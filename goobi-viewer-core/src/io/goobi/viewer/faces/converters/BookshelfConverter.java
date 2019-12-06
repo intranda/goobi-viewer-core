@@ -22,7 +22,7 @@ import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 
 @FacesConverter("bookshelfConverter")
 public class BookshelfConverter implements Converter {
@@ -31,7 +31,7 @@ public class BookshelfConverter implements Converter {
     public final Object getAsObject(final FacesContext context, final UIComponent component, final String value) {
         int id = Integer.valueOf(value);
         try {
-            return DataManager.getInstance().getDao().getBookshelf(id);
+            return DataManager.getInstance().getDao().getBookmarkList(id);
         } catch (DAOException e) {
             return null;
         }
@@ -43,8 +43,8 @@ public class BookshelfConverter implements Converter {
             return null;
         }
 
-        if (object instanceof Bookshelf) {
-            Bookshelf user = (Bookshelf) object;
+        if (object instanceof BookmarkList) {
+            BookmarkList user = (BookmarkList) object;
             try {
                 return String.valueOf(user.getId());
             } catch (NumberFormatException nfe) {

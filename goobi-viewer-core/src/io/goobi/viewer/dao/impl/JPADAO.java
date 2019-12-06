@@ -54,7 +54,7 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSContentItem;
@@ -591,25 +591,25 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#getAllBookshelves()
+     * @see io.goobi.viewer.dao.IDAO#getAllBookmarkLists()
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Bookshelf> getAllBookshelves() throws DAOException {
+    public List<BookmarkList> getAllBookmarkLists() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT bs FROM Bookshelf bs");
+        Query q = em.createQuery("SELECT o FROM BookmarkList o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getPublicBookshelves()
+     * @see io.goobi.viewer.dao.IDAO#getPublicBookmarkLists()
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Bookshelf> getPublicBookshelves() throws DAOException {
+    public List<BookmarkList> getPublicBookmarkLists() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM Bookshelf o WHERE o.isPublic=true");
+        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.isPublic=true");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -617,13 +617,13 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#getBookshelves(io.goobi.viewer.model.user.User)
+     * @see io.goobi.viewer.dao.IDAO#getBookmarkLists(io.goobi.viewer.model.user.User)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Bookshelf> getBookshelves(User user) throws DAOException {
+    public List<BookmarkList> getBookmarkLists(User user) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT bs FROM Bookshelf bs WHERE bs.owner = :user");
+        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user");
         q.setParameter("user", user);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -632,13 +632,13 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#getBookshelf(long)
+     * @see io.goobi.viewer.dao.IDAO#getBookmarkList(long)
      */
     @Override
-    public Bookshelf getBookshelf(long id) throws DAOException {
+    public BookmarkList getBookmarkList(long id) throws DAOException {
         preQuery();
         try {
-            Bookshelf o = em.getReference(Bookshelf.class, id);
+            BookmarkList o = em.getReference(BookmarkList.class, id);
             if (o != null) {
                 em.refresh(o);
             }
@@ -651,16 +651,16 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#getBookshelf(java.lang.String)
+     * @see io.goobi.viewer.dao.IDAO#getBookmarkList(java.lang.String)
      */
     @Override
-    public Bookshelf getBookshelf(String name, User user) throws DAOException {
+    public BookmarkList getBookmarkList(String name, User user) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT bs FROM Bookshelf bs WHERE bs.name = :name AND bs.owner = :user");
+        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
         q.setParameter("name", name);
         q.setParameter("user", user);
         try {
-            Bookshelf o = (Bookshelf) q.getSingleResult();
+            BookmarkList o = (BookmarkList) q.getSingleResult();
             if (o != null) {
                 em.refresh(o);
             }
@@ -672,19 +672,18 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
-    
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getBookshelfByShareKey(java.lang.String)
+     * @see io.goobi.viewer.dao.IDAO#getBookmarkListByShareKey(java.lang.String)
      * @should return correct row
      */
     @Override
-    public Bookshelf getBookshelfByShareKey(String shareKey) throws DAOException {
+    public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT bs FROM Bookshelf bs WHERE bs.shareKey = :shareKey");
+        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.shareKey = :shareKey");
         q.setParameter("shareKey", shareKey);
         try {
-            Bookshelf o = (Bookshelf) q.getSingleResult();
+            BookmarkList o = (BookmarkList) q.getSingleResult();
             if (o != null) {
                 em.refresh(o);
             }
@@ -700,15 +699,15 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#addBookshelf(io.goobi.viewer.model.bookshelf.Bookshelf)
+     * @see io.goobi.viewer.dao.IDAO#addBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
      */
     @Override
-    public boolean addBookshelf(Bookshelf bookshelf) throws DAOException {
+    public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(bookshelf);
+            em.persist(bookmarkList);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -719,19 +718,19 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#updateBookshelf(io.goobi.viewer.model.bookshelf.Bookshelf)
+     * @see io.goobi.viewer.dao.IDAO#updateBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
      */
     @Override
-    public boolean updateBookshelf(Bookshelf bookshelf) throws DAOException {
+    public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(bookshelf);
+            em.merge(bookmarkList);
             em.getTransaction().commit();
             // Refresh the object from the DB so that any new items have IDs
-            if (this.em.contains(bookshelf)) {
-                this.em.refresh(bookshelf);
+            if (this.em.contains(bookmarkList)) {
+                this.em.refresh(bookmarkList);
             }
             return true;
         } finally {
@@ -742,15 +741,15 @@ public class JPADAO implements IDAO {
     /*
      * (non-Javadoc)
      *
-     * @see io.goobi.viewer.dao.IDAO#deleteBookshelf(io.goobi.viewer.model.bookshelf.Bookshelf)
+     * @see io.goobi.viewer.dao.IDAO#deleteBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
      */
     @Override
-    public boolean deleteBookshelf(Bookshelf bookshelf) throws DAOException {
+    public boolean deleteBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            Bookshelf o = em.getReference(Bookshelf.class, bookshelf.getId());
+            BookmarkList o = em.getReference(BookmarkList.class, bookmarkList.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;
@@ -2754,8 +2753,8 @@ public class JPADAO implements IDAO {
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return (CMSMediaItem) q.getSingleResult();
             } catch (NoResultException e) {
-                    //nothing found; no biggie
-                    return null;
+                //nothing found; no biggie
+                return null;
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms media item with filename '" + filename + "'");
                 return null;

@@ -100,7 +100,7 @@ public class ActiveDocumentBean implements Serializable {
     @Inject
     private SearchBean searchBean;
     @Inject
-    private BookshelfBean bookshelfBean;
+    private BookmarkBean bookshelfBean;
     @Inject
     private ImageDeliveryBean imageDelivery;
 
@@ -175,7 +175,7 @@ public class ActiveDocumentBean implements Serializable {
      * 
      * @param bookshelfBean the bookshelfBean to set
      */
-    public void setBookshelfBean(BookshelfBean bookshelfBean) {
+    public void setBookshelfBean(BookmarkBean bookshelfBean) {
         this.bookshelfBean = bookshelfBean;
     }
 

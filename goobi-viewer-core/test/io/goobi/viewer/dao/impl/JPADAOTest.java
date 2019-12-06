@@ -36,8 +36,8 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
-import io.goobi.viewer.model.bookshelf.BookshelfItem;
+import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
@@ -1046,150 +1046,146 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, DataManager.getInstance().getDao().getAllRoles().size());
     }
 
-    // Bookshelves
+    // Bookmarks
 
     @Test
-    public void getAllBookshelvesTest() throws DAOException {
-        List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getAllBookshelves();
-        Assert.assertEquals(2, bookshelves.size());
+    public void getAllBookmarkListsTest() throws DAOException {
+        List<BookmarkList> result = DataManager.getInstance().getDao().getAllBookmarkLists();
+        Assert.assertEquals(2, result.size());
     }
 
     @Test
-    public void getPublicBookshelvesTest() throws DAOException {
-        List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getPublicBookshelves();
-        Assert.assertEquals(1, bookshelves.size());
-        Assert.assertEquals(Long.valueOf(2), bookshelves.get(0).getId());
+    public void getPublicBookmarkListsTest() throws DAOException {
+        List<BookmarkList> result = DataManager.getInstance().getDao().getPublicBookmarkLists();
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(Long.valueOf(2), result.get(0).getId());
     }
 
     @Test
-    public void getAllBookshelvesForUserTest() throws DAOException {
+    public void getAllBookmarkListsForUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(user);
-        Assert.assertEquals(1, bookshelves.size());
-        Assert.assertEquals(user, bookshelves.get(0).getOwner());
+        List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
+        Assert.assertEquals(1, boomarkLists.size());
+        Assert.assertEquals(user, boomarkLists.get(0).getOwner());
     }
 
     @Test
-    public void getBookshelfByIdTest() throws DAOException {
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(1);
-        Assert.assertNotNull(bookshelf);
-        Assert.assertEquals(Long.valueOf(1), bookshelf.getId());
-        Assert.assertNotNull(bookshelf.getOwner());
-        Assert.assertEquals(Long.valueOf(1), bookshelf.getOwner().getId());
-        Assert.assertEquals("bookshelf 1 name", bookshelf.getName());
-        Assert.assertEquals("bookshelf 1 desc", bookshelf.getDescription());
-        // for (BookshelfItem item : bookshelf.getItems()) {
-        // System.out.println(item.getName());
-        // }
-        Assert.assertEquals(2, bookshelf.getItems().size());
+    public void getBookmarkListByIdTest() throws DAOException {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(Long.valueOf(1), bl.getId());
+        Assert.assertNotNull(bl.getOwner());
+        Assert.assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        Assert.assertEquals("bookmark list 1 name", bl.getName());
+        Assert.assertEquals("bookmark list 1 desc", bl.getDescription());
+        Assert.assertEquals(2, bl.getItems().size());
 
     }
 
     @Test
-    public void getBookshelfByNameTest() throws DAOException {
+    public void getBookmarkListByNameTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
 
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf("bookshelf 1 name", user);
-        Assert.assertNotNull(bookshelf);
-        Assert.assertEquals(Long.valueOf(1), bookshelf.getId());
-        Assert.assertNotNull(bookshelf.getOwner());
-        Assert.assertEquals(Long.valueOf(1), bookshelf.getOwner().getId());
-        Assert.assertEquals("bookshelf 1 name", bookshelf.getName());
-        Assert.assertEquals("bookshelf 1 desc", bookshelf.getDescription());
-        Assert.assertEquals(2, bookshelf.getItems().size());
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList("bookmark list 1 name", user);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(Long.valueOf(1), bl.getId());
+        Assert.assertNotNull(bl.getOwner());
+        Assert.assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        Assert.assertEquals("bookmark list 1 name", bl.getName());
+        Assert.assertEquals("bookmark list 1 desc", bl.getDescription());
+        Assert.assertEquals(2, bl.getItems().size());
     }
-    
 
     /**
-     * @see JPADAO#getBookshelfByShareKey(String)
+     * @see JPADAO#getBookmarkListByShareKey(String)
      * @verifies return correct row
      */
     @Test
-    public void getBookshelfByShareKey_shouldReturnCorrectRow() throws Exception {
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelfByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
-        Assert.assertNotNull(bookshelf);
-        Assert.assertEquals(Long.valueOf(1), bookshelf.getId());
+    public void getBookmarkListByShareKey_shouldReturnCorrectRow() throws Exception {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkListByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(Long.valueOf(1), bl.getId());
     }
 
     @Test
-    public void addBookshelfTest() throws DAOException {
+    public void addBookmarkListTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
 
-        Bookshelf bookshelf = new Bookshelf();
-        bookshelf.setName("add bookshelf test");
-        bookshelf.setOwner(user);
-        bookshelf.setDescription("add bookshelf test desc");
-        BookshelfItem item = new BookshelfItem("PPNTEST", "add bookshelf test item 1 main title", "add bookshelf test item 1 name");
-        item.setDescription("add bookshelf test item 1 desc");
-        bookshelf.addItem(item);
-        Assert.assertTrue(DataManager.getInstance().getDao().addBookshelf(bookshelf));
+        BookmarkList bl = new BookmarkList();
+        bl.setName("add bookmark list test");
+        bl.setOwner(user);
+        bl.setDescription("add bookmark list test desc");
+        Bookmark item = new Bookmark("PPNTEST", "add bookmark 1 main title", "add bookmark 1 name");
+        item.setDescription("add bookmark 1 desc");
+        bl.addItem(item);
+        Assert.assertTrue(DataManager.getInstance().getDao().addBookmarkList(bl));
 
-        Bookshelf bookshelf2 = DataManager.getInstance().getDao().getBookshelf("add bookshelf test", user);
-        Assert.assertNotNull(bookshelf2);
-        Assert.assertNotNull(bookshelf2.getId());
-        Assert.assertEquals(user, bookshelf2.getOwner());
-        Assert.assertEquals(bookshelf.getName(), bookshelf2.getName());
-        Assert.assertEquals(bookshelf.getDescription(), bookshelf2.getDescription());
-        Assert.assertEquals(1, bookshelf2.getItems().size());
-        BookshelfItem item2 = bookshelf2.getItems().get(0);
-        Assert.assertEquals(bookshelf2, item2.getBookshelf());
+        BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList("add bookmark list test", user);
+        Assert.assertNotNull(bl2);
+        Assert.assertNotNull(bl2.getId());
+        Assert.assertEquals(user, bl2.getOwner());
+        Assert.assertEquals(bl.getName(), bl2.getName());
+        Assert.assertEquals(bl.getDescription(), bl2.getDescription());
+        Assert.assertEquals(1, bl2.getItems().size());
+        Bookmark item2 = bl2.getItems().get(0);
+        Assert.assertEquals(bl2, item2.getBookmarkList());
         Assert.assertEquals("PPNTEST", item2.getPi());
-        //        Assert.assertEquals("add bookshelf test item 1 main title", item2.getMainTitle());
-        Assert.assertEquals("add bookshelf test item 1 name", item2.getName());
-        Assert.assertEquals("add bookshelf test item 1 desc", item2.getDescription());
+        //        Assert.assertEquals("add bookmark 1 main title", item2.getMainTitle());
+        Assert.assertEquals("add bookmark 1 name", item2.getName());
+        Assert.assertEquals("add bookmark 1 desc", item2.getDescription());
     }
 
     @Test
-    public void updateBookshelfTest() throws DAOException {
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(1);
-        Assert.assertNotNull(bookshelf);
-        Assert.assertEquals(2, bookshelf.getItems().size());
+    public void updateBookmarkListTest() throws DAOException {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(2, bl.getItems().size());
 
-        int numBookshelves = DataManager.getInstance().getDao().getAllBookshelves().size();
+        int numBookmarkLists = DataManager.getInstance().getDao().getAllBookmarkLists().size();
 
-        BookshelfItem item = new BookshelfItem("PPNTEST", "addBookshelfItemTest item main title", "addBookshelfItemTest item name");
-        item.setDescription("addBookshelfItemTest item desc");
-        bookshelf.addItem(item);
-        bookshelf.setName("bookshelf 1 new name");
-        bookshelf.setDescription("bookshelf 1 new desc");
-        Assert.assertTrue(DataManager.getInstance().getDao().updateBookshelf(bookshelf));
+        Bookmark item = new Bookmark("PPNTEST", "addBookmarkTest item main title", "addBookmarkTest item name");
+        item.setDescription("addBookmarkTest item desc");
+        bl.addItem(item);
+        bl.setName("bookmark list 1 new name");
+        bl.setDescription("bookmark list 1 new desc");
+        Assert.assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
         //        Assert.assertNotNull(item.getId());
 
-        int numBookshelves2 = DataManager.getInstance().getDao().getAllBookshelves().size();
-        Assert.assertEquals(numBookshelves, numBookshelves2);
+        int numBookmarkLists2 = DataManager.getInstance().getDao().getAllBookmarkLists().size();
+        Assert.assertEquals(numBookmarkLists, numBookmarkLists2);
 
-        Bookshelf bookshelf2 = DataManager.getInstance().getDao().getBookshelf(bookshelf.getId());
-        Assert.assertNotNull(bookshelf2);
-        Assert.assertEquals(bookshelf.getId(), bookshelf2.getId());
-        Assert.assertEquals(bookshelf.getName(), bookshelf2.getName());
-        Assert.assertEquals(bookshelf.getDescription(), bookshelf2.getDescription());
-        Assert.assertEquals(3, bookshelf2.getItems().size());
+        BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList(bl.getId());
+        Assert.assertNotNull(bl2);
+        Assert.assertEquals(bl.getId(), bl2.getId());
+        Assert.assertEquals(bl.getName(), bl2.getName());
+        Assert.assertEquals(bl.getDescription(), bl2.getDescription());
+        Assert.assertEquals(3, bl2.getItems().size());
     }
 
     @Test
-    public void deleteBookshelfTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllBookshelves().size());
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(1);
-        Assert.assertNotNull(bookshelf);
-        Assert.assertTrue(DataManager.getInstance().getDao().deleteBookshelf(bookshelf));
-        Assert.assertNull(DataManager.getInstance().getDao().getBookshelf(1));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllBookshelves().size());
+    public void deleteBookmarkListTest() throws DAOException {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
+        Assert.assertNotNull(bl);
+        Assert.assertTrue(DataManager.getInstance().getDao().deleteBookmarkList(bl));
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkList(1));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllBookmarkLists().size());
     }
 
     @Test
-    public void removeBookshelfItemTest() throws DAOException {
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(1);
-        Assert.assertNotNull(bookshelf);
-        Assert.assertEquals(2, bookshelf.getItems().size());
-        bookshelf.removeItem(bookshelf.getItems().get(0));
-        Assert.assertTrue(DataManager.getInstance().getDao().updateBookshelf(bookshelf));
+    public void removeBookMarkTest() throws DAOException {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(2, bl.getItems().size());
+        bl.removeItem(bl.getItems().get(0));
+        Assert.assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
 
-        Bookshelf bookshelf2 = DataManager.getInstance().getDao().getBookshelf(1);
-        Assert.assertNotNull(bookshelf2);
-        Assert.assertEquals(1, bookshelf2.getItems().size());
+        BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList(1);
+        Assert.assertNotNull(bl2);
+        Assert.assertEquals(1, bl2.getItems().size());
     }
 
     /**

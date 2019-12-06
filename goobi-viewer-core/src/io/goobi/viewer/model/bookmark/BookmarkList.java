@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.bookshelf;
+package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,11 +56,11 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Entity
 @Table(name = "bookshelves")
 @XStreamAlias("bookshelf")
-public class Bookshelf implements Serializable {
+public class BookmarkList implements Serializable {
 
     private static final long serialVersionUID = -3040539541804852903L;
 
-    private static final Logger logger = LoggerFactory.getLogger(Bookshelf.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookmarkList.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,9 +83,9 @@ public class Bookshelf implements Serializable {
     @Column(name = "share_key", unique = true)
     public String shareKey;
 
-    @OneToMany(mappedBy = "bookshelf", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bookmarkList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrivateOwned
-    private List<BookshelfItem> items = new ArrayList<>();
+    private List<Bookmark> items = new ArrayList<>();
 
     /** UserGroups that may access this bookshelf. */
     @ManyToMany(fetch = FetchType.LAZY)
@@ -125,7 +125,7 @@ public class Bookshelf implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Bookshelf other = (Bookshelf) obj;
+        BookmarkList other = (BookmarkList) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;
@@ -156,13 +156,13 @@ public class Bookshelf implements Serializable {
      * @param item
      * @return boolean if list changed
      */
-    public boolean addItem(BookshelfItem item) {
+    public boolean addItem(Bookmark item) {
         if (items == null) {
             items = new ArrayList<>();
         }
 
         if (item != null && !items.contains(item) && items.add(item)) {
-            item.setBookshelf(this);
+            item.setBookmarkList(this);
             return true;
         }
         return false;
@@ -174,7 +174,7 @@ public class Bookshelf implements Serializable {
      * @param item
      * @return boolean if list changed
      */
-    public boolean removeItem(BookshelfItem item) {
+    public boolean removeItem(Bookmark item) {
         if (items != null) {
             return items.remove(item);
         }
@@ -210,7 +210,7 @@ public class Bookshelf implements Serializable {
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
 
-        for (BookshelfItem item : items) {
+        for (Bookmark item : items) {
             if (StringUtils.isNotEmpty(item.getPi())) {
                 if (StringUtils.isNotEmpty(item.getLogId())) {
                     // with LOGID
@@ -399,14 +399,14 @@ public class Bookshelf implements Serializable {
     /**
      * @return the items
      */
-    public List<BookshelfItem> getItems() {
+    public List<Bookmark> getItems() {
         return items;
     }
 
     /**
      * @param items the items to set
      */
-    public void setItems(List<BookshelfItem> items) {
+    public void setItems(List<Bookmark> items) {
         this.items = items;
     }
 
@@ -459,7 +459,7 @@ public class Bookshelf implements Serializable {
         String queryRoot = SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT + " AND " + SolrConstants.PI_TOPSTRUCT + ":";
         //        int row = 1;
         //        int col = 1;
-        for (BookshelfItem bi : items) {
+        for (Bookmark bi : items) {
             String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("iiif/manifests/")
                     .append(bi.getPi())
                     .append("/manifest")
@@ -503,7 +503,7 @@ public class Bookshelf implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder("+(");
-        for (BookshelfItem item : items) {
+        for (Bookmark item : items) {
             sb.append(' ').append(SolrConstants.PI).append(':').append(item.getPi());
         }
         sb.append(')');

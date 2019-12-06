@@ -42,7 +42,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.Role;
@@ -176,9 +176,9 @@ public class UserGroup implements ILicensee {
      * @return
      * @throws DAOException
      */
-    public List<Bookshelf> getSharedBookshelves() throws DAOException {
-        List<Bookshelf> ret = new ArrayList<>();
-        for (Bookshelf bs : DataManager.getInstance().getDao().getAllBookshelves()) {
+    public List<BookmarkList> getSharedBookshelves() throws DAOException {
+        List<BookmarkList> ret = new ArrayList<>();
+        for (BookmarkList bs : DataManager.getInstance().getDao().getAllBookmarkLists()) {
             if (bs.getGroupShares().contains(this)) {
                 ret.add(bs);
             }

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.bookshelves;
+package io.goobi.viewer.servlets.rest.bookmarks;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -43,9 +43,9 @@ import io.goobi.viewer.exceptions.RestApiException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
-import io.goobi.viewer.model.bookshelf.BookshelfItem;
-import io.goobi.viewer.model.bookshelf.SessionStoreBookshelfManager;
+import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.servlets.rest.SuccessMessage;
@@ -55,30 +55,30 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
  * @author Florian Alpers
  *
  */
-@Path("/bookshelves")
+@Path("/bookmarks")
 @ViewerRestServiceBinding
-public class BookshelfResource {
+public class BookmarkResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(BookshelfResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookmarkResource.class);
     private final boolean testing;
     private final UserBean userBean;
 
     @Context
     private HttpServletRequest servletRequest;
 
-    public BookshelfResource() {
+    public BookmarkResource() {
         this.testing = false;
         this.userBean = BeanUtils.getUserBean();
     }
 
-    public BookshelfResource(UserBean userBean, HttpServletRequest request) {
+    public BookmarkResource(UserBean userBean, HttpServletRequest request) {
         this.testing = true;
         this.userBean = userBean;
         this.servletRequest = request;
     }
 
     /**
-     * Returns the session stored bookshelf, creating a new empty one if needed
+     * Returns the session stored bookmark list, creating a new empty one if needed
      * 
      * @return
      * @throws DAOException
@@ -88,17 +88,17 @@ public class BookshelfResource {
     @GET
     @Path("/session/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Bookshelf getSessionBookshelf() throws DAOException, IOException, RestApiException {
+    public BookmarkList getSessionBookshelf() throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
-            return bookshelf;
+            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookshelf(session);
+            return bookmarkList;
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
-     * Returns the session stored bookshelf, creating a new empty one if needed
+     * Returns the session stored bookmark list, creating a new empty one if needed
      * 
      * @return
      * @throws DAOException
@@ -115,9 +115,9 @@ public class BookshelfResource {
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
-            if (bookshelf != null) {
-                return bookshelf.getMiradorJsonObject(servletRequest.getContextPath());
+            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookshelf(session);
+            if (bookmarkList != null) {
+                return bookmarkList.getMiradorJsonObject(servletRequest.getContextPath());
             }
             return "";
         }
@@ -125,7 +125,7 @@ public class BookshelfResource {
     }
 
     /**
-     * Adds an item with the given pi to the session stored bookshelf, creating a new bookshelf if needed
+     * Adds an item with the given pi to the session stored bookmark list, creating a new bookmark list if needed
      * 
      * @param pi
      * @return
@@ -141,7 +141,7 @@ public class BookshelfResource {
     }
 
     /**
-     * Adds an item with the given pi, logid and page number to the session stored bookshelf, creating a new bookshelf if needed
+     * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed
      * 
      * @param pi
      * @param logId
@@ -162,20 +162,20 @@ public class BookshelfResource {
         }
 
         try {
-            BookshelfItem item = new BookshelfItem(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
-            boolean success = DataManager.getInstance().getBookshelfManager().addToBookshelf(item, session);
+            Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
+            boolean success = DataManager.getInstance().getBookmarkManager().addToBookshelf(item, session);
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
-            String errorMessage = "Unable to create bookshelf item for pi = " + pi + ", page = " + pageString + " and logid = " + logId;
+            String errorMessage = "Unable to create bookmark for pi = " + pi + ", page = " + pageString + " and logid = " + logId;
             logger.error(errorMessage);
             throw new RestApiException(errorMessage, e, HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     /**
-     * Deletes the bookshelf item with the given pi from the session store bookshelf This operation returns an object with the property "success:
-     * false" if the operation failed (usually because the object wasn't in the bookshelf to begin with). Otherwise the return object contains
-     * "success: true"
+     * Deletes the bookmark with the given pi from the session store bookmark list This operation returns an object with the property "success: false"
+     * if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return object contains "success:
+     * true"
      * 
      * @param pi
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
@@ -191,8 +191,8 @@ public class BookshelfResource {
     }
 
     /**
-     * Deletes the bookshelf item with the given pi, logid and page number from the session store bookshelf This operation returns an object with the
-     * property "success: false" if the operation failed (usually because the object wasn't in the bookshelf to begin with). Otherwise the return
+     * Deletes the bookmark with the given pi, logid and page number from the session store bookmark list This operation returns an object with the
+     * property "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return
      * object contains "success: true"
      * 
      * @param pi
@@ -214,19 +214,19 @@ public class BookshelfResource {
         }
 
         try {
-            BookshelfItem item = new BookshelfItem(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
-            boolean success = DataManager.getInstance().getBookshelfManager().removeFromBookself(item, session);
+            Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
+            boolean success = DataManager.getInstance().getBookmarkManager().removeFromBookself(item, session);
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
-            String errorMessage = "Unable to delete bookshelf item with pi = " + pi + " and logid = " + logId;
+            String errorMessage = "Unable to delete bookmark with pi = " + pi + " and logid = " + logId;
             logger.error(errorMessage);
             throw new RestApiException(errorMessage, e, HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     /**
-     * Deletes the entry bookshelf from the session store. Always returns an object with the property "success: true", unless an error occurs in which
-     * case an error status code and an error object is returned
+     * Deletes the entry bookmark list from the session store. Always returns an object with the property "success: true", unless an error occurs in
+     * which case an error status code and an error object is returned
      * 
      * @return
      * @throws RestApiException
@@ -237,14 +237,14 @@ public class BookshelfResource {
     public SuccessMessage deleteSessionBookshelf() throws RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            DataManager.getInstance().getBookshelfManager().deleteBookshelf(session);
+            DataManager.getInstance().getBookmarkManager().deleteBookshelf(session);
             return new SuccessMessage(true);
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
-     * Returns "true" if the object with the given IP is in the session store bookshelf, "false" otherwise
+     * Returns "true" if the object with the given IP is in the session store bookmark list, "false" otherwise
      * 
      * @param pi
      * @return
@@ -260,7 +260,7 @@ public class BookshelfResource {
     }
 
     /**
-     * Returns "true" if the object with the given IP, logid and page number is in the session store bookshelf, "false" otherwise
+     * Returns "true" if the object with the given IP, logid and page number is in the session store bookmark list, "false" otherwise
      * 
      * @param pi
      * @param logId
@@ -281,22 +281,22 @@ public class BookshelfResource {
         }
 
         try {
-            BookshelfItem item = new BookshelfItem(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
-            boolean success = DataManager.getInstance().getBookshelfManager().isInBookshelf(item, session);
+            Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
+            boolean success = DataManager.getInstance().getBookmarkManager().isInBookshelf(item, session);
             return success;
         } catch (PresentationException e) {
             //no such document
             return false;
         } catch (IndexUnreachableException e) {
-            String errorMessage = "Error looking for bookshelf item pi = " + pi + " and logid = " + logId;
+            String errorMessage = "Error looking for bookmark pi = " + pi + " and logid = " + logId;
             logger.error(errorMessage);
             throw new RestApiException(errorMessage, e, HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     /**
-     * Counts the items contained in the session store bookshelf and returns the number as plain integer If no session store bookshelf exists, 0 is
-     * returned
+     * Counts the items contained in the session store bookmark list and returns the number as plain integer If no session store bookmark list exists,
+     * 0 is returned
      * 
      * @return
      * @throws RestApiException
@@ -307,14 +307,14 @@ public class BookshelfResource {
     public Integer countSessionBookshelfItems() throws RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            int count = DataManager.getInstance().getBookshelfManager().getBookshelf(session).map(bs -> bs.getItems().size()).orElse(0);
+            int count = DataManager.getInstance().getBookmarkManager().getBookshelf(session).map(bs -> bs.getItems().size()).orElse(0);
             return count;
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
-     * Returns all Bookshelves owned by the current user
+     * Returns all BookmarkList owned by the current user
      * 
      * @return
      * @throws DAOException
@@ -324,10 +324,10 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getAllUserBookshelfs() throws DAOException, IOException, RestApiException {
+    public List<BookmarkList> getAllUserBookmarkLists() throws DAOException, IOException, RestApiException {
         User user = getUser();
         if (user != null) {
-            return DataManager.getInstance().getDao().getBookshelves(user);
+            return DataManager.getInstance().getDao().getBookmarkLists(user);
         }
         throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
@@ -343,7 +343,7 @@ public class BookshelfResource {
     @GET
     @Path("/shared/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getAllSharedBookshelfs() throws DAOException, IOException, RestApiException {
+    public List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException {
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -351,9 +351,9 @@ public class BookshelfResource {
 
         return DataManager.getInstance()
                 .getDao()
-                .getAllBookshelves()
+                .getAllBookmarkLists()
                 .stream()
-                .filter(bs -> !user.equals(bs.getOwner()))
+                .filter(bl -> !user.equals(bl.getOwner()))
                 .filter(bs -> isSharedTo(bs, user))
                 .collect(Collectors.toList());
     }
@@ -369,12 +369,12 @@ public class BookshelfResource {
     @GET
     @Path("/public/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getAllPublicBookshelfs() throws DAOException, IOException, RestApiException {
-        return DataManager.getInstance().getDao().getPublicBookshelves();
+    public List<BookmarkList> getAllPublicBookshelfs() throws DAOException, IOException, RestApiException {
+        return DataManager.getInstance().getDao().getPublicBookmarkLists();
     }
 
     /**
-     * Returns the bookshelf with the given id, provided it is owned by the user or it is public or shared to him
+     * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him
      * 
      * @return
      * @throws DAOException
@@ -384,78 +384,79 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Bookshelf getUserBookshelfById(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
+    public BookmarkList getUserBookshelfById(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
 
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(id);
+        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(id);
 
-        if (bookshelf.isIsPublic()) {
-            logger.trace("Serving public bookshelf " + id);
-            return bookshelf;
+        if (bookmarkList.isIsPublic()) {
+            logger.trace("Serving public bookmark list " + id);
+            return bookmarkList;
         }
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
 
-        if (user.equals(bookshelf.getOwner())) {
-            logger.trace("Serving bookshelf " + id + " owned by user " + user);
-            return bookshelf;
-        } else if (isSharedTo(bookshelf, user)) {
-            logger.trace("Serving bookshelf " + id + " shared to user " + user);
-            return bookshelf;
+        if (user.equals(bookmarkList.getOwner())) {
+            logger.trace("Serving bookmark list " + id + " owned by user " + user);
+            return bookmarkList;
+        } else if (isSharedTo(bookmarkList, user)) {
+            logger.trace("Serving bookmark list " + id + " shared to user " + user);
+            return bookmarkList;
         } else {
-            throw new RestApiException("User has no access to bookshelf " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
+            throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
     }
 
     /**
-     * Sets the name of the Bookshelf with the given id to the given name - provided the user owns such a bookshelf; otherwise 204 is returned
+     * Sets the name of the BookmarkList with the given id to the given name - provided the user owns such a bookmark list; otherwise 204 is returned
      * 
      */
     @GET
     @Path("/user/get/{id}/set/name/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage setUserBookshelfName(@PathParam("id") Long id, @PathParam("name") String name)
+    public SuccessMessage setUserBookmarkListName(@PathParam("id") Long id, @PathParam("name") String name)
             throws DAOException, IOException, RestApiException {
-        Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
+        Optional<BookmarkList> o = getAllUserBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
-            throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
+            throw new RestApiException("No bookmark list with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
         }
 
         o.get().setName(name);
-        DataManager.getInstance().getDao().updateBookshelf(o.get());
+        DataManager.getInstance().getDao().updateBookmarkList(o.get());
         return new SuccessMessage(true);
     }
 
     /**
-     * Adds a new BookshelfItem with the given pi, logid and page number to the current users bookshelf with the given id Returns 203 if no matching
-     * bookshelf was found or 400 if the BookshelfItem could not be created (wrong pi/logid/page)
+     * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id Returns 203 if no matching
+     * bookmark list was found or 400 if the Bookmark could not be created (wrong pi/logid/page)
      * 
      */
     @GET
     @Path("/user/get/{id}/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
+    public SuccessMessage addItemToUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
-        Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
+        Optional<BookmarkList> o = getAllUserBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
-            throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
+            throw new RestApiException("No bookmark list with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
         }
 
         try {
-            BookshelfItem item = new BookshelfItem(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
+            Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
             boolean success = o.get().addItem(item);
-            DataManager.getInstance().getDao().updateBookshelf(o.get());
+            DataManager.getInstance().getDao().updateBookmarkList(o.get());
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
-            throw new RestApiException("Failed to create bookshelf item with pi '" + pi + "', logid '" + logId + "' and page number '" + pageString
-                    + "': " + e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            throw new RestApiException(
+                    "Failed to create bookmark with pi '" + pi + "', logid '" + logId + "' and page number '" + pageString + "': " + e.getMessage(),
+                    HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     /**
-     * Adds a new BookshelfItem with the given pi to the current users bookshelf with the given id Returns 203 if no matching bookshelf was found or
-     * 400 if the BookshelfItem could not be created (wrong pi)
+     * Adds a new BookshelfItem with the given pi to the current users bookmark list with the given id Returns 203 if no matching bookmark list was
+     * found or 400 if the BookshelfItem could not be created (wrong pi)
      * 
      */
     @GET
@@ -463,12 +464,12 @@ public class BookshelfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi)
             throws DAOException, IOException, RestApiException {
-        return addItemToUserBookshelf(id, pi, null, null);
+        return addItemToUserBookmarkList(id, pi, null, null);
     }
 
     /**
-     * Removes a BookshelfItem with the given pi, logid and page number from the current users bookshelf with the given id Returns 203 if no matching
-     * bookshelf was found or 400 if the requested BookshelfItem is invalid (wrong pi/logid/page)
+     * Removes a BookshelfItem with the given pi, logid and page number from the current users bookmark list with the given id Returns 203 if no
+     * matching bookmark list was found or 400 if the requested BookshelfItem is invalid (wrong pi/logid/page)
      * 
      */
     @GET
@@ -476,25 +477,26 @@ public class BookshelfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
-        Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
+        Optional<BookmarkList> o = getAllUserBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
-            throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
+            throw new RestApiException("No bookmark list with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
         }
 
         try {
-            BookshelfItem item = new BookshelfItem(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
+            Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
             boolean success = o.get().removeItem(item);
-            DataManager.getInstance().getDao().updateBookshelf(o.get());
+            DataManager.getInstance().getDao().updateBookmarkList(o.get());
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
-            throw new RestApiException("Failed to create bookshelf item with pi '" + pi + "', logid '" + logId + "' and page number '" + pageString
-                    + "': " + e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            throw new RestApiException(
+                    "Failed to create bookmark with pi '" + pi + "', logid '" + logId + "' and page number '" + pageString + "': " + e.getMessage(),
+                    HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     /**
-     * Removes a BookshelfItem with the given pi from the current users bookshelf with the given id Returns 203 if no matching bookshelf was found or
-     * 400 if the requested BookshelfItem is invalid (wrong pi)
+     * Removes a BookshelfItem with the given pi from the current users bookmark list with the given id Returns 203 if no matching bookmark list was
+     * found or 400 if the requested BookshelfItem is invalid (wrong pi)
      * 
      * @throws RestApiException
      * @throws IOException
@@ -510,7 +512,7 @@ public class BookshelfResource {
     }
 
     /**
-     * Adds a new Bookshelf with the given name to the current users bookshelves
+     * Adds a new Bookshelf with the given name to the current users bookmark lists
      * 
      * @param pi
      * @return
@@ -531,16 +533,16 @@ public class BookshelfResource {
             throw new RestApiException("Bookshelf '" + name + "' already exists for the current user", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        Bookshelf bookshelf = new Bookshelf();
-        bookshelf.setName(name);
-        bookshelf.setOwner(user);
-        bookshelf.setIsPublic(false);
-        boolean success = DataManager.getInstance().getDao().addBookshelf(bookshelf);
+        BookmarkList bookmarkList = new BookmarkList();
+        bookmarkList.setName(name);
+        bookmarkList.setOwner(user);
+        bookmarkList.setIsPublic(false);
+        boolean success = DataManager.getInstance().getDao().addBookmarkList(bookmarkList);
         return new SuccessMessage(success);
     }
 
     /**
-     * Adds a new Bookshelf with the given name to the current users bookshelves
+     * Adds a new Bookshelf with the given name to the current users bookmark lists
      * 
      * @param pi
      * @return
@@ -552,12 +554,12 @@ public class BookshelfResource {
     @Path("/user/add")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
-        String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
+        String name = SessionStoreBookmarkManager.generateNewBookshelfName(getAllUserBookmarkLists());
         return addUserBookshelf(name);
     }
 
     /**
-     * Adds the current session bookshelf to the current user bookshelves under a newly generated name
+     * Adds the current session bookmark list to the current user bookmark lists under a newly generated name
      * 
      * @param pi
      * @return
@@ -569,12 +571,12 @@ public class BookshelfResource {
     @Path("/user/addSessionBookshelf")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelfFromSession() throws DAOException, IOException, RestApiException {
-        String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
+        String name = SessionStoreBookmarkManager.generateNewBookshelfName(getAllUserBookmarkLists());
         return addUserBookshelfFromSession(name);
     }
 
     /**
-     * Adds the current session bookshelf to the current user bookshelves under the given name
+     * Adds the current session bookmark list to the current user's bookmark lists under the given name
      * 
      * @param pi
      * @return
@@ -585,27 +587,27 @@ public class BookshelfResource {
     @GET
     @Path("/user/addSessionBookshelf/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelfFromSession(@PathParam("name") String bookshelfName) throws DAOException, IOException, RestApiException {
+    public SuccessMessage addUserBookshelfFromSession(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
 
-        Optional<Bookshelf> bookshelf = DataManager.getInstance().getBookshelfManager().getBookshelf(servletRequest.getSession());
-        if (bookshelf.isPresent()) {
-            bookshelf.get().setName(bookshelfName);
-            boolean success = DataManager.getInstance().getDao().addBookshelf(bookshelf.get());
+        Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookshelf(servletRequest.getSession());
+        if (bookmarkList.isPresent()) {
+            bookmarkList.get().setName(name);
+            boolean success = DataManager.getInstance().getDao().addBookmarkList(bookmarkList.get());
             return new SuccessMessage(success);
         }
 
-        throw new RestApiException("No session bookshelf found", HttpServletResponse.SC_NOT_FOUND);
+        throw new RestApiException("No session bookmark list found", HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**
-     * Deletes the current user's bookshelf with the given id. If no such bookshelf could be found a message with 'success:false' is returned,
+     * Deletes the current user's bookmark list with the given id. If no such bookmark list could be found a message with 'success:false' is returned,
      * otherwise one with 'success:true'
      * 
-     * @param id The bookshelf id
+     * @param id The bookmark list id
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws DAOException
      * @throws IOException
@@ -620,17 +622,17 @@ public class BookshelfResource {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
 
-        Optional<Bookshelf> bookshelf = getBookshelf(user, id);
-        if (bookshelf.isPresent()) {
-            DataManager.getInstance().getDao().deleteBookshelf(bookshelf.get());
+        Optional<BookmarkList> bookmarkList = getBookshelf(user, id);
+        if (bookmarkList.isPresent()) {
+            DataManager.getInstance().getDao().deleteBookmarkList(bookmarkList.get());
             return new SuccessMessage(true);
         }
 
-        throw new RestApiException("No bookshelf with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
+        throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**
-     * Returns the user bookshelf with the given ID.
+     * Returns the user bookmark list with the given ID.
      * 
      * @param id
      * @return
@@ -650,17 +652,17 @@ public class BookshelfResource {
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
-        Optional<Bookshelf> bookshelf = getBookshelf(user, id);
-        if (bookshelf.isPresent()) {
-            return bookshelf.get().getMiradorJsonObject(servletRequest.getContextPath());
+        Optional<BookmarkList> bookmarkList = getBookshelf(user, id);
+        if (bookmarkList.isPresent()) {
+            return bookmarkList.get().getMiradorJsonObject(servletRequest.getContextPath());
         }
 
-        throw new RestApiException("No bookshelf with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
+        throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**
-     * Returns the bookshelf containing the object with the given pi, logid and page number if is contained in any bookshelf of the current user
-     * Otherwise an json object with the property "success:false" is returned
+     * Returns the bookmark list containing the object with the given pi, logid and page number if is contained in any bookmark list of the current
+     * user Otherwise an json object with the property "success:false" is returned
      * 
      * @param pi
      * @return
@@ -671,26 +673,26 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId,
+    public List<BookmarkList> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         logger.trace("getContainingUserBookshelves: {}/{}/{}", pi, pageString, logId);
-        List<Bookshelf> bookshelves = getAllUserBookshelfs();
-        if (bookshelves == null) {
+        List<BookmarkList> bookmarkLists = getAllUserBookmarkLists();
+        if (bookmarkLists == null) {
             return Collections.emptyList();
         }
 
         try {
-            BookshelfItem item = new BookshelfItem(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
-            List<Bookshelf> containingShelves = bookshelves.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
+            Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
+            List<BookmarkList> containingShelves = bookmarkLists.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
             return containingShelves;
         } catch (IndexUnreachableException | PresentationException e) {
-            throw new RestApiException("Error retrieving bookshelves: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RestApiException("Error retrieving bookmark lists: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Returns the bookshelf containing the object with the given pi if is contained in any bookshelf of the current user Otherwise an json object
-     * with the property "success:false" is returned
+     * Returns the bookmark list containing the object with the given pi if is contained in any bookmark list of the current user Otherwise an json
+     * object with the property "success:false" is returned
      * 
      * @param pi
      * @return
@@ -701,13 +703,13 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+    public List<BookmarkList> getContainingUserBookshelves(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
         return getContainingUserBookshelves(pi, null, null);
     }
 
     /**
-     * Counts the items contained in the current user's bookshelf with the given id and returns the number as plain integer If no session store
-     * bookshelf exists, 0 is returned
+     * Counts the items contained in the current user's bookmark list with the given id and returns the number as plain integer If no session store
+     * bookmark list exists, 0 is returned
      * 
      * @return
      * @throws RestApiException
@@ -759,12 +761,12 @@ public class BookshelfResource {
     }
 
     /**
-     * @param bookshelf
+     * @param bookmarkList
      * @param user
      * @return
      */
-    private boolean isSharedTo(Bookshelf bookshelf, User user) {
-        return bookshelf.getGroupShares().stream().anyMatch(group -> isInGroup(user, group));
+    private boolean isSharedTo(BookmarkList bookmarkList, User user) {
+        return bookmarkList.getGroupShares().stream().anyMatch(group -> isInGroup(user, group));
     }
 
     /**
@@ -776,7 +778,7 @@ public class BookshelfResource {
      * @throws DAOException
      */
     private boolean userHasBookshelf(User user, String name) throws DAOException, IOException, RestApiException {
-        return getAllUserBookshelfs().stream().anyMatch(bs -> bs.getName() != null && bs.getName().equals(name));
+        return getAllUserBookmarkLists().stream().anyMatch(bs -> bs.getName() != null && bs.getName().equals(name));
     }
 
     /**
@@ -785,10 +787,10 @@ public class BookshelfResource {
      * @return
      * @throws DAOException
      */
-    private static Optional<Bookshelf> getBookshelf(User user, Long id) throws DAOException {
-        List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(user);
-        if (bookshelves != null) {
-            return bookshelves.stream().filter(bs -> bs.getId().equals(id)).findFirst();
+    private static Optional<BookmarkList> getBookshelf(User user, Long id) throws DAOException {
+        List<BookmarkList> bookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
+        if (bookmarkLists != null) {
+            return bookmarkLists.stream().filter(bs -> bs.getId().equals(id)).findFirst();
         }
 
         return Optional.empty();

@@ -54,7 +54,7 @@
 				</div>
 			
 				<!-- WARNING IF NO BOOKSHELF EXISTS -->
-				<h:panelGroup rendered="#{bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
+				<h:panelGroup rendered="#{bookmarkBean.getBookshelvesForUser(userBean.user).isEmpty()}">
 					<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookshelvesWarning}</div>
 				</h:panelGroup>
 				
@@ -62,7 +62,7 @@
 				<h:panelGroup rendered="#{!bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
 					<h:form id="userBookshelvesForm" prependId="false">
 						<div class="row no-margin">
-							<ui:repeat value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}" var="bookshelf" varStatus="status">
+							<ui:repeat value="#{bookmarkBean.getBookshelvesForUser(userBean.user)}" var="bookshelf" varStatus="status">
 								<div class="user-bookshelves__panel">
 									<div class="user-bookshelves__panel-header">
 										<div class="col-xs-8 col-sm-10">
@@ -103,7 +103,7 @@
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
                                                 
-												<h:commandLink title="#{msg.edit}" action="#{bookshelfBean.editBookshelfAction(bookshelf)}">
+												<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookshelfAction(bookshelf)}">
 													<i class="fa fa-pencil" aria-hidden="true"></i>
 													<f:passThroughAttribute name="data-toggle" value="tooltip" />
 													<f:passThroughAttribute name="data-placement" value="top" />
@@ -117,9 +117,9 @@
                                                 </h:commandLink>
                                                 
                                                 <p:dialog header="#{msg.bookshelf_shareLink}" widgetVar="shareLinkPopup_#{status.index}" minHeight="40">
-                                                    <h:outputText disabled="true" value="#{bookshelfBean.getShareLink(bookshelf)}" />
+                                                    <h:outputText disabled="true" value="#{bookmarkBean.getShareLink(bookshelf)}" />
                                                     <h:commandButton type="button"  value="#{msg.bookshelf_shareLink_copy}"
-                                                        onclick="copyLink('#{bookshelfBean.getShareLink(bookshelf)}', 'shareLinkPopup_#{status.index}')">
+                                                        onclick="copyLink('#{bookmarkBean.getShareLink(bookshelf)}', 'shareLinkPopup_#{status.index}')">
                                                     </h:commandButton>
                                                 </p:dialog>
 											</div>
@@ -145,7 +145,7 @@
                     <h3>#{msg.bookshelf_otherBookshelves}</h3>
                     <h:form id="otherBookshelvesForm" prependId="false">
                         <div class="row no-margin">
-                            <ui:repeat value="#{bookshelfBean.getBookshelvesSharedWithUser(userBean.user)}" var="bookshelf" varStatus="status">
+                            <ui:repeat value="#{bookmarkBean.getBookshelvesSharedWithUser(userBean.user)}" var="bookshelf" varStatus="status">
                                 <div class="user-bookshelves__panel">
                                     <div class="user-bookshelves__panel-header">
                                         <div class="col-xs-8 col-sm-10">
@@ -208,7 +208,7 @@
                     <h3>#{msg.bookshelf_publicBookshelves}</h3>
                     <h:form id="pubicBookshelvesForm" prependId="false">
                         <div class="row no-margin">
-                            <ui:repeat value="#{bookshelfBean.publicBookshelves}" var="bookshelf" varStatus="status">
+                            <ui:repeat value="#{bookmarkBean.publicBookshelves}" var="bookshelf" varStatus="status">
                                 <div class="user-bookshelves__panel">
                                     <div class="user-bookshelves__panel-header">
                                         <div class="col-xs-8 col-sm-10">

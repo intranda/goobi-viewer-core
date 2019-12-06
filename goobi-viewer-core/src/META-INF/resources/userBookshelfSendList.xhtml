@@ -41,7 +41,7 @@
                                 <h:inputText
                                     id="userEMailToSend"
                                     styleClass="form-control"
-                                    value="#{bookshelfBean.sessionBookshelfEmail}"
+                                    value="#{bookmarkBean.sessionBookshelfEmail}"
                                     required="true"
                                     requiredMessage="#{msg.loginEnterEmail}">
                                     <f:validator validatorId="emailValidator" />
@@ -53,7 +53,7 @@
                             <h:commandButton
                                 styleClass="btn btn--full"
                                 value="#{msg.submit}"
-                                action="#{bookshelfBean.sendSessionBookshelfAsMail}" />
+                                action="#{bookmarkBean.sendSessionBookshelfAsMail}" />
                         </div>
                     </h:form>
                 </div>

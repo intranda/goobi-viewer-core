@@ -47,20 +47,20 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
-import io.goobi.viewer.model.bookshelf.BookshelfItem;
-import io.goobi.viewer.model.bookshelf.SessionStoreBookshelfManager;
+import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 @Named
 @SessionScoped
-public class BookshelfBean implements Serializable {
+public class BookmarkBean implements Serializable {
 
     private static final long serialVersionUID = -2656584301309913161L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BookshelfBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookmarkBean.class);
 
     @Inject
     private UserBean userBean;
@@ -68,8 +68,8 @@ public class BookshelfBean implements Serializable {
     private NavigationHelper navigationHelper;
 
     /** Currently selected bookshelf. */
-    private Bookshelf currentBookshelf = null;
-    private BookshelfItem currentBookshelfItem;
+    private BookmarkList currentBookshelf = null;
+    private Bookmark currentBookshelfItem;
     private UserGroup currentUserGroup;
 
     /**
@@ -84,7 +84,7 @@ public class BookshelfBean implements Serializable {
     private static String KEY_BOOKSHELF_EMAIL_SUCCESS = "bookshelf_session_mail_success";
 
     /** Empty Constructor. */
-    public BookshelfBean() {
+    public BookmarkBean() {
         // the emptiness inside
     }
 
@@ -128,7 +128,7 @@ public class BookshelfBean implements Serializable {
      * @param bookshelf
      * @return
      */
-    static boolean saveBookshelfAction(Bookshelf bookshelf) {
+    static boolean saveBookshelfAction(BookmarkList bookshelf) {
         UserBean userBean = BeanUtils.getUserBean();
         if (bookshelf == null || userBean == null || userBean.getUser() == null || StringUtils.isEmpty(bookshelf.getName())) {
             return false;
@@ -144,7 +144,7 @@ public class BookshelfBean implements Serializable {
             }
 
             try {
-                if (DataManager.getInstance().getDao().addBookshelf(bookshelf)) {
+                if (DataManager.getInstance().getDao().addBookmarkList(bookshelf)) {
                     String msg = Helper.getTranslation("bookshelf_createBookshelfSuccess", null);
                     Messages.info(msg.replace("{0}", bookshelf.getName()));
                     logger.debug("Bookshelf '{}' for user {} added.", bookshelf.getName(), userBean.getUser().getId());
@@ -158,7 +158,7 @@ public class BookshelfBean implements Serializable {
         } else {
             // Update bookshelf in the DB
             try {
-                if (DataManager.getInstance().getDao().updateBookshelf(bookshelf)) {
+                if (DataManager.getInstance().getDao().updateBookmarkList(bookshelf)) {
                     logger.debug("Bookshelf '{}' for user {} updated.", bookshelf.getName(), userBean.getUser().getId());
                     String msg = Helper.getTranslation("bookshelf_updateBookshelfSuccess", null);
                     Messages.info(msg.replace("{0}", bookshelf.getName()));
@@ -183,7 +183,7 @@ public class BookshelfBean implements Serializable {
         logger.debug("deleteCurrentBookshelfAction: {}", currentBookshelf.getId());
         try {
             UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookshelf(currentBookshelf)) {
+            if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookmarkList(currentBookshelf)) {
                 logger.debug("Bookshelf '" + currentBookshelf.getName() + "' deleted.");
                 String msg = Helper.getTranslation("bookshelf_deleteSuccess", null);
                 Messages.info(msg.replace("{0}", currentBookshelf.getName()));
@@ -230,12 +230,12 @@ public class BookshelfBean implements Serializable {
      */
     public void resetCurrentBookshelfAction() {
         logger.trace("resetCurrentBookshelfAction");
-        currentBookshelf = new Bookshelf();
+        currentBookshelf = new BookmarkList();
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             currentBookshelf.setOwner(userBean.getUser());
         }
-        currentBookshelfItem = new BookshelfItem();
+        currentBookshelfItem = new Bookmark();
     }
 
     public void prepareItemForBookshelf() throws IndexUnreachableException {
@@ -243,7 +243,7 @@ public class BookshelfBean implements Serializable {
         ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
         if (activeDocumentBean != null) {
             ViewManager viewManager = activeDocumentBean.getViewManager();
-            this.currentBookshelfItem = new BookshelfItem(viewManager.getPi(), viewManager.getVolumeTitle(), viewManager.getVolumeTitle());
+            this.currentBookshelfItem = new Bookmark(viewManager.getPi(), viewManager.getVolumeTitle(), viewManager.getVolumeTitle());
         }
     }
 
@@ -262,14 +262,14 @@ public class BookshelfBean implements Serializable {
             try {
                 if (currentBookshelf.getItems().contains(currentBookshelfItem)) {
                     // TODO Do not throw error if item already in bookshelf. Instead, offer to edit or remove.
-                    DataManager.getInstance().getDao().updateBookshelf(currentBookshelf);
+                    DataManager.getInstance().getDao().updateBookmarkList(currentBookshelf);
                     String msg = Helper.getTranslation("bookshelf_addToBookshelfFailureAlreadyContains", null);
                     Messages.error(msg.replace("{0}", currentBookshelf.getName()));
                     //                String msg = Helper.getTranslation("bookshelf_addToBookshelfSuccess", null);
                     //                Messages.info(msg.replace("{0}", currentBookshelf.getName()));
                     //                logger.debug("Bookshelf item '" + currentBookshelfItem.getName() + "' added.");
                     return "";
-                } else if (currentBookshelf.addItem(currentBookshelfItem) && DataManager.getInstance().getDao().updateBookshelf(currentBookshelf)) {
+                } else if (currentBookshelf.addItem(currentBookshelfItem) && DataManager.getInstance().getDao().updateBookmarkList(currentBookshelf)) {
                     String msg = Helper.getTranslation("bookshelf_addToBookshelfSuccess", null);
                     Messages.info(msg.replace("{0}", currentBookshelf.getName()));
                     logger.debug("Bookshelf item '{}' added, ID: {}", currentBookshelfItem.getName(), currentBookshelfItem.getId());
@@ -290,11 +290,11 @@ public class BookshelfBean implements Serializable {
      *
      * @throws DAOException
      */
-    public void deleteCurrentItemAction(BookshelfItem bookshelfItem) {
+    public void deleteCurrentItemAction(Bookmark bookshelfItem) {
         UserBean userBean = BeanUtils.getUserBean();
         if (bookshelfItem != null && userBean != null && userBean.getUser() != null && currentBookshelf != null) {
             try {
-                if (currentBookshelf.removeItem(bookshelfItem) && DataManager.getInstance().getDao().updateBookshelf(currentBookshelf)) {
+                if (currentBookshelf.removeItem(bookshelfItem) && DataManager.getInstance().getDao().updateBookmarkList(currentBookshelf)) {
                     String msg = Helper.getTranslation("bookshelf_removeBookshelfItemSuccess", null);
                     Messages.info(msg.replace("{0}", bookshelfItem.getPi()));
                     logger.debug("Bookshelf item '" + bookshelfItem.getName() + "' deleted.");
@@ -339,14 +339,14 @@ public class BookshelfBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<Bookshelf> getBookshelvesSharedByOthers() throws DAOException {
-        List<Bookshelf> ret = new ArrayList<>();
+    public List<BookmarkList> getBookshelvesSharedByOthers() throws DAOException {
+        List<BookmarkList> ret = new ArrayList<>();
 
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null && userBean.getUser() != null) {
             // Own user groups
             for (UserGroup userGroup : userBean.getUser().getUserGroupOwnerships()) {
-                for (Bookshelf bs : userGroup.getSharedBookshelves()) {
+                for (BookmarkList bs : userGroup.getSharedBookshelves()) {
                     if (!ret.contains(bs) && !bs.getOwner().equals(userBean.getUser())) {
                         ret.add(bs);
                     }
@@ -355,7 +355,7 @@ public class BookshelfBean implements Serializable {
 
             // Group memberships
             for (UserGroup userGroup : userBean.getUser().getUserGroupsWithMembership()) {
-                for (Bookshelf bs : userGroup.getSharedBookshelves()) {
+                for (BookmarkList bs : userGroup.getSharedBookshelves()) {
                     if (!ret.contains(bs) && !bs.getOwner().equals(userBean.getUser())) {
                         ret.add(bs);
                     }
@@ -372,8 +372,8 @@ public class BookshelfBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<Bookshelf> getPublicBookshelves() throws DAOException {
-        return DataManager.getInstance().getDao().getPublicBookshelves();
+    public List<BookmarkList> getPublicBookshelves() throws DAOException {
+        return DataManager.getInstance().getDao().getPublicBookmarkLists();
     }
 
     /**
@@ -383,7 +383,7 @@ public class BookshelfBean implements Serializable {
      * @throws DAOException
      * @should return shared bookshelves
      */
-    public List<Bookshelf> getBookshelvesSharedWithUser(User user) throws DAOException {
+    public List<BookmarkList> getBookshelvesSharedWithUser(User user) throws DAOException {
         if (user == null) {
             return Collections.emptyList();
         }
@@ -393,14 +393,14 @@ public class BookshelfBean implements Serializable {
             return Collections.emptyList();
         }
 
-        List<Bookshelf> allBookshelves = DataManager.getInstance().getDao().getAllBookshelves();
+        List<BookmarkList> allBookshelves = DataManager.getInstance().getDao().getAllBookmarkLists();
         logger.trace("all bookshelves: {}", allBookshelves.size());
         if (allBookshelves.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Bookshelf> ret = new ArrayList<>();
-        for (Bookshelf bs : allBookshelves) {
+        List<BookmarkList> ret = new ArrayList<>();
+        for (BookmarkList bs : allBookshelves) {
             if (bs.getOwner().equals(user) || bs.getGroupShares().isEmpty()) {
                 continue;
             }
@@ -422,7 +422,7 @@ public class BookshelfBean implements Serializable {
      * @throws DAOException
      */
 
-    public List<Bookshelf> getBookshelves() throws DAOException {
+    public List<BookmarkList> getBookshelves() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             return getBookshelvesForUser(userBean.getUser());
@@ -430,12 +430,12 @@ public class BookshelfBean implements Serializable {
         return Collections.emptyList();
     }
 
-    public List<Bookshelf> getBookshelvesForUser(User user) throws DAOException {
-        return DataManager.getInstance().getDao().getBookshelves(user);
+    public List<BookmarkList> getBookshelvesForUser(User user) throws DAOException {
+        return DataManager.getInstance().getDao().getBookmarkLists(user);
     }
 
     public int getNumBookshelvesForUser(User user) throws DAOException {
-        List<Bookshelf> bookshelves = getBookshelvesForUser(user);
+        List<BookmarkList> bookshelves = getBookshelvesForUser(user);
         if (bookshelves != null) {
             return bookshelves.size();
         }
@@ -445,7 +445,7 @@ public class BookshelfBean implements Serializable {
 
     public void bookshelfSelectAction(ValueChangeEvent event) throws DAOException {
         logger.debug("bookshelf selected: {}", event.getNewValue());
-        currentBookshelf = DataManager.getInstance().getDao().getBookshelf(String.valueOf(event.getNewValue()), userBean.getUser());
+        currentBookshelf = DataManager.getInstance().getDao().getBookmarkList(String.valueOf(event.getNewValue()), userBean.getUser());
     }
 
     public boolean isNewBookshelf() {
@@ -479,7 +479,7 @@ public class BookshelfBean implements Serializable {
 
         // Do not allow duplicate names
         if (isNewBookshelf()) {
-            for (Bookshelf bookshelf : getBookshelvesForUser(userBean.getUser())) {
+            for (BookmarkList bookshelf : getBookshelvesForUser(userBean.getUser())) {
                 if (bookshelf.getName().equals(name) && bookshelf.getOwner().equals(userBean.getUser())) {
                     ((UIInput) toValidate).setValid(false);
                     logger.debug("Bookshelf '" + currentBookshelf.getName() + "' for user '" + userBean.getEmail()
@@ -502,19 +502,19 @@ public class BookshelfBean implements Serializable {
     /**
      * @return the currentBookshelf
      */
-    public Bookshelf getCurrentBookshelf() {
+    public BookmarkList getCurrentBookshelf() {
         return currentBookshelf;
     }
 
     public List<String> getCurrentBookshelfNames() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
-        List<Bookshelf> bookshelflist = getBookshelvesForUser(userBean.getUser());
+        List<BookmarkList> bookshelflist = getBookshelvesForUser(userBean.getUser());
         if (bookshelflist == null || bookshelflist.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<String> nameList = new ArrayList<>(bookshelflist.size());
-        for (Bookshelf bookshelf : bookshelflist) {
+        for (BookmarkList bookshelf : bookshelflist) {
             nameList.add(bookshelf.getName());
         }
         return nameList;
@@ -523,7 +523,7 @@ public class BookshelfBean implements Serializable {
     /**
      * @param currentBookshelf the currentBookshelf to set
      */
-    public void setCurrentBookshelf(Bookshelf currentOwnBookshelf) {
+    public void setCurrentBookshelf(BookmarkList currentOwnBookshelf) {
         // logger.debug("currentOwnBookshelf set to "+currentOwnBookshelf.getName());
         this.currentBookshelf = currentOwnBookshelf;
     }
@@ -547,7 +547,7 @@ public class BookshelfBean implements Serializable {
         if (bookshelfId != null) {
             try {
                 Long id = Long.parseLong(bookshelfId);
-                Optional<Bookshelf> o = getBookshelves().stream().filter(bookshelf -> id.equals(bookshelf.getId())).findFirst();
+                Optional<BookmarkList> o = getBookshelves().stream().filter(bookshelf -> id.equals(bookshelf.getId())).findFirst();
                 if (o.isPresent()) {
                     setCurrentBookshelf(o.get());
                 } else {
@@ -559,7 +559,7 @@ public class BookshelfBean implements Serializable {
         }
     }
 
-    public String viewBookshelfAction(Bookshelf bookshelf) {
+    public String viewBookshelfAction(BookmarkList bookshelf) {
         if (bookshelf != null) {
             logger.debug("bookshelf to open: {}, belongs to: {}", bookshelf.getId(), bookshelf.getOwner().getId());
             currentBookshelf = bookshelf;
@@ -568,7 +568,7 @@ public class BookshelfBean implements Serializable {
         return "pretty:userMenuViewBookshelf";
     }
 
-    public String editBookshelfAction(Bookshelf bookshelf) {
+    public String editBookshelfAction(BookmarkList bookshelf) {
         if (bookshelf != null) {
             logger.debug("bookshelf to edit: {}, belongs to: {}", bookshelf.getId(), bookshelf.getOwner().getId());
             currentBookshelf = bookshelf;
@@ -580,14 +580,14 @@ public class BookshelfBean implements Serializable {
     /**
      * @return the currentBookshelfItem
      */
-    public BookshelfItem getCurrentBookshelfItem() {
+    public Bookmark getCurrentBookshelfItem() {
         return currentBookshelfItem;
     }
 
     /**
      * @param currentBookshelfItem the currentBookshelfItem to set
      */
-    public void setCurrentBookshelfItem(BookshelfItem currentBookshelfItem) {
+    public void setCurrentBookshelfItem(Bookmark currentBookshelfItem) {
         this.currentBookshelfItem = currentBookshelfItem;
     }
 
@@ -624,7 +624,7 @@ public class BookshelfBean implements Serializable {
      * @param bookshelf
      * @return Absolute share URLto the given bookshelf
      */
-    public String getShareLink(Bookshelf bookshelf) {
+    public String getShareLink(BookmarkList bookshelf) {
         if (bookshelf == null) {
             return "";
         }
@@ -651,13 +651,13 @@ public class BookshelfBean implements Serializable {
             return;
         }
 
-        currentBookshelf = DataManager.getInstance().getDao().getBookshelfByShareKey(key);
+        currentBookshelf = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
     }
 
     public void sendSessionBookshelfAsMail() {
         if (StringUtils.isNotBlank(getSessionBookshelfEmail())) {
-            DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession(false)).ifPresent(bookshelf -> {
-                String body = SessionStoreBookshelfManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null),
+            DataManager.getInstance().getBookmarkManager().getBookshelf(BeanUtils.getRequest().getSession(false)).ifPresent(bookshelf -> {
+                String body = SessionStoreBookmarkManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null),
                         Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_EMPTY_LIST, null),
                         bookshelf);
                 String subject = Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUBJECT, null);
@@ -679,7 +679,7 @@ public class BookshelfBean implements Serializable {
      */
     public int countSessionBookshelfItems() {
         return DataManager.getInstance()
-                .getBookshelfManager()
+                .getBookmarkManager()
                 .getBookshelf(BeanUtils.getRequest().getSession(false))
                 .map(bookshelf -> bookshelf.getItems().size())
                 .orElse(0);

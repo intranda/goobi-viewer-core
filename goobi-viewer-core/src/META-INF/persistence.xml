@@ -8,8 +8,8 @@
 		<jta-data-source>java:comp/env/viewer</jta-data-source>
 		<class>io.goobi.viewer.model.annotation.Comment</class>
         <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
-		<class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
-		<class>io.goobi.viewer.model.bookshelf.BookshelfItem</class>
+		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
+		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
         <class>io.goobi.viewer.model.cms.CMSContentItem</class>
         <class>io.goobi.viewer.model.cms.CMSCollection</class>
@@ -74,8 +74,8 @@
 		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
 		<class>io.goobi.viewer.model.annotation.Comment</class>
         <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
-		<class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
-		<class>io.goobi.viewer.model.bookshelf.BookshelfItem</class>
+        <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
+        <class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
 		<class>io.goobi.viewer.model.cms.CMSContentItem</class>
 		<class>io.goobi.viewer.model.cms.CMSCollection</class>

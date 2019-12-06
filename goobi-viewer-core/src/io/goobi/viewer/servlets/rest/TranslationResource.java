@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.misc.Translation;
-import io.goobi.viewer.servlets.rest.bookshelves.BookshelfResource;
+import io.goobi.viewer.servlets.rest.bookmarks.BookmarkResource;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**

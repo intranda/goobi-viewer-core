@@ -69,7 +69,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -520,7 +520,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (userBean.isLoggedIn()) {
                         // User bookshelf
                         try {
-                            Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(queryItem.getValue(), userBean.getUser());
+                            BookmarkList bookshelf = DataManager.getInstance().getDao().getBookmarkList(queryItem.getValue(), userBean.getUser());
                             if (bookshelf != null) {
                                 itemQuery = bookshelf.getFilterQuery();
                             }
@@ -529,7 +529,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                     } else {
                         // Session bookshelf
-                        Optional<Bookshelf> obs = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
+                        Optional<BookmarkList> obs = DataManager.getInstance().getBookmarkManager().getBookshelf(BeanUtils.getRequest().getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -1507,9 +1507,9 @@ public class SearchBean implements SearchInterface, Serializable {
             if (SolrConstants.BOOKSHELF.equals(field)) {
                 if (userBean != null && userBean.isLoggedIn()) {
                     // User bookshelves
-                    List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(userBean.getUser());
+                    List<BookmarkList> bookshelves = DataManager.getInstance().getDao().getBookmarkLists(userBean.getUser());
                     if (!bookshelves.isEmpty()) {
-                        for (Bookshelf bookshelf : bookshelves) {
+                        for (BookmarkList bookshelf : bookshelves) {
                             if (!bookshelf.getItems().isEmpty()) {
                                 ret.add(new StringPair(bookshelf.getName(), bookshelf.getName()));
                             }
@@ -1517,7 +1517,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Session bookshelf
-                    Optional<Bookshelf> bookshelf = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
+                    Optional<BookmarkList> bookshelf = DataManager.getInstance().getBookmarkManager().getBookshelf(BeanUtils.getRequest().getSession());
                     if (bookshelf.isPresent() && !bookshelf.get().getItems().isEmpty()) {
                         ret.add(new StringPair(bookshelf.get().getName(), bookshelf.get().getName()));
                     }

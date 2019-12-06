@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.bookshelf;
+package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -52,11 +52,11 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 @Entity
 @Table(name = "bookshelf_items")
-public class BookshelfItem implements Serializable {
+public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 9047168382986927374L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BookshelfItem.class);
+    private static final Logger logger = LoggerFactory.getLogger(Bookmark.class);
 
     private static final String[] FIELDS =
             { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI };
@@ -69,7 +69,7 @@ public class BookshelfItem implements Serializable {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "bookshelf_id", nullable = false)
-    private Bookshelf bookshelf;
+    private BookmarkList bookmarkList;
 
     @Column(name = "name", columnDefinition = "LONGTEXT")
     private String name;
@@ -98,18 +98,18 @@ public class BookshelfItem implements Serializable {
     private Date dateAdded;
 
     /** Empty constructor. */
-    public BookshelfItem() {
+    public Bookmark() {
         // the emptiness inside
     }
 
-    public BookshelfItem(String pi, String mainTitle, String name) {
+    public Bookmark(String pi, String mainTitle, String name) {
         this.pi = pi;
         this.name = name;
         this.dateAdded = new Date();
     }
 
     /**
-     * Creates a new Bookshelf item based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
+     * Creates a new bookmark based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      * 
@@ -120,7 +120,7 @@ public class BookshelfItem implements Serializable {
      * @throws PresentationException if the pi/logId could not be resolved
      * @throws NullPointerException if pi is null or blank
      */
-    public BookshelfItem(String pi, String logId, Integer order) throws IndexUnreachableException, PresentationException {
+    public Bookmark(String pi, String logId, Integer order) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
         this.logId = logId;
         this.order = order;
@@ -129,7 +129,7 @@ public class BookshelfItem implements Serializable {
     }
 
     /**
-     * Creates a new Bookshelf item based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
+     * Creates a new bookmark based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      * 
@@ -141,8 +141,7 @@ public class BookshelfItem implements Serializable {
      * @throws PresentationException if the pi/logId could not be resolved
      * @throws NullPointerException if pi is null or blank
      */
-    public BookshelfItem(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc)
-            throws IndexUnreachableException, PresentationException {
+    public Bookmark(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
         this.logId = logId;
         this.order = order;
@@ -183,7 +182,7 @@ public class BookshelfItem implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        BookshelfItem other = (BookshelfItem) obj;
+        Bookmark other = (Bookmark) obj;
         return bothEqualOrBlank(this.pi, other.pi) && bothEqualOrBlank(this.logId, other.logId) && bothEqualOrNull(this.order, other.order);
     }
 
@@ -213,7 +212,7 @@ public class BookshelfItem implements Serializable {
     }
 
     /**
-     * Constructs the image view URL for this bookshelf item.
+     * Constructs the image view URL for this bookmark.
      *
      * @return The URL as string.
      */
@@ -320,17 +319,17 @@ public class BookshelfItem implements Serializable {
     }
 
     /**
-     * @return the bookshelf
+     * @return the bookmarkList
      */
-    public Bookshelf getBookshelf() {
-        return bookshelf;
+    public BookmarkList getBookmarkList() {
+        return bookmarkList;
     }
 
     /**
-     * @param bookshelf the bookshelf to set
+     * @param bookmarkList the bookmarkList to set
      */
-    public void setBookshelf(Bookshelf bookshelf) {
-        this.bookshelf = bookshelf;
+    public void setBookmarkList(BookmarkList bookmarkList) {
+        this.bookmarkList = bookmarkList;
     }
 
     /**

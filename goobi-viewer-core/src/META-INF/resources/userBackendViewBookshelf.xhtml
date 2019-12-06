@@ -31,7 +31,7 @@
             <h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelf.isMayView(userBean.user)}">
                 <div class="row">
                     <div class="col-xs-10">
-                        <h2>#{bookshelfBean.currentBookshelf.name}</h2>
+                        <h2>#{bookmarkBean.currentBookshelf.name}</h2>
                     </div>
                     <div class="col-xs-2">
                         <!-- ACTION -->
@@ -40,9 +40,9 @@
                                 id="viewBookshelfActionForm"
                                 prependId="false">
                                 <!-- EDIT -->
-                                <h:commandLink rendered="#{bookshelfBean.currentBookshelf.isMayEdit(userBean.user)}"
+                                <h:commandLink rendered="#{bookmarkBean.currentBookshelf.isMayEdit(userBean.user)}"
                                     title="#{msg.edit}"
-                                    action="#{bookshelfBean.editBookshelfAction(bookshelfBean.currentBookshelf)}">
+                                    action="#{bookmarkBean.editBookshelfAction(bookshelfBean.currentBookshelf)}">
                                     <i
                                         class="fa fa-pencil"
                                         aria-hidden="true"></i>
@@ -54,9 +54,9 @@
                                         value="top" />
                                 </h:commandLink>
                                 <!-- DELETE -->
-                                <h:commandLink rendered="#{bookshelfBean.currentBookshelf.isMayEdit(userBean.user)}"
+                                <h:commandLink rendered="#{bookmarkBean.currentBookshelf.isMayEdit(userBean.user)}"
                                     title="#{msg.bookshelf_delete}"
-                                    action="#{bookshelfBean.deleteCurrentBookshelfAction}"
+                                    action="#{bookmarkBean.deleteCurrentBookshelfAction}"
                                     onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelf}&quot; ) ) { return false };">
                                     <i
                                         class="fa fa-trash-o"
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-                <p>#{bookshelfBean.currentBookshelf.description}</p>
+                <p>#{bookmarkBean.currentBookshelf.description}</p>
                 <!-- MESSAGE -->
                 <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
                     <div
@@ -84,7 +84,7 @@
                 <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
                     <h:panelGroup rendered="#{!bookshelfBean.newBookshelf}">
                         <!-- warning if no entries exists -->
-                        <h:panelGroup rendered="#{bookshelfBean.currentBookshelf.items.isEmpty()}">
+                        <h:panelGroup rendered="#{bookmarkBean.currentBookshelf.items.isEmpty()}">
                             <div
                                 class="alert alert-warning"
                                 role="alert">#{msg.bookshelves_noEntryWarning}</div>
@@ -93,7 +93,7 @@
                         <h:panelGroup rendered="#{!bookshelfBean.currentBookshelf.items.isEmpty()}">
                             <div class="row">
                                 <ui:repeat
-                                    value="#{bookshelfBean.currentBookshelf.items}"
+                                    value="#{bookmarkBean.currentBookshelf.items}"
                                     var="item"
                                     varStatus="status">
                                     <div class="col-xs-12 col-sm-6">
@@ -115,7 +115,7 @@
                                                 <div class="view-bookshelf__item-action">
                                                     <h:commandLink
                                                         title="#{msg.bookshelf_itemDelete}"
-                                                        action="#{bookshelfBean.deleteCurrentItemAction(item)}"
+                                                        action="#{bookmarkBean.deleteCurrentItemAction(item)}"
                                                         onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelfItem}&quot; ) ) { return false };"
                                                         role="button">
                                                         <f:passThroughAttribute
@@ -127,7 +127,7 @@
                                                         <f:passThroughAttribute
                                                             name="data-placement"
                                                             value="top" />
-                                                        <!-- 														<f:setPropertyActionListener value="#{bookshelf}" target="#{bookshelfBean.currentBookshelf}" /> -->
+                                                        <!-- 														<f:setPropertyActionListener value="#{bookshelf}" target="#{bookmarkBean.currentBookshelf}" /> -->
                                                     </h:commandLink>
                                                 </div>
                                             </div>

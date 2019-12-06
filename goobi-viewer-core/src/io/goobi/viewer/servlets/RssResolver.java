@@ -37,7 +37,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -82,7 +82,7 @@ public class RssResolver extends HttpServlet {
             if (StringUtils.isEmpty(query)) {
                 if (bookshelfId != null) {
                     // Bookshelf RSS feed
-                    Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(bookshelfId);
+                    BookmarkList bookshelf = DataManager.getInstance().getDao().getBookmarkList(bookshelfId);
                     if (bookshelf == null) {
                         logger.warn("Requested bookshelf not found: {}", bookshelfId);
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);

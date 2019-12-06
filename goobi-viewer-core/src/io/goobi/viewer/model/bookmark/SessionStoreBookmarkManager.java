@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.bookshelf;
+package io.goobi.viewer.model.bookmark;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +35,9 @@ import io.goobi.viewer.model.security.user.User;
  * @author Florian Alpers
  *
  */
-public class SessionStoreBookshelfManager {
+public class SessionStoreBookmarkManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionStoreBookshelfManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(SessionStoreBookmarkManager.class);
 
     public static final String BOOKSHELF_ATTRIBUTE_NAME = "bookshelf";
 
@@ -47,14 +47,14 @@ public class SessionStoreBookshelfManager {
      * 
      * @throws NullPointerException if the session is NULL
      */
-    public Optional<Bookshelf> getBookshelf(HttpSession session) {
+    public Optional<BookmarkList> getBookshelf(HttpSession session) {
         if (session == null) {
             return Optional.empty();
         }
         try {
             Object object = session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME);
             if (object != null) {
-                return Optional.of((Bookshelf) object);
+                return Optional.of((BookmarkList) object);
             }
             return Optional.empty();
         } catch (ClassCastException e) {
@@ -73,10 +73,10 @@ public class SessionStoreBookshelfManager {
      * @throws IllegalStateException if the bookshelf could not be stored in the session
      * @throws NullPointerException if the session is NULL
      */
-    public Bookshelf createBookshelf(HttpSession session) {
+    public BookmarkList createBookshelf(HttpSession session) {
 
         if (session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME) == null) {
-            Bookshelf bookshelf = new Bookshelf();
+            BookmarkList bookshelf = new BookmarkList();
             bookshelf.setName("session");
             session.setAttribute(BOOKSHELF_ATTRIBUTE_NAME, bookshelf);
             return getBookshelf(session).orElseThrow(() -> new IllegalStateException("Attribute stored but not available"));
@@ -91,7 +91,7 @@ public class SessionStoreBookshelfManager {
      * @return
      * @throws NullPointerException if the session is NULL
      */
-    public synchronized Bookshelf getOrCreateBookshelf(HttpSession session) {
+    public synchronized BookmarkList getOrCreateBookshelf(HttpSession session) {
         return getBookshelf(session).orElseGet(() -> createBookshelf(session));
     }
 
@@ -103,7 +103,7 @@ public class SessionStoreBookshelfManager {
      * @return false if the item could not be added (usually because it already exists), true otherwise
      * @throws NullPointerException if the session is NULL
      */
-    public boolean addToBookshelf(BookshelfItem item, HttpSession session) {
+    public boolean addToBookshelf(Bookmark item, HttpSession session) {
         return getOrCreateBookshelf(session).addItem(item);
     }
 
@@ -116,8 +116,8 @@ public class SessionStoreBookshelfManager {
      * @return
      * @throws NullPointerException if the session is NULL
      */
-    public boolean removeFromBookself(BookshelfItem item, HttpSession session) {
-        Optional<Bookshelf> o = getBookshelf(session);
+    public boolean removeFromBookself(Bookmark item, HttpSession session) {
+        Optional<BookmarkList> o = getBookshelf(session);
         if (o.isPresent()) {
             return o.get().removeItem(item);
         }
@@ -135,8 +135,8 @@ public class SessionStoreBookshelfManager {
         session.removeAttribute(BOOKSHELF_ATTRIBUTE_NAME);
     }
 
-    public boolean isInBookshelf(BookshelfItem item, HttpSession session) {
-        Optional<Bookshelf> o = getBookshelf(session);
+    public boolean isInBookshelf(Bookmark item, HttpSession session) {
+        Optional<BookmarkList> o = getBookshelf(session);
         if (o.isPresent()) {
             return o.get().getItems().contains(item);
         }
@@ -153,13 +153,13 @@ public class SessionStoreBookshelfManager {
      */
     public void addSessionBookshelfToUser(User user, HttpServletRequest request) throws DAOException {
         if (request != null) {
-            Optional<Bookshelf> oBookshelf = getBookshelf(request.getSession());
+            Optional<BookmarkList> oBookshelf = getBookshelf(request.getSession());
             if (oBookshelf.isPresent() && !oBookshelf.get().getItems().isEmpty()) {
                 oBookshelf.get().setOwner(user);
                 oBookshelf.get().setIsPublic(false);
-                List<Bookshelf> userBookshelves = DataManager.getInstance().getDao().getBookshelves(user);
+                List<BookmarkList> userBookshelves = DataManager.getInstance().getDao().getBookmarkLists(user);
                 oBookshelf.get().setName(generateNewBookshelfName(userBookshelves));
-                DataManager.getInstance().getDao().addBookshelf(oBookshelf.get());
+                DataManager.getInstance().getDao().addBookmarkList(oBookshelf.get());
             }
         }
     }
@@ -171,7 +171,7 @@ public class SessionStoreBookshelfManager {
      * @param allUserBookshelfs
      * @return
      */
-    public static String generateNewBookshelfName(List<Bookshelf> bookshelves) {
+    public static String generateNewBookshelfName(List<BookmarkList> bookshelves) {
 
         String bookshelfNameTemplate = "List {num}";
         String bookshelfNamePlaceholder = "{num}";
@@ -206,9 +206,9 @@ public class SessionStoreBookshelfManager {
      * @param itemText
      * @return
      */
-    public static String generateBookshelfInfo(String text, String itemText, String emptyListText, Bookshelf bookshelf) {
+    public static String generateBookshelfInfo(String text, String itemText, String emptyListText, BookmarkList bookshelf) {
         StringBuilder itemList = new StringBuilder();
-        for (BookshelfItem item : bookshelf.getItems()) {
+        for (Bookmark item : bookshelf.getItems()) {
             String currentItemText = itemText.replace("{0}", item.getUrl()).replace("{1}", item.getName());
             itemList.append(currentItemText);
         }

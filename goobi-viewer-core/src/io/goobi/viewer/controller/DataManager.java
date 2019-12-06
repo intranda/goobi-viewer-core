@@ -30,7 +30,7 @@ import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
-import io.goobi.viewer.model.bookshelf.SessionStoreBookshelfManager;
+import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.IOAuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OAuthResponseListener;
@@ -58,13 +58,13 @@ public final class DataManager {
 
     private IDAO dao;
 
-    private SessionStoreBookshelfManager bookshelfManager;
+    private SessionStoreBookmarkManager bookmarkManager;
 
     private IOAuthResponseListener oAuthResponseListener;
 
     private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
-    
-    private Map<String,List<Campaign>> recordCampaignMap = null;
+
+    private Map<String, List<Campaign>> recordCampaignMap = null;
 
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -266,17 +266,17 @@ public final class DataManager {
         this.dao = dao;
     }
 
-    public SessionStoreBookshelfManager getBookshelfManager() {
-        if (this.bookshelfManager == null) {
+    public SessionStoreBookmarkManager getBookmarkManager() {
+        if (this.bookmarkManager == null) {
             synchronized (lock) {
-                this.bookshelfManager = new SessionStoreBookshelfManager();
+                this.bookmarkManager = new SessionStoreBookmarkManager();
             }
         }
-        return this.bookshelfManager;
+        return this.bookmarkManager;
     }
 
-    public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
-        this.bookshelfManager = bookshelfManager;
+    public void injectBookmarkManager(SessionStoreBookmarkManager bookmarkManager) {
+        this.bookmarkManager = bookmarkManager;
     }
 
     public void injectOAuthResponseListener(IOAuthResponseListener listener) {

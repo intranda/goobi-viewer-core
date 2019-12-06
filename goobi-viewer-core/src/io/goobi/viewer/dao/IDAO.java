@@ -26,7 +26,7 @@ import javax.persistence.Query;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.bookshelf.Bookshelf;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
@@ -109,25 +109,25 @@ public interface IDAO {
 
     public boolean deleteUserGroup(UserGroup userGroup) throws DAOException;
 
-    // Bookshelf
+    // Bookmarks
 
-    public List<Bookshelf> getAllBookshelves() throws DAOException;
+    public List<BookmarkList> getAllBookmarkLists() throws DAOException;
 
-    public List<Bookshelf> getPublicBookshelves() throws DAOException;
+    public List<BookmarkList> getPublicBookmarkLists() throws DAOException;
 
-    public List<Bookshelf> getBookshelves(User user) throws DAOException;
+    public List<BookmarkList> getBookmarkLists(User user) throws DAOException;
 
-    public Bookshelf getBookshelf(long id) throws DAOException;
+    public BookmarkList getBookmarkList(long id) throws DAOException;
 
-    public Bookshelf getBookshelf(String name, User user) throws DAOException;
-    
-    public Bookshelf getBookshelfByShareKey(String shareKey) throws DAOException;
+    public BookmarkList getBookmarkList(String name, User user) throws DAOException;
 
-    public boolean addBookshelf(Bookshelf bookshelf) throws DAOException;
+    public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException;
 
-    public boolean updateBookshelf(Bookshelf bookshelf) throws DAOException;
+    public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException;
 
-    public boolean deleteBookshelf(Bookshelf bookshelf) throws DAOException;
+    public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException;
+
+    public boolean deleteBookmarkList(BookmarkList bookmarkList) throws DAOException;
 
     // Role
 
@@ -332,7 +332,7 @@ public interface IDAO {
     public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException;
 
     public CMSMediaItem getCMSMediaItem(long id) throws DAOException;
-    
+
     CMSMediaItem getCMSMediaItemByFilename(String string) throws DAOException;
 
     public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException;
