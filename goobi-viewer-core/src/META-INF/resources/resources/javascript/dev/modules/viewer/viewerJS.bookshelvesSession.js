@@ -140,7 +140,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/get/',
+			url : root + '/rest/bookmarks/session/get/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -162,7 +162,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/count/',
+			url : root + '/rest/bookmarks/session/count/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -186,7 +186,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/contains/' + pi + '/',
+			url : root + '/rest/bookmarks/session/contains/' + pi + '/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -215,7 +215,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/add/' + pi + '/' + page + '/-/',
+			url : root + '/rest/bookmarks/session/add/' + pi + '/' + page + '/-/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -240,7 +240,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/delete/' + pi + '/' + page + '/-/',
+			url : root + '/rest/bookmarks/session/delete/' + pi + '/' + page + '/-/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -262,7 +262,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/delete/',
+			url : root + '/rest/bookmarks/session/delete/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -441,12 +441,12 @@ var viewerJS = (function(viewer) {
 
 })(viewerJS || {}, jQuery);
 
-// /rest/bookshelves/session/add/{pi}/{logid}/{page}
+// /rest/bookmarks/session/add/{pi}/{logid}/{page}
 // Fügt der Merkliste ein Item mit der angegebenen pi, logId und Seitennummer an. Der Name
 // des Items wird automatisch aus dem zur pi gehörenden SOLR-Dokument erstellt
-// /rest/bookshelves/session/delete/{pi}/{logid}/{page}
+// /rest/bookmarks/session/delete/{pi}/{logid}/{page}
 // Löscht das Item mit der angegebenen pi, logid und Seitennummer aus der Merkliste, wenn
 // es enthalten ist
-// /rest/bookshelves/session/contains/{pi}/{logid}/{page}
+// /rest/bookmarks/session/contains/{pi}/{logid}/{page}
 // gibt "true" zurück, wenn die Merkliste ein Item mit der angegebenen pi, logid und
 // Seitennummer enthält; sonst "false"
