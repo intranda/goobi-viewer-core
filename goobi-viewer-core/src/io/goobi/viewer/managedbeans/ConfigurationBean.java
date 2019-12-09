@@ -262,8 +262,13 @@ public class ConfigurationBean implements Serializable {
         return csWrapperUrl;
     }
 
+    @Deprecated
     public boolean isBookshelvesEnabled() {
-        return DataManager.getInstance().getConfiguration().isBookshelvesEnabled();
+        return isBookmarksEnabled();
+    }
+
+    public boolean isBookmarksEnabled() {
+        return DataManager.getInstance().getConfiguration().isBookmarksEnabled();
     }
 
     public boolean isUserCommentsEnabled() {
@@ -505,11 +510,11 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayTimeMatrix() {
         return DataManager.getInstance().getConfiguration().isDisplayTimeMatrix();
     }
-    
+
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
-    
+
     /**
      *
      * @return
@@ -760,11 +765,11 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
     }
-    
+
     public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage();
     }
-    
+
     public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage();
     }
@@ -776,7 +781,5 @@ public class ConfigurationBean implements Serializable {
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
-
-
 
 }

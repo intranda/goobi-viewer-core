@@ -100,7 +100,7 @@ public class ActiveDocumentBean implements Serializable {
     @Inject
     private SearchBean searchBean;
     @Inject
-    private BookmarkBean bookshelfBean;
+    private BookmarkBean bookmarkBean;
     @Inject
     private ImageDeliveryBean imageDelivery;
 
@@ -176,7 +176,7 @@ public class ActiveDocumentBean implements Serializable {
      * @param bookshelfBean the bookshelfBean to set
      */
     public void setBookshelfBean(BookmarkBean bookshelfBean) {
-        this.bookshelfBean = bookshelfBean;
+        this.bookmarkBean = bookshelfBean;
     }
 
     /**
@@ -400,10 +400,10 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Prepare a new bookshelf item
-            if (bookshelfBean != null) {
-                bookshelfBean.prepareItemForBookshelf();
-                if (bookshelfBean.getCurrentBookshelfItem() == null || !viewManager.getPi().equals(bookshelfBean.getCurrentBookshelfItem().getPi())) {
-                    bookshelfBean.prepareItemForBookshelf();
+            if (bookmarkBean != null) {
+                bookmarkBean.prepareItemForBookmarkList();
+                if (bookmarkBean.getCurrentBookmark() == null || !viewManager.getPi().equals(bookmarkBean.getCurrentBookmark().getPi())) {
+                    bookmarkBean.prepareItemForBookmarkList();
                 }
             }
         }
@@ -1264,7 +1264,7 @@ public class ActiveDocumentBean implements Serializable {
             this.selectedRecordLanguage = selectedRecordLanguage;
         }
         MetadataBean mdb = BeanUtils.getMetadataBean();
-        if(mdb != null) {
+        if (mdb != null) {
             mdb.setSelectedRecordLanguage(this.selectedRecordLanguage);
         }
     }

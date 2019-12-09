@@ -529,7 +529,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                     } else {
                         // Session bookshelf
-                        Optional<BookmarkList> obs = DataManager.getInstance().getBookmarkManager().getBookshelf(BeanUtils.getRequest().getSession());
+                        Optional<BookmarkList> obs = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -1517,7 +1517,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Session bookshelf
-                    Optional<BookmarkList> bookshelf = DataManager.getInstance().getBookmarkManager().getBookshelf(BeanUtils.getRequest().getSession());
+                    Optional<BookmarkList> bookshelf = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                     if (bookshelf.isPresent() && !bookshelf.get().getItems().isEmpty()) {
                         ret.add(new StringPair(bookshelf.get().getName(), bookshelf.get().getName()));
                     }

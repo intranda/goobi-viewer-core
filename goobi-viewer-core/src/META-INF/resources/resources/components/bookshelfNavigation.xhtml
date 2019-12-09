@@ -20,7 +20,7 @@
                     <!-- BOOKSHELF NAVIGATION TOGGLE DROPDOWN -->
                     <button type="button" class="btn btn--clean" data-bookshelf-type="dropdown">
                         <!-- BOOKSHELF NAVIGATION STRING -->
-                        <span class="bookshelf-navigation__string">#{msg.bookshelf}</span>
+                        <span class="bookshelf-navigation__string">#{msg.bookmarkList}</span>
 
                         <!-- BOOKSHELF NAVIGATION COUNTER -->
                         <ui:fragment rendered="#{!userBean.loggedIn}">
@@ -45,7 +45,7 @@
                                 <!-- BOOKSHELF NAVIGATION DROPDOWN LIST SEND -->
                                 <div class="bookshelf-navigation__dropdown-list-send">
                                     <a href="#{request.contextPath}/userBookshelfSendList/">
-                                        <span>#{msg.bookshelf_session_mail_sendList}</span>
+                                        <span>#{msg.bookmarkList_session_mail_sendList}</span>
                                         <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
                                     </a>
                                 </div>
@@ -73,7 +73,7 @@
                                 <!-- BOOKSHELF NAVIGATION DROPDOWN LIST MIRADOR -->
                                 <div class="bookshelf-navigation__dropdown-list-mirador">
                                     <a href="#{request.contextPath}/mirador/" target="_blank">
-                                        <span>#{msg.bookshelf_openMirador}</span>
+                                        <span>#{msg.bookmarkList_openMirador}</span>
                                         <i class="fa fa-th" aria-hidden="true"></i>
                                     </a>
                                 </div>

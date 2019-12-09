@@ -237,7 +237,7 @@ public class UserBean implements Serializable {
                 try {
                     User user = oUser.get();
                     wipeSession(request);
-                    DataManager.getInstance().getBookmarkManager().addSessionBookshelfToUser(user, request);
+                    DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(user, request);
                     // Update last login
                     user.setLastLogin(new Date());
                     if (!DataManager.getInstance().getDao().updateUser(user)) {

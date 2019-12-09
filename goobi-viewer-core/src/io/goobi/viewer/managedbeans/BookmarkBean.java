@@ -67,21 +67,21 @@ public class BookmarkBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
 
-    /** Currently selected bookshelf. */
-    private BookmarkList currentBookshelf = null;
-    private Bookmark currentBookshelfItem;
+    /** Currently selected bookmark list. */
+    private BookmarkList currentBookmarkList = null;
+    private Bookmark currentBookmark;
     private UserGroup currentUserGroup;
 
     /**
-     * An email-address which a user may enter to receive the session store bookshelf as mail
+     * An email-address which a user may enter to receive the session store bookmark list as mail
      */
-    private String sessionBookshelfEmail = "";
-    private static String KEY_BOOKSHELF_EMAIL_SUBJECT = "bookshelf_session_mail_header";
-    private static String KEY_BOOKSHELF_EMAIL_BODY = "bookshelf_session_mail_body";
-    private static String KEY_BOOKSHELF_EMAIL_ITEM = "bookshelf_session_mail_list";
-    private static String KEY_BOOKSHELF_EMAIL_EMPTY_LIST = "bookshelf_session_mail_emptylist";
-    private static String KEY_BOOKSHELF_EMAIL_ERROR = "bookshelf_session_mail_error";
-    private static String KEY_BOOKSHELF_EMAIL_SUCCESS = "bookshelf_session_mail_success";
+    private String sessionBookmarkListEmail = "";
+    private static String KEY_BOOKMARK_LIST_EMAIL_SUBJECT = "bookmarkList_session_mail_header";
+    private static String KEY_BOOKMARK_LIST_EMAIL_BODY = "bookmarkList_session_mail_body";
+    private static String KEY_BOOKMARK_LIST_EMAIL_ITEM = "bookmarkList_session_mail_list";
+    private static String KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST = "bookmarkList_session_mail_emptylist";
+    private static String KEY_BOOKMARK_LIST_EMAIL_ERROR = "bookmarkList_session_mail_error";
+    private static String KEY_BOOKMARK_LIST_EMAIL_SUCCESS = "bookmarkList_session_mail_success";
 
     /** Empty Constructor. */
     public BookmarkBean() {
@@ -90,229 +90,228 @@ public class BookmarkBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        resetCurrentBookshelfAction();
+        resetCurrentBookmarkListAction();
     }
 
-    public void changeCurrentOwnBookshelf(ActionEvent e) {
-        // logger.info(this.currentOwnBookshelf.getName());
+    @Deprecated
+    public void changeCurrentOwnBookmarkList(ActionEvent e) {
     }
 
     /**
-     * Resets the current bookshelf and returns to the overview of own bookshelves.
+     * Resets the current bookmark list and returns to the overview of own bookmark lists.
      *
      * @return
      */
-    public String cancelEditCurrentBookshelfAction() {
-        resetCurrentBookshelfAction();
-        return "pretty:userMenuMyBookshelves";
+    public String cancelEditCurrentBookmarkListAction() {
+        resetCurrentBookmarkListAction();
+        return "pretty:userMenuBookmarkLists";
     }
 
     /**
-     * Updates the currently selected Bookshelf if it already in the user's bookshelf list, adds it to the list otherwise. Saves DataManager in both
-     * cases.
+     * Updates the currently selected bookmark list if it already in the user's list of bookmark lists, adds it to the list otherwise. Saves
+     * DataManager in both cases.
      *
      * @throws DAOException
      */
-    public String saveCurrentBookshelfAction() {
-        if (saveBookshelfAction(currentBookshelf)) {
-            resetCurrentBookshelfAction();
-            return "pretty:userMenuMyBookshelves";
+    public String saveCurrentBookmarkListAction() {
+        if (saveBookmarkListAction(currentBookmarkList)) {
+            resetCurrentBookmarkListAction();
+            return "pretty:userMenuBookmarkLists";
         }
 
-        return "pretty:userMenuSingleBookshelf";
+        return "pretty:userMenuEditBookmarkList";
     }
 
     /**
-     * Updates the given Bookshelf if it already in the user's bookshelf list, adds it to the list otherwise. Saves DataManager in both cases.
+     * Updates the given BookmarkList if it already in the user's list of bookmark lists, adds it to the list otherwise. Saves DataManager in both
+     * cases.
      * 
-     * @param bookshelf
+     * @param bookmarkList
      * @return
      */
-    static boolean saveBookshelfAction(BookmarkList bookshelf) {
+    static boolean saveBookmarkListAction(BookmarkList bookmarkList) {
         UserBean userBean = BeanUtils.getUserBean();
-        if (bookshelf == null || userBean == null || userBean.getUser() == null || StringUtils.isEmpty(bookshelf.getName())) {
+        if (bookmarkList == null || userBean == null || userBean.getUser() == null || StringUtils.isEmpty(bookmarkList.getName())) {
             return false;
         }
 
-        logger.debug("saveBookshelfAction: {}, ID: {}", bookshelf.getName(), bookshelf.getId());
+        logger.debug("saveBookmarkListAction: {}, ID: {}", bookmarkList.getName(), bookmarkList.getId());
 
-        if (bookshelf.getId() == null) {
-            // New bookshelf
-            if (bookshelf.getOwner() == null) {
+        if (bookmarkList.getId() == null) {
+            // New bookmark list
+            if (bookmarkList.getOwner() == null) {
                 logger.trace("Owner not yet set");
-                bookshelf.setOwner(userBean.getUser());
+                bookmarkList.setOwner(userBean.getUser());
             }
 
             try {
-                if (DataManager.getInstance().getDao().addBookmarkList(bookshelf)) {
-                    String msg = Helper.getTranslation("bookshelf_createBookshelfSuccess", null);
-                    Messages.info(msg.replace("{0}", bookshelf.getName()));
-                    logger.debug("Bookshelf '{}' for user {} added.", bookshelf.getName(), userBean.getUser().getId());
+                if (DataManager.getInstance().getDao().addBookmarkList(bookmarkList)) {
+                    String msg = Helper.getTranslation("bookmarkList_createBookmarkListSuccess", null);
+                    Messages.info(msg.replace("{0}", bookmarkList.getName()));
+                    logger.debug("Bookmark list '{}' for user {} added.", bookmarkList.getName(), userBean.getUser().getId());
                     return true;
                 }
             } catch (DAOException e) {
-                logger.error("Could not save bookshelf: {}", e.getMessage());
+                logger.error("Could not save bookmark list: {}", e.getMessage());
             }
-            String msg = Helper.getTranslation("bookshelf_createBookshelfFailure", null);
-            Messages.error(msg.replace("{0}", bookshelf.getName()));
+            String msg = Helper.getTranslation("bookmarkList_createBookmarkListFailure", null);
+            Messages.error(msg.replace("{0}", bookmarkList.getName()));
         } else {
-            // Update bookshelf in the DB
+            // Update bookmark list in the DB
             try {
-                if (DataManager.getInstance().getDao().updateBookmarkList(bookshelf)) {
-                    logger.debug("Bookshelf '{}' for user {} updated.", bookshelf.getName(), userBean.getUser().getId());
-                    String msg = Helper.getTranslation("bookshelf_updateBookshelfSuccess", null);
-                    Messages.info(msg.replace("{0}", bookshelf.getName()));
+                if (DataManager.getInstance().getDao().updateBookmarkList(bookmarkList)) {
+                    logger.debug("Bookmark list '{}' for user {} updated.", bookmarkList.getName(), userBean.getUser().getId());
+                    String msg = Helper.getTranslation("bookmarkList_updateBookmarkListSuccess", null);
+                    Messages.info(msg.replace("{0}", bookmarkList.getName()));
                     return true;
                 }
             } catch (DAOException e) {
-                logger.error("Could not update bookshelf: {}", e.getMessage());
+                logger.error("Could not update bookmark list: {}", e.getMessage());
             }
-            String msg = Helper.getTranslation("bookshelf_updateBookshelfFailure", null);
-            Messages.error(msg.replace("{0}", bookshelf.getName()));
+            String msg = Helper.getTranslation("bookmarkList_updateBookmarkListFailure", null);
+            Messages.error(msg.replace("{0}", bookmarkList.getName()));
         }
 
         return false;
     }
 
     /**
-     * Deletes currentBookshelf.
+     * Deletes currentBookmarkList.
      *
      * @throws DAOException
      */
-    public String deleteCurrentBookshelfAction() {
-        logger.debug("deleteCurrentBookshelfAction: {}", currentBookshelf.getId());
+    public String deleteCurrentBookmarkListAction() {
+        logger.debug("deleteCurrentBookmarkListAction: {}", currentBookmarkList.getId());
         try {
             UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookmarkList(currentBookshelf)) {
-                logger.debug("Bookshelf '" + currentBookshelf.getName() + "' deleted.");
-                String msg = Helper.getTranslation("bookshelf_deleteSuccess", null);
-                Messages.info(msg.replace("{0}", currentBookshelf.getName()));
-                resetCurrentBookshelfAction();
-                return "pretty:userMenuMyBookshelves";
+            if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookmarkList(currentBookmarkList)) {
+                logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' deleted.");
+                String msg = Helper.getTranslation("bookmarkList_deleteSuccess", null);
+                Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
+                resetCurrentBookmarkListAction();
+                return "pretty:userMenuBookmarkLists";
             }
         } catch (DAOException e) {
-            logger.error("Could not delete bookshelf: {}", e.getMessage());
+            logger.error("Could not delete bookmark list: {}", e.getMessage());
         }
-        String msg = Helper.getTranslation("bookshelf_deleteFailure", null);
-        Messages.error(msg.replace("{0}", currentBookshelf.getName()));
+        String msg = Helper.getTranslation("bookmarkList_deleteFailure", null);
+        Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
 
-        return "pretty:userMenuSingleBookshelf";
+        return "pretty:userMenuEditBookmarkList";
     }
 
     /**
-     * Shares currentBookshelf with currentUserGroup.
+     * Shares currentBookmarkList with currentUserGroup.
      */
-    public void shareCurrentBookshelfAction() {
+    public void shareCurrentBookmarkListAction() {
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookshelf.addGroupShare(currentUserGroup)) {
-            Messages.info("bookshelf_shareWin");
-            logger.debug("Bookshelf '" + currentBookshelf.getName() + "' shared with user group '" + currentUserGroup.getName() + "'.");
+        if (userBean != null && userBean.getUser() != null && currentBookmarkList.addGroupShare(currentUserGroup)) {
+            Messages.info("bookmarkList_shareWin");
+            logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' shared with user group '" + currentUserGroup.getName() + "'.");
             return;
         }
-        Messages.error("bookshelf_shareFail");
+        Messages.error("bookmarkList_shareFail");
     }
 
     /**
-     * Removes currentUserGroup from the shares list of currentBookshelf.
+     * Removes currentUserGroup from the shares list of currentBookmarkList.
      */
-    public void unshareCurrentBookshelfAction() {
+    public void unshareCurrentBookmarkListAction() {
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookshelf.removeGroupShare(currentUserGroup)) {
-            Messages.info("bookshelf_unshareWin");
-            logger.debug("Bookshelf '" + currentBookshelf.getName() + "' unshared with user group '" + currentUserGroup.getName() + "'.");
+        if (userBean != null && userBean.getUser() != null && currentBookmarkList.removeGroupShare(currentUserGroup)) {
+            Messages.info("bookmarkList_unshareWin");
+            logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' unshared with user group '" + currentUserGroup.getName() + "'.");
             return;
         }
-        Messages.error("bookshelf_unshareFail");
+        Messages.error("bookmarkList_unshareFail");
     }
 
     /**
-     * Sets currentBookshelf to a new object.
+     * Sets currentBookmarkList to a new object.
      */
-    public void resetCurrentBookshelfAction() {
-        logger.trace("resetCurrentBookshelfAction");
-        currentBookshelf = new BookmarkList();
+    public void resetCurrentBookmarkListAction() {
+        logger.trace("resetCurrentBookmarkListAction");
+        currentBookmarkList = new BookmarkList();
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
-            currentBookshelf.setOwner(userBean.getUser());
+            currentBookmarkList.setOwner(userBean.getUser());
         }
-        currentBookshelfItem = new Bookmark();
+        currentBookmark = new Bookmark();
     }
 
-    public void prepareItemForBookshelf() throws IndexUnreachableException {
-        logger.trace("prepareItemForBookshelf");
+    public void prepareItemForBookmarkList() throws IndexUnreachableException {
+        logger.trace("prepareItemForBookmarkList");
         ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
         if (activeDocumentBean != null) {
             ViewManager viewManager = activeDocumentBean.getViewManager();
-            this.currentBookshelfItem = new Bookmark(viewManager.getPi(), viewManager.getVolumeTitle(), viewManager.getVolumeTitle());
+            this.currentBookmark = new Bookmark(viewManager.getPi(), viewManager.getVolumeTitle(), viewManager.getVolumeTitle());
         }
     }
 
     /**
-     * Updates the currently selected BookshelfItem if it is already part of the current Bookshelf, otherwise adds a new BookshelfItem. Saves
-     * DataManager in both cases.
+     * Updates the currently selected Bookmark if it is already part of the current BookmarkList, otherwise adds a new Bookmark. Saves DataManager in
+     * both cases.
      *
      * @return
      * @throws DAOException
      */
-    public String saveCurrentItemAction() {
-        logger.trace("name: {}", currentBookshelfItem.getName());
+    public String saveCurrentBookmarkAction() {
+        logger.trace("name: {}", currentBookmark.getName());
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookshelf != null && StringUtils.isNotEmpty(currentBookshelfItem.getName())) {
-            logger.trace("saving item to bookshelf");
+        if (userBean != null && userBean.getUser() != null && currentBookmarkList != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
+            logger.trace("saving bookmark to bookmark list");
             try {
-                if (currentBookshelf.getItems().contains(currentBookshelfItem)) {
-                    // TODO Do not throw error if item already in bookshelf. Instead, offer to edit or remove.
-                    DataManager.getInstance().getDao().updateBookmarkList(currentBookshelf);
-                    String msg = Helper.getTranslation("bookshelf_addToBookshelfFailureAlreadyContains", null);
-                    Messages.error(msg.replace("{0}", currentBookshelf.getName()));
-                    //                String msg = Helper.getTranslation("bookshelf_addToBookshelfSuccess", null);
-                    //                Messages.info(msg.replace("{0}", currentBookshelf.getName()));
-                    //                logger.debug("Bookshelf item '" + currentBookshelfItem.getName() + "' added.");
+                if (currentBookmarkList.getItems().contains(currentBookmark)) {
+                    // TODO Do not throw error if item already in bookmark list. Instead, offer to edit or remove.
+                    DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList);
+                    String msg = Helper.getTranslation("bookmarkList_addToBookmarkListFailureAlreadyContains", null);
+                    Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
                     return "";
-                } else if (currentBookshelf.addItem(currentBookshelfItem) && DataManager.getInstance().getDao().updateBookmarkList(currentBookshelf)) {
-                    String msg = Helper.getTranslation("bookshelf_addToBookshelfSuccess", null);
-                    Messages.info(msg.replace("{0}", currentBookshelf.getName()));
-                    logger.debug("Bookshelf item '{}' added, ID: {}", currentBookshelfItem.getName(), currentBookshelfItem.getId());
+                } else if (currentBookmarkList.addItem(currentBookmark)
+                        && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
+                    String msg = Helper.getTranslation("bookmarkList_addToBookmarkListSuccess", null);
+                    Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
+                    logger.debug("Bookmark '{}' added, ID: {}", currentBookmark.getName(), currentBookmark.getId());
                     return "";
                 }
             } catch (DAOException e) {
-                logger.error("Could not save bookshelf item: {}", e.getMessage());
+                logger.error("Could not save bookmark: {}", e.getMessage());
             }
         }
 
-        String msg = Helper.getTranslation("bookshelf_addToBookshelfFailure", null);
-        Messages.error(msg.replace("{0}", currentBookshelf.getName()));
+        String msg = Helper.getTranslation("bookmarkList_addToBookmarkListFailure", null);
+        Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
         return "";
     }
 
     /**
-     * Removes the currently selected BookshelfItem from the currently selected Bookshelf.
+     * Removes the currently selected Bookmark from the currently selected BookmarkList.
      *
      * @throws DAOException
      */
-    public void deleteCurrentItemAction(Bookmark bookshelfItem) {
+    public void deleteCurrentItemAction(Bookmark bookmark) {
         UserBean userBean = BeanUtils.getUserBean();
-        if (bookshelfItem != null && userBean != null && userBean.getUser() != null && currentBookshelf != null) {
+        if (bookmark != null && userBean != null && userBean.getUser() != null && currentBookmarkList != null) {
             try {
-                if (currentBookshelf.removeItem(bookshelfItem) && DataManager.getInstance().getDao().updateBookmarkList(currentBookshelf)) {
-                    String msg = Helper.getTranslation("bookshelf_removeBookshelfItemSuccess", null);
-                    Messages.info(msg.replace("{0}", bookshelfItem.getPi()));
-                    logger.debug("Bookshelf item '" + bookshelfItem.getName() + "' deleted.");
+                if (currentBookmarkList.removeItem(bookmark) && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
+                    String msg = Helper.getTranslation("bookmarkList_removeBookmarkSuccess", null);
+                    Messages.info(msg.replace("{0}", bookmark.getPi()));
+                    logger.debug("Bookmark '" + bookmark.getName() + "' deleted.");
                     return;
                 }
             } catch (DAOException e) {
-                logger.error("Could not delete bookshelf item: {}", e.getMessage());
+                logger.error("Could not delete bookmark: {}", e.getMessage());
             }
-            String msg = Helper.getTranslation("bookshelf_removeBookshelfItemFailure", null);
-            Messages.error(msg.replace("{0}", bookshelfItem.getPi()));
-        } else if (bookshelfItem == null) {
-            logger.error("BookshelfItem to delete is not defined");
+            String msg = Helper.getTranslation("bookmarkList_removeBookmarkFailure", null);
+            Messages.error(msg.replace("{0}", bookmark.getPi()));
+        } else if (bookmark == null) {
+            logger.error("Bookmark to delete is not defined");
         }
     }
 
     /**
-     * Returns the names all existing user groups (minus the ones currentBookshelf is already shared with). TODO Filter some user groups, if required
-     * (e.g. admins)
+     * Returns the names all existing user groups (minus the ones currentBookmarkList is already shared with). TODO Filter some user groups, if
+     * required (e.g. admins)
      *
      * @return
      * @throws DAOException
@@ -325,7 +324,7 @@ public class BookmarkBean implements Serializable {
 
         List<UserGroup> allGroups = new ArrayList<>();
         allGroups.addAll(DataManager.getInstance().getDao().getAllUserGroups());
-        allGroups.removeAll(currentBookshelf.getGroupShares());
+        allGroups.removeAll(currentBookmarkList.getGroupShares());
         for (UserGroup ug : allGroups) {
             ret.add(ug.getName());
         }
@@ -334,45 +333,12 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * Returns a list of all bookshelves shared with this user by other users through any group of which he is a member or the owner.
+     * Returns a list of all existing bookmark list that are marked public.
      *
      * @return
      * @throws DAOException
      */
-    public List<BookmarkList> getBookshelvesSharedByOthers() throws DAOException {
-        List<BookmarkList> ret = new ArrayList<>();
-
-        UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null) {
-            // Own user groups
-            for (UserGroup userGroup : userBean.getUser().getUserGroupOwnerships()) {
-                for (BookmarkList bs : userGroup.getSharedBookshelves()) {
-                    if (!ret.contains(bs) && !bs.getOwner().equals(userBean.getUser())) {
-                        ret.add(bs);
-                    }
-                }
-            }
-
-            // Group memberships
-            for (UserGroup userGroup : userBean.getUser().getUserGroupsWithMembership()) {
-                for (BookmarkList bs : userGroup.getSharedBookshelves()) {
-                    if (!ret.contains(bs) && !bs.getOwner().equals(userBean.getUser())) {
-                        ret.add(bs);
-                    }
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns a list of all existing bookshelves that are marked public.
-     *
-     * @return
-     * @throws DAOException
-     */
-    public List<BookmarkList> getPublicBookshelves() throws DAOException {
+    public List<BookmarkList> getPublicBookmarkLists() throws DAOException {
         return DataManager.getInstance().getDao().getPublicBookmarkLists();
     }
 
@@ -381,9 +347,9 @@ public class BookmarkBean implements Serializable {
      * @param user
      * @return
      * @throws DAOException
-     * @should return shared bookshelves
+     * @should return shared bookmark lists
      */
-    public List<BookmarkList> getBookshelvesSharedWithUser(User user) throws DAOException {
+    public List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {
         if (user == null) {
             return Collections.emptyList();
         }
@@ -393,20 +359,20 @@ public class BookmarkBean implements Serializable {
             return Collections.emptyList();
         }
 
-        List<BookmarkList> allBookshelves = DataManager.getInstance().getDao().getAllBookmarkLists();
-        logger.trace("all bookshelves: {}", allBookshelves.size());
-        if (allBookshelves.isEmpty()) {
+        List<BookmarkList> allBookmarkLists = DataManager.getInstance().getDao().getAllBookmarkLists();
+        logger.trace("all bookmark lists: {}", allBookmarkLists.size());
+        if (allBookmarkLists.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<BookmarkList> ret = new ArrayList<>();
-        for (BookmarkList bs : allBookshelves) {
-            if (bs.getOwner().equals(user) || bs.getGroupShares().isEmpty()) {
+        for (BookmarkList bl : allBookmarkLists) {
+            if (bl.getOwner().equals(user) || bl.getGroupShares().isEmpty()) {
                 continue;
             }
             for (UserGroup ug : userGroups) {
-                if (bs.getGroupShares().contains(ug)) {
-                    ret.add(bs);
+                if (!ret.contains(bl) && bl.getGroupShares().contains(ug)) {
+                    ret.add(bl);
                     break;
                 }
             }
@@ -416,45 +382,45 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * Returns a list of all existing bookshelves owned by current user
+     * Returns a list of all existing bookmark lists owned by current user
      *
      * @return
      * @throws DAOException
      */
 
-    public List<BookmarkList> getBookshelves() throws DAOException {
+    public List<BookmarkList> getBookmarkLists() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
-            return getBookshelvesForUser(userBean.getUser());
+            return getBookmarkListForUser(userBean.getUser());
         }
         return Collections.emptyList();
     }
 
-    public List<BookmarkList> getBookshelvesForUser(User user) throws DAOException {
+    public List<BookmarkList> getBookmarkListForUser(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkLists(user);
     }
 
-    public int getNumBookshelvesForUser(User user) throws DAOException {
-        List<BookmarkList> bookshelves = getBookshelvesForUser(user);
-        if (bookshelves != null) {
-            return bookshelves.size();
+    public int getNumBookmarkListsForUser(User user) throws DAOException {
+        List<BookmarkList> bookmarkLists = getBookmarkListForUser(user);
+        if (bookmarkLists != null) {
+            return bookmarkLists.size();
         }
 
         return 0;
     }
 
-    public void bookshelfSelectAction(ValueChangeEvent event) throws DAOException {
-        logger.debug("bookshelf selected: {}", event.getNewValue());
-        currentBookshelf = DataManager.getInstance().getDao().getBookmarkList(String.valueOf(event.getNewValue()), userBean.getUser());
+    public void selectBookmarkListAction(ValueChangeEvent event) throws DAOException {
+        logger.debug("bookmark list selected: {}", event.getNewValue());
+        currentBookmarkList = DataManager.getInstance().getDao().getBookmarkList(String.valueOf(event.getNewValue()), userBean.getUser());
     }
 
-    public boolean isNewBookshelf() {
-        return currentBookshelf.getId() == null;
+    public boolean isNewBookmarkList() {
+        return currentBookmarkList.getId() == null;
     }
 
-    public String createNewBookshelfAction() {
-        resetCurrentBookshelfAction();
-        return "pretty:userMenuEditBookshelf";
+    public String createNewBookmarkListAction() {
+        resetCurrentBookmarkListAction();
+        return "pretty:userMenuEditBookmarkList";
     }
 
     /**
@@ -471,20 +437,20 @@ public class BookmarkBean implements Serializable {
 
         if (StringUtils.isEmpty(name)) {
             ((UIInput) toValidate).setValid(false);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Helper.getTranslation("bookshelfNameFailure", null), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Helper.getTranslation("bookmark listNameFailure", null), null);
             throw new ValidatorException(message);
         }
 
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
         // Do not allow duplicate names
-        if (isNewBookshelf()) {
-            for (BookmarkList bookshelf : getBookshelvesForUser(userBean.getUser())) {
-                if (bookshelf.getName().equals(name) && bookshelf.getOwner().equals(userBean.getUser())) {
+        if (isNewBookmarkList()) {
+            for (BookmarkList bookmarkList : getBookmarkListForUser(userBean.getUser())) {
+                if (bookmarkList.getName().equals(name) && bookmarkList.getOwner().equals(userBean.getUser())) {
                     ((UIInput) toValidate).setValid(false);
-                    logger.debug("Bookshelf '" + currentBookshelf.getName() + "' for user '" + userBean.getEmail()
-                            + "' could not be added. A bookshelf with this name for this use may already exist.");
-                    String msg = Helper.getTranslation("bookshelf_createBookshelfNameExists", null);
+                    logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' for user '" + userBean.getEmail()
+                            + "' could not be added. A bookmark list with this name for this use may already exist.");
+                    String msg = Helper.getTranslation("bookmarkList_createBookmarkListNameExists", null);
                     FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Helper.getTranslation(msg.replace("{0}", name), null), null);
                     throw new ValidatorException(message);
                 }
@@ -492,103 +458,102 @@ public class BookmarkBean implements Serializable {
         }
     }
 
-    public boolean isCurrentBookshelfMine() {
+    public boolean isCurrentBookmarkListMine() {
         UserBean userBean = BeanUtils.getUserBean();
-        return currentBookshelf != null && (isNewBookshelf() || currentBookshelf.getOwner().equals(userBean.getUser()));
+        return currentBookmarkList != null && (isNewBookmarkList() || currentBookmarkList.getOwner().equals(userBean.getUser()));
     }
 
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * @return the currentBookshelf
+     * @return the currentBookmarkList
      */
-    public BookmarkList getCurrentBookshelf() {
-        return currentBookshelf;
+    public BookmarkList getCurrentBookmarkList() {
+        return currentBookmarkList;
     }
 
-    public List<String> getCurrentBookshelfNames() throws DAOException {
+    public List<String> getCurrentBookmarkListNames() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
-        List<BookmarkList> bookshelflist = getBookshelvesForUser(userBean.getUser());
-        if (bookshelflist == null || bookshelflist.isEmpty()) {
+        List<BookmarkList> bookmarkLists = getBookmarkListForUser(userBean.getUser());
+        if (bookmarkLists == null || bookmarkLists.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<String> nameList = new ArrayList<>(bookshelflist.size());
-        for (BookmarkList bookshelf : bookshelflist) {
-            nameList.add(bookshelf.getName());
+        List<String> nameList = new ArrayList<>(bookmarkLists.size());
+        for (BookmarkList bookmarkList : bookmarkLists) {
+            nameList.add(bookmarkList.getName());
         }
         return nameList;
     }
 
     /**
-     * @param currentBookshelf the currentBookshelf to set
+     * @param currentBookmarkList the currentBookmarkList to set
      */
-    public void setCurrentBookshelf(BookmarkList currentOwnBookshelf) {
-        // logger.debug("currentOwnBookshelf set to "+currentOwnBookshelf.getName());
-        this.currentBookshelf = currentOwnBookshelf;
+    public void setCurrentBookmarkList(BookmarkList currentBookmarkList) {
+        this.currentBookmarkList = currentBookmarkList;
     }
 
     /**
      * 
-     * @return Identifier of currentBookshelf; null if none loaded
+     * @return Identifier of currentBookmarkList; null if none loaded
      */
-    public String getCurrentBookshelfId() {
-        if (getCurrentBookshelf() != null) {
-            return getCurrentBookshelf().getId().toString();
+    public String getCurrentBookmarkListId() {
+        if (getCurrentBookmarkList() != null) {
+            return getCurrentBookmarkList().getId().toString();
         }
         return null;
     }
 
     /**
-     * @param currentBookshelf the currentBookshelf to set
+     * @param bookmarkList
      * @throws DAOException
      */
-    public void setCurrentBookshelfId(String bookshelfId) throws PresentationException, DAOException {
-        if (bookshelfId != null) {
+    public void setCurrentBookmarkListId(String bookmarkListId) throws PresentationException, DAOException {
+        if (bookmarkListId != null) {
             try {
-                Long id = Long.parseLong(bookshelfId);
-                Optional<BookmarkList> o = getBookshelves().stream().filter(bookshelf -> id.equals(bookshelf.getId())).findFirst();
+                Long id = Long.parseLong(bookmarkListId);
+                Optional<BookmarkList> o = getBookmarkLists().stream().filter(bookmarkList -> id.equals(bookmarkList.getId())).findFirst();
                 if (o.isPresent()) {
-                    setCurrentBookshelf(o.get());
+                    setCurrentBookmarkList(o.get());
                 } else {
-                    throw new PresentationException("No bookshelf found with id " + bookshelfId + " of current user");
+                    throw new PresentationException("No bookmark list found with id " + bookmarkListId + " of current user");
                 }
             } catch (NumberFormatException e) {
-                throw new PresentationException(bookshelfId + " is not viable bookshelf id");
+                throw new PresentationException(bookmarkListId + " is not viable bookmark list id");
             }
         }
     }
 
-    public String viewBookshelfAction(BookmarkList bookshelf) {
-        if (bookshelf != null) {
-            logger.debug("bookshelf to open: {}, belongs to: {}", bookshelf.getId(), bookshelf.getOwner().getId());
-            currentBookshelf = bookshelf;
+    public String viewBookmarkListAction(BookmarkList bookmarkList) {
+        if (bookmarkList != null) {
+            logger.debug("bookmark list to open: {}, belongs to: {}", bookmarkList.getId(), bookmarkList.getOwner().getId());
+            currentBookmarkList = bookmarkList;
         }
 
-        return "pretty:userMenuViewBookshelf";
+        return "pretty:userMenuViewBookmarkList";
     }
 
-    public String editBookshelfAction(BookmarkList bookshelf) {
-        if (bookshelf != null) {
-            logger.debug("bookshelf to edit: {}, belongs to: {}", bookshelf.getId(), bookshelf.getOwner().getId());
-            currentBookshelf = bookshelf;
+    public String editBookmarkListAction(BookmarkList bookmarkList) {
+        if (bookmarkList != null) {
+            logger.debug("bookmark list to edit: {}, belongs to: {}", bookmarkList.getId(), bookmarkList.getOwner().getId());
+            currentBookmarkList = bookmarkList;
         }
 
-        return "pretty:userMenuEditBookshelf";
+        return "pretty:userMenuEditBookmarkList";
     }
 
     /**
-     * @return the currentBookshelfItem
+     * @return the currentBookmark
      */
-    public Bookmark getCurrentBookshelfItem() {
-        return currentBookshelfItem;
+    public Bookmark getCurrentBookmark() {
+        return currentBookmark;
     }
 
     /**
-     * @param currentBookshelfItem the currentBookshelfItem to set
+     * @param currentBookmark the currentBookmark to set
      */
-    public void setCurrentBookshelfItem(Bookmark currentBookshelfItem) {
-        this.currentBookshelfItem = currentBookshelfItem;
+    public void setCurrentBookmark(Bookmark currentBookmark) {
+        this.currentBookmark = currentBookmark;
     }
 
     /**
@@ -606,41 +571,41 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * @param sessionBookshelfEmail the sessionBookshelfEmail to set
+     * @param sessionBookmarkListEmail the sessionBookmarkListEmail to set
      */
-    public void setSessionBookshelfEmail(String sessionBookshelfEmail) {
-        this.sessionBookshelfEmail = sessionBookshelfEmail;
+    public void setSessionBookmarkListEmail(String sessionBookmarkListEmail) {
+        this.sessionBookmarkListEmail = sessionBookmarkListEmail;
     }
 
     /**
-     * @return the sessionBookshelfEmail
+     * @return the sessionBookmarkListEmail
      */
-    public String getSessionBookshelfEmail() {
-        return sessionBookshelfEmail;
+    public String getSessionBookmarkListEmail() {
+        return sessionBookmarkListEmail;
     }
 
     /**
      * 
-     * @param bookshelf
-     * @return Absolute share URLto the given bookshelf
+     * @param bookmarkList
+     * @return Absolute share URLto the given bookmark list
      */
-    public String getShareLink(BookmarkList bookshelf) {
-        if (bookshelf == null) {
+    public String getShareLink(BookmarkList bookmarkList) {
+        if (bookmarkList == null) {
             return "";
         }
-        logger.trace("getShareLink: {}", bookshelf.getId());
+        logger.trace("getShareLink: {}", bookmarkList.getId());
 
-        if (bookshelf.getShareKey() == null) {
-            bookshelf.generateShareKey();
-            saveBookshelfAction(bookshelf);
+        if (bookmarkList.getShareKey() == null) {
+            bookmarkList.generateShareKey();
+            saveBookmarkListAction(bookmarkList);
         }
 
-        return navigationHelper.getApplicationUrl() + "bookshelf/key/" + bookshelf.getShareKey() + "/";
+        return navigationHelper.getApplicationUrl() + "bookmarks/key/" + bookmarkList.getShareKey() + "/";
     }
 
     public String getShareKey() {
-        if (currentBookshelf != null) {
-            return currentBookshelf.getShareKey();
+        if (currentBookmarkList != null) {
+            return currentBookmarkList.getShareKey();
         }
 
         return "-";
@@ -651,37 +616,39 @@ public class BookmarkBean implements Serializable {
             return;
         }
 
-        currentBookshelf = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
+        currentBookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
     }
 
-    public void sendSessionBookshelfAsMail() {
-        if (StringUtils.isNotBlank(getSessionBookshelfEmail())) {
-            DataManager.getInstance().getBookmarkManager().getBookshelf(BeanUtils.getRequest().getSession(false)).ifPresent(bookshelf -> {
-                String body = SessionStoreBookmarkManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null),
-                        Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_EMPTY_LIST, null),
-                        bookshelf);
-                String subject = Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUBJECT, null);
-                try {
-                    Helper.postMail(Collections.singletonList(getSessionBookshelfEmail()), subject, body);
-                    Messages.info(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUCCESS, null));
-                } catch (UnsupportedEncodingException | MessagingException e) {
-                    logger.error(e.getMessage(), e);
-                    Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null)
-                            .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
-                }
-            });
+    public void sendSessionBookmarkListAsMail() {
+        if (StringUtils.isBlank(getSessionBookmarkListEmail())) {
+            return;
         }
+
+        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
+            String body = SessionStoreBookmarkManager.generateBookmarkListInfo(Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
+                    Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
+                    bookmarkList);
+            String subject = Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
+            try {
+                Helper.postMail(Collections.singletonList(getSessionBookmarkListEmail()), subject, body);
+                Messages.info(Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
+            } catch (UnsupportedEncodingException | MessagingException e) {
+                logger.error(e.getMessage(), e);
+                Messages.error(Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ERROR, null)
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            }
+        });
     }
 
     /**
      * 
-     * @return Size of items in the session bookshelf
+     * @return Size of items in the session bookmark list
      */
-    public int countSessionBookshelfItems() {
+    public int countSessionBookmarkListItems() {
         return DataManager.getInstance()
                 .getBookmarkManager()
-                .getBookshelf(BeanUtils.getRequest().getSession(false))
-                .map(bookshelf -> bookshelf.getItems().size())
+                .getBookmarkList(BeanUtils.getRequest().getSession(false))
+                .map(bookmarkList -> bookmarkList.getItems().size())
                 .orElse(0);
     }
 }

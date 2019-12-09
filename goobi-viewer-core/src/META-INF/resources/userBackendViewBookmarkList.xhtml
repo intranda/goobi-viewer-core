@@ -15,8 +15,8 @@
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('mybookshelves', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,'mybookshelves',2)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookshelfBean.currentBookshelf.name,3)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookshelves,'mybookshelves',2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name,3)}" />
 		</f:metadata>
 	</ui:define>
 	
@@ -28,10 +28,10 @@
         <div
             id="viewBookshelf"
             class="view-bookshelf">
-            <h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelf.isMayView(userBean.user)}">
+            <h:panelGroup rendered="#{userBean.loggedIn and bookmarkBean.currentBookmarkList.isMayView(userBean.user)}">
                 <div class="row">
                     <div class="col-xs-10">
-                        <h2>#{bookmarkBean.currentBookshelf.name}</h2>
+                        <h2>#{bookmarkBean.currentBookmarkList.name}</h2>
                     </div>
                     <div class="col-xs-2">
                         <!-- ACTION -->
@@ -40,9 +40,9 @@
                                 id="viewBookshelfActionForm"
                                 prependId="false">
                                 <!-- EDIT -->
-                                <h:commandLink rendered="#{bookmarkBean.currentBookshelf.isMayEdit(userBean.user)}"
+                                <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
                                     title="#{msg.edit}"
-                                    action="#{bookmarkBean.editBookshelfAction(bookshelfBean.currentBookshelf)}">
+                                    action="#{bookmarkBean.editBookshelfAction(bookmarkBean.currentBookmarkList)}">
                                     <i
                                         class="fa fa-pencil"
                                         aria-hidden="true"></i>
@@ -54,8 +54,8 @@
                                         value="top" />
                                 </h:commandLink>
                                 <!-- DELETE -->
-                                <h:commandLink rendered="#{bookmarkBean.currentBookshelf.isMayEdit(userBean.user)}"
-                                    title="#{msg.bookshelf_delete}"
+                                <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
+                                    title="#{msg.bookmarkList_delete}"
                                     action="#{bookmarkBean.deleteCurrentBookshelfAction}"
                                     onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelf}&quot; ) ) { return false };">
                                     <i
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-                <p>#{bookmarkBean.currentBookshelf.description}</p>
+                <p>#{bookmarkBean.currentBookmarkList.description}</p>
                 <!-- MESSAGE -->
                 <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
                     <div
@@ -82,18 +82,18 @@
                     </div>
                 </h:panelGroup>
                 <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
-                    <h:panelGroup rendered="#{!bookshelfBean.newBookshelf}">
+                    <h:panelGroup rendered="#{!bookmarkBean.newBookshelf}">
                         <!-- warning if no entries exists -->
-                        <h:panelGroup rendered="#{bookmarkBean.currentBookshelf.items.isEmpty()}">
+                        <h:panelGroup rendered="#{bookmarkBean.currentBookmarkList.items.isEmpty()}">
                             <div
                                 class="alert alert-warning"
                                 role="alert">#{msg.bookshelves_noEntryWarning}</div>
                         </h:panelGroup>
-                        <!-- bookshelf entries -->
-                        <h:panelGroup rendered="#{!bookshelfBean.currentBookshelf.items.isEmpty()}">
+                        <!-- bookmark list entries -->
+                        <h:panelGroup rendered="#{!bookmarkBean.currentBookmarkList.items.isEmpty()}">
                             <div class="row">
                                 <ui:repeat
-                                    value="#{bookmarkBean.currentBookshelf.items}"
+                                    value="#{bookmarkBean.currentBookmarkList.items}"
                                     var="item"
                                     varStatus="status">
                                     <div class="col-xs-12 col-sm-6">
@@ -114,12 +114,12 @@
                                                 <!--  ACTION -->
                                                 <div class="view-bookshelf__item-action">
                                                     <h:commandLink
-                                                        title="#{msg.bookshelf_itemDelete}"
-                                                        action="#{bookmarkBean.deleteCurrentItemAction(item)}"
+                                                        title="#{msg.bookmarkList_itemDelete}"
+                                                        action="#{bookmarkBean.deleteBookmarkAction(item)}"
                                                         onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelfItem}&quot; ) ) { return false };"
                                                         role="button">
                                                         <f:passThroughAttribute
-                                                            name="data-bookshelf-type"
+                                                            name="data-bookmarklist-type"
                                                             value="delete" />
                                                         <f:passThroughAttribute
                                                             name="data-toggle"
@@ -127,7 +127,6 @@
                                                         <f:passThroughAttribute
                                                             name="data-placement"
                                                             value="top" />
-                                                        <!-- 														<f:setPropertyActionListener value="#{bookshelf}" target="#{bookmarkBean.currentBookshelf}" /> -->
                                                     </h:commandLink>
                                                 </div>
                                             </div>

@@ -142,7 +142,7 @@ public class LoginFilter implements Filter {
                 default:
                     // Regular URLs
                     if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend")
-                            || uri.contains("/bookshel"))) {
+                            || uri.contains("/bookmark"))) {
                         return true;
                     }
             }

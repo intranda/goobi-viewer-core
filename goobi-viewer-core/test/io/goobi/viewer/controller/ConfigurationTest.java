@@ -994,12 +994,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isBookshelvesEnabled()
+     * @see Configuration#isBookmarksEnabled()
      * @verifies return correct value
      */
     @Test
     public void isBookshelvesEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isBookshelvesEnabled());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isBookmarksEnabled());
     }
 
     /**
@@ -1728,7 +1728,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getCmdiFolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("cmdi", DataManager.getInstance().getConfiguration().getCmdiFolder());
     }
-    
 
     /**
      * @see Configuration#getAnnotationFolder()

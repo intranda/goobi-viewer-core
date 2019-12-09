@@ -162,7 +162,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookmarks/shelves/user/get/' + id + '/add/' + pi + '/' + logid + '/' + page + '/',
+            url: root + '/rest/bookmarks/user/get/' + id + '/add/' + pi + '/' + logid + '/' + page + '/',
             type: "GET",
             dataType: "JSON",
             async: true

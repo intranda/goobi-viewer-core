@@ -12,7 +12,7 @@
     <!-- METADATA -->
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('userBookshelfSendList')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('userBookmarkListSendList')}" />
         </f:metadata>
     </ui:define>
     
@@ -27,7 +27,7 @@
             contentType="text/html"
             encoding="utf-8">
             <div class="user-bookshelf-send-list">
-                <h2>#{msg.bookshelf_session_mail_heading}</h2>
+                <h2>#{msg.bookmarkList_session_mail_heading}</h2>
                 <div class="user-bookshelf-send-list__form">
                     <h:form
                         id="userBookshelfSendListForm"
@@ -41,19 +41,19 @@
                                 <h:inputText
                                     id="userEMailToSend"
                                     styleClass="form-control"
-                                    value="#{bookmarkBean.sessionBookshelfEmail}"
+                                    value="#{bookmarkBean.sessionBookmarkListEmail}"
                                     required="true"
                                     requiredMessage="#{msg.loginEnterEmail}">
                                     <f:validator validatorId="emailValidator" />
                                 </h:inputText>
                             </div>
                         </div>
-                        <p>#{msg.bookshelf_session_mail_text}</p>
+                        <p>#{msg.bookmarkList_session_mail_text}</p>
                         <div class="user-bookshelf-send-list__action">
                             <h:commandButton
                                 styleClass="btn btn--full"
                                 value="#{msg.submit}"
-                                action="#{bookmarkBean.sendSessionBookshelfAsMail}" />
+                                action="#{bookmarkBean.sendSessionBookmarkListAsMail}" />
                         </div>
                     </h:form>
                 </div>

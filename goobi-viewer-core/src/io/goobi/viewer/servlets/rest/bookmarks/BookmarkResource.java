@@ -88,10 +88,10 @@ public class BookmarkResource {
     @GET
     @Path("/session/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public BookmarkList getSessionBookshelf() throws DAOException, IOException, RestApiException {
+    public BookmarkList getSessionBookmarkList() throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookshelf(session);
+            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
             return bookmarkList;
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -111,11 +111,11 @@ public class BookmarkResource {
     @GET
     @Path("/session/mirador")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getSessionBookshelfForMirador()
+    public String getSessionBookmarkListForMirador()
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookshelf(session);
+            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
             if (bookmarkList != null) {
                 return bookmarkList.getMiradorJsonObject(servletRequest.getContextPath());
             }
@@ -136,8 +136,8 @@ public class BookmarkResource {
     @GET
     @Path("/session/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addToSessionBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return addToSessionBookshelf(pi, null, null);
+    public SuccessMessage addToSessionBookmarkList(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return addToSessionBookmarkList(pi, null, null);
     }
 
     /**
@@ -154,7 +154,7 @@ public class BookmarkResource {
     @GET
     @Path("/session/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addToSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
+    public SuccessMessage addToSessionBookmarkList(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session == null) {
@@ -163,7 +163,7 @@ public class BookmarkResource {
 
         try {
             Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
-            boolean success = DataManager.getInstance().getBookmarkManager().addToBookshelf(item, session);
+            boolean success = DataManager.getInstance().getBookmarkManager().addToBookmarkList(item, session);
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
             String errorMessage = "Unable to create bookmark for pi = " + pi + ", page = " + pageString + " and logid = " + logId;
@@ -186,8 +186,8 @@ public class BookmarkResource {
     @GET
     @Path("/session/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return deleteFromSessionBookshelf(pi, null, null);
+    public SuccessMessage deleteFromSessionBookmarkList(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return deleteFromSessionBookmarkList(pi, null, null);
     }
 
     /**
@@ -206,7 +206,7 @@ public class BookmarkResource {
     @GET
     @Path("/session/delete/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId,
+    public SuccessMessage deleteFromSessionBookmarkList(@PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session == null) {
@@ -234,10 +234,10 @@ public class BookmarkResource {
     @GET
     @Path("/session/delete")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteSessionBookshelf() throws RestApiException {
+    public SuccessMessage deleteSessionBookmarkList() throws RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            DataManager.getInstance().getBookmarkManager().deleteBookshelf(session);
+            DataManager.getInstance().getBookmarkManager().deleteBookmarkList(session);
             return new SuccessMessage(true);
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -255,8 +255,8 @@ public class BookmarkResource {
     @GET
     @Path("/session/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Boolean isInSessionBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return isInSessionBookshelf(pi, null, null);
+    public Boolean isInSessionBookmarkList(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return isInSessionBookmarkList(pi, null, null);
     }
 
     /**
@@ -273,7 +273,7 @@ public class BookmarkResource {
     @GET
     @Path("/session/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Boolean isInSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
+    public Boolean isInSessionBookmarkList(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session == null) {
@@ -282,7 +282,7 @@ public class BookmarkResource {
 
         try {
             Bookmark item = new Bookmark(pi, "-".equals(logId) ? null : logId, getPageOrder(pageString), testing);
-            boolean success = DataManager.getInstance().getBookmarkManager().isInBookshelf(item, session);
+            boolean success = DataManager.getInstance().getBookmarkManager().isInBookmarkList(item, session);
             return success;
         } catch (PresentationException e) {
             //no such document
@@ -304,10 +304,10 @@ public class BookmarkResource {
     @GET
     @Path("/session/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Integer countSessionBookshelfItems() throws RestApiException {
+    public Integer countSessionBookmarks() throws RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            int count = DataManager.getInstance().getBookmarkManager().getBookshelf(session).map(bs -> bs.getItems().size()).orElse(0);
+            int count = DataManager.getInstance().getBookmarkManager().getBookmarkList(session).map(bs -> bs.getItems().size()).orElse(0);
             return count;
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -333,7 +333,7 @@ public class BookmarkResource {
     }
 
     /**
-     * Returns all Bookshelves shared to the current user and not owned by him
+     * Returns all bookmark lists shared with the current user and not owned by him
      * 
      * @return
      * @throws DAOException
@@ -359,7 +359,7 @@ public class BookmarkResource {
     }
 
     /**
-     * Returns all public Bookshelves
+     * Returns all public bookmark lists
      * 
      * @return
      * @throws DAOException
@@ -369,7 +369,7 @@ public class BookmarkResource {
     @GET
     @Path("/public/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<BookmarkList> getAllPublicBookshelfs() throws DAOException, IOException, RestApiException {
+    public List<BookmarkList> getAllPublicBookmarkLists() throws DAOException, IOException, RestApiException {
         return DataManager.getInstance().getDao().getPublicBookmarkLists();
     }
 
@@ -384,7 +384,7 @@ public class BookmarkResource {
     @GET
     @Path("/user/get/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public BookmarkList getUserBookshelfById(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
+    public BookmarkList getUserBookmarkListById(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
 
         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(id);
 
@@ -435,7 +435,7 @@ public class BookmarkResource {
     @GET
     @Path("/user/get/{id}/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addItemToUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
+    public SuccessMessage addBookmarkToUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         Optional<BookmarkList> o = getAllUserBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
@@ -455,27 +455,27 @@ public class BookmarkResource {
     }
 
     /**
-     * Adds a new BookshelfItem with the given pi to the current users bookmark list with the given id Returns 203 if no matching bookmark list was
-     * found or 400 if the BookshelfItem could not be created (wrong pi)
+     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
+     * or 400 if the Bookmark could not be created (wrong pi)
      * 
      */
     @GET
     @Path("/user/get/{id}/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi)
+    public SuccessMessage addBookmarkToUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi)
             throws DAOException, IOException, RestApiException {
-        return addItemToUserBookmarkList(id, pi, null, null);
+        return addBookmarkToUserBookmarkList(id, pi, null, null);
     }
 
     /**
-     * Removes a BookshelfItem with the given pi, logid and page number from the current users bookmark list with the given id Returns 203 if no
-     * matching bookmark list was found or 400 if the requested BookshelfItem is invalid (wrong pi/logid/page)
+     * Removes a Bookmark with the given pi, logid and page number from the current users bookmark list with the given id Returns 203 if no matching
+     * bookmark list was found or 400 if the requested Bookmark is invalid (wrong pi/logid/page)
      * 
      */
     @GET
     @Path("/user/get/{id}/delete/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
+    public SuccessMessage deleteBookmarkFromUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         Optional<BookmarkList> o = getAllUserBookmarkLists().stream().filter(bs -> bs.getId().equals(id)).findFirst();
         if (!o.isPresent()) {
@@ -495,8 +495,8 @@ public class BookmarkResource {
     }
 
     /**
-     * Removes a BookshelfItem with the given pi from the current users bookmark list with the given id Returns 203 if no matching bookmark list was
-     * found or 400 if the requested BookshelfItem is invalid (wrong pi)
+     * Removes a Bookmark with the given pi from the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
+     * or 400 if the requested Bookmark is invalid (wrong pi)
      * 
      * @throws RestApiException
      * @throws IOException
@@ -506,13 +506,13 @@ public class BookmarkResource {
     @GET
     @Path("/user/get/{id}/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi)
+    public SuccessMessage deleteBookmarkFromUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi)
             throws DAOException, IOException, RestApiException {
-        return deleteFromUserBookshelf(id, pi, null, null);
+        return deleteBookmarkFromUserBookmarkList(id, pi, null, null);
     }
 
     /**
-     * Adds a new Bookshelf with the given name to the current users bookmark lists
+     * Adds a new BookmarkList with the given name to the current users bookmark lists
      * 
      * @param pi
      * @return
@@ -523,14 +523,14 @@ public class BookmarkResource {
     @GET
     @Path("/user/add/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelf(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
+    public SuccessMessage addUserBookmarkList(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
 
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
-        if (userHasBookshelf(user, name)) {
-            throw new RestApiException("Bookshelf '" + name + "' already exists for the current user", HttpServletResponse.SC_BAD_REQUEST);
+        if (userHasBookmarkList(user, name)) {
+            throw new RestApiException("BookmarkList '" + name + "' already exists for the current user", HttpServletResponse.SC_BAD_REQUEST);
         }
 
         BookmarkList bookmarkList = new BookmarkList();
@@ -542,7 +542,7 @@ public class BookmarkResource {
     }
 
     /**
-     * Adds a new Bookshelf with the given name to the current users bookmark lists
+     * Adds a new BookmarkList with the given name to the current users bookmark lists
      * 
      * @param pi
      * @return
@@ -553,9 +553,9 @@ public class BookmarkResource {
     @GET
     @Path("/user/add")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
-        String name = SessionStoreBookmarkManager.generateNewBookshelfName(getAllUserBookmarkLists());
-        return addUserBookshelf(name);
+    public SuccessMessage addUserBookmarkList() throws DAOException, IOException, RestApiException {
+        String name = SessionStoreBookmarkManager.generateNewBookmarkListName(getAllUserBookmarkLists());
+        return addUserBookmarkList(name);
     }
 
     /**
@@ -568,11 +568,11 @@ public class BookmarkResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/addSessionBookshelf")
+    @Path("/user/addSessionBookmarkList")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelfFromSession() throws DAOException, IOException, RestApiException {
-        String name = SessionStoreBookmarkManager.generateNewBookshelfName(getAllUserBookmarkLists());
-        return addUserBookshelfFromSession(name);
+    public SuccessMessage addUserBookmarkListFromSession() throws DAOException, IOException, RestApiException {
+        String name = SessionStoreBookmarkManager.generateNewBookmarkListName(getAllUserBookmarkLists());
+        return addUserBookmarkListFromSession(name);
     }
 
     /**
@@ -585,15 +585,15 @@ public class BookmarkResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/addSessionBookshelf/{name}")
+    @Path("/user/addSessionBookmarkList/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelfFromSession(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
+    public SuccessMessage addUserBookmarkListFromSession(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
 
-        Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookshelf(servletRequest.getSession());
+        Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookmarkList(servletRequest.getSession());
         if (bookmarkList.isPresent()) {
             bookmarkList.get().setName(name);
             boolean success = DataManager.getInstance().getDao().addBookmarkList(bookmarkList.get());
@@ -616,13 +616,13 @@ public class BookmarkResource {
     @GET
     @Path("/user/delete/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteUserBookshelf(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
+    public SuccessMessage deleteUserBookmarkList(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
 
-        Optional<BookmarkList> bookmarkList = getBookshelf(user, id);
+        Optional<BookmarkList> bookmarkList = getBookmarkList(user, id);
         if (bookmarkList.isPresent()) {
             DataManager.getInstance().getDao().deleteBookmarkList(bookmarkList.get());
             return new SuccessMessage(true);
@@ -646,13 +646,13 @@ public class BookmarkResource {
     @GET
     @Path("/user/mirador/{id}/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getUserBookshelfForMirador(@PathParam("id") Long id)
+    public String getUserBookmarkListForMirador(@PathParam("id") Long id)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
-        Optional<BookmarkList> bookmarkList = getBookshelf(user, id);
+        Optional<BookmarkList> bookmarkList = getBookmarkList(user, id);
         if (bookmarkList.isPresent()) {
             return bookmarkList.get().getMiradorJsonObject(servletRequest.getContextPath());
         }
@@ -673,9 +673,9 @@ public class BookmarkResource {
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<BookmarkList> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId,
+    public List<BookmarkList> getContainingUserBookmarkLists(@PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
-        logger.trace("getContainingUserBookshelves: {}/{}/{}", pi, pageString, logId);
+        logger.trace("getContainingUserBookmarkList: {}/{}/{}", pi, pageString, logId);
         List<BookmarkList> bookmarkLists = getAllUserBookmarkLists();
         if (bookmarkLists == null) {
             return Collections.emptyList();
@@ -703,8 +703,8 @@ public class BookmarkResource {
     @GET
     @Path("/user/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<BookmarkList> getContainingUserBookshelves(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return getContainingUserBookshelves(pi, null, null);
+    public List<BookmarkList> getContainingUserBookmarkLists(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return getContainingUserBookmarkLists(pi, null, null);
     }
 
     /**
@@ -719,8 +719,8 @@ public class BookmarkResource {
     @GET
     @Path("/user/get/{id}/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Long countUserBookshelfItems(@PathParam("id") Long id) throws RestApiException, DAOException, IOException {
-        return getUserBookshelfById(id).getItems().stream().count();
+    public Long countUserBookmarks(@PathParam("id") Long id) throws RestApiException, DAOException, IOException {
+        return getUserBookmarkListById(id).getItems().stream().count();
     }
 
     /**
@@ -777,7 +777,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws DAOException
      */
-    private boolean userHasBookshelf(User user, String name) throws DAOException, IOException, RestApiException {
+    private boolean userHasBookmarkList(User user, String name) throws DAOException, IOException, RestApiException {
         return getAllUserBookmarkLists().stream().anyMatch(bs -> bs.getName() != null && bs.getName().equals(name));
     }
 
@@ -787,7 +787,7 @@ public class BookmarkResource {
      * @return
      * @throws DAOException
      */
-    private static Optional<BookmarkList> getBookshelf(User user, Long id) throws DAOException {
+    private static Optional<BookmarkList> getBookmarkList(User user, Long id) throws DAOException {
         List<BookmarkList> bookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
         if (bookmarkLists != null) {
             return bookmarkLists.stream().filter(bs -> bs.getId().equals(id)).findFirst();
@@ -810,13 +810,4 @@ public class BookmarkResource {
             return false;
         }
     }
-
-    //    @PUT
-    //    @Path("/testPost")
-    //    @Consumes(MediaType.APPLICATION_JSON)
-    //    public Response test(Bookshelf bs) {
-    //        System.out.println("Received data " + bs);
-    //        return Response.ok().build();
-    //    }
-
 }

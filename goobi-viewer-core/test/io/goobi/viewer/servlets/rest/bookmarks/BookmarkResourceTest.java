@@ -83,32 +83,32 @@ public class BookmarkResourceTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testSessionBookshelf() throws DAOException, IOException, RestApiException {
 
-        BookmarkList bs = resource.getSessionBookshelf();
+        BookmarkList bs = resource.getSessionBookmarkList();
         Assert.assertNotNull(bs);
 
-        resource.addToSessionBookshelf(PI_1);
-        Assert.assertEquals(1, resource.countSessionBookshelfItems(), 0);
-        resource.addToSessionBookshelf(PI_2);
-        Assert.assertEquals(2, resource.countSessionBookshelfItems(), 0);
-        resource.addToSessionBookshelf(PI_3, LOGID_1, PAGE_1);
-        Assert.assertEquals(3, resource.countSessionBookshelfItems(), 0);
+        resource.addToSessionBookmarkList(PI_1);
+        Assert.assertEquals(1, resource.countSessionBookmarks(), 0);
+        resource.addToSessionBookmarkList(PI_2);
+        Assert.assertEquals(2, resource.countSessionBookmarks(), 0);
+        resource.addToSessionBookmarkList(PI_3, LOGID_1, PAGE_1);
+        Assert.assertEquals(3, resource.countSessionBookmarks(), 0);
 
-        Assert.assertTrue(resource.isInSessionBookshelf(PI_2));
-        Assert.assertTrue(resource.isInSessionBookshelf(PI_3, LOGID_1, PAGE_1));
-        Assert.assertFalse(resource.isInSessionBookshelf(PI_2, LOGID_1, PAGE_1));
-        Assert.assertFalse(resource.isInSessionBookshelf(PI_3));
+        Assert.assertTrue(resource.isInSessionBookmarkList(PI_2));
+        Assert.assertTrue(resource.isInSessionBookmarkList(PI_3, LOGID_1, PAGE_1));
+        Assert.assertFalse(resource.isInSessionBookmarkList(PI_2, LOGID_1, PAGE_1));
+        Assert.assertFalse(resource.isInSessionBookmarkList(PI_3));
 
-        resource.deleteFromSessionBookshelf(PI_2);
-        Assert.assertEquals(2, resource.countSessionBookshelfItems(), 0);
+        resource.deleteFromSessionBookmarkList(PI_2);
+        Assert.assertEquals(2, resource.countSessionBookmarks(), 0);
 
-        resource.deleteFromSessionBookshelf(PI_3);
-        Assert.assertEquals(2, resource.countSessionBookshelfItems(), 0);
+        resource.deleteFromSessionBookmarkList(PI_3);
+        Assert.assertEquals(2, resource.countSessionBookmarks(), 0);
 
-        resource.deleteFromSessionBookshelf(PI_3, LOGID_1, PAGE_1);
-        Assert.assertEquals(1, resource.countSessionBookshelfItems(), 0);
+        resource.deleteFromSessionBookmarkList(PI_3, LOGID_1, PAGE_1);
+        Assert.assertEquals(1, resource.countSessionBookmarks(), 0);
 
-        resource.deleteSessionBookshelf();
-        Assert.assertEquals(0, resource.countSessionBookshelfItems(), 0);
+        resource.deleteSessionBookmarkList();
+        Assert.assertEquals(0, resource.countSessionBookmarks(), 0);
     }
 
     @Test
@@ -118,9 +118,9 @@ public class BookmarkResourceTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(bookmarkLists);
         Assert.assertEquals(1, bookmarkLists.size());
 
-        resource.addUserBookshelf("List 1");
-        resource.addUserBookshelf("Test 2");
-        resource.addUserBookshelf();
+        resource.addUserBookmarkList("List 1");
+        resource.addUserBookmarkList("Test 2");
+        resource.addUserBookmarkList();
 
         bookmarkLists = resource.getAllUserBookmarkLists();
         Assert.assertEquals(4, bookmarkLists.size());
@@ -132,42 +132,42 @@ public class BookmarkResourceTest extends AbstractDatabaseEnabledTest {
         Long id3 = bookmarkLists.get(3).getId();
         Assert.assertNotNull(id3);
 
-        BookmarkList bs1 = resource.getUserBookshelfById(id1);
+        BookmarkList bs1 = resource.getUserBookmarkListById(id1);
         Assert.assertNotNull(bs1);
         Assert.assertEquals("List 1", bs1.getName());
-        BookmarkList bs2 = resource.getUserBookshelfById(id2);
+        BookmarkList bs2 = resource.getUserBookmarkListById(id2);
         Assert.assertNotNull(bs2);
         Assert.assertEquals("Test 2", bs2.getName());
-        BookmarkList bs3 = resource.getUserBookshelfById(id3);
+        BookmarkList bs3 = resource.getUserBookmarkListById(id3);
         Assert.assertNotNull(bs3);
         Assert.assertEquals("List 2", bs3.getName());
         resource.setUserBookmarkListName(id3, "TEST");
-        Assert.assertEquals("TEST", resource.getUserBookshelfById(id3).getName());
+        Assert.assertEquals("TEST", resource.getUserBookmarkListById(id3).getName());
 
-        Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id1, PI_1));
-        Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id2, PI_1));
-        Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id2, PI_2));
-        Assert.assertEquals(new SuccessMessage(false), resource.addItemToUserBookshelf(id2, PI_2));
-        Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookmarkList(id2, PI_3, LOGID_1, PAGE_1));
+        Assert.assertEquals(new SuccessMessage(true), resource.addBookmarkToUserBookmarkList(id1, PI_1));
+        Assert.assertEquals(new SuccessMessage(true), resource.addBookmarkToUserBookmarkList(id2, PI_1));
+        Assert.assertEquals(new SuccessMessage(true), resource.addBookmarkToUserBookmarkList(id2, PI_2));
+        Assert.assertEquals(new SuccessMessage(false), resource.addBookmarkToUserBookmarkList(id2, PI_2));
+        Assert.assertEquals(new SuccessMessage(true), resource.addBookmarkToUserBookmarkList(id2, PI_3, LOGID_1, PAGE_1));
 
-        Assert.assertEquals(1, resource.countUserBookshelfItems(id1), 0);
-        Assert.assertEquals(3, resource.countUserBookshelfItems(id2), 0);
+        Assert.assertEquals(1, resource.countUserBookmarks(id1), 0);
+        Assert.assertEquals(3, resource.countUserBookmarks(id2), 0);
 
-        Assert.assertTrue(resource.getContainingUserBookshelves(PI_1).contains(bs1));
-        Assert.assertTrue(resource.getContainingUserBookshelves(PI_1).contains(bs2));
-        Assert.assertTrue(resource.getContainingUserBookshelves(PI_3, LOGID_1, PAGE_1).contains(bs2));
+        Assert.assertTrue(resource.getContainingUserBookmarkLists(PI_1).contains(bs1));
+        Assert.assertTrue(resource.getContainingUserBookmarkLists(PI_1).contains(bs2));
+        Assert.assertTrue(resource.getContainingUserBookmarkLists(PI_3, LOGID_1, PAGE_1).contains(bs2));
 
-        resource.deleteFromUserBookshelf(id1, PI_1);
-        Assert.assertEquals(0, resource.countUserBookshelfItems(id1), 0);
-        resource.deleteFromUserBookshelf(id2, PI_3, LOGID_1, PAGE_1);
-        Assert.assertEquals(2, resource.countUserBookshelfItems(id2), 0);
+        resource.deleteBookmarkFromUserBookmarkList(id1, PI_1);
+        Assert.assertEquals(0, resource.countUserBookmarks(id1), 0);
+        resource.deleteBookmarkFromUserBookmarkList(id2, PI_3, LOGID_1, PAGE_1);
+        Assert.assertEquals(2, resource.countUserBookmarks(id2), 0);
 
-        resource.deleteUserBookshelf(id1);
-        resource.deleteUserBookshelf(id3);
-        resource.deleteUserBookshelf(id2);
+        resource.deleteUserBookmarkList(id1);
+        resource.deleteUserBookmarkList(id3);
+        resource.deleteUserBookmarkList(id2);
         Assert.assertEquals(1, resource.getAllUserBookmarkLists().size());
 
-        List<BookmarkList> publicBookshelves = resource.getAllPublicBookshelfs();
+        List<BookmarkList> publicBookshelves = resource.getAllPublicBookmarkLists();
         List<BookmarkList> sharedBookshelves = resource.getAllSharedBookmarkLists();
         Assert.assertTrue(publicBookshelves.stream().allMatch(bs -> bs.isIsPublic()));
         //        Assert.assertTrue(sharedBookshelves.stream()
