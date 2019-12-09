@@ -55,7 +55,7 @@
 			
 				<!-- WARNING IF NO BOOKMARK LIST EXISTS -->
 				<h:panelGroup rendered="#{bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
-					<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookmarkListsWarning}</div>
+					<div class="alert alert-warning" role="alert">#{msg.bookmarks_noBookmarkListsWarning}</div>
 				</h:panelGroup>
 				
 				<!-- USER BOOKMARK LISTS -->
@@ -140,24 +140,24 @@
 					</h:form>
 				</h:panelGroup>
 				
-				<!-- BOOKSHELVES SHARED WITH THIS USER -->
-                <h:panelGroup rendered="#{!bookmarkBean.getBookshelvesSharedWithUser(userBean.user).isEmpty()}">
-                    <h3>#{msg.bookmarkList_otherBookshelves}</h3>
-                    <h:form id="otherBookshelvesForm" prependId="false">
+				<!-- BOOKMARK LISTS SHARED WITH THIS USER -->
+                <h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsSharedWithUser(userBean.user).isEmpty()}">
+                    <h3>#{msg.bookmarkList_otherBookmarkLists}</h3>
+                    <h:form id="otherBookmarkListsForm" prependId="false">
                         <div class="row no-margin">
-                            <ui:repeat value="#{bookmarkBean.getBookshelvesSharedWithUser(userBean.user)}" var="bookshelf" varStatus="status">
+                            <ui:repeat value="#{bookmarkBean.getBookmarkListsSharedWithUser(userBean.user)}" var="bookmarkList" varStatus="status">
                                 <div class="user-bookshelves__panel">
                                     <div class="user-bookshelves__panel-header">
                                         <div class="col-xs-8 col-sm-10">
                                             <h4>
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/">
-                                                    #{bookshelf.name}
+                                                <a href="#{request.contextPath}/bookmarkList/#{bookmarkList.id}/">
+                                                    #{bookmarkList.name}
                                                 </a>
-                                                <ui:fragment rendered="#{bookshelf.items.size() == 1}">
-                                                    <small>(#{bookshelf.items.size()} #{msg.bookshelves_object})</small>
+                                                <ui:fragment rendered="#{bookmarkList.items.size() == 1}">
+                                                    <small>(#{bookmarkList.items.size()} #{msg.bookmarks_object})</small>
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{bookshelf.items.size() != 1}">
-                                                    <small>(#{bookshelf.items.size()} #{msg.bookshelves_objects})</small>
+                                                <ui:fragment rendered="#{bookmarkList.items.size() != 1}">
+                                                    <small>(#{bookmarkList.items.size()} #{msg.bookmarks_objects})</small>
                                                 </ui:fragment>
                                             </h4>
                                         </div>
@@ -165,24 +165,25 @@
                                             <!-- ACTION -->
                                             <div class="user-bookshelves__panel-action text-right">
                                                 <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                <ui:fragment rendered="#{bookshelf.items.size() > 1}">
+                                                <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
                                                     <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookshelf-id="#{bookshelf.id}">
+                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookmark-list-id="#{bookmarkList.id}">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
                                                     </a>
                                                 </ui:fragment>
                                                 
                                                 <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
                                                     <i class="fa fa-search" aria-hidden="true"></i>
-                                                    <f:setPropertyActionListener value="#{bookshelf.name}"
+                                                    <f:setPropertyActionListener value="#{bookmarkList.name}"
                                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                                    <f:setPropertyActionListener value="BOOKSHELF" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+                                                    <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
                                                     <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
                                                 </h:commandLink>                                   
                                                 
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
+                                                <a href="#{request.contextPath}/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}"
+                                                    data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
                                             </div>
@@ -190,10 +191,10 @@
                                     </div>
                                     
                                     <!-- DESCRIPTION -->
-                                    <ui:fragment rendered="#{bookshelf.hasDescription()}">
+                                    <ui:fragment rendered="#{bookmarkList.hasDescription()}">
                                         <div class="col-xs-12">
                                             <div class="user-bookshelves__panel-body">
-                                                <p>#{bookshelf.description}</p>
+                                                <p>#{bookmarkList.description}</p>
                                             </div>
                                         </div>
                                     </ui:fragment>
@@ -203,24 +204,24 @@
                     </h:form>
                 </h:panelGroup>
                 
-                <!-- PUBLIC BOOKSHELVES-->
-                <h:panelGroup rendered="#{!bookmarkBean.publicBookshelves.isEmpty()}">
-                    <h3>#{msg.bookmarkList_publicBookshelves}</h3>
-                    <h:form id="pubicBookshelvesForm" prependId="false">
+                <!-- PUBLIC BOOKMARK LISTS -->
+                <h:panelGroup rendered="#{!bookmarkBean.publicBookmarkLists.isEmpty()}">
+                    <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
+                    <h:form id="pubicBookmarkListsForm" prependId="false">
                         <div class="row no-margin">
-                            <ui:repeat value="#{bookmarkBean.publicBookshelves}" var="bookshelf" varStatus="status">
+                            <ui:repeat value="#{bookmarkBean.publicBookmarkLists}" var="bookmarkList" varStatus="status">
                                 <div class="user-bookshelves__panel">
                                     <div class="user-bookshelves__panel-header">
                                         <div class="col-xs-8 col-sm-10">
                                             <h4>
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/">
-                                                    #{bookshelf.name}
+                                                <a href="#{request.contextPath}/bookmarks/show/#{bookmarkList.id}/">
+                                                    #{bookmarkList.name}
                                                 </a>
-                                                <ui:fragment rendered="#{bookshelf.items.size() == 1}">
-                                                    <small>(#{bookshelf.items.size()} #{msg.bookshelves_object})</small>
+                                                <ui:fragment rendered="#{bookmarkList.items.size() == 1}">
+                                                    <small>(#{bookmarkList.items.size()} #{msg.bookmarks_object})</small>
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{bookshelf.items.size() != 1}">
-                                                    <small>(#{bookshelf.items.size()} #{msg.bookshelves_objects})</small>
+                                                <ui:fragment rendered="#{bookmarkList.items.size() != 1}">
+                                                    <small>(#{bookmarkList.items.size()} #{msg.bookmarks_objects})</small>
                                                 </ui:fragment>
                                             </h4>
                                         </div>
@@ -228,24 +229,25 @@
                                             <!-- ACTION -->
                                             <div class="user-bookshelves__panel-action text-right">
                                                 <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                <ui:fragment rendered="#{bookshelf.items.size() > 1}">
+                                                <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
                                                     <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookshelf-id="#{bookshelf.id}">
+                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookmark-list-id="#{bookmarkList.id}">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
                                                     </a>
                                                 </ui:fragment>
                                                 
                                                 <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
                                                     <i class="fa fa-search" aria-hidden="true"></i>
-                                                    <f:setPropertyActionListener value="#{bookshelf.name}"
+                                                    <f:setPropertyActionListener value="#{bookmarkList.name}"
                                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                                    <f:setPropertyActionListener value="BOOKSHELF" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+                                                    <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
                                                     <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
                                                 </h:commandLink>                                   
                                                 
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
+                                                <a href="#{request.contextPath}/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}"
+                                                    data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
                                             </div>
@@ -253,10 +255,10 @@
                                     </div>
                                     
                                     <!-- DESCRIPTION -->
-                                    <ui:fragment rendered="#{bookshelf.hasDescription()}">
+                                    <ui:fragment rendered="#{bookmarkList.hasDescription()}">
                                         <div class="col-xs-12">
                                             <div class="user-bookshelves__panel-body">
-                                                <p>#{bookshelf.description}</p>
+                                                <p>#{bookmarkList.description}</p>
                                             </div>
                                         </div>
                                     </ui:fragment>

@@ -578,7 +578,7 @@
 	</url-mapping>
 
 	<!-- TODO Use uniform URL patterns for pages that only logged in users may visit so that LoginFilter still works! -->
-	<!-- BOOKSHELVES -->
+	<!-- BOOKMARKS -->
 	<url-mapping id="userMenuBookmarkLists">
 		<pattern value="/bookmarks/" />
 		<view-id value="/userBackendBookmarkLists.xhtml" />
