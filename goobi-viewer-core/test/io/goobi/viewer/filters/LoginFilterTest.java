@@ -30,7 +30,7 @@ public class LoginFilterTest {
     public void isRestrictedUri_shouldReturnTrueForCertainPrettyUris() throws Exception {
         Assert.assertTrue(LoginFilter.isRestrictedUri("/myactivity/"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/mysearches/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/mybookmarks/"));
+        Assert.assertTrue(LoginFilter.isRestrictedUri("/bookmarks/"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/bookshelf/"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/editbookshelf/"));
     }
@@ -77,6 +77,6 @@ public class LoginFilterTest {
      */
     @Test
     public void isRestrictedUri_shouldReturnTrueForBookshelfUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("boo.hoo/bookshelfIsEmpty"));
+        Assert.assertTrue(LoginFilter.isRestrictedUri("boo.hoo/bookmarksEmpty"));
     }
 }
