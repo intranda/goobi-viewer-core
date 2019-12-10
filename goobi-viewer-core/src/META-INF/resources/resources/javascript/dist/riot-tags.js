@@ -172,6 +172,139 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 
 
+riot.tag2('bookmarklist', '<ul class="bookshelf-popup__body-list list"><li each="{bookmarkList in bookmarkLists}"><button class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button></li></ul>', '', '', function(opts) {
+
+
+this.bookmarkLists = [];
+this.pi = this.opts.data.pi;
+this.logid = this.opts.data.logid;
+this.page = this.opts.data.page;
+this.loader = this.opts.data.loader;
+this.bookmarkPage = this.opts.data.bookmarkPage ? this.opts.data.bookmarkPage : () => false;
+this.button = this.opts.button;
+
+this.on( 'mount', function() {
+    console.log("opts ", this.opts);
+    this.updateLists()
+    .then( () => this.hideLoader())
+
+});
+
+this.on( 'update', function() {
+    let $button = $(this.button);
+    if($button.length > 0) {
+	    let contained = this.contained(this.pi, this.page, this.logid);
+	    if(contained) {
+	        $button.addClass("active");
+	    } else {
+	        $button.removeClass("active");
+
+	    }
+    }
+})
+
+this.updateLists = function() {
+    return this.opts.bookmarks.getBookmarkLists()
+    .then(lists => {
+        this.bookmarkLists = lists;
+        this.update();
+    })
+}.bind(this)
+
+this.hideLoader = function() {
+    $(this.loader).hide();
+}.bind(this)
+
+this.add = function(event) {
+    let list = event.item.bookmarkList
+    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.bookmarkPage())
+    .then( () => this.updateLists());
+}.bind(this)
+
+this.remove = function(event) {
+    let list = event.item.bookmarkList
+    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.bookmarkPage())
+    .then( () => this.updateLists())
+}.bind(this)
+
+this.getList = function(id) {
+    this.bookmarkLists.find(list => list.id == id);
+}.bind(this)
+
+this.getItem = function(list, pi, page, logid) {
+    for(item of list.items) {
+        if(item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId)) {
+            return item;
+        }
+    }
+    return undefined;
+}.bind(this)
+
+this.contained = function(pi, page, logid) {
+    for(list of this.bookmarkLists) {
+        if(this.inList(list, pi, page, logid)) {
+            return true;
+        }
+    }
+    return false;
+}.bind(this)
+
+this.inList = function(list, pi, page, logid) {
+        for(item of list.items) {
+            if(item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId)) {
+                return true;
+            }
+        }
+    return false;
+}.bind(this)
+
+});
+riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
+
+const popupOffset = 6;
+
+console.log("opts ", this.opts);
+this.opts.data.loader = ".bookshelf-popup__body-loader";
+
+this.on( 'mount', function() {
+
+	this.setPosition();
+	this.addCloseHandler();
+
+});
+
+this.setPosition = function() {
+    var $button = $(this.opts.button);
+    var anchor = {
+            x : $button.offset().left + $button.outerWidth()/2,
+            y : $button.offset().top + $button.outerHeight(),
+    }
+    var position = {
+            left: anchor.x - this.root.getBoundingClientRect().width/2,
+            top: anchor.y + popupOffset
+    }
+    $(this.root).offset(position);
+}.bind(this)
+
+this.addCloseHandler = function() {
+
+    $(this.root).on("click", function(event){
+        event.stopPropagation();
+    });
+
+    $('body').one("click", function(event) {
+        this.unmount(true);
+        $(this.root).off();
+        this.root.remove();
+    }.bind(this));
+}.bind(this)
+
+this.add = function() {
+    let name = this.refs.inputValue.value;
+    console.log("add bookshelf ", name);
+}.bind(this)
+
+});
 riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1><div class="questions_wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="question_wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";

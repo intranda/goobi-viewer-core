@@ -24,7 +24,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -133,7 +135,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws RestApiException
      */
-    @GET
+    @POST
     @Path("/session/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addToSessionBookmarkList(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
@@ -151,7 +153,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws RestApiException
      */
-    @GET
+    @POST
     @Path("/session/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addToSessionBookmarkList(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
@@ -432,7 +434,7 @@ public class BookmarkResource {
      * bookmark list was found or 400 if the Bookmark could not be created (wrong pi/logid/page)
      * 
      */
-    @GET
+    @POST
     @Path("/user/get/{id}/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addBookmarkToUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
@@ -459,7 +461,7 @@ public class BookmarkResource {
      * or 400 if the Bookmark could not be created (wrong pi)
      * 
      */
-    @GET
+    @POST
     @Path("/user/get/{id}/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addBookmarkToUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi)
@@ -472,7 +474,7 @@ public class BookmarkResource {
      * bookmark list was found or 400 if the requested Bookmark is invalid (wrong pi/logid/page)
      * 
      */
-    @GET
+    @DELETE
     @Path("/user/get/{id}/delete/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteBookmarkFromUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
@@ -503,7 +505,7 @@ public class BookmarkResource {
      * @throws DAOException
      * 
      */
-    @GET
+    @DELETE
     @Path("/user/get/{id}/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteBookmarkFromUserBookmarkList(@PathParam("id") Long id, @PathParam("pi") String pi)
@@ -520,7 +522,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws RestApiException
      */
-    @GET
+    @POST
     @Path("/user/add/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookmarkList(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
