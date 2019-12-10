@@ -29,8 +29,6 @@
 		<!-- intranda libraries -->
 		<alto.version>1.3.5</alto.version>
 		<contentserver.version>1.9.5</contentserver.version>
-		<mets.version>1.10</mets.version>
-		<mods.version>3.5</mods.version>
 		<normdataimporter.version>1.2.7-SNAPSHOT</normdataimporter.version>
 		<iiif-api-model.version>1.5.1</iiif-api-model.version>
 		<tei-conversion.version>1.0.0</tei-conversion.version>
