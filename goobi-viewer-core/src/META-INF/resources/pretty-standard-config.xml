@@ -590,8 +590,8 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userMenuViewBookmarkList1">
-        <pattern value="/bookmarks/show/#{identifier:bookmarkBean.currentBookshelfId}/" />
-        <view-id value="/userBackendViewBookshelf.xhtml" />
+        <pattern value="/bookmarks/show/#{identifier:bookmarkBean.currentBookmarkListId}/" />
+        <view-id value="/userBackendViewBookmarkList.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="userMenuEditBookmarkList">
@@ -601,12 +601,12 @@
 	</url-mapping>
 	<url-mapping id="userMenuEditBookmarkList1">
 		<pattern value="/bookmarks/edit/#{identifier:bookmarkBean.currentBookmarkListId}/" />
-		<view-id value="/userBackendEditBookshelf.xhtml" />
+		<view-id value="/userBackendEditBookmarkList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userMenuViewSharedBookmarkList">
         <pattern value="/bookmarks/key/#{shareKey:bookmarkBean.shareKey}/" />
-        <view-id value="/userBackendViewBookshelf.xhtml" />
+        <view-id value="/userBackendViewBookmarkList.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="userBookshelfSendList">

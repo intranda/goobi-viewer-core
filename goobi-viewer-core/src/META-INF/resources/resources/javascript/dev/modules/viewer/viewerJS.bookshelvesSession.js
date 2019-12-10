@@ -57,7 +57,7 @@ var viewerJS = (function(viewer) {
 			_renderMiradorLink();
 
 			// toggle bookshelf dropdown
-			$('[data-bookshelf-type="dropdown"]').off().on('click', function(event) {
+			$('[data-bookmark-list-type="dropdown"]').off().on('click', function(event) {
 				event.stopPropagation();
 
 				// hide other dropdowns
@@ -81,7 +81,7 @@ var viewerJS = (function(viewer) {
 			_setAddActiveState();
 
 			// add element to session
-			$('body').on('click', '[data-bookshelf-type="add"]', function() {
+			$('body').on('click', '[data-bookmark-list-type="add"]', function() {
 				var currBtn = $(this);
 				var currPi = currBtn.attr('data-pi');
 				var currLogid = currBtn.attr('data-logid');
@@ -285,7 +285,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		_getAllSessionElements(_defaults.root).then(function(elements) {
-			$('[data-bookshelf-type="counter"]').empty().text(elements.items.length).addClass( 'in' );
+			$('[data-bookmark-list-type="counter"]').empty().text(elements.items.length).addClass( 'in' );
 		}).fail(function(error) {
 			console.error('ERROR - _getAllSessionElements: ', error.responseText);
 		});
@@ -302,7 +302,7 @@ var viewerJS = (function(viewer) {
 
 		_getAllSessionElements(_defaults.root).then(function(elements) {
 			// DOM-Elements
-			var dropdownListReset = $('<button>').addClass('btn btn--clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').html('<span>' + _defaults.msg.resetBookmarkLists + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
+			var dropdownListReset = $('<button>').addClass('btn btn--clean').attr('type', 'button').attr('data-bookmark-list-type', 'reset').html('<span>' + _defaults.msg.resetBookmarkLists + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
 			var dropdownList = $('<ul />').addClass('list');
 			var dropdownListItem = null;
 			var dropdownListItemRow = null;
@@ -330,7 +330,7 @@ var viewerJS = (function(viewer) {
 						+ item.representativeImageUrl + ')');
 					dropdownListItemName = $('<h4 />');
 					dropdownListItemNameLink = $('<a />').attr('href', _defaults.root + item.url).text(item.name);
-					dropdownListItemDelete = $('<button />').addClass('btn btn--clean').attr('type', 'button').attr('data-bookshelf-type', 'delete')
+					dropdownListItemDelete = $('<button />').addClass('btn btn--clean').attr('type', 'button').attr('data-bookmark-list-type', 'delete')
 						.attr('data-pi', item.pi).html('<i class="fa fa-ban" aria-hidden="true"></i>');
 
 					// build bookshelf item
@@ -355,7 +355,7 @@ var viewerJS = (function(viewer) {
 			}
 
 			// delete single item
-			$('[data-bookshelf-type="delete"]').on('click', function() {
+			$('[data-bookmark-list-type="delete"]').on('click', function() {
 				var currBtn = $(this);
 				var currPi = currBtn.attr('data-pi');
 				var logid = currBtn.attr('data-logid');
@@ -370,7 +370,7 @@ var viewerJS = (function(viewer) {
 			});
 
 			// delete all items
-			$('[data-bookshelf-type="reset"]').on('click', function() {
+			$('[data-bookmark-list-type="reset"]').on('click', function() {
 				if (confirm(_defaults.msg.resetBookshelvesConfirm)) {
 					_deleteAllSessionElements(_defaults.root).then(function() {
 						sessionStorage.setItem('confirmCounter', 0);
@@ -419,7 +419,7 @@ var viewerJS = (function(viewer) {
 			console.log('---------- _setAddActiveState() ----------');
 		}
 
-		$('[data-bookshelf-type="add"]').each(function() {
+		$('[data-bookmark-list-type="add"]').each(function() {
 			var currBtn = $(this);
 			var currPi = currBtn.attr('data-pi');
 			var currLogid = currBtn.attr('data-logid');

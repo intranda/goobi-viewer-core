@@ -54,7 +54,7 @@ var viewerJS = ( function( viewer ) {
             _renderBookshelfNavigationList();
             
             // toggle bookshelf dropdown
-            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
+            $( '[data-bookmark-list-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
@@ -68,7 +68,7 @@ var viewerJS = ( function( viewer ) {
             _setAddedStatus();
             
             // render bookshelf popup
-            $( '[data-bookshelf-type="add"]' ).off().on( 'click', function( event ) {
+            $( '[data-bookmark-list-type="add"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
@@ -549,7 +549,7 @@ var viewerJS = ( function( viewer ) {
         var bookshelfPopupFooterInput = $( '<input />' ).attr( 'type', 'text' ).attr( 'placeholder', _defaults.msg.addNewBookshelf );
         bookshelfPopupFooterColLeft.append( bookshelfPopupFooterInput );
         var bookshelfPopupFooterColright = $( '<div />' ).addClass( 'col-xs-1 no-padding' );
-        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page );
+        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookmark-list-type', 'add' ).attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page );
         bookshelfPopupFooterColright.append( bookshelfPopupFooterAddBtn );
         bookshelfPopupFooterRow.append( bookshelfPopupFooterColLeft ).append( bookshelfPopupFooterColright );
         bookshelfPopupFooter.append( bookshelfPopupFooterRow );
@@ -566,7 +566,7 @@ var viewerJS = ( function( viewer ) {
         _renderBookshelfPopoverList( pi, logid, page, selectedType );
         
         // add new bookshelf in popover
-        $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).on( 'click', function() {
+        $( '.bookshelf-popup__footer [data-bookmark-list-type="add"]' ).on( 'click', function() {
             var bsName = $( '.bookshelf-popup__footer input' ).val();
             var currPi = $( this ).attr( 'data-pi' );
             var currLogid = $( this ).attr( 'data-logid' );
@@ -601,7 +601,7 @@ var viewerJS = ( function( viewer ) {
         // add new bookshelf on enter in popover
         $( '.bookshelf-popup__footer input' ).on( 'keyup', function( event ) {
             if ( event.which == 13 ) {
-                $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).click();
+                $( '.bookshelf-popup__footer [data-bookmark-list-type="add"]' ).click();
             }
         } );
     }
@@ -638,7 +638,7 @@ var viewerJS = ( function( viewer ) {
                     } );
                     dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
                     dropdownListItemAdd = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' )
-                    		.attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
+                    		.attr( 'data-bookmark-list-type', 'add' ).attr( 'data-id', item.id )
                             .attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page ).attr( 'data-type', type )
                             .text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
                     
@@ -663,7 +663,7 @@ var viewerJS = ( function( viewer ) {
             $( '.bookshelf-popup__body-loader' ).remove();
             
             // add item to bookshelf
-            $( '.bookshelf-popup__body-list [data-bookshelf-type="add"]' ).on( 'click', function() {
+            $( '.bookshelf-popup__body-list [data-bookmark-list-type="add"]' ).on( 'click', function() {
                 var currBtn = $( this );
                 var currId = currBtn.attr( 'data-id' );
                 var currPi = currBtn.attr( 'data-pi' );
@@ -741,7 +741,7 @@ var viewerJS = ( function( viewer ) {
                 } );
                 
                 // set bookshelf item counter
-                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems ).addClass( 'in' );
+                $( '[data-bookmark-list-type="counter"]' ).empty().text( allBookshelfItems ).addClass( 'in' );
             }
             else {
                 // add empty list item
@@ -752,7 +752,7 @@ var viewerJS = ( function( viewer ) {
                 dropdownList.append( dropdownListItem );
                 
                 // set bookshelf item counter
-                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems ).addClass( 'in' );
+                $( '[data-bookmark-list-type="counter"]' ).empty().text( allBookshelfItems ).addClass( 'in' );
             }
             
             // render complete list
@@ -773,7 +773,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '---------- _setAddedStatus() ----------' );
         }
         
-        $( '[data-bookshelf-type="add"]' ).each( function() {
+        $( '[data-bookmark-list-type="add"]' ).each( function() {
             var currTrigger = $( this );
             var currTriggerPi = currTrigger.attr( 'data-pi' );
             var currTriggerLogid = currTrigger.attr( 'data-logid' );

@@ -56,7 +56,7 @@ var viewerJS = ( function( viewer ) {
                 this.renderBookshelfNavigationList();
                 
                 // toggle bookshelf dropdown
-                $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
+                $( '[data-bookmark-list-type="dropdown"]' ).off().on( 'click', function( event ) {
                     event.stopPropagation();
                     // hide other dropdowns
                     $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown, .navigation__collection-panel' ).hide();
@@ -65,7 +65,7 @@ var viewerJS = ( function( viewer ) {
                 } );
                 
                 // render bookshelf popup
-                $( '[data-bookshelf-type="add"]' ).off().on( 'click', function( event ) {
+                $( '[data-bookmark-list-type="add"]' ).off().on( 'click', function( event ) {
                     event.stopPropagation();
                     // hide other dropdowns
                     $( '.bookshelf-navigation__dropdown, .login-navigation__user-dropdown' ).hide();

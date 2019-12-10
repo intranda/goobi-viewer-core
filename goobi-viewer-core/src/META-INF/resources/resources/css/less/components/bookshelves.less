@@ -76,7 +76,7 @@
 	}
 	&__dropdown-list-remove {
 		text-align: center;
-		[data-bookshelf-type="delete"] {
+		[data-bookmark-list-type="delete"] {
 			width: 16px;
 			height: 16px;
 			color: @blue;
@@ -252,28 +252,28 @@
 }
 
 /* ACTION BUTTONS */
-[data-bookshelf-type="dropdown"],
-[data-bookshelf-type="get"],
-[data-bookshelf-type="add"],
-[data-bookshelf-type="add-bookshelf"],
-[data-bookshelf-type="delete"],
-[data-bookshelf-type="link"],
-[data-bookshelf-type="reset"] {
+[data-bookmark-list-type="dropdown"],
+[data-bookmark-list-type="get"],
+[data-bookmark-list-type="add"],
+[data-bookmark-list-type="add-bookshelf"],
+[data-bookmark-list-type="delete"],
+[data-bookmark-list-type="link"],
+[data-bookmark-list-type="reset"] {
 	background-repeat: no-repeat;
 	background-position: center center;	
 }
-[data-bookshelf-type="counter"] {
+[data-bookmark-list-type="counter"] {
 	visibility: hidden;
 	&.in {
 		visibility: visible;
 	}
 }
-[data-bookshelf-type="dropdown"] {
+[data-bookmark-list-type="dropdown"] {
 	display: flex;
     align-items: center;
 }
-[data-bookshelf-type="get"] {}
-[data-bookshelf-type="add"] {
+[data-bookmark-list-type="get"] {}
+[data-bookmark-list-type="add"] {
 	background-image: url("@{images}/icons/icon-bs-herz-blau_thin.svg");
 	background-size: 72%;
 	&.white {
@@ -286,11 +286,11 @@
 		}	
 	}
 }
-[data-bookshelf-type="delete"] {}
-[data-bookshelf-type="link"] {
+[data-bookmark-list-type="delete"] {}
+[data-bookmark-list-type="link"] {
 	background-image: url("@{images}/icons/icon-bs-link.svg");
 }
-[data-bookshelf-type="reset"] {}
+[data-bookmark-list-type="reset"] {}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 

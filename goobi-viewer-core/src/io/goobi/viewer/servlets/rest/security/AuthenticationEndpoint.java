@@ -65,7 +65,7 @@ public class AuthenticationEndpoint {
      * @throws AuthenticationException
      * @throws DAOException
      */
-    private void authenticate(String email, String password) throws AuthenticationException, DAOException {
+    private static void authenticate(String email, String password) throws AuthenticationException, DAOException {
         User user = new User().auth(email, password);
         if (!user.isSuperuser()) {
             throw new AuthenticationException("Superuser access required");

@@ -391,17 +391,17 @@ public class BookmarkBean implements Serializable {
     public List<BookmarkList> getBookmarkLists() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
-            return getBookmarkListForUser(userBean.getUser());
+            return getBookmarkListsForUser(userBean.getUser());
         }
         return Collections.emptyList();
     }
 
-    public List<BookmarkList> getBookmarkListForUser(User user) throws DAOException {
+    public List<BookmarkList> getBookmarkListsForUser(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkLists(user);
     }
 
     public int getNumBookmarkListsForUser(User user) throws DAOException {
-        List<BookmarkList> bookmarkLists = getBookmarkListForUser(user);
+        List<BookmarkList> bookmarkLists = getBookmarkListsForUser(user);
         if (bookmarkLists != null) {
             return bookmarkLists.size();
         }
@@ -445,7 +445,7 @@ public class BookmarkBean implements Serializable {
 
         // Do not allow duplicate names
         if (isNewBookmarkList()) {
-            for (BookmarkList bookmarkList : getBookmarkListForUser(userBean.getUser())) {
+            for (BookmarkList bookmarkList : getBookmarkListsForUser(userBean.getUser())) {
                 if (bookmarkList.getName().equals(name) && bookmarkList.getOwner().equals(userBean.getUser())) {
                     ((UIInput) toValidate).setValid(false);
                     logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' for user '" + userBean.getEmail()
@@ -474,7 +474,7 @@ public class BookmarkBean implements Serializable {
 
     public List<String> getCurrentBookmarkListNames() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
-        List<BookmarkList> bookmarkLists = getBookmarkListForUser(userBean.getUser());
+        List<BookmarkList> bookmarkLists = getBookmarkListsForUser(userBean.getUser());
         if (bookmarkLists == null || bookmarkLists.isEmpty()) {
             return Collections.emptyList();
         }
@@ -509,18 +509,20 @@ public class BookmarkBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentBookmarkListId(String bookmarkListId) throws PresentationException, DAOException {
-        if (bookmarkListId != null) {
-            try {
-                Long id = Long.parseLong(bookmarkListId);
-                Optional<BookmarkList> o = getBookmarkLists().stream().filter(bookmarkList -> id.equals(bookmarkList.getId())).findFirst();
-                if (o.isPresent()) {
-                    setCurrentBookmarkList(o.get());
-                } else {
-                    throw new PresentationException("No bookmark list found with id " + bookmarkListId + " of current user");
-                }
-            } catch (NumberFormatException e) {
-                throw new PresentationException(bookmarkListId + " is not viable bookmark list id");
+        if (bookmarkListId == null) {
+            return;
+        }
+        
+        try {
+            Long id = Long.parseLong(bookmarkListId);
+            Optional<BookmarkList> o = getBookmarkLists().stream().filter(bookmarkList -> id.equals(bookmarkList.getId())).findFirst();
+            if (o.isPresent()) {
+                setCurrentBookmarkList(o.get());
+            } else {
+                throw new PresentationException("No bookmark list found with id " + bookmarkListId + " of current user");
             }
+        } catch (NumberFormatException e) {
+            throw new PresentationException(bookmarkListId + " is not viable bookmark list id");
         }
     }
 
@@ -530,7 +532,7 @@ public class BookmarkBean implements Serializable {
             currentBookmarkList = bookmarkList;
         }
 
-        return "pretty:userMenuViewBookmarkList";
+        return "pretty:userMenuViewBookmarkList1";
     }
 
     public String editBookmarkListAction(BookmarkList bookmarkList) {
@@ -539,7 +541,7 @@ public class BookmarkBean implements Serializable {
             currentBookmarkList = bookmarkList;
         }
 
-        return "pretty:userMenuEditBookmarkList";
+        return "pretty:userMenuEditBookmarkList1";
     }
 
     /**
@@ -593,7 +595,6 @@ public class BookmarkBean implements Serializable {
         if (bookmarkList == null) {
             return "";
         }
-        logger.trace("getShareLink: {}", bookmarkList.getId());
 
         if (bookmarkList.getShareKey() == null) {
             bookmarkList.generateShareKey();

@@ -30,7 +30,7 @@
             <h2>#{msg.bookmarkList_myBookmarkLists}</h2>
 
 			<!-- MESSAGE -->
-			<h:panelGroup rendered="#{!configurationBean.bookmarkListsEnabled}">
+			<h:panelGroup rendered="#{!configurationBean.bookmarksEnabled}">
 				<div class="alert alert-warning" role="alert">
 					<h:outputText value="#{msg.errFunctionalityDisabled}" />
 				</div>
@@ -38,7 +38,7 @@
 			
 			<h3>#{msg.bookmarkList_myBookmarkLists}</h3>
 
-			<h:panelGroup rendered="#{configurationBean.bookmarkListsEnabled}">
+			<h:panelGroup rendered="#{configurationBean.bookmarksEnabled}">
 				<!-- ADD BOOKMARK LIST -->
 				<div class="row">
 					<div class="col-xs-12 col-sm-4 col-sm-offset-8">

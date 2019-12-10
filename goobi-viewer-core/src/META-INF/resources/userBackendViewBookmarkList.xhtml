@@ -13,9 +13,9 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('mybookshelves', false, true)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('bookmarks', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookshelves,'mybookshelves',2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookmarkLists,'mybookmarklists',2)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name,3)}" />
 		</f:metadata>
 	</ui:define>
@@ -26,7 +26,7 @@
     
     <ui:define name="content">
         <div
-            id="viewBookshelf"
+            id="viewBookmarkList"
             class="view-bookshelf">
             <h:panelGroup rendered="#{userBean.loggedIn and bookmarkBean.currentBookmarkList.isMayView(userBean.user)}">
                 <div class="row">
@@ -37,12 +37,12 @@
                         <!-- ACTION -->
                         <div class="view-bookshelf__action text-right">
                             <h:form
-                                id="viewBookshelfActionForm"
+                                id="viewBookmarkListActionForm"
                                 prependId="false">
                                 <!-- EDIT -->
                                 <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
                                     title="#{msg.edit}"
-                                    action="#{bookmarkBean.editBookshelfAction(bookmarkBean.currentBookmarkList)}">
+                                    action="#{bookmarkBean.editBookmarkListAction(bookmarkBean.currentBookmarkList)}">
                                     <i
                                         class="fa fa-pencil"
                                         aria-hidden="true"></i>
@@ -56,8 +56,8 @@
                                 <!-- DELETE -->
                                 <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
                                     title="#{msg.bookmarkList_delete}"
-                                    action="#{bookmarkBean.deleteCurrentBookshelfAction}"
-                                    onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelf}&quot; ) ) { return false };">
+                                    action="#{bookmarkBean.deleteCurrentBookmarkListAction}"
+                                    onclick="if ( !confirm( &quot;#{msg.bookmarks_confirmDeleteBookmarkList}&quot; ) ) { return false };">
                                     <i
                                         class="fa fa-trash-o"
                                         aria-hidden="true"></i>
@@ -74,20 +74,20 @@
                 </div>
                 <p>#{bookmarkBean.currentBookmarkList.description}</p>
                 <!-- MESSAGE -->
-                <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+                <h:panelGroup rendered="#{!configurationBean.bookmarksEnabled}">
                     <div
                         class="alert alert-warning"
                         role="alert">
                         <h:outputText value="#{msg.errFunctionalityDisabled}" />
                     </div>
                 </h:panelGroup>
-                <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
-                    <h:panelGroup rendered="#{!bookmarkBean.newBookshelf}">
+                <h:panelGroup rendered="#{configurationBean.bookmarksEnabled}">
+                    <h:panelGroup rendered="#{!bookmarkBean.newBookmarkList}">
                         <!-- warning if no entries exists -->
                         <h:panelGroup rendered="#{bookmarkBean.currentBookmarkList.items.isEmpty()}">
                             <div
                                 class="alert alert-warning"
-                                role="alert">#{msg.bookshelves_noEntryWarning}</div>
+                                role="alert">#{msg.bookmarks_noEntryWarning}</div>
                         </h:panelGroup>
                         <!-- bookmark list entries -->
                         <h:panelGroup rendered="#{!bookmarkBean.currentBookmarkList.items.isEmpty()}">
@@ -98,7 +98,7 @@
                                     varStatus="status">
                                     <div class="col-xs-12 col-sm-6">
                                         <h:form
-                                            id="viewBookshelfItemForm"
+                                            id="viewBookmarkForm"
                                             prependId="false">
                                             <div class="view-bookshelf__item">
                                                 <!--  IMAGE -->
@@ -116,7 +116,7 @@
                                                     <h:commandLink
                                                         title="#{msg.bookmarkList_itemDelete}"
                                                         action="#{bookmarkBean.deleteBookmarkAction(item)}"
-                                                        onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelfItem}&quot; ) ) { return false };"
+                                                        onclick="if ( !confirm( &quot;#{msg.bookmarks_confirmDeleteBookmark}&quot; ) ) { return false };"
                                                         role="button">
                                                         <f:passThroughAttribute
                                                             name="data-bookmarklist-type"
