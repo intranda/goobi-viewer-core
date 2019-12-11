@@ -552,7 +552,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws RestApiException
      */
-    @GET
+    @POST
     @Path("/user/add")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookmarkList() throws DAOException, IOException, RestApiException {
@@ -615,7 +615,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws RestApiException if no current user was found
      */
-    @GET
+    @DELETE
     @Path("/user/delete/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteUserBookmarkList(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {

@@ -2,7 +2,16 @@
 
 	<div class="bookshelf-popup__body-loader"></div>
 
-	<div class="bookshelf-popup__header">
+	<div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons">
+		<div>
+			<label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}"/>{opts.msg.typeRecord}</label>
+		</div>
+		<div>
+			<label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}"/>{opts.msg.typePage}</label>
+		</div>
+	</div>
+	
+   <div class="bookshelf-popup__header">
 		{this.opts.msg.selectBookmarkList}
 	</div>
 
@@ -63,7 +72,23 @@ addCloseHandler() {
 
 add() {
     let name = this.refs.inputValue.value;
+    this.refs.inputValue.value = "";
     console.log("add bookshelf ", name);
+    this.opts.bookmarks.addBookmarkList(name)
+    .then( () => {
+        this.opts.bookmarks.listsNeedUpdate.onNext();
+        this.update();
+    })
+}
+
+setBookmarkTypeRecord() {
+    this.opts.bookmarks.setTypeRecord();
+    this.opts.bookmarks.listsNeedUpdate.onNext();
+}
+
+setBookmarkTypePage() {
+    this.opts.bookmarks.setTypePage();
+    this.opts.bookmarks.listsNeedUpdate.onNext();
 }
 
 </script>

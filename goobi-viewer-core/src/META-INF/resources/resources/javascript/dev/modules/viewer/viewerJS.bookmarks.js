@@ -18,8 +18,8 @@
  * 
  * Module to manage bookshelves if the user is logged in.
  * 
- * @version 3.2.0
- * @module viewerJS.bookshelvesUser
+ * @version 4.3.0
+ * @module viewerJS.bookmarks
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -29,6 +29,7 @@ var viewerJS = ( function( viewer ) {
     var _riotTags = [];
     var _defaults = {
         root: '',
+        typePage: false,
         msg: {
             resetBookmarkLists: "",
             resetBookmarkListsConfirm: "",
@@ -42,6 +43,7 @@ var viewerJS = ( function( viewer ) {
     };
     
     viewer.bookmarks = {
+            listsNeedUpdate : new Rx.Subject(),
             init: function( config ) {
                 if ( _debug ) {
                     console.log( '##############################' );
@@ -51,6 +53,8 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 this.config = $.extend( true, {}, _defaults, config );
+                
+                this.typePage = this.config.typePage;
                 
                 // render bookshelf navigation list
                 this.renderBookshelfNavigationList();
@@ -124,11 +128,10 @@ var viewerJS = ( function( viewer ) {
 
             addToBookmarkList: function(listId, pi, page, logid, bookmarkPage) {
                 
-                let url = this.action("add", listId) + pi; 
+                let url = this.action("add", listId) + pi + "/"; 
                 if(bookmarkPage) { 
-                    url += "/" + page ? page : "-" + "/" + logId ? logId : "-";
+                    url += (page ? page : "-") + "/" + (logid ? logid : "-") + "/";
                 }
-                url += "/";
                 
              
                 return fetch(url, {method:"POST"})
@@ -146,11 +149,10 @@ var viewerJS = ( function( viewer ) {
 
             removeFromBookmarkList: function(listId, pi, page, logid, bookmarkPage) {
                 
-                let url = this.action("delete", listId) + pi;
+                let url = this.action("delete", listId) + pi + "/";
                 if(bookmarkPage) {
-                    url += "/" + page ? page : "-" + "/" + logId ? logId : "-";
+                    url += (page ? page : "-") + "/" + (logid ? logid : "-") + "/";
                 }
-                url += "/";
                 
              
                 return fetch(url, {method:"DELETE"})
@@ -166,7 +168,65 @@ var viewerJS = ( function( viewer ) {
                     console.log(error);
                 })
                 
+            },
+            
+            addBookmarkList: function(name) {
+                
+                let url = this.action("add")
+                if(name) {
+                    url +=  name + "/"
+                }
+                
+             
+                return fetch(url, {method:"POST"})
+                .then( res => res.json())
+                .then(data => {
+                    if(data.success === false) {
+                        return Promise.reject("Failed to create bookmarklist: " + data.message);
+                    } else {
+                        
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+                
+            },
+            
+            removeBookmarkList: function(id) {
+                
+                let url = this.action("delete")
+                url += id + "/";
+                
+             
+                return fetch(url, {method:"DELETE"})
+                .then( res => res.json())
+                .then(data => {
+                    if(data.success === false) {
+                        return Promise.reject("Failed to delete bookmarklist: " + data.message);
+                    } else {
+                        
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+                
+            },
+            
+            isTypePage: function() {
+                return this.typePage;
+            },
+            isTypeRecord: function() {
+                return !this.typePage;
+            },
+            setTypePage: function() {
+                this.typePage = true;
+            },
+            setTypeRecord: function() {
+                this.typePage = false;
             }
+            
     }
     return viewer;
     

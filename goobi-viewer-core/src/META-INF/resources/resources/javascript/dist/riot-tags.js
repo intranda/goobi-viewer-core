@@ -180,14 +180,14 @@ this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
 this.page = this.opts.data.page;
 this.loader = this.opts.data.loader;
-this.bookmarkPage = this.opts.data.bookmarkPage ? this.opts.data.bookmarkPage : () => false;
 this.button = this.opts.button;
+
+this.opts.bookmarks.listsNeedUpdate.subscribe( () => this.updateLists());
 
 this.on( 'mount', function() {
     console.log("opts ", this.opts);
     this.updateLists()
     .then( () => this.hideLoader())
-
 });
 
 this.on( 'update', function() {
@@ -204,6 +204,7 @@ this.on( 'update', function() {
 })
 
 this.updateLists = function() {
+	console.log("update list");
     return this.opts.bookmarks.getBookmarkLists()
     .then(lists => {
         this.bookmarkLists = lists;
@@ -217,13 +218,13 @@ this.hideLoader = function() {
 
 this.add = function(event) {
     let list = event.item.bookmarkList
-    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.bookmarkPage())
+    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
     .then( () => this.updateLists());
 }.bind(this)
 
 this.remove = function(event) {
     let list = event.item.bookmarkList
-    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.bookmarkPage())
+    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
     .then( () => this.updateLists())
 }.bind(this)
 
@@ -250,8 +251,11 @@ this.contained = function(pi, page, logid) {
 }.bind(this)
 
 this.inList = function(list, pi, page, logid) {
+	console.log("check containment", list, pi, page, logid);
         for(item of list.items) {
-            if(item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId)) {
+        	if(this.opts.bookmarks.isTypeRecord() && item.pi == pi && item.order === null && item.logId === null) {
+        		return true;
+        	} else if(this.opts.bookmarks.isTypePage() && item.pi == pi && page == item.order ) {
                 return true;
             }
         }
@@ -259,7 +263,7 @@ this.inList = function(list, pi, page, logid) {
 }.bind(this)
 
 });
-riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
+riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
 
 const popupOffset = 6;
 
@@ -301,7 +305,23 @@ this.addCloseHandler = function() {
 
 this.add = function() {
     let name = this.refs.inputValue.value;
+    this.refs.inputValue.value = "";
     console.log("add bookshelf ", name);
+    this.opts.bookmarks.addBookmarkList(name)
+    .then( () => {
+        this.opts.bookmarks.listsNeedUpdate.onNext();
+        this.update();
+    })
+}.bind(this)
+
+this.setBookmarkTypeRecord = function() {
+    this.opts.bookmarks.setTypeRecord();
+    this.opts.bookmarks.listsNeedUpdate.onNext();
+}.bind(this)
+
+this.setBookmarkTypePage = function() {
+    this.opts.bookmarks.setTypePage();
+    this.opts.bookmarks.listsNeedUpdate.onNext();
 }.bind(this)
 
 });

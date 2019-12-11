@@ -24,15 +24,14 @@ this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
 this.page = this.opts.data.page;
 this.loader = this.opts.data.loader; 
-this.bookmarkPage = this.opts.data.bookmarkPage ? this.opts.data.bookmarkPage : () => false;
 this.button = this.opts.button;
+
+this.opts.bookmarks.listsNeedUpdate.subscribe( () => this.updateLists());
 
 this.on( 'mount', function() {    	
     console.log("opts ", this.opts);
     this.updateLists()
     .then( () => this.hideLoader())
-    
-    
 });
 
 this.on( 'update', function() {  
@@ -49,6 +48,7 @@ this.on( 'update', function() {
 })
 
 updateLists() {
+	console.log("update list");
     return this.opts.bookmarks.getBookmarkLists()
     .then(lists => {
         this.bookmarkLists = lists;
@@ -63,13 +63,13 @@ hideLoader() {
 
 add(event) {
     let list = event.item.bookmarkList
-    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.bookmarkPage())
+    this.opts.bookmarks.addToBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
     .then( () => this.updateLists());
 }
 
 remove(event) {
     let list = event.item.bookmarkList
-    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.bookmarkPage())
+    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
     .then( () => this.updateLists())
 }
 
@@ -100,8 +100,11 @@ contained(pi, page, logid) {
 }
         
 inList(list, pi, page, logid) {
+	console.log("check containment", list, pi, page, logid);
         for(item of list.items) {
-            if(item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId)) {
+        	if(this.opts.bookmarks.isTypeRecord() && item.pi == pi && item.order === null && item.logId === null) {
+        		return true;
+        	} else if(this.opts.bookmarks.isTypePage() && item.pi == pi && page == item.order ) {
                 return true;
             }
         }
