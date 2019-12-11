@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module to manage bookshelves if the user is logged in.
+ * Module to manage bookmarks if the user is logged in.
  * 
  * @version 4.3.0
  * @module viewerJS.bookmarks
@@ -53,13 +53,10 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 this.config = $.extend( true, {}, _defaults, config );
-                
                 this.typePage = this.config.typePage;
+                this.renderBookmarksNavigationList();
                 
-                // render bookshelf navigation list
-                this.renderBookshelfNavigationList();
-                
-                // toggle bookshelf dropdown
+                // toggle bookmarks dropdown
                 $( '[data-bookmark-list-type="dropdown"]' ).off().on( 'click', function( event ) {
                     event.stopPropagation();
                     // hide other dropdowns
@@ -68,7 +65,7 @@ var viewerJS = ( function( viewer ) {
                     $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
                 } );
                 
-                // render bookshelf popup
+                // render bookmarks popup
                 $( '[data-bookmark-list-type="add"]' ).off().on( 'click', function( event ) {
                     event.stopPropagation();
                     // hide other dropdowns
@@ -81,14 +78,14 @@ var viewerJS = ( function( viewer ) {
                     var currPage = currBtn.attr( 'data-page' );
                     var currType = currBtn.attr( 'data-type' );
                     
-                    // render bookshelf popup
-                    this.renderBookshelfPopup( currPi, currLogid, currPage, currBtn );
+                    // render bookmarks popup
+                    this.renderbookmarksPopup( currPi, currLogid, currPage, currBtn );
                 }.bind(this) );
             },
-            renderBookshelfNavigationList: function() {
+            renderbookmarksNavigationList: function() {
                 
             },
-            renderBookshelfPopup: function(pi, logid, page, button) {
+            renderbookmarksPopup: function(pi, logid, page, button) {
                 var $popup = $("<bookmarksPopup></bookmarksPopup>");
                 $('body').append($popup);
                 console.log("mount bookmarksPopup") 
