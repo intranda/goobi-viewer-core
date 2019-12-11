@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     
     // variables
     var _debug = false;
-    var _sessionBookshelf = '';
+    var _sessionBoomarkList = '';
     var _defaults = {
     	root: '',
     	restEndpoint: undefined,
@@ -90,9 +90,9 @@ var viewerJS = ( function( viewer ) {
             // check login status
             // logged in
             if ( _defaults.userLoggedIn ) {
-            	// User bookshelf
-                _sessionBookshelf = sessionStorage.getItem( 'bookshelfId' );
-                _getMiradorObjects( _defaults.root, _sessionBookshelf ).then( function( elements ) {                    
+            	// User bookmarks
+                _sessionBookmarkList = sessionStorage.getItem( 'bookmarkListId' );
+                _getMiradorObjects( _defaults.root, _sessionBookmarkList ).then( function( elements ) {                    
                     $( function() {
                         console.log("elements ", elements)
                         Mirador( elements );
@@ -110,7 +110,7 @@ var viewerJS = ( function( viewer ) {
             }
             // not logged in
             else {
-            	// Session bookshelf
+            	// Session mark list
                 _getMiradorSessionObjects( _defaults.root ).then( function( elements ) {                    
                     $( function() {
                     	 console.log("elements ", elements)
@@ -146,7 +146,7 @@ var viewerJS = ( function( viewer ) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/user/mirador/' + id + '/',
+			url : root + '/rest/bookmarks/user/mirador/' + id + '/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -168,7 +168,7 @@ var viewerJS = ( function( viewer ) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/mirador/',
+			url : root + '/rest/bookmarks/session/mirador/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
