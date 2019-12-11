@@ -172,7 +172,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 
 
-riot.tag2('bookmarklist', '<ul class="bookshelf-popup__body-list list"><li each="{bookmarkList in bookmarkLists}"><button class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button></li></ul>', '', '', function(opts) {
+riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in bookmarkLists}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-10 no-padding"><a href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
 
 
 this.bookmarkLists = [];
@@ -181,6 +181,7 @@ this.logid = this.opts.data.logid;
 this.page = this.opts.data.page;
 this.loader = this.opts.data.loader;
 this.button = this.opts.button;
+this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookshelf-popup__body-list";
 
 this.opts.bookmarks.listsNeedUpdate.subscribe( () => this.updateLists());
 
@@ -251,7 +252,6 @@ this.contained = function(pi, page, logid) {
 }.bind(this)
 
 this.inList = function(list, pi, page, logid) {
-	console.log("check containment", list, pi, page, logid);
         for(item of list.items) {
         	if(this.opts.bookmarks.isTypeRecord() && item.pi == pi && item.order === null && item.logId === null) {
         		return true;
@@ -260,6 +260,68 @@ this.inList = function(list, pi, page, logid) {
             }
         }
     return false;
+}.bind(this)
+
+});
+riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
+
+const popupOffset = 6;
+
+console.log("opts ", this.opts);
+this.opts.data.loader = ".bookshelf-popup__body-loader";
+
+this.on( 'mount', function() {
+
+	this.setPosition();
+	this.addCloseHandler();
+
+});
+
+this.setPosition = function() {
+    var $button = $(this.opts.button);
+    var anchor = {
+            x : $button.offset().left + $button.outerWidth()/2,
+            y : $button.offset().top + $button.outerHeight(),
+    }
+    var position = {
+            left: anchor.x - this.root.getBoundingClientRect().width/2,
+            top: anchor.y + popupOffset
+    }
+    $(this.root).offset(position);
+}.bind(this)
+
+this.addCloseHandler = function() {
+
+    $(this.root).on("click", function(event){
+        event.stopPropagation();
+    });
+
+    $('body').one("click", function(event) {
+        this.unmount(true);
+        $(this.root).off();
+        this.root.remove();
+    }.bind(this));
+}.bind(this)
+
+this.add = function() {
+    let name = this.refs.inputValue.value;
+    this.refs.inputValue.value = "";
+    console.log("add bookshelf ", name);
+    this.opts.bookmarks.addBookmarkList(name)
+    .then( () => {
+        this.opts.bookmarks.listsNeedUpdate.onNext();
+        this.update();
+    })
+}.bind(this)
+
+this.setBookmarkTypeRecord = function() {
+    this.opts.bookmarks.setTypeRecord();
+    this.opts.bookmarks.listsNeedUpdate.onNext();
+}.bind(this)
+
+this.setBookmarkTypePage = function() {
+    this.opts.bookmarks.setTypePage();
+    this.opts.bookmarks.listsNeedUpdate.onNext();
 }.bind(this)
 
 });

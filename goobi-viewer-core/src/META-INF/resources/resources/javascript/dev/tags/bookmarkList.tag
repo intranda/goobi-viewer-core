@@ -1,16 +1,25 @@
 <bookmarkList>
 
 
-<ul class="bookshelf-popup__body-list list">
+<ul class="{mainClass} list">
 
 	<li each="{bookmarkList in bookmarkLists}">
 	
-		<button class="btn btn--clean" type="button"  onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}">
+		<button if="{pi}" class="btn btn--clean" type="button"  onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}">
 		<i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i>
 		
 		{bookmarkList.name}
 		<span>{bookmarkList.numItems}</span>
 		</button>
+		
+		<div if="{!pi}" class="row no-margin">			
+			<div class="col-xs-10 no-padding">
+				<a href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}" >{bookmarkList.name}</a>
+			</div>
+			<div class="col-xs-2 no-padding">
+				<span class="{mainClass}-counter">{bookmarkList.numItems}</span>
+			</div>
+		</div>
 	
 	</li>
 
@@ -25,6 +34,7 @@ this.logid = this.opts.data.logid;
 this.page = this.opts.data.page;
 this.loader = this.opts.data.loader; 
 this.button = this.opts.button;
+this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookshelf-popup__body-list";
 
 this.opts.bookmarks.listsNeedUpdate.subscribe( () => this.updateLists());
 
@@ -100,7 +110,6 @@ contained(pi, page, logid) {
 }
         
 inList(list, pi, page, logid) {
-	console.log("check containment", list, pi, page, logid);
         for(item of list.items) {
         	if(this.opts.bookmarks.isTypeRecord() && item.pi == pi && item.order === null && item.logId === null) {
         		return true;
