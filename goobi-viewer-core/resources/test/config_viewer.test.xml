@@ -401,6 +401,9 @@
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
+				<field>MD_FOO_LANG_EN</field>
+				<field>MD_FOO_LANG_DE</field>
+				<field>MD_FOO_LANG_ES</field>
 			</searchFields>
 		</advanced>
 		<timeline>

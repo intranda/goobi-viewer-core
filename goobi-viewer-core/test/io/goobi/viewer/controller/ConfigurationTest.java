@@ -1476,7 +1476,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(7, DataManager.getInstance().getConfiguration().getAdvancedSearchFields().size());
+        Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getAdvancedSearchFields().size());
     }
 
     /**
