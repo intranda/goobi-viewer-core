@@ -505,11 +505,11 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayTimeMatrix() {
         return DataManager.getInstance().getConfiguration().isDisplayTimeMatrix();
     }
-    
+
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
     }
-    
+
     /**
      *
      * @return
@@ -601,10 +601,6 @@ public class ConfigurationBean implements Serializable {
 
     public int getTocIndentation() {
         return DataManager.getInstance().getConfiguration().getTocIndentation();
-    }
-
-    public int getSidebarTocIndentation() {
-        return DataManager.getInstance().getConfiguration().getSidebarTocIndentation();
     }
 
     public boolean isPageBrowseEnabled() {
@@ -760,11 +756,11 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
     }
-    
+
     public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage();
     }
-    
+
     public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage();
     }
@@ -776,7 +772,5 @@ public class ConfigurationBean implements Serializable {
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
-
-
 
 }

@@ -78,7 +78,7 @@
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
-		<contentServer external="false">/</contentServer>
+		<contentServer>/</contentServer>
 		<!-- <contentServer external="true">http://localhost:8080/ics/</contentServer> -->
 
 		<!-- contentServerWrapper: absolute path to the content servlet -->

@@ -74,11 +74,9 @@
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
-		<contentServer external="true">contentServer_value
-		</contentServer>
+		<contentServer>contentServer_value</contentServer>
 		<!-- contentServerWrapper: absolute path to the content servlet -->
-		<contentServerWrapper>contentServerWrapper_value
-		</contentServerWrapper>
+		<contentServerWrapper>contentServerWrapper_value</contentServerWrapper>
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
 		<dfg-viewer>dfg-viewer_value</dfg-viewer>

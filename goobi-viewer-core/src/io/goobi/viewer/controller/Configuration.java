@@ -2428,24 +2428,6 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
-     */
-    @Deprecated
-    public Integer getImageViewZoomScale() {
-        return getLocalInt("viewer.zoomImageView[@zoomScale]", 3);
-    }
-
-    /**
-     * 
-     * @return
-     */
-    @Deprecated
-    public Integer getFullscreenZoomScale() {
-        return getLocalInt("viewer.zoomFullscreenView[@zoomScale]", 3);
-    }
-
-    /**
-     * 
-     * @return
      * @should return correct value
      */
     public int getBreadcrumbsClipping() {
@@ -2737,14 +2719,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getTagCloudSampleSize(String fieldName) {
         return getLocalInt("tagclouds.sampleSizes." + fieldName, Integer.MAX_VALUE);
-    }
-
-    /**
-     * @return
-     */
-    @Deprecated
-    public boolean isUseExternalCS() {
-        return getLocalBoolean("urls.contentServer[@external]", false);
     }
 
     /**
@@ -3144,14 +3118,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getTocIndentation() {
         return getLocalInt("toc.tocIndentation", 20);
-    }
-
-    /**
-     * @return
-     */
-    @Deprecated
-    public int getSidebarTocIndentation() {
-        return getLocalInt("sidebar.sidebarToc.tocIndentation", 10);
     }
 
     public boolean isPageBrowseEnabled() {
