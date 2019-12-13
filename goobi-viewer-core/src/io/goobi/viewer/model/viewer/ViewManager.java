@@ -1012,7 +1012,7 @@ public class ViewManager implements Serializable {
         if (topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS.equals(topDocument.getSourceDocFormat()) && isHasPages()) {
             try {
                 StringBuilder sbPath = new StringBuilder();
-                sbPath.append(DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
+                sbPath.append(DataManager.getInstance().getConfiguration().getDfgViewerUrl());
                 sbPath.append(URLEncoder.encode(getMetsResolverUrl(), "utf-8"));
                 sbPath.append("&set[image]=").append(currentImageOrder);
                 return sbPath.toString();

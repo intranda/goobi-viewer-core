@@ -246,8 +246,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getViewerDfgViewerUrl() {
-        return getLocalString("urls.dfg-viewer", "http://dfg-viewer.de/v2?set[mets]=");
+    public String getDfgViewerUrl() {
+        return getLocalString("urls.dfg-viewer", "https://dfg-viewer.de/v2?set[mets]=");
     }
 
     /**
@@ -1356,7 +1356,6 @@ public final class Configuration extends AbstractConfiguration {
     @SuppressWarnings("static-method")
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
-        //        return System.getProperty("java.io.tmpdir") + "viewer";
     }
 
     /**
@@ -2048,6 +2047,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public boolean isGeneratePdfInTaskManager() {
+        return getLocalBoolean("pdf.externalPdfGeneration", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isPdfApiDisabled() {
         return getLocalBoolean("pdf.pdfApiDisabled", false);
     }
@@ -2096,6 +2104,48 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isDocHierarchyPdfEnabled() {
         return getLocalBoolean("pdf.docHierarchyPdfEnabled", false);
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isTitleEpubEnabled() {
+        return getLocalBoolean("epub.titleEpubEnabled", false);
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isTocEpubEnabled() {
+        return getLocalBoolean("epub.tocEpubEnabled", false);
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isMetadataEpubEnabled() {
+        return getLocalBoolean("epub.metadataEpubEnabled", false);
+    }
+
+    /**
+     * @return
+     * @should return correct value for pdf
+     * @should return correct value for epub
+     * @should return empty string if type unknown
+     */
+    public String getDownloadFolder(String type) {
+        switch (type.toLowerCase()) {
+            case "pdf":
+                return getLocalString("pdf.downloadFolder", "/opt/digiverso/viewer/pdf_download");
+            case "epub":
+                return getLocalString("epub.downloadFolder", "/opt/digiverso/viewer/epub_download");
+            default:
+                return "";
+
+        }
     }
 
     /**
@@ -2378,7 +2428,6 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
-     * @should return correct value
      */
     @Deprecated
     public Integer getImageViewZoomScale() {
@@ -2388,7 +2437,6 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
-     * @should return correct value
      */
     @Deprecated
     public Integer getFullscreenZoomScale() {
@@ -2693,8 +2741,8 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return
-     * @should return correct value
      */
+    @Deprecated
     public boolean isUseExternalCS() {
         return getLocalBoolean("urls.contentServer[@external]", false);
     }
@@ -3100,8 +3148,8 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return
-     * @should return correct value
      */
+    @Deprecated
     public int getSidebarTocIndentation() {
         return getLocalInt("sidebar.sidebarToc.tocIndentation", 10);
     }
@@ -3122,30 +3170,6 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
         return intList;
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public String getDownloadFolder(String type) {
-        switch (type.toLowerCase()) {
-            case "pdf":
-                return getLocalString("pdf.downloadFolder", "/opt/digiverso/viewer/pdf_download");
-            case "epub":
-                return getLocalString("epub.downloadFolder", "/opt/digiverso/viewer/epub_download");
-            default:
-                return "";
-
-        }
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public String getTaskManagerUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/");
     }
 
     /**
@@ -3178,34 +3202,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isUseReCaptcha() {
         return getLocalBoolean("reCaptcha[@show]", true);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public boolean isTocEpubEnabled() {
-        return getLocalBoolean("epub.tocEpubEnabled", false);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public boolean isMetadataEpubEnabled() {
-        return getLocalBoolean("epub.metadataEpubEnabled", false);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public boolean isTitleEpubEnabled() {
-        return getLocalBoolean("epub.titleEpubEnabled", false);
-    }
-
-    public boolean isGeneratePdfInTaskManager() {
-        return getLocalBoolean("pdf.externalPdfGeneration", false);
     }
 
     /**
@@ -3250,6 +3246,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return
+     * @should return correct value
      */
     public boolean isDisplayEmptyTocInSidebar() {
         return getLocalBoolean("sidebar.sidebarToc.visibleIfEmpty", true);
@@ -3257,6 +3254,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return
+     * @should return correct value
      */
     public boolean isDoublePageModeEnabled() {
         return getLocalBoolean("viewer.doublePageMode.enabled", false);
@@ -3284,6 +3282,7 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * @param field the value of the field
      * @return The attribute "label" of any children of webapi.iiif.metadataFields
+     * @should return correct values
      */
     public String getIIIFMetadataLabel(String field) {
 
@@ -3353,6 +3352,10 @@ public final class Configuration extends AbstractConfiguration {
 
     }
 
+    /**
+     * @return
+     * @should return correct value
+     */
     public String getWebApiToken() {
         String token = getLocalString("webapi.authorization.token", "");
         return token;
@@ -3360,6 +3363,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return true if opening a collection containing only a single work should redirect to that work
+     * @should return correct value
      */
     public boolean isAllowRedirectCollectionToWork() {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
@@ -3375,20 +3379,33 @@ public final class Configuration extends AbstractConfiguration {
         return token;
     }
 
+    /**
+     * @return
+     * @should return correct value
+     */
     public float getLimitImageHeightUpperRatioThreshold() {
         return getLocalFloat("viewer.limitImageHeight[@upperRatioThreshold]", 0.3f);
     }
 
+    /**
+     * @return
+     * @should return correct value
+     */
     public float getLimitImageHeightLowerRatioThreshold() {
         return getLocalFloat("viewer.limitImageHeight[@lowerRatioThreshold]", 3f);
     }
 
+    /**
+     * @return
+     * @should return correct value
+     */
     public boolean isLimitImageHeight() {
         return getLocalBoolean("viewer.limitImageHeight", true);
     }
 
     /**
      * @return
+     * @should return correct value
      */
     public boolean isAddCORSHeader() {
         return getLocalBoolean("webapi.cors[@use]", false);
@@ -3396,6 +3413,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return
+     * @should return correct value
      */
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");

@@ -22,6 +22,8 @@
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>media</mediaFolder>
+    <!-- pdfFolder: contains pre-generated PDFs -->
+    <pdfFolder>pdf</pdfFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the Goobi viewer (see <content> also) -->
 	<origContentFolder>source</origContentFolder>
@@ -88,10 +90,10 @@
 
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
-		<dfg-viewer>http://dfg-viewer.de/v2?set[mets]=</dfg-viewer>
+		<dfg-viewer>https://dfg-viewer.de/v2?set[mets]=</dfg-viewer>
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
-		<urnResolver>http://nbn-resolving.de/</urnResolver>
+		<urnResolver>https://nbn-resolving.de/</urnResolver>
 
 		<!-- The base urls to access download pages for pdf and epub downloads -->
 		<download>http://localhost:8080/viewer/download/</download>
