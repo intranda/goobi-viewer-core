@@ -1544,12 +1544,20 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        if (isBornDigital()) {
+            return false;
+        }
+        
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
 
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        if (isBornDigital()) {
+            return false;
+        }
+        
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
@@ -1648,6 +1656,10 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
+        if (isBornDigital()) {
+            return false;
+        }
+        
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return false;
