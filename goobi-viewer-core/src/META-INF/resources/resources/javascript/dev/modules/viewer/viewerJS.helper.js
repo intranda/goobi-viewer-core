@@ -372,6 +372,27 @@ var viewerJS = ( function( viewer ) {
         }
     }
     
+    if(!Array.prototype.flatMap) {
+        Array.prototype.flatMap = function(callback) {
+            var res = [];
+            for ( var int = 0; int < this.length; int++ ) {
+                var listEle = this[int];
+                let value = callback(listEle, int, this);
+                res.push(value);
+            }
+            return res;
+        }
+    }
+    
+    /**
+     * Filter function to keep only unique values in arrays.
+     * Use as array.filter(viewerJS.unique);
+     */
+    viewer.unique = (value, index, self) => {
+        return self.indexOf(value) === index;
+    }
+
+    
     return viewer;
     
 } )( viewerJS || {}, jQuery );

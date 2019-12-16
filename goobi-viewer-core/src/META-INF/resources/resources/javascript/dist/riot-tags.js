@@ -172,49 +172,40 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 
 
-riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in bookmarkLists}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-10 no-padding"><a href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
+riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-10 no-padding"><a href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
 
 
-this.bookmarkLists = [];
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
 this.page = this.opts.data.page;
-this.loader = this.opts.data.loader;
+this.loader = this.opts.loader;
 this.button = this.opts.button;
 this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookshelf-popup__body-list";
 
-this.opts.bookmarks.listsNeedUpdate.subscribe( () => this.updateLists());
-
 this.on( 'mount', function() {
-    console.log("opts ", this.opts);
-    this.updateLists()
-    .then( () => this.hideLoader())
+    this.updateLists();
+    this.opts.bookmarks.listsUpdated.subscribe( () => this.onListUpdate());
 });
 
-this.on( 'update', function() {
-    let $button = $(this.button);
-    if($button.length > 0) {
-	    let contained = this.contained(this.pi, this.page, this.logid);
-	    if(contained) {
-	        $button.addClass("active");
-	    } else {
-	        $button.removeClass("active");
-
-	    }
-    }
-})
+this.getBookmarkLists = function() {
+    return this.opts.bookmarks.getBookmarkLists();
+}.bind(this)
 
 this.updateLists = function() {
-	console.log("update list");
-    return this.opts.bookmarks.getBookmarkLists()
-    .then(lists => {
-        this.bookmarkLists = lists;
-        this.update();
-    })
+    this.opts.bookmarks.listsNeedUpdate.onNext();
+}.bind(this)
+
+this.onListUpdate = function() {
+	this.update();
+    this.hideLoader();
 }.bind(this)
 
 this.hideLoader = function() {
     $(this.loader).hide();
+}.bind(this)
+
+this.showLoader = function() {
+    $(this.loader).show();
 }.bind(this)
 
 this.add = function(event) {
@@ -229,46 +220,16 @@ this.remove = function(event) {
     .then( () => this.updateLists())
 }.bind(this)
 
-this.getList = function(id) {
-    this.bookmarkLists.find(list => list.id == id);
-}.bind(this)
-
-this.getItem = function(list, pi, page, logid) {
-    for(item of list.items) {
-        if(item.pi == pi && (page == undefined  || page == item.order) && (logid == undefined || logid == item.logId)) {
-            return item;
-        }
-    }
-    return undefined;
-}.bind(this)
-
-this.contained = function(pi, page, logid) {
-    for(list of this.bookmarkLists) {
-        if(this.inList(list, pi, page, logid)) {
-            return true;
-        }
-    }
-    return false;
-}.bind(this)
-
 this.inList = function(list, pi, page, logid) {
-        for(item of list.items) {
-        	if(this.opts.bookmarks.isTypeRecord() && item.pi == pi && item.order === null && item.logId === null) {
-        		return true;
-        	} else if(this.opts.bookmarks.isTypePage() && item.pi == pi && page == item.order ) {
-                return true;
-            }
-        }
-    return false;
+    return this.opts.bookmarks.inList(list, pi, page, logid);
 }.bind(this)
 
 });
-riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
+riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
 
 const popupOffset = 6;
 
-console.log("opts ", this.opts);
-this.opts.data.loader = ".bookshelf-popup__body-loader";
+this.opts.loader = ".bookshelf-popup__body-loader";
 
 this.on( 'mount', function() {
 
@@ -306,7 +267,6 @@ this.addCloseHandler = function() {
 this.add = function() {
     let name = this.refs.inputValue.value;
     this.refs.inputValue.value = "";
-    console.log("add bookshelf ", name);
     this.opts.bookmarks.addBookmarkList(name)
     .then( () => {
         this.opts.bookmarks.listsNeedUpdate.onNext();
@@ -324,66 +284,12 @@ this.setBookmarkTypePage = function() {
     this.opts.bookmarks.listsNeedUpdate.onNext();
 }.bind(this)
 
-});
-riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
-
-const popupOffset = 6;
-
-console.log("opts ", this.opts);
-this.opts.data.loader = ".bookshelf-popup__body-loader";
-
-this.on( 'mount', function() {
-
-	this.setPosition();
-	this.addCloseHandler();
-
-});
-
-this.setPosition = function() {
-    var $button = $(this.opts.button);
-    var anchor = {
-            x : $button.offset().left + $button.outerWidth()/2,
-            y : $button.offset().top + $button.outerHeight(),
-    }
-    var position = {
-            left: anchor.x - this.root.getBoundingClientRect().width/2,
-            top: anchor.y + popupOffset
-    }
-    $(this.root).offset(position);
+this.hideLoader = function() {
+    $(this.opts.data.loader).hide();
 }.bind(this)
 
-this.addCloseHandler = function() {
-
-    $(this.root).on("click", function(event){
-        event.stopPropagation();
-    });
-
-    $('body').one("click", function(event) {
-        this.unmount(true);
-        $(this.root).off();
-        this.root.remove();
-    }.bind(this));
-}.bind(this)
-
-this.add = function() {
-    let name = this.refs.inputValue.value;
-    this.refs.inputValue.value = "";
-    console.log("add bookshelf ", name);
-    this.opts.bookmarks.addBookmarkList(name)
-    .then( () => {
-        this.opts.bookmarks.listsNeedUpdate.onNext();
-        this.update();
-    })
-}.bind(this)
-
-this.setBookmarkTypeRecord = function() {
-    this.opts.bookmarks.setTypeRecord();
-    this.opts.bookmarks.listsNeedUpdate.onNext();
-}.bind(this)
-
-this.setBookmarkTypePage = function() {
-    this.opts.bookmarks.setTypePage();
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+this.showLoader = function() {
+    $(this.opts.data.loader).show();
 }.bind(this)
 
 });
@@ -1474,6 +1380,46 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
     }.bind(this)
 
 });
+riot.tag2('popup', '<yield></yield>', '', '', function(opts) {
+
+this.on( 'mount', function() {
+	console.log("mount popup");
+	this.setPosition();
+	this.addCloseHandler();
+
+});
+
+this.setPosition = function() {
+    var $button = $(this.opts.button);
+    var anchor = {
+            x : $button.offset().left + $button.outerWidth()/2,
+            y : $button.offset().top + $button.outerHeight(),
+    }
+    var position = {
+            left: anchor.x - this.root.getBoundingClientRect().width/2,
+            top: anchor.y + popupOffset
+    }
+    $(this.root).offset(position);
+}.bind(this)
+
+this.addCloseHandler = function() {
+    console.log("add popup close handler");
+    $(this.root).on("click", function(event){
+        console.log("click root");
+        event.stopPropagation();
+    });
+
+    $('body').one("click", function(event) {
+        console.log("click body");
+        this.unmount(true);
+        $(this.root).off();
+        this.root.remove();
+    }.bind(this));
+}.bind(this)
+
+});
+
+
 riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar {styleClasses[index]}" riot-style="width: {getRelativeWidth(value)};"></div></div></div>', '', '', function(opts) {
 	this.values = JSON.parse(this.opts.values);
 	this.styleClasses = JSON.parse(this.opts.styleclasses);

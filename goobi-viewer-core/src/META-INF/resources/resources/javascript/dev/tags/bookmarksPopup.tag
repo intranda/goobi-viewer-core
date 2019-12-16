@@ -16,7 +16,7 @@
 	</div>
 
 	<div class="bookshelf-popup__body">
-		<bookmarkList data="{this.opts.data}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList>
+		<bookmarkList data="{this.opts.data}" loader="{this.opts.loader}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList>
 	</div>
 	
 	<div class="bookshelf-popup__footer">
@@ -34,8 +34,7 @@
 
 const popupOffset = 6;
 
-console.log("opts ", this.opts);
-this.opts.data.loader = ".bookshelf-popup__body-loader";
+this.opts.loader = ".bookshelf-popup__body-loader";
 
 this.on( 'mount', function() {    	
 	
@@ -73,7 +72,6 @@ addCloseHandler() {
 add() {
     let name = this.refs.inputValue.value;
     this.refs.inputValue.value = "";
-    console.log("add bookshelf ", name);
     this.opts.bookmarks.addBookmarkList(name)
     .then( () => {
         this.opts.bookmarks.listsNeedUpdate.onNext();
@@ -89,6 +87,14 @@ setBookmarkTypeRecord() {
 setBookmarkTypePage() {
     this.opts.bookmarks.setTypePage();
     this.opts.bookmarks.listsNeedUpdate.onNext();
+}
+
+hideLoader() {
+    $(this.opts.data.loader).hide();
+}
+
+showLoader() {
+    $(this.opts.data.loader).show();
 }
 
 </script>
