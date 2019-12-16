@@ -42,8 +42,8 @@
                 </ui:insert>
 
                 <!-- ePUBLICATIONS -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
-                    <viewerComponent:ePub />
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital}">
+                    <viewerComponent:bornDigital />
 
                     <div class="clearfix"></div>
                 </h:panelGroup>

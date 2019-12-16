@@ -963,6 +963,44 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return false;
     }
 
+    /**
+     * 
+     * @return true if PDF download is allowed for this page; false otherwise
+     */
+    public boolean isAccessPermissionPdf() {
+        if (!DataManager.getInstance().getConfiguration().isPagePdfEnabled()) {
+            return false;
+        }
+        // Prevent access if mime type incompatible
+        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+            return false;
+        }
+
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        try {
+            boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
+            // logger.trace("accessPermissionPdf for {}: {}", pi, accessPermissionPdf);
+            return accessPermissionPdf;
+        } catch (IndexUnreachableException e) {
+            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+            return false;
+        } catch (DAOException e) {
+            logger.debug("DAOException thrown here: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @return true if access is allowed for born digital files; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
+        return isAccessPermissionObject();
+
+    }
+
     public int getFooterHeight() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType());
     }
@@ -1184,33 +1222,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isDisplayPagePdfLink() {
         logger.trace("isDisplayPagePdfLink");
         return DataManager.getInstance().getConfiguration().isPagePdfEnabled() && isAccessPermissionPdf();
-    }
-
-    /**
-     * 
-     * @return true if PDF download is allowed for this page; false otherwise
-     */
-    public boolean isAccessPermissionPdf() {
-        if (!DataManager.getInstance().getConfiguration().isPagePdfEnabled()) {
-            return false;
-        }
-        // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
-            return false;
-        }
-
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        try {
-            boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
-            // logger.trace("accessPermissionPdf for {}: {}", pi, accessPermissionPdf);
-            return accessPermissionPdf;
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            return false;
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-            return false;
-        }
     }
 
     /**
