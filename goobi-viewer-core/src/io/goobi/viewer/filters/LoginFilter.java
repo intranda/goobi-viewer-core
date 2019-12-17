@@ -140,6 +140,10 @@ public class LoginFilter implements Filter {
                 case "/editbookshelf/":
                     return true;
                 default:
+                    //make an exception for session bookmarks search list
+                    if(uri.contains("bookmarks/session/")) {
+                        return false;
+                    }
                     // Regular URLs
                     if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend")
                             || uri.contains("/bookmark"))) {

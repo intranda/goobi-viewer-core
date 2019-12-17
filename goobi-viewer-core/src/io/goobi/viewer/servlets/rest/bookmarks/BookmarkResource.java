@@ -94,8 +94,6 @@ public class BookmarkResource {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
-            bookmarkList.setRequest(servletRequest);
-            String searchUrl = bookmarkList.getSearchUrl();
             return bookmarkList;
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);

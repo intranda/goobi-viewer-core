@@ -12,11 +12,24 @@
 		</button>
 
 		<div if="{!pi}" class="row no-margin">
-			<div class="col-xs-10 no-padding">
+			<div class="col-xs-7 no-padding">
 				<a
 					href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a>
 			</div>
-			<div class="col-xs-2 no-padding">
+			<div class="col-xs-4 no-padding icon-list">
+				<a href="{sendListUrl(bookmarkList)}" title="{opts.msg.sendBookmarkList}"> 
+					<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+				</a>
+				<a href="{searchListUrl(bookmarkList)}"
+					data-toggle="tooltip" data-placement="top" data-original-title=""
+					title="{opts.msg.searchInBookmarkList}"> 
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</a>
+				<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{opts.msg.openInMirador}"> 
+					<i class="fa fa-th" aria-hidden="true"></i>
+				</a>
+			</div>
+			<div class="col-xs-1 no-padding">
 				<span class="{mainClass}-counter">{bookmarkList.numItems}</span>
 			</div>
 		</div>
@@ -171,8 +184,8 @@ maySearchList(list) {
 }
 
 searchListUrl(list) {
-    let url = this.opts.bookmarks.config.root + list.searchUrl;
-    console.log("list search url ", url);
+    let url = this.opts.bookmarks.config.root + "/search/bookmarks/" + list.name + "/";
+    console.log("list search url ", url);  
     return url;
 }
 

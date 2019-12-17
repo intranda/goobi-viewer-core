@@ -106,9 +106,6 @@ public class BookmarkList implements Serializable {
     @JsonIgnore
     private List<UserGroup> groupShares = new ArrayList<>();
 
-    @JsonIgnore
-    private HttpServletRequest servletRequest = null;
-
     /*
      * (non-Javadoc)
      *
@@ -526,31 +523,5 @@ public class BookmarkList implements Serializable {
 
         return sb.toString();
     }
-    
-    @JsonProperty("searchUrl")
-    public String getSearchUrl() {
-        String filterQuery = getFilterQuery();
-        if(StringUtils.isNotBlank(filterQuery) && servletRequest != null && PrettyContext.getCurrentInstance(servletRequest) != null) {       
-            try {
-                filterQuery = URLEncoder.encode(filterQuery, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage());
-            }
-            filterQuery = filterQuery.replace("%", "%25");
-//            filterQuery = BeanUtils.escapeCriticalUrlChracters(filterQuery, false);
-//            filterQuery = ClientUtils.escapeQueryChars(filterQuery);
-            String searchUrl = PrettyContext.getCurrentInstance(servletRequest).getConfig().getMappingById("newSearch5").getPatternParser().getMappedURL("-","-",1,"-", filterQuery).toString();    
-            return searchUrl;
-        } else {
-            return null;
-        }
-        
-    }
 
-    /**
-     * @param servletRequest
-     */
-    public void setRequest(HttpServletRequest servletRequest) {
-        this.servletRequest = servletRequest;
-    }
 }

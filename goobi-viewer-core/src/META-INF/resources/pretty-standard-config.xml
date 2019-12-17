@@ -155,6 +155,8 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
+
+	
 	<url-mapping id="searchcalendar">
 		<pattern value="/searchcalendar/" />
 		<view-id value="/searchCalendar.xhtml" />
@@ -277,6 +279,14 @@
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage}</action>
+	</url-mapping>
+	
+	<url-mapping id="searchbookmarks">
+		<pattern value="/search/bookmarks/#{name:searchBean.bookmarkListName}/" />
+		<view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+		<action onPostback="false">#{searchBean.searchAdvanced()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	

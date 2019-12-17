@@ -62,6 +62,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -2157,6 +2158,25 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setShowReducedSearchOptions(boolean showReducedSearchOptions) {
         this.showReducedSearchOptions = showReducedSearchOptions;
+    }
+    
+    public void setFirstQueryItemValue(String value) {
+        this.advancedQueryGroups.get(0).getQueryItems().get(0).setValue(value);
+    }
+    
+    public void getFirstQueryItemValue() {
+        this.advancedQueryGroups.get(0).getQueryItems().get(0).getValue();
+    }
+    
+    public void setBookmarkListName(String name) {
+        this.advancedQueryGroups.get(0).getQueryItems().get(0).setValue(name);
+        this.advancedQueryGroups.get(0).getQueryItems().get(0).setField(SolrConstants.BOOKSHELF);
+        this.advancedQueryGroups.get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);;
+
+    }
+    
+    public String getBookmarkListName() {
+        return this.advancedQueryGroups.get(0).getQueryItems().get(0).getValue();
     }
 
 }
