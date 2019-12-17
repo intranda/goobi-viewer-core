@@ -25,6 +25,8 @@
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the Goobi viewer (see <content> also) -->
 	<origContentFolder>src</origContentFolder>
+    <!-- pdfFolder: contains pre-generated PDFs -->
+    <pdfFolder>PDF</pdfFolder>
     <!-- cmsTextFolder: contains extracted CMS page texts for indexing-->
     <cmsTextFolder>cms</cmsTextFolder>
 	<!-- altoFolder: contains ALTO files -->
@@ -72,11 +74,9 @@
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
-		<contentServer external="true">contentServer_value
-		</contentServer>
+		<contentServer>contentServer_value</contentServer>
 		<!-- contentServerWrapper: absolute path to the content servlet -->
-		<contentServerWrapper>contentServerWrapper_value
-		</contentServerWrapper>
+		<contentServerWrapper>contentServerWrapper_value</contentServerWrapper>
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
 		<dfg-viewer>dfg-viewer_value</dfg-viewer>
@@ -87,7 +87,6 @@
 		<rest>http://localhost:8080/viewer/rest/</rest>
 
 		<download>http://localhost:8080/viewer/download/</download>
-
 	</urls>
 
 	<user>
@@ -140,13 +139,13 @@
 		<fullAccessForLocalhost>true</fullAccessForLocalhost>
 	</accessConditions>
 
-	<reCaptcha show="true">
+	<reCaptcha show="false">
 		<provider name="Google" siteKey="6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3" />
 	</reCaptcha>
 
 	<pdf>
-		<!-- externalPdfGeneration: Create pdfs in an external intranda TaskManager. -->
-		<externalPdfGeneration>false</externalPdfGeneration>
+		<!-- externalPdfGeneration: Create pdfs in an external intranda TaskManager. Default is false. -->
+		<externalPdfGeneration>true</externalPdfGeneration>
 		<!-- pdfApiDisabled: if true, the content servlet will reject PDF queries -->
 		<pdfApiDisabled>true</pdfApiDisabled>
 		<!-- titlePdfEnabled: if true, PDF a download link for the entire record 
@@ -162,7 +161,7 @@
 			pages in the image view (default is false) -->
 		<pagePdfEnabled>true</pagePdfEnabled>
 		<!-- Folder for generated download files -->
-		<downloadFolder>/opt/digiverso/viewer/download_pdf</downloadFolder>
+		<downloadFolder>/opt/digiverso/viewer/download_test_pdf</downloadFolder>
 
 		<docHierarchyPdfEnabled>true</docHierarchyPdfEnabled>
 	</pdf>
@@ -170,15 +169,15 @@
 	<epub>
 		<!-- titlePdfEnabled: if true, PDF a download link for the entire record 
 			is displayed in the title bar (where enabled in the XHTML) (default is true) -->
-		<titleEpubEnabled>true</titleEpubEnabled>
+		<titleEpubEnabled>false</titleEpubEnabled>
 		<!-- tocPdfEnabled: if true, PDF download links for each structural element 
 			is displayed in the TOC (default is true) -->
-		<tocEpubEnabled>true</tocEpubEnabled>
+		<tocEpubEnabled>false</tocEpubEnabled>
 		<!-- metadataPdfEnabled: if true, a PDF download link for the entire record 
 			is displayed on the metadata page (default is true) -->
-		<metadataEpubEnabled>true</metadataEpubEnabled>
+		<metadataEpubEnabled>false</metadataEpubEnabled>
 		<!-- Folder for generated download files -->
-		<downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
+		<downloadFolder>/opt/digiverso/viewer/download_test_epub</downloadFolder>
 	</epub>
 
 	<viewer>
@@ -236,6 +235,12 @@
 				<size>512</size>
 			</tileSize>
 		</zoomImageView>
+		
+		<!-- limitImageHeight: If true, the image width is divided by the
+            image hight and if the result is below the lowerRatioThreshold or above the upperRatioThreshold,
+            the default image view will set the OpenSeadragon canvas to a
+            hight of 1200px. Default is true with a lowerRatioThreshold of 0,3 and an upperRatioThreshold of 3.0 -->
+        <limitImageHeight lowerRatioThreshold="0.2" upperRatioThreshold="2.0">false</limitImageHeight> 
 
 		<externalContent>
 			<restrictedUrls>
@@ -319,6 +324,10 @@
 		<theme subTheme="true" mainTheme="mainTheme_value"
 			discriminatorField="discriminatorField_value" autoSwitch="true"
 			addFilterQuery="true" filterQueryVisible="true">
+            <!-- rootPath: If the theme is localed externally, the CMS template loading
+                 mechanism needs the root path of the theme. The path must be defined down
+                 to the /themes folder, just above the folder named like the theme. -->
+            <rootPath>/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-mest/WebContent/resources/themes/</rootPath>
 		</theme>
 		
         <!-- name: Goobi viewer instance name -->
@@ -392,6 +401,9 @@
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
+				<field>MD_FOO_LANG_EN</field>
+				<field>MD_FOO_LANG_DE</field>
+				<field>MD_FOO_LANG_ES</field>
 			</searchFields>
 		</advanced>
 		<timeline>
@@ -783,6 +795,9 @@
 
 		<!-- display as interactive tree view -->
 		<useTreeView showDocStructs="Monograph;Manuscript;MusicSupplies">true</useTreeView>
+		
+        <!-- tocIndentation: Number of pixels used as padding for child element indentation in the tree view. Default is 20. -->
+        <tocIndentation>15</tocIndentation>
 	</toc>
 
 	<tagclouds>
@@ -851,8 +866,9 @@
 			<visible>false</visible>
 		</thumbs>
 
+        <!-- searchInItem: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
 		<searchInItem>
-			<visible>true</visible>
+			<visible>false</visible>
 		</searchInItem>
 
 		<metadata>
@@ -943,6 +959,9 @@
 		<!-- displayTimeline: if false, time matrix link is hidden (default is 
 			false) -->
 		<displayTimeMatrix>true</displayTimeMatrix>
+		
+		<!-- displayCrowdsourcingModuleLinks: Switch to enable crowdsourcing transcription links (default is false) -->
+        <displayCrowdsourcingModuleLinks>true</displayCrowdsourcingModuleLinks>
 	</webGuiDisplay>
 
 
@@ -1012,8 +1031,8 @@
 
 	<!-- Transkribus settings (enabled: default false) -->
 	<transkribus enabled="true">
-		<userName></userName>
-		<password></password>
+		<userName>transkribus_user</userName>
+		<password>transkribus_pwd</password>
 		<defaultCollection>intranda_viewer</defaultCollection>
 		<!-- URL of the Transkribus REST API. This can be changed to the test API, 
 			if necessary. Default value is the production API URL. -->
@@ -1095,6 +1114,10 @@
         <authorization>
             <token>test</token>
         </authorization>
+        
+           <!-- If @use is 'true' add a Access-Control-Allow-Origin Header with this value to all REST-api calls
+                referencing the @CORSBinding annotation -->        
+           <cors use="true">*</cors>
 	</webapi>
 
     <embedding>

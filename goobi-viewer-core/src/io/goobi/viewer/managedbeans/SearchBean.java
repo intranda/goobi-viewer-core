@@ -512,31 +512,31 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
 
                 String itemQuery = null;
-                if (SolrConstants.BOOKSHELF.equals(queryItem.getField())) {
+                if (SolrConstants.BOOKMARKS.equals(queryItem.getField())) {
 
-                    // Bookshelf search
+                    // Bookmark list search
                     if (StringUtils.isEmpty(queryItem.getValue())) {
                         continue;
                     }
                     if (userBean.isLoggedIn()) {
-                        // User bookshelf
+                        // User bookmark list
                         try {
-                            BookmarkList bookshelf = DataManager.getInstance().getDao().getBookmarkList(queryItem.getValue(), userBean.getUser());
-                            if (bookshelf != null) {
-                                itemQuery = bookshelf.getFilterQuery();
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(queryItem.getValue(), userBean.getUser());
+                            if (bookmarkList != null) {
+                                itemQuery = bookmarkList.getFilterQuery();
                             }
                         } catch (DAOException e) {
                             logger.error(e.getMessage(), e);
                         }
                     } else {
-                        // Session bookshelf
+                        // Session bookmark list
                         Optional<BookmarkList> obs = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
                     }
                     if (StringUtils.isEmpty(itemQuery)) {
-                        // Skip empty bookshelf
+                        // Skip empty bookmark list
                         continue;
                     }
                 } else {
@@ -1505,22 +1505,22 @@ public class SearchBean implements SearchInterface, Serializable {
         if (ret == null) {
             ret = new ArrayList<>();
             logger.trace("Generating drop-down values for {}", field);
-            if (SolrConstants.BOOKSHELF.equals(field)) {
+            if (SolrConstants.BOOKMARKS.equals(field)) {
                 if (userBean != null && userBean.isLoggedIn()) {
                     // User bookshelves
-                    List<BookmarkList> bookshelves = DataManager.getInstance().getDao().getBookmarkLists(userBean.getUser());
-                    if (!bookshelves.isEmpty()) {
-                        for (BookmarkList bookshelf : bookshelves) {
-                            if (!bookshelf.getItems().isEmpty()) {
-                                ret.add(new StringPair(bookshelf.getName(), bookshelf.getName()));
+                    List<BookmarkList> bookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(userBean.getUser());
+                    if (!bookmarkLists.isEmpty()) {
+                        for (BookmarkList bookmarkList : bookmarkLists) {
+                            if (!bookmarkList.getItems().isEmpty()) {
+                                ret.add(new StringPair(bookmarkList.getName(), bookmarkList.getName()));
                             }
                         }
                     }
                 } else {
-                    // Session bookshelf
-                    Optional<BookmarkList> bookshelf = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
-                    if (bookshelf.isPresent() && !bookshelf.get().getItems().isEmpty()) {
-                        ret.add(new StringPair(bookshelf.get().getName(), bookshelf.get().getName()));
+                    // Session bookmark list
+                    Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                    if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
+                        ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
                     }
                 }
             } else if (hierarchical) {
@@ -1614,15 +1614,41 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Returns index field names allowed for advanced search use.
-     *
-     * @return
+     * 
+     * @return List of allowed advanced search fields
      */
     public List<String> getAdvancedSearchAllowedFields() {
+        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString());
+    }
+
+    /**
+     * Returns index field names allowed for advanced search use. If language-specific index fields are used, those that don't match the current
+     * locale are omitted.
+     *
+     * @param language
+     * @return List of allowed advanced search fields
+     * @should omit languaged fields for other languages
+     */
+    public static List<String> getAdvancedSearchAllowedFields(String language) {
         List<String> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         if (fields == null) {
             fields = new ArrayList<>();
         }
+
+        // Omit other languages
+        if (!fields.isEmpty() && StringUtils.isNotEmpty(language)) {
+            List<String> toRemove = new ArrayList<>();
+            language = language.toUpperCase();
+            for (String field : fields) {
+                if (field.contains(SolrConstants._LANG_) && !field.endsWith(language)) {
+                    toRemove.add(field);
+                }
+            }
+            if (!toRemove.isEmpty()) {
+                fields.removeAll(toRemove);
+            }
+        }
+
         fields.add(0, SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
 
         return fields;

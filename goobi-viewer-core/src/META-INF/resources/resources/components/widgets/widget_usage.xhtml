@@ -108,7 +108,7 @@
                         </ui:fragment>
                         
                         <!-- TEI (WORK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork }">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
                             <a 
                                 href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
                                 id="textWork" 
@@ -172,7 +172,7 @@
                         </ui:fragment>
         
                         <!-- DFG Viewer -->
-                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null}">
+                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
                            <a 
                                 href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
                                 id="dfgViewer" 
@@ -280,24 +280,26 @@
 									#{msg.pdfDownload} </a>
 							</ui:fragment>
 
-							<!-- JPEG -->
-							<ui:fragment
-								rendered="#{configurationBean.displaySidebarUsageWidgetLinkToJpegImage and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-								<a href="#{activeDocumentBean.viewManager.jpegUrlForDownload}"
-									id="jpeg"
-									class="label label-default widget-usage__page-download-jpeg"
-									title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow">
-									#{msg.imageLink} </a>
-							</ui:fragment>
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+							    <!-- JPEG -->
+							    <ui:fragment
+								    rendered="#{configurationBean.displaySidebarUsageWidgetLinkToJpegImage and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+								    <a href="#{activeDocumentBean.viewManager.jpegUrlForDownload}"
+									    id="jpeg"
+									    class="label label-default widget-usage__page-download-jpeg"
+									    title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow">
+									    #{msg.imageLink} </a>
+							    </ui:fragment>
 							
-                            <!-- MASTER IMAGE (TIFF) -->
-                            <ui:fragment
-                                rendered="#{configurationBean.displaySidebarUsageWidgetLinkToMasterImage and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-                                <a href="#{activeDocumentBean.viewManager.masterImageUrlForDownload}"
-                                    id="tiff"
-                                    class="label label-default widget-usage__page-download-tiff"
-                                    title="#{msg.action__downloadMasterImage}" target="_blank" rel="nofollow">
-                                    #{msg.imageLinkMaster} (#{activeDocumentBean.viewManager.currentPage.fileNameExtension.toUpperCase()}) </a>
+                                <!-- MASTER IMAGE (TIFF) -->
+                                <ui:fragment
+                                    rendered="#{configurationBean.displaySidebarUsageWidgetLinkToMasterImage and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                                    <a href="#{activeDocumentBean.viewManager.masterImageUrlForDownload}"
+                                        id="tiff"
+                                        class="label label-default widget-usage__page-download-tiff"
+                                        title="#{msg.action__downloadMasterImage}" target="_blank" rel="nofollow">
+                                        #{msg.imageLinkMaster} (#{activeDocumentBean.viewManager.currentPage.fileNameExtension.toUpperCase()}) </a>
+                                </ui:fragment>
                             </ui:fragment>
 
 							<!-- ALTO (PAGE) -->
@@ -310,23 +312,25 @@
 									#{msg.downloadAltoPageButtonLabel} </a>
 							</ui:fragment>
 
-							<!-- TEI (PAGE) -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
-								<a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
-									class="label label-default widget-usage__page-download-tei"
-									title="#{msg.downloadPageTei}" target="_blank" rel="nofollow"> #{msg.TEI}
-								</a>
-							</ui:fragment>
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+							    <!-- TEI (PAGE) -->
+							    <ui:fragment
+								    rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
+								    <a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
+									    class="label label-default widget-usage__page-download-tei"
+									    title="#{msg.downloadPageTei}" target="_blank" rel="nofollow"> #{msg.TEI}
+								    </a>
+							    </ui:fragment>
 
-							<!-- FULLTEXT (PAGE) -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
-								<a href="#{activeDocumentBean.viewManager.fulltextUrl}"
-									id="textPage"
-									class="label label-default widget-usage__page-download-fulltext"
-									title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow">
-									#{msg.FULLEXT} </a>
+							    <!-- FULLTEXT (PAGE) -->
+							    <ui:fragment
+								    rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
+								    <a href="#{activeDocumentBean.viewManager.fulltextUrl}"
+									    id="textPage"
+									    class="label label-default widget-usage__page-download-fulltext"
+									    title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow">
+									    #{msg.FULLEXT} </a>
+							    </ui:fragment>
 							</ui:fragment>
 						</div>
 					</ui:fragment>

@@ -1824,7 +1824,7 @@ public final class SearchHelper {
                     case SolrConstants.PI_ANCHOR:
                     case SolrConstants.DC:
                     case SolrConstants.DOCSTRCT:
-                    case SolrConstants.BOOKSHELF:
+                    case SolrConstants.BOOKMARKS:
                         continue;
                     default:
                         if (item.getField().startsWith(SolrConstants.GROUPID_)) {

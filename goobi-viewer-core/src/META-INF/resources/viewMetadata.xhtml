@@ -41,9 +41,9 @@
                     <ui:include src="/resources/includes/metadata/metadata.xhtml" />
                 </ui:insert>
 
-                <!-- ePUBLICATIONS -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
-                    <viewerComponent:ePub />
+                <!-- BORN DIGITAL MATERIALS -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital}">
+                    <viewerComponent:bornDigital />
 
                     <div class="clearfix"></div>
                 </h:panelGroup>

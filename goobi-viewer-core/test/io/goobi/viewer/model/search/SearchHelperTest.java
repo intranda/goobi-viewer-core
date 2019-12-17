@@ -809,8 +809,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(3).setField("MD_FIELD");
         group.getQueryItems().get(3).setValue("val");
         group.getQueryItems().get(4).setOperator(SearchItemOperator.AND);
-        group.getQueryItems().get(4).setField(SolrConstants.BOOKSHELF);
-        group.getQueryItems().get(4).setValue("bookshelf");
+        group.getQueryItems().get(4).setField(SolrConstants.BOOKMARKS);
+        group.getQueryItems().get(4).setValue("bookmarklist");
         group.getQueryItems().get(5).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(5).setField(SolrConstants.PI_ANCHOR);
         group.getQueryItems().get(5).setValue("PPN000");
