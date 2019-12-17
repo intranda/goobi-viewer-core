@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     
     // variables
     var _debug = false;
-    var _sessionBoomarkList = '';
+    var _sessionBookmarkList = '';
     var _defaults = {
     	root: '',
     	restEndpoint: undefined,

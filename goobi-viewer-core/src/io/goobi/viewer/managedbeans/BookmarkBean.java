@@ -498,7 +498,7 @@ public class BookmarkBean implements Serializable {
      * @return Identifier of currentBookmarkList; null if none loaded
      */
     public String getCurrentBookmarkListId() {
-        if (getCurrentBookmarkList() != null) {
+        if (getCurrentBookmarkList() != null && getCurrentBookmarkList().getId() != null) {
             return getCurrentBookmarkList().getId().toString();
         }
         return null;

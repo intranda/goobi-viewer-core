@@ -2196,7 +2196,7 @@ public class SearchBean implements SearchInterface, Serializable {
     
     public void setBookmarkListName(String name) {
         this.advancedQueryGroups.get(0).getQueryItems().get(0).setValue(name);
-        this.advancedQueryGroups.get(0).getQueryItems().get(0).setField(SolrConstants.BOOKSHELF);
+        this.advancedQueryGroups.get(0).getQueryItems().get(0).setField(SolrConstants.BOOKMARKS);
         this.advancedQueryGroups.get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);;
 
     }

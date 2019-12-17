@@ -194,7 +194,11 @@ mayCompareList(list) {
 }
 
 miradorUrl(list) {
-    return this.opts.bookmarks.config.root + "/mirador/";
+    if(list.id != null) {
+    	return this.opts.bookmarks.config.root + "/mirador/" + list.id + "/";
+    } else {        
+    	return this.opts.bookmarks.config.root + "/mirador/";
+    }
 }
 
 </script> 

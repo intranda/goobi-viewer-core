@@ -387,6 +387,12 @@
 		<view-id value="/viewMirador.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>	
+	<url-mapping id="mirador2">
+		<pattern value="/mirador/#{bookmarklist:bookmarkBean.currentBookmarkListId}/" />
+		<view-id value="/viewMirador.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 
 	<!-- PREVIEW -->
