@@ -33,11 +33,15 @@ var viewerJS = ( function( viewer ) {
         typePage: false,
         userLoggedIn: false,
         msg: {
+            deleteBookmarkList: "",
             resetBookmarkLists: "",
             resetBookmarkListsConfirm: "",
             noItemsAvailable: "",
             selectBookmarkList: "",
             addNewBookmarkList: "",
+            sendBookmarkList: "",
+            searchInBookmarkList: "",
+            openInMirador: "",
             type_label: "",
             typeRecord: "",
             typePage: ""
@@ -85,6 +89,8 @@ var viewerJS = ( function( viewer ) {
                 } );
             },
             
+            
+            
             renderCounter: function() {
                 var $counter = $(this.config.counter);
                 if($counter.length > 0) {
@@ -92,10 +98,7 @@ var viewerJS = ( function( viewer ) {
                     this.listsUpdated.subscribe((list) => {
                         let count = 0;
                         if(this.bookmarkLists) {
-                            count = this.bookmarkLists.flatMap(list => list.items)
-                            .map(item => item.id)
-                            .filter(viewerJS.unique)
-                            .length;
+                            count = this.bookmarkLists.flatMap(list => list.items).length;
                         }
                         this.updateCounter(count);
                     })
@@ -164,8 +167,16 @@ var viewerJS = ( function( viewer ) {
                     var currPage = currBtn.attr( 'data-page' );
                     var currType = currBtn.attr( 'data-type' );
                     
-                    // render bookmarks popup with timeout to finish handling click event first.
-                    setTimeout(() => this.renderBookmarksPopup( currPi, currLogid, currPage, currBtn ), 0);
+                    if(this.config.userLoggedIn) {                        
+                        // render bookmarks popup with timeout to finish handling click event first.
+                        setTimeout(() => this.renderBookmarksPopup( currPi, currLogid, currPage, currBtn ), 0);
+                    } else if(this.contained(currPi, currPage, currLogid)){
+                        this.removeFromBookmarkList(undefined, currPi, undefined, undefined, false )
+                        .then( () => this.listsNeedUpdate.onNext());
+                    } else {
+                        this.addToBookmarkList(undefined, currPi, undefined, undefined, false )
+                        .then( () => this.listsNeedUpdate.onNext());
+                    }
                 }.bind(this) );  
             },
             renderBookmarksPopup: function(pi, logid, page, button) {
@@ -203,7 +214,14 @@ var viewerJS = ( function( viewer ) {
                 let url = this.action("get");
                 
                 return fetch(url, {cache:"no-cache"})
-                .then( data => data.json());
+                .then( data => data.json())
+                .then(json => {
+                    if(!Array.isArray(json)) {
+                        return [json];
+                    } else {
+                        return json
+                    }
+                })
                 
             },
             
@@ -284,7 +302,9 @@ var viewerJS = ( function( viewer ) {
             removeBookmarkList: function(id) {
                 
                 let url = this.action("delete")
-                url += id + "/";
+                if(id) {                    
+                    url += id + "/";
+                }
                 
              
                 return fetch(url, {method:"DELETE"})
@@ -315,7 +335,6 @@ var viewerJS = ( function( viewer ) {
                 return undefined;
             },
 
-
             contained: function(pi, page, logid) {
                 for(var list of this.bookmarkLists) {
                     if(this.inList(list, pi, page, logid)) {
@@ -335,7 +354,7 @@ var viewerJS = ( function( viewer ) {
                     }
                 return false;
             },
-            
+
             isTypePage: function() {
                 return this.typePage;
             },

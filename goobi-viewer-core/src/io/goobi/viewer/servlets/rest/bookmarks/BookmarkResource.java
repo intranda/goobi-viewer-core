@@ -94,6 +94,8 @@ public class BookmarkResource {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
+            bookmarkList.setRequest(servletRequest);
+            String searchUrl = bookmarkList.getSearchUrl();
             return bookmarkList;
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -185,7 +187,7 @@ public class BookmarkResource {
      * @throws IOException
      * @throws RestApiException
      */
-    @GET
+    @DELETE
     @Path("/session/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteFromSessionBookmarkList(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
@@ -233,7 +235,7 @@ public class BookmarkResource {
      * @return
      * @throws RestApiException
      */
-    @GET
+    @DELETE
     @Path("/session/delete")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteSessionBookmarkList() throws RestApiException {

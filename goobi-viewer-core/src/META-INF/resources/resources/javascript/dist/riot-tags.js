@@ -172,7 +172,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 
 
-riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-10 no-padding"><a href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
+riot.tag2('bookmarklist', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-10 no-padding"><a href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul><ul if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin"><div class="col-xs-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-xs-7 no-padding"><h4><a href="{opts.bookmarks.root}{bookmark.url}">{bookmark.name}</a></h4></div><div class="col-xs-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookshelf-type="delete" onclick="{remove}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions test"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookshelf-type="reset" onclick="{deleteList}"><span>{opts.msg.resetBookmarkLists}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{opts.msg.sendBookmarkList}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{opts.msg.searchInBookmarkList}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{opts.msg.openInMirador}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
 
 
 this.pi = this.opts.data.pi;
@@ -188,7 +188,8 @@ this.on( 'mount', function() {
 });
 
 this.getBookmarkLists = function() {
-    return this.opts.bookmarks.getBookmarkLists();
+    let lists =  this.opts.bookmarks.getBookmarkLists();
+    return lists;
 }.bind(this)
 
 this.updateLists = function() {
@@ -215,16 +216,60 @@ this.add = function(event) {
 }.bind(this)
 
 this.remove = function(event) {
-    let list = event.item.bookmarkList
-    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
-    .then( () => this.updateLists())
+    if(this.opts.bookmarks.config.userLoggedIn) {
+	    let list = event.item.bookmarkList
+	    this.opts.bookmarks.removeFromBookmarkList(list.id, this.pi, this.page, this.logid, this.opts.bookmarks.isTypePage())
+	    .then( () => this.updateLists())
+    } else {
+        let bookmark = event.item.bookmark;
+        this.opts.bookmarks.removeFromBookmarkList(undefined, bookmark.pi, undefined, undefined, false)
+	    .then( () => this.updateLists())
+    }
 }.bind(this)
 
 this.inList = function(list, pi, page, logid) {
     return this.opts.bookmarks.inList(list, pi, page, logid);
 }.bind(this)
 
+this.mayEmptyList = function(list) {
+    return list.items.length > 0;
+}.bind(this)
+
+this.deleteList = function(event) {
+    let list = event.item.bookmarkList
+    this.opts.bookmarks.removeBookmarkList(list.id)
+    .then( () => this.updateLists());
+}.bind(this)
+
+this.maySendList = function(list) {
+    return list.items.length > 0;
+}.bind(this)
+
+this.sendListUrl = function(list) {
+	return this.opts.bookmarks.config.root + "/bookmarks/send/";
+}.bind(this)
+
+this.maySearchList = function(list) {
+    return list.items.length > 0;
+}.bind(this)
+
+this.searchListUrl = function(list) {
+    let url = this.opts.bookmarks.config.root + list.searchUrl;
+    console.log("list search url ", url);
+    return url;
+}.bind(this)
+
+this.mayCompareList = function(list) {
+    return list.items.length > 1;
+}.bind(this)
+
+this.miradorUrl = function(list) {
+    return this.opts.bookmarks.config.root + "/mirador/";
+}.bind(this)
+
 });
+
+
 riot.tag2('bookmarkspopup', '<div class="bookshelf-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookshelf-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookshelf-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookshelf-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookshelf-popup bottom"', function(opts) {
 
 const popupOffset = 6;

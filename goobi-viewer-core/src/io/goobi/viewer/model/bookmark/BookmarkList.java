@@ -16,8 +16,11 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,8 +34,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,6 +45,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.ocpsoft.pretty.PrettyContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import io.goobi.viewer.controller.DataManager;
@@ -50,12 +60,14 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 @Entity
 @Table(name = "bookshelves")
 @XStreamAlias("bookshelf")
+@JsonInclude(Include.NON_NULL)
 public class BookmarkList implements Serializable {
 
     private static final long serialVersionUID = -3040539541804852903L;
@@ -93,6 +105,9 @@ public class BookmarkList implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "user_group_id"))
     @JsonIgnore
     private List<UserGroup> groupShares = new ArrayList<>();
+
+    @JsonIgnore
+    private HttpServletRequest servletRequest = null;
 
     /*
      * (non-Javadoc)
@@ -503,11 +518,39 @@ public class BookmarkList implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder("+(");
-        for (Bookmark item : items) {
-            sb.append(' ').append(SolrConstants.PI).append(':').append(item.getPi());
-        }
+        sb.append(items.stream().map(item -> SolrConstants.PI + ":" + item.getPi()).collect(Collectors.joining(" OR ")));
+//        for (Bookmark item : items) {
+//            sb.append(' ').append(SolrConstants.PI).append(':').append(item.getPi());
+//        }
         sb.append(')');
 
         return sb.toString();
+    }
+    
+    @JsonProperty("searchUrl")
+    public String getSearchUrl() {
+        String filterQuery = getFilterQuery();
+        if(StringUtils.isNotBlank(filterQuery) && servletRequest != null && PrettyContext.getCurrentInstance(servletRequest) != null) {       
+            try {
+                filterQuery = URLEncoder.encode(filterQuery, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
+            filterQuery = filterQuery.replace("%", "%25");
+//            filterQuery = BeanUtils.escapeCriticalUrlChracters(filterQuery, false);
+//            filterQuery = ClientUtils.escapeQueryChars(filterQuery);
+            String searchUrl = PrettyContext.getCurrentInstance(servletRequest).getConfig().getMappingById("newSearch5").getPatternParser().getMappedURL("-","-",1,"-", filterQuery).toString();    
+            return searchUrl;
+        } else {
+            return null;
+        }
+        
+    }
+
+    /**
+     * @param servletRequest
+     */
+    public void setRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
     }
 }
