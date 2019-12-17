@@ -608,10 +608,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getTocIndentation();
     }
 
-    public int getSidebarTocIndentation() {
-        return DataManager.getInstance().getConfiguration().getSidebarTocIndentation();
-    }
-
     public boolean isPageBrowseEnabled() {
         return DataManager.getInstance().getConfiguration().isPageBrowseEnabled();
     }

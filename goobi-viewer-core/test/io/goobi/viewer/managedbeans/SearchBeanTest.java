@@ -445,4 +445,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("sonstiges.ocr.antiqua", facets.get(1));
         Assert.assertEquals("schulbuch", facets.get(0));
     }
+
+    /**
+     * @see SearchBean#getAdvancedSearchAllowedFields()
+     * @verifies omit languaged fields for other languages
+     */
+    @Test
+    public void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
+        List<String> fields = SearchBean.getAdvancedSearchAllowedFields("en");
+        Assert.assertTrue(fields.contains("MD_FOO_LANG_EN"));
+        Assert.assertFalse(fields.contains("MD_FOO_LANG_DE"));
+        Assert.assertFalse(fields.contains("MD_FOO_LANG_ES"));
+    }
 }

@@ -694,8 +694,8 @@ public class AccessConditionUtils {
         // logger.debug("permissions key: " + key + ": " + permissions.get(key));
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
-//            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
-//                    request.getSession().getId());
+            //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
+            //                    request.getSession().getId());
         } else {
             // TODO check for all images and save to map
             Map<String, Boolean> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
@@ -819,20 +819,22 @@ public class AccessConditionUtils {
                     logger.trace("Privilege '{}' is OpenAccess", privilegeName);
                     accessMap.put(key, Boolean.TRUE);
                 } else {
-
                     // Check IP range
                     if (StringUtils.isNotEmpty(remoteAddress)) {
-                        if ( (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                                logger.debug("Access granted to localhost");
+                        if ((Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
+                                && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                            logger.debug("Access granted to localhost");
+                            accessMap.put(key, Boolean.TRUE);
+                            continue;
+                        }
+                        // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+                        for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                            // logger.debug("ip range: " + ipRange.getSubnetMask());
+                            if (ipRange.matchIp(remoteAddress)
+                                    && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
+                                logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
                                 accessMap.put(key, Boolean.TRUE);
-                        } else {
-                            // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                            for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                                // logger.debug("ip range: " + ipRange.getSubnetMask());
-                                if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
-                                    logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                                    accessMap.put(key, Boolean.TRUE);
-                                }
+                                continue;
                             }
                         }
                     }
@@ -856,9 +858,9 @@ public class AccessConditionUtils {
      * database then it likely contains some access restrictions which need to be checked
      * 
      * @param requiredAccessConditions
-     * @param allLicenseTypes   all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
+     * @param allLicenseTypes all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
      * @return true if we can savely assume that we have entirely open access
-     * @throws DAOException 
+     * @throws DAOException
      */
     public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions, Collection<LicenseType> allLicenseTypes) throws DAOException {
 
@@ -866,8 +868,8 @@ public class AccessConditionUtils {
             boolean containsOpenAccess =
                     requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
             boolean openAccessIsConfiguredLicenceType =
-                    allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null :
-                    allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
+                    allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
+                            : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
             return containsOpenAccess && !openAccessIsConfiguredLicenceType;
         } else {
             return false;

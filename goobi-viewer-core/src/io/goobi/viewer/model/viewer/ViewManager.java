@@ -569,10 +569,21 @@ public class ViewManager implements Serializable {
         return topDocument.getNumVolumes() > 0;
     }
 
+    /**
+     * 
+     * @return true if record contains pages; false otherwise
+     * @throws IndexUnreachableException
+     */
     public boolean isHasPages() throws IndexUnreachableException {
         return pageLoader != null && pageLoader.getNumPages() > 0;
     }
 
+    /**
+     * 
+     * @return true if record or first child or first page have an application mime type; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
         // TODO check all files for mime type?
         if (filesOnly == null) {
@@ -587,6 +598,17 @@ public class ViewManager implements Serializable {
         }
 
         return filesOnly;
+    }
+
+    /**
+     * Convenience method for identifying born digital material records.
+     * 
+     * @return true if record is born digital material (no scanned images); false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isBornDigital() throws IndexUnreachableException, DAOException {
+        return isHasPages() && isFilesOnly();
     }
 
     /**
@@ -757,7 +779,7 @@ public class ViewManager implements Serializable {
             // Reset LOGID so that the same TOC element doesn't stay highlighted when flipping pages
             logId = null;
         }
-        if(currentDocument == null || currentDocument.getLuceneId() != currentDocumentIddoc) {
+        if (currentDocument == null || currentDocument.getLuceneId() != currentDocumentIddoc) {
             setCurrentDocument(new StructElement(currentDocumentIddoc));
         }
     }
@@ -1012,7 +1034,7 @@ public class ViewManager implements Serializable {
         if (topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS.equals(topDocument.getSourceDocFormat()) && isHasPages()) {
             try {
                 StringBuilder sbPath = new StringBuilder();
-                sbPath.append(DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
+                sbPath.append(DataManager.getInstance().getConfiguration().getDfgViewerUrl());
                 sbPath.append(URLEncoder.encode(getMetsResolverUrl(), "utf-8"));
                 sbPath.append("&set[image]=").append(currentImageOrder);
                 return sbPath.toString();
@@ -1522,12 +1544,20 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        if (isBornDigital()) {
+            return false;
+        }
+        
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
 
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        if (isBornDigital()) {
+            return false;
+        }
+        
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
@@ -1626,6 +1656,10 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
+        if (isBornDigital()) {
+            return false;
+        }
+        
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return false;
@@ -1791,7 +1825,7 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException, PresentationException {
         List<LabeledLink> ret = new ArrayList<>();

@@ -1613,15 +1613,41 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Returns index field names allowed for advanced search use.
-     *
-     * @return
+     * 
+     * @return List of allowed advanced search fields
      */
     public List<String> getAdvancedSearchAllowedFields() {
+        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString());
+    }
+
+    /**
+     * Returns index field names allowed for advanced search use. If language-specific index fields are used, those that don't match the current
+     * locale are omitted.
+     *
+     * @param language
+     * @return List of allowed advanced search fields
+     * @should omit languaged fields for other languages
+     */
+    public static List<String> getAdvancedSearchAllowedFields(String language) {
         List<String> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         if (fields == null) {
             fields = new ArrayList<>();
         }
+
+        // Omit other languages
+        if (!fields.isEmpty() && StringUtils.isNotEmpty(language)) {
+            List<String> toRemove = new ArrayList<>();
+            language = language.toUpperCase();
+            for (String field : fields) {
+                if (field.contains(SolrConstants._LANG_) && !field.endsWith(language)) {
+                    toRemove.add(field);
+                }
+            }
+            if (!toRemove.isEmpty()) {
+                fields.removeAll(toRemove);
+            }
+        }
+
         fields.add(0, SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
 
         return fields;
