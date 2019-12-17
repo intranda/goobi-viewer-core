@@ -99,7 +99,7 @@ public class SolrConstants {
     }
 
     public static final String ACCESSCONDITION = "ACCESSCONDITION";
-    public static final String BOOKSHELF = "BOOKSHELF"; // not an index field, just a constant
+    public static final String BOOKMARKS = "BOOKMARKS"; // not an index field, just a constant
     public static final String CMS_TEXT_ALL = "CMS_TEXT_ALL";
     public static final String CURRENTNO = "CURRENTNO";
     public static final String CURRENTNOSORT = "CURRENTNOSORT";
