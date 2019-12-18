@@ -280,8 +280,7 @@ public class Bookmark implements Serializable {
         if (!docs.isEmpty()) {
             String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-            StructElement doc = new StructElement(Long.parseLong(luceneId), docs.get(0));
-            return thumbs.getThumbnailUrl(doc, width, height);
+            return thumbs.getThumbnailUrl(docs.get(0), width, height);
         }
 
         return "";
