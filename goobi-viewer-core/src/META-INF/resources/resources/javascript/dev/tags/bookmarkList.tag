@@ -185,7 +185,6 @@ maySearchList(list) {
 
 searchListUrl(list) {
     let url = this.opts.bookmarks.config.root + "/search/bookmarks/" + list.name + "/";
-    console.log("list search url ", url);  
     return url;
 }
 

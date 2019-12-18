@@ -255,7 +255,6 @@ this.maySearchList = function(list) {
 
 this.searchListUrl = function(list) {
     let url = this.opts.bookmarks.config.root + "/search/bookmarks/" + list.name + "/";
-    console.log("list search url ", url);
     return url;
 }.bind(this)
 
@@ -264,7 +263,11 @@ this.mayCompareList = function(list) {
 }.bind(this)
 
 this.miradorUrl = function(list) {
-    return this.opts.bookmarks.config.root + "/mirador/";
+    if(list.id != null) {
+    	return this.opts.bookmarks.config.root + "/mirador/" + list.id + "/";
+    } else {
+    	return this.opts.bookmarks.config.root + "/mirador/";
+    }
 }.bind(this)
 
 });
