@@ -257,12 +257,28 @@ public class Bookmark implements Serializable {
      */
     public String getRepresentativeImageUrl(int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        SolrDocumentList docs = DataManager.getInstance()
-                .getSearchIndex()
-                .search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 1, null, Arrays.asList(FIELDS));
+        String query;
+        if (order != null) {
+            // Exactly the bookmarked page
+            query = new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(pi)
+                    .append(" +")
+                    .append(SolrConstants.ORDER)
+                    .append(':')
+                    .append(order)
+                    .append(" +")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(":PAGE")
+                    .toString();
+        } else {
+            // Representative image
+            query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
+        }
+
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 1, null, Arrays.asList(FIELDS));
         if (!docs.isEmpty()) {
             String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
-
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
             StructElement doc = new StructElement(Long.parseLong(luceneId), docs.get(0));
             return thumbs.getThumbnailUrl(doc, width, height);
