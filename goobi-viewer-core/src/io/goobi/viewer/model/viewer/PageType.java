@@ -86,8 +86,7 @@ public enum PageType {
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
     index("index", PageTypeHandling.cms),
-    bookshelf("bookshelf"),
-    mybookshelves("mybookshelves"),
+    bookmarks("bookmarks"),
     user("user"),
     privacy("privacy", PageTypeHandling.cms),
     feedback("feedback", PageTypeHandling.cms),
@@ -341,11 +340,10 @@ public enum PageType {
             case adminUserActivity:
             case adminUserComments:
             case adminUserGroup:
-            case bookshelf:
             case editContent:
             case editHistory:
             case editOcr:
-            case mybookshelves:
+            case bookmarks:
             case user:
                 return true;
             default:

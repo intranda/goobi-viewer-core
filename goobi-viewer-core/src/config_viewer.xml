@@ -433,7 +433,7 @@
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
-				<field>BOOKSHELF</field>
+				<field>BOOKMARKS</field>
 			</searchFields>
 		</advanced>
 		<timeline>
