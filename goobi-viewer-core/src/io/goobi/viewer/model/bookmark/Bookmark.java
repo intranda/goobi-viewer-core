@@ -43,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -240,8 +241,9 @@ public class Bookmark implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ViewerConfigurationException
+     * @throws DAOException
      */
-    public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+    public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         int width = 90;
         int height = 120;
         return getRepresentativeImageUrl(width, height);
@@ -254,9 +256,10 @@ public class Bookmark implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ViewerConfigurationException
+     * @throws DAOException
      */
     public String getRepresentativeImageUrl(int width, int height)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         String query;
         if (order != null) {
             // Exactly the bookmarked page
@@ -280,6 +283,10 @@ public class Bookmark implements Serializable {
         if (!docs.isEmpty()) {
             String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+            if (order != null) {
+                logger.trace("url: " + thumbs.getThumbnailUrl(docs.get(0), width, height));
+                return thumbs.getThumbnailUrl(order, pi, width, height);
+            }
             return thumbs.getThumbnailUrl(docs.get(0), width, height);
         }
 

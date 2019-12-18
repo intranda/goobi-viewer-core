@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import java.util.List;
 import java.util.Locale;
 
 import javax.faces.component.UIViewRoot;
@@ -34,8 +33,6 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.managedbeans.ContextMocker;
-import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.StructElementStub;
 
 public class StructElementTest extends AbstractSolrEnabledTest {
 
@@ -79,19 +76,6 @@ public class StructElementTest extends AbstractSolrEnabledTest {
         Assert.assertNotNull(element.getLabel());
         Assert.assertEquals(element.getLabel(), stub.getLabel());
         Assert.assertEquals(element.getMetadataFields().size(), stub.getMetadataFields().size());
-
-    }
-
-    /**
-     * @see StructElement#getChildren()
-     * @verifies load all children
-     */
-    @Test
-    @Deprecated
-    public void getChildren_shouldLoadAllChildren() throws Exception {
-        StructElement element = new StructElement(1387459019047L);
-        List<StructElement> children = element.getChildren(null);
-        Assert.assertEquals(5, children.size());
 
     }
 

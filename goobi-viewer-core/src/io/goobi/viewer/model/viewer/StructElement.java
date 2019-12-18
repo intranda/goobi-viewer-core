@@ -287,37 +287,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Loads immediate child StructElements for the given element.
-     *
-     * @return {@link ArrayList}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @should load all children
-     */
-    @Deprecated
-    public List<StructElement> getChildren(List<String> fieldList) throws PresentationException, IndexUnreachableException {
-        logger.trace("getChildren");
-        List<StructElement> children = new ArrayList<>();
-        try {
-            SolrDocumentList hits = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fieldList);
-            if (hits.isEmpty()) {
-                hasChildren = false;
-            } else {
-                hasChildren = true;
-                for (SolrDocument doc : hits) {
-                    children.add(new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
-                }
-            }
-        } catch (NumberFormatException e) {
-            logger.error(e.getMessage());
-        }
-
-        return children;
-    }
-
-    /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true).
      *
      * @return
