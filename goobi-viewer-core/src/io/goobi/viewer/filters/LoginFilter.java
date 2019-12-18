@@ -80,11 +80,11 @@ public class LoginFilter implements Filter {
                 //                return;
             }
         }
-        //        PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
-        if (isRestrictedUri(httpRequest.getRequestURI())) {
+                PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
+        if (isRestrictedUri(httpRequest.getRequestURI()) || (prettyContext != null && isRestrictedUri(prettyContext.getRequestURL().toString())) ) {
             String requestURI = httpRequest.getRequestURI();
             // Use Pretty URL, if available
-            PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
+//            PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
             if (prettyContext != null && prettyContext.getRequestURL() != null) {
                 requestURI = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + prettyContext.getRequestURL().toURL();
             }
@@ -131,13 +131,16 @@ public class LoginFilter implements Filter {
      */
     public static boolean isRestrictedUri(String uri) {
         if (uri != null) {
-            //            logger.trace("URL: {}", uri);
+            if(uri.matches("/?viewer/.*")) {
+                uri = uri.replaceAll("/?viewer/", "/");
+            }
             switch (uri) {
                 case "/myactivity/":
                 case "/mysearches/":
                 case "/mybookshelves/":
                 case "/bookshelf/":
                 case "/editbookshelf/":
+                case "/user/":
                     return true;
                 default:
                     //make an exception for session bookmarks search list
