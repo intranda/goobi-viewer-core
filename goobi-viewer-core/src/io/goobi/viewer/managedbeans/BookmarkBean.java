@@ -28,7 +28,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
@@ -69,7 +68,11 @@ public class BookmarkBean implements Serializable {
 
     /** Currently selected bookmark list. */
     private BookmarkList currentBookmarkList = null;
+    /** Flag indicating that currentBookmarkList was opened via a share link and is publicly visible. */
+    private String currentBookmarkListSharedKey = null;
+
     private Bookmark currentBookmark;
+
     private UserGroup currentUserGroup;
 
     /**
@@ -91,10 +94,6 @@ public class BookmarkBean implements Serializable {
     @PostConstruct
     public void init() {
         resetCurrentBookmarkListAction();
-    }
-
-    @Deprecated
-    public void changeCurrentOwnBookmarkList(ActionEvent e) {
     }
 
     /**
@@ -231,6 +230,7 @@ public class BookmarkBean implements Serializable {
      */
     public void resetCurrentBookmarkListAction() {
         logger.trace("resetCurrentBookmarkListAction");
+        currentBookmarkListSharedKey = null;
         currentBookmarkList = new BookmarkList();
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
@@ -472,6 +472,14 @@ public class BookmarkBean implements Serializable {
         return currentBookmarkList;
     }
 
+    /**
+     * @return true if currentBookmarkListSharedKey matches the shared key value of currentBookmarkList; false otherwise;
+     */
+    public boolean isCurrentBookmarkListShared() {
+        return currentBookmarkListSharedKey != null && currentBookmarkList != null
+                && currentBookmarkListSharedKey.equals(currentBookmarkList.getShareKey());
+    }
+
     public List<String> getCurrentBookmarkListNames() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
         List<BookmarkList> bookmarkLists = getBookmarkListsForUser(userBean.getUser());
@@ -512,7 +520,9 @@ public class BookmarkBean implements Serializable {
         if (bookmarkListId == null) {
             return;
         }
-        
+
+        currentBookmarkListSharedKey = null;
+
         try {
             Long id = Long.parseLong(bookmarkListId);
             Optional<BookmarkList> o = getBookmarkLists().stream().filter(bookmarkList -> id.equals(bookmarkList.getId())).findFirst();
@@ -612,12 +622,21 @@ public class BookmarkBean implements Serializable {
         return "-";
     }
 
+    /**
+     * 
+     * @param key
+     * @throws DAOException
+     */
     public void setShareKey(String key) throws DAOException {
         if (key == null) {
             return;
         }
 
         currentBookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
+        // Set currentBookmarkListSharedKey to enable public sharing of this list
+        if (currentBookmarkList != null) {
+            currentBookmarkListSharedKey = currentBookmarkList.getShareKey();
+        }
     }
 
     public void sendSessionBookmarkListAsMail() {

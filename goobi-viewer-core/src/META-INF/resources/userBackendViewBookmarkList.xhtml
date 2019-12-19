@@ -28,7 +28,7 @@
         <div
             id="viewBookmarkList"
             class="view-bookshelf">
-            <h:panelGroup rendered="#{userBean.loggedIn and bookmarkBean.currentBookmarkList.isMayView(userBean.user)}">
+            <h:panelGroup rendered="#{bookmarkBean.currentBookmarkListShared or (userBean.loggedIn and bookmarkBean.currentBookmarkList.isMayView(userBean.user))}">
                 <div class="row">
                     <div class="col-xs-10">
                         <h2>#{bookmarkBean.currentBookmarkList.name}</h2>
@@ -112,12 +112,14 @@
                                                     <h4>#{item.name}</h4>
                                                 </div>
                                                 <!--  ACTION -->
-                                                <div class="view-bookshelf__item-action">
-                                                    <h:commandLink actionListener="#{bookmarkBean.deleteCurrentItemAction(item)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete"
-					                                	onclick="if ( !confirm( &quot;#{msg.bookmarkList_confirmDeleteBookmarkListItem}&quot; ) ) { return false };">
-									                	<f:ajax render="@all"></f:ajax>
-									                </h:commandLink>
-                                                </div>
+                                                <ui:fragment  rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}">
+                                                    <div class="view-bookshelf__item-action">
+                                                        <h:commandLink actionListener="#{bookmarkBean.deleteCurrentItemAction(item)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete"
+					                                	    onclick="if ( !confirm( &quot;#{msg.bookmarkList_confirmDeleteBookmarkListItem}&quot; ) ) { return false };">
+									                	    <f:ajax render="@all"></f:ajax>
+									                    </h:commandLink>
+                                                    </div>
+                                                </ui:fragment>
                                             </div>
                                         </h:form>
                                     </div>

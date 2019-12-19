@@ -80,38 +80,39 @@ public class LoginFilter implements Filter {
                 //                return;
             }
         }
-                PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
-        if (isRestrictedUri(httpRequest.getRequestURI()) || (prettyContext != null && isRestrictedUri(prettyContext.getRequestURL().toString())) ) {
-            String requestURI = httpRequest.getRequestURI();
-            // Use Pretty URL, if available
-//            PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
-            if (prettyContext != null && prettyContext.getRequestURL() != null) {
-                requestURI = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + prettyContext.getRequestURL().toURL();
-            }
-            User user = (User) httpRequest.getSession().getAttribute("user");
-            if (user == null) {
-                logger.debug("No user found, redirecting to login...");
-                ((HttpServletResponse) response).sendRedirect(
-                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
-            } else if (httpRequest.getRequestURI().contains("/admin")) {
-                try {
-                    if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
-                        chain.doFilter(request, response); // continue
-                        return;
-                    }
-                    logger.debug("User '{}' not superuser, redirecting to login...", user.getDisplayName());
-                } catch (PresentationException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (IndexUnreachableException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
+        PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
+        String requestURI = httpRequest.getRequestURI();
+        // Use Pretty URL, if available
+        if (prettyContext != null && prettyContext.getRequestURL() != null) {
+            requestURI = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + prettyContext.getRequestURL().toURL();
+        }
+        if (!isRestrictedUri(requestURI)) {
+            chain.doFilter(request, response); // continue
+            return;
+        }
+        
+        logger.trace("request uri: " + requestURI);
+        User user = (User) httpRequest.getSession().getAttribute("user");
+        if (user == null) {
+            logger.debug("No user found, redirecting to login...");
+            ((HttpServletResponse) response).sendRedirect(
+                    ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
+        } else if (httpRequest.getRequestURI().contains("/admin")) {
+            try {
+                if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
+                    chain.doFilter(request, response); // continue
+                    return;
                 }
-                ((HttpServletResponse) response).sendRedirect(
-                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
-            } else {
-                chain.doFilter(request, response); // continue
+                logger.debug("User '{}' not superuser, redirecting to login...", user.getDisplayName());
+            } catch (PresentationException e) {
+                logger.error(e.getMessage(), e);
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
             }
+            ((HttpServletResponse) response).sendRedirect(
+                    ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
         } else {
             chain.doFilter(request, response); // continue
         }
@@ -127,24 +128,23 @@ public class LoginFilter implements Filter {
      * @should return false for crowdsourcing about page
      * @should return true for admin uris
      * @should return true for user backend uris
-     * @should return true for bookshelf uris
+     * @should return true for bookmarks uris
+     * @should return false for bookmarks session uris
+     * @should return false for bookmarks share key uris
      */
     public static boolean isRestrictedUri(String uri) {
         if (uri != null) {
-            if(uri.matches("/?viewer/.*")) {
+            if (uri.matches("/?viewer/.*")) {
                 uri = uri.replaceAll("/?viewer/", "/");
             }
             switch (uri) {
                 case "/myactivity/":
                 case "/mysearches/":
-                case "/mybookshelves/":
-                case "/bookshelf/":
-                case "/editbookshelf/":
                 case "/user/":
                     return true;
                 default:
-                    //make an exception for session bookmarks search list
-                    if(uri.contains("bookmarks/session/")) {
+                    //make an exception for session bookmarks search list or share key
+                    if (uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/")) {
                         return false;
                     }
                     // Regular URLs

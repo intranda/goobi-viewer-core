@@ -30,9 +30,7 @@ public class LoginFilterTest {
     public void isRestrictedUri_shouldReturnTrueForCertainPrettyUris() throws Exception {
         Assert.assertTrue(LoginFilter.isRestrictedUri("/myactivity/"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/mysearches/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/bookmarks/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/bookshelf/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/editbookshelf/"));
+        Assert.assertTrue(LoginFilter.isRestrictedUri("/bookmarks/show"));
     }
 
     /**
@@ -78,5 +76,32 @@ public class LoginFilterTest {
     @Test
     public void isRestrictedUri_shouldReturnTrueForBookshelfUris() throws Exception {
         Assert.assertTrue(LoginFilter.isRestrictedUri("boo.hoo/bookmarksEmpty"));
+    }
+
+    /**
+     * @see LoginFilter#isRestrictedUri(String)
+     * @verifies return true for bookmarks uris
+     */
+    @Test
+    public void isRestrictedUri_shouldReturnTrueForBookmarksUris() throws Exception {
+        Assert.assertTrue(LoginFilter.isRestrictedUri("boo.hoo/bookmarksEmpty"));
+    }
+
+    /**
+     * @see LoginFilter#isRestrictedUri(String)
+     * @verifies return false for bookmarks session uris
+     */
+    @Test
+    public void isRestrictedUri_shouldReturnFalseForBookmarksSessionUris() throws Exception {
+        Assert.assertFalse(LoginFilter.isRestrictedUri("boo.hoo/bookmarks/session/foo"));
+    }
+
+    /**
+     * @see LoginFilter#isRestrictedUri(String)
+     * @verifies return false for bookmarks share key uris
+     */
+    @Test
+    public void isRestrictedUri_shouldReturnFalseForBookmarksShareKeyUris() throws Exception {
+        Assert.assertFalse(LoginFilter.isRestrictedUri("boo.hoo/bookmarks/key/somesharekey/"));
     }
 }
