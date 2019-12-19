@@ -524,4 +524,7 @@ public class BookmarkList implements Serializable {
         return sb.toString();
     }
 
+    public String getIIIFCollectionURI() {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/user/get/"+ getId() +"/collection/";
+    }
 }

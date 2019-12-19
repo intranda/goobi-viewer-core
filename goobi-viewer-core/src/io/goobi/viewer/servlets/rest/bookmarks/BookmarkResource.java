@@ -16,11 +16,13 @@
 package io.goobi.viewer.servlets.rest.bookmarks;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.mail.FetchProfile.Item;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -37,6 +39,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -48,10 +54,13 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
+import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.servlets.rest.SuccessMessage;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * @author Florian Alpers
@@ -811,5 +820,46 @@ public class BookmarkResource {
             logger.error("Cannot determine user affiliation with group: " + e.toString());
             return false;
         }
+    }
+    
+    @GET
+    @Path("/user/get/{id}/collection")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @IIIFPresentationBinding
+    public Collection getAsCollection(@PathParam("id") Long id) throws DAOException, RestApiException {
+        
+        User user = getUser();
+        if (user == null) {
+            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+        }
+        Optional<BookmarkList> list = getBookmarkList(user, id);
+        if (list.isPresent()) {
+            ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+            Collection collection = new Collection(getCollectionURI());
+            collection.setLabel(new SimpleMetadataValue(list.get().getName()));
+            collection.setDescription(new SimpleMetadataValue(list.get().getDescription()));
+            list.get().getItems().forEach(item -> {
+                try {
+                    URI manifestURI = builder.getManifestURI(item.getPi());
+                    Manifest manifest = new Manifest(manifestURI);
+                    manifest.setLabel(new SimpleMetadataValue(item.getName()));
+                    manifest.setThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
+                    collection.addManifest(manifest);
+                } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+                    logger.error("Failed to add item " + item.getId() + " to manifest");
+                }
+            });
+            return collection;
+        }
+
+        throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    /**
+     * @return
+     */
+    public URI getCollectionURI() {
+        String baseURI = ServletUtils.getServletPathWithoutHostAsUrlFromRequest(servletRequest);
+        return URI.create(baseURI + servletRequest.getRequestURI());
     }
 }

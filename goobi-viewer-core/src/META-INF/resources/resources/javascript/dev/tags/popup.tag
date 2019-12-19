@@ -5,24 +5,14 @@
 <script>
 
 this.on( 'mount', function() {    	
-	console.log("mount popup");
-	this.setPosition();
+	console.log("mount popup", this.opts);
 	this.addCloseHandler();
-	
+	$(this.root).offset(this.opts.offset);
+    $("body").append($(this.root));
+    $(this.root).css("position", "absolute");
+    $(this.root).show();
 });
 
-setPosition() {
-    var $button = $(this.opts.button);
-    var anchor = {
-            x : $button.offset().left + $button.outerWidth()/2,
-            y : $button.offset().top + $button.outerHeight(),
-    }
-    var position = {
-            left: anchor.x - this.root.getBoundingClientRect().width/2,
-            top: anchor.y + popupOffset
-    }
-    $(this.root).offset(position);
-}
 
 addCloseHandler() {
     console.log("add popup close handler");
@@ -32,11 +22,20 @@ addCloseHandler() {
     });
     
     $('body').one("click", function(event) {
-        console.log("click body");
+        console.log("click body ", this);
         this.unmount(true);
         $(this.root).off();
-        this.root.remove();
+        if(this.opts.myparent) {
+            console.log("reattach to parent ")
+             $(this.root).hide();
+            $(this.opts.myparent).append($(this.root));
+            $(this.root).offset({left:0, top:0});
+        } else {
+            this.root.remove();
+        }
     }.bind(this));
+    
+
 }
 
 

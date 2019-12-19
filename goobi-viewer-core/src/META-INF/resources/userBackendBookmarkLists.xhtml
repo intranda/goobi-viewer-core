@@ -61,7 +61,7 @@
 				<!-- USER BOOKMARK LISTS -->
 				<h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
 					<h:form id="userBookmarkListsForm" prependId="false">
-						<div class="row no-margin">
+						<div  class="row no-margin">
 							<ui:repeat value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}" var="bookmarkList" varStatus="status">
 								<div class="user-bookshelves__panel">
 									<div class="user-bookshelves__panel-header">
@@ -122,6 +122,23 @@
                                                         onclick="copyLink('#{bookmarkBean.getShareLink(bookmarkList)}', 'shareLinkPopup_#{status.index}')">
                                                     </h:commandButton>
                                                 </p:dialog>
+                                                
+                                                <a href="#" title="#{msg.bookmarkList_shareCollection}" onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})">
+                                                    <i class="fa fa-share" aria-hidden="true"></i>
+                                                </a>
+                                                    <popup>
+                                                    	<div
+                                                    	data-copy="bookmarklist-collection"
+                                                    	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
+                                                    	title="#{msg.bookmarkList_shareLink_copy}"
+                                                    	>#{bookmarkList.getIIIFCollectionURI()}</div>
+<!--                                                     	<a  -->
+<!--                                                     	data-copy="bookmarklist-collection" -->
+<!--                                                     	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"> -->
+<!-- 							                            #{msg.bookmarkList_shareLink_copy} -->
+<!-- 							                            </a> -->
+                                                    </popup>
+          
 											</div>
 										</div>
 									</div>
@@ -281,6 +298,7 @@
             		    console.error('Async: Could not copy text: ', err);
             		  });
             }
+            new ClipboardJS('[data-copy]')
         </script>
         
 	</ui:define>
