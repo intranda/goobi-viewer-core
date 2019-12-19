@@ -24,8 +24,14 @@
 		margin-bottom: 30px;
 		border: 1px solid @middlegray;
 		transition: all .3s ease-in;
+		&-action {
+			display: none;
+		}
 		&:hover {
 			background-color: @lightgray;
+			.view-bookshelf__item-action {
+				display: block;
+			}
 		}
 	}
 	&__item-image,
@@ -67,7 +73,6 @@
 		text-align: right;
 		a {
 			display: inline-block;
-		    width: 16px;
 		    height: 16px;
 		}
 		[data-bookshelf-type="delete"] {
@@ -107,6 +112,15 @@
             margin: 1.3125rem 0;
         }
     }
+}
+
+.btn.delete {
+	color: @btnCleanDelete;
+	&:hover,
+	&:active,
+	&:focus {
+		color: @btnDanger;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
