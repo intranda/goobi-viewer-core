@@ -119,7 +119,6 @@ public class NavigationHelper implements Serializable {
     private static final String BROWSE_PAGE = "browse";
     private static final String TAGS_PAGE = "tags";
 
-
     private Locale locale = Locale.ENGLISH;
 
     /** Map for setting any navigation status variables. Replaces currentView, etc. */
@@ -298,20 +297,22 @@ public class NavigationHelper implements Serializable {
         updateBreadcrumbs(new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
                 NavigationHelper.WEIGHT_TAG_MAIN_MENU));
     }
-    
+
     /**
      * Set the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier
      */
     public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
         String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
-        if(campaign != null) {            
-            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
+        if (campaign != null) {
+            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true),
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
                     NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
-            
+
         }
-        if(pi != null) {            
-            updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi + "/",
+        if (pi != null) {
+            updateBreadcrumbs(new LabeledLink(pi,
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi + "/",
                     NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
         }
     }
@@ -451,7 +452,6 @@ public class NavigationHelper implements Serializable {
 
     public void reload() {
     }
-
 
     public String getApplicationUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
@@ -989,16 +989,13 @@ public class NavigationHelper implements Serializable {
      * Attaches a new link to the breadcrumb list at the appropriate position (depending on the link's weight).
      *
      * @param newLink The breadcrumb link to add.
+     * @should always remove bookmarks coming after the proposed bookmark
      */
     public void updateBreadcrumbs(LabeledLink newLink) {
         logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
-            // To avoid duplicate breadcrumbs while flipping pages, the LabeledLink.equals() method will prevent multiple breadcrumbs with the same name
-            if (breadcrumbs.contains(newLink)) {
-                logger.trace("Breadcrumb '{}' is already in the list.", newLink);
-                return;
-            }
+
             // Always add the home page if there are no breadcrumbs
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();
@@ -1013,18 +1010,27 @@ public class NavigationHelper implements Serializable {
                     break;
                 }
             }
-            breadcrumbs.add(position, newLink);
-            // Remove any following links
-            if (position < breadcrumbs.size()) {
-                try {
-                    breadcrumbs.subList(position + 1, breadcrumbs.size()).clear();
-                } catch (NullPointerException e) {
-                    // This throws a NPE sometimes
+            try {
+                // To avoid duplicate breadcrumbs while flipping pages, the LabeledLink.equals() method will prevent multiple breadcrumbs with the same name
+                if (breadcrumbs.contains(newLink)) {
+                    logger.trace("Breadcrumb '{}' is already in the list.", newLink);
+                    return;
                 }
+                breadcrumbs.add(position, newLink);
+            } finally {
+                // Remove any following links, even if the proposed link is a duplicate
+                if (position < breadcrumbs.size()) {
+                    try {
+                        breadcrumbs.subList(position + 1, breadcrumbs.size()).clear();
+                    } catch (NullPointerException e) {
+                        // This throws a NPE sometimes
+                    }
+                }
+                // logger.trace("breadcrumbs: " + breadcrumbs.size() + " " +
+                // breadcrumbs.toString());
             }
-            // logger.trace("breadcrumbs: " + breadcrumbs.size() + " " +
-            // breadcrumbs.toString());
         }
+
     }
 
     /**
@@ -1422,27 +1428,27 @@ public class NavigationHelper implements Serializable {
                 || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()
                         && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
     }
-    
+
     public String getVersion() {
         return Version.VERSION;
     }
-    
+
     public String getPublicVersion() {
         return Version.PUBLIC_VERSION;
     }
-    
+
     public String getBuildDate() {
         return Version.BUILDDATE;
     }
-    
+
     public String getBuildVersion() {
         return Version.BUILDVERSION;
     }
-    
+
     public String getApplicationName() {
         return Version.APPLICATION_NAME;
     }
-    
+
     public String getBuildDate(String pattern) {
         return Version.getBuildDate(pattern);
     }

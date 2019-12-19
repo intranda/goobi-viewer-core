@@ -285,7 +285,6 @@ public class Bookmark implements Serializable {
             String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
             if (order != null) {
-                logger.trace("url: " + thumbs.getThumbnailUrl(docs.get(0), width, height));
                 return thumbs.getThumbnailUrl(order, pi, width, height);
             }
             return thumbs.getThumbnailUrl(docs.get(0), width, height);

@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.model.viewer.LabeledLink;
 
 public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
@@ -236,5 +237,29 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(nh.getBreadcrumbs().get(3).getUrl().contains("/FOO:a.b/"));
         Assert.assertTrue(nh.getBreadcrumbs().get(4).getUrl().contains("/FOO:a.b.c/"));
         Assert.assertTrue(nh.getBreadcrumbs().get(5).getUrl().contains("/FOO:a.b.c.d/"));
+    }
+
+    /**
+     * @see NavigationHelper#updateBreadcrumbs(LabeledLink)
+     * @verifies always remove bookmarks coming after the proposed bookmark
+     */
+    @Test
+    public void updateBreadcrumbs_shouldAlwaysRemoveBookmarksComingAfterTheProposedBookmark() throws Exception {
+        NavigationHelper nh = new NavigationHelper();
+        Assert.assertEquals(0, nh.getBreadcrumbs().size());
+        nh.updateBreadcrumbs(new LabeledLink("one", "https://example.com/one", 1));
+        nh.updateBreadcrumbs(new LabeledLink("two", "https://example.com/one/two", 2));
+        nh.updateBreadcrumbs(new LabeledLink("three", "https://example.com/one/two/three", 3));
+        Assert.assertEquals(4, nh.getBreadcrumbs().size());
+        
+        // Insert new breadcrumb at 2
+        nh.updateBreadcrumbs(new LabeledLink("two-too", "https://example.com/one/two-too", 2));
+        Assert.assertEquals(3, nh.getBreadcrumbs().size());
+        Assert.assertEquals("two-too", nh.getBreadcrumbs().get(2).getName());
+        
+        // Insert duplicate at 1
+        nh.updateBreadcrumbs(new LabeledLink("one", "https://example.com/one", 1));
+        Assert.assertEquals(2, nh.getBreadcrumbs().size());
+        Assert.assertEquals("one", nh.getBreadcrumbs().get(1).getName());
     }
 }
