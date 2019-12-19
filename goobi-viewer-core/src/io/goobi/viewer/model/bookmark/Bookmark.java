@@ -227,7 +227,8 @@ public class Bookmark implements Serializable {
             url.append('/')
                     .append(DataManager.getInstance()
                             .getUrlBuilder()
-                            .buildPageUrl(pi, order != null ? Integer.valueOf(order) : 1, logId, PageType.viewMetadata));
+                            .buildPageUrl(pi, order != null ? Integer.valueOf(order) : 1, logId,
+                                    order != null ? PageType.viewObject : PageType.viewMetadata));
         }
 
         // logger.debug("URL: {}", url.toString());
