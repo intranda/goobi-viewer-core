@@ -711,7 +711,6 @@ public class CollectionView {
             //            return collection.getRepresentativeUrl();
             String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + field + "/"
                     + collection.getLuceneName() + "/";
-            logger.trace("COLLECTION single volume url: {}", ret);
             return ret;
         } else {
             String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')

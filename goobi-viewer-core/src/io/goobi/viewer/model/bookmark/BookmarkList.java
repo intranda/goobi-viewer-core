@@ -515,10 +515,9 @@ public class BookmarkList implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder("+(");
-        sb.append(items.stream().map(item -> SolrConstants.PI + ":" + item.getPi()).collect(Collectors.joining(" OR ")));
-//        for (Bookmark item : items) {
-//            sb.append(' ').append(SolrConstants.PI).append(':').append(item.getPi());
-//        }
+        for (Bookmark item : items) {
+            sb.append(' ').append(SolrConstants.PI).append(':').append(item.getPi());
+        }
         sb.append(')');
 
         return sb.toString();

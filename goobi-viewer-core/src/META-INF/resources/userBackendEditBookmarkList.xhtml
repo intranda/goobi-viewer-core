@@ -7,7 +7,7 @@
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('editbookmarklist', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookmarkLists,'bookmarks',2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,'bookmarks',2)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name, navigationHelper.applicationUrl.concat('bookmarks/edit/').concat(bookmarkBean.currentBookmarkList.id),3)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_edit,4)}" />
 		</f:metadata>
