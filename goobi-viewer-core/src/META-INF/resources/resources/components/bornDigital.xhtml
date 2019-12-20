@@ -13,7 +13,7 @@
             <h3><h:outputText value="#{msg.bornDigital_fileList}" /></h3>
             
             <!-- ACCESS DENIED -->
-            <ui:fragment rendered="#{!activeDocumentBean.accessPermissionBornDigital}">
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
                 <p>
                     <h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" />
                 </p>
