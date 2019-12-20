@@ -35,6 +35,7 @@ var viewerJS = ( function( viewer ) {
     var _maxDoubleClickDelay = 250 //ms
     var _defaults = {
     	resizeSelector: '#fullscreenViewSidebar',
+    	openPanel: "panel-1",
     	msg: {}
     };
     
@@ -399,10 +400,14 @@ var viewerJS = ( function( viewer ) {
     			
     			if ( !panelStatus.hasOwnProperty( currId ) ) {
     				// disable all panels
-    				panelStatus[ currId ] = false;
+    				if(_defaults.openPanel == currId) {
+    					panelStatus[ currId ] = true;
+    				} else {    					
+    					panelStatus[ currId ] = false;
+    				}
     				
     				// enable first panel
-		    		panelStatus[Object.keys(panelStatus)[0]] = true;
+    				// panelStatus[Object.keys(panelStatus)[_defaults.openPanel]] = true;
 		    		
 		    		// show active panels
 		    		if ( panelStatus[ currId ] ) {
@@ -415,7 +420,7 @@ var viewerJS = ( function( viewer ) {
     			}        	
     		} );
     		
-    		// write object to session storage
+    		// write object to session storage  
     		sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelStatus ) );    		
     	}
     	else {
@@ -435,7 +440,7 @@ var viewerJS = ( function( viewer ) {
     			}    			        	
     		} );    		
     	}
-    }
+    } 
 
     /**
      * @description Method to initialize the resizable view.
