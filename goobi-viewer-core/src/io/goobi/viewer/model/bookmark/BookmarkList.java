@@ -250,12 +250,22 @@ public class BookmarkList implements Serializable {
         return sb.toString();
     }
 
-    public boolean isMayView(User user) {
+    public boolean isMayView(User user) throws DAOException {
         if (isPublic) {
             return true;
         }
+        if (user == null) {
+            return false;
+        }
+        if (user.equals(owner)) {
+            return true;
+        }
+        // TODO This is expensive - cache shared lists somewhere
+        if (BookmarkTools.getBookmarkListsSharedWithUser(user).contains(this)) {
+            return true;
+        }
 
-        return true; // TODO
+        return false;
     }
 
     public boolean isMayEdit(User user) throws DAOException {
@@ -390,7 +400,7 @@ public class BookmarkList implements Serializable {
     public void generateShareKey() {
         setShareKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
     }
-    
+
     /**
      * Removes the share key.
      */
@@ -522,6 +532,6 @@ public class BookmarkList implements Serializable {
     }
 
     public String getIIIFCollectionURI() {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/user/get/"+ getId() +"/collection/";
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/user/get/" + getId() + "/collection/";
     }
 }

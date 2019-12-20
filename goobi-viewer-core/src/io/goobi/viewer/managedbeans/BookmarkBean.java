@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -48,6 +47,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.bookmark.BookmarkTools;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -347,38 +347,9 @@ public class BookmarkBean implements Serializable {
      * @param user
      * @return
      * @throws DAOException
-     * @should return shared bookmark lists
      */
-    public List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {
-        if (user == null) {
-            return Collections.emptyList();
-        }
-        List<UserGroup> userGroups = user.getAllUserGroups();
-        logger.trace("user groups: {}", userGroups.size());
-        if (userGroups.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<BookmarkList> allBookmarkLists = DataManager.getInstance().getDao().getAllBookmarkLists();
-        logger.trace("all bookmark lists: {}", allBookmarkLists.size());
-        if (allBookmarkLists.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<BookmarkList> ret = new ArrayList<>();
-        for (BookmarkList bl : allBookmarkLists) {
-            if (bl.getOwner().equals(user) || bl.getGroupShares().isEmpty()) {
-                continue;
-            }
-            for (UserGroup ug : userGroups) {
-                if (!ret.contains(bl) && bl.getGroupShares().contains(ug)) {
-                    ret.add(bl);
-                    break;
-                }
-            }
-        }
-
-        return ret;
+    public static List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {
+        return BookmarkTools.getBookmarkListsSharedWithUser(user);
     }
 
     /**
@@ -525,12 +496,11 @@ public class BookmarkBean implements Serializable {
 
         try {
             Long id = Long.parseLong(bookmarkListId);
-            Optional<BookmarkList> o = getBookmarkLists().stream().filter(bookmarkList -> id.equals(bookmarkList.getId())).findFirst();
-            if (o.isPresent()) {
-                setCurrentBookmarkList(o.get());
-            } else {
-                throw new PresentationException("No bookmark list found with id " + bookmarkListId + " of current user");
+            BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(id);
+            if (bl == null || !bl.isMayView(userBean.getUser())) {
+                throw new PresentationException("No bookmark list found with id " + bookmarkListId);
             }
+            setCurrentBookmarkList(bl);
         } catch (NumberFormatException e) {
             throw new PresentationException(bookmarkListId + " is not viable bookmark list id");
         }
