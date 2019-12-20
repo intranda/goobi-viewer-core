@@ -20,7 +20,7 @@
             </ui:fragment>
             
             <!-- ACCESS GRANTED -->
-            <ui:fragment rendered="#{activeDocumentBean.accessPermissionBornDigital}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
                 <div class="e-pub__items">
                     <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
                         <div class="e-pub__item">
