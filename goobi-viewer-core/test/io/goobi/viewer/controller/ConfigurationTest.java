@@ -383,6 +383,15 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("media", DataManager.getInstance().getConfiguration().getMediaFolder());
     }
 
+    /**
+     * @see Configuration#getPdfFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPdfFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("PDF", DataManager.getInstance().getConfiguration().getPdfFolder());
+    }
+
     @Test
     public void getVocabulariesFolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("vocabularies", DataManager.getInstance().getConfiguration().getVocabulariesFolder());
@@ -1093,12 +1102,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isPagePdfEnabled()
+     * @see Configuration#isGeneratePdfInTaskManager()
      * @verifies return correct value
      */
     @Test
-    public void isPagePdfEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPagePdfEnabled());
+    public void isGeneratePdfInTaskManager_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager());
     }
 
     /**
@@ -1111,12 +1120,93 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isTitlePdfEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isTitlePdfEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isTitlePdfEnabled());
+    }
+
+    /**
+     * @see Configuration#isTocPdfEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isTocPdfEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isTocPdfEnabled());
+    }
+
+    /**
+     * @see Configuration#isPagePdfEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isPagePdfEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPagePdfEnabled());
+    }
+
+    /**
      * @see Configuration#isDocHierarchyPdfEnabled()
      * @verifies return correct value
      */
     @Test
     public void isDocHierarchyPdfEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDocHierarchyPdfEnabled());
+    }
+
+    /**
+     * @see Configuration#isTitleEpubEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isTitleEpubEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTitleEpubEnabled());
+    }
+
+    /**
+     * @see Configuration#isTocEpubEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isTocEpubEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTocEpubEnabled());
+    }
+
+    /**
+     * @see Configuration#isMetadataEpubEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isMetadataEpubEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isMetadataEpubEnabled());
+    }
+
+    /**
+     * @see Configuration#getDownloadFolder(String)
+     * @verifies return correct value for pdf
+     */
+    @Test
+    public void getDownloadFolder_shouldReturnCorrectValueForPdf() throws Exception {
+        Assert.assertEquals("/opt/digiverso/viewer/download_test_pdf", DataManager.getInstance().getConfiguration().getDownloadFolder("pdf"));
+    }
+
+    /**
+     * @see Configuration#getDownloadFolder(String)
+     * @verifies return correct value for epub
+     */
+    @Test
+    public void getDownloadFolder_shouldReturnCorrectValueForEpub() throws Exception {
+        Assert.assertEquals("/opt/digiverso/viewer/download_test_epub", DataManager.getInstance().getConfiguration().getDownloadFolder("epub"));
+    }
+
+    /**
+     * @see Configuration#getDownloadFolder(String)
+     * @verifies return empty string if type unknown
+     */
+    @Test
+    public void getDownloadFolder_shouldReturnEmptyStringIfTypeUnknown() throws Exception {
+        Assert.assertEquals("", DataManager.getInstance().getConfiguration().getDownloadFolder("xxx"));
     }
 
     /**
@@ -1225,24 +1315,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isSubthemesEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSubthemesEnabled());
-    }
-
-    /**
-     * @see Configuration#isTitlePdfEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isTitlePdfEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isTitlePdfEnabled());
-    }
-
-    /**
-     * @see Configuration#isTocPdfEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isTocPdfEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isTocPdfEnabled());
     }
 
     /**
@@ -1404,7 +1476,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(7, DataManager.getInstance().getConfiguration().getAdvancedSearchFields().size());
+        Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getAdvancedSearchFields().size());
     }
 
     /**
@@ -1470,15 +1542,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getTitleBreadcrumbsMaxTitleLength_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(20, DataManager.getInstance().getConfiguration().getTitleBreadcrumbsMaxTitleLength());
-    }
-
-    /**
-     * @see Configuration#isUseExternalCS()
-     * @verifies return correct value
-     */
-    @Test
-    public void getUseExternalCS_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseExternalCS());
     }
 
     /**
@@ -1728,7 +1791,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getCmdiFolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("cmdi", DataManager.getInstance().getConfiguration().getCmdiFolder());
     }
-    
 
     /**
      * @see Configuration#getAnnotationFolder()
@@ -2096,31 +2158,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage());
     }
 
-    @Test
-    public void testGetTaskManagerRestUrl() {
-        Assert.assertEquals("taskmanager_url/rest", DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-    }
-
-    @Test
-    public void testGetTaskManagerServiceUrl() {
-        Assert.assertEquals("taskmanager_url/service", DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl());
-    }
-
-    @Test
-    public void testGetReCaptchaSiteKey() {
-        Assert.assertEquals("6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3", DataManager.getInstance().getConfiguration().getReCaptchaSiteKey());
-    }
-
-    @Test
-    public void testIsTocEpubEnabled() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isTocEpubEnabled());
-    }
-
-    @Test
-    public void testIsSearchInItemEnabled() {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
-    }
-
     /**
      * @see Configuration#getCollectionDisplayDepthForSearch(String)
      * @verifies return correct value
@@ -2165,11 +2202,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isAddCollectionHierarchyToBreadcrumbs_shouldReturnFalseIfNoCollectionConfigWasFound() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
-    }
-
-    @Test
-    public void testGetDownloadUrl() {
-        Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
     }
 
     @Test
@@ -2334,13 +2366,17 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
     }
 
+    /**
+     * @see Configuration#isDisplayEmptyTocInSidebar()
+     * @verifies return correct value
+     */
     @Test
-    public void testSidebarTocVisibleIfEmpty() throws Exception {
+    public void isDisplayEmptyTocInSidebar_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
     }
 
     @Test
-    public void testIsDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
+    public void isDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());
     }
 
@@ -2380,17 +2416,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
     }
 
-    @Test
-    public void testGetWebapiToken() {
-        Assert.assertEquals("test", DataManager.getInstance().getConfiguration().getWebApiToken());
-
-    }
-
-    @Test
-    public void testAllowRedirectCollectionToWork() {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
-    }
-
     /**
      * @see Configuration#getDocstrctWhitelistFilterSuffix()
      * @verifies return correct value
@@ -2400,13 +2425,16 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("ISWORK:true OR ISANCHOR:true", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery());
     }
 
+    /**
+     * @see Configuration#getIIIFMetadataLabel(String)
+     * @verifies return correct values
+     */
     @Test
-    public void testGetIIIFMetadataLabel() {
+    public void getIIIFMetadataLabel_shouldReturnCorrectValues() throws Exception {
         Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("MD_*"));
         Assert.assertEquals("label_year", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("YEAR"));
         Assert.assertEquals("label_provenienz", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("Provenienz/MD_EVENT_DETAILS"));
         Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("/YEAR"));
-
     }
 
     /**
@@ -2448,5 +2476,177 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
         Assert.assertEquals(1, mdTitle.getParams().size());
         Assert.assertEquals("bar", mdTitle.getParams().get(0).getReplaceRules().get("foo"));
+    }
+
+    /**
+     * @see Configuration#getDocstrctWhitelistFilterQuery()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDocstrctWhitelistFilterQuery_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("ISWORK:true OR ISANCHOR:true", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery());
+    }
+
+    /**
+     * @see Configuration#getReCaptchaSiteKey()
+     * @verifies return correct value
+     */
+    @Test
+    public void getReCaptchaSiteKey_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3", DataManager.getInstance().getConfiguration().getReCaptchaSiteKey());
+    }
+
+    /**
+     * @see Configuration#getTaskManagerRestUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTaskManagerRestUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("taskmanager_url/rest", DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
+    }
+
+    /**
+     * @see Configuration#getTaskManagerServiceUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTaskManagerServiceUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("taskmanager_url/service", DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl());
+    }
+
+    /**
+     * @see Configuration#getThemeRootPath()
+     * @verifies return correct value
+     */
+    @Test
+    public void getThemeRootPath_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-mest/WebContent/resources/themes/",
+                DataManager.getInstance().getConfiguration().getThemeRootPath());
+    }
+
+    /**
+     * @see Configuration#getTocIndentation()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTocIndentation_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(15, DataManager.getInstance().getConfiguration().getTocIndentation());
+    }
+
+    /**
+     * @see Configuration#getTranskribusUserName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTranskribusUserName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("transkribus_user", DataManager.getInstance().getConfiguration().getTranskribusUserName());
+    }
+
+    /**
+     * @see Configuration#getTranskribusPassword()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTranskribusPassword_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("transkribus_pwd", DataManager.getInstance().getConfiguration().getTranskribusPassword());
+    }
+
+    /**
+     * @see Configuration#getDfgViewerUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDfgViewerUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("dfg-viewer_value", DataManager.getInstance().getConfiguration().getDfgViewerUrl());
+    }
+
+    /**
+     * @see Configuration#isDisplayCrowdsourcingModuleLinks()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayCrowdsourcingModuleLinks_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks());
+    }
+
+    /**
+     * @see Configuration#isDisplayTitlePURL()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayTitlePURL_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayTitlePURL());
+    }
+
+    /**
+     * @see Configuration#isSearchInItemEnabled()
+     * @verifies return true if the search field to search the current item/work is configured to be visible
+     */
+    @Test
+    public void isSearchInItemEnabled_shouldReturnTrueIfTheSearchFieldToSearchTheCurrentItemworkIsConfiguredToBeVisible() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
+    }
+
+    /**
+     * @see Configuration#isUseReCaptcha()
+     * @verifies return correct value
+     */
+    @Test
+    public void isUseReCaptcha_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isUseReCaptcha());
+    }
+
+    /**
+     * @see Configuration#getWebApiToken()
+     * @verifies return correct value
+     */
+    @Test
+    public void getWebApiToken_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("test", DataManager.getInstance().getConfiguration().getWebApiToken());
+    }
+
+    /**
+     * @see Configuration#isAddCORSHeader()
+     * @verifies return correct value
+     */
+    @Test
+    public void isAddCORSHeader_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAddCORSHeader());
+    }
+
+    /**
+     * @see Configuration#isAllowRedirectCollectionToWork()
+     * @verifies return correct value
+     */
+    @Test
+    public void isAllowRedirectCollectionToWork_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+    }
+
+    /**
+     * @see Configuration#isLimitImageHeight()
+     * @verifies return correct value
+     */
+    @Test
+    public void isLimitImageHeight_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isLimitImageHeight());
+    }
+
+    /**
+     * @see Configuration#getLimitImageHeightUpperRatioThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getLimitImageHeightUpperRatioThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(0.2f == DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold());
+    }
+
+    /**
+     * @see Configuration#getLimitImageHeightLowerRatioThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(2.0f == DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
     }
 }

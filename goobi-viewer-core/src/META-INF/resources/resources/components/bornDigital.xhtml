@@ -13,14 +13,14 @@
             <h3><h:outputText value="#{msg.bornDigital_fileList}" /></h3>
             
             <!-- ACCESS DENIED -->
-            <ui:fragment rendered="#{!activeDocumentBean.accessPermissionEpub}">
+            <ui:fragment rendered="#{!activeDocumentBean.accessPermissionBornDigital}">
                 <p>
                     <h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" />
                 </p>
             </ui:fragment>
             
             <!-- ACCESS GRANTED -->
-            <ui:fragment rendered="#{activeDocumentBean.accessPermissionEpub}">
+            <ui:fragment rendered="#{activeDocumentBean.accessPermissionBornDigital}">
                 <div class="e-pub__items">
                     <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
                         <div class="e-pub__item">
