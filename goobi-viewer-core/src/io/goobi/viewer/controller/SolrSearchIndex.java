@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.comparators.ReverseComparator;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -1367,7 +1368,6 @@ public final class SolrSearchIndex {
     }
 
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
-
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
@@ -1379,4 +1379,25 @@ public final class SolrSearchIndex {
         }
     }
 
+    /**
+     * @param doc
+     * @return
+     * @throws IndexUnreachableException
+     * @should return correct value for page docs
+     * @should return correct value for docsctrct docs
+     */
+    public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
+        StructElement structElement = new StructElement(0, doc);
+        String fileExtension = "";
+
+        String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
+        if (StringUtils.isEmpty(filename)) {
+            filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
+        }
+        if (filename != null) {
+            fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
+        }
+
+        return fileExtension != null && fileExtension.toLowerCase().matches("(tiff?|jpe?g|png|jp2|gif)");
+    }
 }

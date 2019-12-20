@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -210,8 +212,15 @@ public class SessionStoreBookmarkManager {
     public static String generateBookmarkListInfo(String text, String itemText, String emptyListText, BookmarkList bookmarkList) {
         StringBuilder itemList = new StringBuilder();
         for (Bookmark item : bookmarkList.getItems()) {
-            String currentItemText = itemText.replace("{0}", item.getUrl()).replace("{1}", item.getName());
-            itemList.append(currentItemText);
+            try {
+                String currentItemText = itemText.replace("{0}", item.getUrl()).replace("{1}", item.getName());
+                itemList.append(currentItemText);
+            } catch (PresentationException e) {
+                logger.error(e.getMessage());
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage(), e);
+            }
+
         }
         if (itemList.toString().isEmpty()) {
             itemList.append(emptyListText);

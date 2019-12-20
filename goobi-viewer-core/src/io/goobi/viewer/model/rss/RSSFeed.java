@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -42,6 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -51,7 +51,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.model.viewer.StructElement;
 
 public class RSSFeed {
     /**
@@ -194,7 +193,7 @@ public class RSSFeed {
             String bookSeries = "";
             int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
             int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-            boolean hasImages = isHasImages(doc);
+            boolean hasImages = SolrSearchIndex.isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
@@ -449,7 +448,7 @@ public class RSSFeed {
 
             int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
             int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-            boolean hasImages = isHasImages(doc);
+            boolean hasImages = SolrSearchIndex.isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
@@ -668,26 +667,5 @@ public class RSSFeed {
             imageUrl = sbImageUrl.toString();
         }
         return imageUrl;
-    }
-
-    /**
-     * @param doc
-     * @return
-     * @throws IndexUnreachableException
-     */
-    private static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
-
-        StructElement structElement = new StructElement(0, doc);
-        String fileExtension = "";
-
-        String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
-        if (StringUtils.isEmpty(filename)) {
-            filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
-        }
-        if (filename != null) {
-            fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
-        }
-
-        return fileExtension != null && fileExtension.toLowerCase().matches("(tiff?|jpe?g|png|jp2|gif)");
     }
 }

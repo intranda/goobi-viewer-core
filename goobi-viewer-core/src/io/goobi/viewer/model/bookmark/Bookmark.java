@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -97,6 +99,9 @@ public class Bookmark implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_added")
     private Date dateAdded;
+
+    @Transient
+    private String url;
 
     /** Empty constructor. */
     public Bookmark() {
@@ -213,26 +218,54 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * Constructs the image view URL for this bookmark.
+     * Returns the image view URL for this bookmark. If this is the first call, the url is constructed first.
      *
      * @return The URL as string.
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public String getUrl() {
-        StringBuilder url = new StringBuilder();
-        url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-
-        if (StringUtils.isNotEmpty(urn)) {
-            url.append("/resolver?identifier=").append(urn);
-        } else {
-            url.append('/')
-                    .append(DataManager.getInstance()
-                            .getUrlBuilder()
-                            .buildPageUrl(pi, order != null ? Integer.valueOf(order) : 1, logId,
-                                    order != null ? PageType.viewObject : PageType.viewMetadata));
+    public String getUrl() throws PresentationException, IndexUnreachableException {
+        if (url != null) {
+            return url;
         }
 
-        // logger.debug("URL: {}", url.toString());
-        return url.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+
+        if (StringUtils.isNotEmpty(urn)) {
+            sb.append("/resolver?identifier=").append(urn);
+        } else {
+            // Determine page type
+            StringBuilder sbQuery = new StringBuilder("+");
+            if (order != null) {
+                sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.ORDER)
+                        .append(':')
+                        .append(order)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE");
+            } else {
+                sbQuery.append(SolrConstants.PI).append(':').append(pi);
+            }
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), null);
+            PageType pageType = PageType.viewMetadata;
+            if (doc != null) {
+                boolean isAnchor = doc.containsKey(SolrConstants.ISANCHOR) ? (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR) : false;
+                pageType = PageType.determinePageType((String) doc.getFieldValue(SolrConstants.DOCSTRCT),
+                        (String) doc.getFieldValue(SolrConstants.MIMETYPE), isAnchor, SolrSearchIndex.isHasImages(doc), order != null);
+                logger.trace("found page type: {}", pageType);
+            }
+            sb.append('/')
+                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, order != null ? Integer.valueOf(order) : 1, logId, pageType));
+        }
+        url = sb.toString();
+
+        // logger.debug("URL: {}", url);
+        return url;
     }
 
     /**

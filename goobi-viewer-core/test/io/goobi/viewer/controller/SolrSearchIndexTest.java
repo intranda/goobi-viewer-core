@@ -373,4 +373,28 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         DataManager.getInstance().getSearchIndex().dataRepositoryNames.put("PPN123", "superrepo");
         Assert.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
     }
+
+    /**
+     * @see SolrSearchIndex#isHasImages(SolrDocument)
+     * @verifies return correct value for page docs
+     */
+    @Test
+    public void isHasImages_shouldReturnCorrectValueForPageDocs() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.FILENAME, "foo.jpg");
+        Assert.assertTrue(SolrSearchIndex.isHasImages(doc));
+        doc.setField(SolrConstants.FILENAME, "foo.txt");
+        Assert.assertFalse(SolrSearchIndex.isHasImages(doc));
+    }
+
+    /**
+     * @see SolrSearchIndex#isHasImages(SolrDocument)
+     * @verifies return correct value for docsctrct docs
+     */
+    @Test
+    public void isHasImages_shouldReturnCorrectValueForDocsctrctDocs() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.THUMBNAIL, "foo.jpg");
+        Assert.assertTrue(SolrSearchIndex.isHasImages(doc));
+    }
 }
