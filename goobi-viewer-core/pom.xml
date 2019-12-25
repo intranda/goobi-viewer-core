@@ -951,8 +951,29 @@
 					<doCheck>false</doCheck>
 				</configuration>
 			</plugin>
-			
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<doclint>none</doclint>
+					<fixTags>link,throws,return,param</fixTags>
+					<tags>
+						<tag>
+							<name>should</name>
+							<placement>X</placement>
+						</tag>
+					</tags>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
