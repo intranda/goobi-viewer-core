@@ -52,6 +52,7 @@ public class IndexingResource {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexingResource.class);
 
+    /** Constant <code>RESOURCE_PATH="/index"</code> */
     public static final String RESOURCE_PATH = "/index";
 
     private static Thread workerThread = null;
@@ -61,22 +62,25 @@ public class IndexingResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for IndexingResource.</p>
+     */
     public IndexingResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected IndexingResource(HttpServletRequest request) {
         this.servletRequest = request;
     }
 
     /**
-     * @param outputPath Output path for sitemap files
-     * @param firstPageOnly
-     * @param params
+     * <p>deleteRecord.</p>
+     *
+     * @param params a {@link io.goobi.viewer.servlets.rest.utils.IndexingRequestParameters} object.
      * @return Short summary of files created
      */
     @SuppressWarnings("unchecked")

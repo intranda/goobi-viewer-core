@@ -18,21 +18,45 @@ package io.goobi.viewer.model.cms;
 import io.goobi.viewer.managedbeans.CmsBean;
 
 /**
- * Any object which may directly contain a {@link CMSMediaItem}. Only classes implementing this interface may be given a mediaItem 
- * in the selectMedia dialog, since the dialog uses {@link CmsBean#fillSelectedMediaHolder(CategorizableTranslatedSelectable)} to apply the selected MediaItem
- * 
- * @author florian
+ * Any object which may directly contain a {@link io.goobi.viewer.model.cms.CMSMediaItem}. Only classes implementing this interface may be given a mediaItem
+ * in the selectMedia dialog, since the dialog uses {@link io.goobi.viewer.managedbeans.CmsBean#fillSelectedMediaHolder(CategorizableTranslatedSelectable)} to apply the selected MediaItem
  *
+ * @author florian
  */
 public interface CMSMediaHolder {
 
+	/**
+	 * <p>setMediaItem.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 */
 	public void setMediaItem(CMSMediaItem item);
 	
+	/**
+	 * <p>getMediaItem.</p>
+	 *
+	 * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 */
 	public CMSMediaItem getMediaItem();
 	
+	/**
+	 * <p>getMediaFilter.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getMediaFilter();
 
+	/**
+	 * <p>hasMediaItem.</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean hasMediaItem();
 
+	/**
+	 * <p>getMediaItemWrapper.</p>
+	 *
+	 * @return a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
+	 */
 	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper();
 }

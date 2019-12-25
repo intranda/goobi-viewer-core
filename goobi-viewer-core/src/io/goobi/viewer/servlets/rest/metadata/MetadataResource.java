@@ -36,6 +36,10 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
+/**
+ * <p>MetadataResource class.</p>
+ *
+ */
 @Path("/metadata")
 @ViewerRestServiceBinding
 public class MetadataResource {
@@ -45,6 +49,15 @@ public class MetadataResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>getTagsForPageJson.</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @param fields a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @SuppressWarnings("unchecked")
     @GET
     @Path("/{query}/{fields}")

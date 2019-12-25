@@ -39,35 +39,55 @@ public class DateTools {
     private static final Logger logger = LoggerFactory.getLogger(DateTools.class);
 
     // "DateTimeFormat is thread-safe and immutable, and the formatters it returns are as well." - JodaTime Javadoc
+    /** Constant <code>formatterISO8601BasicDateTime</code> */
     public static DateTimeFormatter formatterISO8601BasicDateTime = ISODateTimeFormat.basicDateTime(); // yyyyMMddHHmmss
+    /** Constant <code>formatterISO8601BasicDate</code> */
     public static DateTimeFormatter formatterISO8601BasicDate = ISODateTimeFormat.basicDate(); // yyyyMMdd
+    /** Constant <code>formatterISO8601BasicDateNoYear</code> */
     public static DateTimeFormatter formatterISO8601BasicDateNoYear = DateTimeFormat.forPattern("MMdd");
+    /** Constant <code>formatterISO8601YearMonth</code> */
     public static DateTimeFormatter formatterISO8601YearMonth = DateTimeFormat.forPattern("yyyy-MM"); // yyyy-MM
+    /** Constant <code>formatterISO8601Date</code> */
     public static DateTimeFormatter formatterISO8601Date = ISODateTimeFormat.date(); // yyyy-MM-dd
+    /** Constant <code>formatterISO8601DateReverse</code> */
     public static DateTimeFormatter formatterISO8601DateReverse = DateTimeFormat.forPattern("dd-MM-yyyy"); // dd-MM-YYYY
+    /** Constant <code>formatterISO8601DateTime</code> */
     public static DateTimeFormatter formatterISO8601DateTime = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    /** Constant <code>formatterISO8601DateTimeMS</code> */
     public static DateTimeFormatter formatterISO8601DateTimeMS = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    /** Constant <code>formatterISO8601DateTimeFull</code> */
     public static DateTimeFormatter formatterISO8601DateTimeFull = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+    /** Constant <code>formatterISO8601DateTimeFullWithTimeZone</code> */
     public static DateTimeFormatter formatterISO8601DateTimeFullWithTimeZone = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+    /** Constant <code>formatterISO8601Time</code> */
     public static DateTimeFormatter formatterISO8601Time = DateTimeFormat.forPattern("HH:mm:ss");
+    /** Constant <code>formatterDEDateTime</code> */
     public static DateTimeFormatter formatterDEDateTime = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss");
+    /** Constant <code>formatterENDateTime</code> */
     public static DateTimeFormatter formatterENDateTime = DateTimeFormat.forPattern("MM/dd/yyyy h:mm:ss a");
+    /** Constant <code>formatterDEDateTimeNoSeconds</code> */
     public static DateTimeFormatter formatterDEDateTimeNoSeconds = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm");
+    /** Constant <code>formatterENDateTimeNoSeconds</code> */
     public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormat.forPattern("MM/dd/yyyy h:mm a");
+    /** Constant <code>formatterDEDate</code> */
     public static DateTimeFormatter formatterDEDate = DateTimeFormat.forPattern("dd.MM.yyyy");
+    /** Constant <code>formatterENDate</code> */
     public static DateTimeFormatter formatterENDate = DateTimeFormat.forPattern("MM/dd/yyyy");
+    /** Constant <code>formatterCNDate</code> */
     public static DateTimeFormatter formatterCNDate = DateTimeFormat.forPattern("yyyy.MM.dd");
+    /** Constant <code>formatterJPDate</code> */
     public static DateTimeFormatter formatterJPDate = DateTimeFormat.forPattern("yyyy/MM/dd");;
+    /** Constant <code>formatterFilename</code> */
     public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
     /**
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).
      *
-     * @param dateString
-     * @return
+     * @param dateString a {@link java.lang.String} object.
      * @should parse single date correctly
      * @should parse multiple dates correctly
      * @should parse dates in parentheses correctly
+     * @return a {@link java.util.List} object.
      */
     public static List<Date> parseMultipleDatesFromString(String dateString) {
         List<Date> ret = new ArrayList<>();
@@ -121,9 +141,9 @@ public class DateTools {
     }
 
     /**
+     * <p>parseDateTimeFromString.</p>
      *
-     * @param dateString
-     * @return
+     * @param dateString a {@link java.lang.String} object.
      * @should parse iso date formats correctly
      * @should parse iso date as UTC correctly
      * @should parse german date formats correctly
@@ -132,6 +152,8 @@ public class DateTools {
      * @should parse japanese date formats correctly
      * @should return null if unsupported format
      * @should throw IllegalArgumentException if dateString is null
+     * @param fromUTC a boolean.
+     * @return a {@link org.joda.time.DateTime} object.
      */
     public static DateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
         if (dateString == null) {
@@ -194,9 +216,10 @@ public class DateTools {
     }
 
     /**
+     * <p>parseDateFromString.</p>
      *
-     * @param dateString
-     * @return
+     * @param dateString a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
      */
     public static Date parseDateFromString(String dateString) {
         DateTime dateTime = parseDateTimeFromString(dateString, false);
@@ -212,9 +235,9 @@ public class DateTools {
      *
      * @param date Date to format.
      * @param language ISO 639-1 (two-character) language code.
-     * @return
      * @should format date correctly for the given language
      * @should use English format for unknown languages
+     * @return a {@link java.lang.String} object.
      */
     public static String getLocalDate(Date date, String language) {
         switch (language) {
@@ -228,9 +251,9 @@ public class DateTools {
     /**
      * FIXME add some more documentation This method is used by the crowdsourcing module
      *
-     * @param dateEnd
-     * @param locale
-     * @return
+     * @param locale a {@link java.util.Locale} object.
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String formatDate(Date date, Locale locale) {
         if (locale != null) {

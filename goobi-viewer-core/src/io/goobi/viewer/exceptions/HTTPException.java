@@ -17,6 +17,10 @@ package io.goobi.viewer.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * <p>HTTPException class.</p>
+ *
+ */
 public class HTTPException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5840484445206784670L;
@@ -24,7 +28,10 @@ public class HTTPException extends Exception implements Serializable {
     private final int code;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for HTTPException.</p>
+     *
+     * @param string {@link java.lang.String}
+     * @param code a int.
      */
     public HTTPException(int code, String string) {
         super(string);
@@ -32,6 +39,8 @@ public class HTTPException extends Exception implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>code</code>.</p>
+     *
      * @return the code
      */
     public int getCode() {

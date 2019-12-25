@@ -22,12 +22,12 @@ import io.goobi.viewer.model.viewer.StructElement;
 /**
  * Sorts StructElements by anchors first, then works, then everything else
  * within anchors and works, elements are sorted by PI, all other elements are sorted by LOGID
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class StructElementComparator implements Comparator<StructElement> {
 
+    /** {@inheritDoc} */
     @Override
     public int compare(StructElement ds1, StructElement ds2) {
         if(ds1 == null) {

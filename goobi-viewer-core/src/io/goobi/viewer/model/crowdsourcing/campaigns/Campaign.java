@@ -83,12 +83,11 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
- * 
+ *
  * A Campaign is a template to create annotations of specific types for a limited set of target resources and optionally by limited user group within
  * a limited time frame. The types of annotations created are determined by the {@link Question Questions} contained in this Campaign
- * 
- * @author florian
  *
+ * @author florian
  */
 @Entity
 @Table(name = "cs_campaigns")
@@ -227,8 +226,8 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Locale constructor.
-     * 
-     * @param selectedLocale
+     *
+     * @param selectedLocale a {@link java.util.Locale} object.
      */
     public Campaign(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
@@ -237,6 +236,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -248,6 +248,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -266,7 +267,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>getCampaignVisibilityValues.</p>
+     *
      * @return available values of the CampaignVisibility enum
      */
     @JsonIgnore
@@ -275,10 +277,10 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>getNumRecords.</p>
+     *
      * @return total number of records encompassed by the configured solrQuery
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public long getNumRecords() throws IndexUnreachableException {
         try {
@@ -290,8 +292,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
-     * @param status
+     * <p>getNumRecordsForStatus.</p>
+     *
+     * @param status a {@link java.lang.String} object.
      * @return number of records with the given status
      */
     public long getNumRecordsForStatus(String status) {
@@ -311,9 +314,10 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>getNumRecordsToAnnotate.</p>
+     *
      * @return Number of records whose status is neither REVIEW nor FINISHED
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public long getNumRecordsToAnnotate() throws IndexUnreachableException {
         long all = getNumRecords();
@@ -334,9 +338,9 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
-     * 
+     *
      * @return number of users
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public long getContributorCount() throws DAOException {
         Set<Long> userIds = new HashSet<>();
@@ -354,10 +358,10 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * FINISHED records in percent
-     * 
+     *
      * @return percentage of records marked as finished relative to the total number or records
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public int getProgress() throws IndexUnreachableException, PresentationException {
         float numRecords = getNumRecords();
@@ -367,7 +371,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Returns the number of whole days between today and the starting date for this campaign.
-     * 
+     *
      * @return whole days left between today and dateStart; -1 if no dateStart
      * @should return -1 if no dateStart
      * @should calculate days correctly
@@ -385,7 +389,7 @@ public class Campaign implements CMSMediaHolder {
     /**
      * Returns the number of whole days between today and the end date for this campaign. Because this method only returns the number of whole days
      * left, its main purpose is for displaying the number of days to the user, and it shouldn't be used for access control.
-     * 
+     *
      * @return whole days left between today and dateEnd; -1 if no dateEnd
      * @should return -1 if no dateEnd
      * @should calculate days correctly
@@ -401,7 +405,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>getDaysLeftAsString.</p>
+     *
      * @return number of days left as string; infinity symbol if no dateEnd
      */
     public String getDaysLeftAsString() {
@@ -413,7 +418,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>isHasStarted.</p>
+     *
      * @return true if dateStart lies after now; false otherwise
      * @should return true if dateStart null
      * @should return true if dateStart equals now
@@ -432,7 +438,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>isHasEnded.</p>
+     *
      * @return true if dateEnd lies before now; false otherwise
      * @should return false if dateEnd null
      * @should return false if dateEnd after now
@@ -451,13 +458,13 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Checks whether the given user may annotate or review records based on the given status.
-     * 
-     * @param user
-     * @param privilege
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
      */
     public boolean isUserAllowedAction(User user, CampaignRecordStatus status) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("isUserAllowedAction: {}", status);
@@ -480,17 +487,18 @@ public class Campaign implements CMSMediaHolder {
     /**
      * Returns the title value in the current language of the campaign object (current tab). This is meant to be used for campaign editing only, since
      * the language will not be in sync with the selected locale!
-     * 
-     * @return
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "title");
     }
 
     /**
-     * 
-     * @param title
+     * <p>setTitle.</p>
+     *
+     * @param title a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setTitle(String title) {
@@ -500,14 +508,19 @@ public class Campaign implements CMSMediaHolder {
     /**
      * Returns the menu title value in the current language of the campaign object (current tab). This is meant to be used for campaign editing only,
      * since the language will not be in sync with the selected locale!
-     * 
-     * @return
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getMenuTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "menu_title");
     }
 
+    /**
+     * <p>getMenuTitleOrElseTitle.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMenuTitleOrElseTitle() {
         String title = getMenuTitle();
         if (StringUtils.isBlank(title)) {
@@ -517,9 +530,11 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * @param localeString
-     * @param b
-     * @return
+     * <p>getMenuTitleOrElseTitle.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
+     * @param useFallback a boolean.
+     * @return a {@link java.lang.String} object.
      */
     public String getMenuTitleOrElseTitle(String lang, boolean useFallback) {
         String title = getMenuTitle(lang, useFallback);
@@ -530,9 +545,10 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
-     * @param title
+     * <p>setMenuTitle.</p>
+     *
      * @should set value correctly
+     * @param menuTitle a {@link java.lang.String} object.
      */
     public void setMenuTitle(String menuTitle) {
         CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), menuTitle, "menu_title", this);
@@ -541,7 +557,7 @@ public class Campaign implements CMSMediaHolder {
     /**
      * Returns the description value in the current language of the campaign object (current tab). This is meant to be used for campaign editing only,
      * since the language will not be in sync with the selected locale!
-     * 
+     *
      * @return Description value in the current language in the campaign object
      * @should return correct value
      */
@@ -550,69 +566,81 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
-     * @param title
+     * <p>setDescription.</p>
+     *
      * @should set value correctly
+     * @param description a {@link java.lang.String} object.
      */
     public void setDescription(String description) {
         CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description", this);
     }
 
     /**
-     * 
-     * @param lang
-     * @return
+     * <p>getTitle.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTitle(String lang) {
         return getTitle(lang, false);
     }
 
     /**
-     * 
-     * @param lang
+     * <p>getTitle.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
      * @return the title of the given language or if it doesn't exist the title of the default language
+     * @param useFallback a boolean.
      */
     public String getTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "title", useFallback);
     }
 
     /**
-     * 
-     * @param lang
-     * @return
+     * <p>getDescription.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getDescription(String lang) {
         return getDescription(lang, false);
     }
 
     /**
-     * 
-     * @param lang
-     * @return
+     * <p>getDescription.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
+     * @param useFallback a boolean.
+     * @return a {@link java.lang.String} object.
      */
     public String getDescription(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "description", useFallback);
     }
 
     /**
-     * 
-     * @param lang
-     * @return
+     * <p>getMenuTitle.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getMenuTitle(String lang) {
         return getMenuTitle(lang, false);
     }
 
     /**
-     * 
-     * @param lang
-     * @return
+     * <p>getMenuTitle.</p>
+     *
+     * @param lang a {@link java.lang.String} object.
+     * @param useFallback a boolean.
+     * @return a {@link java.lang.String} object.
      */
     public String getMenuTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "menu_title", useFallback);
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     @JsonIgnore
@@ -620,6 +648,12 @@ public class Campaign implements CMSMediaHolder {
         return id;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @param idAsURI a {@link java.net.URI} object.
+     * @return a {@link java.lang.Long} object.
+     */
     public static Long getId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
@@ -630,12 +664,19 @@ public class Campaign implements CMSMediaHolder {
         return null;
     }
 
+    /**
+     * <p>getIdAsURI.</p>
+     *
+     * @return a {@link java.net.URI} object.
+     */
     @JsonProperty("id")
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -643,6 +684,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>dateCreated</code>.</p>
+     *
      * @return the dateCreated
      */
     public Date getDateCreated() {
@@ -650,6 +693,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>dateCreated</code>.</p>
+     *
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
@@ -657,6 +702,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     *
      * @return the dateUpdated
      */
     public Date getDateUpdated() {
@@ -664,6 +711,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -671,6 +720,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>visibility</code>.</p>
+     *
      * @return the visibility
      */
     public CampaignVisibility getVisibility() {
@@ -678,6 +729,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>visibility</code>.</p>
+     *
      * @param visibility the visibility to set
      */
     public void setVisibility(CampaignVisibility visibility) {
@@ -685,6 +738,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>dateStart</code>.</p>
+     *
      * @return the dateStart
      */
     public Date getDateStart() {
@@ -692,6 +747,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>dateStart</code>.</p>
+     *
      * @param dateStart the dateStart to set
      */
     public void setDateStart(Date dateStart) {
@@ -699,7 +756,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>getDateStartString.</p>
+     *
      * @return formatted ISO string representation of stateStart
      */
     public String getDateStartString() {
@@ -711,8 +769,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
-     * @param dateStartString
+     * <p>setDateStartString.</p>
+     *
+     * @param dateStartString a {@link java.lang.String} object.
      * @should parse string correctly
      */
     public void setDateStartString(String dateStartString) {
@@ -725,6 +784,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>dateEnd</code>.</p>
+     *
      * @return the dateEnd
      */
     public Date getDateEnd() {
@@ -732,6 +793,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>dateEnd</code>.</p>
+     *
      * @param dateEnd the dateEnd to set
      */
     public void setDateEnd(Date dateEnd) {
@@ -739,7 +802,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
+     * <p>getDateEndString.</p>
+     *
      * @return formatted ISO string representation of dateEnd
      */
     public String getDateEndString() {
@@ -751,8 +815,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * 
-     * @param dateEndString
+     * <p>setDateEndString.</p>
+     *
+     * @param dateEndString a {@link java.lang.String} object.
      * @should parse string correctly
      */
     public void setDateEndString(String dateEndString) {
@@ -764,6 +829,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>contentItem</code>.</p>
+     *
      * @return the contentItem
      */
     public CMSContentItem getContentItem() {
@@ -771,6 +838,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>solrQuery</code>.</p>
+     *
      * @return the solrQuery
      */
     public String getSolrQuery() {
@@ -778,6 +847,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>solrQuery</code>.</p>
+     *
      * @param solrQuery the solrQuery to set
      */
     public void setSolrQuery(String solrQuery) {
@@ -786,6 +857,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>permalink</code>.</p>
+     *
      * @return the permalink
      */
     public String getPermalink() {
@@ -793,6 +866,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>permalink</code>.</p>
+     *
      * @param permalink the permalink to set
      */
     public void setPermalink(String permalink) {
@@ -800,6 +875,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>breadcrumbParentCmsPageId</code>.</p>
+     *
      * @return the breadcrumbParentCmsPageId
      */
     public String getBreadcrumbParentCmsPageId() {
@@ -807,6 +884,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>breadcrumbParentCmsPageId</code>.</p>
+     *
      * @param breadcrumbParentCmsPageId the breadcrumbParentCmsPageId to set
      */
     public void setBreadcrumbParentCmsPageId(String breadcrumbParentCmsPageId) {
@@ -814,6 +893,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>translations</code>.</p>
+     *
      * @return the translations
      */
     public List<CampaignTranslation> getTranslations() {
@@ -821,6 +902,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>translations</code>.</p>
+     *
      * @param translations the translations to set
      */
     public void setTranslations(List<CampaignTranslation> translations) {
@@ -828,6 +911,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>questions</code>.</p>
+     *
      * @return the questions
      */
     public List<Question> getQuestions() {
@@ -835,6 +920,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>questions</code>.</p>
+     *
      * @param questions the questions to set
      */
     public void setQuestions(List<Question> questions) {
@@ -842,6 +929,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>statistics</code>.</p>
+     *
      * @return the statistics
      */
     public Map<String, CampaignRecordStatistic> getStatistics() {
@@ -849,6 +938,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>statistics</code>.</p>
+     *
      * @param statistics the statistics to set
      */
     public void setStatistics(Map<String, CampaignRecordStatistic> statistics) {
@@ -856,6 +947,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Getter for the field <code>selectedLocale</code>.</p>
+     *
      * @return the selectedLocale
      */
     public Locale getSelectedLocale() {
@@ -863,6 +956,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>selectedLocale</code>.</p>
+     *
      * @param selectedLocale the selectedLocale to set
      */
     public void setSelectedLocale(Locale selectedLocale) {
@@ -870,6 +965,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>isDirty.</p>
+     *
      * @return the dirty
      */
     public boolean isDirty() {
@@ -877,6 +974,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * <p>Setter for the field <code>dirty</code>.</p>
+     *
      * @param dirty the dirty to set
      */
     public void setDirty(boolean dirty) {
@@ -885,12 +984,12 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
-     * 
-     * @param status
-     * @param
-     * 
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     *
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param piToIgnore a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getRandomizedTarget(CampaignRecordStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
         User user = BeanUtils.getUserBean().getUser();
@@ -927,16 +1026,16 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Check if the given user may annotate/review (depending on status) a specific pi within this campaign
-     * 
-     * @param result
-     * @param status
-     * @param user
+     *
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if
      *         <ul>
-     *         <li>the status is {@link CampaignRecordStatus#REVIEW REVIEW} and the user is not contained in the annotaters list</li> or
-     *         <li>the status is {@link CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is not contained in the reviewers list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW REVIEW} and the user is not contained in the annotaters list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is not contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
      *         <li>The user is null</li>
+     * @param pi a {@link java.lang.String} object.
      */
     public boolean isEligibleToEdit(String pi, CampaignRecordStatus status, User user) {
         if (user != null) {
@@ -958,11 +1057,11 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * check if the given user is eligible to review any records
-     * 
-     * @param user
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if there are any records in review status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean hasRecordsToReview(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
@@ -973,11 +1072,11 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * check if the given user is eligible to annotate any records
-     * 
-     * @param user
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
@@ -988,12 +1087,12 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * check if the user is allowed to annotate the given pi for this campaign
-     * 
-     * @param user
-     * @param pi
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param pi a {@link java.lang.String} object.
      * @return true if the pi is ready for annotation and the user hasn't reviewed it or is a superuser
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean mayAnnotate(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.ANNOTATE) && isEligibleToEdit(pi, CampaignRecordStatus.ANNOTATE, user);
@@ -1001,12 +1100,12 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * check if the user is allowed to review the given pi for this campaign
-     * 
-     * @param user
-     * @param pi
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param pi a {@link java.lang.String} object.
      * @return true if the pi is ready for review and the user hasn't annotated it or is a superuser
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean mayReview(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.REVIEW) && isEligibleToEdit(pi, CampaignRecordStatus.REVIEW, user);
@@ -1022,8 +1121,10 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * @param targetIdentifier
+     * <p>getRecordStatus.</p>
+     *
      * @return record status for the given pi
+     * @param pi a {@link java.lang.String} object.
      */
     public CampaignRecordStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
@@ -1032,9 +1133,10 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Updates record status in the campaign statistics.
-     * 
-     * @param pi
-     * @param status
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @param user a {@link java.util.Optional} object.
      */
     public void setRecordStatus(String pi, CampaignRecordStatus status, Optional<User> user) {
         CampaignRecordStatistic statistic = statistics.get(pi);
@@ -1058,6 +1160,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#setMediaItem(io.goobi.viewer.model.cms.CMSMediaItem)
      */
+    /** {@inheritDoc} */
     @Override
     public void setMediaItem(CMSMediaItem item) {
         this.mediaItem = item;
@@ -1066,6 +1169,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItem()
      */
+    /** {@inheritDoc} */
     @Override
     public CMSMediaItem getMediaItem() {
         return this.mediaItem;
@@ -1074,6 +1178,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaFilter()
      */
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public String getMediaFilter() {
@@ -1083,6 +1188,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean hasMediaItem() {
         return this.mediaItem != null;
@@ -1091,6 +1197,7 @@ public class Campaign implements CMSMediaHolder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
      */
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {

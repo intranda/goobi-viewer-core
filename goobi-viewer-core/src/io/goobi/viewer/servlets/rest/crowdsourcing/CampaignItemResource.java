@@ -57,14 +57,13 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the campaign status
- * 
- * The following api points are defined: 
+ *
+ * The following api points are defined:
  * <ul>
- * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/ <br/> GET a {@link CampaignItem} for the given campaignId and pi, or PUT the status for that combination</li>
+ * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/ <br/> GET a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for the given campaignId and pi, or PUT the status for that combination</li>
  * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/annotations/ <br/> GET a list of annotations for the given campaignId and pi, sorted by target, or PUT the annotations for this combination</li>
  *
  * @author florian
- *
  */
 @Path("/crowdsourcing/campaigns")
 @ViewerRestServiceBinding
@@ -79,15 +78,18 @@ public class CampaignItemResource {
 
     private final URI requestURI;
 
+    /**
+     * <p>Constructor for CampaignItemResource.</p>
+     */
     public CampaignItemResource() {
         this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
     /**
      * For testing
-     * 
-     * @param request
-     * @param response
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      */
     public CampaignItemResource(HttpServletRequest request, HttpServletResponse response) {
         this.servletRequest = request;
@@ -96,16 +98,15 @@ public class CampaignItemResource {
     }
 
     /**
-     * Get the {@link CampaignItem} for a campaign and work, containing the URL of the targeted resource (iiif manifest)
+     * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted resource (iiif manifest)
      * and all information to create a GUI for the campaign's questions
-     * 
-     * 
-     * @param campaignId
-     * @param pi
-     * @return  a {@link CampaignItem}
-     * @throws URISyntaxException
-     * @throws DAOException
-     * @throws ContentNotFoundException
+     *
+     * @param campaignId a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return  a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem}
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
      */
     @GET
     @Path("/{campaignId}/{pi}")
@@ -128,12 +129,12 @@ public class CampaignItemResource {
     }
 
     /**
-     * Sets the {@link CampaignRecordStatus} for the given campaign and work and records the {@link User} who made the change
-     * 
-     * @param item
-     * @param campaignId
-     * @param pi
-     * @throws DAOException
+     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} for the given campaign and work and records the {@link io.goobi.viewer.model.security.user.User} who made the change
+     *
+     * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
+     * @param campaignId a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     @PUT
     @Path("/{campaignId}/{pi}/")
@@ -161,12 +162,12 @@ public class CampaignItemResource {
 
     /**
      * Get all annotations for the given campaign and work, sorted by target
-     * 
-     * @param campaignId
-     * @param pi
+     *
+     * @param campaignId a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
      * @return A map of target URIs (manifest or canvas) mapped to a submap of question URIs mapped to questions
-     * @throws URISyntaxException
-     * @throws DAOException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     @GET
     @Path("/{campaignId}/{pi}/annotations")
@@ -190,12 +191,12 @@ public class CampaignItemResource {
     /**
      * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages (if target is
      * canvas) with the ones contained in the map
-     * 
-     * @param map
-     * @param campaignId
-     * @param pi
-     * @throws URISyntaxException
-     * @throws DAOException
+     *
+     * @param campaignId a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param pages a {@link java.util.List} object.
      */
     @PUT
     @Path("/{campaignId}/{pi}/annotations")

@@ -92,20 +92,32 @@ public final class SearchHelper {
     // public static final String[] FULLTEXT_SEARCH_FIELDS = { LuceneConstants.FULLTEXT, LuceneConstants.IDDOC_OWNER,
     // LuceneConstants.IDDOC_IMAGEOWNER };
 
+    /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
+    /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
     public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[-]";
+    /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##HLS##";
+    /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_END = "##HLE##";
+    /** Constant <code>SEARCH_TYPE_REGULAR=0</code> */
     public static final int SEARCH_TYPE_REGULAR = 0;
+    /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
     public static final int SEARCH_TYPE_ADVANCED = 1;
+    /** Constant <code>SEARCH_TYPE_TIMELINE=2</code> */
     public static final int SEARCH_TYPE_TIMELINE = 2;
+    /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
     public static final int SEARCH_TYPE_CALENDAR = 3;
+    /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = "(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)";
 
     private static final Object lock = new Object();
 
+    /** Constant <code>patternNotBrackets</code> */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
+    /** Constant <code>patternPhrase</code> */
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
 
     /** Filter subquery for collection listing (no volumes). */
@@ -114,22 +126,22 @@ public final class SearchHelper {
     /**
      * Main search method for flat search.
      *
-     * @param query {@link String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link Integer} von
-     * @param rows {@link Integer} bis
-     * @param sortFields
-     * @param resultFields
-     * @param filterQueries
-     * @param params
-     * @param searchTerms
-     * @param exportFields
-     * @param locale
-     * @param request
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return List of <code>StructElement</code>s containing the search hits.
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
@@ -193,21 +205,21 @@ public final class SearchHelper {
     /**
      * Main search method for aggregated search.
      *
-     * @param query {@link String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
-     * @param first {@link Integer} von
-     * @param rows {@link Integer} bis
-     * @param sortFields
-     * @param resultFields
-     * @param filterQueries
-     * @param params
-     * @param searchTerms
-     * @param exportFields
-     * @param locale
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
      * @return List of <code>StructElement</code>s containing the search hits.
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return all hits
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
@@ -259,16 +271,16 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request
-     * @param addStaticQuerySuffix
-     * @param addCollectionBlacklistSuffix
-     * @param addDiscriminatorValueSuffix
-     * @return
-     * @throws IndexUnreachableException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
+     * @param addDiscriminatorValueSuffix a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should add static suffix
      * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
+     * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
             boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
@@ -302,9 +314,9 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param addDiscriminatorValueSuffix
-     * @return
-     * @throws IndexUnreachableException
+     * @param addDiscriminatorValueSuffix a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         return getAllSuffixes(null, true, true, addDiscriminatorValueSuffix);
@@ -313,9 +325,9 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param addDiscriminatorValueSuffix
-     * @return
-     * @throws IndexUnreachableException
+     * @param addDiscriminatorValueSuffix a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         return getAllSuffixes(null, true, false, addDiscriminatorValueSuffix);
@@ -325,21 +337,22 @@ public final class SearchHelper {
      * Returns the <code>BrowseElement</code> constructed from the search hit at <code>index</code> from the search hit list for the given
      * <code>query</code>.
      *
-     * @param query
-     * @param index
-     * @param sortFields
-     * @param params
-     * @param searchTerms
-     * @param locale
-     * @param aggregateHits
-     * @param filterQuerySuffix
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @param query a {@link java.lang.String} object.
+     * @param index a int.
+     * @param sortFields a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param aggregateHits a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
+     * @param filterQueries a {@link java.util.List} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link io.goobi.viewer.model.search.BrowseElement} object.
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
@@ -358,16 +371,17 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param luceneField
-     * @param value
-     * @param filterForWhitelist
-     * @param filterForBlacklist
-     * @param separatorString
-     * @param locale
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>getFirstWorkUrlWithFieldValue.</p>
+     *
+     * @param luceneField a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param filterForWhitelist a boolean.
+     * @param filterForBlacklist a boolean.
+     * @param separatorString a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link java.lang.String} object.
      */
     public static String getFirstWorkUrlWithFieldValue(String luceneField, String value, boolean filterForWhitelist, boolean filterForBlacklist,
             String separatorString, Locale locale) throws IndexUnreachableException, PresentationException {
@@ -441,15 +455,15 @@ public final class SearchHelper {
     /**
      * Returns a Map with hierarchical values from the given field and their respective record counts.
      *
-     * @param luceneField
-     * @param facetField
+     * @param luceneField a {@link java.lang.String} object.
+     * @param facetField a {@link java.lang.String} object.
      * @param filterQuery An addition solr-query to filer collections by
-     * @param filterForWhitelist
-     * @param filterForBlacklist
-     * @param splittingChar
-     * @return
-     * @throws IndexUnreachableException
+     * @param filterForWhitelist a boolean.
+     * @param filterForBlacklist a boolean.
+     * @param splittingChar a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should find all collections
+     * @return a {@link java.util.Map} object.
      */
     public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
             boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
@@ -580,14 +594,14 @@ public final class SearchHelper {
     /**
      * Matches given collection name against the given collection blacklist. Also matches wildcards and child collections.
      *
-     * @param dc
-     * @param blacklist
-     * @param splittingChar
-     * @return
+     * @param dc a {@link java.lang.String} object.
+     * @param blacklist a {@link java.util.Set} object.
+     * @param splittingChar a {@link java.lang.String} object.
      * @should match simple collections correctly
      * @should match subcollections correctly
      * @should throw IllegalArgumentException if dc is null
      * @should throw IllegalArgumentException if blacklist is null
+     * @return a boolean.
      */
     protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist, String splittingChar) {
         if (dc == null) {
@@ -619,14 +633,15 @@ public final class SearchHelper {
     }
 
     /**
+     * <p>searchCalendar.</p>
      *
-     * @param query
-     * @param facetFields
-     * @param facetMinCount
-     * @param getFieldStatistics
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param query a {@link java.lang.String} object.
+     * @param facetFields a {@link java.util.List} object.
+     * @param facetMinCount a int.
+     * @param getFieldStatistics a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      */
     public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
@@ -637,6 +652,14 @@ public final class SearchHelper {
                 .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
     }
 
+    /**
+     * <p>getMinMaxYears.</p>
+     *
+     * @param subQuery a {@link java.lang.String} object.
+     * @return an array of {@link int} objects.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
         int[] ret = { -1, -1 };
 
@@ -673,11 +696,12 @@ public final class SearchHelper {
      * <li>Then search in field "TITLE" and check with contains</li>
      *
      * @param suggest the search string
-     * @param currentFacets
-     * @throws IndexUnreachableException
+     * @param currentFacets a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return autosuggestions correctly
      * @should filter by collection correctly
      * @should filter by facet correctly
+     * @return a {@link java.util.List} object.
      */
     public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentFacets) throws IndexUnreachableException {
         if (suggest.contains(" ")) {
@@ -740,8 +764,8 @@ public final class SearchHelper {
      * Returns a Solr query suffix that filters out collections defined in the collection blacklist. This suffix is only generated once per
      * application lifecycle.
      *
-     * @param fiel
-     * @return
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
         String suffix = collectionBlacklistFilterSuffix;
@@ -759,10 +783,11 @@ public final class SearchHelper {
     }
 
     /**
+     * <p>generateCollectionBlacklistFilterSuffix.</p>
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should construct suffix correctly
+     * @return a {@link java.lang.String} object.
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
         logger.debug("Generating blacklist suffix for field '{}'...", field);
@@ -783,13 +808,14 @@ public final class SearchHelper {
     }
 
     /**
+     * <p>getDiscriminatorFieldFilterSuffix.</p>
      *
-     * @param nagivationHelper
-     * @param discriminatorField
-     * @return
-     * @throws IndexUnreachableException
+     * @param discriminatorField a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should construct subquery correctly
      * @should return empty string if discriminator value is empty or hyphen
+     * @param nh a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getDiscriminatorFieldFilterSuffix(NavigationHelper nh, String discriminatorField) throws IndexUnreachableException {
         // logger.trace("nh null? {}", nh == null);
@@ -811,10 +837,10 @@ public final class SearchHelper {
     /**
      * Updates the calling agent's session with a personalized filter sub-query.
      *
-     * @param request
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public static void updateFilterQuerySuffix(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), Helper.getIpAddress(request));
@@ -825,14 +851,16 @@ public final class SearchHelper {
     /**
      * Constructs a personal search query filter suffix for the given user and IP address.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should construct suffix correctly
      * @should construct suffix correctly if user has license privilege
      * @should construct suffix correctly if user has overriding license privilege
      * @should construct suffix correctly if ip range has license privilege
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
             throws IndexUnreachableException, PresentationException, DAOException {
@@ -887,12 +915,11 @@ public final class SearchHelper {
     /**
      * TODO This method might be quite expensive.
      *
-     * @param searchTerms
-     * @param fulltext
+     * @param searchTerms a {@link java.util.Set} object.
+     * @param fulltext a {@link java.lang.String} object.
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
-     * @return
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
@@ -902,7 +929,7 @@ public final class SearchHelper {
      * @should replace line breaks with spaces
      * @should add fragment if no term was matched only if so requested
      * @should highlight multi word terms while removing stopwords
-     * 
+     * @return a {@link java.util.List} object.
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
             boolean addFragmentIfNoMatches) {
@@ -1024,12 +1051,12 @@ public final class SearchHelper {
 
     /**
      * Adds highlighting markup for all given terms to the phrase.
-     * 
-     * @param phrase
-     * @param terms
-     * @return
+     *
+     * @param phrase a {@link java.lang.String} object.
+     * @param terms a {@link java.util.Set} object.
      * @should apply highlighting for all terms
      * @should skip single character terms
+     * @return a {@link java.lang.String} object.
      */
     public static String applyHighlightingToPhrase(String phrase, Set<String> terms) {
         if (phrase == null) {
@@ -1118,20 +1145,22 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param phrase
-     * @return
+     * <p>replaceHighlightingPlaceholdersForHyperlinks.</p>
+     *
+     * @param phrase a {@link java.lang.String} object.
      * @should replace placeholders with bold tags
+     * @return a {@link java.lang.String} object.
      */
     public static String replaceHighlightingPlaceholdersForHyperlinks(String phrase) {
         return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span style=\"color:blue\">").replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
     }
 
     /**
-     * 
-     * @param phrase
-     * @return
+     * <p>replaceHighlightingPlaceholders.</p>
+     *
+     * @param phrase a {@link java.lang.String} object.
      * @should replace placeholders with html tags
+     * @return a {@link java.lang.String} object.
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
         return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
@@ -1139,8 +1168,9 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param phrase
+     * <p>removeHighlightingTags.</p>
+     *
+     * @param phrase a {@link java.lang.String} object.
      * @return Given phrase without the highlighting html tags
      * @should remove html tags
      */
@@ -1220,12 +1250,12 @@ public final class SearchHelper {
     /**
      * Returns a list of values for a given facet field and the given query.
      *
-     * @param query
-     * @param facetFieldName
-     * @param facetMinCount
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param query a {@link java.lang.String} object.
+     * @param facetFieldName a {@link java.lang.String} object.
+     * @param facetMinCount a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
@@ -1235,13 +1265,13 @@ public final class SearchHelper {
     /**
      * Returns a list of values for a given facet field and the given query.
      *
-     * @param query
-     * @param facetFieldName
-     * @param facetMinCount
+     * @param query a {@link java.lang.String} object.
+     * @param facetFieldName a {@link java.lang.String} object.
+     * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
@@ -1270,14 +1300,14 @@ public final class SearchHelper {
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
      * a query.
      *
-     * @param bmfc
-     * @param startsWith
-     * @param filterQuery
-     * @param comparator
-     * @param aggregateHits
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param bmfc a {@link io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig} object.
+     * @param startsWith a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
+     * @param comparator a {@link java.util.Comparator} object.
+     * @param aggregateHits a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.List} object.
      */
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery,
             Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
@@ -1461,14 +1491,14 @@ public final class SearchHelper {
     /**
      * Parses the given Solr query for field values and returns them as a set of strings.
      *
-     * @param query
-     * @param discriminatorValue
-     * @return
+     * @param query a {@link java.lang.String} object.
+     * @param discriminatorValue a {@link java.lang.String} object.
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
      * @should remove truncation
      * @should throw IllegalArgumentException if query is null
+     * @return a {@link java.util.Map} object.
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         if (query == null) {
@@ -1584,8 +1614,9 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @return
+     * <p>generateQueryParams.</p>
+     *
+     * @return a {@link java.util.Map} object.
      */
     public static Map<String, String> generateQueryParams() {
         Map<String, String> params = new HashMap<>();
@@ -1606,10 +1637,11 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param sourceList
-     * @return
+     * <p>facetifyList.</p>
+     *
+     * @param sourceList a {@link java.util.List} object.
      * @should facetify correctly
+     * @return a {@link java.util.List} object.
      */
     public static List<String> facetifyList(List<String> sourceList) {
         if (sourceList == null) {
@@ -1627,20 +1659,22 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param fieldName
-     * @return
+     * <p>facetifyField.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
      * @should facetify correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String facetifyField(String fieldName) {
         return adaptField(fieldName, "FACET_");
     }
 
     /**
-     * 
-     * @param fieldName
-     * @return
+     * <p>sortifyField.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
      * @should sortify correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String sortifyField(String fieldName) {
         return adaptField(fieldName, "SORT_");
@@ -1676,10 +1710,11 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param fieldName
-     * @return
+     * <p>defacetifyField.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
      * @should defacetify correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String defacetifyField(String fieldName) {
         if (fieldName == null) {
@@ -1702,17 +1737,17 @@ public final class SearchHelper {
 
     /**
      * Creates a Solr expand query string out of lists of fields and terms.
-     * 
-     * @param fields
-     * @param searchTerms
+     *
+     * @param fields a {@link java.util.List} object.
+     * @param searchTerms a {@link java.util.Map} object.
      * @param phraseSearch If true, quotation marks are added to terms
-     * @return
      * @should generate query correctly
      * @should return empty string if no fields match
      * @should skip reserved fields
      * @should escape reserved characters
      * @should not escape asterisks
      * @should add quotation marks if phraseSearch is true
+     * @return a {@link java.lang.String} object.
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch) {
         logger.trace("generateExpandQuery");
@@ -1780,12 +1815,12 @@ public final class SearchHelper {
 
     /**
      * Creates a Solr expand query string out of advanced search query item groups.
-     * 
-     * @param groups
-     * @param advancedSearchGroupOperator
-     * @return
+     *
+     * @param groups a {@link java.util.List} object.
+     * @param advancedSearchGroupOperator a int.
      * @should generate query correctly
      * @should skip reserved fields
+     * @return a {@link java.lang.String} object.
      */
     public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
         logger.trace("generateAdvancedExpandQuery");
@@ -1869,11 +1904,12 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param searchType
-     * @param searchFilter
-     * @param queryGroups
-     * @return
+     * <p>getExpandQueryFieldList.</p>
+     *
+     * @param searchType a int.
+     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param queryGroups a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, List<SearchQueryGroup> queryGroups) {
         List<String> ret = new ArrayList<>();
@@ -1946,9 +1982,10 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param query
-     * @return
+     * <p>prepareQuery.</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String prepareQuery(String query) {
         StringBuilder sbQuery = new StringBuilder();
@@ -1970,12 +2007,12 @@ public final class SearchHelper {
 
     /**
      * Puts non-empty queries into parentheses and replaces empty queries with a top level record-only query (for collection listing).
-     * 
-     * @param query
-     * @query
-     * @return
+     *
+     * @param query a {@link java.lang.String} object.
      * @should prepare non-empty queries correctly
      * @should prepare empty queries correctly
+     * @param docstructWhitelistFilterQuery a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String prepareQuery(String query, String docstructWhitelistFilterQuery) {
         StringBuilder sbQuery = new StringBuilder();
@@ -1996,12 +2033,12 @@ public final class SearchHelper {
 
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
-     * 
-     * @param rawQuery
-     * @param aggregateHits
-     * @return
-     * @throws IndexUnreachableException
+     *
+     * @param rawQuery a {@link java.lang.String} object.
+     * @param aggregateHits a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should add join statement if aggregateHits true
+     * @return a {@link java.lang.String} object.
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
@@ -2034,19 +2071,23 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     * <p>exportSearchAsExcel.</p>
+     *
      * @param query Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
-     * @param sortFields
-     * @param resultFields
-     * @param filterQueries
-     * @param params
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
+     * @param sortFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should create excel workbook correctly
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param aggregateHits a boolean.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.apache.poi.xssf.streaming.SXSSFWorkbook} object.
      */
     public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
@@ -2119,8 +2160,10 @@ public final class SearchHelper {
     }
 
     /**
-     * @param hierarchicalFacetFields
-     * @return
+     * <p>getAllFacetFields.</p>
+     *
+     * @param hierarchicalFacetFields a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
         List<String> facetFields = DataManager.getInstance().getConfiguration().getDrillDownFields();
@@ -2132,11 +2175,12 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param sortString
-     * @param navigationHelper
-     * @return
+     * <p>parseSortString.</p>
+     *
+     * @param sortString a {@link java.lang.String} object.
+     * @param navigationHelper a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
      * @should parse string correctly
+     * @return a {@link java.util.List} object.
      */
     public static List<StringPair> parseSortString(String sortString, NavigationHelper navigationHelper) {
         List<StringPair> ret = new ArrayList<>();

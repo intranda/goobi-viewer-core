@@ -41,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("role")
 public class Role {
 
+    /** Constant <code>SUPERUSER_ROLE="admin"</code> */
     public static final String SUPERUSER_ROLE = "admin";
 
     @Id
@@ -65,11 +66,18 @@ public class Role {
     @Transient
     private Set<Role> inheritedRoles = new HashSet<>();
 
-    /** Empty constructor for XStream. */
+    /**
+     * Empty constructor for XStream.
+     */
     public Role() {
         // the emptiness inside
     }
 
+    /**
+     * <p>Constructor for Role.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public Role(String name) {
         this.name = name;
     }
@@ -79,6 +87,7 @@ public class Role {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -93,6 +102,7 @@ public class Role {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -145,10 +155,20 @@ public class Role {
         return false;
     }
 
+    /**
+     * <p>isPrivDeleteOcrPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivDeleteOcrPage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
     }
 
+    /**
+     * <p>setPrivDeleteOcrPage.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivDeleteOcrPage(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
@@ -157,10 +177,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivSetRepresentativeImage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
     }
 
+    /**
+     * <p>setPrivSetRepresentativeImage.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivSetRepresentativeImage(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
@@ -169,10 +199,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsPages.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
     }
 
+    /**
+     * <p>setPrivCmsPages.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
@@ -181,10 +221,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsAllSubthemes.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsAllSubthemes() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
     }
 
+    /**
+     * <p>setPrivCmsAllSubthemes.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsAllSubthemes(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
@@ -193,10 +243,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsAllCategories.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsAllCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
     }
 
+    /**
+     * <p>setPrivCmsAllCategories.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsAllCategories(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
@@ -205,10 +265,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsAllTemplates.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsAllTemplates() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
     }
 
+    /**
+     * <p>setPrivCmsAllTemplates.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsAllTemplates(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
@@ -217,10 +287,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsMenu.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsMenu() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
     }
 
+    /**
+     * <p>setPrivCmsMenu.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsMenu(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
@@ -229,10 +309,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsStaticPages.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsStaticPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
     }
 
+    /**
+     * <p>setPrivCmsStaticPages.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
@@ -241,10 +331,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsCollections.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsCollections() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
     }
 
+    /**
+     * <p>setPrivCmsCollections.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
@@ -253,10 +353,20 @@ public class Role {
         }
     }
 
+    /**
+     * <p>isPrivCmsCategories.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrivCmsCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
     }
 
+    /**
+     * <p>setPrivCmsCategories.</p>
+     *
+     * @param priv a boolean.
+     */
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
@@ -268,6 +378,8 @@ public class Role {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -275,6 +387,8 @@ public class Role {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -282,6 +396,8 @@ public class Role {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -289,6 +405,8 @@ public class Role {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -296,6 +414,8 @@ public class Role {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -303,6 +423,8 @@ public class Role {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -310,6 +432,8 @@ public class Role {
     }
 
     /**
+     * <p>Getter for the field <code>privileges</code>.</p>
+     *
      * @return the privileges
      */
     public Set<String> getPrivileges() {
@@ -317,6 +441,8 @@ public class Role {
     }
 
     /**
+     * <p>Setter for the field <code>privileges</code>.</p>
+     *
      * @param privileges the privileges to set
      */
     public void setPrivileges(Set<String> privileges) {
@@ -324,6 +450,8 @@ public class Role {
     }
 
     /**
+     * <p>Getter for the field <code>inheritedRoles</code>.</p>
+     *
      * @return the inheritedRoles
      */
     public Set<Role> getInheritedRoles() {
@@ -331,12 +459,15 @@ public class Role {
     }
 
     /**
+     * <p>Setter for the field <code>inheritedRoles</code>.</p>
+     *
      * @param inheritedRoles the inheritedRoles to set
      */
     public void setInheritedRoles(Set<Role> inheritedRoles) {
         this.inheritedRoles = inheritedRoles;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;

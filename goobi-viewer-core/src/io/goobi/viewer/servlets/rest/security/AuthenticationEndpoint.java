@@ -30,11 +30,22 @@ import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>AuthenticationEndpoint class.</p>
+ *
+ */
 @Path("/auth")
 public class AuthenticationEndpoint {
     
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationEndpoint.class);
 
+    /**
+     * <p>authenticateUser.</p>
+     *
+     * @param email a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

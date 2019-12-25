@@ -77,6 +77,9 @@ public class Metadata implements Serializable {
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
 
+    /**
+     * <p>Constructor for Metadata.</p>
+     */
     public Metadata() {
         this.label = "";
         this.masterValue = "";
@@ -86,10 +89,11 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
-     * @param label
-     * @param masterValue
-     * @param paramValue
+     * <p>Constructor for Metadata.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param paramValue a {@link java.lang.String} object.
      */
     public Metadata(String label, String masterValue, String paramValue) {
         this.label = label;
@@ -105,11 +109,12 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
-     * @param label
-     * @param masterValue
-     * @param param
-     * @param paramValue
+     * <p>Constructor for Metadata.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param param a {@link io.goobi.viewer.model.metadata.MetadataParameter} object.
+     * @param paramValue a {@link java.lang.String} object.
      */
     public Metadata(String label, String masterValue, MetadataParameter param, String paramValue) {
         this.label = label;
@@ -126,12 +131,13 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
-     * @param label
-     * @param masterValue
-     * @param type
-     * @param params
-     * @param group
+     * <p>Constructor for Metadata.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param type a int.
+     * @param params a {@link java.util.List} object.
+     * @param group a boolean.
      */
     public Metadata(String label, String masterValue, int type, List<MetadataParameter> params, boolean group) {
         this.label = label;
@@ -143,13 +149,14 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
-     * @param label
-     * @param masterValue
-     * @param type
-     * @param params
-     * @param group
-     * @param number
+     * <p>Constructor for Metadata.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param type a int.
+     * @param params a {@link java.util.List} object.
+     * @param group a boolean.
+     * @param number a int.
      */
     public Metadata(String label, String masterValue, int type, List<MetadataParameter> params, boolean group, int number) {
         this.label = label;
@@ -163,6 +170,7 @@ public class Metadata implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -176,6 +184,7 @@ public class Metadata implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -208,17 +217,29 @@ public class Metadata implements Serializable {
         return true;
     }
 
+    /**
+     * <p>isHasLabel.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasLabel() {
         return StringUtils.isNotBlank(label);
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * <p>Getter for the field <code>masterValue</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
             return "{0}";
@@ -228,6 +249,8 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public int getType() {
@@ -235,6 +258,8 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>values</code>.</p>
+     *
      * @return the values
      */
     public List<MetadataValue> getValues() {
@@ -242,15 +267,16 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
-     * @param valueIndex
-     * @param paramIndex
+     * <p>setParamValue.</p>
+     *
+     * @param valueIndex a int.
+     * @param paramIndex a int.
      * @param inValues List with values
-     * @param label
-     * @param url
-     * @param options
+     * @param label a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
-     * @param locale
+     * @param locale a {@link java.util.Locale} object.
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
@@ -456,12 +482,20 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>params</code>.</p>
+     *
      * @return the params
      */
     public List<MetadataParameter> getParams() {
         return params;
     }
 
+    /**
+     * <p>hasParam.</p>
+     *
+     * @param paramName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean hasParam(String paramName) {
         if (params != null) {
             for (MetadataParameter param : params) {
@@ -502,11 +536,11 @@ public class Metadata implements Serializable {
     /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
-     * @param metadataMap
-     * @param locale
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param locale a {@link java.util.Locale} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a boolean.
      */
     @SuppressWarnings("unchecked")
     public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {
@@ -709,8 +743,8 @@ public class Metadata implements Serializable {
     /**
      * Converts aggregated person/corporation metadata to just the displayable name.
      *
-     * @param aggregatedMetadata
-     * @return
+     * @param aggregatedMetadata a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getPersonDisplayName(String aggregatedMetadata) {
         if (aggregatedMetadata.contains(";")) {
@@ -728,11 +762,18 @@ public class Metadata implements Serializable {
         return aggregatedMetadata;
     }
 
+    /**
+     * <p>Getter for the field <code>number</code>.</p>
+     *
+     * @return a int.
+     */
     public int getNumber() {
         return number;
     }
 
     /**
+     * <p>isGroup.</p>
+     *
      * @return the group
      */
     public boolean isGroup() {
@@ -742,9 +783,9 @@ public class Metadata implements Serializable {
     /**
      * Returns a metadata list that contains the fields of the given metadata list minus any language-specific fields that do not match the given
      * language.
-     * 
-     * @param metadataList
-     * @param recordLanguage
+     *
+     * @param metadataList a {@link java.util.List} object.
+     * @param recordLanguage a {@link java.lang.String} object.
      * @return Metadata list without any fields with non-matching language; original list if no language is given
      * @should return language-specific version of a field
      * @should return generic version if no language specific version is found
@@ -784,6 +825,7 @@ public class Metadata implements Serializable {
         return ret;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         if (values != null) {

@@ -19,9 +19,8 @@ import io.goobi.viewer.controller.Configuration;
 
 /**
  * Resolves urls audio or video files
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class Object3DHandler {
 
@@ -29,14 +28,18 @@ public class Object3DHandler {
 
     private final String restApiUrl;
 
+    /**
+     * <p>Constructor for Object3DHandler.</p>
+     *
+     * @param config a {@link io.goobi.viewer.controller.Configuration} object.
+     */
     public Object3DHandler(Configuration config) {
         this.restApiUrl = config.getRestApiUrl();
     }
 
     /**
      * Returns the url to the media object for the given pi and filename
-     * 
-     * @param mimeType The mime type to use
+     *
      * @param pi The pi of the requested work
      * @param filename The media filename
      * @return the url to the media file of the given pi and filename

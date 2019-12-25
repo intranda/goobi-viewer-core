@@ -29,6 +29,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
+/**
+ * <p>SimpleBrowseElementInfo class.</p>
+ *
+ */
 public class SimpleBrowseElementInfo implements BrowseElementInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleBrowseElementInfo.class);
@@ -39,18 +43,20 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     private String collectionName;
 
     /**
-     * 
-     * @param collectionName
+     * <p>Constructor for SimpleBrowseElementInfo.</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
      */
     public SimpleBrowseElementInfo(String collectionName) {
         this.collectionName = collectionName;
     }
 
     /**
-     * 
-     * @param collectionName
-     * @param linkURI
-     * @param iconURI
+     * <p>Constructor for SimpleBrowseElementInfo.</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @param linkURI a {@link java.net.URI} object.
+     * @param iconURI a {@link java.net.URI} object.
      */
     public SimpleBrowseElementInfo(String collectionName, URI linkURI, URI iconURI) {
         this.collectionName = collectionName;
@@ -58,29 +64,43 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         this.iconURI = iconURI;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDescription() {
         return description;
     }
 
+    /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
+     * @param description a {@link java.lang.String} object.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
         return linkURI;
     }
     
+    /** {@inheritDoc} */
     @Override
     public URI getLinkURI() {
         return linkURI;
     }
 
+    /**
+     * <p>Setter for the field <code>linkURI</code>.</p>
+     *
+     * @param linkURI a {@link java.net.URI} object.
+     */
     public void setLinkURI(URI linkURI) {
         this.linkURI = linkURI;
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getIconURI() {
         if (this.iconURI == null) {
@@ -89,20 +109,33 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         return this.iconURI;
     }
 
+    /**
+     * <p>Setter for the field <code>iconURI</code>.</p>
+     *
+     * @param iconURI a {@link java.net.URI} object.
+     */
     public void setIconURI(URI iconURI) {
         this.iconURI = iconURI;
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getIconURI(int width, int height) {
         return getIconURI();
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getIconURI(int size) {
         return getIconURI();
     }
 
+    /**
+     * <p>createIconURI.</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
     protected static URI createIconURI(String collectionName) {
         String icon = DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName);
         if (StringUtils.isBlank(icon)) {
@@ -128,6 +161,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getName()
      */
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return collectionName;
@@ -136,6 +170,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForName()
      */
+    /** {@inheritDoc} */
     @Override
     public IMetadataValue getTranslationsForName() {
         return ViewerResourceBundle.getTranslations(getName());

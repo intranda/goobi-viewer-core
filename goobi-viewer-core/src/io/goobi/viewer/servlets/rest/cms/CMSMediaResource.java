@@ -84,8 +84,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * @author Florian Alpers
+ * <p>CMSMediaResource class.</p>
  *
+ * @author Florian Alpers
  */
 @javax.ws.rs.Path("/cms/media")
 @ViewerRestServiceBinding
@@ -97,6 +98,13 @@ public class CMSMediaResource {
     @Context
     protected HttpServletResponse servletResponse;
 
+    /**
+     * <p>getMediaByTag.</p>
+     *
+     * @param tag a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @GET
     @javax.ws.rs.Path("/get/{tag}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -111,6 +119,12 @@ public class CMSMediaResource {
         return new MediaList(items);
     }
 
+    /**
+     * <p>getAllMedia.</p>
+     *
+     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @GET
     @javax.ws.rs.Path("/get")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -121,11 +135,13 @@ public class CMSMediaResource {
     }
     
     /**
-     * 
-     * @param id
+     * <p>getPDFMediaItemContent.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
      * @return File contents as HTML
-     * @throws ContentNotFoundException
-     * @throws DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      */
     @GET
     @javax.ws.rs.Path("/get/{id}.pdf")
@@ -156,11 +172,12 @@ public class CMSMediaResource {
     }
 
     /**
-     * 
-     * @param id
+     * <p>getMediaItemContent.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
      * @return File contents as HTML
-     * @throws ContentNotFoundException
-     * @throws DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     @GET
     @javax.ws.rs.Path("/get/item/{id}")
@@ -215,6 +232,13 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("Resource not found");
     }
 
+    /**
+     * <p>validateUploadMediaFiles.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @GET
     @javax.ws.rs.Path("/upload/{filename}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -232,8 +256,14 @@ public class CMSMediaResource {
 
     /**
      * May receive a file from a multipart form and saves the file in the cms media folder
+     *
      * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does not have rights to upload media,
      *  or a CONFLICT response if a file of the same name already exists in the cms media foler
+     * @param enabled a boolean.
+     * @param filename a {@link java.lang.String} object.
+     * @param uploadedInputStream a {@link java.io.InputStream} object.
+     * @param fileDetail a {@link org.glassfish.jersey.media.multipart.FormDataContentDisposition} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @POST
     @javax.ws.rs.Path("/upload")
@@ -331,6 +361,12 @@ public class CMSMediaResource {
         return Optional.empty();
     }
 
+    /**
+     * <p>createMediaItem.</p>
+     *
+     * @param filePath a {@link java.nio.file.Path} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     */
     public CMSMediaItem createMediaItem(Path filePath) {
         CMSMediaItem item = new CMSMediaItem();
         item.setFileName(filePath.getFileName().toString());

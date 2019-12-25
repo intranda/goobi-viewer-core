@@ -45,8 +45,9 @@ import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
- * @author Florian Alpers
+ * <p>SearchFunctionality class.</p>
  *
+ * @author Florian Alpers
  */
 public class SearchFunctionality implements Functionality, SearchInterface {
 
@@ -65,13 +66,17 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     //    private SearchBean searchBean;
 
     /**
-     * @param searchPrefix
+     * <p>Constructor for SearchFunctionality.</p>
+     *
+     * @param pageFacetString a {@link java.lang.String} object.
+     * @param baseUrl a {@link java.lang.String} object.
      */
     public SearchFunctionality(String pageFacetString, String baseUrl) {
         this.pageFacetString = pageFacetString;
         this.baseUrl = baseUrl;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String resetSearch() {
         getSearchBean().resetSearchAction();
@@ -80,8 +85,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * @throws DAOException
-     * 
+     * <p>redirectToSearchUrl.</p>
+     *
+     * @param keepUrlParameter a boolean.
      */
     public void redirectToSearchUrl(boolean keepUrlParameter) {
         try {
@@ -104,6 +110,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String searchSimple() {
         logger.trace("searchSimple");
@@ -116,6 +123,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return "";
     }
 
+    /** {@inheritDoc} */
     @Override
     public String searchAdvanced() {
         logger.trace("searchAdvanced");
@@ -128,6 +136,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return "";
     }
 
+    /**
+     * <p>searchFacetted.</p>
+     */
     public void searchFacetted() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
@@ -138,6 +149,14 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         }
     }
 
+    /**
+     * <p>search.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public void search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchAction");
         SearchBean searchBean = getSearchBean();
@@ -170,8 +189,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     /**
      * The part of the search url before the page number
-     * 
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
@@ -180,14 +199,20 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return sb.toString();
     }
 
+    /**
+     * <p>getUrlSuffix.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrlSuffix() {
         return getUrlSuffix(getSortString());
     }
 
     /**
      * The part of the search url after the page number
-     * 
-     * @return
+     *
+     * @param solrSortFields a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getUrlSuffix(String solrSortFields) {
         StringBuilder sb = new StringBuilder();
@@ -199,6 +224,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
         getSearchBean().setCurrentPage(pageNo);
@@ -207,17 +233,21 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
      */
+    /** {@inheritDoc} */
     @Override
     public int getPageNo() {
         return getSearchBean().getCurrentPage();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getCurrentPage() {
         return getPageNo();
     }
 
     /**
+     * <p>getSearchBean.</p>
+     *
      * @return the searchBean
      */
     public SearchBean getSearchBean() {
@@ -225,29 +255,29 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
+     * <p>getHitsPerPage.</p>
+     *
      * @return the hitsPerPage
      */
     public int getHitsPerPage() {
         return getSearchBean().getHitsPerPage();
     }
 
-    /**
-     * @return the solrSortFields
-     */
+    /** {@inheritDoc} */
     @Override
     public String getSortString() {
         return getSearchBean().getSortString();
     }
 
-    /**
-     * @param solrSortFields the solrSortFields to set
-     */
+    /** {@inheritDoc} */
     @Override
     public void setSortString(String solrSortFields) {
         getSearchBean().setSortString(solrSortFields);
     }
 
     /**
+     * <p>getFacetString.</p>
+     *
      * @return the facetString
      */
     public String getFacetString() {
@@ -255,6 +285,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
+     * <p>setFacetString.</p>
+     *
      * @param facetString the facetString to set
      */
     public void setFacetString(String facetString) {
@@ -275,20 +307,33 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     //        getSearchBean().getFacets().setCurrentFacetString(collection);
     //    }
 
+    /**
+     * <p>getQueryString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getQueryString() {
         return getSearchBean().getExactSearchString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getExactSearchString() {
         return getQueryString();
     }
 
+    /**
+     * <p>setQueryString.</p>
+     *
+     * @param s a {@link java.lang.String} object.
+     */
     public void setQueryString(String s) {
         getSearchBean().setExactSearchString(s);
     }
 
     /**
+     * <p>Getter for the field <code>baseUrl</code>.</p>
+     *
      * @return the baseUrl
      */
     public String getBaseUrl() {
@@ -306,21 +351,41 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
+     * <p>Getter for the field <code>pageFacetString</code>.</p>
+     *
      * @return the pageFacetString
      */
     public String getPageFacetString() {
         return pageFacetString;
     }
 
+    /**
+     * <p>getNewSearchUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNewSearchUrl() {
         return getSortUrl("-", false);
     }
 
+    /**
+     * <p>getSortUrl.</p>
+     *
+     * @param sortString a {@link java.lang.String} object.
+     * @param descending a boolean.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSortUrl(String sortString, boolean descending) {
         sortString = (descending ? "!" : "") + sortString;
         return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
     }
 
+    /**
+     * <p>getFacettedUrl.</p>
+     *
+     * @param facetString a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getFacettedUrl(String facetString) {
         Path path = Paths.get(getBaseUrl());
         //        path = path.resolve(getCollection());
@@ -331,6 +396,12 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return path.toString();
     }
 
+    /**
+     * <p>removeFacet.</p>
+     *
+     * @param facet a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String removeFacet(String facet) {
         final String currentFacetString = getSearchBean().getFacets().getCurrentFacetString();
         String separator = ";;";
@@ -346,6 +417,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return facetString;
     }
 
+    /**
+     * <p>getCurrentPagePath.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCurrentPagePath() {
         ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
         if (path != null) {
@@ -357,6 +433,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#isSearchInDcFlag()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isSearchInDcFlag() {
         return getSearchBean().isSearchInDcFlag();
@@ -365,6 +442,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getFacets()
      */
+    /** {@inheritDoc} */
     @Override
     public SearchFacets getFacets() {
         return getSearchBean().getFacets();
@@ -373,6 +451,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#autocomplete(java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public List<String> autocomplete(String suggestion) throws IndexUnreachableException {
         return getSearchBean().autocomplete(suggestion);
@@ -381,6 +460,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getSearchString()
      */
+    /** {@inheritDoc} */
     @Override
     public String getSearchString() {
         return getSearchBean().getSearchString();
@@ -389,6 +469,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getSearchFilters()
      */
+    /** {@inheritDoc} */
     @Override
     public List<SearchFilter> getSearchFilters() {
         return getSearchBean().getSearchFilters();
@@ -397,6 +478,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getCurrentSearchFilterString()
      */
+    /** {@inheritDoc} */
     @Override
     public String getCurrentSearchFilterString() {
         return getSearchBean().getCurrentSearchFilterString();
@@ -405,6 +487,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#setCurrentSearchFilterString(java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public void setCurrentSearchFilterString(String filter) {
         getSearchBean().setCurrentSearchFilterString(filter);
@@ -413,6 +496,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getActiveSearchType()
      */
+    /** {@inheritDoc} */
     @Override
     public int getActiveSearchType() {
         return getSearchBean().getActiveSearchType();
@@ -421,6 +505,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#setActiveSearchType(int)
      */
+    /** {@inheritDoc} */
     @Override
     public void setActiveSearchType(int type) {
         getSearchBean().setActiveSearchType(type);
@@ -430,6 +515,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#setSearchString(java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public void setSearchString(String searchString) {
         getSearchBean().setSearchString(searchString);
@@ -438,6 +524,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#isSearchPerformed()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isSearchPerformed() {
         return getSearchBean().isSearchPerformed();
@@ -446,6 +533,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getHitsCount()
      */
+    /** {@inheritDoc} */
     @Override
     public long getHitsCount() {
         return getSearchBean().getHitsCount();
@@ -454,6 +542,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getCurrentSearchUrlRoot()
      */
+    /** {@inheritDoc} */
     @Override
     public String getCurrentSearchUrlRoot() {
         if (getBaseUrl().endsWith("/")) {
@@ -466,6 +555,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getLastPage()
      */
+    /** {@inheritDoc} */
     @Override
     public int getLastPage() {
         return getSearchBean().getLastPage();
@@ -474,6 +564,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#isExplicitSearchPerformed()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {
         return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));

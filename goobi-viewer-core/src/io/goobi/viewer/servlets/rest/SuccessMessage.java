@@ -16,34 +16,46 @@
 package io.goobi.viewer.servlets.rest;
 
 /**
- * @author Florian Alpers
+ * <p>SuccessMessage class.</p>
  *
+ * @author Florian Alpers
  */
 public class SuccessMessage {
 
     private final boolean success;
     private final String message;
     /**
-     * @param success
-     * @param message
+     * <p>Constructor for SuccessMessage.</p>
+     *
+     * @param success a boolean.
+     * @param message a {@link java.lang.String} object.
      */
     public SuccessMessage(boolean success, String message) {
         super();
         this.success = success;
         this.message = message;
     }
+    /**
+     * <p>Constructor for SuccessMessage.</p>
+     *
+     * @param success a boolean.
+     */
     public SuccessMessage(boolean success) {
         super();
         this.success = success;
         this.message = "";
     }
     /**
+     * <p>isSuccess.</p>
+     *
      * @return the success
      */
     public boolean isSuccess() {
         return success;
     }
     /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
      * @return the message
      */
     public String getMessage() {
@@ -51,6 +63,8 @@ public class SuccessMessage {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * Two success messages are equal, of their success properties are equal
      */
     @Override

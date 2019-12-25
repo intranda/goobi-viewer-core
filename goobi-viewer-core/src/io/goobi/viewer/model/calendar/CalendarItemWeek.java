@@ -19,27 +19,54 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <p>CalendarItemWeek class.</p>
+ *
+ */
 public class CalendarItemWeek extends AbstractCalendarItem implements Serializable {
     private static final long serialVersionUID = -6938153715941936763L;
 
     private List<CalendarItemDay> daysOfWeek = new ArrayList<>();
 
+    /**
+     * <p>Constructor for CalendarItemWeek.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a int.
+     * @param hits a int.
+     */
     public CalendarItemWeek(String name, int value, int hits) {
         super(name, value, hits);
     }
 
+    /**
+     * <p>Getter for the field <code>daysOfWeek</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CalendarItemDay> getDaysOfWeek() {
         return daysOfWeek;
     }
 
+    /**
+     * <p>Setter for the field <code>daysOfWeek</code>.</p>
+     *
+     * @param daysOfWeek a {@link java.util.List} object.
+     */
     public void setDaysOfWeek(List<CalendarItemDay> daysOfWeek) {
         this.daysOfWeek = daysOfWeek;
     }
 
+    /**
+     * <p>addDay.</p>
+     *
+     * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
+     */
     public void addDay(CalendarItemDay day) {
         daysOfWeek.add(day);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "CalendarItemWeek [Week=" + name + ", hits=" + hits + "]";

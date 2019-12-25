@@ -44,6 +44,7 @@ public class EmailValidator implements Validator<String> {
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
             if (!validateEmailAddress(value)) {
@@ -55,12 +56,13 @@ public class EmailValidator implements Validator<String> {
 
 
     /**
+     * <p>validateEmailAddress.</p>
      *
-     * @param email
-     * @return
+     * @param email a {@link java.lang.String} object.
      * @should match correct email addresses
      * @should match entire email address only
      * @should not match invalid addresses
+     * @return a boolean.
      */
     protected static boolean validateEmailAddress(String email) {
         if (email == null) {

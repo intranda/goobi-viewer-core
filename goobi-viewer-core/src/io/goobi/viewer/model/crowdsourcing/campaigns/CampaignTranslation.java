@@ -26,9 +26,8 @@ import io.goobi.viewer.model.misc.Translation;
 
 /**
  * A persistence object holding a translated String value
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cs_campaign_translations")
@@ -40,18 +39,19 @@ public class CampaignTranslation extends Translation {
     private Campaign owner;
 
     /**
-     * 
+     * <p>Constructor for CampaignTranslation.</p>
      */
     public CampaignTranslation() {
         super();
     }
 
     /**
-     * 
-     * @param language
-     * @param tag
-     * @param value
-     * @param owner
+     * <p>Constructor for CampaignTranslation.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @param tag a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public CampaignTranslation(String language, String tag, String value, Campaign owner) {
         super(language, tag, value);
@@ -59,12 +59,13 @@ public class CampaignTranslation extends Translation {
     }
 
     /**
-     * 
-     * @param translations
-     * @param lang
-     * @param value
-     * @param tag
-     * @param owner
+     * <p>setTranslation.</p>
+     *
+     * @param translations a {@link java.util.List} object.
+     * @param lang a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param tag a {@link java.lang.String} object.
+     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public static void setTranslation(List<CampaignTranslation> translations, String lang, String value, String tag, Campaign owner) {
         if (lang == null) {
@@ -84,6 +85,8 @@ public class CampaignTranslation extends Translation {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public Campaign getOwner() {
@@ -91,6 +94,8 @@ public class CampaignTranslation extends Translation {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(Campaign owner) {

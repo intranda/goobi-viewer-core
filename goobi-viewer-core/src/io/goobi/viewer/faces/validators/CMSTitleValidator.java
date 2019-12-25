@@ -26,12 +26,17 @@ import org.apache.commons.lang.StringUtils;
 
 import io.goobi.viewer.controller.Helper;
 
+/**
+ * <p>CMSTitleValidator class.</p>
+ *
+ */
 @FacesValidator("cmsTitleValidator")
 public class CMSTitleValidator implements Validator {
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!validate((String) value)) {
@@ -42,9 +47,10 @@ public class CMSTitleValidator implements Validator {
     }
 
     /**
+     * <p>validate.</p>
      *
-     * @param email
-     * @return
+     * @param s a {@link java.lang.String} object.
+     * @return a boolean.
      */
     protected static boolean validate(String s) {
         return StringUtils.isNotBlank(s);

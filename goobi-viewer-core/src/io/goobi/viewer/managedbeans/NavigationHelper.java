@@ -89,28 +89,50 @@ public class NavigationHelper implements Serializable {
 
     private static final String URL_RSS = "rss";
 
+    /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code> */
     public static final int WEIGHT_TAG_MAIN_MENU = 1;
+    /** Constant <code>WEIGHT_ACTIVE_COLLECTION=2</code> */
     public static final int WEIGHT_ACTIVE_COLLECTION = 2;
+    /** Constant <code>WEIGHT_OPEN_DOCUMENT=3</code> */
     public static final int WEIGHT_OPEN_DOCUMENT = 3;
+    /** Constant <code>WEIGHT_BROWSE=1</code> */
     public static final int WEIGHT_BROWSE = 1;
+    /** Constant <code>WEIGHT_SEARCH=1</code> */
     public static final int WEIGHT_SEARCH = 1;
+    /** Constant <code>WEIGHT_SEARCH_RESULTS=2</code> */
     public static final int WEIGHT_SEARCH_RESULTS = 2;
+    /** Constant <code>WEIGHT_SEARCH_TERMS=1</code> */
     public static final int WEIGHT_SEARCH_TERMS = 1;
+    /** Constant <code>WEIGHT_TAG_CLOUD=1</code> */
     public static final int WEIGHT_TAG_CLOUD = 1;
+    /** Constant <code>WEIGHT_SITELINKS=1</code> */
     public static final int WEIGHT_SITELINKS = 1;
+    /** Constant <code>WEIGHT_USER_ACCOUNT=1</code> */
     public static final int WEIGHT_USER_ACCOUNT = 1;
+    /** Constant <code>WEIGHT_CROWDSOURCING_OVERVIEW=3</code> */
     public static final int WEIGHT_CROWDSOURCING_OVERVIEW = 3;
+    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OVERVIEW=4</code> */
     public static final int WEIGHT_CROWDSOURCING_EDIT_OVERVIEW = 4;
+    /** Constant <code>WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS=5</code> */
     public static final int WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS = 5;
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN=2</code> */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 2;
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM=3</code> */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 3;
+    /** Constant <code>WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT=1</code> */
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT = 1;
 
+    /** Constant <code>KEY_CURRENT_VIEW="currentView"</code> */
     protected static final String KEY_CURRENT_VIEW = "currentView";
+    /** Constant <code>KEY_PREFERRED_VIEW="preferredView"</code> */
     protected static final String KEY_PREFERRED_VIEW = "preferredView";
+    /** Constant <code>KEY_CURRENT_PARTNER_PAGE="preferredView"</code> */
     protected static final String KEY_CURRENT_PARTNER_PAGE = "preferredView";
+    /** Constant <code>KEY_SELECTED_NEWS_ARTICLE="selectedNewsArticle"</code> */
     protected static final String KEY_SELECTED_NEWS_ARTICLE = "selectedNewsArticle";
+    /** Constant <code>KEY_MENU_PAGE="menuPage"</code> */
     protected static final String KEY_MENU_PAGE = "menuPage";
+    /** Constant <code>KEY_SUBTHEME_DISCRIMINATOR_VALUE="subThemeDicriminatorValue"</code> */
     protected static final String KEY_SUBTHEME_DISCRIMINATOR_VALUE = "subThemeDicriminatorValue";
 
     private static final String HOME_PAGE = "index";
@@ -133,11 +155,16 @@ public class NavigationHelper implements Serializable {
 
     private boolean isCmsPage = false;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public NavigationHelper() {
         // the emptiness inside
     }
 
+    /**
+     * <p>init.</p>
+     */
     @PostConstruct
     public void init() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
@@ -152,26 +179,48 @@ public class NavigationHelper implements Serializable {
         statusMap.put(KEY_MENU_PAGE, "user");
     }
 
+    /**
+     * <p>searchPage.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String searchPage() {
         this.setCurrentPage(SEARCH_PAGE);
         return SEARCH_PAGE;
     }
 
+    /**
+     * <p>homePage.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String homePage() {
         this.setCurrentPage(HOME_PAGE);
         return HOME_PAGE;
     }
 
+    /**
+     * <p>browsePage.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String browsePage() {
         this.setCurrentPage(BROWSE_PAGE);
         return BROWSE_PAGE;
     }
 
+    /**
+     * <p>Getter for the field <code>currentPage</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCurrentPage() {
         return StringTools.escapeQuotes(currentPage);
     }
 
     /**
+     * <p>isCmsPage.</p>
+     *
      * @return the isCmsPage
      */
     public boolean isCmsPage() {
@@ -179,6 +228,8 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>setCmsPage.</p>
+     *
      * @param isCmsPage the isCmsPage to set
      */
     public void setCmsPage(boolean isCmsPage) {
@@ -186,24 +237,34 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
-     * @param currentPage
+     * <p>Setter for the field <code>currentPage</code>.</p>
+     *
+     * @param currentPage a {@link java.lang.String} object.
      */
     public void setCurrentPage(String currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, false, false);
     }
 
+    /**
+     * <p>Setter for the field <code>currentPage</code>.</p>
+     *
+     * @param currentPage a {@link java.lang.String} object.
+     * @param resetBreadcrubs a boolean.
+     * @param resetCurrentDocument a boolean.
+     */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
         logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
     /**
+     * <p>Setter for the field <code>currentPage</code>.</p>
      *
-     * @param currentPage
-     * @param resetBreadcrubs
-     * @param resetCurrentDocument
+     * @param currentPage a {@link java.lang.String} object.
+     * @param resetBreadcrubs a boolean.
+     * @param resetCurrentDocument a boolean.
+     * @param setCmsPage a boolean.
      */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument, boolean setCmsPage) {
         logger.trace("setCurrentPage: {}", currentPage);
@@ -220,6 +281,13 @@ public class NavigationHelper implements Serializable {
         this.currentPage = currentPage;
     }
 
+    /**
+     * <p>setCurrentBreadcrumbPage.</p>
+     *
+     * @param pageName a {@link java.lang.String} object.
+     * @param pageWeight a {@link java.lang.String} object.
+     * @param pageURL a {@link java.lang.String} object.
+     */
     public void setCurrentBreadcrumbPage(String pageName, String pageWeight, String pageURL) {
         // logger.debug("Current Breadcrumb Page: {}", pageName);
         // logger.debug("pageWeight: {}", pageWeight);
@@ -232,7 +300,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * @param currentPartnerPage
+     * <p>setCurrentPartnerPage.</p>
+     *
+     * @param currentPartnerPage a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setCurrentPartnerPage(String currentPartnerPage) {
@@ -241,8 +311,10 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * @return
+     * <p>getCurrentPartnerPage.</p>
+     *
      * @should return value correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getCurrentPartnerPage() {
         return statusMap.get(KEY_CURRENT_PARTNER_PAGE);
@@ -252,6 +324,7 @@ public class NavigationHelper implements Serializable {
      * Returns the manually selected view type (will be used for search result browsing, if set).
      *
      * @should return value correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getPreferredView() {
         return statusMap.get(KEY_PREFERRED_VIEW);
@@ -261,37 +334,58 @@ public class NavigationHelper implements Serializable {
      * Sets the manually selected view type (will be used for search result browsing, if set).
      *
      * @should set value correctly
+     * @param preferredView a {@link java.lang.String} object.
      */
     public void setPreferredView(String preferredView) {
         statusMap.put(KEY_PREFERRED_VIEW, preferredView);
     }
 
+    /**
+     * <p>setCurrentPageIndex.</p>
+     */
     public void setCurrentPageIndex() {
         setCurrentPage(HOME_PAGE, true, true);
     }
 
+    /**
+     * <p>setCurrentPageSearch.</p>
+     */
     public void setCurrentPageSearch() {
         setCurrentPage(SEARCH_PAGE, true, true);
         updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, getSearchUrl() + '/', NavigationHelper.WEIGHT_SEARCH));
     }
 
+    /**
+     * <p>setCurrentPageBrowse.</p>
+     */
     public void setCurrentPageBrowse() {
         setCurrentPage(BROWSE_PAGE, true, true);
         updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
     }
 
+    /**
+     * <p>setCurrentPageBrowse.</p>
+     *
+     * @param collection a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     */
     public void setCurrentPageBrowse(CollectionView collection) {
         logger.trace("setCurrentPageBrowse: {}", collection.getBaseElementName());
         setCurrentPage(BROWSE_PAGE, true, true);
         updateBreadcrumbs(new CollectionLabeledLink("browseCollection", getBrowseUrl() + '/', collection, NavigationHelper.WEIGHT_BROWSE));
     }
 
+    /**
+     * <p>setCurrentPageTags.</p>
+     */
     public void setCurrentPageTags() {
         setCurrentPage(TAGS_PAGE, true, true);
         updateBreadcrumbs(
                 new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/", NavigationHelper.WEIGHT_TAG_CLOUD));
     }
 
+    /**
+     * <p>setCurrentPageStatistics.</p>
+     */
     public void setCurrentPageStatistics() {
         setCurrentPage("statistics", true, true);
         updateBreadcrumbs(new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
@@ -300,6 +394,10 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Set the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier
+     *
+     * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
      */
     public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
         String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
@@ -317,10 +415,18 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>setCurrentPageUser.</p>
+     */
     public void setCurrentPageUser() {
         setCurrentPage("user", false, true);
     }
 
+    /**
+     * <p>setCurrentPageAdmin.</p>
+     *
+     * @param pageName a {@link java.lang.String} object.
+     */
     public void setCurrentPageAdmin(String pageName) {
         resetBreadcrumbs();
         resetCurrentDocument();
@@ -332,10 +438,16 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * <p>setCurrentPageAdmin.</p>
+     */
     public void setCurrentPageAdmin() {
         setCurrentPageAdmin("adminAllUsers");
     }
 
+    /**
+     * <p>setCurrentPageSitelinks.</p>
+     */
     public void setCurrentPageSitelinks() {
         setCurrentPage("sitelinks", true, true);
         updateBreadcrumbs(new LabeledLink("sitelinks", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sitelinks/",
@@ -343,25 +455,42 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * <p>setCurrentPageTimeMatrix.</p>
+     */
     public void setCurrentPageTimeMatrix() {
         setCurrentPage("timeMatrix", true, true);
 
     }
 
+    /**
+     * <p>setCurrentPageSearchTermList.</p>
+     */
     public void setCurrentPageSearchTermList() {
         setCurrentPage(SEARCH_TERM_LIST_PAGE, false, true);
     }
 
+    /**
+     * <p>resetCurrentPage.</p>
+     */
     public void resetCurrentPage() {
         logger.trace("resetCurrentPage");
         setCurrentPage(null, true, true);
     }
 
+    /**
+     * <p>getViewAction.</p>
+     *
+     * @param view a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getViewAction(String view) {
         return view;
     }
 
     /**
+     * <p>getCurrentView.</p>
+     *
      * @return the currentView
      * @should return value correctly
      */
@@ -372,7 +501,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the currently selected content view name.
      *
-     * @param currentView
+     * @param currentView a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setCurrentView(String currentView) {
@@ -381,6 +510,11 @@ public class NavigationHelper implements Serializable {
         setCurrentPage(currentView);
     }
 
+    /**
+     * <p>getDefaultLocale.</p>
+     *
+     * @return a {@link java.util.Locale} object.
+     */
     public Locale getDefaultLocale() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
             return FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
@@ -389,14 +523,29 @@ public class NavigationHelper implements Serializable {
         return null;
     }
 
+    /**
+     * <p>Getter for the field <code>locale</code>.</p>
+     *
+     * @return a {@link java.util.Locale} object.
+     */
     public Locale getLocale() {
         return locale;
     }
 
+    /**
+     * <p>getLocaleString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocaleString() {
         return locale.getLanguage();
     }
 
+    /**
+     * <p>getSupportedLocales.</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
     public Iterator<Locale> getSupportedLocales() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
             return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
@@ -407,8 +556,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Returns ISO 639-1 language codes of available JSF locales.
-     * 
-     * @return
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getSupportedLanguages() {
         List<String> ret = new ArrayList<>();
@@ -422,8 +571,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
-     * @param inLocale
+     * <p>setLocaleString.</p>
+     *
+     * @param inLocale a {@link java.lang.String} object.
      */
     public void setLocaleString(String inLocale) {
         logger.trace("setLocaleString: {}", inLocale);
@@ -439,6 +589,11 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>getDatePattern.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDatePattern() {
         switch (locale.getLanguage()) {
             case "en":
@@ -450,15 +605,25 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>reload.</p>
+     */
     public void reload() {
     }
 
+    /**
+     * <p>getApplicationUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getApplicationUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
     }
 
     /**
      * Used for social bookmarks.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getEncodedUrl() {
         try {
@@ -469,6 +634,11 @@ public class NavigationHelper implements Serializable {
         return "";
     }
 
+    /**
+     * <p>getCurrentUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCurrentUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         if (request != null) {
@@ -480,6 +650,11 @@ public class NavigationHelper implements Serializable {
         return null;
     }
 
+    /**
+     * <p>getRssUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRssUrl() {
         try {
             return URL_RSS + "/?lang=" + CmsBean.getCurrentLocale().getLanguage();
@@ -489,8 +664,10 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>getRequestPath.</p>
      *
      * @return the complete Request Path, eg http://hostname.de/viewer/pathxyz/pathxyz/
+     * @param externalContext a {@link javax.faces.context.ExternalContext} object.
      */
     public String getRequestPath(ExternalContext externalContext) {
         ExternalContext exContext = externalContext;
@@ -501,6 +678,13 @@ public class NavigationHelper implements Serializable {
         return getRequestPath(request, prettyFacesURI);
     }
 
+    /**
+     * <p>getRequestPath.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param prettyFacesURI a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getRequestPath(HttpServletRequest request, String prettyFacesURI) {
         String requestPath = "";
         if (StringUtils.isEmpty(prettyFacesURI)) {
@@ -525,6 +709,13 @@ public class NavigationHelper implements Serializable {
         return baseURL + requestPath;
     }
 
+    /**
+     * <p>getFullRequestUrl.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param prettyFacesURI a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getFullRequestUrl(HttpServletRequest request, String prettyFacesURI) {
         if (StringUtils.isEmpty(prettyFacesURI)) {
             return getRequestPath(request, prettyFacesURI) + "?" + request.getQueryString();
@@ -536,7 +727,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the current PrettyURL.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getCurrentPrettyUrl() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -545,12 +736,19 @@ public class NavigationHelper implements Serializable {
         return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + url.toURL();
     }
 
+    /**
+     * <p>getTimeZone.</p>
+     *
+     * @return a {@link java.util.TimeZone} object.
+     */
     public TimeZone getTimeZone() {
         return TimeZone.getDefault();
     }
 
     /**
-     * @param page
+     * <p>setMenuPage.</p>
+     *
+     * @param page a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setMenuPage(String page) {
@@ -559,14 +757,18 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * @return
+     * <p>getMenuPage.</p>
+     *
      * @should return value correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getMenuPage() {
         return statusMap.get(KEY_MENU_PAGE);
     }
 
     /**
+     * <p>getActivePartnerId.</p>
+     *
      * @return the activePartnerId
      * @should return value correctly
      */
@@ -576,6 +778,8 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>setActivePartnerId.</p>
+     *
      * @param activePartnerId the activePartnerId to set
      * @should reset current partner page
      * @should set value correctly
@@ -591,6 +795,8 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>resetActivePartnerId.</p>
+     *
      * @should reset value correctly
      */
     @Deprecated
@@ -601,6 +807,11 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>theme</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTheme() {
         return theme;
     }
@@ -610,8 +821,8 @@ public class NavigationHelper implements Serializable {
      * <code>setSubThemeDiscriminatorValue(java.lang.String)</code> (e.g. via PrettyFacces). If a record is currently loaded and has a
      * dicriminatorField:discriminatorValue pair, the currently set value is replaced with that from the record.
      *
-     * @return
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
 
@@ -651,8 +862,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>setSubThemeDiscriminatorValue.</p>
      *
-     * @param subThemeDiscriminatorValue
+     * @param subThemeDiscriminatorValue a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
@@ -681,6 +893,11 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>changeTheme.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public void changeTheme() throws IndexUnreachableException {
         if (DataManager.getInstance().getConfiguration().isSubthemesEnabled()) {
             String discriminatorValue = getSubThemeDiscriminatorValue();
@@ -695,6 +912,9 @@ public class NavigationHelper implements Serializable {
         logger.debug("theme: {}", theme);
     }
 
+    /**
+     * <p>resetTheme.</p>
+     */
     public void resetTheme() {
         logger.trace("resetTheme");
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
@@ -706,13 +926,20 @@ public class NavigationHelper implements Serializable {
         setCmsPage(false);
     }
 
+    /**
+     * <p>Setter for the field <code>theme</code>.</p>
+     *
+     * @param theme a {@link java.lang.String} object.
+     */
     public void setTheme(String theme) {
         this.theme = theme;
     }
 
     /**
-     * 
+     * <p>isHtmlHeadDCMetadata.</p>
+     *
      * @deprecated Use ConfigurationBean.isAddDublinCoreTags()
+     * @return a boolean.
      */
     @Deprecated
     public boolean isHtmlHeadDCMetadata() {
@@ -727,22 +954,37 @@ public class NavigationHelper implements Serializable {
     //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
     //    }
 
+    /**
+     * <p>getObjectUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getObjectUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewObject.getName();
     }
 
+    /**
+     * <p>getImageUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getImageUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
     }
 
+    /**
+     * <p>getImageActiveUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getImageActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
     }
 
     /**
-     * 
+     * <p>getReadingModeUrl.</p>
+     *
      * @return the reading mode url
-     * 
      * @deprecated renamed to fullscreen
      */
     public String getReadingModeUrl() {
@@ -753,9 +995,9 @@ public class NavigationHelper implements Serializable {
      * This method checks the Solr height attribute of the current page. If this is > 0, than the current page is displayed with OpenLayers
      *
      * @return the path which viewImageFullscreen.xhtml the user should see for the current page.
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
@@ -781,54 +1023,120 @@ public class NavigationHelper implements Serializable {
         return "/viewImageFullscreen.xhtml";
     }
 
+    /**
+     * <p>getCalendarUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCalendarUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
     }
 
+    /**
+     * <p>getCalendarActiveUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCalendarActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
     }
 
+    /**
+     * <p>getTocUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTocUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
     }
 
+    /**
+     * <p>getTocActiveUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTocActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
     }
 
+    /**
+     * <p>getThumbsUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getThumbsUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewThumbs.getName();
     }
 
+    /**
+     * <p>getThumbsActiveUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getThumbsActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewThumbs.getName();
     }
 
+    /**
+     * <p>getMetadataUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMetadataUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMetadata.getName();
     }
 
+    /**
+     * <p>getMetadataActiveUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMetadataActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMetadata.getName();
     }
 
+    /**
+     * <p>getFulltextUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFulltextUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFulltext.getName();
     }
 
+    /**
+     * <p>getFulltextActiveUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFulltextActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
 
+    /**
+     * <p>getSearchUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSearchUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
     }
 
+    /**
+     * <p>getAdvancedSearchUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAdvancedSearchUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
     }
 
+    /**
+     * <p>getPageUrl.</p>
+     *
+     * @param pageType a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getPageUrl(String pageType) {
         PageType page = PageType.getByName(pageType);
         if (page != null) {
@@ -838,10 +1146,22 @@ public class NavigationHelper implements Serializable {
         return "";
     }
 
+    /**
+     * <p>getPageUrl.</p>
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
 
+    /**
+     * <p>getSearchUrl.</p>
+     *
+     * @param activeSearchType a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSearchUrl(int activeSearchType) {
 
         //If we are on a cms-page, return the cms page url
@@ -864,15 +1184,30 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>getTermUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTermUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.term.getName();
     }
 
+    /**
+     * <p>getBrowseUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBrowseUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
 
     }
 
+    /**
+     * <p>getSortUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSortUrl() {
         return getSearchUrl();
     }
@@ -880,7 +1215,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
      * not the main link.
-     * 
+     *
      * @return the List of flattened breadcrumb links
      */
     public List<LabeledLink> getBreadcrumbs() {
@@ -900,7 +1235,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the bottom breadcrumb. Used to return to the previous page from the errorGeneral page.
      *
-     * @return
+     * @return a {@link io.goobi.viewer.model.viewer.LabeledLink} object.
      */
     public LabeledLink getLastBreadcrumb() {
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
@@ -915,9 +1250,9 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
-     * 
+     *
      * @param cmsPage The CMS page from which to create a breadcrumb
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
         logger.trace("updateBreadcrumbs (CMSPage): {}", cmsPage.getTitle());
@@ -1035,6 +1370,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
+     *
+     * @param facetString a {@link java.lang.String} object.
      */
     public void updateBreadcrumbsForSearchHits(String facetString) {
         //        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
@@ -1096,8 +1433,8 @@ public class NavigationHelper implements Serializable {
     /**
      * Adds a link to the breadcrumbs using the current PrettyURL. Can be called from XHTML.
      *
-     * @param linkName
-     * @param linkWeight
+     * @param linkName a {@link java.lang.String} object.
+     * @param linkWeight a int.
      */
     public void addStaticLinkToBreadcrumb(String linkName, int linkWeight) {
         addStaticLinkToBreadcrumb(linkName, getCurrentPrettyUrl(), linkWeight);
@@ -1106,8 +1443,9 @@ public class NavigationHelper implements Serializable {
     /**
      * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
      *
-     * @param linkName
-     * @param linkWeight
+     * @param linkName a {@link java.lang.String} object.
+     * @param linkWeight a int.
+     * @param url a {@link java.lang.String} object.
      */
     public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
         PageType page = PageType.getByName(url);
@@ -1120,13 +1458,13 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
+     * <p>addCollectionHierarchyToBreadcrumb.</p>
+     *
      * @param collection Full collection string containing all levels
      * @param field Solr field
-     * @param splittingChar
-     * @return Link weight after the last added collection hierarchy level
-     * @throws PresentationException
-     * @throws DAOException
+     * @param splittingChar a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should create breadcrumbs correctly
      */
     public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
@@ -1156,6 +1494,11 @@ public class NavigationHelper implements Serializable {
         return getApplicationUrl() + page.getName();
     }
 
+    /**
+     * <p>getCurrentPartnerUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCurrentPartnerUrl() {
         logger.trace("activePartnerId: {}", statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE));
         logger.trace("currentPartnerPage: {}", statusMap.get(KEY_CURRENT_PARTNER_PAGE));
@@ -1179,13 +1522,19 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the string representation of the given <code>Date</code> based on the current <code>locale</code>.
      *
-     * @param date
-     * @return
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getLocalDate(Date date) {
         return DateTools.getLocalDate(date, locale.getLanguage());
     }
 
+    /**
+     * <p>getMessageValueList.</p>
+     *
+     * @param keyPrefix a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getMessageValueList(String keyPrefix) {
         List<String> sortetList = ViewerResourceBundle.getMessagesValues(locale, keyPrefix);
         Collections.reverse(sortetList);
@@ -1194,8 +1543,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>setSelectedNewsArticle.</p>
      *
-     * @param art
+     * @param art a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setSelectedNewsArticle(String art) {
@@ -1203,8 +1553,10 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * @return
+     * <p>getSelectedNewsArticle.</p>
+     *
      * @should return value correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getSelectedNewsArticle() {
         return statusMap.get(KEY_SELECTED_NEWS_ARTICLE);
@@ -1229,22 +1581,31 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * <p>getLastRequestTimestamp.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLastRequestTimestamp() {
         return (String) BeanUtils.getRequest().getSession(false).getAttribute("lastRequest");
     }
 
     /**
-     * @param key
-     * @return
+     * <p>getStatusMapValue.</p>
+     *
+     * @param key a {@link java.lang.String} object.
      * @should return value correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getStatusMapValue(String key) {
         return statusMap.get(key);
     }
 
     /**
-     * @param key
-     * @param value
+     * <p>setStatusMapValue.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      * @should set value correctly
      */
     public void setStatusMapValue(String key, String value) {
@@ -1252,6 +1613,8 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>statusMap</code>.</p>
+     *
      * @return the statusMap
      */
     public Map<String, String> getStatusMap() {
@@ -1259,6 +1622,8 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>statusMap</code>.</p>
+     *
      * @param statusMap the statusMap to set
      */
     public void setStatusMap(Map<String, String> statusMap) {
@@ -1282,7 +1647,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Returns a simple translation for the given language (or current language, if none given).
-     * 
+     *
      * @param msgKey Message key to translate
      * @param language Optional desired language
      * @return Translated, escaped key
@@ -1297,7 +1662,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Checks whether to display a noindex meta tag on the current page.
-     * 
+     *
      * @return true for a set of current page values; false otherwise
      */
     public boolean isDisplayNoIndexMetaTag() {
@@ -1319,7 +1684,7 @@ public class NavigationHelper implements Serializable {
      * Checks if the current page displays document information, solely based on the String getCurrentPage() The Pages for which this method should
      * return true are set in the PageType class.
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isDocumentPage() {
         PageType page = PageType.getByName(getCurrentPage());
@@ -1330,21 +1695,29 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     * @throws IndexUnreachableException
+     * <p>getSubThemeDiscriminatorQuerySuffix.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getSubThemeDiscriminatorQuerySuffix() throws IndexUnreachableException {
         return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     /**
-     * @return
+     * <p>getCurrentPagerType.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public PageType getCurrentPagerType() {
         return PageType.getByName(getCurrentPage());
     }
 
+    /**
+     * <p>getPreviousViewUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPreviousViewUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request).map(path -> (path.getCombinedUrl())).orElse("");
@@ -1354,6 +1727,11 @@ public class NavigationHelper implements Serializable {
         return previousUrl;
     }
 
+    /**
+     * <p>redirectToPreviousView.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void redirectToPreviousView() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request)
@@ -1367,6 +1745,11 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * <p>getCurrentViewUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCurrentViewUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
@@ -1376,6 +1759,11 @@ public class NavigationHelper implements Serializable {
         return previousUrl;
     }
 
+    /**
+     * <p>redirectToCurrentView.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void redirectToCurrentView() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request)
@@ -1390,25 +1778,29 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
-     * @param s
-     * @return
+     * <p>urlEncode.</p>
+     *
+     * @param s a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String urlEncode(String s) {
         return StringTools.encodeUrl(s);
     }
 
     /**
-     * 
-     * @param s
-     * @return
+     * <p>urlEncodeUnicode.</p>
+     *
+     * @param s a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String urlEncodeUnicode(String s) {
         return BeanUtils.escapeCriticalUrlChracters(s);
     }
 
     /**
-     * @return
+     * <p>getThemeOrSubtheme.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getThemeOrSubtheme() {
         String currentTheme = getTheme();
@@ -1423,32 +1815,69 @@ public class NavigationHelper implements Serializable {
         return currentTheme;
     }
 
+    /**
+     * <p>isSubthemeSelected.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public boolean isSubthemeSelected() throws IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().isSubthemesEnabled()
                 || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()
                         && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
     }
 
+    /**
+     * <p>getVersion.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getVersion() {
         return Version.VERSION;
     }
 
+    /**
+     * <p>getPublicVersion.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPublicVersion() {
         return Version.PUBLIC_VERSION;
     }
 
+    /**
+     * <p>getBuildDate.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBuildDate() {
         return Version.BUILDDATE;
     }
 
+    /**
+     * <p>getBuildVersion.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBuildVersion() {
         return Version.BUILDVERSION;
     }
 
+    /**
+     * <p>getApplicationName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getApplicationName() {
         return Version.APPLICATION_NAME;
     }
 
+    /**
+     * <p>getBuildDate.</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getBuildDate(String pattern) {
         return Version.getBuildDate(pattern);
     }

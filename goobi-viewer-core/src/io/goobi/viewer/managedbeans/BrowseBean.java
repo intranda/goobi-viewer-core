@@ -94,14 +94,16 @@ public class BrowseBean implements Serializable {
     private Map<String, CollectionView> collections = new HashMap<>();
     private String collectionField;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public BrowseBean() {
         // the emptiness inside
     }
 
     /**
      * Required setter for ManagedProperty injection
-     * 
+     *
      * @param navigationHelper the navigationHelper to set
      */
     public void setNavigationHelper(NavigationHelper navigationHelper) {
@@ -110,7 +112,7 @@ public class BrowseBean implements Serializable {
 
     /**
      * Required setter for ManagedProperty injection
-     * 
+     *
      * @param searchBean the searchBean to set
      */
     public void setSearchBean(SearchBean searchBean) {
@@ -135,17 +137,28 @@ public class BrowseBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resetAllLists.</p>
+     */
     public void resetAllLists() {
         for (String field : collections.keySet()) {
             collections.get(field).resetCollectionList();
         }
     }
 
+    /**
+     * <p>resetDcList.</p>
+     */
     public void resetDcList() {
         logger.trace("resetDcList");
         resetList(SolrConstants.DC);
     }
 
+    /**
+     * <p>resetList.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     */
     public void resetList(String field) {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
@@ -156,17 +169,34 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>getDcList.</p>
+     *
      * @return the dcList (Collections)
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public List<BrowseDcElement> getDcList() throws IndexUnreachableException {
         return getList(SolrConstants.DC);
     }
 
+    /**
+     * <p>getList.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public List<BrowseDcElement> getList(String field) throws IndexUnreachableException {
         return getList(field, -1);
     }
 
+    /**
+     * <p>getList.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param depth a int.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public List<BrowseDcElement> getList(String field, int depth) throws IndexUnreachableException {
         if (collections.get(field) == null) {
             initializeCollection(field, field);
@@ -183,8 +213,10 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * @throws IndexUnreachableException
+     * <p>populateCollection.</p>
      *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param field a {@link java.lang.String} object.
      */
     public void populateCollection(String field) throws IndexUnreachableException {
         if (collections.containsKey(field)) {
@@ -192,6 +224,11 @@ public class BrowseBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getVisibleDcList.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @Deprecated
     public List<BrowseDcElement> getVisibleDcList() {
         logger.debug("getVisibleDcList");
@@ -205,7 +242,7 @@ public class BrowseBean implements Serializable {
      * Populates <code>visibledcList</code> with elements to be currently show in the UI. Prior to using this method, <code>dcList</code> must be
      * sorted and each <code>BrowseDcElement.hasSubElements</code> must be set correctly.
      *
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     @Deprecated
     public void calculateVisibleDcElements() throws IndexUnreachableException {
@@ -214,10 +251,20 @@ public class BrowseBean implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>collectionToExpand</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCollectionToExpand() {
         return collectionToExpand;
     }
 
+    /**
+     * <p>Setter for the field <code>collectionToExpand</code>.</p>
+     *
+     * @param collectionToExpand a {@link java.lang.String} object.
+     */
     public void setCollectionToExpand(String collectionToExpand) {
         synchronized (this) {
             this.collectionToExpand = collectionToExpand;
@@ -226,6 +273,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>topVisibleCollection</code>.</p>
+     *
      * @return the topVisibleCollecion
      */
     public String getTopVisibleCollection() {
@@ -236,6 +285,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>topVisibleCollection</code>.</p>
+     *
      * @param topVisibleCollecion the topVisibleCollecion to set
      */
     public void setTopVisibleCollection(String topVisibleCollecion) {
@@ -245,12 +296,21 @@ public class BrowseBean implements Serializable {
     /**
      * Use this method of a certain collections needs to be expanded via URL.
      *
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param levels a int.
      */
     public void expandCollection(int levels) throws IndexUnreachableException {
         expandCollection(SolrConstants.DC, SolrConstants.FACET_DC, levels);
     }
 
+    /**
+     * <p>expandCollection.</p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param facetField a {@link java.lang.String} object.
+     * @param levels a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException {
         synchronized (this) {
             initializeCollection(collectionField, facetField);
@@ -262,10 +322,11 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>searchTerms.</p>
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {
@@ -374,6 +435,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>browsingMenuField</code>.</p>
+     *
      * @return the browsingMenuField
      */
     public String getBrowsingMenuField() {
@@ -385,6 +448,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>browsingMenuField</code>.</p>
+     *
      * @param browsingMenuField the browsingMenuField to set
      */
     public void setBrowsingMenuField(String browsingMenuField) {
@@ -401,6 +466,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>browseTermList</code>.</p>
+     *
      * @return the browseTermList
      */
     public List<String> getBrowseTermList() {
@@ -408,6 +475,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>browseTermListEscaped</code>.</p>
+     *
      * @return the browseTermListEscaped
      */
     public List<String> getBrowseTermListEscaped() {
@@ -415,12 +484,19 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>browseTermHitCountList</code>.</p>
+     *
      * @return the browseTermHitCountList
      */
     public List<Long> getBrowseTermHitCountList() {
         return browseTermHitCountList;
     }
 
+    /**
+     * <p>getPrevTermUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPrevTermUrl() {
         int page = 1;
         if (currentPage > 1) {
@@ -435,6 +511,11 @@ public class BrowseBean implements Serializable {
                 .toString();
     }
 
+    /**
+     * <p>getNextTermUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNextTermUrl() {
         int page = getLastPage();
         if (currentPage < page) {
@@ -450,6 +531,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>availableStringFilters</code>.</p>
+     *
      * @return the availableStringFilters
      */
     public List<String> getAvailableStringFilters() {
@@ -457,6 +540,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentStringFilter</code>.</p>
+     *
      * @return the currentStringFilter
      */
     public String getCurrentStringFilter() {
@@ -467,6 +552,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentStringFilter</code>.</p>
+     *
      * @param currentStringFilter the currentStringFilter to set
      */
     public void setCurrentStringFilter(String currentStringFilter) {
@@ -483,6 +570,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>filterQuery</code>.</p>
+     *
      * @return the filterQuery
      */
     public String getFilterQuery() {
@@ -493,12 +582,19 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>filterQuery</code>.</p>
+     *
      * @param filterQuery the filterQuery to set
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = "-".equals(filterQuery) ? null : filterQuery;
     }
 
+    /**
+     * <p>getCurrentPageResetFilter.</p>
+     *
+     * @return a int.
+     */
     public int getCurrentPageResetFilter() {
         return currentPage;
     }
@@ -506,7 +602,7 @@ public class BrowseBean implements Serializable {
     /**
      * This is used when a term search query doesn't contain a filter value. In this case, the value is reset.
      *
-     * @param currentPage
+     * @param currentPage a int.
      * @deprecated Reset the currentStringFilter value in the PrettyFaces mapping
      */
     @Deprecated
@@ -518,6 +614,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentPage</code>.</p>
+     *
      * @return the currentPage
      */
     public int getCurrentPage() {
@@ -525,6 +623,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentPage</code>.</p>
+     *
      * @param currentPage the currentPage to set
      */
     public void setCurrentPage(int currentPage) {
@@ -533,6 +633,11 @@ public class BrowseBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getLastPage.</p>
+     *
+     * @return a int.
+     */
     public int getLastPage() {
         int hitsPerPageLocal = browsingMenuHitsPerPage;
         int answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
@@ -544,13 +649,19 @@ public class BrowseBean implements Serializable {
         return answer;
     }
 
+    /**
+     * <p>isBrowsingMenuEnabled.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isBrowsingMenuEnabled() {
         return DataManager.getInstance().getConfiguration().isBrowsingMenuEnabled();
     }
 
     /**
-     * 
-     * @param language
+     * <p>getBrowsingMenuItems.</p>
+     *
+     * @param language a {@link java.lang.String} object.
      * @return List of browsing menu items
      * @should skip items for language-specific fields if no language was given
      * @should skip items for language-specific fields if they don't match given language
@@ -570,14 +681,31 @@ public class BrowseBean implements Serializable {
         return ret;
     }
 
+    /**
+     * <p>Getter for the field <code>targetCollection</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTargetCollection() {
         return targetCollection;
     }
 
+    /**
+     * <p>Setter for the field <code>targetCollection</code>.</p>
+     *
+     * @param targetCollection a {@link java.lang.String} object.
+     */
     public void setTargetCollection(String targetCollection) {
         this.targetCollection = targetCollection;
     }
 
+    /**
+     * <p>openWorkInTargetCollection.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public String openWorkInTargetCollection() throws IndexUnreachableException, PresentationException {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
@@ -588,14 +716,28 @@ public class BrowseBean implements Serializable {
         return "pretty:" + url;
     }
 
+    /**
+     * <p>getDcCollection.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     */
     public CollectionView getDcCollection() {
         return getCollection(SolrConstants.DC);
     }
 
+    /**
+     * <p>getCollection.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     */
     public CollectionView getCollection(String field) {
         return collections.get(field);
     }
 
+    /**
+     * <p>initializeDCCollection.</p>
+     */
     public void initializeDCCollection() {
         initializeCollection(SolrConstants.DC, SolrConstants.FACET_DC);
     }
@@ -603,8 +745,8 @@ public class BrowseBean implements Serializable {
     /**
      * Adds a CollectionView object for the given field to the map and populates its values.
      *
-     * @param collectionField
-     * @param facetField
+     * @param collectionField a {@link java.lang.String} object.
+     * @param facetField a {@link java.lang.String} object.
      */
     public void initializeCollection(final String collectionField, final String facetField) {
         logger.trace("initializeCollection: {}", collectionField);
@@ -620,6 +762,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>collectionField</code>.</p>
+     *
      * @return the collectionField
      */
     public String getCollectionField() {
@@ -627,6 +771,8 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>collectionField</code>.</p>
+     *
      * @param collectionField the collectionField to set
      */
     public void setCollectionField(String collectionField) {

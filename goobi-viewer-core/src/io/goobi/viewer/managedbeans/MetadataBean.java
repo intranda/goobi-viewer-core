@@ -55,14 +55,16 @@ public class MetadataBean {
     /** Events. */
     private List<EventElement> events = new ArrayList<>();
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public MetadataBean() {
         // the emptiness inside
     }
 
     /**
      * Required setter for ManagedProperty injection
-     * 
+     *
      * @param activeDocumentBean the activeDocumentBean to set
      */
     public void setActiveDocumentBean(ActiveDocumentBean activeDocumentBean) {
@@ -70,10 +72,11 @@ public class MetadataBean {
     }
 
     /**
+     * <p>loadMetadata.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String loadMetadata() throws IndexUnreachableException, DAOException {
         metadataElementList = new ArrayList<>();
@@ -116,6 +119,8 @@ public class MetadataBean {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Setter for the field <code>metadataElementList</code>.</p>
+     *
      * @param metadataElementList the metadataElementList to set
      */
     public void setMetadataElementList(List<MetadataElement> metadataElementList) {
@@ -123,9 +128,9 @@ public class MetadataBean {
     }
 
     /**
+     * <p>Getter for the field <code>metadataElementList</code>.</p>
+     *
      * @return the metadataElementList
-     * @throws IndexUnreachableException
-     * @throws DAOException
      */
     public List<MetadataElement> getMetadataElementList() {
         if (metadataElementList == null) {
@@ -141,6 +146,11 @@ public class MetadataBean {
         return metadataElementList;
     }
 
+    /**
+     * <p>getTopMetadataElement.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
+     */
     public MetadataElement getTopMetadataElement() {
         if (getMetadataElementList() != null && !getMetadataElementList().isEmpty()) {
             return getMetadataElementList().get(0);
@@ -154,7 +164,7 @@ public class MetadataBean {
      * metadata, the next higher element is checked until an element with sidebar metadata is found. TODO for some reason this method is called 6-15
      * times per page
      *
-     * @return
+     * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
      */
     public MetadataElement getBottomMetadataElement() {
         if (getMetadataElementList() != null && !getMetadataElementList().isEmpty()) {
@@ -170,6 +180,8 @@ public class MetadataBean {
     }
 
     /**
+     * <p>Getter for the field <code>events</code>.</p>
+     *
      * @return the events
      */
     public List<EventElement> getEvents() {
@@ -177,18 +189,27 @@ public class MetadataBean {
     }
 
     /**
+     * <p>Setter for the field <code>events</code>.</p>
+     *
      * @param events the events to set
      */
     public void setEvents(List<EventElement> events) {
         this.events = events;
     }
 
+    /**
+     * <p>displayChildStructs.</p>
+     *
+     * @return a boolean.
+     */
     public boolean displayChildStructs() {
         return true;
     }
 
     /**
-     * @param selectedRecordLanguage
+     * <p>setSelectedRecordLanguage.</p>
+     *
+     * @param selectedRecordLanguage a {@link java.lang.String} object.
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
        if(metadataElementList != null) {           

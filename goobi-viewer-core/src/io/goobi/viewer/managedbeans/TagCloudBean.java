@@ -48,11 +48,18 @@ public class TagCloudBean implements Serializable {
 
     private Map<String, List<Tag>> lists = new HashMap<>();
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public TagCloudBean() {
         // the emptiness inside
     }
 
+    /**
+     * <p>getTagsAutor.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tag> getTagsAutor() {
         try {
             return getTagsForField(SolrConstants.YEARPUBLISH, true, 50, null);
@@ -62,6 +69,11 @@ public class TagCloudBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTags.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tag> getTags() {
         try {
             return getTagsForField(SolrConstants.DEFAULT, true, 50, null);
@@ -71,10 +83,20 @@ public class TagCloudBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTagsSize.</p>
+     *
+     * @return a int.
+     */
     public int getTagsSize() {
         return getTags().size();
     }
 
+    /**
+     * <p>getTagsTitles.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tag> getTagsTitles() {
         try {
             return getTagsForField(SolrConstants.TITLE, true, 100, null);
@@ -84,6 +106,11 @@ public class TagCloudBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTagsPlaces.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tag> getTagsPlaces() {
         try {
             return getTagsForField(SolrConstants.PLACEPUBLISH, true, 100, null);
@@ -93,6 +120,11 @@ public class TagCloudBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTagsYears.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tag> getTagsYears() {
         try {
             return getTagsForField(SolrConstants.YEARPUBLISH, true, 100, null);
@@ -102,6 +134,11 @@ public class TagCloudBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTagsPersons.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tag> getTagsPersons() {
         try {
             return getTagsForField(SolrConstants.PERSON_ONEFIELD, true, 100, null);
@@ -111,6 +148,16 @@ public class TagCloudBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTags.</p>
+     *
+     * @param luceneField a {@link java.lang.String} object.
+     * @param shuffle a boolean.
+     * @param topCount a int.
+     * @param query a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public List<Tag> getTags(String luceneField, boolean shuffle, int topCount, String query) throws IndexUnreachableException {
         return this.getTagsForField(luceneField, shuffle, topCount, query);
     }

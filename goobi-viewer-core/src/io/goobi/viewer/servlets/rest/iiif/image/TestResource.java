@@ -22,12 +22,21 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 
 /**
- * @author Florian Alpers
+ * <p>TestResource class.</p>
  *
+ * @author Florian Alpers
  */
 @Path("/imageTT")
 public class TestResource {
     
+    /**
+     * <p>forwardToContentServer.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param a a {@link java.lang.String} object.
+     * @param b a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Path("/{a}/{b}/default")
     public String forwardToContentServer(@Context ContainerRequestContext request, @PathParam("a") String a, @PathParam("b") String b) {
@@ -35,6 +44,13 @@ public class TestResource {
             return "Received " + a + "/" + b;
     }
 
+    /**
+     * <p>forwardToContentServer1.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param b a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Path("/{b}/default")
     public String forwardToContentServer1(@Context ContainerRequestContext request, @PathParam("b") String b) {

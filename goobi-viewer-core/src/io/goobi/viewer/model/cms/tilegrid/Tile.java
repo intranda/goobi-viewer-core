@@ -32,10 +32,17 @@ public class Tile {
     private final int displayOrder;
 
     /**
-     * @param title
-     * @param name
-     * @param caption
-     * @param id
+     * <p>Constructor for Tile.</p>
+     *
+     * @param title a {@link java.lang.String} object.
+     * @param caption a {@link java.lang.String} object.
+     * @param imageUrl a {@link java.lang.String} object.
+     * @param linkUrl a {@link java.lang.String} object.
+     * @param important a boolean.
+     * @param size a CMSMediaItem.DisplaySize object.
+     * @param tags a {@link java.util.List} object.
+     * @param collection a {@link java.lang.String} object.
+     * @param displayOrder a int.
      */
     public Tile(String title, String imageUrl, String caption, String linkUrl, boolean important, CMSMediaItem.DisplaySize size, List<String> tags,
             String collection, int displayOrder) {
@@ -52,6 +59,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
@@ -59,6 +68,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -66,6 +77,8 @@ public class Tile {
     }
 
     /**
+     * <p>getAlt.</p>
+     *
      * @return the alt
      */
     public String getAlt() {
@@ -73,6 +86,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>caption</code>.</p>
+     *
      * @return the caption
      */
     public String getCaption() {
@@ -80,6 +95,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
      * @return the url
      */
     public String getUrl() {
@@ -89,12 +106,15 @@ public class Tile {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getName();
     }
 
     /**
+     * <p>Getter for the field <code>tags</code>.</p>
+     *
      * @return the tags
      */
     public List<String> getTags() {
@@ -102,6 +122,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>collection</code>.</p>
+     *
      * @return the collection
      */
     public String getCollection() {
@@ -109,6 +131,8 @@ public class Tile {
     }
 
     /**
+     * <p>isImportant.</p>
+     *
      * @return the important
      */
     public boolean isImportant() {
@@ -116,6 +140,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>size</code>.</p>
+     *
      * @return the size
      */
     public CMSMediaItem.DisplaySize getSize() {
@@ -123,6 +149,8 @@ public class Tile {
     }
 
     /**
+     * <p>Getter for the field <code>displayOrder</code>.</p>
+     *
      * @return the displayOrder
      */
     public int getDisplayOrder() {

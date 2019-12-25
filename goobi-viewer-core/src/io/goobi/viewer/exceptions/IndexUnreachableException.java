@@ -17,12 +17,18 @@ package io.goobi.viewer.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * <p>IndexUnreachableException class.</p>
+ *
+ */
 public class IndexUnreachableException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5840484445206784670L;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for IndexUnreachableException.</p>
+     *
+     * @param string {@link java.lang.String}
      */
     public IndexUnreachableException(String string) {
         super(string);

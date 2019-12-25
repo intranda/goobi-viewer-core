@@ -20,10 +20,17 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
+/**
+ * <p>ViewerApplication class.</p>
+ *
+ */
 @ApplicationPath("rest")
 @ViewerRestServiceBinding
 public class ViewerApplication extends ResourceConfig {
 
+	/**
+	 * <p>Constructor for ViewerApplication.</p>
+	 */
 	public ViewerApplication() {
 		super();
 		register(MultiPartFeature.class);

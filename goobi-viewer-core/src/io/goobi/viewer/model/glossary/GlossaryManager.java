@@ -36,8 +36,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * @author Florian Alpers
+ * <p>GlossaryManager class.</p>
  *
+ * @author Florian Alpers
  */
 public class GlossaryManager {
 
@@ -45,6 +46,12 @@ public class GlossaryManager {
     private static final String VOCABULARY_TITLE_REGEX = "\"title\":\"(.*?)\"";
     private static final String VOCABULARY_DESCRIPTION_REGEX = "\"description\":\"(.*?)\"";
 
+    /**
+     * <p>getGlossaries.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
+     */
     public List<Glossary> getGlossaries() throws IOException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());
@@ -64,6 +71,14 @@ public class GlossaryManager {
         }
     }
 
+    /**
+     * <p>getGlossaryAsJson.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     */
     public String getGlossaryAsJson(String filename) throws IOException, ContentNotFoundException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());
@@ -76,6 +91,15 @@ public class GlossaryManager {
         throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
     }
 
+    /**
+     * <p>getGlossary.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
+     * @throws java.io.IOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws org.json.JSONException if any.
+     */
     public Glossary getGlossary(String filename) throws IOException, ContentNotFoundException, JSONException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());

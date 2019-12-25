@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.model.transkribus;
 
+/**
+ * <p>TranskribusSession class.</p>
+ *
+ */
 public class TranskribusSession {
 
     /** Internal system ID for the user account at Transkribus. */
@@ -24,6 +28,13 @@ public class TranskribusSession {
     /** Session ID, needed as an authentication token for subsequent API calls. */
     private final String sessionId;
 
+    /**
+     * <p>Constructor for TranskribusSession.</p>
+     *
+     * @param userId a {@link java.lang.String} object.
+     * @param userName a {@link java.lang.String} object.
+     * @param sessionId a {@link java.lang.String} object.
+     */
     public TranskribusSession(String userId, String userName, String sessionId) {
         this.userId = userId;
         this.userName = userName;
@@ -31,6 +42,8 @@ public class TranskribusSession {
     }
 
     /**
+     * <p>Getter for the field <code>userId</code>.</p>
+     *
      * @return the userId
      */
     public String getUserId() {
@@ -38,6 +51,8 @@ public class TranskribusSession {
     }
 
     /**
+     * <p>Getter for the field <code>userName</code>.</p>
+     *
      * @return the userName
      */
     public String getUserName() {
@@ -45,6 +60,8 @@ public class TranskribusSession {
     }
 
     /**
+     * <p>Getter for the field <code>sessionId</code>.</p>
+     *
      * @return the sessionId
      */
     public String getSessionId() {

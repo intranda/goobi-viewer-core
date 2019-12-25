@@ -84,12 +84,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private static final Logger logger = LoggerFactory.getLogger(PhysicalElement.class);
 
+    /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code> */
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";
+    /** Constant <code>WATERMARK_TEXT_TYPE_PURL="PURL"</code> */
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
+    /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code> */
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
 
     private static List<String> watermarkTextConfiguration;
+    /** Constant <code>defaultVideoWidth=320</code> */
     public static int defaultVideoWidth = 320;
+    /** Constant <code>defaultVideoHeight=240</code> */
     public static int defaultVideoHeight = 240;
 
     /** Persistent identifier. */
@@ -139,13 +144,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private String previousCommentText;
 
     /**
-     * 
+     * <p>Constructor for PhysicalElement.</p>
+     *
      * @param physId Physical element ID
      * @param filePath Path to the file
      * @param order Page number (numerical)
      * @param orderLabel Page number (label)
      * @param urn Page URN
-     * @param purlPart
+     * @param purlPart a {@link java.lang.String} object.
      * @param pi Record identifier
      * @param mimeType Page mime type
      * @param dataRepository Record date repository
@@ -177,11 +183,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
-     * @param filePath
-     * @return
+     * <p>determineFileName.</p>
+     *
+     * @param filePath a {@link java.lang.String} object.
      * @should cut off everything but the file name for normal file paths
      * @should leave external urls intact
+     * @return a {@link java.lang.String} object.
      */
     protected static String determineFileName(String filePath) {
         String ret = filePath;
@@ -196,6 +203,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -209,6 +217,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -246,6 +255,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compareTo(PhysicalElement o) {
         if (o.getOrder() > getOrder()) {
@@ -258,10 +268,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     * <p>getUrl.</p>
+     *
      * @return the url to the media content of the page, for example the
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
         MimeType mimeType = MimeType.getByName(this.mimeType);
@@ -294,6 +305,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
+    /**
+     * <p>getSandboxedUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSandboxedUrl() {
         logger.trace(fileNames.toString());
         if (fileNames.get("html-sandboxed") != null) {
@@ -302,6 +318,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return filePath;
     }
 
+    /**
+     * <p>getWatermarkText.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWatermarkText() {
         if (watermarkTextConfiguration != null && !watermarkTextConfiguration.isEmpty()) {
             StringBuilder urlBuilder = new StringBuilder();
@@ -351,9 +372,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>getThumbnailUrl.</p>
      *
-     * @return {@link String}
-     * @throws ViewerConfigurationException
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getThumbnailUrl() throws ViewerConfigurationException {
         int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
@@ -362,32 +384,58 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getThumbnailUrl(thumbWidth, thumbHeight);
     }
 
+    /**
+     * <p>getThumbnailUrl.</p>
+     *
+     * @param width a int.
+     * @param height a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getThumbnailUrl(int width, int height) {
         ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
 
+    /**
+     * <p>getId.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId() {
         logger.debug("getPhysId");
         return physId;
     }
 
     /**
-     * @return {@link String} Path zu Image Datei.
+     * <p>getFilepath.</p>
+     *
+     * @return {@link java.lang.String} Path zu Image Datei.
      */
     public String getFilepath() {
         return filePath;
     }
 
+    /**
+     * <p>Getter for the field <code>order</code>.</p>
+     *
+     * @return a int.
+     */
     public int getOrder() {
         return order;
     }
 
+    /**
+     * <p>Getter for the field <code>orderLabel</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOrderLabel() {
         return orderLabel;
     }
 
     /**
+     * <p>Getter for the field <code>urn</code>.</p>
+     *
      * @return the urn
      */
     public String getUrn() {
@@ -395,6 +443,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>purlPart</code>.</p>
+     *
      * @param purlPart the purlPart to set
      */
     public void setPurlPart(String purlPart) {
@@ -402,6 +452,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>purlPart</code>.</p>
+     *
      * @return the purlPart
      */
     public String getPurlPart() {
@@ -411,19 +463,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * For images, this returns the full mime-type as image/X, with X being the format which should be used for image display. This is png for
      * png-images and jpeg for all other types.
-     * 
-     * 
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getDisplayMimeType() {
         return getFullMimeType(getMimeType(), fileName);
     }
 
     /**
-     * 
-     * @param baseType
-     * @param fileName
-     * @return
+     * <p>getFullMimeType.</p>
+     *
+     * @param baseType a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getFullMimeType(String baseType, String fileName) {
         if (baseType.equals(MimeType.IMAGE.getName())) {
@@ -438,12 +490,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return baseType;
     }
 
+    /**
+     * <p>getFullMimeType.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Deprecated
     public String getFullMimeType() {
         return getDisplayMimeType();
     }
 
     /**
+     * <p>Getter for the field <code>mimeType</code>.</p>
+     *
      * @return the mimeType
      */
     public String getMimeType() {
@@ -451,6 +510,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>mimeType</code>.</p>
+     *
      * @param mimeType the mimeType to set
      */
     public void setMimeType(String mimeType) {
@@ -458,6 +519,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>width</code>.</p>
+     *
      * @param width the width to set
      */
     public void setWidth(int width) {
@@ -465,6 +528,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>height</code>.</p>
+     *
      * @param height the height to set
      */
     public void setHeight(int height) {
@@ -472,7 +537,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Returns the filename alone, if {@link PhysicalElement#getFilePath()} is a local file, or the entire filepath otherwise
+     * Returns the filename alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filepath otherwise
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getFileName() {
         if (StringUtils.isEmpty(fileName)) {
@@ -481,15 +548,27 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return fileName;
     }
 
+    /**
+     * <p>getFileNameBase.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFileNameBase() {
         return FilenameUtils.getBaseName(fileName);
     }
 
+    /**
+     * <p>getFileNameExtension.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFileNameExtension() {
         return FilenameUtils.getExtension(fileName);
     }
 
     /**
+     * <p>Getter for the field <code>fileIdRoot</code>.</p>
+     *
      * @return the fileIdRoot
      */
     public String getFileIdRoot() {
@@ -497,6 +576,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>fileIdRoot</code>.</p>
+     *
      * @param fileIdRoot the fileIdRoot to set
      */
     public void setFileIdRoot(String fileIdRoot) {
@@ -504,6 +585,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>isFulltextAvailable.</p>
+     *
      * @return the fulltextAvailable
      */
     public boolean isFulltextAvailable() {
@@ -511,6 +594,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>fulltextAvailable</code>.</p>
+     *
      * @param fulltextAvailable the fulltextAvailable to set
      */
     public void setFulltextAvailable(boolean fulltextAvailable) {
@@ -518,6 +603,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>fulltextFileName</code>.</p>
+     *
      * @return the fulltextFileName
      */
     public String getFulltextFileName() {
@@ -525,6 +612,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>fulltextFileName</code>.</p>
+     *
      * @param fulltextFileName the fulltextFileName to set
      */
     public void setFulltextFileName(String fulltextFileName) {
@@ -532,6 +621,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>altoFileName</code>.</p>
+     *
      * @return the altoFileName
      */
     public String getAltoFileName() {
@@ -539,6 +630,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>altoFileName</code>.</p>
+     *
      * @param altoFileName the altoFileName to set
      */
     public void setAltoFileName(String altoFileName) {
@@ -546,8 +639,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>fullText</code>.</p>
+     *
      * @return the fullText
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getFullText() throws ViewerConfigurationException {
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
@@ -582,6 +677,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>fullText</code>.</p>
+     *
      * @param fullText the fullText to set
      */
     public void setFullText(String fullText) {
@@ -622,6 +719,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
+    /**
+     * <p>getWordCoords.</p>
+     *
+     * @param searchTerms a {@link java.util.Set} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public List<String> getWordCoords(Set<String> searchTerms) throws ViewerConfigurationException {
         return getWordCoords(searchTerms, 0);
     }
@@ -629,12 +733,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Returns word coordinates for words that start with any of the given search terms.
      *
-     * @param searchTerms
-     * @return
-     * @throws ViewerConfigurationException
-     * @throws IOException
-     * @throws JDOMException
+     * @param searchTerms a {@link java.util.Set} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load XML document if none yet set
+     * @param rotation a int.
+     * @return a {@link java.util.List} object.
      */
     public List<String> getWordCoords(Set<String> searchTerms, int rotation) throws ViewerConfigurationException {
         if (searchTerms == null || searchTerms.isEmpty()) {
@@ -663,14 +766,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * Loads ALTO data for this page via the REST service, if not yet loaded.
-     * 
+     *
      * @return true if ALTO successfully loaded; false otherwise
-     * @throws AccessDeniedException
-     * @throws IOException
-     * @throws JDOMException
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException
+     * @throws java.io.IOException
+     * @throws org.jdom2.JDOMException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load and set alto correctly
      * @should set wordCoordsFormat correctly
      */
@@ -702,6 +805,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>fileNames</code>.</p>
+     *
      * @return the fileNames
      */
     public Map<String, String> getFileNames() {
@@ -709,12 +814,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>fileNames</code>.</p>
+     *
      * @param fileNames the fileNames to set
      */
     public void setFileNames(Map<String, String> fileNames) {
         this.fileNames = fileNames;
     }
 
+    /**
+     * <p>getFileNameForFormat.</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getFileNameForFormat(String format) {
         if (fileNames.get(format) != null) {
             return fileNames.get(format);
@@ -725,7 +838,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * Returns The first matching media filename for this page
-     * 
+     *
      * @return The first matching media filename for this page
      */
     public String getFilename() {
@@ -733,6 +846,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getFileNameForFormat(format);
     }
 
+    /**
+     * <p>getImageToPdfUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public String getImageToPdfUrl() throws IndexUnreachableException {
         return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
     }
@@ -740,9 +859,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Returns a "RESTful" URL for a media (audio or video) file in the given format.
      *
-     * @param format
-     * @return
-     * @throws IndexUnreachableException
+     * @param format a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getMediaUrl(String format) throws IndexUnreachableException {
 
@@ -752,6 +871,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return url.toString();
     }
 
+    /**
+     * <p>getVideoWidth.</p>
+     *
+     * @return a int.
+     */
     public int getVideoWidth() {
         if (width > 0) {
             return width;
@@ -760,6 +884,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return defaultVideoWidth;
     }
 
+    /**
+     * <p>getVideoHeight.</p>
+     *
+     * @return a int.
+     */
     public int getVideoHeight() {
         if (height > 0) {
             return height;
@@ -771,7 +900,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Returns the actual image width, if available. Otherwise the default width.
      *
-     * @return
+     * @return a int.
      */
     public int getImageWidth() {
         return width;
@@ -780,15 +909,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Returns the actual image height, if available. Otherwise the default height.
      *
-     * @return
+     * @return a int.
      */
     public int getImageHeight() {
         return height;
     }
 
     /**
+     * <p>getPhysicalImageHeight.</p>
      *
-     * @return
+     * @return a int.
      */
     public int getPhysicalImageHeight() {
         return height;
@@ -797,12 +927,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Return the zoom factor for this image depending on its actual size.
      *
-     * @return
+     * @return a int.
      */
     public int getImageZoomFactor() {
         return getImageWidth() / 100;
     }
 
+    /**
+     * <p>getImageUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getImageUrl() {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
@@ -813,6 +948,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 Rotation.NONE, Colortype.DEFAULT, format);
     }
 
+    /**
+     * <p>getImageUrl.</p>
+     *
+     * @param size a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getImageUrl(int size) {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
@@ -826,21 +967,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Return the bare width as read from the index (0 if none available).
      *
-     * @return
+     * @return a int.
      */
     public int getMixWidth() {
         return width;
     }
 
     /**
+     * <p>getPhysicalImageWidth.</p>
      *
-     * @return
+     * @return a int.
      */
     public int getPhysicalImageWidth() {
         return width;
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -848,6 +992,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>accessConditions</code>.</p>
+     *
      * @return the accessConditions
      */
     public Set<String> getAccessConditions() {
@@ -855,12 +1001,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>accessConditions</code>.</p>
+     *
      * @param accessConditions the accessConditions to set
      */
     public void setAccessConditions(Set<String> accessConditions) {
         this.accessConditions = accessConditions;
     }
 
+    /**
+     * <p>getPageLinkLabel.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPageLinkLabel() {
         MimeType mimeType = MimeType.getByName(this.mimeType);
         if (mimeType == null) {
@@ -883,10 +1036,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * Checks if the media type is displayable as a 3d object and access is granted for viewing it
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
@@ -910,10 +1063,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * Checks if the media type is displayable as an image and access is granted for viewing an image
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
         // logger.trace("AccessPermissionImage");
@@ -938,10 +1091,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Remnant from when image access had to be checked for each tile. Still used for OpenSeaDragon, so it just redirects to the access permission
      * check.
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
         logger.trace("isAccessForJs");
@@ -964,7 +1117,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     * <p>isAccessPermissionPdf.</p>
+     *
      * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
@@ -991,28 +1145,53 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     * <p>isAccessPermissionBornDigital.</p>
+     *
      * @return true if access is allowed for born digital files; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
         return isAccessPermissionObject();
 
     }
 
+    /**
+     * <p>getFooterHeight.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public int getFooterHeight() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType());
     }
 
+    /**
+     * <p>getFooterHeight.</p>
+     *
+     * @param pageType a {@link java.lang.String} object.
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public int getFooterHeight(String pageType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType());
     }
 
+    /**
+     * <p>Getter for the field <code>imageFooterHeight</code>.</p>
+     *
+     * @return a int.
+     */
     public int getImageFooterHeight() {
         return getImageFooterHeight(0);
     }
 
+    /**
+     * <p>Getter for the field <code>imageFooterHeight</code>.</p>
+     *
+     * @param rotation a int.
+     * @return a int.
+     */
     public int getImageFooterHeight(int rotation) {
         if (imageFooterHeight == null) {
             try {
@@ -1048,6 +1227,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>currentComment</code>.</p>
+     *
      * @return the currentComment
      */
     public Comment getCurrentComment() {
@@ -1055,6 +1236,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>currentComment</code>.</p>
+     *
      * @param currentComment the currentComment to set
      */
     public void setCurrentComment(Comment currentComment) {
@@ -1062,10 +1245,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.debug("currentComment: " + currentComment.getText());
     }
 
+    /**
+     * <p>resetCurrentComment.</p>
+     */
     public void resetCurrentComment() {
         currentComment = new Comment(this.pi, this.order, null, "", null);
     }
 
+    /**
+     * <p>getComments.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public List<Comment> getComments() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, true);
         Collections.sort(comments);
@@ -1073,6 +1265,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return comments;
     }
 
+    /**
+     * <p>createNewCommentAction.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void createNewCommentAction(User user) throws DAOException {
         if (user != null) {
             if (previousCommentText == null || !previousCommentText.equals(currentComment.getText())) {
@@ -1086,6 +1284,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
+    /**
+     * <p>updateCommentAction.</p>
+     *
+     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void updateCommentAction(Comment comment) throws DAOException {
         // Set updated timestamp
         comment.setDateUpdated(new Date());
@@ -1097,8 +1301,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Saves the given <code>Comment</code> and sends out notification emails. The language of the email is the default JSF locale for the current
      * theme.
      *
-     * @param comment
-     * @throws DAOException
+     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void saveCommentAction(Comment comment) throws DAOException {
         logger.trace("saveCommentAction");
@@ -1125,6 +1329,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
+    /**
+     * <p>deleteCommentAction.</p>
+     *
+     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void deleteCommentAction(Comment comment) throws DAOException {
         logger.trace("deleteCommentAction");
         if (DataManager.getInstance().getDao().deleteComment(comment)) {
@@ -1137,13 +1347,15 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * return true if this image has its own width/height measurements, and does not rely on default width/height
      *
-     * @return
+     * @return a boolean.
      */
     public boolean hasIndividualSize() {
         return (width > 0 && height > 0);
     }
 
     /**
+     * <p>Getter for the field <code>altoText</code>.</p>
+     *
      * @return the altoText
      */
     public String getAltoText() {
@@ -1151,6 +1363,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>wordCoordsFormat</code>.</p>
+     *
      * @return the wordCoordsFormat
      */
     public CoordsFormat getWordCoordsFormat() {
@@ -1158,6 +1372,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>dataRepository</code>.</p>
+     *
      * @return the dataRepository
      */
     public String getDataRepository() {
@@ -1165,6 +1381,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>fileSize</code>.</p>
+     *
      * @return the fileSize
      */
     public long getFileSize() {
@@ -1172,12 +1390,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>fileSize</code>.</p>
+     *
      * @param fileSize the fileSize to set
      */
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
+    /**
+     * <p>getFileSizeAsString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFileSizeAsString() {
         if (fileSize > 1024 * 1024) {
             return (fileSize / 1024 / 1024) + " MB";
@@ -1191,7 +1416,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * @return
+     * <p>getImageType.</p>
+     *
+     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
      */
     public ImageType getImageType() {
         ImageType imageType = new ImageType(false);
@@ -1201,10 +1428,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * Gets the filename but with its extension replaced by the given extension If the extension is an empty String, the filename without any
-     * extension is returned If the extension is null, {@link PhysicalElement#getFileName()} is returned
-     * 
-     * @param string
-     * @return
+     * extension is returned If the extension is null, {@link io.goobi.viewer.model.viewer.PhysicalElement#getFileName()} is returned
+     *
+     * @param extension a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getFileName(String extension) {
         if (extension == null) {
@@ -1216,7 +1443,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     * <p>isDisplayPagePdfLink.</p>
+     *
      * @return true if page pdf link is allowed in configuration and no access conditions prevent PDF download; false otherwise
      */
     public boolean isDisplayPagePdfLink() {
@@ -1225,7 +1453,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     * <p>isAdaptImageViewHeight.</p>
+     *
      * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the
      *         upper threshold Otherwise return true
      */

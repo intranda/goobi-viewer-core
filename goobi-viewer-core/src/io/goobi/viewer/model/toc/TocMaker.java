@@ -62,6 +62,10 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 
+/**
+ * <p>TocMaker class.</p>
+ *
+ */
 public class TocMaker {
 
     private static final Logger logger = LoggerFactory.getLogger(TocMaker.class);
@@ -77,8 +81,9 @@ public class TocMaker {
      * Returns a list of fields to be used as the field filter for Solr queries. The list constists of statically defined fields in REQUIRED_FIELDS
      * and any additional fields configured for the TOC label.
      *
-     * @return
      * @should return both static and configured fields
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     protected static List<String> getSolrFieldsToFetch(String template) {
         logger.trace("getSolrFieldsToFetch: {}", template);
@@ -113,22 +118,23 @@ public class TocMaker {
      * Generate the TOC.
      *
      * @param toc The TOC object (only required to set the number of volumes for anchor TOCs.
-     * @param structElement
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param addAllSiblings If true and <code>structElement</code> has a parent, other siblings will be listed as well and can be navigated.
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
      * @param hitsPerPage Hits per page of a paginated TOC.
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @throws Exception in case of errors.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException in case of errors.
      * @should generate volume TOC correctly with siblings correctly
      * @should generate volume TOC correctly without siblings correctly
      * @should generate anchor TOC correctly
      * @should paginate anchor TOC correctly
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
+     * @return a {@link java.util.LinkedHashMap} object.
      */
     public static LinkedHashMap<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -669,9 +675,11 @@ public class TocMaker {
     }
 
     /**
-     * @param doc
-     * @param footerIdField
-     * @return
+     * <p>getFirstFieldValue.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param footerIdField a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     @SuppressWarnings("rawtypes")
     public static String getFirstFieldValue(SolrDocument doc, String footerIdField) {
@@ -789,9 +797,11 @@ public class TocMaker {
     }
 
     /**
-     * @param doc
-     * @param param
-     * @return
+     * <p>createMultiLanguageValue.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
     public static IMetadataValue createMultiLanguageValue(SolrDocument doc, String field) {
         IMetadataValue value;

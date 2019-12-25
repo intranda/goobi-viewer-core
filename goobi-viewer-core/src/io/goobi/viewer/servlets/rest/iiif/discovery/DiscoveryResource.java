@@ -38,13 +38,12 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
  *  <ul>
  *      <li>{@link #getAllChanges() /iiif/discovery/activities/}</li>
  *      <li>{@link #getPage(int) /iiif/discovery/activities/&lt;pageNo&gt;/}</li>
- *  </ul> 
- *  
- *  This service supports activity types UPDATE, CREATE and DELETE. They are created from the SOLR fields 
- *  DATEUPDATED, DATECREATED AND DATEDELETED respectively
- * 
- * @author Florian Alpers
+ *  </ul>
  *
+ *  This service supports activity types UPDATE, CREATE and DELETE. They are created from the SOLR fields
+ *  DATEUPDATED, DATECREATED AND DATEDELETED respectively
+ *
+ * @author Florian Alpers
  */
 @Path("/iiif/discovery")
 @ViewerRestServiceBinding
@@ -61,10 +60,10 @@ public class DiscoveryResource {
      * Provides a view of the entire list of all activities by linking to the first and last page of the collection.
      * The pages contain the actual activity entries and are provided by {@link #getPage(int) /iiif/discovery/activities/&lt;pageNo&gt;/}.
      * This resource also contains a count of the total number of activities
-     * 
-     * @return  An {@link OrderedCollection} of {@link Activity Activities}
-     * @throws PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws IndexUnreachableException   If the Solr index cannot be queried
+     *
+     * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Activities}
+     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
      */
     @GET
     @Path("/activities")
@@ -78,15 +77,15 @@ public class DiscoveryResource {
 
     
     /**
-     * Provides a partial list of {@link Activity Activities} along with links to the preceding and succeeding page 
+     * Provides a partial list of {@link Activity Activities} along with links to the preceding and succeeding page
      * as well as the parent collection as provided by {@link #getAllChanges() /iiif/discovery/activities/}
-     * The number of Activities on the page is determined by 
+     * The number of Activities on the page is determined by
      * {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
-     * 
+     *
      * @param pageNo    The page number, starting with 0
-     * @return  An {@link OrderedCollectionPage} of {@link Activity Activities}
-     * @throws PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws IndexUnreachableException   If the Solr index cannot be queried
+     * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of {@link Activity Activities}
+     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
      */
     @GET
     @Path("/activities/{pageNo}")

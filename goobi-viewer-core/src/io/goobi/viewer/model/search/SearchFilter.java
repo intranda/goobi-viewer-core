@@ -17,6 +17,10 @@ package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
 
+/**
+ * <p>SearchFilter class.</p>
+ *
+ */
 public class SearchFilter implements Serializable {
 
     private static final long serialVersionUID = 7282765948716424825L;
@@ -27,6 +31,7 @@ public class SearchFilter implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -39,6 +44,7 @@ public class SearchFilter implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -69,8 +75,10 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * @param label
-     * @param field
+     * <p>Constructor for SearchFilter.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param field a {@link java.lang.String} object.
      * @should set attributes correctly
      */
     public SearchFilter(String label, String field) {
@@ -79,6 +87,8 @@ public class SearchFilter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -86,6 +96,8 @@ public class SearchFilter implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>label</code>.</p>
+     *
      * @param label the label to set
      */
     public void setLabel(String label) {
@@ -93,6 +105,8 @@ public class SearchFilter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
      * @return the field
      */
     public String getField() {
@@ -100,6 +114,8 @@ public class SearchFilter implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>field</code>.</p>
+     *
      * @param field the field to set
      */
     public void setField(String field) {

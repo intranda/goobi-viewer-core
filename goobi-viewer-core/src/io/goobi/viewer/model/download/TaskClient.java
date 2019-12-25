@@ -31,31 +31,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author florian
+ * <p>TaskClient class.</p>
  *
+ * @author florian
  */
 public class TaskClient {
 
     /**
-     * 
-     * @param ocrServiceUrl
-     * @param fsourceDir
-     * @param ftargetDir
-     * @param flanguage
-     * @param ffontType
-     * @param fpriority
-     * @param fpostOCR
-     * @param ftitlePrefix
-     * @param ftemplateName
-     * @param fjobType
-     * @param fgoobiId
-     * @param fserverType
-     * @param fimageDir
-     * @param fmetsFile
-     * @param fanchorMetsFile
-     * @param flocale
-     * @param frightToLeft
-     * @return
+     * <p>createPost.</p>
+     *
+     * @param ocrServiceUrl a {@link java.lang.String} object.
+     * @param fsourceDir a {@link java.lang.String} object.
+     * @param ftargetDir a {@link java.lang.String} object.
+     * @param flanguage a {@link java.lang.String} object.
+     * @param ffontType a {@link java.lang.String} object.
+     * @param fpriority a int.
+     * @param fpostOCR a {@link java.lang.String} object.
+     * @param ftitlePrefix a {@link java.lang.String} object.
+     * @param ftemplateName a {@link java.lang.String} object.
+     * @param fjobType a {@link java.lang.String} object.
+     * @param fgoobiId a {@link java.lang.String} object.
+     * @param fserverType a {@link java.lang.String} object.
+     * @param fimageDir a {@link java.lang.String} object.
+     * @param fmetsFile a {@link java.lang.String} object.
+     * @param fanchorMetsFile a {@link java.lang.String} object.
+     * @param flocale a {@link java.lang.String} object.
+     * @param frightToLeft a boolean.
+     * @return a {@link org.apache.http.client.methods.HttpPost} object.
      */
     public static HttpPost createPost(final String ocrServiceUrl, final String fsourceDir, final String ftargetDir, final String flanguage, final String ffontType, final int fpriority,
             final String fpostOCR, final String ftitlePrefix, final String ftemplateName, final String fjobType, final String fgoobiId, final String fserverType, final String fimageDir,
@@ -98,13 +100,14 @@ public class TaskClient {
     }
     
     /**
-     * 
-     * @param client
-     * @param post
-     * @return
-     * @throws IOException
-     * @throws ClientProtocolException
-     * @throws JSONException
+     * <p>getJsonResponse.</p>
+     *
+     * @param client a {@link org.apache.http.client.HttpClient} object.
+     * @param post a {@link org.apache.http.client.methods.HttpPost} object.
+     * @throws java.io.IOException
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws org.json.JSONException
+     * @return a {@link org.json.JSONObject} object.
      */
     public static JSONObject getJsonResponse(HttpClient client, HttpPost post) throws IOException, ClientProtocolException, JSONException {
         // ------------------------------------------------------------------------------------------

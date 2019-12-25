@@ -23,9 +23,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Represents metadata for an RSS feed object
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
@@ -39,9 +38,11 @@ public class RssMetadata {
     
     
     /**
-     * @param type
-     * @param label
-     * @param value
+     * <p>Constructor for RssMetadata.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param link a {@link java.lang.String} object.
      */
     public RssMetadata(String label, String value, String link) {
         super();
@@ -50,6 +51,12 @@ public class RssMetadata {
         this.value = value;
     }
     
+    /**
+     * <p>Constructor for RssMetadata.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public RssMetadata(String label, String value) {
         super();
         this.link = null;
@@ -58,6 +65,8 @@ public class RssMetadata {
     }
 
     /**
+     * <p>Getter for the field <code>link</code>.</p>
+     *
      * @return the link
      */
     public String getLink() {
@@ -67,6 +76,8 @@ public class RssMetadata {
 
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -76,6 +87,8 @@ public class RssMetadata {
 
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {

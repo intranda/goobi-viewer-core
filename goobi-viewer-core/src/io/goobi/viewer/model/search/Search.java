@@ -150,9 +150,10 @@ public class Search implements Serializable {
     }
 
     /**
-     * 
-     * @param searchType
-     * @param searchFilter
+     * <p>Constructor for Search.</p>
+     *
+     * @param searchType a int.
+     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
      */
     public Search(int searchType, SearchFilter searchFilter) {
         this.searchType = searchType;
@@ -164,6 +165,7 @@ public class Search implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -176,6 +178,7 @@ public class Search implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -206,15 +209,17 @@ public class Search implements Serializable {
     }
 
     /**
-     * @param facets
-     * @param searchTerms
-     * @param hitsPerPage
-     * @param advancedSearchGroupOperator
+     * <p>execute.</p>
+     *
+     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param hitsPerPage a int.
+     * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -406,8 +411,8 @@ public class Search implements Serializable {
     /**
      * Constructs a search URL using the query parameters contained in this object.
      *
-     * @return
-     * @throws UnsupportedEncodingException
+     * @throws java.io.UnsupportedEncodingException
+     * @return a {@link java.lang.String} object.
      */
     public String getUrl() throws UnsupportedEncodingException {
         StringBuilder sbUrl = new StringBuilder();
@@ -423,6 +428,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -430,6 +437,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -437,6 +446,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public User getOwner() {
@@ -444,6 +455,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(User owner) {
@@ -451,6 +464,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -458,6 +473,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -465,6 +482,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>userInput</code>.</p>
+     *
      * @return the userInput
      */
     public String getUserInput() {
@@ -472,6 +491,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>userInput</code>.</p>
+     *
      * @param userInput the userInput to set
      */
     public void setUserInput(String userInput) {
@@ -479,6 +500,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>searchType</code>.</p>
+     *
      * @return the searchType
      */
     public int getSearchType() {
@@ -486,6 +509,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>searchType</code>.</p>
+     *
      * @param searchType the searchType to set
      */
     public void setSearchType(int searchType) {
@@ -493,6 +518,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>searchFilter</code>.</p>
+     *
      * @return the searchFilter
      */
     public String getSearchFilter() {
@@ -500,6 +527,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>searchFilter</code>.</p>
+     *
      * @param searchFilter the searchFilter to set
      */
     public void setSearchFilter(String searchFilter) {
@@ -507,6 +536,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>query</code>.</p>
+     *
      * @return the query
      */
     public String getQuery() {
@@ -514,6 +545,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>query</code>.</p>
+     *
      * @param query the query to set
      */
     public void setQuery(String query) {
@@ -521,6 +554,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>expandQuery</code>.</p>
+     *
      * @return the expandQuery
      */
     public String getExpandQuery() {
@@ -528,6 +563,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>expandQuery</code>.</p>
+     *
      * @param expandQuery the expandQuery to set
      */
     public void setExpandQuery(String expandQuery) {
@@ -535,6 +572,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>page</code>.</p>
+     *
      * @return the page
      */
     public int getPage() {
@@ -542,6 +581,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>page</code>.</p>
+     *
      * @param page the page to set
      */
     public void setPage(int page) {
@@ -549,6 +590,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>hierarchicalFacetString</code>.</p>
+     *
      * @return the hierarchicalFacetString
      */
     @Deprecated
@@ -557,6 +600,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>hierarchicalFacetString</code>.</p>
+     *
      * @param hierarchicalFacetString the hierarchicalFacetString to set
      */
     @Deprecated
@@ -565,6 +610,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>facetString</code>.</p>
+     *
      * @return the facetString
      */
     public String getFacetString() {
@@ -572,6 +619,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>facetString</code>.</p>
+     *
      * @param facetString the facetString to set
      */
     public void setFacetString(String facetString) {
@@ -579,6 +628,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sortString</code>.</p>
+     *
      * @return the sortString
      */
     public String getSortString() {
@@ -586,6 +637,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>sortString</code>.</p>
+     *
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
@@ -594,6 +647,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sortFields</code>.</p>
+     *
      * @return the sortFields
      */
     public List<StringPair> getSortFields() {
@@ -601,6 +656,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     *
      * @return the dateUpdated
      */
     public Date getDateUpdated() {
@@ -608,6 +665,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -615,6 +674,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lastHitsCount</code>.</p>
+     *
      * @return the lastHitsCount
      */
     public long getLastHitsCount() {
@@ -622,6 +683,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>lastHitsCount</code>.</p>
+     *
      * @param lastHitsCount the lastHitsCount to set
      */
     public void setLastHitsCount(long lastHitsCount) {
@@ -629,6 +692,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>isNewHitsNotification.</p>
+     *
      * @return the newHitsNotification
      */
     public boolean isNewHitsNotification() {
@@ -636,6 +701,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>newHitsNotification</code>.</p>
+     *
      * @param newHitsNotification the newHitsNotification to set
      */
     public void setNewHitsNotification(boolean newHitsNotification) {
@@ -643,6 +710,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>isSaved.</p>
+     *
      * @return the saved
      */
     public boolean isSaved() {
@@ -650,6 +719,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>saved</code>.</p>
+     *
      * @param saved the saved to set
      */
     public void setSaved(boolean saved) {
@@ -657,6 +728,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>hitsCount</code>.</p>
+     *
      * @return the hitsCount
      */
     public long getHitsCount() {
@@ -664,6 +737,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>hitsCount</code>.</p>
+     *
      * @param hitsCount the hitsCount to set
      */
     public void setHitsCount(long hitsCount) {
@@ -671,6 +746,8 @@ public class Search implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>hits</code>.</p>
+     *
      * @return the hits
      */
     public List<SearchHit> getHits() {
@@ -679,9 +756,10 @@ public class Search implements Serializable {
     }
 
     /**
-     * 
-     * @param hitsPerPage
-     * @return
+     * <p>getLastPage.</p>
+     *
+     * @param hitsPerPage a int.
+     * @return a int.
      */
     public int getLastPage(int hitsPerPage) {
         int answer = 0;
@@ -696,8 +774,8 @@ public class Search implements Serializable {
 
     /**
      * Toggles the status of newHitsNotification and persists this search.
-     * 
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void toggleNotifications() throws DAOException {
         this.newHitsNotification = !this.newHitsNotification;

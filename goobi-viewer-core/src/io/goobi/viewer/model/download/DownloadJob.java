@@ -74,6 +74,10 @@ import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * <p>Abstract DownloadJob class.</p>
+ *
+ */
 @Entity
 @Table(name = "download_jobs")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -81,7 +85,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 @JsonInclude(Include.NON_NULL)
 public abstract class DownloadJob implements Serializable {
 
+    /** Constant <code>DATETIME_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'"</code> */
     protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    /** Constant <code>TTL_FORMAT="dd'T'HH:mm:ss"</code> */
     protected static final String TTL_FORMAT = "dd'T'HH:mm:ss";
 
     private static final Logger logger = LoggerFactory.getLogger(DownloadJob.class);
@@ -164,13 +170,17 @@ public abstract class DownloadJob implements Serializable {
     @Column(name = "observer")
     protected List<String> observers = new ArrayList<>();
 
+    /**
+     * <p>generateDownloadIdentifier.</p>
+     */
     public abstract void generateDownloadIdentifier();
 
     /**
+     * <p>generateDownloadJobId.</p>
      *
-     * @param criteria
-     * @return
+     * @param criteria a {@link java.lang.String} object.
      * @should generate same id from same criteria
+     * @return a {@link java.lang.String} object.
      */
     public static String generateDownloadJobId(String... criteria) {
         StringBuilder sbCriteria = new StringBuilder(criteria.length * 10);
@@ -184,17 +194,18 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>checkDownload.</p>
      *
      * @param type For now just 'pdf'.
      * @param email Optional e-mail address to be notified.
-     * @param pi
-     * @param logId
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
      * @param downloadIdentifier Identifier has (Construct via DownloadJob.generateDownloadJobId()).
      * @param ttl Number of ms before the job expires.
-     * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a boolean.
      */
     public static boolean checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
             throws DAOException, PresentationException, IndexUnreachableException {
@@ -276,19 +287,21 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>triggerCreation.</p>
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException, DownloadException;
 
     /**
-     * 
-     * @param pi
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>ocrFolderExists.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a boolean.
      */
     public static boolean ocrFolderExists(String pi) throws PresentationException, IndexUnreachableException {
         Path abbyyFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
@@ -297,9 +310,11 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>cleanupExpiredDownloads.</p>
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should delete expired jobs correctly
+     * @return a int.
      */
     public static int cleanupExpiredDownloads() throws DAOException {
         List<DownloadJob> jobs = DataManager.getInstance().getDao().getAllDownloadJobs();
@@ -328,9 +343,10 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>isExpired.</p>
      *
-     * @return
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isExpired() {
         if (lastRequested == null) {
@@ -341,41 +357,47 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>getMimeType.</p>
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     @JsonIgnore
     public abstract String getMimeType();
 
     /**
+     * <p>getFileExtension.</p>
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     @JsonIgnore
     public abstract String getFileExtension();
 
     /**
+     * <p>getDisplayName.</p>
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     @JsonIgnore
     public abstract String getDisplayName();
 
     /**
+     * <p>getSize.</p>
      *
-     * @return
+     * @return a long.
      */
     public abstract long getSize();
 
     /**
+     * <p>getQueuePosition.</p>
      *
-     * @return
+     * @return a int.
      */
     public abstract int getQueuePosition();
 
     /**
+     * <p>getFile.</p>
      *
-     * @return
+     * @return a {@link java.nio.file.Path} object.
      */
     @JsonIgnore
     public Path getFile() {
@@ -389,13 +411,14 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>notifyObservers.</p>
      *
-     * @status
-     * @message
-     * @return
-     * @throws MessagingException
-     * @throws AuthenticationFailedException
-     * @throws UnsupportedEncodingException
+     * @throws javax.mail.MessagingException
+     * @throws javax.mail.AuthenticationFailedException
+     * @throws java.io.UnsupportedEncodingException
+     * @param status a {@link io.goobi.viewer.model.download.DownloadJob.JobStatus} object.
+     * @param message a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean notifyObservers(JobStatus status, String message)
             throws UnsupportedEncodingException, AuthenticationFailedException, MessagingException {
@@ -438,12 +461,13 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>getDownloadFile.</p>
      *
      * @param pi The pi of the work to download.
      * @param logId the logId of the structure element to download. Is ignored if it is null, empty, blank or equals "-"
      * @param type either "pdf" or "epub"
      * @return The Download location file, ending with ".pdf" or ".epub" depending on type
-     * @throws IllegalArgumentException If the pi is null, empty or blank, or if the type is not "epub" or "pdf"
+     * @throws java.lang.IllegalArgumentException If the pi is null, empty or blank, or if the type is not "epub" or "pdf"
      */
     public File getDownloadFile(String pi, final String logId, String type) {
         if (StringUtils.isBlank(pi)) {
@@ -458,12 +482,13 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>getDownloadFileStatic.</p>
      *
      * @param identifier the identifier of the download
      * @param type either "pdf" or "epub"
-     * @param extension
+     * @param extension a {@link java.lang.String} object.
      * @return The Download location file, ending with ".pdf" or ".epub" depending on type
-     * @throws IllegalArgumentException If the hash is null, empty or blank, or if the type is not "epub" or "pdf"
+     * @throws java.lang.IllegalArgumentException If the hash is null, empty or blank, or if the type is not "epub" or "pdf"
      */
     protected static File getDownloadFileStatic(String identifier, String type, String extension) {
         if (StringUtils.isBlank(identifier)) {
@@ -477,6 +502,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -484,6 +511,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -491,6 +520,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public String getType() {
@@ -498,6 +529,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -505,6 +538,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -512,6 +547,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>logId</code>.</p>
+     *
      * @return the logId
      */
     public String getLogId() {
@@ -519,6 +556,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>logId</code>.</p>
+     *
      * @param logId the logId to set
      */
     public void setLogId(String logId) {
@@ -526,6 +565,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>identifier</code>.</p>
+     *
      * @return the identifier
      */
     public String getIdentifier() {
@@ -533,6 +574,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>identifier</code>.</p>
+     *
      * @param identifier the identifier to set
      */
     public void setIdentifier(String identifier) {
@@ -540,6 +583,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lastRequested</code>.</p>
+     *
      * @return the lastRequested
      */
     @JsonFormat(pattern = DATETIME_FORMAT)
@@ -548,6 +593,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>lastRequested</code>.</p>
+     *
      * @param lastRequested the lastRequested to set
      */
     public void setLastRequested(Date lastRequested) {
@@ -555,6 +602,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>ttl</code>.</p>
+     *
      * @return the ttl
      */
     @JsonIgnore
@@ -562,12 +611,19 @@ public abstract class DownloadJob implements Serializable {
         return ttl;
     }
 
+    /**
+     * <p>getTimeToLive.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTimeToLive() {
         Duration d = Duration.ofMillis(ttl);
         return String.format("%dd %d:%02d:%02d", d.toDays(), d.toHours() % 24, d.toMinutes() % 60, d.getSeconds() % 60);
     }
 
     /**
+     * <p>Setter for the field <code>ttl</code>.</p>
+     *
      * @param ttl the ttl to set
      */
     public void setTtl(long ttl) {
@@ -575,6 +631,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
      * @return the status
      */
     public JobStatus getStatus() {
@@ -585,6 +643,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
      * @param status the status to set
      */
     public void setStatus(JobStatus status) {
@@ -592,6 +652,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -599,6 +661,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -606,6 +670,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>observers</code>.</p>
+     *
      * @return the observers
      */
     @JsonIgnore
@@ -614,6 +680,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>observers</code>.</p>
+     *
      * @param observers the observers to set
      */
     public void setObservers(List<String> observers) {
@@ -628,6 +696,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
      * @return the message
      */
     public String getMessage() {
@@ -635,6 +705,8 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>message</code>.</p>
+     *
      * @param message the message to set
      */
     public void setMessage(String message) {
@@ -642,9 +714,10 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
+     * <p>getJobStatus.</p>
      *
-     * @param identtifier The identifier/has of the last job to count
-     * @return
+     * @param identifier a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getJobStatus(String identifier) {
         StringBuilder url = new StringBuilder();
@@ -664,6 +737,9 @@ public abstract class DownloadJob implements Serializable {
         }
     }
 
+    /**
+     * <p>updateStatus.</p>
+     */
     public void updateStatus() {
         String ret = PDFDownloadJob.getJobStatus(identifier);
         try {
@@ -685,6 +761,7 @@ public abstract class DownloadJob implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

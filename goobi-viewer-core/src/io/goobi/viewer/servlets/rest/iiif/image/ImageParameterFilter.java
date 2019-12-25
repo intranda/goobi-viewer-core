@@ -51,6 +51,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageParameterFilter.class);
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
@@ -88,8 +89,11 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @throws PresentationException
+     * <p>addRepositoryPathIfRequired.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param pi a {@link java.lang.String} object.
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
         try {

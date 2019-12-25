@@ -46,8 +46,9 @@ import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * @author Florian Alpers
+ * <p>GlossaryResource class.</p>
  *
+ * @author Florian Alpers
  */
 @Path("/vocabularies")
 @ViewerRestServiceBinding
@@ -62,6 +63,12 @@ public class GlossaryResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>listVocabularies.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
+     */
     @GET
     @Path("/list")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -69,6 +76,14 @@ public class GlossaryResource {
         return new GlossaryManager().getGlossaries();
     }
 
+    /**
+     * <p>getVocabulary.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     */
     @GET
     @Path("/{filename}")
     @Produces({ MediaType.APPLICATION_JSON })

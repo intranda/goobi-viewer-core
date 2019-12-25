@@ -53,6 +53,7 @@ public class FileTools {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
 
+    /** Constant <code>filenameFilterXML</code> */
     public static FilenameFilter filenameFilterXML = new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
@@ -61,13 +62,14 @@ public class FileTools {
     };
 
     /**
+     * <p>getStringFromFilePath.</p>
      *
-     * @param filePath
-     * @return
-     * @throws IOException in case of errors
-     * @throws FileNotFoundException if file not found
+     * @param filePath a {@link java.lang.String} object.
+     * @throws java.io.IOException in case of errors
+     * @throws java.io.FileNotFoundException if file not found
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
+     * @return a {@link java.lang.String} object.
      */
     public static String getStringFromFilePath(String filePath) throws FileNotFoundException, IOException {
         return getStringFromFile(new File(filePath), null);
@@ -76,13 +78,13 @@ public class FileTools {
     /**
      * Read a text file and return content as String
      *
-     * @param file
+     * @param file a {@link java.io.File} object.
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
-     * @return
-     * @throws IOException in case of errors
-     * @throws FileNotFoundException if file not found
+     * @throws java.io.IOException in case of errors
+     * @throws java.io.FileNotFoundException if file not found
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
+     * @return a {@link java.lang.String} object.
      */
     public static String getStringFromFile(File file, String encoding) throws FileNotFoundException, IOException {
         return getStringFromFile(file, encoding, null);
@@ -91,12 +93,12 @@ public class FileTools {
     /**
      * Read a text file and return content as String
      *
-     * @param file
+     * @param file a {@link java.io.File} object.
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @param convertToEncoding Optional target encoding for conversion
-     * @return
-     * @throws IOException in case of errors
-     * @throws FileNotFoundException if file not found
+     * @throws java.io.IOException in case of errors
+     * @throws java.io.FileNotFoundException if file not found
+     * @return a {@link java.lang.String} object.
      */
     public static String getStringFromFile(File file, String encoding, String convertToEncoding) throws FileNotFoundException, IOException {
         if (file == null) {
@@ -133,10 +135,10 @@ public class FileTools {
 
     /**
      * Uses ICU4J to determine the charset of the given InputStream.
-     * 
-     * @param input
+     *
+     * @param input a {@link java.io.InputStream} object.
      * @return Detected charset name; null if not detected.
-     * @throws IOException
+     * @throws java.io.IOException
      * @should detect charset correctly
      */
     public static String getCharset(InputStream input) throws IOException {
@@ -155,9 +157,9 @@ public class FileTools {
     /**
      * Reads a String from a byte array
      *
-     * @param bytes
-     * @param encoding
-     * @return
+     * @param bytes an array of {@link byte} objects.
+     * @param encoding a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getStringFromByteArray(byte[] bytes, String encoding) {
         String result = "";
@@ -188,10 +190,10 @@ public class FileTools {
      * @param filePath The file path to write to (will be created if it doesn't exist)
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @param append Whether to append the text to an existing file (true), or to overwrite it (false)
-     * @return
-     * @throws IOException
+     * @throws java.io.IOException
      * @should write file correctly
      * @should append to file correctly
+     * @return a {@link java.io.File} object.
      */
     public static File getFileFromString(String string, String filePath, String encoding, boolean append) throws IOException {
         if (string == null) {
@@ -210,11 +212,12 @@ public class FileTools {
     }
 
     /**
+     * <p>decompressGzipFile.</p>
      *
-     * @param gzipFile
-     * @param newFile
-     * @throws FileNotFoundException
-     * @throws IOException if file not found
+     * @param gzipFile a {@link java.io.File} object.
+     * @param newFile a {@link java.io.File} object.
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException if file not found
      * @should throw FileNotFoundException if file not found
      */
     public static void decompressGzipFile(File gzipFile, File newFile) throws FileNotFoundException, IOException {
@@ -229,11 +232,12 @@ public class FileTools {
     }
 
     /**
+     * <p>compressGzipFile.</p>
      *
-     * @param file
-     * @param gzipFile
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @param file a {@link java.io.File} object.
+     * @param gzipFile a {@link java.io.File} object.
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
      * @should throw FileNotFoundException if file not found
      */
     public static void compressGzipFile(File file, File gzipFile) throws FileNotFoundException, IOException {
@@ -248,12 +252,13 @@ public class FileTools {
     }
 
     /**
+     * <p>compressZipFile.</p>
      *
      * @param files Source files
      * @param zipFile Target file
      * @param level Compression level 0-9
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
      * @should throw FileNotFoundException if file not found
      */
     public static void compressZipFile(List<File> files, File zipFile, Integer level) throws FileNotFoundException, IOException {
@@ -282,13 +287,14 @@ public class FileTools {
     }
 
     /**
+     * <p>compressZipFile.</p>
      *
-     * @param files
-     * @param zipFile
-     * @param level
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @param zipFile a {@link java.io.File} object.
+     * @param level a {@link java.lang.Integer} object.
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
      * @should throw FileNotFoundException if file not found
+     * @param contentMap a {@link java.util.Map} object.
      */
     public static void compressZipFile(Map<Path, String> contentMap, File zipFile, Integer level) throws FileNotFoundException, IOException {
         if (contentMap == null || contentMap.isEmpty()) {
@@ -316,11 +322,12 @@ public class FileTools {
     }
 
     /**
+     * <p>checkPathExistance.</p>
      *
-     * @param path
-     * @param create
-     * @return
-     * @throws IOException
+     * @param path a {@link java.nio.file.Path} object.
+     * @param create a boolean.
+     * @throws java.io.IOException
+     * @return a boolean.
      */
     public static boolean checkPathExistance(Path path, boolean create) throws IOException {
         if (path == null) {
@@ -339,6 +346,13 @@ public class FileTools {
         return false;
     }
 
+    /**
+     * <p>copyStream.</p>
+     *
+     * @param output a {@link java.io.OutputStream} object.
+     * @param input a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
+     */
     public static void copyStream(OutputStream output, InputStream input) throws IOException {
         byte[] buf = new byte[1024];
         int len;
@@ -348,10 +362,11 @@ public class FileTools {
     }
 
     /**
-     * 
-     * @param folder
+     * <p>isFolderEmpty.</p>
+     *
+     * @param folder a {@link java.nio.file.Path} object.
      * @return true if folder empty; false otherwise
-     * @throws IOException
+     * @throws java.io.IOException
      */
     public static boolean isFolderEmpty(final Path folder) throws IOException {
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(folder)) {
@@ -360,7 +375,8 @@ public class FileTools {
     }
 
     /**
-     * 
+     * <p>adaptPathForWindows.</p>
+     *
      * @param path Absolute ath to adapt
      * @return Windows-compatible path on Windows; unchanged path elsewhere
      */

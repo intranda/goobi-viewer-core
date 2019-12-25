@@ -26,9 +26,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Description for an RSS feed object
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
@@ -39,34 +38,47 @@ public class Description {
     private String text;
     private List<RssMetadata> metadata = new ArrayList<>();
     
+    /**
+     * <p>Constructor for Description.</p>
+     */
     public Description() {
         text = null;
     }
     /**
-     * @param value
+     * <p>Constructor for Description.</p>
+     *
+     * @param value a {@link java.lang.String} object.
      */
     public Description(String value) {
         text = value;
     }
     /**
+     * <p>Getter for the field <code>image</code>.</p>
+     *
      * @return the image
      */
     public String getImage() {
         return image;
     }
     /**
+     * <p>Setter for the field <code>image</code>.</p>
+     *
      * @param image the image to set
      */
     public void setImage(String image) {
         this.image = image;
     }
     /**
+     * <p>Getter for the field <code>text</code>.</p>
+     *
      * @return the description
      */
     public String getText() {
         return text;
     }
     /**
+     * <p>Setter for the field <code>text</code>.</p>
+     *
      * @param description the description to set
      */
     public void setText(String description) {
@@ -74,7 +86,8 @@ public class Description {
     }
     
     /**
-     * 
+     * <p>Getter for the field <code>metadata</code>.</p>
+     *
      * @return all rss metadata of this object
      */
     public List<RssMetadata> getMetadata() {
@@ -83,8 +96,8 @@ public class Description {
     
     /**
      * Add rss metadata to this object
-     * 
-     * @param metadata
+     *
+     * @param metadata a {@link io.goobi.viewer.model.rss.RssMetadata} object.
      */
     public void addMetadata(RssMetadata metadata) {
         this.metadata.add(metadata);

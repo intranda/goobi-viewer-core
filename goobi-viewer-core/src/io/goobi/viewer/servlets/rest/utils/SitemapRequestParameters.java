@@ -24,6 +24,8 @@ public class SitemapRequestParameters {
     private Boolean firstPageOnly;
 
     /**
+     * <p>Getter for the field <code>outputPath</code>.</p>
+     *
      * @return the outputPath
      */
     public String getOutputPath() {
@@ -31,6 +33,8 @@ public class SitemapRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>outputPath</code>.</p>
+     *
      * @param outputPath the outputPath to set
      */
     public void setOutputPath(String outputPath) {
@@ -38,6 +42,8 @@ public class SitemapRequestParameters {
     }
 
     /**
+     * <p>isFirstPageOnly.</p>
+     *
      * @return the firstPageOnly
      */
     public Boolean isFirstPageOnly() {
@@ -45,6 +51,8 @@ public class SitemapRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>firstPageOnly</code>.</p>
+     *
      * @param firstPageOnly the firstPageOnly to set
      */
     public void setFirstPageOnly(boolean firstPageOnly) {

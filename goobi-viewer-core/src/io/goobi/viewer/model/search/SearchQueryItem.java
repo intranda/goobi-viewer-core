@@ -48,6 +48,7 @@ public class SearchQueryItem implements Serializable {
 
     private static final long serialVersionUID = -367323410132252816L;
 
+    /** Constant <code>ADVANCED_SEARCH_ALL_FIELDS="searchAdvanced_allFields"</code> */
     public static final String ADVANCED_SEARCH_ALL_FIELDS = "searchAdvanced_allFields";
 
     public enum SearchItemOperator {
@@ -72,16 +73,21 @@ public class SearchQueryItem implements Serializable {
     private Locale locale;
     private volatile boolean displaySelectItems = false;
 
-    /** Empty constructor */
+    /**
+     * Empty constructor
+     *
+     * @param locale a {@link java.util.Locale} object.
+     */
     public SearchQueryItem(Locale locale) {
         this.locale = locale;
     }
 
     /**
-     * 
-     * @return
+     * <p>getAvailableOperators.</p>
+     *
      * @should return IS if displaySelectItems true
      * @should return AND, OR, PHRASE if displaySelectItems false
+     * @return a {@link java.util.List} object.
      */
     public List<SearchItemOperator> getAvailableOperators() {
         if (displaySelectItems) {
@@ -91,6 +97,14 @@ public class SearchQueryItem implements Serializable {
         return Arrays.asList(new SearchItemOperator[] { SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.PHRASE });
     }
 
+    /**
+     * <p>getSelectItems.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public List<StringPair> getSelectItems() throws PresentationException, IndexUnreachableException, DAOException {
         if (locale != null) {
             return getSelectItems(locale.getLanguage());
@@ -99,6 +113,15 @@ public class SearchQueryItem implements Serializable {
         return getSelectItems(locale.getLanguage());
     }
 
+    /**
+     * <p>getSelectItems.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public List<StringPair> getSelectItems(String language) throws PresentationException, IndexUnreachableException, DAOException {
         if (searchBean == null) {
             searchBean = BeanUtils.getSearchBean();
@@ -115,6 +138,9 @@ public class SearchQueryItem implements Serializable {
         return Collections.emptyList();
     }
 
+    /**
+     * <p>reset.</p>
+     */
     public void reset() {
         displaySelectItems = false;
         operator = SearchItemOperator.AND;
@@ -123,6 +149,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>isHierarchical.</p>
      *
      * @return true or false
      */
@@ -131,7 +158,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
+     * <p>isUntokenizeForPhraseSearch.</p>
+     *
      * @return true or false
      */
     public boolean isUntokenizeForPhraseSearch() {
@@ -139,6 +167,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
      * @return the field
      */
     public String getField() {
@@ -146,6 +176,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>field</code>.</p>
+     *
      * @param field the field to set
      */
     public void setField(String field) {
@@ -154,8 +186,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>operator</code>.</p>
+     *
      * @return the operator
-     * 
      */
     public SearchItemOperator getOperator() {
         checkAutoOperator();
@@ -180,6 +213,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>operator</code>.</p>
+     *
      * @param operator the operator to set
      */
     public void setOperator(SearchItemOperator operator) {
@@ -187,6 +222,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -194,12 +231,19 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
         this.value = StringTools.stripJS(value);
     }
 
+    /**
+     * <p>isDisplaySelectItems.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplaySelectItems() {
         return displaySelectItems;
     }
@@ -207,11 +251,14 @@ public class SearchQueryItem implements Serializable {
     /**
      * This is called after <code>setField</code>, so no point in calling <code>toggleDisplaySelectItems</code> here.
      *
-     * @param ev
+     * @param ev a {@link javax.faces.event.ValueChangeEvent} object.
      */
     public void selectOneMenuListener(ValueChangeEvent ev) {
     }
 
+    /**
+     * <p>toggleDisplaySelectItems.</p>
+     */
     protected void toggleDisplaySelectItems() {
         if (field != null) {
             if (isHierarchical()) {
@@ -234,14 +281,14 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * Generates the advanced query part for this item.
-     * 
-     * @param searchTerms
-     * @param aggregateHits
-     * @return
+     *
+     * @param searchTerms a {@link java.util.Set} object.
+     * @param aggregateHits a boolean.
      * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields
      * @should preserve truncation
+     * @return a {@link java.lang.String} object.
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
         checkAutoOperator();
@@ -438,6 +485,7 @@ public class SearchQueryItem implements Serializable {
         return sbItem.toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return field + " " + operator + " " + value;

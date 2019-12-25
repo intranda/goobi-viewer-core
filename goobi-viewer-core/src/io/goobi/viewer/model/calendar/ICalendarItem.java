@@ -15,18 +15,52 @@
  */
 package io.goobi.viewer.model.calendar;
 
+/**
+ * <p>ICalendarItem interface.</p>
+ *
+ */
 public interface ICalendarItem {
 
+    /**
+     * <p>getName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName();
 
+    /**
+     * <p>getValue.</p>
+     *
+     * @return a int.
+     */
     public int getValue();
 
+    /**
+     * <p>getHits.</p>
+     *
+     * @return a int.
+     */
     public int getHits();
 
+    /**
+     * <p>setHits.</p>
+     *
+     * @param hits a int.
+     */
     public void setHits(int hits);
 
+    /**
+     * <p>isSelected.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSelected();
 
+    /**
+     * <p>setSelected.</p>
+     *
+     * @param selected a boolean.
+     */
     public void setSelected(boolean selected);
 
 }

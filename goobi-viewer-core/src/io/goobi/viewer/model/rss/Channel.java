@@ -26,8 +26,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * @author Florian Alpers
+ * <p>Channel class.</p>
  *
+ * @author Florian Alpers
  */
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
@@ -44,6 +45,8 @@ public class Channel {
     List<RssItem> items = new ArrayList<>();
 
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
@@ -51,6 +54,8 @@ public class Channel {
     }
 
     /**
+     * <p>Setter for the field <code>title</code>.</p>
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -58,6 +63,8 @@ public class Channel {
     }
 
     /**
+     * <p>Getter for the field <code>link</code>.</p>
+     *
      * @return the link
      */
     public String getLink() {
@@ -65,6 +72,8 @@ public class Channel {
     }
 
     /**
+     * <p>Setter for the field <code>link</code>.</p>
+     *
      * @param link the link to set
      */
     public void setLink(String link) {
@@ -72,6 +81,8 @@ public class Channel {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -79,6 +90,8 @@ public class Channel {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -86,6 +99,8 @@ public class Channel {
     }
 
     /**
+     * <p>Getter for the field <code>language</code>.</p>
+     *
      * @return the language
      */
     public String getLanguage() {
@@ -93,6 +108,8 @@ public class Channel {
     }
 
     /**
+     * <p>Setter for the field <code>language</code>.</p>
+     *
      * @param language the language to set
      */
     public void setLanguage(String language) {
@@ -100,6 +117,8 @@ public class Channel {
     }
 
     /**
+     * <p>Getter for the field <code>copyright</code>.</p>
+     *
      * @return the copyright
      */
     public String getCopyright() {
@@ -107,6 +126,8 @@ public class Channel {
     }
 
     /**
+     * <p>Setter for the field <code>copyright</code>.</p>
+     *
      * @param copyright the copyright to set
      */
     public void setCopyright(String copyright) {
@@ -114,6 +135,8 @@ public class Channel {
     }
 
     /**
+     * <p>Getter for the field <code>pubDate</code>.</p>
+     *
      * @return the pubDate
      */
     public Date getPubDate() {
@@ -121,6 +144,8 @@ public class Channel {
     }
 
     /**
+     * <p>Setter for the field <code>pubDate</code>.</p>
+     *
      * @param pubDate the pubDate to set
      */
     public void setPubDate(Date pubDate) {
@@ -128,6 +153,8 @@ public class Channel {
     }
 
     /**
+     * <p>Getter for the field <code>items</code>.</p>
+     *
      * @return the items
      */
     public List<RssItem> getItems() {
@@ -135,7 +162,9 @@ public class Channel {
     }
 
     /**
-     * @param items the items to set
+     * <p>addItem.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.rss.RssItem} object.
      */
     public void addItem(RssItem item) {
         this.items.add(item);

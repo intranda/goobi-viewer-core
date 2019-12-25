@@ -56,15 +56,15 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(OEmbedServlet.class);
 
     /**
+     * <p>Constructor for OEmbedServlet.</p>
+     *
      * @see HttpServlet#HttpServlet()
      */
     public OEmbedServlet() {
         super();
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String url = null;

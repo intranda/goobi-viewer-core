@@ -21,8 +21,9 @@ import java.io.StringWriter;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * @author Florian Alpers
+ * <p>ErrorMessage class.</p>
  *
+ * @author Florian Alpers
  */
 public class ErrorMessage {
 
@@ -30,9 +31,11 @@ public class ErrorMessage {
     private final String message;
     private final String stackTrace;
     /**
-     * @param status
-     * @param message
-     * @param stackTrace
+     * <p>Constructor for ErrorMessage.</p>
+     *
+     * @param status a int.
+     * @param message a {@link java.lang.String} object.
+     * @param stackTrace a {@link java.lang.String} object.
      */
     public ErrorMessage(int status, String message, String stackTrace) {
         super();
@@ -41,7 +44,9 @@ public class ErrorMessage {
         this.stackTrace = stackTrace;
     }
     /**
-     * @param exception
+     * <p>Constructor for ErrorMessage.</p>
+     *
+     * @param exception a {@link io.goobi.viewer.exceptions.RestApiException} object.
      */
     public ErrorMessage(RestApiException exception) {
         this.status = exception.getStatusCode();
@@ -49,18 +54,24 @@ public class ErrorMessage {
         this.stackTrace = getStackTrace(exception);
     }
     /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
      * @return the status
      */
     public int getStatus() {
         return status;
     }
     /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
      * @return the message
      */
     public String getMessage() {
         return message;
     }
     /**
+     * <p>Getter for the field <code>stackTrace</code>.</p>
+     *
      * @return the stackTrace
      */
     public String getStackTrace() {

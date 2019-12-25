@@ -25,8 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * @author Florian Alpers
+ * <p>LoginResult class.</p>
  *
+ * @author Florian Alpers
  */
 public class LoginResult {
 
@@ -38,9 +39,11 @@ public class LoginResult {
     private Object redirectLock = new Object();
 
     /**
-     * @param request
-     * @param response
-     * @param user
+     * <p>Constructor for LoginResult.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param user a {@link java.util.Optional} object.
      * @param loginRefused  true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused) {
@@ -53,9 +56,11 @@ public class LoginResult {
     }
 
     /**
-     * @param request
-     * @param response
-     * @param exception
+     * <p>Constructor for LoginResult.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception) {
         super();
@@ -67,6 +72,8 @@ public class LoginResult {
     }
 
     /**
+     * <p>Getter for the field <code>request</code>.</p>
+     *
      * @return the request
      */
     public HttpServletRequest getRequest() {
@@ -74,6 +81,8 @@ public class LoginResult {
     }
 
     /**
+     * <p>Getter for the field <code>response</code>.</p>
+     *
      * @return the response
      */
     public HttpServletResponse getResponse() {
@@ -81,8 +90,10 @@ public class LoginResult {
     }
 
     /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
      * @return the user Optional containing the user if login was successful. Otherwise an empty optional
-     * @throws AuthenticationProviderException if an internal error occured while logging in
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if an internal error occured while logging in
      */
     public Optional<User> getUser() throws AuthenticationProviderException {
         if (exception != null) {
@@ -91,6 +102,12 @@ public class LoginResult {
         return user;
     }
 
+    /**
+     * <p>isRedirected.</p>
+     *
+     * @param timeout a long.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future<Boolean> isRedirected(long timeout) {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (redirectLock) {
@@ -103,6 +120,9 @@ public class LoginResult {
         });
     }
 
+    /**
+     * <p>setRedirected.</p>
+     */
     public void setRedirected() {
         synchronized (redirectLock) {
             redirectLock.notifyAll();
@@ -110,6 +130,8 @@ public class LoginResult {
     }
     
     /**
+     * <p>isRefused.</p>
+     *
      * @return the refused
      */
     public boolean isRefused() {

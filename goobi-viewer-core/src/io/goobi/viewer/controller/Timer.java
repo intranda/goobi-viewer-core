@@ -23,6 +23,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>Timer class.</p>
+ *
+ */
 public class Timer {
 
     private static final Logger logger = LoggerFactory.getLogger(Timer.class);
@@ -37,26 +41,54 @@ public class Timer {
     private Timer() {
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.controller.Timer} object.
+     */
     public static Timer getInstance() {
         return instance;
     }
 
+    /**
+     * <p>startTiming.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     */
     public void startTiming(String key) {
         startTimeMap.put(key, System.nanoTime());
     }
 
+    /**
+     * <p>startTiming.</p>
+     */
     public void startTiming() {
         startDate = System.nanoTime();
     }
 
+    /**
+     * <p>pauseTiming.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     */
     public void pauseTiming(String key) {
         measure(key, true);
     }
 
+    /**
+     * <p>ignoreLastMeasurement.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     */
     public void ignoreLastMeasurement(String key) {
         startTimeMap.remove(key);
     }
 
+    /**
+     * <p>stopTiming.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     */
     public void stopTiming(String key) {
         try {
             measure(key, false);
@@ -66,6 +98,9 @@ public class Timer {
         startTimeMap.remove(key);
     }
 
+    /**
+     * <p>stopTiming.</p>
+     */
     public void stopTiming() {
         measure();
         startDate = null;
@@ -84,6 +119,11 @@ public class Timer {
         measuredTimeMap.put(key, time);
     }
 
+    /**
+     * <p>measure.</p>
+     *
+     * @throws io.goobi.viewer.controller.Timer.TimerException if any.
+     */
     public void measure() throws TimerException {
         if (startDate == null) {
             throw new TimerException("Timer has not been started");
@@ -91,15 +131,24 @@ public class Timer {
         measuredTime = System.nanoTime() - startDate;
     }
 
+    /**
+     * <p>debug.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param key a {@link java.lang.String} object.
+     * @param scale a {@link io.goobi.viewer.controller.Timer.TimeScale} object.
+     */
     public void debug(String message, String key, TimeScale scale) {
         String timeString = getTime(key, scale);
         logger.debug(message + timeString);
     }
 
     /**
-     * @param key
-     * @param scale
-     * @return
+     * <p>getTime.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param scale a {@link io.goobi.viewer.controller.Timer.TimeScale} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTime(String key, TimeScale scale) {
         Long time;
@@ -127,22 +176,47 @@ public class Timer {
     }
     
 
+    /**
+     * <p>debug.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param key a {@link java.lang.String} object.
+     */
     public void debug(String message, String key) {
         debug(message, key, TimeScale.SECONDS);
     }
 
+    /**
+     * <p>debug.</p>
+     */
     public void debug() {
         debug("Logged time: ");
     }
 
+    /**
+     * <p>debug.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public void debug(String message) {
         debug(message, null);
     }
 
+    /**
+     * <p>seconds.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String seconds() {
         return seconds(measuredTime);
     }
 
+    /**
+     * <p>seconds.</p>
+     *
+     * @param time a {@link java.lang.Long} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String seconds(Long time) {
         if (time == null) {
             throw new TimerException("No measure has yet been taken");
@@ -151,10 +225,21 @@ public class Timer {
         return format.format(seconds) + "s";
     }
 
+    /**
+     * <p>millis.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String millis() {
         return millis(measuredTime);
     }
 
+    /**
+     * <p>millis.</p>
+     *
+     * @param time a {@link java.lang.Long} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String millis(Long time) {
         if (time == null) {
             throw new TimerException("No mease has yet been taken");
@@ -163,10 +248,21 @@ public class Timer {
         return format.format(millis) + "ms";
     }
 
+    /**
+     * <p>mikros.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String mikros() {
         return mikros(measuredTime);
     }
 
+    /**
+     * <p>mikros.</p>
+     *
+     * @param time a {@link java.lang.Long} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String mikros(Long time) {
         if (time == null) {
             throw new TimerException("No mease has yet been taken");
@@ -175,10 +271,21 @@ public class Timer {
         return format.format(mikros) + "\u00B5s";
     }
 
+    /**
+     * <p>nanos.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String nanos() {
         return nanos(measuredTime);
     }
 
+    /**
+     * <p>nanos.</p>
+     *
+     * @param time a {@link java.lang.Long} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String nanos(Long time) {
         if (time == null) {
             throw new TimerException("No mease has yet been taken");
@@ -210,6 +317,12 @@ public class Timer {
         NANOS;
     }
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.InterruptedException if any.
+     */
     public static void main(String[] args) throws InterruptedException {
 
         for (int i = 0; i < 5; i++) {

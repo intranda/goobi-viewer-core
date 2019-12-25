@@ -54,6 +54,8 @@ public class FileServlet extends HttpServlet implements Serializable {
     // private HttpClient httpClient;
 
     /**
+     * <p>Constructor for FileServlet.</p>
+     *
      * @see HttpServlet#HttpServlet()
      */
     public FileServlet() {
@@ -63,9 +65,7 @@ public class FileServlet extends HttpServlet implements Serializable {
         // httpClient.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pi = null;
@@ -165,12 +165,14 @@ public class FileServlet extends HttpServlet implements Serializable {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @param page
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>getFile.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @param page a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.nio.file.Path} object.
      */
     public Path getFile(String pi, String fileName, String page) throws PresentationException, IndexUnreachableException {
 //        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
@@ -196,9 +198,7 @@ public class FileServlet extends HttpServlet implements Serializable {
         return  Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, fileName);
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);

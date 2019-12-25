@@ -27,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * <p>MultiPageReference class.</p>
+ *
+ */
 @XmlRootElement
 @XmlType(propOrder = { "firstPage, lastPage, tags" })
 @JsonPropertyOrder({ "firstPage, lastPage, tags" })
@@ -36,6 +40,9 @@ public class MultiPageReference implements TagGroup {
     private final Integer lastPage;
     private List<TagCount> tags;
 
+    /**
+     * <p>Constructor for MultiPageReference.</p>
+     */
     public MultiPageReference() {
         super();
         this.firstPage = null;
@@ -43,6 +50,11 @@ public class MultiPageReference implements TagGroup {
         this.tags = new ArrayList<>();
     }
 
+    /**
+     * <p>Constructor for MultiPageReference.</p>
+     *
+     * @param order a int.
+     */
     public MultiPageReference(int order) {
         super();
         this.firstPage = order;
@@ -50,6 +62,12 @@ public class MultiPageReference implements TagGroup {
         this.tags = new ArrayList<>();
     }
 
+    /**
+     * <p>Constructor for MultiPageReference.</p>
+     *
+     * @param first a {@link java.lang.Integer} object.
+     * @param last a {@link java.lang.Integer} object.
+     */
     public MultiPageReference(Integer first, Integer last) {
         super();
         this.firstPage = first;
@@ -57,18 +75,29 @@ public class MultiPageReference implements TagGroup {
         this.tags = new ArrayList<>();
     }
 
+    /**
+     * <p>Getter for the field <code>firstPage</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @JsonProperty("firstPage")
     @XmlElement
     public Integer getFirstPage() {
         return firstPage;
     }
 
+    /**
+     * <p>Getter for the field <code>lastPage</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @JsonProperty("lastPage")
     @XmlElement
     public Integer getLastPage() {
         return lastPage;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonProperty("tags")
     @XmlElementWrapper(name = "tags")
@@ -77,6 +106,7 @@ public class MultiPageReference implements TagGroup {
         return tags;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(TagGroup o) {
         return this.getFirstPage().compareTo(o.getPageOrder());
@@ -85,6 +115,7 @@ public class MultiPageReference implements TagGroup {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         if (getFirstPage() != null) {
@@ -97,6 +128,7 @@ public class MultiPageReference implements TagGroup {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(MultiPageReference.class)) {
@@ -114,6 +146,7 @@ public class MultiPageReference implements TagGroup {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public int getPages() {
@@ -126,12 +159,14 @@ public class MultiPageReference implements TagGroup {
     /* (non-Javadoc)
      * @see io.goobi.viewer.servlets.rest.ner.TagGroup#getPageOrder()
      */
+    /** {@inheritDoc} */
     @JsonIgnore
     @Override
     public Integer getPageOrder() {
         return getFirstPage();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addTags(List<TagCount> tags) {
         for (TagCount tagCount : tags) {

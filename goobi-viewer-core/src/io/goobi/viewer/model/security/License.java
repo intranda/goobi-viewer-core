@@ -47,6 +47,10 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
+/**
+ * <p>License class.</p>
+ *
+ */
 @Entity
 @Table(name = "licenses")
 public class License implements IPrivilegeHolder, Serializable {
@@ -59,6 +63,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -70,6 +75,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -167,16 +173,19 @@ public class License implements IPrivilegeHolder, Serializable {
         return (start == null || start.before(now)) && (end == null || end.after(now));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasPrivilege(String privilege) {
         return privileges.contains(privilege);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivList() {
         return hasPrivilege(IPrivilegeHolder.PRIV_LIST);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivList(boolean priv) {
         if (priv) {
@@ -186,11 +195,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivViewImages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivViewImages(boolean priv) {
         if (priv) {
@@ -200,11 +211,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivViewThumbnails() {
         return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivViewThumbnails(boolean priv) {
         if (priv) {
@@ -214,11 +227,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivViewFulltext() {
         return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivViewFulltext(boolean priv) {
         if (priv) {
@@ -228,11 +243,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivViewVideo() {
         return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_VIDEO);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivViewVideo(boolean priv) {
         if (priv) {
@@ -242,11 +259,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivViewAudio() {
         return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_AUDIO);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivViewAudio(boolean priv) {
         if (priv) {
@@ -256,11 +275,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivDownloadPdf() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivDownloadPdf(boolean priv) {
         if (priv) {
@@ -273,6 +294,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadPagePdf()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivDownloadPagePdf() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
@@ -281,6 +303,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadPagePdf(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivDownloadPagePdf(boolean priv) {
         if (priv) {
@@ -293,6 +316,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivDownloadOriginalContent() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
@@ -301,6 +325,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.user.IPrivilegeHolder#setPrivDownloadOriginalContent(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivDownloadOriginalContent(boolean priv) {
         if (priv) {
@@ -314,6 +339,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivDeleteOcrPage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
@@ -322,6 +348,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDeleteOcrPage(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivDeleteOcrPage(boolean priv) {
         if (priv) {
@@ -331,11 +358,13 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPrivSetRepresentativeImage(boolean priv) {
         if (priv) {
@@ -348,6 +377,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCms()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
@@ -356,6 +386,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
@@ -368,6 +399,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsAllSubthemes() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
@@ -376,6 +408,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsAllSubthemes(boolean priv) {
         if (priv) {
@@ -388,6 +421,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsAllCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
@@ -396,6 +430,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsAllCategories(boolean priv) {
         if (priv) {
@@ -408,6 +443,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsAllTemplates() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
@@ -416,6 +452,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsAllTemplates(boolean priv) {
         if (priv) {
@@ -428,6 +465,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsMenu()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsMenu() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
@@ -436,6 +474,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsMenu(boolean priv) {
         if (priv) {
@@ -448,6 +487,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsStaticPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
@@ -456,6 +496,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
@@ -468,6 +509,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsCollections()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsCollections() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
@@ -476,6 +518,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
@@ -488,6 +531,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsCategories()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
@@ -496,6 +540,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsCategories(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
@@ -508,6 +553,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAllCampaigns()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCrowdsourcingAllCampaigns() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
@@ -516,6 +562,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAllCampaigns(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
         if (priv) {
@@ -528,6 +575,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAnnotateCampaign()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCrowdsourcingAnnotateCampaign() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
@@ -536,6 +584,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAnnotateCampaign(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
         if (priv) {
@@ -548,6 +597,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingReviewCampaign()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isPrivCrowdsourcingReviewCampaign() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
@@ -556,6 +606,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingReviewCampaign(boolean)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
         if (priv) {
@@ -566,6 +617,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -573,6 +626,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -580,6 +635,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>licenseType</code>.</p>
+     *
      * @return the licenseType
      */
     public LicenseType getLicenseType() {
@@ -587,6 +644,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>licenseType</code>.</p>
+     *
      * @param licenseType the licenseType to set
      */
     public void setLicenseType(LicenseType licenseType) {
@@ -595,6 +654,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
      * @return the user
      */
     public User getUser() {
@@ -602,6 +663,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>user</code>.</p>
+     *
      * @param user the user to set
      */
     public void setUser(User user) {
@@ -609,6 +672,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>userGroup</code>.</p>
+     *
      * @return the userGroup
      */
     public UserGroup getUserGroup() {
@@ -616,6 +681,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>userGroup</code>.</p>
+     *
      * @param userGroup the userGroup to set
      */
     public void setUserGroup(UserGroup userGroup) {
@@ -623,6 +690,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>ipRange</code>.</p>
+     *
      * @return the ipRange
      */
     public IpRange getIpRange() {
@@ -630,6 +699,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>ipRange</code>.</p>
+     *
      * @param ipRange the ipRange to set
      */
     public void setIpRange(IpRange ipRange) {
@@ -637,6 +708,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>start</code>.</p>
+     *
      * @return the start
      */
     public Date getStart() {
@@ -644,6 +717,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>start</code>.</p>
+     *
      * @param start the start to set
      */
     public void setStart(Date start) {
@@ -651,6 +726,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>end</code>.</p>
+     *
      * @return the end
      */
     public Date getEnd() {
@@ -658,6 +735,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>end</code>.</p>
+     *
      * @param end the end to set
      */
     public void setEnd(Date end) {
@@ -665,6 +744,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>privileges</code>.</p>
+     *
      * @return the privileges
      */
     public Set<String> getPrivileges() {
@@ -672,6 +753,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>privileges</code>.</p>
+     *
      * @param privileges the privileges to set
      */
     public void setPrivileges(Set<String> privileges) {
@@ -679,6 +762,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>conditions</code>.</p>
+     *
      * @return the conditions
      */
     public String getConditions() {
@@ -686,6 +771,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>conditions</code>.</p>
+     *
      * @param conditions the conditions to set
      */
     public void setConditions(String conditions) {
@@ -693,6 +780,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -700,6 +789,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -707,6 +798,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>subthemeDiscriminatorValues</code>.</p>
+     *
      * @return the subthemeDiscriminatorValues
      */
     public List<String> getSubthemeDiscriminatorValues() {
@@ -714,6 +807,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>subthemeDiscriminatorValues</code>.</p>
+     *
      * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
      */
     public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
@@ -721,6 +816,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>allowedCategories</code>.</p>
+     *
      * @return the allowedCategories
      */
     public List<CMSCategory> getAllowedCategories() {
@@ -728,6 +825,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>allowedCategories</code>.</p>
+     *
      * @param allowedCategories the allowedCategories to set
      */
     public void setAllowedCategories(List<CMSCategory> allowedCategories) {
@@ -735,6 +834,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>allowedCmsTemplates</code>.</p>
+     *
      * @return the allowedCmsTemplates
      */
     public List<String> getAllowedCmsTemplates() {
@@ -742,6 +843,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>allowedCmsTemplates</code>.</p>
+     *
      * @param allowedCmsTemplates the allowedCmsTemplates to set
      */
     public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
@@ -749,6 +852,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>allowedCrowdsourcingCampaigns</code>.</p>
+     *
      * @return the allowedCrowdsourcingCampaigns
      */
     public List<Campaign> getAllowedCrowdsourcingCampaigns() {
@@ -756,6 +861,8 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>allowedCrowdsourcingCampaigns</code>.</p>
+     *
      * @param allowedCrowdsourcingCampaigns the allowedCrowdsourcingCampaigns to set
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {

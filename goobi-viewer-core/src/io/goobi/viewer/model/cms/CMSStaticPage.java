@@ -31,6 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 
+/**
+ * <p>CMSStaticPage class.</p>
+ *
+ */
 @Entity
 @Table(name = "cms_static_pages")
 public class CMSStaticPage {
@@ -50,16 +54,19 @@ public class CMSStaticPage {
     @Transient
     private Optional<CMSPage> cmsPage = Optional.empty();
     
+    /**
+     * <p>Constructor for CMSStaticPage.</p>
+     */
     public CMSStaticPage() {
         this.id = null;
         this.pageName = "";
     }
     
     /**
-     * 
-     * @param name
-     * 
-     * @throws NullPointerException if the given name is null
+     * <p>Constructor for CMSStaticPage.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @throws java.lang.NullPointerException if the given name is null
      */
     public CMSStaticPage(String name) {
         if(name == null) {
@@ -72,10 +79,10 @@ public class CMSStaticPage {
     /**
      * Construct a CMSStaticPage from a CMSPage referring to a static page.
      * Used for Backwards compability
-     * 
-     * @param cmsPage
-     * @throws IllegalArgumentException if the cmsPage does not refer to a static page
-     * @throws NullPointerException if the cmsPage is null
+     *
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @throws java.lang.IllegalArgumentException if the cmsPage does not refer to a static page
+     * @throws java.lang.NullPointerException if the cmsPage is null
      */
     @SuppressWarnings("deprecation")
     public CMSStaticPage(CMSPage cmsPage) {
@@ -91,6 +98,8 @@ public class CMSStaticPage {
 
 
     /**
+     * <p>getCmsPageOptional.</p>
+     *
      * @return the cmsPage
      */
     public Optional<CMSPage> getCmsPageOptional() {
@@ -100,11 +109,18 @@ public class CMSStaticPage {
         return cmsPage;
     }
     
+    /**
+     * <p>Getter for the field <code>cmsPage</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     */
     public CMSPage getCmsPage() {
         return getCmsPageOptional().orElse(null);
     }
 
     /**
+     * <p>Setter for the field <code>cmsPage</code>.</p>
+     *
      * @param cmsPage the cmsPage to set
      */
     public void setCmsPage(CMSPage cmsPage) {
@@ -113,6 +129,8 @@ public class CMSStaticPage {
     }
     
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -120,12 +138,20 @@ public class CMSStaticPage {
     }
 
     /**
+     * <p>Getter for the field <code>pageName</code>.</p>
+     *
      * @return the pageName
      */
     public String getPageName() {
         return pageName;
     }
 
+    /**
+     * <p>isLanguageComplete.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a boolean.
+     */
     public boolean isLanguageComplete(Locale locale) {
         if (getCmsPageOptional().isPresent()) {
             return cmsPage.get().isLanguageComplete(locale);
@@ -134,6 +160,8 @@ public class CMSStaticPage {
     }
 
     /**
+     * <p>isHasCmsPage.</p>
+     *
      * @return true only if isUseCmsPage == true and cmsPage != null
      */
     public boolean isHasCmsPage() {
@@ -141,6 +169,8 @@ public class CMSStaticPage {
     }
     
     /**
+     * <p>Getter for the field <code>cmsPageId</code>.</p>
+     *
      * @return the cmsPageId
      */
     public Optional<Long> getCmsPageId() {
@@ -148,6 +178,8 @@ public class CMSStaticPage {
     }
     
     /**
+     * <p>Setter for the field <code>cmsPageId</code>.</p>
+     *
      * @param cmsPageId the cmsPageId to set
      */
     public void setCmsPageId(Long cmsPageId) {
@@ -173,6 +205,7 @@ public class CMSStaticPage {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getPageName().hashCode();
@@ -181,6 +214,7 @@ public class CMSStaticPage {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(this.getClass())) {

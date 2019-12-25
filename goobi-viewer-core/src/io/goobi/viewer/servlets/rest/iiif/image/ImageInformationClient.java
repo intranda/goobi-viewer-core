@@ -34,12 +34,18 @@ import de.intranda.api.iiif.image.IiifProfile;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.services.Service;
 
+/**
+ * <p>ImageInformationClient class.</p>
+ *
+ */
 public class ImageInformationClient {
 
     /**
-     * @param string
-     * @return
-     * @throws FileNotFoundException
+     * <p>getImageInfo.</p>
+     *
+     * @throws java.io.FileNotFoundException
+     * @param url a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
      */
     public ImageInformation getImageInfo(String url) throws FileNotFoundException {
         //		Client client = ClientBuilder.newClient();

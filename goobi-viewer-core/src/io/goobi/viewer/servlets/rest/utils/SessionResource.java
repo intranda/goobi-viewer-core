@@ -46,21 +46,26 @@ public class SessionResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for SessionResource.</p>
+     */
     public SessionResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected SessionResource(HttpServletRequest request) {
         this.servletRequest = request;
     }
 
     /**
-     * @return
+     * <p>getSessionInfo.</p>
+     *
      * @should return session info correctly
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/info")

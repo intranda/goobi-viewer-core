@@ -36,8 +36,9 @@ import io.goobi.viewer.servlets.rest.bookmarks.BookmarkResource;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
- * @author florian
+ * <p>TranslationResource class.</p>
  *
+ * @author florian
  */
 @Path("/messages")
 @ViewerRestServiceBinding
@@ -45,6 +46,12 @@ public class TranslationResource {
     
     private static final Logger logger = LoggerFactory.getLogger(TranslationResource.class);
 
+    /**
+     * <p>getTranslations.</p>
+     *
+     * @param keys a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.TranslationResource.TranslationList} object.
+     */
     @GET
     @Path("/translate/{keys}")
     @Produces({ MediaType.APPLICATION_JSON })

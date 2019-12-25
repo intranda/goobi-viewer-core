@@ -19,6 +19,10 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>CompareYearSolrDocWrapper class.</p>
+ *
+ */
 public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocWrapper> {
 
     private static final Logger logger = LoggerFactory.getLogger(CompareYearSolrDocWrapper.class);
@@ -26,6 +30,11 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     private SolrDocument solrDocument = null;
     private long year = 0;
 
+    /**
+     * <p>Constructor for CompareYearSolrDocWrapper.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     */
     public CompareYearSolrDocWrapper(SolrDocument doc) {
         this.solrDocument = doc;
         if (doc.getFieldValue("YEAR") != null) {
@@ -35,6 +44,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(CompareYearSolrDocWrapper comp) {
         int ret = 0;
@@ -55,6 +65,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -68,6 +79,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -86,18 +98,38 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
         return true;
     }
 
+    /**
+     * <p>Getter for the field <code>solrDocument</code>.</p>
+     *
+     * @return a {@link org.apache.solr.common.SolrDocument} object.
+     */
     public SolrDocument getSolrDocument() {
         return solrDocument;
     }
 
+    /**
+     * <p>Setter for the field <code>solrDocument</code>.</p>
+     *
+     * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
+     */
     public void setSolrDocument(SolrDocument solrDocument) {
         this.solrDocument = solrDocument;
     }
 
+    /**
+     * <p>Getter for the field <code>year</code>.</p>
+     *
+     * @return a long.
+     */
     public long getYear() {
         return year;
     }
 
+    /**
+     * <p>Setter for the field <code>year</code>.</p>
+     *
+     * @param year a long.
+     */
     public void setYear(long year) {
         this.year = year;
     }

@@ -61,6 +61,7 @@ public class DisplayUserGeneratedContent {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(DisplayUserGeneratedContent.class);
+    /** Constant <code>format</code> */
     public static final NumberFormat format = new DecimalFormat("00000000");
 
     private Long id;
@@ -81,19 +82,33 @@ public class DisplayUserGeneratedContent {
 
     private Date dateUpdated;
 
-    /** Default constructor (needed for persistence). */
+    /**
+     * Default constructor (needed for persistence).
+     */
     public DisplayUserGeneratedContent() {
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public ContentType getType() {
@@ -101,6 +116,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(ContentType type) {
@@ -108,6 +125,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -115,6 +134,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -122,6 +143,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Getter for the field <code>page</code>.</p>
+     *
      * @return the page
      */
     public Integer getPage() {
@@ -129,6 +152,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>page</code>.</p>
+     *
      * @param page the page to set
      */
     public void setPage(Integer page) {
@@ -136,6 +161,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -143,6 +170,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>label</code>.</p>
+     *
      * @param label the label to set
      */
     public void setLabel(String label) {
@@ -152,13 +181,15 @@ public class DisplayUserGeneratedContent {
     /**
      * Returns the <code>label</code>, if set, otherwise <code>pi</code>.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getDisplayLabel() {
         return StringUtils.isNotEmpty(label) ? label : pi;
     }
 
     /**
+     * <p>Getter for the field <code>updatedBy</code>.</p>
+     *
      * @return the updatedBy
      */
     public User getUpdatedBy() {
@@ -166,6 +197,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>updatedBy</code>.</p>
+     *
      * @param updatedBy the updatedBy to set
      */
     public void setUpdatedBy(User updatedBy) {
@@ -173,12 +206,19 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     *
      * @return the dateUpdated
      */
     public Date getDateUpdated() {
         return dateUpdated;
     }
 
+    /**
+     * <p>getDateUpdatedAsString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDateUpdatedAsString() {
         if (dateUpdated != null) {
             String dateString = DateTools.formatterDEDate.print(dateUpdated.getTime());
@@ -187,6 +227,11 @@ public class DisplayUserGeneratedContent {
         return null;
     }
 
+    /**
+     * <p>getTimeUpdatedAsString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTimeUpdatedAsString() {
         if (dateUpdated != null) {
             String dateString = DateTools.formatterISO8601Time.print(dateUpdated.getTime());
@@ -196,6 +241,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -203,6 +250,8 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Getter for the field <code>areaString</code>.</p>
+     *
      * @return the areaString
      */
     public String getAreaString() {
@@ -210,23 +259,37 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
+     * <p>Setter for the field <code>areaString</code>.</p>
+     *
      * @param areaString the areaString to set
      */
     public void setAreaString(String areaString) {
         this.areaString = areaString;
     }
 
+    /**
+     * <p>hasArea.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasArea() {
         return (!(getAreaString() == null) && !getAreaString().isEmpty());
     }
 
+    /**
+     * <p>mayHaveArea.</p>
+     *
+     * @return a boolean.
+     */
     public boolean mayHaveArea() {
         return true;
     }
 
     /**
-     * @param coordinates
-     * @return
+     * <p>convertToIntArray.</p>
+     *
+     * @param coordinates an array of {@link double} objects.
+     * @return an array of {@link int} objects.
      */
     public static int[] convertToIntArray(double[] coordinates) {
         int[] intCoords = new int[coordinates.length];
@@ -237,6 +300,12 @@ public class DisplayUserGeneratedContent {
         return intCoords;
     }
 
+    /**
+     * <p>convertToDoubleArray.</p>
+     *
+     * @param coordinates an array of {@link int} objects.
+     * @return an array of {@link double} objects.
+     */
     public static double[] convertToDoubleArray(int[] coordinates) {
         double[] doubleCoords = new double[coordinates.length];
         for (int i = 0; i < coordinates.length; i++) {
@@ -246,16 +315,31 @@ public class DisplayUserGeneratedContent {
         return doubleCoords;
     }
 
+    /**
+     * <p>Getter for the field <code>displayCoordinates</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayCoordinates() {
         return displayCoordinates;
     }
 
+    /**
+     * <p>Setter for the field <code>displayCoordinates</code>.</p>
+     *
+     * @param displayCoordinates a {@link java.lang.String} object.
+     */
     public void setDisplayCoordinates(String displayCoordinates) {
         this.displayCoordinates = displayCoordinates;
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
+     */
+    /**
+     * <p>getDisplayPage.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getDisplayPage() {
         return page;
@@ -272,19 +356,30 @@ public class DisplayUserGeneratedContent {
         }
     }
 
+    /**
+     * <p>isEmpty.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEmpty() {
         return StringUtils.isEmpty(getLabel());
     }
 
+    /**
+     * <p>getTypeAsString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTypeAsString() {
         return getType().getName();
     }
 
     /**
-     * 
-     * @param doc
+     * <p>buildFromSolrDoc.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return UserGeneratedContent generated from the given Solr document
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should construct content correctly
      */
     public static DisplayUserGeneratedContent buildFromSolrDoc(SolrDocument doc) throws IndexUnreachableException {
@@ -312,8 +407,8 @@ public class DisplayUserGeneratedContent {
 
     /**
      * Builds label out of user-generated content metadata.
-     * 
-     * @param se
+     *
+     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return the generated label
      * @should generate person label correctly
      * @should generate corporation label correctly

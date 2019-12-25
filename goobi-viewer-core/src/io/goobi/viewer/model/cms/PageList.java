@@ -36,9 +36,8 @@ import io.goobi.viewer.model.viewer.PageType;
  * A list of strings with some convenience methods. Each string is either the id
  * of a cmsPage or a pageType name The list may be stored as a single string
  * containing all strings in the list separated by ;
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class PageList implements Iterable<String> {
 
@@ -46,10 +45,18 @@ public class PageList implements Iterable<String> {
 
 	private List<String> pages = new ArrayList<>();
 
+	/**
+	 * <p>Constructor for PageList.</p>
+	 */
 	public PageList() {
 		super();
 	}
 
+	/**
+	 * <p>Constructor for PageList.</p>
+	 *
+	 * @param stringRep a {@link java.lang.String} object.
+	 */
 	public PageList(String stringRep) {
 		super();
 		if (StringUtils.isNotBlank(stringRep)) {
@@ -66,6 +73,7 @@ public class PageList implements Iterable<String> {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return StringUtils.join(pages, ";");
@@ -78,6 +86,7 @@ public class PageList implements Iterable<String> {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		return pages.hashCode();
@@ -88,6 +97,7 @@ public class PageList implements Iterable<String> {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null) {
@@ -98,6 +108,8 @@ public class PageList implements Iterable<String> {
 	}
 
 	/**
+	 * <p>Getter for the field <code>pages</code>.</p>
+	 *
 	 * @return the pages
 	 */
 	public List<String> getPages() {
@@ -105,6 +117,8 @@ public class PageList implements Iterable<String> {
 	}
 
 	/**
+	 * <p>Setter for the field <code>pages</code>.</p>
+	 *
 	 * @param pages the pages to set
 	 */
 	public void setPages(List<String> pages) {
@@ -113,7 +127,7 @@ public class PageList implements Iterable<String> {
 
 	/**
 	 * get the if/pageName of the first page, or an empty string if no pages exist
-	 * 
+	 *
 	 * @return the if/pageName of the first page, or an empty string if no pages
 	 *         exist
 	 */
@@ -121,6 +135,12 @@ public class PageList implements Iterable<String> {
 		return getPage(0);
 	}
 	
+	/**
+	 * <p>getPage.</p>
+	 *
+	 * @param index a int.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getPage(int index) {
 		if (pages.size() > index) {
 			return pages.get(index);
@@ -130,21 +150,29 @@ public class PageList implements Iterable<String> {
 	}
 
 	/**
-	 * Get the matching {@link SearchInterface} for the first listed page. This is
+	 * Get the matching {@link io.goobi.viewer.model.search.SearchInterface} for the first listed page. This is
 	 * the {@link SearchFunctionality} of that page if any exists, or otherwise the
 	 * {@link SearchBean}
-	 * 
-	 * @return the matching {@link SearchInterface} for the first listed page. This
+	 *
+	 * @return the matching {@link io.goobi.viewer.model.search.SearchInterface} for the first listed page. This
 	 *         is the {@link SearchFunctionality} of that page if any exists, or
 	 *         otherwise the {@link SearchBean}
-	 * @throws DAOException 
-	 * @throws NumberFormatException 
+	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws java.lang.NumberFormatException
 	 */
 	public SearchInterface getSearch() throws NumberFormatException, DAOException {
 		return getSearch(0);
 	}
 		
 		
+	/**
+	 * <p>getSearch.</p>
+	 *
+	 * @param pageIndex a int.
+	 * @return a {@link io.goobi.viewer.model.search.SearchInterface} object.
+	 * @throws java.lang.NumberFormatException if any.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public SearchInterface getSearch(int pageIndex) throws NumberFormatException, DAOException {
 		SearchInterface search = null;
 		String page = getPage(pageIndex);
@@ -161,11 +189,12 @@ public class PageList implements Iterable<String> {
 	}
 	
 	/**
-	 * 
+	 * <p>getUrl.</p>
+	 *
 	 * @param pageIndex	the index of the desired page in the page list
 	 * @return	the url of the page at pageIndex, relative to the host url
-	 * @throws DAOException 
-	 * @throws NumberFormatException 
+	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws java.lang.NumberFormatException
 	 */
 	public String getUrl(int pageIndex) throws NumberFormatException, DAOException {
 		String url = "";
@@ -192,8 +221,8 @@ public class PageList implements Iterable<String> {
 
 	/**
 	 * Sets the pages list to a list containing only the given string
-	 * 
-	 * @param page
+	 *
+	 * @param page a {@link java.lang.String} object.
 	 */
 	public void setPage(String page) {
 		this.pages = Collections.singletonList(page);
@@ -204,11 +233,19 @@ public class PageList implements Iterable<String> {
 	 * 
 	 * @see java.lang.Iterable#iterator()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public Iterator<String> iterator() {
 		return pages.iterator();
 	}
 
+	/**
+	 * <p>getPage.</p>
+	 *
+	 * @param idString a {@link java.lang.String} object.
+	 * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public CMSPage getPage(String idString) throws DAOException {
 		if (StringUtils.isNotBlank(idString) && idString.matches("\\d+")) {
 			Long id = Long.parseLong(idString);
@@ -220,6 +257,11 @@ public class PageList implements Iterable<String> {
 		throw new IllegalArgumentException("No cms page found with id = " + idString);
 	}
 
+	/**
+	 * <p>isEmpty.</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isEmpty() {
 		return pages == null || pages.isEmpty();
 	}

@@ -28,14 +28,16 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.goobi.viewer.model.misc.Translation;
 
 /**
- * @author florian
+ * <p>TranslationListSerializer class.</p>
  *
+ * @author florian
  */
 public class TranslationListSerializer extends JsonSerializer<List<Translation>> {
 
     /* (non-Javadoc)
      * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
      */
+    /** {@inheritDoc} */
     @Override
     public void serialize(List<Translation> translations, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         

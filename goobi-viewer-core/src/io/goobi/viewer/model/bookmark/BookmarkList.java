@@ -55,6 +55,10 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
+/**
+ * <p>BookmarkList class.</p>
+ *
+ */
 @Entity
 @Table(name = "bookshelves")
 @XStreamAlias("bookshelf")
@@ -102,6 +106,7 @@ public class BookmarkList implements Serializable {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -117,6 +122,7 @@ public class BookmarkList implements Serializable {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -156,7 +162,7 @@ public class BookmarkList implements Serializable {
     /**
      * add bookshelf to list and save
      *
-     * @param item
+     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
      * @return boolean if list changed
      */
     public boolean addItem(Bookmark item) {
@@ -174,7 +180,7 @@ public class BookmarkList implements Serializable {
     /**
      * remove bookshelf from list and save
      *
-     * @param item
+     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
      * @return boolean if list changed
      */
     public boolean removeItem(Bookmark item) {
@@ -187,7 +193,7 @@ public class BookmarkList implements Serializable {
     /**
      * add user group to list and save
      *
-     * @param group
+     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return boolean if list changed
      */
     public boolean addGroupShare(UserGroup group) {
@@ -197,7 +203,7 @@ public class BookmarkList implements Serializable {
     /**
      * remove user group from list and save
      *
-     * @param group
+     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return boolean if list changed
      */
     public boolean removeGroupShare(UserGroup group) {
@@ -207,8 +213,8 @@ public class BookmarkList implements Serializable {
     /**
      * Returns a Solr query that would retrieve the Solr documents representing the items listed on this bookshelf.
      *
-     * @return
      * @should return correct query
+     * @return a {@link java.lang.String} object.
      */
     public String generateSolrQueryForItems() {
         StringBuilder sb = new StringBuilder();
@@ -250,6 +256,13 @@ public class BookmarkList implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * <p>isMayView.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isMayView(User user) throws DAOException {
         if (isPublic) {
             return true;
@@ -268,6 +281,13 @@ public class BookmarkList implements Serializable {
         return false;
     }
 
+    /**
+     * <p>isMayEdit.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isMayEdit(User user) throws DAOException {
         if (user == null) {
             return false;
@@ -288,6 +308,8 @@ public class BookmarkList implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -295,6 +317,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -302,6 +326,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -309,6 +335,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -320,6 +348,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -327,17 +357,26 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * <p>hasDescription.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public User getOwner() {
@@ -345,6 +384,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(User owner) {
@@ -352,6 +393,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>isIsPublic.</p>
+     *
      * @return the isPublic
      */
     public boolean isIsPublic() {
@@ -359,6 +402,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>getPublicString.</p>
+     *
      * @return the isPublic Value as a String <br>
      *         surrounded with ()
      */
@@ -374,6 +419,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>isPublic</code>.</p>
+     *
      * @param isPublic the isPublic to set
      */
     public void setIsPublic(boolean isPublic) {
@@ -381,6 +428,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>shareKey</code>.</p>
+     *
      * @return the shareKey
      */
     public String getShareKey() {
@@ -388,6 +437,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>shareKey</code>.</p>
+     *
      * @param shareKey the shareKey to set
      */
     public void setShareKey(String shareKey) {
@@ -409,7 +460,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * 
+     * <p>getNumItems.</p>
+     *
      * @return Number of items
      */
     public int getNumItems() {
@@ -417,6 +469,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>items</code>.</p>
+     *
      * @return the items
      */
     public List<Bookmark> getItems() {
@@ -424,6 +478,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>items</code>.</p>
+     *
      * @param items the items to set
      */
     public void setItems(List<Bookmark> items) {
@@ -431,6 +487,8 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>groupShares</code>.</p>
+     *
      * @return the groupShares
      */
     public List<UserGroup> getGroupShares() {
@@ -441,12 +499,19 @@ public class BookmarkList implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>groupShares</code>.</p>
+     *
      * @param groupShares the groupShares to set
      */
     public void setGroupShares(List<UserGroup> groupShares) {
         this.groupShares = groupShares;
     }
 
+    /**
+     * <p>getOwnerName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOwnerName() {
         if (getOwner() != null) {
             return getOwner().getDisplayNameObfuscated();
@@ -455,13 +520,14 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * 
-     * @param applicationRoot
-     * @return
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>getMiradorJsonObject.</p>
+     *
+     * @param applicationRoot a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate JSON object correctly
+     * @return a {@link java.lang.String} object.
      */
     @SuppressWarnings("unchecked")
     public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
@@ -513,9 +579,10 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * 
-     * @return
+     * <p>getFilterQuery.</p>
+     *
      * @should construct query correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getFilterQuery() {
         if (items.isEmpty()) {
@@ -531,6 +598,11 @@ public class BookmarkList implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * <p>getIIIFCollectionURI.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIIIFCollectionURI() {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/user/get/" + getId() + "/collection/";
     }

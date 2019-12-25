@@ -182,29 +182,31 @@ public class SearchHit implements Comparable<SearchHit> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compareTo(SearchHit other) {
         return Integer.compare(this.getBrowseElement().getImageNo(), other.getBrowseElement().getImageNo());
     }
 
     /**
-     * 
-     * @param doc
-     * @param ownerDoc
-     * @param locale
+     * <p>createSearchHit.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param locale a {@link java.util.Locale} object.
      * @param fulltext Optional fulltext (page docs only).
-     * @param searchTerms
+     * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields Optional fields for (Excel) export purposes.
-     * @param useThumbnail
-     * @param ignoreAdditionalFields
-     * @param translateAdditionalFields
-     * @param overrideType
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @param useThumbnail a boolean.
+     * @param ignoreAdditionalFields a {@link java.util.Set} object.
+     * @param translateAdditionalFields a {@link java.util.Set} object.
+     * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should add export fields correctly
+     * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
@@ -301,8 +303,8 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
-     * 
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
@@ -397,12 +399,12 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * Creates a child hit element for TEI full-texts, with child hits of its own for each truncated fragment containing search terms.
-     * 
-     * @param doc
-     * @param language
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
@@ -466,14 +468,15 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param number
-     * @param locale
-     * @param request
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * <p>populateChildren.</p>
+     *
+     * @param number a int.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public void populateChildren(int number, Locale locale, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -481,14 +484,16 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param number
-     * @param locale
-     * @param request
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * <p>populateChildren.</p>
+     *
+     * @param number a int.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @param skip a int.
      */
     public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -602,8 +607,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @param doc
+     * <p>populateFoundMetadata.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @should add field values pairs that match search terms
@@ -741,6 +747,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public HitType getType() {
@@ -748,6 +756,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>translatedType</code>.</p>
+     *
      * @return the translatedType
      */
     public String getTranslatedType() {
@@ -755,6 +765,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>browseElement</code>.</p>
+     *
      * @return the browseElement
      */
     public BrowseElement getBrowseElement() {
@@ -762,6 +774,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>childDocs</code>.</p>
+     *
      * @return the childDocs
      */
     public List<SolrDocument> getChildDocs() {
@@ -769,6 +783,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>hitsPopulated</code>.</p>
+     *
      * @return the hitsPopulated
      */
     public int getHitsPopulated() {
@@ -776,6 +792,8 @@ public class SearchHit implements Comparable<SearchHit> {
     };
 
     /**
+     * <p>Setter for the field <code>childDocs</code>.</p>
+     *
      * @param childDocs the childDocs to set
      */
     public void setChildDocs(SolrDocumentList childDocs) {
@@ -784,8 +802,8 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * Returns true if this hit has populated child elements.
-     * 
-     * @return
+     *
+     * @return a boolean.
      */
     public boolean isHasChildren() {
         return children != null && !children.isEmpty();
@@ -793,14 +811,16 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * Returns true if this hit has any unpopulated child hits left.
-     * 
-     * @return
+     *
+     * @return a boolean.
      */
     public boolean isHasMoreChildren() {
         return childDocs != null && !childDocs.isEmpty() && getHitsPopulated() < childDocs.size();
     }
 
     /**
+     * <p>Getter for the field <code>ugcDocIddocs</code>.</p>
+     *
      * @return the ugcDocIddocs
      */
     public Set<String> getUgcDocIddocs() {
@@ -808,6 +828,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>children</code>.</p>
+     *
      * @return the children
      */
     public List<SearchHit> getChildren() {
@@ -815,6 +837,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>hitTypeCounts</code>.</p>
+     *
      * @return the hitTypeCounts
      */
     public Map<HitType, Integer> getHitTypeCounts() {
@@ -822,8 +846,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * 
-     * @return
+     * <p>isHasHitCount.</p>
+     *
+     * @return a boolean.
      */
     public boolean isHasHitCount() {
         for (HitType key : hitTypeCounts.keySet()) {
@@ -835,6 +860,11 @@ public class SearchHit implements Comparable<SearchHit> {
         return false;
     }
 
+    /**
+     * <p>getCmsPageHitCount.</p>
+     *
+     * @return a int.
+     */
     public int getCmsPageHitCount() {
         if (hitTypeCounts.get(HitType.CMS) != null) {
             return hitTypeCounts.get(HitType.CMS);
@@ -843,6 +873,11 @@ public class SearchHit implements Comparable<SearchHit> {
         return 0;
     }
 
+    /**
+     * <p>getDocstructHitCount.</p>
+     *
+     * @return a int.
+     */
     public int getDocstructHitCount() {
         if (hitTypeCounts.get(HitType.DOCSTRCT) != null) {
             return hitTypeCounts.get(HitType.DOCSTRCT);
@@ -851,6 +886,11 @@ public class SearchHit implements Comparable<SearchHit> {
         return 0;
     }
 
+    /**
+     * <p>getPageHitCount.</p>
+     *
+     * @return a int.
+     */
     public int getPageHitCount() {
         if (hitTypeCounts.get(HitType.PAGE) != null) {
             return hitTypeCounts.get(HitType.PAGE);
@@ -859,6 +899,11 @@ public class SearchHit implements Comparable<SearchHit> {
         return 0;
     }
 
+    /**
+     * <p>getMetadataHitCount.</p>
+     *
+     * @return a int.
+     */
     public int getMetadataHitCount() {
         if (hitTypeCounts.get(HitType.METADATA) != null) {
             return hitTypeCounts.get(HitType.METADATA);
@@ -867,6 +912,11 @@ public class SearchHit implements Comparable<SearchHit> {
         return 0;
     }
 
+    /**
+     * <p>getEventHitCount.</p>
+     *
+     * @return a int.
+     */
     public int getEventHitCount() {
         if (hitTypeCounts.get(HitType.EVENT) != null) {
             return hitTypeCounts.get(HitType.EVENT);
@@ -875,6 +925,11 @@ public class SearchHit implements Comparable<SearchHit> {
         return 0;
     }
 
+    /**
+     * <p>getUgcHitCount.</p>
+     *
+     * @return a int.
+     */
     public int getUgcHitCount() {
         if (hitTypeCounts.get(HitType.UGC) != null) {
             return hitTypeCounts.get(HitType.UGC);
@@ -884,6 +939,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>foundMetadata</code>.</p>
+     *
      * @return the foundMetadata
      */
     public List<StringPair> getFoundMetadata() {
@@ -891,6 +948,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
      * @return the url
      */
     public String getUrl() {
@@ -898,6 +957,8 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * <p>Getter for the field <code>exportMetadata</code>.</p>
+     *
      * @return the exportMetadata
      */
     public Map<String, String> getExportMetadata() {
@@ -906,9 +967,9 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * Generates HTML fragment for this search hit for notification mails.
-     * 
-     * @param count
-     * @return
+     *
+     * @param count a int.
+     * @return a {@link java.lang.String} object.
      */
     public String generateNotificationFragment(int count) {
         StringBuilder sb = new StringBuilder();

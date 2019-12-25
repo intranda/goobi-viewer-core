@@ -18,6 +18,10 @@ package io.goobi.viewer.model.cms;
 import io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode;
 import io.goobi.viewer.model.misc.GeoLocationInfo;
 
+/**
+ * <p>SidebarElementType class.</p>
+ *
+ */
 public enum SidebarElementType {
 
     searchField("widgetSearchField", Category.search),
@@ -49,6 +53,8 @@ public enum SidebarElementType {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -56,6 +62,8 @@ public enum SidebarElementType {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public Category getType() {
@@ -63,7 +71,9 @@ public enum SidebarElementType {
     }
 
     /**
-     * @return
+     * <p>createSidebarElement.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
      */
     public CMSSidebarElement createSidebarElement() {
         CMSSidebarElement element;

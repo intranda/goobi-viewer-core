@@ -44,12 +44,12 @@ public class CalendarView {
 
     /**
      * Constructor.
-     * 
+     *
      * @param pi Record identifier
      * @param anchorPi Anchor record identifier (must be same as pi if this is an anchor)
      * @param year Year of a volume; null, if this is an anchor!
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public CalendarView(String pi, String anchorPi, String year) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
@@ -63,10 +63,10 @@ public class CalendarView {
 
     /**
      * Checks whether the conditions for displaying the calendar view have been met.
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a boolean.
      */
     public boolean isDisplay() throws PresentationException, IndexUnreachableException {
         boolean empty = true;
@@ -81,9 +81,9 @@ public class CalendarView {
 
     /**
      * Populates the calendar with items.
-     * 
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
         if (anchorPi != null && anchorPi.equals(pi)) {
@@ -95,11 +95,12 @@ public class CalendarView {
     }
 
     /**
-     * 
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>getVolumeYears.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should only return volume years that have YEARMONTHDAY field
+     * @return a {@link java.util.List} object.
      */
     public List<String> getVolumeYears() throws PresentationException, IndexUnreachableException {
         if (anchorPi != null) {
@@ -111,6 +112,8 @@ public class CalendarView {
     }
 
     /**
+     * <p>Getter for the field <code>year</code>.</p>
+     *
      * @return the year
      */
     public String getYear() {
@@ -118,6 +121,8 @@ public class CalendarView {
     }
 
     /**
+     * <p>Setter for the field <code>year</code>.</p>
+     *
      * @param year the year to set
      */
     public void setYear(String year) {
@@ -130,6 +135,8 @@ public class CalendarView {
     }
 
     /**
+     * <p>Getter for the field <code>calendarItems</code>.</p>
+     *
      * @return the calendarItems
      */
     public List<CalendarItemMonth> getCalendarItems() {

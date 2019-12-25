@@ -26,12 +26,21 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>LanguageHelper class.</p>
+ *
+ */
 public class LanguageHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(LanguageHelper.class);
 
     private XMLConfiguration config;
 
+    /**
+     * <p>Constructor for LanguageHelper.</p>
+     *
+     * @param configFilePath a {@link java.lang.String} object.
+     */
     public LanguageHelper(String configFilePath) {
         try {
             config = new XMLConfiguration(configFilePath);
@@ -46,9 +55,9 @@ public class LanguageHelper {
 
     /**
      * Gets the language data for the given iso-code 639-1 or 639-2B
-     * 
-     * @param isoCode
-     * @return
+     *
+     * @param isoCode a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.controller.language.Language} object.
      */
     public Language getLanguage(String isoCode) {
         SubnodeConfiguration languageConfig = null;

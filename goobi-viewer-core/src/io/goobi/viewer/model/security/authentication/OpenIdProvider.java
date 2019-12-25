@@ -40,10 +40,15 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.openid.OAuthServlet;
 
+/**
+ * <p>OpenIdProvider class.</p>
+ *
+ */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenIdProvider.class);
 
+    /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";
     
     /** OAuth client ID. */
@@ -62,6 +67,17 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     private Object responseLock = new Object();
 
+    /**
+     * <p>Constructor for OpenIdProvider.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param image a {@link java.lang.String} object.
+     * @param timeoutMillis a long.
+     * @param clientId a {@link java.lang.String} object.
+     * @param clientSecret a {@link java.lang.String} object.
+     */
     public OpenIdProvider(String name, String label, String url, String image, long timeoutMillis, String clientId, String clientSecret) {
         super(name, label, TYPE_OPENID, url, image, timeoutMillis);
         this.clientId = clientId;
@@ -70,6 +86,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
 
     /**
+     * <p>Getter for the field <code>clientId</code>.</p>
+     *
      * @return the clientId
      */
     public String getClientId() {
@@ -77,6 +95,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
+     * <p>Getter for the field <code>clientSecret</code>.</p>
+     *
      * @return the clientSecret
      */
     public String getClientSecret() {
@@ -86,6 +106,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
 
@@ -147,16 +168,17 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * Tries to find or create a valid {@link User} based on the given json object. Generates a {@link LoginResult}
-     * containing the given request and response and either an optional containing the user or nothing if no user was found, or a {@link AuthenticationProviderException} 
+     * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a {@link io.goobi.viewer.model.security.authentication.LoginResult}
+     * containing the given request and response and either an optional containing the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException}
      * if an internal error occured during login
-     * If this method is not called within {@link #getTimeoutMillis()} ms after calling {@#login(String, String)}, 
+     * If this method is not called within {@link #getTimeoutMillis()} ms after calling {@#login(String, String)},
      * a loginResponse is created containing an appropriate exception.
      * In any case, the future returned by {@link #login(String, String)} is resolved
-     * 
+     *
      * @param json  The server response as json object. If null, the login request is resolved as failure
-     * @param request
-     * @param response
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> completeLogin(JSONObject json, HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -245,6 +267,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
      */
+    /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
@@ -253,12 +276,15 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;
     }
 
     /**
+     * <p>Getter for the field <code>oAuthState</code>.</p>
+     *
      * @return the oAuthState
      */
     public String getoAuthState() {
@@ -266,6 +292,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
+     * <p>Setter for the field <code>oAuthState</code>.</p>
+     *
      * @param oAuthState the oAuthState to set
      */
     public void setoAuthState(String oAuthState) {
@@ -273,6 +301,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
+     * <p>Getter for the field <code>oAuthAccessToken</code>.</p>
+     *
      * @return the oAuthAccessToken
      */
     public String getoAuthAccessToken() {
@@ -280,6 +310,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
+     * <p>Setter for the field <code>oAuthAccessToken</code>.</p>
+     *
      * @param oAuthAccessToken the oAuthAccessToken to set
      */
     public void setoAuthAccessToken(String oAuthAccessToken) {
@@ -297,6 +329,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return true;
@@ -306,6 +339,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {
         return false;

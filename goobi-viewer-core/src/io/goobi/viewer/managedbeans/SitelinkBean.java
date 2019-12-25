@@ -61,10 +61,11 @@ public class SitelinkBean implements Serializable {
     private List<StringPair> hits;
 
     /**
-     * 
+     * <p>getAvailableValues.</p>
+     *
      * @return List of facet values for the configured field and query
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public List<String> getAvailableValues() throws PresentationException, IndexUnreachableException {
         return getAvailableValuesForField(DataManager.getInstance().getConfiguration().getSitelinksField(),
@@ -72,12 +73,13 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
-     * 
-     * @param field
-     * @param filterQuery
+     * <p>getAvailableValuesForField.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
      * @return List of facet values for the given field and query
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return all existing values for the given field
      */
     public List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
@@ -109,12 +111,12 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
-     * 
-     * @param filterQuery
+     * <p>searchAction.</p>
+     *
      * @return Target page
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public String searchAction() throws IndexUnreachableException, PresentationException, DAOException {
         String field = DataManager.getInstance().getConfiguration().getSitelinksField();
@@ -179,6 +181,11 @@ public class SitelinkBean implements Serializable {
         return "";
     }
 
+    /**
+     * <p>resetAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String resetAction() {
         value = null;
         hits = null;
@@ -187,6 +194,8 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -194,6 +203,8 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -201,6 +212,8 @@ public class SitelinkBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>hits</code>.</p>
+     *
      * @return the hits
      */
     public List<StringPair> getHits() {

@@ -18,6 +18,10 @@ package io.goobi.viewer.model.cms;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+/**
+ * <p>CMSMediaItemMetadata class.</p>
+ *
+ */
 @Embeddable
 public class CMSMediaItemMetadata {
 
@@ -39,7 +43,8 @@ public class CMSMediaItemMetadata {
     
     /**
      * copy constructor
-     * @param origMetadata
+     *
+     * @param orig a {@link io.goobi.viewer.model.cms.CMSMediaItemMetadata} object.
      */
     public CMSMediaItemMetadata(CMSMediaItemMetadata orig) {
         this.language = orig.language;
@@ -50,6 +55,7 @@ public class CMSMediaItemMetadata {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -62,6 +68,7 @@ public class CMSMediaItemMetadata {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -85,6 +92,8 @@ public class CMSMediaItemMetadata {
     }
 
     /**
+     * <p>Getter for the field <code>language</code>.</p>
+     *
      * @return the language
      */
     public String getLanguage() {
@@ -92,6 +101,8 @@ public class CMSMediaItemMetadata {
     }
 
     /**
+     * <p>Setter for the field <code>language</code>.</p>
+     *
      * @param language the language to set
      */
     public void setLanguage(String language) {
@@ -99,6 +110,8 @@ public class CMSMediaItemMetadata {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -106,6 +119,8 @@ public class CMSMediaItemMetadata {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -113,6 +128,8 @@ public class CMSMediaItemMetadata {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -120,6 +137,8 @@ public class CMSMediaItemMetadata {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {

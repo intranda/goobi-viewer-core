@@ -39,8 +39,9 @@ import org.apache.commons.lang3.StringUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 /**
- * @author Florian Alpers
+ * <p>MediaDeliveryService class.</p>
  *
+ * @author Florian Alpers
  */
 public class MediaDeliveryService {
 
@@ -50,13 +51,12 @@ public class MediaDeliveryService {
 
     /**
      * Process the actual request.
-     * 
+     *
      * @param request The request to be processed.
      * @param response The response to be created.
-     * @param content Whether the request body should be written (GET) or not (HEAD).
-     * @param filePath
-     * @param mimeType
-     * @throws IOException If something fails at I/O level.
+     * @param filePath a {@link java.lang.String} object.
+     * @param mimeType a {@link java.lang.String} object.
+     * @throws java.io.IOException If something fails at I/O level.
      */
     public void processRequest(HttpServletRequest request, HttpServletResponse response, String filePath, String mimeType)
             throws IOException {

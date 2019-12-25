@@ -16,8 +16,9 @@
 package io.goobi.viewer.model.cms;
 
 /**
- * @author Florian Alpers
+ * <p>PageValidityStatus class.</p>
  *
+ * @author Florian Alpers
  */
 public enum PageValidityStatus {
 
@@ -25,6 +26,11 @@ public enum PageValidityStatus {
     INVALID_NO_TEMPLATE,
     INVALID_INVALID_CONTENT;
     
+    /**
+     * <p>isValid.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isValid() {
         return this.equals(VALID);
     }

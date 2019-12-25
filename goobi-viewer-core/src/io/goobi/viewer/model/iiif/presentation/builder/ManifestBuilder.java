@@ -60,8 +60,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * @author Florian Alpers
+ * <p>ManifestBuilder class.</p>
  *
+ * @author Florian Alpers
  */
 public class ManifestBuilder extends AbstractBuilder {
 
@@ -70,30 +71,34 @@ public class ManifestBuilder extends AbstractBuilder {
     private BuildMode buildMode = BuildMode.IIIF;
 
     /**
-     * @param request
-     * @throws URISyntaxException
+     * <p>Constructor for ManifestBuilder.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public ManifestBuilder(HttpServletRequest request) {
         super(request);
     }
 
     /**
-     * @param servletUri
-     * @param requestURI
+     * <p>Constructor for ManifestBuilder.</p>
+     *
+     * @param servletUri a {@link java.net.URI} object.
+     * @param requestURI a {@link java.net.URI} object.
      */
     public ManifestBuilder(URI servletUri, URI requestURI) {
         super(servletUri, requestURI);
     }
 
     /**
-     * @param pi
-     * @param baseUrl
-     * @return
-     * @throws URISyntaxException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * <p>generateManifest.</p>
+     *
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
      */
     public IPresentationModelElement generateManifest(StructElement ele)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
@@ -119,12 +124,14 @@ public class ManifestBuilder extends AbstractBuilder {
 
 
     /**
-     * @param ele
-     * @param manifest
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
+     * <p>populate.</p>
+     *
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public void populate(StructElement ele, final AbstractPresentationModelElement manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
@@ -242,8 +249,10 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param anchor
-     * @param volumes
+     * <p>addVolumes.</p>
+     *
+     * @param anchor a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @param volumes a {@link java.util.List} object.
      */
     public void addVolumes(Collection anchor, List<StructElement> volumes) {
         for (StructElement volume : volumes) {
@@ -261,11 +270,14 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param manifest
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     * @throws URISyntaxException
+     * <p>addAnchor.</p>
+     *
+     * @param manifest a {@link de.intranda.api.iiif.presentation.Manifest} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.URISyntaxException
+     * @param anchorPI a {@link java.lang.String} object.
      */
     public void addAnchor(Manifest manifest, String anchorPI)
             throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
@@ -333,6 +345,8 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>buildMode</code>.</p>
+     *
      * @return the buildMode
      */
     public BuildMode getBuildMode() {
@@ -340,7 +354,10 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>buildMode</code>.</p>
+     *
      * @param buildMode the buildMode to set
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.
      */
     public ManifestBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;

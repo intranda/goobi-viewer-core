@@ -34,6 +34,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
+/**
+ * <p>SingleWorkCollectionRedirect class.</p>
+ *
+ */
 @Path("/redirect/toFirstWork")
 @ViewerRestServiceBinding
 public class SingleWorkCollectionRedirect {
@@ -41,6 +45,15 @@ public class SingleWorkCollectionRedirect {
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * <p>redirectToWork.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @GET
     @Path("/{luceneField}/{fieldValue}")
     public Response redirectToWork(@PathParam("luceneField") String field, @PathParam("fieldValue") String value, @Context HttpServletRequest request,

@@ -52,6 +52,7 @@ public class SitemapResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapResource.class);
 
+    /** Constant <code>RESOURCE_PATH="/sitemap"</code> */
     public static final String RESOURCE_PATH = "/sitemap";
 
     private static Thread workerThread = null;
@@ -61,22 +62,25 @@ public class SitemapResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for SitemapResource.</p>
+     */
     public SitemapResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected SitemapResource(HttpServletRequest request) {
         this.servletRequest = request;
     }
 
     /**
-     * @param outputPath Output path for sitemap files
-     * @param firstPageOnly
-     * @param params
+     * <p>updateSitemap.</p>
+     *
+     * @param params a {@link io.goobi.viewer.servlets.rest.utils.SitemapRequestParameters} object.
      * @return Short summary of files created
      */
     @SuppressWarnings("unchecked")

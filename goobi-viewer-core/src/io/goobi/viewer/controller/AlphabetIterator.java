@@ -18,17 +18,26 @@ package io.goobi.viewer.controller;
 import java.util.Iterator;
 
 /**
- * @author Florian Alpers
+ * <p>AlphabetIterator class.</p>
  *
+ * @author Florian Alpers
  */
 public class AlphabetIterator implements Iterator<String> {
 
     private char currentValue;
 
+    /**
+     * <p>Constructor for AlphabetIterator.</p>
+     */
     public AlphabetIterator() {
         currentValue = decrement('a');
     }
     
+    /**
+     * <p>Constructor for AlphabetIterator.</p>
+     *
+     * @param firstLetter a char.
+     */
     public AlphabetIterator(char firstLetter) {
         if(firstLetter >= 'a' && firstLetter <= 'z') {            
             currentValue = decrement(firstLetter);
@@ -40,6 +49,7 @@ public class AlphabetIterator implements Iterator<String> {
     /* (non-Javadoc)
      * @see java.util.Iterator#hasNext()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         return currentValue < 'z';
@@ -48,6 +58,7 @@ public class AlphabetIterator implements Iterator<String> {
     /* (non-Javadoc)
      * @see java.util.Iterator#next()
      */
+    /** {@inheritDoc} */
     @Override
     public String next() {
        currentValue = increment(currentValue);

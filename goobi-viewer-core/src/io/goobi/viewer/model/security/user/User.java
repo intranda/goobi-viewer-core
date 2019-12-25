@@ -78,6 +78,10 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 
+/**
+ * <p>User class.</p>
+ *
+ */
 @Entity
 @Table(name = "users")
 @XStreamAlias("user")
@@ -86,8 +90,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(User.class);
 
+    /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
     public static final String ATTRIBUTE_LOGINS = "logins";
 
+    /** Constant <code>AVATAR_DEFAULT_SIZE=96</code> */
     public static final int AVATAR_DEFAULT_SIZE = 96;
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
@@ -178,7 +184,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     @XStreamOmitField
     private TranskribusSession transkribusSession;
 
-    /** Empty constructor for XStream. */
+    /**
+     * Empty constructor for XStream.
+     */
     public User() {
         // the emptiness inside
     }
@@ -188,6 +196,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -201,6 +210,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -230,6 +240,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public User clone() {
         User user = new User();
@@ -261,7 +272,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Returns the name best suited for displaying (depending on which values are available).
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getDisplayName() {
         String displayName = "";
@@ -285,7 +296,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * If the display name is the e-mail address and the logged in user (!= this user) is not an superuser, obfuscate the address.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getDisplayNameObfuscated() {
         String displayName = getDisplayName();
@@ -296,6 +307,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return displayName;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
@@ -334,7 +346,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * Checks whether the user has the role with the given name.
      *
      * @param roleName The role name to check.
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     @Deprecated
     public boolean hasRole(String roleName) throws DAOException {
@@ -347,9 +360,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Checks whether the user has the given privilege directly.
      *
-     * @param privilegeName
-     * @return
-     * @throws DAOException
+     * @param privilegeName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     @Deprecated
     public boolean hasUserPrivilege(String privilegeName) throws DAOException {
@@ -365,16 +378,18 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Returns a list of UserGroups of which this user is the owner.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<UserGroup> getUserGroupOwnerships() throws DAOException {
         return DataManager.getInstance().getDao().getUserGroups(this);
     }
 
     /**
+     * <p>getUserGroupMemberships.</p>
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<UserRole> getUserGroupMemberships() throws DAOException {
         return DataManager.getInstance().getDao().getUserRoles(null, this, null);
@@ -383,7 +398,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Returns a list of UserGroups of which this user is a member.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<UserGroup> getUserGroupsWithMembership() throws DAOException {
         List<UserGroup> ret = new ArrayList<>();
@@ -395,6 +411,13 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return ret;
     }
 
+    /**
+     * <p>isGroupMember.</p>
+     *
+     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isGroupMember(UserGroup group) throws DAOException {
         for (UserRole membership : group.getMemberships()) {
             if (membership.getUser().equals(this) && membership.getUserGroup().equals(group)) {
@@ -407,9 +430,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
     /**
      * Returns a list of all groups with this user's involvement (either as owner or member).
-     * 
-     * @return
-     * @throws DAOException 
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<UserGroup> getAllUserGroups() throws DAOException {
         List<UserGroup> ret = getUserGroupsWithMembership();
@@ -422,18 +445,18 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * Checks whether the user can satisfy at least one of the given access conditions with a license that contains the given privilege name. If one
      * of the conditions is OPENACCESS, true is always returned. Superusers always get access.
      *
-     * @param conditionList
-     * @param privilegeName
-     * @param pi
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @param conditionList a {@link java.util.Set} object.
+     * @param privilegeName a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return true if user is superuser
      * @should return true if condition is open access
      * @should return true if user has license
      * @should return false if user has no license
      * @should return true if condition list empty
+     * @return a boolean.
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -476,6 +499,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
         // return !permissionMap.containsValue(false);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean addLicense(License license) {
         if (licenses == null) {
@@ -490,6 +514,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean removeLicense(License license) {
         if (license != null && licenses != null) {
@@ -501,37 +526,40 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * 
-     * @param privilege
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>isHasCmsPrivilege.</p>
+     *
+     * @param privilege a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isHasCmsPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return isHasPrivilege(LicenseType.LICENSE_TYPE_CMS, privilege);
     }
 
     /**
-     * 
-     * @param privilege
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>isHasCrowdsourcingPrivilege.</p>
+     *
+     * @param privilege a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isHasCrowdsourcingPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return isHasPrivilege(LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS, privilege);
     }
 
     /**
-     * 
-     * @param licenseType
-     * @param privilege
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>isHasPrivilege.</p>
+     *
+     * @param licenseType a {@link java.lang.String} object.
+     * @param privilege a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isHasPrivilege(String licenseType, String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null);
@@ -541,10 +569,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * Checks whether this user has the permission to set the representative image for the currently open record. TODO For some reason this method is
      * called 8x in a row.
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isMaySetRepresentativeImage() throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("isMaySetRepresentativeImage");
@@ -555,10 +583,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Checks whether this user has the permission to delete all ocr-content of one page in crowdsourcing.
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isMayDeleteCrowdsourcingFulltext() throws IndexUnreachableException, PresentationException, DAOException {
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE,
@@ -613,6 +641,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return false;
     }
 
+    /**
+     * <p>getAvatarUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAvatarUrl() {
         if (useGravatar) {
             return getGravatarUrl(AVATAR_DEFAULT_SIZE);
@@ -621,6 +654,12 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return BeanUtils.getNavigationHelper().getApplicationUrl() + "resources/crowdsourcing/img/profile-small.png";
     }
 
+    /**
+     * <p>getAvatarUrl.</p>
+     *
+     * @param size a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getAvatarUrl(int size) {
         if (useGravatar) {
             return getGravatarUrl(size);
@@ -629,6 +668,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return BeanUtils.getNavigationHelper().getApplicationUrl() + "resources/crowdsourcing/img/profile-small.png";
     }
 
+    /**
+     * <p>getGravatarUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGravatarUrl() {
         return getGravatarUrl(AVATAR_DEFAULT_SIZE);
     }
@@ -636,7 +680,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Emptry setter so that HTML pages do not throw missing property errors.
      *
-     * @param gravatarUrl
+     * @param gravatarUrl a {@link java.lang.String} object.
      */
     public void setGravatarUrl(String gravatarUrl) {
         // nothing
@@ -644,8 +688,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
     /**
      * Generates and returns a Gravatar url for the user's e-mail address.
-     * 
-     * @param size
+     *
+     * @param size a int.
      * @return Gravatar URL
      */
     public String getGravatarUrl(int size) {
@@ -667,8 +711,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Generates salt and a password hash for the given password string.
      *
-     * @param password
-     * @return
+     * @param password a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean setNewPassword(String password) {
         if (StringUtils.isNotBlank(password)) {
@@ -682,11 +726,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Authentication check for regular (i.e. non-OpenID) accounts.
      *
-     * @param email
-     * @param password
+     * @param email a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
      * @return The user, if successful.
-     * @throws AuthenticationException if login data incorrect
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.AuthenticationException if login data incorrect
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public User auth(String email, String password) throws AuthenticationException, DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
@@ -699,6 +743,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
         throw new AuthenticationException("User not found or passwort incorrect");
     }
 
+    /**
+     * <p>hasPriviledgeForAllTemplates.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPriviledgeForAllTemplates() {
 
         // Abort if user not a CMS admin
@@ -722,8 +771,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * 
-     * @param templateId
+     * <p>hasPrivilegesForTemplate.</p>
+     *
+     * @param templateId a {@link java.lang.String} object.
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
      *         user of a usergroup she is in
      */
@@ -765,6 +815,12 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return false;
     }
 
+    /**
+     * <p>getAllowedTemplates.</p>
+     *
+     * @param allTemplates a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
         if (allTemplates == null || allTemplates.isEmpty()) {
             return allTemplates;
@@ -827,6 +883,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return ret;
     }
 
+    /**
+     * <p>hasPrivilegeForAllCategories.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPrivilegeForAllCategories() {
 
         // Abort if user not a CMS admin
@@ -850,9 +911,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * 
-     * @param allCategories
-     * @return
+     * <p>getAllowedCategories.</p>
+     *
+     * @param allCategories a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public List<CMSCategory> getAllowedCategories(List<CMSCategory> allCategories) {
         if (allCategories == null || allCategories.isEmpty()) {
@@ -904,6 +966,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return ret;
     }
 
+    /**
+     * <p>hasPrivilegeForAllSubthemeDiscriminatorValues.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPrivilegeForAllSubthemeDiscriminatorValues() {
 
         // Abort if user not a CMS admin
@@ -927,7 +994,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * 
+     * <p>getAllowedSubthemeDiscriminatorValues.</p>
+     *
      * @param rawValues All possible values
      * @return filtered list of allowed values
      */
@@ -982,9 +1050,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * 
-     * @param allCampaigns
-     * @return
+     * <p>getAllowedCrowdsourcingCampaigns.</p>
+     *
+     * @param allCampaigns a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Campaign> getAllowedCrowdsourcingCampaigns(List<Campaign> allCampaigns) {
         if (allCampaigns == null || allCampaigns.isEmpty()) {
@@ -1049,6 +1118,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
      ***************************************/
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -1056,6 +1127,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -1063,6 +1136,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>passwordHash</code>.</p>
+     *
      * @return the passwordHash
      */
     public String getPasswordHash() {
@@ -1070,6 +1145,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>passwordHash</code>.</p>
+     *
      * @param passwordHash the passwordHash to set
      */
     public void setPasswordHash(String passwordHash) {
@@ -1077,6 +1154,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>activationKey</code>.</p>
+     *
      * @return the activationKey
      */
     public String getActivationKey() {
@@ -1084,6 +1163,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>activationKey</code>.</p>
+     *
      * @param activationKey the activationKey to set
      */
     public void setActivationKey(String activationKey) {
@@ -1091,6 +1172,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>lastLogin</code>.</p>
+     *
      * @return the lastLogin
      */
     public Date getLastLogin() {
@@ -1098,6 +1181,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>lastLogin</code>.</p>
+     *
      * @param lastLogin the lastLogin to set
      */
     public void setLastLogin(Date lastLogin) {
@@ -1105,6 +1190,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>isActive.</p>
+     *
      * @return the active
      */
     public boolean isActive() {
@@ -1112,6 +1199,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>active</code>.</p>
+     *
      * @param active the active to set
      */
     public void setActive(boolean active) {
@@ -1119,6 +1208,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>isSuspended.</p>
+     *
      * @return the suspended
      */
     public boolean isSuspended() {
@@ -1126,6 +1217,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>suspended</code>.</p>
+     *
      * @param suspended the suspended to set
      */
     public void setSuspended(boolean suspended) {
@@ -1133,6 +1226,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>nickName</code>.</p>
+     *
      * @return the nickName
      */
     public String getNickName() {
@@ -1140,6 +1235,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>nickName</code>.</p>
+     *
      * @param nickName the nickName to set
      */
     public void setNickName(String nickName) {
@@ -1147,6 +1244,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>lastName</code>.</p>
+     *
      * @return the lastName
      */
     public String getLastName() {
@@ -1154,6 +1253,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>lastName</code>.</p>
+     *
      * @param lastName the lastName to set
      */
     public void setLastName(String lastName) {
@@ -1161,6 +1262,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>firstName</code>.</p>
+     *
      * @return the firstName
      */
     public String getFirstName() {
@@ -1168,6 +1271,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>firstName</code>.</p>
+     *
      * @param firstName the firstName to set
      */
     public void setFirstName(String firstName) {
@@ -1175,6 +1280,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>openIdAccounts</code>.</p>
+     *
      * @return the openIdAccounts
      */
     public List<String> getOpenIdAccounts() {
@@ -1182,6 +1289,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>openIdAccounts</code>.</p>
+     *
      * @param openIdAccounts the openIdAccounts to set
      */
     public void setOpenIdAccounts(List<String> openIdAccounts) {
@@ -1189,6 +1298,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>email</code>.</p>
+     *
      * @param email the email to set
      */
     public void setEmail(String email) {
@@ -1196,6 +1307,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>email</code>.</p>
+     *
      * @return the email
      */
     public String getEmail() {
@@ -1203,6 +1316,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>comments</code>.</p>
+     *
      * @return the comments
      */
     public String getComments() {
@@ -1210,6 +1325,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>comments</code>.</p>
+     *
      * @param comments the comments to set
      */
     public void setComments(String comments) {
@@ -1217,6 +1334,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>score</code>.</p>
+     *
      * @return the score
      */
     public long getScore() {
@@ -1224,6 +1343,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>score</code>.</p>
+     *
      * @param score the score to set
      */
     public void setScore(long score) {
@@ -1231,6 +1352,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>isUseGravatar.</p>
+     *
      * @return the useGravatar
      */
     public boolean isUseGravatar() {
@@ -1238,17 +1361,30 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>useGravatar</code>.</p>
+     *
      * @param useGravatar the useGravatar to set
      */
     public void setUseGravatar(boolean useGravatar) {
         this.useGravatar = useGravatar;
     }
 
+    /**
+     * <p>raiseScore.</p>
+     *
+     * @param amount a int.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void raiseScore(int amount) throws DAOException {
         score += amount;
         DataManager.getInstance().getDao().updateUser(this);
     }
 
+    /**
+     * <p>getRank.</p>
+     *
+     * @return a int.
+     */
     public int getRank() {
         if (score < 100) {
             return 0;
@@ -1263,15 +1399,15 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return 3;
     }
 
-    /**
-     * @return the licenses
-     */
+    /** {@inheritDoc} */
     @Override
     public List<License> getLicenses() {
         return licenses;
     }
 
     /**
+     * <p>Setter for the field <code>licenses</code>.</p>
+     *
      * @param licenses the licenses to set
      */
     public void setLicenses(List<License> licenses) {
@@ -1279,6 +1415,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>isSuperuser.</p>
+     *
      * @return the superuser
      */
     public boolean isSuperuser() {
@@ -1286,7 +1424,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * 
+     * <p>isCmsAdmin.</p>
+     *
      * @return true if user is superuser or has CMS-specific privileges
      */
     public boolean isCmsAdmin() {
@@ -1304,17 +1443,26 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>superuser</code>.</p>
+     *
      * @param superuser the superuser to set
      */
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
     }
 
+    /**
+     * <p>isOpenIdUser.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isOpenIdUser() {
         return openIdAccounts != null && !openIdAccounts.isEmpty();
     }
 
     /**
+     * <p>Getter for the field <code>copy</code>.</p>
+     *
      * @return the copy
      */
     public User getCopy() {
@@ -1322,6 +1470,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>copy</code>.</p>
+     *
      * @param copy the copy to set
      */
     public void setCopy(User copy) {
@@ -1329,6 +1479,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Getter for the field <code>transkribusSession</code>.</p>
+     *
      * @return the transkribusSession
      */
     public TranskribusSession getTranskribusSession() {
@@ -1336,6 +1488,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * <p>Setter for the field <code>transkribusSession</code>.</p>
+     *
      * @param transkribusSession the transkribusSession to set
      */
     public void setTranskribusSession(TranskribusSession transkribusSession) {
@@ -1343,6 +1497,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Required by the ILicensee interface.
      */
     @Override
@@ -1361,6 +1517,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.
      * HttpSessionBindingEvent)
      */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void valueBound(HttpSessionBindingEvent event) {
@@ -1381,6 +1538,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http
      * .HttpSessionBindingEvent)
      */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
@@ -1392,24 +1550,33 @@ public class User implements ILicensee, HttpSessionBindingListener {
         }
     }
 
+    /**
+     * <p>backupFields.</p>
+     */
     public void backupFields() {
         copy = clone();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getDisplayName();
     }
 
+    /**
+     * <p>setBCrypt.</p>
+     *
+     * @param bcrypt a {@link io.goobi.viewer.controller.BCrypt} object.
+     */
     protected void setBCrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;
     }
 
     /**
-     * Get the {@link User#id} of a user from a URI
-     * 
-     * @param idAsURI
-     * @return
+     * Get the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI
+     *
+     * @param idAsURI a {@link java.net.URI} object.
+     * @return a {@link java.lang.Long} object.
      */
     public static Long getId(URI idAsURI) {
         if (idAsURI == null) {
@@ -1424,10 +1591,20 @@ public class User implements ILicensee, HttpSessionBindingListener {
         }
     }
 
+    /**
+     * <p>getIdAsURI.</p>
+     *
+     * @return a {@link java.net.URI} object.
+     */
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
     }

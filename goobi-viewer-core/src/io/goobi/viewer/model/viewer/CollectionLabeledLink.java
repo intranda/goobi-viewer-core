@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author Florian Alpers
+ * <p>CollectionLabeledLink class.</p>
  *
+ * @author Florian Alpers
  */
 public class CollectionLabeledLink extends CompoundLabeledLink {
 
@@ -31,9 +32,12 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
     private final CollectionView collection;
 
     /**
-     * @param name
-     * @param url
-     * @param weight
+     * <p>Constructor for CollectionLabeledLink.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param weight a int.
+     * @param collection a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      */
     public CollectionLabeledLink(String name, String url, CollectionView collection, int weight) {
         super(name, url, collection.getField(), weight);
@@ -43,6 +47,7 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.CompoundLabeledLink#getSubLinks()
      */
+    /** {@inheritDoc} */
     @Override
     public List<LabeledLink> getSubLinks() {
         List<LabeledLink> links = collection.getAncestors(collection.getTopVisibleElement(), true)

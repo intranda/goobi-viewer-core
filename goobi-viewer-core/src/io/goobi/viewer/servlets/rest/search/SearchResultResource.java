@@ -39,6 +39,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
+/**
+ * <p>SearchResultResource class.</p>
+ *
+ */
 @Path("/search")
 @ViewerRestServiceBinding
 public class SearchResultResource {
@@ -48,6 +52,18 @@ public class SearchResultResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>getTagsForPageJson.</p>
+     *
+     * @param hitId a {@link java.lang.String} object.
+     * @param numChildren a int.
+     * @return a {@link io.goobi.viewer.servlets.rest.search.SearchHitChildList} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/hit/{id}/{numChildren}")
     @Produces({ MediaType.APPLICATION_JSON })

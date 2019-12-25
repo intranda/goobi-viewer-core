@@ -94,11 +94,16 @@ public class AdminBean implements Serializable {
     private String passwordOne = "";
     private String passwordTwo = "";
 
+    /**
+     * <p>Constructor for AdminBean.</p>
+     */
     public AdminBean() {
         // the emptiness inside
     }
 
     /**
+     * <p>init.</p>
+     *
      * @should sort lazyModelComments by dateUpdated desc by default
      */
     @PostConstruct
@@ -309,17 +314,21 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns all users in the DB. Needed for getting a list of users (e.g for adding user group members).
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
         return DataManager.getInstance().getDao().getAllUsers(true);
     }
 
     /**
-     * 
-     * @param usersToExclude
-     * @return
-     * @throws DAOException
+     * <p>getAllUsersExcept.</p>
+     *
+     * @param usersToExclude a {@link java.util.Set} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return all users except given
+     * @return a {@link java.util.List} object.
      */
     public List<User> getAllUsersExcept(Set<User> usersToExclude) throws DAOException {
         List<User> ret = getAllUsers();
@@ -331,8 +340,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>saveUserAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String saveUserAction() throws DAOException {
         // Retrieving a new user from the DB overrides the current object and resets the field, so save a copy
@@ -394,8 +405,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>deleteUserAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public void deleteUserAction(User user) throws DAOException {
         logger.debug("Deleting user: " + user.getDisplayName());
@@ -406,6 +419,9 @@ public class AdminBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resetCurrentUserAction.</p>
+     */
     public void resetCurrentUserAction() {
         currentUser = new User();
     }
@@ -413,7 +429,7 @@ public class AdminBean implements Serializable {
     /**
      * Persists changes in <code>currentUserGroup</code>.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void saveUserGroupAction() throws DAOException {
         if (currentUserGroup != null) {
@@ -435,8 +451,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>deleteUserGroupAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      */
     public void deleteUserGroupAction(UserGroup userGroup) throws DAOException {
         if (DataManager.getInstance().getDao().deleteUserGroup(userGroup)) {
@@ -446,6 +464,9 @@ public class AdminBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resetCurrentUserGroupAction.</p>
+     */
     public void resetCurrentUserGroupAction() {
         currentUserGroup = new UserGroup();
     }
@@ -455,16 +476,17 @@ public class AdminBean implements Serializable {
     /**
      * Returns a list of all existing roles. Required for admin tab components.
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<Role> getAllRoles() throws DAOException {
         return DataManager.getInstance().getDao().getAllRoles();
     }
 
     /**
-     * @throws DAOException
+     * <p>saveRoleAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void saveRoleAction() throws DAOException {
         // String name = getCurrentRole().getName();
@@ -485,8 +507,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>deleteRoleAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param role a {@link io.goobi.viewer.model.security.Role} object.
      */
     public void deleteRoleAction(Role role) throws DAOException {
         if (DataManager.getInstance().getDao().deleteRole(role)) {
@@ -496,19 +520,26 @@ public class AdminBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resetCurrentRoleAction.</p>
+     */
     public void resetCurrentRoleAction() {
         currentRole = new Role();
     }
 
     // UserRole
 
+    /**
+     * <p>resetCurrentUserRoleAction.</p>
+     */
     public void resetCurrentUserRoleAction() {
         currentUserRole = new UserRole(getCurrentUserGroup(), null, null);
     }
 
     /**
-     * @throws DAOException
+     * <p>saveUserRoleAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void saveUserRoleAction() throws DAOException {
         if (currentUserRole == null) {
@@ -536,8 +567,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>deleteUserRoleAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
         if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
@@ -552,9 +585,9 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns all existing license types. Required for admin tabs.
-     * 
+     *
      * @return all license types in the database
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         return DataManager.getInstance().getDao().getAllLicenseTypes();
@@ -583,18 +616,20 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     * <p>getAllRoleLicenseTypes.</p>
+     *
      * @return all license types in the database where core=true
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<LicenseType> getAllRoleLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(true);
     }
 
     /**
-     * 
+     * <p>getAllRecordLicenseTypes.</p>
+     *
      * @return all license types in the database where core=false
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<LicenseType> getAllRecordLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(false);
@@ -602,6 +637,9 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns all existing non-core license types minus this one. Required for admin tabs.
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
         List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
@@ -621,8 +659,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>saveLicenseTypeAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String saveLicenseTypeAction() throws DAOException {
         // String name = getCurrentLicenseType().getName();
@@ -645,8 +685,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>deleteLicenseTypeAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      */
     public void deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
         if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
@@ -656,11 +698,17 @@ public class AdminBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resetCurrentLicenseTypeAction.</p>
+     */
     public void resetCurrentLicenseTypeAction() {
         logger.trace("resetCurrentLicenseTypeAction");
         currentLicenseType = new LicenseType();
     }
 
+    /**
+     * <p>resetCurrentRoleLicenseAction.</p>
+     */
     public void resetCurrentRoleLicenseAction() {
         currentLicenseType = new LicenseType();
         currentLicenseType.setCore(true);
@@ -669,8 +717,9 @@ public class AdminBean implements Serializable {
     // IpRange
 
     /**
-     * @throws DAOException
+     * <p>saveIpRangeAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void saveIpRangeAction() throws DAOException {
         // String name = getCurrentIpRange().getName();
@@ -691,8 +740,10 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>deleteIpRangeAction.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
      */
     public void deleteIpRangeAction(IpRange ipRange) throws DAOException {
         if (DataManager.getInstance().getDao().deleteIpRange(ipRange)) {
@@ -702,33 +753,54 @@ public class AdminBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resetCurrentIpRangeAction.</p>
+     */
     public void resetCurrentIpRangeAction() {
         currentIpRange = new IpRange();
     }
 
+    /**
+     * <p>resetCurrentLicenseAction.</p>
+     */
     public void resetCurrentLicenseAction() {
         logger.trace("resetCurrentLicenseAction");
         setCurrentLicense(null);
     }
 
+    /**
+     * <p>resetCurrentLicenseForUserAction.</p>
+     */
     public void resetCurrentLicenseForUserAction() {
         logger.trace("resetCurrentLicenseForUserAction");
         currentLicense = new License();
         currentLicense.setUser(getCurrentUser());
     }
 
+    /**
+     * <p>resetCurrentLicenseForUserGroupAction.</p>
+     */
     public void resetCurrentLicenseForUserGroupAction() {
         logger.trace("resetCurrentLicenseForUserGroupAction");
         currentLicense = new License();
         currentLicense.setUserGroup(getCurrentUserGroup());
     }
 
+    /**
+     * <p>resetCurrentLicenseForIpRangeAction.</p>
+     */
     public void resetCurrentLicenseForIpRangeAction() {
         logger.trace("resetCurrentLicenseForIpRangeAction");
         currentLicense = new License();
         currentLicense.setIpRange(getCurrentIpRange());
     }
 
+    /**
+     * <p>saveCurrentLicenseAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String saveCurrentLicenseAction() throws DAOException {
         logger.trace("saveCurrentLicenseAction");
         String ret = saveLicenseAction(currentLicense);
@@ -740,7 +812,9 @@ public class AdminBean implements Serializable {
      * Adds the current License to the licensee (User, UserGroup or IpRange). It is imperative that the licensee object is refreshed after updating so
      * that a new license object is an ID attached. Otherwise the list of licenses will throw an NPE!
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a {@link java.lang.String} object.
      */
     public String saveLicenseAction(License license) throws DAOException {
         logger.trace("saveLicenseAction");
@@ -780,6 +854,13 @@ public class AdminBean implements Serializable {
         return "";
     }
 
+    /**
+     * <p>deleteLicenseAction.</p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String deleteLicenseAction(License license) throws DAOException {
         if (license == null) {
             throw new IllegalArgumentException("license may not be null");
@@ -812,6 +893,12 @@ public class AdminBean implements Serializable {
 
     // Comments
 
+    /**
+     * <p>saveCommentAction.</p>
+     *
+     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void saveCommentAction(Comment comment) throws DAOException {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
@@ -833,6 +920,13 @@ public class AdminBean implements Serializable {
         resetCurrentCommentAction();
     }
 
+    /**
+     * <p>deleteCommentAction.</p>
+     *
+     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String deleteCommentAction(Comment comment) throws DAOException {
         if (DataManager.getInstance().getDao().deleteComment(comment)) {
             Messages.info("commentDeleteSuccess");
@@ -843,6 +937,9 @@ public class AdminBean implements Serializable {
         return "";
     }
 
+    /**
+     * <p>resetCurrentCommentAction.</p>
+     */
     public void resetCurrentCommentAction() {
         currentComment = null;
     }
@@ -850,6 +947,8 @@ public class AdminBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>currentUser</code>.</p>
+     *
      * @return the currentUser
      */
     public User getCurrentUser() {
@@ -857,21 +956,35 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentUser</code>.</p>
+     *
      * @param currentUser the currentUser to set
      */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
+    /**
+     * <p>Getter for the field <code>currentUserGroup</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     */
     public UserGroup getCurrentUserGroup() {
         return this.currentUserGroup;
     }
 
+    /**
+     * <p>Setter for the field <code>currentUserGroup</code>.</p>
+     *
+     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     */
     public void setCurrentUserGroup(UserGroup userGroup) {
         this.currentUserGroup = userGroup;
     }
 
     /**
+     * <p>Getter for the field <code>currentRole</code>.</p>
+     *
      * @return the currentRole
      */
     public Role getCurrentRole() {
@@ -879,6 +992,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentRole</code>.</p>
+     *
      * @param currentRole the currentRole to set
      */
     public void setCurrentRole(Role currentRole) {
@@ -886,6 +1001,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentUserRole</code>.</p>
+     *
      * @return the currentUserRole
      */
     public UserRole getCurrentUserRole() {
@@ -893,6 +1010,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentUserRole</code>.</p>
+     *
      * @param currentUserRole the currentUserRole to set
      */
     public void setCurrentUserRole(UserRole currentUserRole) {
@@ -900,6 +1019,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentLicenseType</code>.</p>
+     *
      * @return the currentLicenseType
      */
     public LicenseType getCurrentLicenseType() {
@@ -907,6 +1028,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentLicenseType</code>.</p>
+     *
      * @param currentLicenseType the currentLicenseType to set
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
@@ -917,6 +1040,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentLicense</code>.</p>
+     *
      * @return the currentLicense
      */
     public License getCurrentLicense() {
@@ -924,6 +1049,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentLicense</code>.</p>
+     *
      * @param currentLicense the currentLicense to set
      */
     public void setCurrentLicense(License currentLicense) {
@@ -932,6 +1059,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentIpRange</code>.</p>
+     *
      * @return the currentIpRange
      */
     public IpRange getCurrentIpRange() {
@@ -939,6 +1068,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentIpRange</code>.</p>
+     *
      * @param currentIpRange the currentIpRange to set
      */
     public void setCurrentIpRange(IpRange currentIpRange) {
@@ -946,6 +1077,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentComment</code>.</p>
+     *
      * @return the currentComment
      */
     public Comment getCurrentComment() {
@@ -953,6 +1086,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentComment</code>.</p>
+     *
      * @param currentComment the currentComment to set
      */
     public void setCurrentComment(Comment currentComment) {
@@ -962,28 +1097,44 @@ public class AdminBean implements Serializable {
     // Lazy models
 
     /**
+     * <p>Getter for the field <code>lazyModelUsers</code>.</p>
+     *
      * @return the lazyModelUsers
      */
     public TableDataProvider<User> getLazyModelUsers() {
         return lazyModelUsers;
     }
 
+    /**
+     * <p>getPageUsers.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
     }
 
     /**
+     * <p>Getter for the field <code>lazyModelUserGroups</code>.</p>
+     *
      * @return the lazyModelUserGroups
      */
     public TableDataProvider<UserGroup> getLazyModelUserGroups() {
         return lazyModelUserGroups;
     }
 
+    /**
+     * <p>getPageUserGroups.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<UserGroup> getPageUserGroups() {
         return lazyModelUserGroups.getPaginatorList();
     }
 
     /**
+     * <p>Getter for the field <code>lazyModelLicenseTypes</code>.</p>
+     *
      * @return the lazyModelLicenseTypes
      */
     public TableDataProvider<LicenseType> getLazyModelLicenseTypes() {
@@ -991,43 +1142,71 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lazyModelCoreLicenseTypes</code>.</p>
+     *
      * @return the lazyModelCoreLicenseTypes
      */
     public TableDataProvider<LicenseType> getLazyModelCoreLicenseTypes() {
         return lazyModelCoreLicenseTypes;
     }
 
+    /**
+     * <p>getPageLicenseTypes.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<LicenseType> getPageLicenseTypes() {
         return lazyModelLicenseTypes.getPaginatorList();
     }
 
+    /**
+     * <p>getPageCoreLicenseTypes.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<LicenseType> getPageCoreLicenseTypes() {
         return lazyModelCoreLicenseTypes.getPaginatorList();
     }
 
     /**
+     * <p>Getter for the field <code>lazyModelIpRanges</code>.</p>
+     *
      * @return the lazyModelIpRanges
      */
     public TableDataProvider<IpRange> getLazyModelIpRanges() {
         return lazyModelIpRanges;
     }
 
+    /**
+     * <p>getPageIpRanges.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IpRange> getPageIpRanges() {
         return lazyModelIpRanges.getPaginatorList();
     }
 
     /**
+     * <p>Getter for the field <code>lazyModelComments</code>.</p>
+     *
      * @return the lazyModelComments
      */
     public TableDataProvider<Comment> getLazyModelComments() {
         return lazyModelComments;
     }
 
+    /**
+     * <p>getPageComments.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Comment> getPageComments() {
         return lazyModelComments.getPaginatorList();
     }
 
     /**
+     * <p>Getter for the field <code>passwordOne</code>.</p>
+     *
      * @return the passwordOne
      */
     public String getPasswordOne() {
@@ -1035,6 +1214,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>passwordOne</code>.</p>
+     *
      * @param passwordOne the passwordOne to set
      */
     public void setPasswordOne(String passwordOne) {
@@ -1042,6 +1223,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>passwordTwo</code>.</p>
+     *
      * @return the passwordTwo
      */
     public String getPasswordTwo() {
@@ -1049,20 +1232,47 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>passwordTwo</code>.</p>
+     *
      * @param passwordTwo the passwordTwo to set
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
     }
 
+    /**
+     * <p>deleteFromCache.</p>
+     *
+     * @param identifiers a {@link java.util.List} object.
+     * @param fromContentCache a boolean.
+     * @param fromThumbnailCache a boolean.
+     * @return a int.
+     */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache) {
         return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
     }
 
+    /**
+     * <p>deleteFromCache.</p>
+     *
+     * @param identifiers a {@link java.util.List} object.
+     * @param fromContentCache a boolean.
+     * @param fromThumbnailCache a boolean.
+     * @param fromPdfCache a boolean.
+     * @return a int.
+     */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache, boolean fromPdfCache) {
         return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
     }
 
+    /**
+     * <p>setRepresantativeImageAction.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param dataRepository a {@link java.lang.String} object.
+     * @param fileIdRoot a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String setRepresantativeImageAction(String pi, String dataRepository, String fileIdRoot) {
         setRepresantativeImageStatic(pi, dataRepository, fileIdRoot);
 
@@ -1073,9 +1283,9 @@ public class AdminBean implements Serializable {
      * Opens the METS file for the given identifier and sets the attribute USE='banner' to all file elements that match the given file ID root. Any
      * USE='banner' attributes that do not match the file ID root are removed. Solr schema version "intranda_viewer-20130117" or newer required.
      *
-     * @param pi
-     * @param dataRepository
-     * @param fileIdRoot
+     * @param pi a {@link java.lang.String} object.
+     * @param dataRepository a {@link java.lang.String} object.
+     * @param fileIdRoot a {@link java.lang.String} object.
      */
     public static void setRepresantativeImageStatic(String pi, String dataRepository, String fileIdRoot) {
         logger.debug("setRepresantativeImageStatic");
@@ -1138,10 +1348,11 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <p>toggleSuspendUserAction.</p>
      *
-     * @param user
-     * @return
-     * @throws DAOException
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String toggleSuspendUserAction(User user) throws DAOException {
         if (user == null) {
@@ -1157,10 +1368,10 @@ public class AdminBean implements Serializable {
 
     /**
      * Querys solr for a list of all values of the set ACCESSCONDITION
-     * 
+     *
      * @return A list of all indexed ACCESSCONDITIONs
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
 

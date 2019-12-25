@@ -25,7 +25,9 @@ public class ViewerConfigurationException extends Exception implements Serializa
     private static final long serialVersionUID = 3263005370127814191L;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for ViewerConfigurationException.</p>
+     *
+     * @param string {@link java.lang.String}
      */
     public ViewerConfigurationException(String string) {
         super(string);

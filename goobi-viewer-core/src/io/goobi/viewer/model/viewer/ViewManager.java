@@ -136,14 +136,16 @@ public class ViewManager implements Serializable {
     private Boolean workHasTEIFiles = null;
 
     /**
-     * 
-     * @param topDocument
-     * @param pageLoader
-     * @param currentDocumentIddoc
-     * @param logId
-     * @param mainMimeType
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>Constructor for ViewManager.</p>
+     *
+     * @param topDocument a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param pageLoader a {@link io.goobi.viewer.model.viewer.pageloader.IPageLoader} object.
+     * @param currentDocumentIddoc a long.
+     * @param logId a {@link java.lang.String} object.
+     * @param mainMimeType a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param imageDelivery a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType,
             ImageDeliveryBean imageDelivery) throws IndexUnreachableException, PresentationException {
@@ -180,6 +182,13 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * <p>createCalendarView.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.calendar.CalendarView} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
         String anchorPi = anchorDocument != null ? anchorDocument.getPi() : (topDocument.isAnchor() ? pi : null);
@@ -187,6 +196,15 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * <p>getRepresentativeImageInfo.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         PhysicalElement representative = getRepresentativePage();
         if (representative == null) {
@@ -198,6 +216,13 @@ public class ViewManager implements Serializable {
         return urlBuilder.toString();
     }
 
+    /**
+     * <p>getCurrentImageInfo.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
         if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
@@ -206,6 +231,14 @@ public class ViewManager implements Serializable {
         return "{}";
     }
 
+    /**
+     * <p>getCurrentImageInfo.</p>
+     *
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
         StringBuilder urlBuilder = new StringBuilder();
         if (isDoublePageMode()) {
@@ -264,6 +297,13 @@ public class ViewManager implements Serializable {
         return imageDelivery.getImages().getImageUrl(page, pageType);
     }
 
+    /**
+     * <p>getCurrentImageInfoFullscreen.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentImageInfoFullscreen() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
@@ -273,6 +313,13 @@ public class ViewManager implements Serializable {
         return url;
     }
 
+    /**
+     * <p>getCurrentImageInfoCrowd.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentImageInfoCrowd() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
@@ -282,10 +329,27 @@ public class ViewManager implements Serializable {
         return url;
     }
 
+    /**
+     * <p>getWatermarkUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getWatermarkUrl("viewImage");
     }
 
+    /**
+     * <p>getWatermarkUrl.</p>
+     *
+     * @param pageType a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return imageDelivery.getFooter()
                 .getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()),
@@ -294,19 +358,37 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * <p>getCurrentImageUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewObject);
     }
 
+    /**
+     * <p>getCurrentObjectUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
         return imageDelivery.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
     }
 
     /**
+     * <p>getCurrentImageUrl.</p>
+     *
      * @return the iiif url to the image in a configured size
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public String getCurrentImageUrl(PageType view) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
@@ -321,14 +403,37 @@ public class ViewManager implements Serializable {
         return getCurrentImageUrl(view, size);
     }
 
+    /**
+     * <p>getCurrentImageUrl.</p>
+     *
+     * @param size a int.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage, size);
     }
 
+    /**
+     * <p>getCurrentMasterImageUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
         return getCurrentMasterImageUrl(Scale.MAX);
     }
 
+    /**
+     * <p>getCurrentMasterImageUrl.</p>
+     *
+     * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
 
         PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
@@ -369,6 +474,13 @@ public class ViewManager implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * <p>getJpegUrlForDownload.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getJpegUrlForDownload() throws IndexUnreachableException, DAOException {
 
         Scale scale;
@@ -385,6 +497,13 @@ public class ViewManager implements Serializable {
         return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
     }
 
+    /**
+     * <p>getMasterImageUrlForDownload.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getMasterImageUrlForDownload() throws IndexUnreachableException, DAOException {
 
         Scale scale;
@@ -402,6 +521,14 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * <p>getCurrentSearchResultCoords.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<List<String>> coords = new ArrayList<>();
         List<String> coordStrings = getSearchResultCoords(getCurrentPage());
@@ -428,6 +555,14 @@ public class ViewManager implements Serializable {
         return coords;
     }
 
+    /**
+     * <p>getRepresentativeWidth.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public int getRepresentativeWidth() throws PresentationException, IndexUnreachableException, DAOException {
         if (getRepresentativePage() != null) {
             return getRepresentativePage().getImageWidth();
@@ -435,6 +570,14 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
+    /**
+     * <p>getRepresentativeHeight.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public int getRepresentativeHeight() throws PresentationException, IndexUnreachableException, DAOException {
         if (getRepresentativePage() != null) {
             return getRepresentativePage().getImageHeight();
@@ -442,6 +585,13 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
+    /**
+     * <p>getCurrentWidth.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public int getCurrentWidth() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -453,6 +603,13 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
+    /**
+     * <p>getCurrentHeight.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public int getCurrentHeight() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -464,6 +621,14 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
+    /**
+     * <p>getRepresentativeImageUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getRepresentativeImageUrl() throws IndexUnreachableException, PresentationException, DAOException {
 
         if (getRepresentativePage() != null) {
@@ -474,12 +639,26 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * <p>scaleToWidth.</p>
+     *
+     * @param imageSize a {@link java.awt.Dimension} object.
+     * @param scaledWidth a int.
+     * @return a {@link java.awt.Dimension} object.
+     */
     public static Dimension scaleToWidth(Dimension imageSize, int scaledWidth) {
         double scale = scaledWidth / imageSize.getWidth();
         int scaledHeight = (int) (imageSize.getHeight() * scale);
         return new Dimension(scaledWidth, scaledHeight);
     }
 
+    /**
+     * <p>scaleToHeight.</p>
+     *
+     * @param imageSize a {@link java.awt.Dimension} object.
+     * @param scaledHeight a int.
+     * @return a {@link java.awt.Dimension} object.
+     */
     public static Dimension scaleToHeight(Dimension imageSize, int scaledHeight) {
         double scale = scaledHeight / imageSize.getHeight();
         int scaledWidth = (int) (imageSize.getWidth() * scale);
@@ -503,9 +682,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>rotateLeft.</p>
      *
-     * @return
      * @should rotate correctly
+     * @return a {@link java.lang.String} object.
      */
     public String rotateLeft() {
         rotate -= 90;
@@ -521,9 +701,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>rotateRight.</p>
      *
-     * @return
      * @should rotate correctly
+     * @return a {@link java.lang.String} object.
      */
     public String rotateRight() {
         rotate += 90;
@@ -536,9 +717,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>resetImage.</p>
      *
-     * @return
      * @should reset rotation
+     * @return a {@link java.lang.String} object.
      */
     public String resetImage() {
         this.rotate = 0;
@@ -548,17 +730,19 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     * <p>isHasUrns.</p>
+     *
      * @return true if this record contains URN or IMAGEURN fields; false otherwise
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public boolean isHasUrns() throws PresentationException, IndexUnreachableException {
         return topDocument.getMetadataFields().containsKey(SolrConstants.URN) || topDocument.getFirstPageFieldValue(SolrConstants.IMAGEURN) != null;
     }
 
     /**
-     * 
+     * <p>isHasVolumes.</p>
+     *
      * @return true if this is an anchor record and has indexed volumes; false otherwise
      */
     public boolean isHasVolumes() {
@@ -570,19 +754,21 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     * <p>isHasPages.</p>
+     *
      * @return true if record contains pages; false otherwise
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean isHasPages() throws IndexUnreachableException {
         return pageLoader != null && pageLoader.getNumPages() > 0;
     }
 
     /**
-     * 
+     * <p>isFilesOnly.</p>
+     *
      * @return true if record or first child or first page have an application mime type; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
         // TODO check all files for mime type?
@@ -602,10 +788,10 @@ public class ViewManager implements Serializable {
 
     /**
      * Convenience method for identifying born digital material records.
-     * 
+     *
      * @return true if record is born digital material (no scanned images); false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
@@ -634,9 +820,9 @@ public class ViewManager implements Serializable {
     /**
      * Defines the criteria whether to list all remaining volumes in the TOC if the current record is a volume.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isListAllVolumesInTOC() throws IndexUnreachableException, DAOException {
         return DataManager.getInstance().getConfiguration().isTocListSiblingRecords() || isFilesOnly();
@@ -645,9 +831,9 @@ public class ViewManager implements Serializable {
     /**
      * Returns all pages in their correct order. Used for e-publications.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<PhysicalElement> getAllPages() throws IndexUnreachableException, DAOException {
         List<PhysicalElement> ret = new ArrayList<>();
@@ -664,10 +850,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getCurrentPage.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      */
     public PhysicalElement getCurrentPage() throws IndexUnreachableException, DAOException {
         return getPage(currentImageOrder).orElse(null);
@@ -676,10 +863,10 @@ public class ViewManager implements Serializable {
     /**
      * Returns the page with the given order number from the page loader, if exists.
      *
-     * @param order
+     * @param order a int.
      * @return requested page if exists; null otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return correct page
      * @should return null if order less than zero
      * @should return null if order larger than number of pages
@@ -694,6 +881,14 @@ public class ViewManager implements Serializable {
         return Optional.empty();
     }
 
+    /**
+     * <p>Getter for the field <code>representativePage</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public PhysicalElement getRepresentativePage() throws PresentationException, IndexUnreachableException, DAOException {
         if (representativePage == null) {
             String thumbnailName = topDocument.getMetadataValue(SolrConstants.THUMBNAIL);
@@ -710,11 +905,20 @@ public class ViewManager implements Serializable {
         return representativePage;
     }
 
+    /**
+     * <p>getFirstPage.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public PhysicalElement getFirstPage() throws IndexUnreachableException, DAOException {
         return pageLoader.getPage(pageLoader.getFirstPageOrder());
     }
 
     /**
+     * <p>getCurrentImageNo.</p>
+     *
      * @return the currentImageNo
      */
     public int getCurrentImageNo() {
@@ -733,18 +937,20 @@ public class ViewManager implements Serializable {
     /**
      * Setter for the direct page number input field
      *
-     * @param currentImageNo
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param currentImageNo a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void setCurrentImageNoForPaginator(int currentImageNo) throws IndexUnreachableException, PresentationException {
         setCurrentImageNo(currentImageNo);
     }
 
     /**
+     * <p>setCurrentImageNo.</p>
+     *
      * @param currentImageNo the currentImageNo to set
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void setCurrentImageNo(int currentImageNo) throws IndexUnreachableException, PresentationException {
         logger.trace("setCurrentImageNo: {}", currentImageNo);
@@ -787,9 +993,9 @@ public class ViewManager implements Serializable {
     /**
      * Returns the ORDERLABEL value for the current page.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String getCurrentImageLabel() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
@@ -801,10 +1007,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * @return {@link String}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>nextImage.</p>
+     *
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String nextImage() throws IndexUnreachableException, PresentationException {
         //        logger.debug("currentImageNo: {}", currentImageOrder);
@@ -816,10 +1023,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>prevImage.</p>
      *
-     * @return {@link String}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String prevImage() throws IndexUnreachableException, PresentationException {
         if (currentImageOrder > 0) {
@@ -830,10 +1038,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>firstImage.</p>
      *
-     * @return {@link String}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String firstImage() throws IndexUnreachableException, PresentationException {
         setCurrentImageNo(pageLoader.getFirstPageOrder());
@@ -842,10 +1051,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>lastImage.</p>
      *
-     * @return {@link String}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String lastImage() throws IndexUnreachableException, PresentationException {
         setCurrentImageNo(pageLoader.getLastPageOrder());
@@ -853,14 +1063,21 @@ public class ViewManager implements Serializable {
         return null;
     }
 
+    /**
+     * <p>isMultiPageRecord.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public boolean isMultiPageRecord() throws IndexUnreachableException {
         return getImagesCount() > 1;
     }
 
     /**
+     * <p>getImagesCount.</p>
      *
-     * @return {@link Integer}
-     * @throws IndexUnreachableException
+     * @return {@link java.lang.Integer}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public int getImagesCount() throws IndexUnreachableException {
         if (pageLoader == null) {
@@ -870,6 +1087,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dropdownPages</code>.</p>
+     *
      * @return the dropdownPages
      */
     public List<SelectItem> getDropdownPages() {
@@ -877,6 +1096,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dropdownFulltext</code>.</p>
+     *
      * @return the dropdownPages
      */
     public List<SelectItem> getDropdownFulltext() {
@@ -884,6 +1105,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dropdownSelected</code>.</p>
+     *
      * @param dropdownSelected the dropdownSelected to set
      */
     public void setDropdownSelected(String dropdownSelected) {
@@ -892,6 +1115,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dropdownSelected</code>.</p>
+     *
      * @return the dropdownSelected
      */
     public String getDropdownSelected() {
@@ -902,9 +1127,9 @@ public class ViewManager implements Serializable {
      *
      * Returns the PhysicalElements for the current thumbnail page using the configured number of thumbnails per page;
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<PhysicalElement> getImagesSection() throws IndexUnreachableException, DAOException {
         return getImagesSection(DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage());
@@ -915,8 +1140,8 @@ public class ViewManager implements Serializable {
      *
      * @param thumbnailsPerPage Length of the thumbnail list per page.
      * @return PhysicalElements for the current thumbnail page.
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return correct PhysicalElements for a thumbnail page
      */
     protected List<PhysicalElement> getImagesSection(int thumbnailsPerPage) throws IndexUnreachableException, DAOException {
@@ -961,55 +1186,93 @@ public class ViewManager implements Serializable {
         return i;
     }
 
+    /**
+     * <p>getFirstDisplayedThumbnailIndex.</p>
+     *
+     * @return a int.
+     */
     public int getFirstDisplayedThumbnailIndex() {
         return getFirstDisplayedThumbnailIndex(DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage());
     }
 
+    /**
+     * <p>Getter for the field <code>currentThumbnailPage</code>.</p>
+     *
+     * @return a int.
+     */
     public int getCurrentThumbnailPage() {
         return currentThumbnailPage;
     }
 
+    /**
+     * <p>Setter for the field <code>currentThumbnailPage</code>.</p>
+     *
+     * @param currentThumbnailPage a int.
+     */
     public void setCurrentThumbnailPage(int currentThumbnailPage) {
         this.currentThumbnailPage = currentThumbnailPage;
     }
 
+    /**
+     * <p>nextThumbnailSection.</p>
+     */
     public void nextThumbnailSection() {
         ++currentThumbnailPage;
     }
 
+    /**
+     * <p>previousThumbnailSection.</p>
+     */
     public void previousThumbnailSection() {
         --currentThumbnailPage;
     }
 
+    /**
+     * <p>hasPreviousThumbnailSection.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPreviousThumbnailSection() {
         int currentFirstThumbnailIndex = getFirstDisplayedThumbnailIndex();
         int previousLastThumbnailIndex = currentFirstThumbnailIndex - DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
         return previousLastThumbnailIndex >= pageLoader.getFirstPageOrder();
     }
 
+    /**
+     * <p>hasNextThumbnailSection.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasNextThumbnailSection() {
         int currentFirstThumbnailIndex = getFirstDisplayedThumbnailIndex();
         int previousLastThumbnailIndex = currentFirstThumbnailIndex + DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
         return previousLastThumbnailIndex <= pageLoader.getLastPageOrder();
     }
 
+    /**
+     * <p>updateDropdownSelected.</p>
+     */
     public void updateDropdownSelected() {
         setDropdownSelected(String.valueOf(currentImageOrder));
     }
 
     /**
-     * @param event {@link ValueChangeEvent}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws NumberFormatException
+     * <p>dropdownAction.</p>
+     *
+     * @param event {@link javax.faces.event.ValueChangeEvent}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.lang.NumberFormatException
      */
     public void dropdownAction(ValueChangeEvent event) throws NumberFormatException, IndexUnreachableException, PresentationException {
         setCurrentImageNo(Integer.valueOf((String) event.getNewValue()) - 1);
     }
 
     /**
-     * @return
-     * @throws IndexUnreachableException
+     * <p>getImagesSizeThumbnail.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getImagesSizeThumbnail() throws IndexUnreachableException {
         if (pageLoader != null) {
@@ -1027,8 +1290,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getLinkForDFGViewer.</p>
+     *
      * @return DFG Viewer link
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS.equals(topDocument.getSourceDocFormat()) && isHasPages()) {
@@ -1048,6 +1313,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getMetsResolverUrl.</p>
+     *
      * @return METS resolver link for the DFG Viewer
      */
     public String getMetsResolverUrl() {
@@ -1060,6 +1327,11 @@ public class ViewManager implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + 0;
     }
 
+    /**
+     * <p>getLidoResolverUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLidoResolverUrl() {
         try {
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + getPi();
@@ -1071,6 +1343,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getAnchorMetsResolverUrl.</p>
+     *
      * @return METS resolver URL for the anchor; null if no parent PI found (must be null, otherwise an empty link will be displayed).
      */
     public String getAnchorMetsResolverUrl() {
@@ -1084,11 +1358,11 @@ public class ViewManager implements Serializable {
 
     /**
      * Return the url to a REST service delivering all alto files of a work as zip
-     * 
+     *
      * @return the url to a REST service delivering all alto files of a work as zip
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi();
@@ -1096,11 +1370,11 @@ public class ViewManager implements Serializable {
 
     /**
      * Return the url to a REST service delivering all plain text of a work as zip
-     * 
+     *
      * @return the url to a REST service delivering all plain text of a work as zip
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi();
@@ -1108,10 +1382,10 @@ public class ViewManager implements Serializable {
 
     /**
      * Return the url to a REST service delivering a TEI document containing the text of all pages
-     * 
+     *
      * @return the TEI REST url
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + BeanUtils.getLocale().getLanguage();
@@ -1119,11 +1393,11 @@ public class ViewManager implements Serializable {
 
     /**
      * Return the url to a REST service delivering the fulltext of the current page as TEI
-     * 
+     *
      * @return the TEI REST url
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
@@ -1137,12 +1411,12 @@ public class ViewManager implements Serializable {
 
     /**
      * Return the url to a REST service delivering the alto file of the given page as xml
-     * 
+     *
      * @return the url to a REST service delivering the alto file of the given page as xml
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws DAOException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
@@ -1151,12 +1425,12 @@ public class ViewManager implements Serializable {
 
     /**
      * Return the url to a REST service delivering the fulltext as plain text of the given page
-     * 
+     *
      * @return the url to a REST service delivering the fulltext as plain text of the given page
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws DAOException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
         String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
@@ -1168,11 +1442,11 @@ public class ViewManager implements Serializable {
 
     /**
      * Returns the pdf download link for the current document
-     * 
-     * @return {@link String}
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
+     *
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
@@ -1180,11 +1454,11 @@ public class ViewManager implements Serializable {
 
     /**
      * Returns the pdf download link for the current page
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentPage = getCurrentPage();
@@ -1196,12 +1470,12 @@ public class ViewManager implements Serializable {
 
     /**
      * Returns the pdf download link for the current struct element
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfStructDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException, PresentationException {
         StructElement currentStruct = getCurrentDocument();
@@ -1211,12 +1485,12 @@ public class ViewManager implements Serializable {
 
     /**
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively)
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should construct url correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfPartDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPdfPartDownloadLink: {}-{}", firstPdfPage, lastPdfPage);
@@ -1244,6 +1518,11 @@ public class ViewManager implements Serializable {
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), pages.toArray(pageArr));
     }
 
+    /**
+     * <p>isPdfPartDownloadLinkEnabled.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPdfPartDownloadLinkEnabled() {
         return firstPdfPage <= lastPdfPage;
     }
@@ -1256,7 +1535,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     * <p>isAccessPermissionPdf.</p>
+     *
      * @return true if record/structure PDF download is allowed; false otherwise
      */
     public boolean isAccessPermissionPdf() {
@@ -1302,7 +1582,7 @@ public class ViewManager implements Serializable {
     /**
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isAllowUserComments() {
         if (!DataManager.getInstance().getConfiguration().isUserCommentsEnabled()) {
@@ -1337,15 +1617,32 @@ public class ViewManager implements Serializable {
         return allowUserComments;
     }
 
+    /**
+     * <p>isDisplayTitleBarPdfLink.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayTitleBarPdfLink() {
         return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
     }
 
+    /**
+     * <p>isDisplayMetadataPdfLink.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayMetadataPdfLink() {
         return topDocument != null && topDocument.isWork() && DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
                 && isAccessPermissionPdf();
     }
 
+    /**
+     * <p>isDisplayPagePdfLink.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @Deprecated
     public boolean isDisplayPagePdfLink() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
@@ -1357,35 +1654,39 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getOaiMarcUrl.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getOaiMarcUrl() throws IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getMarcUrl() + getPi();
     }
 
     /**
+     * <p>getOaiDcUrl.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getOaiDcUrl() throws IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getDcUrl() + getPi();
     }
 
     /**
+     * <p>getOaiEseUrl.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     public String getOaiEseUrl() throws IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getEseUrl() + getPi();
     }
 
     /**
+     * <p>Getter for the field <code>opacUrl</code>.</p>
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getOpacUrl() {
         if (currentDocument != null && opacUrl == null) {
@@ -1405,10 +1706,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>persistentUrl</code>.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String getPersistentUrl() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
@@ -1433,9 +1735,10 @@ public class ViewManager implements Serializable {
      * Returns the PURL for the current page (either via the URN resolver or a pretty URL)
      *
      * @return PURL for the current page
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate purl via urn correctly
      * @should generate purl without urn correctly
+     * @param urn a {@link java.lang.String} object.
      */
     public String getPersistentUrl(String urn) throws IndexUnreachableException {
         String persistentUrl = "";
@@ -1476,7 +1779,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the main title of the current volume's anchor, if available.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getAnchorTitle() {
         if (anchorDocument != null) {
@@ -1499,10 +1802,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>isBelowFulltextThreshold.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a boolean.
      */
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
         int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
@@ -1543,6 +1847,14 @@ public class ViewManager implements Serializable {
         return false;
     }
 
+    /**
+     * <p>isFulltextAvailableForWork.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (isBornDigital()) {
             return false;
@@ -1553,6 +1865,14 @@ public class ViewManager implements Serializable {
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
 
+    /**
+     * <p>isTeiAvailableForWork.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (isBornDigital()) {
             return false;
@@ -1563,6 +1883,13 @@ public class ViewManager implements Serializable {
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
     }
 
+    /**
+     * <p>isTeiAvailableForPage.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
         return isFulltextAvailableForPage();
     }
@@ -1599,6 +1926,14 @@ public class ViewManager implements Serializable {
         return workHasTEIFiles;
     }
 
+    /**
+     * <p>isAltoAvailableForWork.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
@@ -1629,6 +1964,13 @@ public class ViewManager implements Serializable {
         return true;
     }
 
+    /**
+     * <p>isAltoAvailableForPage.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
@@ -1646,15 +1988,22 @@ public class ViewManager implements Serializable {
     /**
      * Default fulltext getter (with HTML escaping).
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link java.lang.String} object.
      */
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
     }
 
+    /**
+     * <p>isFulltextAvailableForPage.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
         if (isBornDigital()) {
             return false;
@@ -1681,15 +2030,13 @@ public class ViewManager implements Serializable {
 
     /**
      * Returns the full-text for the current page, stripped of any included JavaScript.
-     * 
+     *
      * @param escapeHtml If true HTML tags will be escaped to prevent pseudo-HTML from breaking the text.
-     * @param language
+     * @param language a {@link java.lang.String} object.
      * @return Full-text for the current page.
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @throws IOException
-     * @throws FileNotFoundException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String currentFulltext = null;
@@ -1712,10 +2059,22 @@ public class ViewManager implements Serializable {
         return currentFulltext;
     }
 
+    /**
+     * <p>getCurrentRotate.</p>
+     *
+     * @return a int.
+     */
     public int getCurrentRotate() {
         return rotate;
     }
 
+    /**
+     * <p>getCurrentFooterHeight.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public int getCurrentFooterHeight() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -1724,10 +2083,20 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
+    /**
+     * <p>Setter for the field <code>zoomSlider</code>.</p>
+     *
+     * @param zoomSlider a int.
+     */
     public void setZoomSlider(int zoomSlider) {
         this.zoomSlider = zoomSlider;
     }
 
+    /**
+     * <p>Getter for the field <code>zoomSlider</code>.</p>
+     *
+     * @return a int.
+     */
     public int getZoomSlider() {
         return this.zoomSlider;
     }
@@ -1736,7 +2105,7 @@ public class ViewManager implements Serializable {
      * Returns true if original content download has been enabled in the configuration and there are files in the original content folder for this
      * record.
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
         if (!DataManager.getInstance().getConfiguration().isOriginalContentDownload()) {
@@ -1770,10 +2139,10 @@ public class ViewManager implements Serializable {
     /**
      * Returns a list of original content file download links (name+url) for the current document.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link java.util.List} object.
      */
     public List<LabeledLink> getContentDownloadLinksForWork() throws IndexUnreachableException, DAOException, PresentationException {
         Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
@@ -1822,10 +2191,10 @@ public class ViewManager implements Serializable {
     /**
      * Returns a list of original content file download links (name+url) for the current page. CURRENTLY NOT SUPPORTED
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link java.util.List} object.
      */
     public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException, PresentationException {
         List<LabeledLink> ret = new ArrayList<>();
@@ -1864,6 +2233,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>topDocumentIddoc</code>.</p>
+     *
      * @return the topDocumentIddoc
      */
     public long getTopDocumentIddoc() {
@@ -1871,12 +2242,19 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>topDocumentIddoc</code>.</p>
+     *
      * @param topDocumentIddoc the topDocumentIddoc to set
      */
     public void setTopDocumentIddoc(long topDocumentIddoc) {
         this.topDocumentIddoc = topDocumentIddoc;
     }
 
+    /**
+     * <p>Getter for the field <code>topDocument</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     */
     public StructElement getTopDocument() {
         try {
             return loadTopDocument();
@@ -1901,6 +2279,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>setActiveDocument.</p>
+     *
      * @param currentDocument the currentDocument to set
      */
     public void setActiveDocument(StructElement currentDocument) {
@@ -1908,6 +2288,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentDocumentIddoc</code>.</p>
+     *
      * @return the currentDocumentIddoc
      */
     public long getCurrentDocumentIddoc() {
@@ -1915,6 +2297,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentDocumentIddoc</code>.</p>
+     *
      * @param currentDocumentIddoc the currentDocumentIddoc to set
      */
     public void setCurrentDocumentIddoc(long currentDocumentIddoc) {
@@ -1922,8 +2306,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentDocument</code>.</p>
+     *
      * @return the currentDocument
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public StructElement getCurrentDocument() throws IndexUnreachableException {
         if (currentDocument == null || currentDocument.getLuceneId() != currentDocumentIddoc) {
@@ -1935,9 +2321,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getCurrentDocumentHierarchy.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.List} object.
      */
     public List<StructElementStub> getCurrentDocumentHierarchy() throws IndexUnreachableException {
         if (docHierarchy == null) {
@@ -1960,6 +2347,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentDocument</code>.</p>
+     *
      * @param currentDocument the currentDocument to set
      */
     public void setCurrentDocument(StructElement currentDocument) {
@@ -1967,6 +2356,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>logId</code>.</p>
+     *
      * @return the logId
      */
     public String getLogId() {
@@ -1974,6 +2365,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>logId</code>.</p>
+     *
      * @param logId the logId to set
      */
     public void setLogId(String logId) {
@@ -1983,6 +2376,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pageLoader</code>.</p>
+     *
      * @return the pageLoader
      */
     public IPageLoader getPageLoader() {
@@ -1990,6 +2385,11 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * <p>getHtmlHeadDCMetadata.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Deprecated
     public String getHtmlHeadDCMetadata() {
         return getDublinCoreMetaTags();
@@ -1997,7 +2397,7 @@ public class ViewManager implements Serializable {
 
     /**
      * Generates DC meta tags for the head of a HTML page.
-     * 
+     *
      * @return String with tags
      */
     public String getDublinCoreMetaTags() {
@@ -2005,7 +2405,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     * <p>getHighwirePressMetaTags.</p>
+     *
      * @return String with tags
      */
     public String getHighwirePressMetaTags() {
@@ -2026,6 +2427,13 @@ public class ViewManager implements Serializable {
         }
     }
 
+    /**
+     * <p>isHasVersionHistory.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public boolean isHasVersionHistory() throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField())
                 && StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getNextVersionIdentifierField())) {
@@ -2036,11 +2444,12 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>Getter for the field <code>versionHistory</code>.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should create create history correctly
+     * @return a {@link java.util.List} object.
      */
     @SuppressWarnings("unchecked")
     public List<String> getVersionHistory() throws PresentationException, IndexUnreachableException {
@@ -2137,7 +2546,7 @@ public class ViewManager implements Serializable {
     /**
      * Returns the ContextObject value for a COinS element (generated using metadata from <code>currentDocument</code>).
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getContextObject() {
         if (currentDocument != null && contextObject == null) {
@@ -2155,9 +2564,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     * <p>addToTranskribusAction.</p>
+     *
      * @param login If true, the user will first be logged into their Transkribus account in the UserBean.
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String addToTranskribusAction(boolean login) {
         logger.trace("addToTranskribusAction");
@@ -2207,10 +2617,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * @param session
-     * @return
-     * @throws DAOException
+     * <p>isRecordAddedToTranskribus.</p>
+     *
+     * @param session a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public boolean isRecordAddedToTranskribus(TranskribusSession session) throws DAOException {
         if (session == null) {
@@ -2221,6 +2632,14 @@ public class ViewManager implements Serializable {
         return jobs != null && !jobs.isEmpty();
     }
 
+    /**
+     * <p>useTiles.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public boolean useTiles() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
@@ -2230,6 +2649,14 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance().getConfiguration().useTiles();
     }
 
+    /**
+     * <p>useTilesFullscreen.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public boolean useTilesFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
@@ -2240,6 +2667,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>isDisplayImage.</p>
+     *
      * @return the displayImage
      */
     public boolean isDisplayImage() {
@@ -2247,6 +2676,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>displayImage</code>.</p>
+     *
      * @param displayImage the displayImage to set
      */
     public void setDisplayImage(boolean displayImage) {
@@ -2254,8 +2685,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getPi() throws IndexUnreachableException {
         if (StringUtils.isEmpty(pi)) {
@@ -2279,17 +2712,24 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>mainMimeType</code>.</p>
+     *
      * @return the mainMimeType
      */
     public String getMainMimeType() {
         return mainMimeType;
     }
 
+    /**
+     * <p>togglePageOrientation.</p>
+     */
     public void togglePageOrientation() {
         this.firstPageOrientation = this.firstPageOrientation.opposite();
     }
 
     /**
+     * <p>Setter for the field <code>doublePageMode</code>.</p>
+     *
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
@@ -2297,6 +2737,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>isDoublePageMode.</p>
+     *
      * @return the doublePageMode
      */
     public boolean isDoublePageMode() {
@@ -2304,6 +2746,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>firstPdfPage</code>.</p>
+     *
      * @return the firstPdfPage
      */
     public String getFirstPdfPage() {
@@ -2311,6 +2755,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>firstPdfPage</code>.</p>
+     *
      * @param firstPdfPage the firstPdfPage to set
      */
     public void setFirstPdfPage(String firstPdfPage) {
@@ -2318,6 +2764,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lastPdfPage</code>.</p>
+     *
      * @return the lastPdfPage
      */
     public String getLastPdfPage() {
@@ -2325,6 +2773,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>lastPdfPage</code>.</p>
+     *
      * @param lastPdfPage the lastPdfPage to set
      */
     public void setLastPdfPage(String lastPdfPage) {
@@ -2335,9 +2785,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>calendarView</code>.</p>
+     *
      * @return the calendarView
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public CalendarView getCalendarView() throws IndexUnreachableException, PresentationException {
         if (calendarView == null) {
@@ -2347,6 +2799,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>firstPageOrientation</code>.</p>
+     *
      * @return the firstPageOrientation
      */
     public PageOrientation getFirstPageOrientation() {
@@ -2354,6 +2808,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>firstPageOrientation</code>.</p>
+     *
      * @param firstPageOrientation the firstPageOrientation to set
      */
     public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
@@ -2361,9 +2817,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * <p>getCurrentPageSourceIndex.</p>
+     *
      * @return 1 if we are in double page mode and the current page is the right page. 0 otherwise
-     * @throws DAOException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
         if (!isDoublePageMode()) {
@@ -2378,10 +2836,21 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
+    /**
+     * <p>getTopDocumentTitle.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTopDocumentTitle() {
         return getDocumentTitle(this.topDocument);
     }
 
+    /**
+     * <p>getDocumentTitle.</p>
+     *
+     * @param document a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getDocumentTitle(StructElement document) {
         if (document == null) {
             return "";
@@ -2417,13 +2886,22 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param pageLoader2
+     * <p>Setter for the field <code>pageLoader</code>.</p>
+     *
+     * @param loader a {@link io.goobi.viewer.model.viewer.pageloader.IPageLoader} object.
      */
     public void setPageLoader(IPageLoader loader) {
         this.pageLoader = loader;
 
     }
 
+    /**
+     * <p>getUsageWidgetAccessCondition.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException, PresentationException {
         Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
         md.populate(getTopDocument(), BeanUtils.getLocale());
@@ -2449,13 +2927,14 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     * <p>getCiteLinkWork.</p>
+     *
      * @return A persistent link to the current work
-     * 
+     *
      *         TODO: additional urn-resolving logic
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getCiteLinkWork() throws IndexUnreachableException, DAOException, PresentationException {
         if (topDocument == null) {
@@ -2488,10 +2967,22 @@ public class ViewManager implements Serializable {
         }
     }
 
+    /**
+     * <p>isDisplayCiteLinkWork.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayCiteLinkWork() {
         return topDocument != null;
     }
 
+    /**
+     * <p>getCiteLinkPage.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String getCiteLinkPage() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
@@ -2502,6 +2993,13 @@ public class ViewManager implements Serializable {
         return getPersistentUrl(urn);
     }
 
+    /**
+     * <p>isDisplayCiteLinkPage.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
         return getCurrentPage() != null;
     }

@@ -28,6 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+/**
+ * <p>NERTag class.</p>
+ *
+ */
 @XmlRootElement(name = "tag")
 @XmlType(propOrder = { "id", "type", "value", "element" })
 @JsonInclude(Include.NON_NULL)
@@ -67,6 +71,9 @@ public class NERTag {
     private Type type;
     private ElementReference element;
 
+    /**
+     * <p>Constructor for NERTag.</p>
+     */
     public NERTag() {
         this.id = null;
         this.value = null;
@@ -74,6 +81,14 @@ public class NERTag {
         this.element = null;
     }
 
+    /**
+     * <p>Constructor for NERTag.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     */
     public NERTag(String id, String value, Type type, ElementReference element) {
         this.id = id;
         this.value = value;
@@ -81,25 +96,50 @@ public class NERTag {
         this.element = element;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement
     public String getId() {
         return id;
     }
 
+    /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement
     public String getValue() {
         return value;
     }
 
+    /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     */
     @XmlElement
     public Type getType() {
         return type;
     }
 
+    /**
+     * <p>Getter for the field <code>element</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     */
     public ElementReference getElement() {
         return element;
     }
 
+    /**
+     * <p>Setter for the field <code>element</code>.</p>
+     *
+     * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     */
     public void setElement(ElementReference element) {
         this.element = element;
     }
@@ -107,6 +147,7 @@ public class NERTag {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getId().hashCode();
@@ -115,6 +156,7 @@ public class NERTag {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(NERTag.class)) {
@@ -134,6 +176,7 @@ public class NERTag {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getType() + ": \"" + getValue() + "\" (ID=" + getId() + ")";

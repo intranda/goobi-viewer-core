@@ -56,10 +56,8 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * REST resource providing a rss feed as json response
- * 
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Path("/rss")
 @ViewerRestServiceBinding
@@ -74,14 +72,14 @@ public class RssResource {
 
     /**
      * Returns the RSS feed containing the @numHits most recently indexed objects All metadata is provided in the passed language
-     * 
-     * @param numHits
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @param numHits a int.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      */
     @GET
     @Path("/{language}/{numhits}")
@@ -104,15 +102,15 @@ public class RssResource {
     /**
      * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned whose value in the
      * "subthemeDiscriminatorField" matches that provided in @partnerId All metadata is provided in the passed language
-     * 
-     * @param numHits
-     * @param language
-     * @param partnerId
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @param numHits a int.
+     * @param language a {@link java.lang.String} object.
+     * @param partnerId a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      */
     @GET
     @Path("/{language}/{partnerId}/{numhits}")
@@ -136,20 +134,20 @@ public class RssResource {
     }
 
     /**
-     * 
+     *
      * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned whose value in the
      * "subthemeDiscriminatorField" matches that provided in @partnerId, and further filtered by the given @query All metadata is provided in the
      * passed language
-     * 
-     * @param partnerId
-     * @param numHits
-     * @param query
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ConfigurationExViewerConfigurationExceptionception
+     *
+     * @param partnerId a {@link java.lang.String} object.
+     * @param numHits a int.
+     * @param query a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("/{query}/{language}/{partnerId}/{numhits}")
@@ -175,19 +173,19 @@ public class RssResource {
     }
 
     /**
-     * 
+     *
      * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned whose value in the
      * "subthemeDiscriminatorField" matches that provided in @partnerId and are in the given @bookshelf All metadata is provided in the passed
      * language
-     * 
-     * @param bookshelfIdString
-     * @param numHits
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @param bookshelfIdString a {@link java.lang.String} object.
+     * @param numHits a int.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      */
     @GET
     @Path("bookshelf/{bookshelfId}/{language}/{numhits}")
@@ -214,17 +212,17 @@ public class RssResource {
     /**
      * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned that are within the given @bookshelf All
      * metadata is provided in the passed language
-     * 
-     * @param partnerId
-     * @param bookshelfIdString
-     * @param numHits
-     * @param query
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     *
+     * @param partnerId a {@link java.lang.String} object.
+     * @param bookshelfIdString a {@link java.lang.String} object.
+     * @param numHits a int.
+     * @param query a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      */
     @GET
     @Path("/{query}/{language}/{bookshelfId}/{partnerId}/{numhits}")
@@ -253,16 +251,18 @@ public class RssResource {
     }
 
     /**
-     * 
-     * @param query
-     * @param facets
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @throws FeedException
+     * <p>getSearchRssFeed.</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @param facets a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws com.sun.syndication.io.FeedException
+     * @param advancedSearchGroupOperator a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/search/{query}/{facets}/{advancedSearchGroupOperator}/{language}")

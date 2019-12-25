@@ -52,6 +52,10 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
+/**
+ * <p>SearchDownloadResource class.</p>
+ *
+ */
 @Path("/download/search")
 @ViewerRestServiceBinding
 public class SearchDownloadResource {
@@ -61,6 +65,12 @@ public class SearchDownloadResource {
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * <p>waitForDownloadStatus.</p>
+     *
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a boolean.
+     */
     @GET
     @Path("/waitFor")
     @Produces({ MediaType.TEXT_PLAIN })
@@ -90,6 +100,17 @@ public class SearchDownloadResource {
         return false;
     }
 
+    /**
+     * <p>downloadAsExcel.</p>
+     *
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.search.SearchDownloadResource.ExcelStreamingOutput} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/excel")
     @Produces({ "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })

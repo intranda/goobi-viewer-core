@@ -59,16 +59,21 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     private int firstPageOrder = 1;
     private int lastPageOrder = 1;
 
+    /**
+     * <p>Constructor for EagerPageLoader.</p>
+     *
+     * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public EagerPageLoader(StructElement topElement) throws PresentationException, IndexUnreachableException, DAOException {
         pi = topElement.getPi();
         pages = loadAllPages(topElement);
         setFirstAndLastPageOrder();
     }
 
-    /**
-     * @see io.goobi.viewer.model.viewer.IPageLoader#getNumPages()
-     * @should return size correctly
-     */
+    /** {@inheritDoc} */
     @Override
     public int getNumPages() {
         return pages.size();
@@ -77,6 +82,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getFirstPageOrder()
      */
+    /** {@inheritDoc} */
     @Override
     public int getFirstPageOrder() {
         return firstPageOrder;
@@ -85,25 +91,19 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getLastPageOrder()
      */
+    /** {@inheritDoc} */
     @Override
     public int getLastPageOrder() {
         return lastPageOrder;
     }
 
-    /**
-     * @see io.goobi.viewer.model.viewer.IPageLoader#getPage(int)
-     * @should return correct page
-     */
+    /** {@inheritDoc} */
     @Override
     public PhysicalElement getPage(int pageOrder) {
         return pages.get(pageOrder);
     }
 
-    /**
-     * @see io.goobi.viewer.model.viewer.IPageLoader#getPageForFileName(java.lang.String)
-     * @should return the correct page
-     * @should return null if file name not found
-     */
+    /** {@inheritDoc} */
     @Override
     public PhysicalElement getPageForFileName(String fileName) {
         for (int key : pages.keySet()) {
@@ -119,6 +119,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getIddocForPage(int)
      */
+    /** {@inheritDoc} */
     @Override
     public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         if (pageOwnerIddocMap.get(pageOrder) == null) {
@@ -133,6 +134,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean, java.util.Locale)
      */
+    /** {@inheritDoc} */
     @Override
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException {
@@ -155,6 +157,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     }
 
     /**
+     * <p>setFirstAndLastPageOrder.</p>
+     *
      * @should set first page order correctly
      * @should set last page order correctly
      */

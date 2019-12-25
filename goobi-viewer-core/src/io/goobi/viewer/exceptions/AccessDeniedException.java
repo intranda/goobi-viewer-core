@@ -17,12 +17,18 @@ package io.goobi.viewer.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * <p>AccessDeniedException class.</p>
+ *
+ */
 public class AccessDeniedException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5535245246816475462L;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for AccessDeniedException.</p>
+     *
+     * @param string {@link java.lang.String}
      */
     public AccessDeniedException(String string) {
         super(string);

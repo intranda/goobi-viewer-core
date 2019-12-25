@@ -40,6 +40,10 @@ import com.lowagie.text.pdf.PdfWriter;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.model.toc.TOCElement;
 
+/**
+ * <p>TocWriter class.</p>
+ *
+ */
 public class TocWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(TocWriter.class);
@@ -53,27 +57,60 @@ public class TocWriter {
     private String author;
     private int levelIndent = DEFAULT_LEVEL_INDENT;
 
+    /**
+     * <p>Constructor for TocWriter.</p>
+     *
+     * @param author a {@link java.lang.String} object.
+     * @param title a {@link java.lang.String} object.
+     */
     public TocWriter(String author, String title) {
         this.author = author;
         this.title = title;
     }
 
+    /**
+     * <p>Getter for the field <code>author</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthor() {
         return author;
     }
 
+    /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * <p>Getter for the field <code>levelIndent</code>.</p>
+     *
+     * @return a int.
+     */
     public int getLevelIndent() {
         return levelIndent;
     }
 
+    /**
+     * <p>Setter for the field <code>levelIndent</code>.</p>
+     *
+     * @param levelIndent a int.
+     */
     public void setLevelIndent(int levelIndent) {
         this.levelIndent = levelIndent;
     }
 
+    /**
+     * <p>createDocument.</p>
+     *
+     * @param output a {@link java.io.OutputStream} object.
+     * @param elements a {@link java.util.List} object.
+     * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
+     */
     public void createDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
 
         Document document = new Document();
@@ -128,6 +165,14 @@ public class TocWriter {
 
     }
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
+     */
     public static void main(String[] args) throws FileNotFoundException, IOException, WriteTocException {
         File outputFile = new File("test.pdf");
 

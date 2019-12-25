@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>TableDataProvider class.</p>
+ *
+ */
 public class TableDataProvider<T> implements Serializable {
 
     private static final long serialVersionUID = 6109453168491579420L;
@@ -56,16 +60,29 @@ public class TableDataProvider<T> implements Serializable {
         }
     }
 
+    /**
+     * <p>Constructor for TableDataProvider.</p>
+     *
+     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
+     */
     public TableDataProvider(TableDataSource<T> source) {
         this.source = source;
     }
 
+    /**
+     * <p>getPaginatorList.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public List<T> getPaginatorList() throws TableDataSourceException {
         return loadList().orElse(Collections.emptyList());
     }
 
     /**
-     * 
+     * <p>loadList.</p>
+     *
+     * @return a {@link java.util.Optional} object.
      */
     protected Optional<List<T>> loadList() {
         String filterString = getFilterString(filters);
@@ -87,6 +104,11 @@ public class TableDataProvider<T> implements Serializable {
         return filters.stream().map(filter -> filter.getColumn() + "::" + filter.getValue()).collect(Collectors.joining(";"));
     }
 
+    /**
+     * <p>getFiltersAsMap.</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, String> getFiltersAsMap() {
         return getAsMap(getFilters());
     }
@@ -105,16 +127,34 @@ public class TableDataProvider<T> implements Serializable {
     protected void resetCurrentList() {
     }
 
+    /**
+     * <p>sortBy.</p>
+     *
+     * @param sortField a {@link java.lang.String} object.
+     * @param sortOrder a {@link java.lang.String} object.
+     */
     public void sortBy(String sortField, String sortOrder) {
         setSortField(sortField);
         setSortOrder(SortOrder.valueOf(sortOrder));
     }
 
+    /**
+     * <p>sortBy.</p>
+     *
+     * @param sortField a {@link java.lang.String} object.
+     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     */
     public void sortBy(String sortField, SortOrder sortOrder) {
         setSortField(sortField);
         setSortOrder(sortOrder);
     }
 
+    /**
+     * <p>cmdMoveFirst.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public String cmdMoveFirst() throws TableDataSourceException {
         if (this.currentPage != 0) {
             this.currentPage = 0;
@@ -124,6 +164,12 @@ public class TableDataProvider<T> implements Serializable {
         return "";
     }
 
+    /**
+     * <p>cmdMovePrevious.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public String cmdMovePrevious() throws TableDataSourceException {
         if (!isFirstPage()) {
             this.currentPage--;
@@ -133,6 +179,12 @@ public class TableDataProvider<T> implements Serializable {
         return "";
     }
 
+    /**
+     * <p>cmdMoveNext.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public String cmdMoveNext() throws TableDataSourceException {
         if (!isLastPage()) {
             this.currentPage++;
@@ -142,6 +194,12 @@ public class TableDataProvider<T> implements Serializable {
         return "";
     }
 
+    /**
+     * <p>cmdMoveLast.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public String cmdMoveLast() throws TableDataSourceException {
         if (this.currentPage != getLastPageNumber()) {
             this.currentPage = getLastPageNumber();
@@ -151,6 +209,12 @@ public class TableDataProvider<T> implements Serializable {
         return "";
     }
 
+    /**
+     * <p>setTxtMoveTo.</p>
+     *
+     * @param neueSeite a int.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public void setTxtMoveTo(int neueSeite) throws TableDataSourceException {
         if ((this.currentPage != neueSeite - 1) && neueSeite > 0 && neueSeite <= getLastPageNumber() + 1) {
             this.currentPage = neueSeite - 1;
@@ -159,10 +223,20 @@ public class TableDataProvider<T> implements Serializable {
         }
     }
 
+    /**
+     * <p>getTxtMoveTo.</p>
+     *
+     * @return a int.
+     */
     public int getTxtMoveTo() {
         return this.currentPage + 1;
     }
 
+    /**
+     * <p>getLastPageNumber.</p>
+     *
+     * @return a int.
+     */
     public int getLastPageNumber() {
         int ret = new Double(Math.floor(getSizeOfDataList() / entriesPerPage)).intValue();
         if (ret > 0 && getSizeOfDataList() % entriesPerPage == 0) {
@@ -171,22 +245,47 @@ public class TableDataProvider<T> implements Serializable {
         return ret;
     }
 
+    /**
+     * <p>isFirstPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isFirstPage() {
         return this.currentPage == 0;
     }
 
+    /**
+     * <p>isLastPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isLastPage() {
         return this.currentPage >= getLastPageNumber();
     }
 
+    /**
+     * <p>hasNextPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasNextPage() {
         return this.currentPage == getLastPageNumber();
     }
 
+    /**
+     * <p>hasPreviousPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPreviousPage() {
         return this.currentPage > 0;
     }
 
+    /**
+     * <p>getPageNumberCurrent.</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getPageNumberCurrent() {
         int totalPages = getLastPageNumber();
         if (this.currentPage > totalPages) {
@@ -195,51 +294,108 @@ public class TableDataProvider<T> implements Serializable {
         return Long.valueOf(this.currentPage + 1);
     }
 
+    /**
+     * <p>getPageNumberLast.</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getPageNumberLast() {
         return Long.valueOf(getLastPageNumber() + 1);
     }
 
+    /**
+     * <p>getSizeOfDataList.</p>
+     *
+     * @return a long.
+     */
     public long getSizeOfDataList() {
         return source.getTotalNumberOfRecords(getAsMap(getFilters()));
     }
 
+    /**
+     * <p>Getter for the field <code>sortField</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSortField() {
         return sortField;
     }
 
+    /**
+     * <p>Setter for the field <code>sortField</code>.</p>
+     *
+     * @param sortField a {@link java.lang.String} object.
+     */
     public void setSortField(String sortField) {
         if (!this.sortField.equals(sortField))
             this.sortField = sortField;
         resetCurrentList();
     }
 
+    /**
+     * <p>Getter for the field <code>sortOrder</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     */
     public SortOrder getSortOrder() {
         return sortOrder;
     }
 
+    /**
+     * <p>Setter for the field <code>sortOrder</code>.</p>
+     *
+     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     */
     public void setSortOrder(SortOrder sortOrder) {
         this.sortOrder = sortOrder;
         resetCurrentList();
     }
 
+    /**
+     * <p>Setter for the field <code>entriesPerPage</code>.</p>
+     *
+     * @param entriesPerPage a int.
+     */
     public void setEntriesPerPage(int entriesPerPage) {
         this.entriesPerPage = entriesPerPage;
         resetCurrentList();
     }
 
+    /**
+     * <p>Getter for the field <code>entriesPerPage</code>.</p>
+     *
+     * @return a int.
+     */
     public int getEntriesPerPage() {
         return entriesPerPage;
     }
 
+    /**
+     * <p>Getter for the field <code>filters</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<TableDataFilter> getFilters() {
         return filters;
     }
 
+    /**
+     * <p>addFilter.</p>
+     *
+     * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
+     */
     public void addFilter(TableDataFilter filter) {
         this.filters.add(filter);
         resetCurrentList();
     }
 
+    /**
+     * <p>addFilter.</p>
+     *
+     * @param joinTable a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean addFilter(String joinTable, String column) {
         if (!getFilterAsOptional(joinTable, column).isPresent()) {
             addFilter(new TableDataFilter(joinTable, column, "", this));
@@ -249,6 +405,12 @@ public class TableDataProvider<T> implements Serializable {
         return false;
     }
 
+    /**
+     * <p>addFilter.</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean addFilter(String column) {
         if (!getFilterAsOptional(column).isPresent()) {
             addFilter(new TableDataFilter(column, "", this));
@@ -258,6 +420,12 @@ public class TableDataProvider<T> implements Serializable {
         return false;
     }
 
+    /**
+     * <p>getFilterAsOptional.</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<TableDataFilter> getFilterAsOptional(String column) {
         for (TableDataFilter filter : filters) {
             if (filter.getColumn().equalsIgnoreCase(column) && !filter.getJoinTable().isPresent()) {
@@ -267,6 +435,13 @@ public class TableDataProvider<T> implements Serializable {
         return Optional.empty();
     }
 
+    /**
+     * <p>getFilterAsOptional.</p>
+     *
+     * @param joinTable a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<TableDataFilter> getFilterAsOptional(String joinTable, String column) {
         for (TableDataFilter filter : filters) {
             if (filter.getColumn().equalsIgnoreCase(column) && filter.getJoinTable().equals(Optional.ofNullable(joinTable))) {
@@ -276,31 +451,68 @@ public class TableDataProvider<T> implements Serializable {
         return Optional.empty();
     }
 
+    /**
+     * <p>getFilter.</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
+     */
     public TableDataFilter getFilter(String column) {
         return getFilterAsOptional(column).orElse(null);
     }
 
+    /**
+     * <p>getFilter.</p>
+     *
+     * @param joinTable a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
+     */
     public TableDataFilter getFilter(String joinTable, String column) {
         return getFilterAsOptional(joinTable, column).orElse(null);
     }
 
+    /**
+     * <p>removeFilter.</p>
+     *
+     * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
+     */
     public void removeFilter(TableDataFilter filter) {
         this.filters.remove(filter);
         update();
     }
 
+    /**
+     * <p>removeFilter.</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     */
     public void removeFilter(String column) {
         getFilterAsOptional(column).ifPresent(filter -> removeFilter(filter));
     }
 
+    /**
+     * <p>removeFilter.</p>
+     *
+     * @param joinTable a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
+     */
     public void removeFilter(String joinTable, String column) {
         getFilterAsOptional(joinTable, column).ifPresent(filter -> removeFilter(filter));
     }
 
+    /**
+     * <p>resetFilters.</p>
+     */
     public void resetFilters() {
         this.filters = new ArrayList<>();
     }
 
+    /**
+     * <p>Setter for the field <code>filters</code>.</p>
+     *
+     * @param columns a {@link java.lang.String} object.
+     */
     public void setFilters(String... columns) {
         resetFilters();
         for (String column : columns) {
@@ -316,7 +528,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * 
+     * <p>resetAll.</p>
      */
     public void resetAll() {
         currentPage = 0;
@@ -329,7 +541,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * 
+     * <p>update.</p>
      */
     public void update() {
         resetCurrentList();

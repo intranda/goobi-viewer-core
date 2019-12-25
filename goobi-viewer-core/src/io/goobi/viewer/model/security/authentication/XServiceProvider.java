@@ -32,10 +32,23 @@ import io.goobi.viewer.model.security.authentication.model.XServiceAuthenticatio
 import io.goobi.viewer.model.security.authentication.model.XServiceAuthenticationResponse;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>XServiceProvider class.</p>
+ *
+ */
 public class XServiceProvider extends VuFindProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(XServiceProvider.class);
 
+    /**
+     * <p>Constructor for XServiceProvider.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param image a {@link java.lang.String} object.
+     * @param timeoutMillis a long.
+     */
     public XServiceProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, url, image, timeoutMillis);
     }
@@ -43,6 +56,7 @@ public class XServiceProvider extends VuFindProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String borID, String password) throws AuthenticationProviderException {
         StringBuilder sbUrl = new StringBuilder();
@@ -70,6 +84,7 @@ public class XServiceProvider extends VuFindProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
      */
+    /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
@@ -78,6 +93,7 @@ public class XServiceProvider extends VuFindProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;

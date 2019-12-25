@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 
+/**
+ * <p>FullscreenResource class.</p>
+ *
+ */
 @ContentServerImageInfoBinding
 @Path("/fullscreen")
 public class FullscreenResource {
@@ -35,6 +39,12 @@ public class FullscreenResource {
     @Context
     private ResourceContext resourceContext;
 
+    /**
+     * <p>forwardToContentServer.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @return a {@link de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource} object.
+     */
     @Path("/image/{directory}/{filename}")
     public ImageResource forwardToContentServer(@Context ContainerRequestContext request) {
         return resourceContext.getResource(ImageResource.class);

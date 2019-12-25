@@ -77,8 +77,9 @@ import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
- * @author Florian Alpers
+ * <p>SequenceBuilder class.</p>
  *
+ * @author Florian Alpers
  */
 public class SequenceBuilder extends AbstractBuilder {
 
@@ -89,16 +90,19 @@ public class SequenceBuilder extends AbstractBuilder {
     private PageType preferredView = PageType.viewObject;
 
     /**
-     * @param request
-     * @throws URISyntaxException
+     * <p>Constructor for SequenceBuilder.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public SequenceBuilder(HttpServletRequest request) {
         super(request);
     }
 
     /**
-     * @param servletUri
-     * @param requestURI
+     * <p>Constructor for SequenceBuilder.</p>
+     *
+     * @param servletUri a {@link java.net.URI} object.
+     * @param requestURI a {@link java.net.URI} object.
      */
     public SequenceBuilder(URI servletUri, URI requestURI) {
         super(servletUri, requestURI);
@@ -106,15 +110,16 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * Creates a sequence from all pages within the given doc and appends it to manifest
-     * 
+     *
      * @param manifest The manifest to include the sequence. May be null
-     * @param doc
-     * @param string
-     * @throws URISyntaxException
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @param manifestId a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
      */
     public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -159,9 +164,13 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param canvas
-     * @throws ViewerConfigurationException
-     * @throws URISyntaxException
+     * <p>addSeeAlsos.</p>
+     *
+     * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws java.net.URISyntaxException
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      */
     public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
 
@@ -194,14 +203,14 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * Adds a comment annotation to all cavases which contain comments
-     * 
+     *
      * @param canvases All canvases which may get comments, mapped by their page order
      * @param pi The pi of the work containing the pages
      * @param populate if true, the actual annotations will be included in the resources property
      * @return a map with the list of all annotationlists (one list per page)
-     * @throws DAOException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public List<AnnotationList> addComments(Map<Integer, Canvas> canvases, String pi, boolean populate)
             throws DAOException, URISyntaxException, ViewerConfigurationException {
@@ -244,8 +253,10 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param annotationMap
-     * @param content
+     * <p>merge.</p>
+     *
+     * @param annotationMap a {@link java.util.Map} object.
+     * @param content a {@link java.util.Map} object.
      */
     public void merge(Map<AnnotationType, List<AnnotationList>> annotationMap, Map<AnnotationType, AnnotationList> content) {
         for (AnnotationType type : content.keySet()) {
@@ -258,19 +269,30 @@ public class SequenceBuilder extends AbstractBuilder {
         }
     }
 
+    /**
+     * <p>getPage.</p>
+     *
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param order a int.
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException {
         IPageLoader loader = new LeanPageLoader(doc, 1);
         return loader.getPage(order);
     }
 
     /**
-     * @param doc
-     * @param page
-     * @return
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>generateCanvas.</p>
+     *
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link de.intranda.api.iiif.presentation.Canvas} object.
      */
     public Canvas generateCanvas(StructElement doc, PhysicalElement page)
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
@@ -331,6 +353,18 @@ public class SequenceBuilder extends AbstractBuilder {
         return canvas;
     }
 
+    /**
+     * <p>addOtherContent.</p>
+     *
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @param populate a boolean.
+     * @return a {@link java.util.Map} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, boolean populate)
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
@@ -508,6 +542,8 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>buildMode</code>.</p>
+     *
      * @return the buildMode
      */
     public BuildMode getBuildMode() {
@@ -515,7 +551,10 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>buildMode</code>.</p>
+     *
      * @param buildMode the buildMode to set
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
      */
     public SequenceBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;
@@ -523,6 +562,8 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>preferredView</code>.</p>
+     *
      * @return the preferredView
      */
     public PageType getPreferredView() {
@@ -530,7 +571,10 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>preferredView</code>.</p>
+     *
      * @param preferredView the preferredView to set
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
      */
     public SequenceBuilder setPreferredView(PageType preferredView) {
         this.preferredView = preferredView;

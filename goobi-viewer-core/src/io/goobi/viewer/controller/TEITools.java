@@ -28,17 +28,21 @@ import org.jdom2.transform.XSLTransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>TEITools class.</p>
+ *
+ */
 public class TEITools {
 
     private final static Logger logger = LoggerFactory.getLogger(TEITools.class);
 
     /**
      * Returns the full-text part of the given TEI document string.
-     * 
+     *
      * @param tei Full TEI document as string
      * @return TEI full-text element
-     * @throws JDOMException
-     * @throws IOException
+     * @throws org.jdom2.JDOMException
+     * @throws java.io.IOException
      * @should extract fulltext correctly
      */
     public static String getTeiFulltext(String tei) throws JDOMException, IOException {
@@ -69,11 +73,12 @@ public class TEITools {
     }
 
     /**
-     * 
-     * @param tei
+     * <p>convertTeiToHtml.</p>
+     *
+     * @param tei a {@link java.lang.String} object.
      * @return HTML conversion of the TEI
-     * @throws IOException
-     * @throws JDOMException
+     * @throws java.io.IOException
+     * @throws org.jdom2.JDOMException
      * @should convert tei to html correctly
      */
     public static String convertTeiToHtml(String tei) throws IOException, JDOMException {
@@ -92,11 +97,12 @@ public class TEITools {
     }
 
     /**
-     * 
-     * @param docxFile
-     * @return
-     * @throws IOException
+     * <p>convertDocxToTei.</p>
+     *
+     * @param docxFile a {@link java.nio.file.Path} object.
+     * @throws java.io.IOException
      * @should convert docx to tei correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String convertDocxToTei(Path docxFile) throws IOException {
         if (docxFile == null) {

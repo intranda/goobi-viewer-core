@@ -26,8 +26,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
+/**
+ * <p>IPageLoader interface.</p>
+ *
+ */
 public interface IPageLoader {
 
+    /** Constant <code>FIELDS</code> */
     public static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
             SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
             SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3,
@@ -35,26 +40,68 @@ public interface IPageLoader {
             SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION,
             SolrConstants.MDNUM_FILESIZE };
 
+    /**
+     * <p>getNumPages.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public int getNumPages() throws IndexUnreachableException;
 
+    /**
+     * <p>getFirstPageOrder.</p>
+     *
+     * @return a int.
+     */
     public int getFirstPageOrder();
 
+    /**
+     * <p>getLastPageOrder.</p>
+     *
+     * @return a int.
+     */
     public int getLastPageOrder();
 
+    /**
+     * <p>getPage.</p>
+     *
+     * @param pageOrder a int.
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException, DAOException;
 
+    /**
+     * <p>getPageForFileName.</p>
+     *
+     * @param fileName a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public PhysicalElement getPageForFileName(String fileName) throws PresentationException, IndexUnreachableException, DAOException;
 
+    /**
+     * <p>getOwnerIddocForPage.</p>
+     *
+     * @param pageOrder a int.
+     * @return a {@link java.lang.Long} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
 
     /**
-     * 
+     * <p>generateSelectItems.</p>
+     *
      * @param dropdownPages Image view drop-down item
      * @param dropdownFulltext Full-text view drop-down item list
-     * @param urlRoot
-     * @param locale
-     * @param recordBelowFulltextThreshold
-     * @throws IndexUnreachableException
+     * @param urlRoot a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param recordBelowFulltextThreshold a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException;

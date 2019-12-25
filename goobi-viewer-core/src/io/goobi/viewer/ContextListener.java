@@ -45,13 +45,19 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 
+/**
+ * <p>ContextListener class.</p>
+ *
+ */
 @WebListener
 public class ContextListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ContextListener.class);
 
+    /** Constant <code>PRETTY_FACES_CONFIG_PARAM_NAME="com.ocpsoft.pretty.CONFIG_FILES"</code> */
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
+    /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
     public static volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
@@ -59,6 +65,7 @@ public class ContextListener implements ServletContextListener {
     // ImageIO.scanForPlugins();
     //    }
 
+    /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("Launching {}", Helper.getVersion());
@@ -126,6 +133,7 @@ public class ContextListener implements ServletContextListener {
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {

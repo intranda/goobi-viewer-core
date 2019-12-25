@@ -50,11 +50,10 @@ import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
- * An annotation generator to create a specific type of annotation for a specific question. 
- * One or more of these may be contained within a {@link Campaign}
- * 
- * @author florian
+ * An annotation generator to create a specific type of annotation for a specific question.
+ * One or more of these may be contained within a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
  *
+ * @author florian
  */
 @Entity
 @Table(name = "cs_questions")
@@ -100,21 +99,21 @@ public class Question {
 
     /**
      * constructor setting the owning campaign
-     * 
-     * @param owner
+     *
+     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public Question(Campaign owner) {
         this.owner = owner;
     }
 
     /**
-     * 
+     *
      * constructor setting the owning campaign as well ass the type of annotation to be generated
-     * 
-     * @param questionType
-     * @param targetSelector
-     * @param targetFrequency
-     * @param owner
+     *
+     * @param questionType a {@link io.goobi.viewer.model.crowdsourcing.questions.QuestionType} object.
+     * @param targetSelector a {@link io.goobi.viewer.model.crowdsourcing.questions.TargetSelector} object.
+     * @param targetFrequency a int.
+     * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
     public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
         this.questionType = questionType;
@@ -124,6 +123,7 @@ public class Question {
     }
 
     /**
+     * <p>getText.</p>
      *
      * @return translation of the 'text' attribute for the currently selected locale in the owner campaign
      */
@@ -133,15 +133,16 @@ public class Question {
 
     /**
      * Sets the translation of the 'text' attribute for the currently selected locale in the owner campaign
-     * 
-     * @param text
+     *
+     * @param text a {@link java.lang.String} object.
      */
     public void setText(String text) {
         QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), text, "text", this);
     }
 
     /**
-     * 
+     * <p>getAvailableQuestionTypes.</p>
+     *
      * @return available values of the QuestionType enum
      */
     @JsonIgnore
@@ -150,7 +151,8 @@ public class Question {
     }
 
     /**
-     * 
+     * <p>getAvailableTargetSelectors.</p>
+     *
      * @return available values of the TargetSelector enum
      */
     @JsonIgnore
@@ -159,6 +161,8 @@ public class Question {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     @JsonIgnore
@@ -167,6 +171,8 @@ public class Question {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -174,6 +180,8 @@ public class Question {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public Campaign getOwner() {
@@ -181,6 +189,8 @@ public class Question {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(Campaign owner) {
@@ -188,6 +198,8 @@ public class Question {
     }
 
     /**
+     * <p>Getter for the field <code>translations</code>.</p>
+     *
      * @return the translations
      */
     public List<QuestionTranslation> getTranslations() {
@@ -195,6 +207,8 @@ public class Question {
     }
 
     /**
+     * <p>Setter for the field <code>translations</code>.</p>
+     *
      * @param translations the translations to set
      */
     public void setTranslations(List<QuestionTranslation> translations) {
@@ -202,6 +216,8 @@ public class Question {
     }
 
     /**
+     * <p>Getter for the field <code>questionType</code>.</p>
+     *
      * @return the questionType
      */
     public QuestionType getQuestionType() {
@@ -209,6 +225,8 @@ public class Question {
     }
 
     /**
+     * <p>Setter for the field <code>questionType</code>.</p>
+     *
      * @param questionType the questionType to set
      */
     public void setQuestionType(QuestionType questionType) {
@@ -216,6 +234,8 @@ public class Question {
     }
 
     /**
+     * <p>Getter for the field <code>targetSelector</code>.</p>
+     *
      * @return the targetSelector
      */
     public TargetSelector getTargetSelector() {
@@ -223,6 +243,8 @@ public class Question {
     }
 
     /**
+     * <p>Setter for the field <code>targetSelector</code>.</p>
+     *
      * @param targetSelector the targetSelector to set
      */
     public void setTargetSelector(TargetSelector targetSelector) {
@@ -230,6 +252,8 @@ public class Question {
     }
 
     /**
+     * <p>Getter for the field <code>targetFrequency</code>.</p>
+     *
      * @return the targetFrequency
      */
     public int getTargetFrequency() {
@@ -237,6 +261,8 @@ public class Question {
     }
 
     /**
+     * <p>Setter for the field <code>targetFrequency</code>.</p>
+     *
      * @param targetFrequency the targetFrequency to set
      */
     public void setTargetFrequency(int targetFrequency) {
@@ -245,9 +271,9 @@ public class Question {
 
     /**
      * get the {@link #id} of a question from an URI identifier
-     * 
-     * @param idAsURI
-     * @return
+     *
+     * @param idAsURI a {@link java.net.URI} object.
+     * @return a {@link java.lang.Long} object.
      */
     public static Long getQuestionId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
@@ -260,10 +286,10 @@ public class Question {
     }
     
     /**
-     * get the {@link Campaign#id} of the owning campaign from an URI identifier of a question
-     * 
-     * @param idAsURI
-     * @return
+     * get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question
+     *
+     * @param idAsURI a {@link java.net.URI} object.
+     * @return a {@link java.lang.Long} object.
      */
     public static Long getCampaignId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
@@ -276,6 +302,8 @@ public class Question {
     }
 
     /**
+     * <p>getIdAsURI.</p>
+     *
      * @return  The URI identifier for this question from the question and campaign id
      */
     @JsonProperty("id")

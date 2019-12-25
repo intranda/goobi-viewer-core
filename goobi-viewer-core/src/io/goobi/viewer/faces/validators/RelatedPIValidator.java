@@ -51,6 +51,7 @@ public class RelatedPIValidator extends PIValidator {
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         User user = null;
@@ -79,16 +80,17 @@ public class RelatedPIValidator extends PIValidator {
     }
 
     /**
+     * <p>validatePi.</p>
      *
-     * @param pi
-     * @param user
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param pi a {@link java.lang.String} object.
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if user is null
      * @should return true if user is superuser
+     * @return a {@link java.lang.String} object.
      */
     public static String validatePi(String pi, User user) throws PresentationException, IndexUnreachableException {
         // Allow for related PI to be optional

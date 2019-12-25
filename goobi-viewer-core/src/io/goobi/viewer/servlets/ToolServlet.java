@@ -57,9 +57,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(ToolServlet.class);
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = null;
@@ -346,9 +344,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
     //        return stopped;
     //    }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);

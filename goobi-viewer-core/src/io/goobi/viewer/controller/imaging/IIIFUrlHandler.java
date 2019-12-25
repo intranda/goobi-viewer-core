@@ -39,8 +39,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author Florian Alpers
+ * <p>IIIFUrlHandler class.</p>
  *
+ * @author Florian Alpers
  */
 public class IIIFUrlHandler {
 
@@ -52,14 +53,15 @@ public class IIIFUrlHandler {
 
     /**
      * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters
-     * 
-     * @param page
-     * @param region
-     * @param size
-     * @param rotation
-     * @param thumbCompression
-     * @return
-     * @throws ViewerConfigurationException
+     *
+     * @param region a {@link java.lang.String} object.
+     * @param size a {@link java.lang.String} object.
+     * @param rotation a {@link java.lang.String} object.
+     * @param fileUrl a {@link java.lang.String} object.
+     * @param docStructIdentifier a {@link java.lang.String} object.
+     * @param quality a {@link java.lang.String} object.
+     * @param format a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {
@@ -133,9 +135,14 @@ public class IIIFUrlHandler {
 
     /**
      * Appends image request parameter paths to the given baseUrl
-     * 
-     * @param baseUrl
-     * @return
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param region a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest} object.
+     * @param size a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param rotation a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation} object.
+     * @param quality a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype} object.
+     * @param format a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getIIIFImageUrl(String baseUrl, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {
         if (StringUtils.isNotBlank(baseUrl) && !baseUrl.endsWith("/")) {
@@ -154,13 +161,16 @@ public class IIIFUrlHandler {
 
     /**
      * Replaces the image request parameters in an IIIF URL with the given ones
-     * 
-     * @param url
-     * @param width
-     * @param height
-     * @return
+     *
+     * @param url a {@link java.lang.String} object.
      * @should replace dimensions correctly
      * @should do nothing if not iiif url
+     * @param region a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest} object.
+     * @param size a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param rotation a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation} object.
+     * @param quality a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype} object.
+     * @param format a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getModifiedIIIFFUrl(String url, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {
         return IIIFUrlResolver.getModifiedIIIFFUrl(url, region == null ? null : region.toString(), size == null ? null : size.toString(),

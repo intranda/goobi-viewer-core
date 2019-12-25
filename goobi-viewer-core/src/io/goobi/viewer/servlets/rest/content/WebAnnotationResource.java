@@ -78,13 +78,16 @@ public class WebAnnotationResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for WebAnnotationResource.</p>
+     */
     public WebAnnotationResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected WebAnnotationResource(HttpServletRequest request) {
         this.servletRequest = request;
@@ -92,18 +95,16 @@ public class WebAnnotationResource {
 
     /**
      * Returns an annotation for the comment with the given database ID.
-     * 
-     * @param pi Record identifier
-     * @param page Record page number
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws URISyntaxException 
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link de.intranda.api.annotation.IAnnotation} object.
      */
     @GET
     @Path("comments/{pi}/{page}/{id}")
@@ -153,18 +154,18 @@ public class WebAnnotationResource {
 
     /**
      * Returns an annotation collection containing comment annotations for the given record page.
-     * 
+     *
      * @param pi Record identifier
      * @param page Record page number
-     * @return
-     * @throws PresentationException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws URISyntaxException 
-     * @throws ViewerConfigurationException 
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link de.intranda.api.annotation.wa.collection.AnnotationCollection} object.
      */
     @GET
     @Path("comments/{pi}/{page}")
@@ -193,19 +194,18 @@ public class WebAnnotationResource {
 
     /**
      * Returns an annotation collection containing comment annotations for the given record.
-     * 
+     *
      * @param pi Record identifier
-     * @param page Record page number
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws URISyntaxException 
-     * @throws ViewerConfigurationException 
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link de.intranda.api.annotation.wa.collection.AnnotationCollection} object.
      */
     @GET
     @Path("comments/{pi}")

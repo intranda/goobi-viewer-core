@@ -16,21 +16,27 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * @author Florian Alpers
+ * <p>XServiceAuthenticationRequest class.</p>
  *
+ * @author Florian Alpers
  */
 public class XServiceAuthenticationRequest {
 
     private String username;
     private String password;
     
+    /**
+     * <p>Constructor for XServiceAuthenticationRequest.</p>
+     */
     public XServiceAuthenticationRequest() {
         
     }
     
     /**
-     * @param username
-     * @param password
+     * <p>Constructor for XServiceAuthenticationRequest.</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
      */
     public XServiceAuthenticationRequest(String username, String password) {
         super();
@@ -38,12 +44,16 @@ public class XServiceAuthenticationRequest {
         this.password = password;
     }
     /**
+     * <p>Getter for the field <code>username</code>.</p>
+     *
      * @return the username
      */
     public String getUsername() {
         return username;
     }
     /**
+     * <p>Getter for the field <code>password</code>.</p>
+     *
      * @return the password
      */
     public String getPassword() {
@@ -51,6 +61,8 @@ public class XServiceAuthenticationRequest {
     }
     
     /**
+     * <p>Setter for the field <code>username</code>.</p>
+     *
      * @param username the username to set
      */
     public void setUsername(String username) {
@@ -58,6 +70,8 @@ public class XServiceAuthenticationRequest {
     }
     
     /**
+     * <p>Setter for the field <code>password</code>.</p>
+     *
      * @param password the password to set
      */
     public void setPassword(String password) {
@@ -67,6 +81,7 @@ public class XServiceAuthenticationRequest {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "username: " + username + ", password: " + password;

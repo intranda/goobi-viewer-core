@@ -28,15 +28,16 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * Validates that any input text has no "script" tags
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @FacesValidator("htmlScriptValidator")
 public class HtmlScriptValidator implements Validator<String> {
 
 
     /**
+     * {@inheritDoc}
+     *
      * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag}  if {@link #validate(String)} returns false
      */
     @Override
@@ -51,9 +52,9 @@ public class HtmlScriptValidator implements Validator<String> {
     
     /**
      * Returns false if the input string is not blank and does not contain the string {@code <script} (disregarding case)
-     * 
-     * @param input
-     * @return
+     *
+     * @param input a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean validate(String input) {
         return !(StringUtils.isNotBlank(input) && input.toLowerCase().contains("<script"));

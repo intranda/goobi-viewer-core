@@ -21,19 +21,28 @@ import java.util.List;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.iiif.search.SearchHit;
 
+/**
+ * <p>AnnotationResultList class.</p>
+ *
+ */
 public class AnnotationResultList {
     
     public long numHits;
     public final List<IAnnotation> annotations;
     public final List<SearchHit> hits;
 
+    /**
+     * <p>Constructor for AnnotationResultList.</p>
+     */
     public AnnotationResultList() {
         this.annotations = new ArrayList<>();
         this.hits = new ArrayList<>();
     }
 
     /**
-     * @param hit
+     * <p>add.</p>
+     *
+     * @param hit a {@link de.intranda.api.iiif.search.SearchHit} object.
      */
     public void add(SearchHit hit) {
         numHits++;
@@ -46,7 +55,9 @@ public class AnnotationResultList {
     }
 
     /**
-     * @param annotationsFromAlto
+     * <p>add.</p>
+     *
+     * @param partialResults a {@link io.goobi.viewer.model.iiif.search.model.AnnotationResultList} object.
      */
     public void add(AnnotationResultList partialResults) {
         numHits += partialResults.numHits;
@@ -54,6 +65,12 @@ public class AnnotationResultList {
         hits.addAll(partialResults.hits);
     }
 
+    /**
+     * <p>Constructor for AnnotationResultList.</p>
+     *
+     * @param numHits a long.
+     * @param hits a {@link java.util.List} object.
+     */
     public AnnotationResultList(long numHits, List<SearchHit> hits) {
         this.annotations = new ArrayList<>();
         this.hits = new ArrayList<>();

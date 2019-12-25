@@ -43,11 +43,11 @@ public class XServiceAuthenticationResponse {
 
     /**
      * Parses and evaluates the given XML response from X-Service.
-     * 
-     * @param xml
-     * @param encoding
-     * @throws JDOMException
-     * @throws IOException
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @param encoding a {@link java.lang.String} object.
+     * @throws org.jdom2.JDOMException
+     * @throws java.io.IOException
      */
     public XServiceAuthenticationResponse(String xml, String encoding) throws JDOMException, IOException {
         if (xml == null) {
@@ -79,7 +79,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * 
+     * <p>isValid.</p>
+     *
      * @return true if all relevant data indicates the account is valid; false otherwise
      */
     public boolean isValid() {
@@ -87,6 +88,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
+     * <p>Getter for the field <code>errorMsg</code>.</p>
+     *
      * @return the errorMsg
      */
     public String getErrorMsg() {
@@ -94,6 +97,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
+     * <p>Setter for the field <code>errorMsg</code>.</p>
+     *
      * @param errorMsg the errorMsg to set
      */
     public void setErrorMsg(String errorMsg) {
@@ -101,6 +106,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public String getId() {
@@ -108,6 +115,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
+     * <p>isExpired.</p>
+     *
      * @return the expired
      */
     public boolean isExpired() {
@@ -115,6 +124,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
+     * <p>Getter for the field <code>request</code>.</p>
+     *
      * @return the request
      */
     public Request getRequest() {
@@ -122,6 +133,8 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
+     * <p>Setter for the field <code>request</code>.</p>
+     *
      * @param request the request to set
      */
     public void setRequest(Request request) {

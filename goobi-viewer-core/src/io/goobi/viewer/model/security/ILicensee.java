@@ -20,10 +20,24 @@ import java.util.List;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * <p>ILicensee interface.</p>
+ *
+ */
 public interface ILicensee {
 
+    /**
+     * <p>getName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName();
 
+    /**
+     * <p>getLicenses.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<License> getLicenses();
 
     /**
@@ -33,25 +47,25 @@ public interface ILicensee {
      * @param licenseName License name.
      * @param privilegeName Required privilege (optional).
      * @param pi Checks the privilege in connection with a specific record identifier (optional).
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a boolean.
      */
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException;
 
     /**
      * Adds the given license to this ILicensee.
      *
-     * @param license
-     * @return
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
      */
     public boolean addLicense(License license);
 
     /**
      * Removes the given license from this ILicensee.
      *
-     * @param license
-     * @return
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
      */
     public boolean removeLicense(License license);
 }

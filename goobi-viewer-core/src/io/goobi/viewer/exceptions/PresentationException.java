@@ -17,6 +17,10 @@ package io.goobi.viewer.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * <p>PresentationException class.</p>
+ *
+ */
 public class PresentationException extends Exception implements Serializable {
 
     /**
@@ -25,15 +29,19 @@ public class PresentationException extends Exception implements Serializable {
     private static final long serialVersionUID = -6158638123863313562L;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for PresentationException.</p>
+     *
+     * @param string {@link java.lang.String}
      */
     public PresentationException(String string) {
         super(string);
     }
 
     /**
-     * @param string
-     * @param e
+     * <p>Constructor for PresentationException.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @param e a {@link java.lang.Throwable} object.
      */
     public PresentationException(String string, Throwable e) {
         super(string, e);

@@ -30,6 +30,8 @@ public class DcSortingList {
     private final List<String> collections;
 
     /**
+     * <p>Constructor for DcSortingList.</p>
+     *
      * @param sortAfter the collection after which to insert the collectionlist
      * @param collectionList the sorted list of collections to insert
      */
@@ -40,6 +42,8 @@ public class DcSortingList {
     }
 
     /**
+     * <p>Constructor for DcSortingList.</p>
+     *
      * @param sortAfter the collection after which to insert the collectionlist
      */
     public DcSortingList(String sortAfter) {
@@ -49,6 +53,7 @@ public class DcSortingList {
     }
 
     /**
+     * <p>Constructor for DcSortingList.</p>
      *
      * @param collectionList the sorted list of collections to insert
      */
@@ -58,24 +63,43 @@ public class DcSortingList {
         this.collections = collectionList;
     }
 
+    /**
+     * <p>Constructor for DcSortingList.</p>
+     */
     public DcSortingList() {
         super();
         this.sortAfter = null;
         this.collections = new ArrayList<>();
     }
 
+    /**
+     * <p>Getter for the field <code>sortAfter</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSortAfter() {
         return sortAfter;
     }
 
+    /**
+     * <p>Getter for the field <code>collections</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getCollections() {
         return collections;
     }
 
+    /**
+     * <p>addCollection.</p>
+     *
+     * @param collection a {@link java.lang.String} object.
+     */
     public void addCollection(String collection) {
         collections.add(collection);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder(this.getClass().getName());

@@ -25,8 +25,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author Florian Alpers
+ * <p>GeoLocationInfo class.</p>
  *
+ * @author Florian Alpers
  */
 public class GeoLocationInfo {
 
@@ -38,10 +39,19 @@ public class GeoLocationInfo {
 
     private List<GeoLocation> locationList = new ArrayList<>();
 
+    /**
+     * <p>Constructor for GeoLocationInfo.</p>
+     */
     public GeoLocationInfo() {
 
     }
 
+    /**
+     * <p>Constructor for GeoLocationInfo.</p>
+     *
+     * @param json a {@link org.json.JSONObject} object.
+     * @throws org.json.JSONException if any.
+     */
     public GeoLocationInfo(JSONObject json) throws JSONException {
         if (json.has(JSON_PROPERTYNAME_CENTER)) {
             setCenterLocation(new GeoLocation(json.getJSONObject(JSON_PROPERTYNAME_CENTER)));
@@ -54,6 +64,11 @@ public class GeoLocationInfo {
         }
     }
 
+    /**
+     * <p>getAsJson.</p>
+     *
+     * @return a {@link org.json.JSONObject} object.
+     */
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
         map.put(JSON_PROPERTYNAME_CENTER, getCenterLocation().getAsJson());
@@ -70,6 +85,8 @@ public class GeoLocationInfo {
     }
 
     /**
+     * <p>Getter for the field <code>centerLocation</code>.</p>
+     *
      * @return the centerLocation
      */
     public GeoLocation getCenterLocation() {
@@ -77,6 +94,8 @@ public class GeoLocationInfo {
     }
 
     /**
+     * <p>Setter for the field <code>centerLocation</code>.</p>
+     *
      * @param centerLocation the centerLocation to set
      */
     public void setCenterLocation(GeoLocation centerLocation) {
@@ -84,6 +103,8 @@ public class GeoLocationInfo {
     }
 
     /**
+     * <p>Getter for the field <code>locationList</code>.</p>
+     *
      * @return the locationList
      */
     public List<GeoLocation> getLocationList() {
@@ -91,6 +112,8 @@ public class GeoLocationInfo {
     }
 
     /**
+     * <p>Setter for the field <code>locationList</code>.</p>
+     *
      * @param locationList the locationList to set
      */
     public void setLocationList(List<GeoLocation> locationList) {

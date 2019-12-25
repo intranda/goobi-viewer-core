@@ -77,21 +77,36 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>Constructor for StructElement.</p>
      *
-     *
-     * @param luceneId {@link Long}
-     * @throws IndexUnreachableException
+     * @param luceneId {@link java.lang.Long}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public StructElement(long luceneId) throws IndexUnreachableException {
         super(luceneId);
         init(null);
     }
 
+    /**
+     * <p>Constructor for StructElement.</p>
+     *
+     * @param luceneId a long.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public StructElement(long luceneId, SolrDocument doc) throws IndexUnreachableException {
         super(luceneId);
         init(doc);
     }
 
+    /**
+     * <p>Constructor for StructElement.</p>
+     *
+     * @param luceneId a long.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param docToMerge a {@link org.apache.solr.common.SolrDocument} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public StructElement(long luceneId, SolrDocument doc, SolrDocument docToMerge) throws IndexUnreachableException {
         super(luceneId);
         if (docToMerge != null) {
@@ -225,18 +240,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>isHasParentOrChildren.</p>
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a boolean.
      */
     public boolean isHasParentOrChildren() throws PresentationException, IndexUnreachableException {
         return isHasParent() || isHasChildren();
     }
 
     /**
+     * <p>isHasParent.</p>
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isHasParent() {
         return getMetadataValue(SolrConstants.IDDOC_PARENT) != null;
@@ -245,9 +262,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Loads and returns the immediate parent StructElement of this element.
      *
-     * @return {@link StructElement}
-     * @throws IndexUnreachableException
-     * @throws PresentationException -
+     * @return {@link io.goobi.viewer.model.viewer.StructElement}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return parent correctly
      */
     public StructElement getParent() throws IndexUnreachableException {
@@ -268,9 +284,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Checks whether the Solr document represented by this StructElement has child elements in the index.
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a boolean.
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
@@ -289,10 +305,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true).
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should retrieve top struct correctly
+     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
         StructElement topStruct = this;
@@ -310,10 +326,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return topStruct;
     }
 
+    /**
+     * <p>isGroupMember.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isGroupMember() {
         return !groupMemberships.isEmpty();
     }
 
+    /**
+     * <p>isGroup.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
     }
@@ -324,7 +350,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param groupIdentifier Group record identifier
      * @param altValue Message key to return if no label was found
      * @return label value for the group record; given message key if none found
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return altValue of no label was found
      */
     public String getGroupLabel(String groupIdentifier, String altValue) throws IndexUnreachableException {
@@ -356,20 +382,27 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>isExists.</p>
+     *
      * @return the exists
      */
     public boolean isExists() {
         return exists;
     }
 
+    /**
+     * <p>isDeleted.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDeleted() {
         return getMetadataValue(SolrConstants.DATEDELETED) != null;
     }
 
     /**
-     * Returns the identifier of the record to which this struct element belongs.
+     * {@inheritDoc}
      *
-     * @return {@link String} PI/PPN
+     * Returns the identifier of the record to which this struct element belongs.
      */
     @Override
     public String getPi() {
@@ -380,6 +413,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getImageNumber() {
         int no = 0;
@@ -393,11 +427,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * 
-     * @param width
-     * @param height
+     * <p>getImageUrl.</p>
+     *
+     * @param width a int.
+     * @param height a int.
      * @return Image URL
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should construct url correctly
      */
     public String getImageUrl(int width, int height) throws ViewerConfigurationException {
@@ -410,10 +445,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * @param locale
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>generateEventElements.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.List} object.
      */
     public List<EventElement> generateEventElements(Locale locale) throws IndexUnreachableException {
         logger.trace("generateEventElements");
@@ -443,11 +479,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>isAnchorChild.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return true if current record is volume
      * @should return false if current record is not volume
+     * @return a boolean.
      */
     public boolean isAnchorChild() throws IndexUnreachableException {
         if (isWork() && isHasParent()) {
@@ -457,15 +494,27 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return false;
     }
 
+    /**
+     * <p>getCollection.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCollection() {
         return this.getMetadataValue(SolrConstants.DC);
     }
 
+    /**
+     * <p>getCollections.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getCollections() {
         return this.getMetadataValues(SolrConstants.DC);
     }
 
     /**
+     * <p>isFulltextAvailable.</p>
+     *
      * @return the fulltextAvailable
      */
     public boolean isFulltextAvailable() {
@@ -474,6 +523,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>Setter for the field <code>fulltextAvailable</code>.</p>
+     *
      * @param fulltextAvailable the fulltextAvailable to set
      */
     public void setFulltextAvailable(boolean fulltextAvailable) {
@@ -482,10 +533,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns true if the record has any ALTO documents indexed in its pages; false otherwise.
-     * 
+     *
      * @return the altoAvailable
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean isAltoAvailable() throws IndexUnreachableException, PresentationException {
         if (altoAvailable == null) {
@@ -499,10 +550,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns true if the record has any NE_* tags indexed in its pages; false otherwise.
-     * 
+     *
      * @return the nerAvailable
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean isNerAvailable() throws IndexUnreachableException, PresentationException {
         if (nerAvailable == null) {
@@ -515,6 +566,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return nerAvailable;
     }
 
+    /**
+     * <p>getTitle.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Deprecated
     public String getTitle() {
         String answer = getLabel();
@@ -528,6 +584,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
      * @should create stub correctly
+     * @return a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
      */
     public StructElementStub createStub() {
         StructElementStub ret = new StructElementStub(luceneId);
@@ -546,6 +603,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>Getter for the field <code>ancestors</code>.</p>
+     *
      * @return the ancestors
      */
     public Map<String, String> getAncestors() {
@@ -553,12 +612,19 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>Getter for the field <code>groupMemberships</code>.</p>
+     *
      * @return the groupMemberships
      */
     public Map<String, String> getGroupMemberships() {
         return groupMemberships;
     }
 
+    /**
+     * <p>getDisplayLabel.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayLabel() {
         String label = getMetadataValue(SolrConstants.LABEL);
         if (StringUtils.isEmpty(label)) {
@@ -571,6 +637,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return label;
     }
 
+    /**
+     * <p>getMultiLanguageDisplayLabel.</p>
+     *
+     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     */
     public IMetadataValue getMultiLanguageDisplayLabel() {
         IMetadataValue label = getMultiLanguageMetadataValue(SolrConstants.TITLE);
         if (label.isEmpty()) {
@@ -585,19 +656,23 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns the group field name of a group document.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getGroupIdField() {
         return getMetadataValue(SolrConstants.GROUPTYPE);
     }
 
     /**
+     * <p>getFirstVolumeFieldValue.</p>
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct value
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getFirstVolumeFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
@@ -619,13 +694,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * <p>getFirstVolume.</p>
      *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct value
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
+     * @param fields a {@link java.util.List} object.
+     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public StructElement getFirstVolume(List<String> fields) throws PresentationException, IndexUnreachableException {
 
@@ -649,6 +726,14 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return null;
     }
 
+    /**
+     * <p>getFirstPageFieldValue.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public String getFirstPageFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
@@ -683,8 +768,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * If the given StructElement contains access conditions, the logged in user must satisfy these conditions to be allowed to view the thumbnail.
      *
-     * @param structElement
-     * @return
+     * @return a boolean.
      */
     public boolean mayShowThumbnail() {
         // TODO why does this always return true?

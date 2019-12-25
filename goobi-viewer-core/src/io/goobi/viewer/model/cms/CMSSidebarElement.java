@@ -47,6 +47,10 @@ import io.goobi.viewer.model.misc.GeoLocationInfo;
 import io.goobi.viewer.model.misc.NumberIterator;
 import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
+/**
+ * <p>CMSSidebarElement class.</p>
+ *
+ */
 @Entity
 @Table(name = "cms_sidebar_elements")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -58,6 +62,7 @@ public class CMSSidebarElement {
      */
     private static final String JSON_PROPERTYNAME_GEOLOCATIONS = "locations";
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
+    /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();
 
@@ -118,16 +123,20 @@ public class CMSSidebarElement {
         FOLDOUT;
     }
 
+    /**
+     * <p>Constructor for CMSSidebarElement.</p>
+     */
     public CMSSidebarElement() {
         // the emptiness inside
     }
 
     /**
      * Creates a copy of the original CMSSidebarElement. Handles cases where the original is of a class inheriting from this class
-     * 
-     * @param sidebarElement
+     *
      * @param ownerPage May be null, if the sidebarelement is not (yet) associated with a CMSPage. Otherwise it should be the actual owning page, not
      *            the owner of the original (unless that is acutally desired)
+     * @param original a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
      */
     public static CMSSidebarElement copy(CMSSidebarElement original, CMSPage ownerPage) {
         CMSSidebarElement copy;
@@ -146,6 +155,12 @@ public class CMSSidebarElement {
         return copy;
     }
 
+    /**
+     * <p>Constructor for CMSSidebarElement.</p>
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
+     * @param owner a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     */
     public CMSSidebarElement(CMSSidebarElement original, CMSPage owner) {
         if (original.id != null) {
             this.id = new Long(original.id);
@@ -165,6 +180,12 @@ public class CMSSidebarElement {
 
     }
 
+    /**
+     * <p>compareTo.</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     * @return a int.
+     */
     public int compareTo(Object o) {
         CMSSidebarElement other = (CMSSidebarElement) o;
         if (other.order == order) {
@@ -180,6 +201,7 @@ public class CMSSidebarElement {
     /* (non-Javadoc)
     * @see java.lang.Object#hashCode()
     */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int code = 21;
@@ -196,6 +218,7 @@ public class CMSSidebarElement {
         return code;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
@@ -204,6 +227,13 @@ public class CMSSidebarElement {
                 && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages());
     }
 
+    /**
+     * <p>bothNullOrEqual.</p>
+     *
+     * @param o1 a {@link java.lang.Object} object.
+     * @param o2 a {@link java.lang.Object} object.
+     * @return a boolean.
+     */
     protected static boolean bothNullOrEqual(Object o1, Object o2) {
         if (o1 == null) {
             return o2 == null;
@@ -211,10 +241,20 @@ public class CMSSidebarElement {
         return o1.equals(o2);
     }
 
+    /**
+     * <p>Getter for the field <code>html</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHtml() {
         return this.html;
     }
 
+    /**
+     * <p>Setter for the field <code>html</code>.</p>
+     *
+     * @param html a {@link java.lang.String} object.
+     */
     public void setHtml(String html) {
         //        this.html = html;
         this.html = correctHtml(html);
@@ -233,6 +273,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -240,6 +282,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -247,6 +291,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>ownerPage</code>.</p>
+     *
      * @return the ownerPage
      */
     public CMSPage getOwnerPage() {
@@ -254,6 +300,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>ownerPage</code>.</p>
+     *
      * @param ownerPage the ownerPage to set
      */
     public void setOwnerPage(CMSPage ownerPage) {
@@ -261,6 +309,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public String getType() {
@@ -268,6 +318,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -275,6 +327,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -282,6 +336,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -289,6 +345,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>order</code>.</p>
+     *
      * @return the order
      */
     public int getOrder() {
@@ -296,20 +354,37 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>order</code>.</p>
+     *
      * @param order the order to set
      */
     public void setOrder(int order) {
         this.order = order;
     }
 
+    /**
+     * <p>getContent.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getContent() {
         return CMSContentResource.getSidebarElementUrl(this);
     }
 
+    /**
+     * <p>hasHtml.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasHtml() {
         return getHtml() != null;
     }
 
+    /**
+     * <p>Getter for the field <code>widgetMode</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode} object.
+     */
     public WidgetMode getWidgetMode() {
         if (widgetMode == null) {
             widgetMode = WidgetMode.STANDARD;
@@ -318,6 +393,11 @@ public class CMSSidebarElement {
         return widgetMode;
     }
 
+    /**
+     * <p>Setter for the field <code>widgetMode</code>.</p>
+     *
+     * @param widgetMode a {@link io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode} object.
+     */
     public void setWidgetMode(WidgetMode widgetMode) {
         //	logger.trace("Setting widget mode of {} to {}", type,  widgetMode);
         if (widgetMode == null) {
@@ -327,6 +407,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>cssClass</code>.</p>
+     *
      * @return the cssClass
      */
     public String getCssClass() {
@@ -334,7 +416,9 @@ public class CMSSidebarElement {
     }
 
     /**
-     * @param cssClass the cssClass to set
+     * <p>Setter for the field <code>cssClass</code>.</p>
+     *
+     * @param className a {@link java.lang.String} object.
      */
     public void setCssClass(String className) {
         if (!validateCssClass(className)) {
@@ -356,7 +440,7 @@ public class CMSSidebarElement {
     /**
      * Tests whether the html contains only the allowed html-tags
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isValid() {
         if (hasHtml()) {
@@ -383,10 +467,10 @@ public class CMSSidebarElement {
     /**
      * Normalizes the given HTML tag so that it can be matched against <code>CMSSidebarManager.getAllowedHtmlTags()</code>.
      *
-     * @param tag
-     * @return
+     * @param tag a {@link java.lang.String} object.
      * @should remove attributes correctly
      * @should remove closing tag correctly
+     * @return a {@link java.lang.String} object.
      */
     protected static String cleanupHtmlTag(String tag) {
         // Remove attributes
@@ -400,6 +484,11 @@ public class CMSSidebarElement {
         return tag;
     }
 
+    /**
+     * <p>getCategory.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.SidebarElementType.Category} object.
+     */
     public SidebarElementType.Category getCategory() {
 
         if (this instanceof CMSSidebarElementWithQuery) {
@@ -414,6 +503,7 @@ public class CMSSidebarElement {
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -424,6 +514,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>sortingId</code>.</p>
+     *
      * @return the sortingId
      */
     public int getSortingId() {
@@ -431,6 +523,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>linkedPages</code>.</p>
+     *
      * @return the linkedPages
      */
     public PageList getLinkedPages() {
@@ -439,6 +533,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>linkedPages</code>.</p>
+     *
      * @param linkedPages the linkedPages to set
      */
     public void setLinkedPages(PageList linkedPages) {
@@ -446,6 +542,8 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>linkedPagesString</code>.</p>
+     *
      * @return the linkedPagesList
      */
     public String getLinkedPagesString() {
@@ -454,12 +552,17 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>linkedPagesString</code>.</p>
+     *
      * @param linkedPagesList the linkedPagesList to set
      */
     public void setLinkedPagesString(String linkedPagesList) {
         this.linkedPagesString = linkedPagesList;
     }
 
+    /**
+     * <p>serialize.</p>
+     */
     public void serialize() {
         if (this.linkedPages != null) {
             this.linkedPagesString = linkedPages.toString();
@@ -472,6 +575,9 @@ public class CMSSidebarElement {
 
     }
 
+    /**
+     * <p>deSerialize.</p>
+     */
     public void deSerialize() {
         if (StringUtils.isNotEmpty(this.linkedPagesString)) {
             this.linkedPages = new PageList(this.linkedPagesString);
@@ -484,7 +590,9 @@ public class CMSSidebarElement {
     }
 
     /**
-     * 
+     * <p>initGeolocations.</p>
+     *
+     * @param info a {@link io.goobi.viewer.model.misc.GeoLocationInfo} object.
      */
     public void initGeolocations(GeoLocationInfo info) {
         if (info.getLocationList().isEmpty()) {
@@ -494,14 +602,25 @@ public class CMSSidebarElement {
         this.geoLocationsString = createGeoLocationsString(this.geoLocations);
     }
 
+    /**
+     * <p>Getter for the field <code>geoLocations</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.misc.GeoLocationInfo} object.
+     */
     public GeoLocationInfo getGeoLocations() {
         return this.geoLocations;
     }
 
+    /**
+     * <p>addGeoLocation.</p>
+     */
     public void addGeoLocation() {
         this.geoLocations.getLocationList().add(new GeoLocation());
     }
 
+    /**
+     * <p>removeGeoLocation.</p>
+     */
     public void removeGeoLocation() {
         if (geoLocations != null) {
             this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size() - 1);
@@ -556,11 +675,18 @@ public class CMSSidebarElement {
         return json.toString();
     }
 
+    /**
+     * <p>Getter for the field <code>geoLocationsString</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGeoLocationsString() {
         return this.geoLocationsString;
     }
 
     /**
+     * <p>Getter for the field <code>widgetTitle</code>.</p>
+     *
      * @return the widgetTitle
      */
     public String getWidgetTitle() {
@@ -568,16 +694,28 @@ public class CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>widgetTitle</code>.</p>
+     *
      * @param widgetTitle the widgetTitle to set
      */
     public void setWidgetTitle(String widgetTitle) {
         this.widgetTitle = widgetTitle;
     }
 
+    /**
+     * <p>isHasWidgetTitle.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasWidgetTitle() {
         return StringUtils.isNotBlank(getWidgetTitle());
     }
 
+    /**
+     * <p>isHasLinkedPages.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasLinkedPages() {
         return this.linkedPages != null && !this.linkedPages.isEmpty();
     }

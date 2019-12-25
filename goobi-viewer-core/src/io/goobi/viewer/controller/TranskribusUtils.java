@@ -37,11 +37,17 @@ import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 
+/**
+ * <p>TranskribusUtils class.</p>
+ *
+ */
 public class TranskribusUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(TranskribusUtils.class);
 
+    /** Constant <code>TRANSRIBUS_REST_URL="https://transkribus.eu/TrpServer/rest/"</code> */
     public static final String TRANSRIBUS_REST_URL = "https://transkribus.eu/TrpServer/rest/";
+    /** Constant <code>TRANSRIBUS_REST_TESTING_URL="https://transkribus.eu/TrpServerTesting"{trunked}</code> */
     public static final String TRANSRIBUS_REST_TESTING_URL = "https://transkribus.eu/TrpServerTesting/rest/";
     private static final String URLPART_CHECK_JOB_STATUS = "jobs/{id}";
     private static final String URLPART_COLLECTION_LIST = "collections/listByName";
@@ -51,18 +57,19 @@ public class TranskribusUtils {
     private static final String URLPART_LOGIN = "auth/login";
 
     /**
-     * 
-     * @param restApiUrl
-     * @param userSession
-     * @param pi
+     * <p>ingestRecord.</p>
+     *
+     * @param restApiUrl a {@link java.lang.String} object.
+     * @param userSession a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
+     * @param pi a {@link java.lang.String} object.
      * @param metsResolverUrlRoot Root of the METS resolver URL (without the identifier).
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
-     * @throws JDOMException
-     * @throws ParseException
-     * @throws DAOException
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @throws org.jdom2.JDOMException
+     * @throws org.json.simple.parser.ParseException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      */
     public static TranskribusJob ingestRecord(String restApiUrl, TranskribusSession userSession, String pi, String metsResolverUrlRoot)
             throws ClientProtocolException, IOException, HTTPException, JDOMException, ParseException, DAOException {
@@ -124,15 +131,16 @@ public class TranskribusUtils {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param userName
-     * @param password
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws JDOMException
-     * @throws HTTPException
+     * <p>login.</p>
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param userName a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws org.jdom2.JDOMException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
      */
     public static TranskribusSession login(String baseUrl, String userName, String password) throws ClientProtocolException, IOException,
             JDOMException, HTTPException {
@@ -154,15 +162,16 @@ public class TranskribusUtils {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param userName
-     * @param password
+     * <p>auth.</p>
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param userName a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
      * @return JDOM object containing the API response
-     * @throws IOException
-     * @throws ClientProtocolException
-     * @throws JDOMException
-     * @throws HTTPException
+     * @throws java.io.IOException
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws org.jdom2.JDOMException
+     * @throws io.goobi.viewer.exceptions.HTTPException
      * @should auth correctly
      */
     public static Document auth(String baseUrl, String userName, String password) throws ClientProtocolException, IOException, JDOMException,
@@ -194,16 +203,16 @@ public class TranskribusUtils {
 
     /**
      * Returns the ID of the first collection that has the given collection name.
-     * 
-     * @param baseUrl
-     * @param sessionId
-     * @param collectionName
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
-     * @throws ParseException
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param sessionId a {@link java.lang.String} object.
+     * @param collectionName a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @throws org.json.simple.parser.ParseException
      * @should retrieve correct id
+     * @return a {@link java.lang.String} object.
      */
     public static String getCollectionId(String baseUrl, String sessionId, String collectionName) throws ClientProtocolException, IOException,
             HTTPException, ParseException {
@@ -238,17 +247,17 @@ public class TranskribusUtils {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param sessionId
-     * @param collection
-     * @return
-     * @throws HTTPException
-     * @throws IOException
-     * @throws ClientProtocolException
-     * @throws JDOMException
+     * <p>createCollection.</p>
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param sessionId a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @throws java.io.IOException
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws org.jdom2.JDOMException
      * @should create collection and return numeric id
-     * 
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     protected static String createCollection(String baseUrl, String sessionId, String collectionName) throws ClientProtocolException, IOException,
             HTTPException, JDOMException {
@@ -271,19 +280,19 @@ public class TranskribusUtils {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param sessionId
-     * @param collectionId
-     * @param recipientUserId
-     * @param recipientSessionId
-     * @param sendMail
-     * @return
-     * @throws HTTPException
-     * @throws IOException
-     * @throws ClientProtocolException
-     * @throws JDOMException
+     * <p>grantCollectionPrivsToViewer.</p>
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param sessionId a {@link java.lang.String} object.
+     * @param collectionId a {@link java.lang.String} object.
+     * @param recipientUserId a {@link java.lang.String} object.
+     * @param sendMail a boolean.
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @throws java.io.IOException
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws org.jdom2.JDOMException
      * @should grant privs correctly
+     * @return a boolean.
      */
     protected static boolean grantCollectionPrivsToViewer(String baseUrl, String sessionId, String collectionId, String recipientUserId,
             boolean sendMail) throws ClientProtocolException, IOException, HTTPException, JDOMException {
@@ -313,19 +322,20 @@ public class TranskribusUtils {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param session
-     * @param pi
-     * @param metsUrl
-     * @param userCollectionId
-     * @param viewerCollectionId
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
-     * @throws JDOMException
+     * <p>ingestRecordToCollections.</p>
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param session a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param metsUrl a {@link java.lang.String} object.
+     * @param userCollectionId a {@link java.lang.String} object.
+     * @param viewerCollectionId a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @throws org.jdom2.JDOMException
      * @should ingest record correctly
+     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      */
     protected static TranskribusJob ingestRecordToCollections(String baseUrl, TranskribusSession session, String pi, String metsUrl,
             String userCollectionId, String viewerCollectionId) throws ClientProtocolException, IOException, HTTPException, JDOMException {
@@ -366,16 +376,17 @@ public class TranskribusUtils {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param sessionId
-     * @param jobId
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
-     * @throws ParseException
+     * <p>checkJobStatus.</p>
+     *
+     * @param baseUrl a {@link java.lang.String} object.
+     * @param sessionId a {@link java.lang.String} object.
+     * @param jobId a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @throws org.json.simple.parser.ParseException
      * @should return correct status
+     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus} object.
      */
     protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId) throws ClientProtocolException,
             IOException, HTTPException, ParseException {

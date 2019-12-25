@@ -31,6 +31,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode;
 
+/**
+ * <p>CMSSidebarManager class.</p>
+ *
+ */
 public final class CMSSidebarManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarManager.class);
@@ -60,6 +64,11 @@ public final class CMSSidebarManager {
         private static CMSSidebarManager instance = new CMSSidebarManager();
     }
 
+    /**
+     * <p>getInstance.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSSidebarManager} object.
+     */
     public static CMSSidebarManager getInstance() {
         return InstanceHolder.instance;
     }
@@ -94,6 +103,11 @@ public final class CMSSidebarManager {
         disallowedHtmlTagsForDisplay = StringUtils.join(disallowedHtmlTags, ", ");
     }
 
+    /**
+     * <p>getAvailableSidebarElements.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public static List<CMSSidebarElement> getAvailableSidebarElements() {
         List<CMSSidebarElement> ret = new ArrayList<>();
         for (SidebarElementType element : SidebarElementType.values()) {
@@ -105,6 +119,8 @@ public final class CMSSidebarManager {
     }
 
     /**
+     * <p>getDefaultSidebarElements.</p>
+     *
      * @return the sorted list of
      */
     public static List<CMSSidebarElement> getDefaultSidebarElements() {
@@ -125,7 +141,7 @@ public final class CMSSidebarManager {
     /**
      * Returns the HTML tags in ALLOWED_HTML_TAGS as a <code>HashSet</code> for fast <code>contains()</code> calls.
      *
-     * @return
+     * @return a {@link java.util.Set} object.
      */
     @Deprecated
     public Set<String> getAllowedHtmlTags() {
@@ -135,23 +151,25 @@ public final class CMSSidebarManager {
     /**
      * Returns the HTML tags in DISALLOWED_HTML_TAGS as a <code>HashSet</code> for fast <code>contains()</code> calls.
      *
-     * @return
+     * @return a {@link java.util.Set} object.
      */
     public Set<String> getDisallowedHtmlTags() {
         return disallowedHtmlTags;
     }
 
     /**
+     * <p>Getter for the field <code>htmlReplacements</code>.</p>
      *
-     * @return
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getHtmlReplacements() {
         return htmlReplacements;
     }
 
     /**
+     * <p>Getter for the field <code>allowedHtmlTagsForDisplay</code>.</p>
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     @Deprecated
     public String getAllowedHtmlTagsForDisplay() {
@@ -159,6 +177,8 @@ public final class CMSSidebarManager {
     }
 
     /**
+     * <p>Getter for the field <code>disallowedHtmlTagsForDisplay</code>.</p>
+     *
      * @return the disallowedHtmlTagsForDisplay
      */
     public String getDisallowedHtmlTagsForDisplay() {

@@ -55,8 +55,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
 
 /**
- * @author Florian Alpers
+ * <p>ObjectResource class.</p>
  *
+ * @author Florian Alpers
  */
 
 @javax.ws.rs.Path("/view/object")
@@ -64,6 +65,17 @@ public class ObjectResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ObjectResource.class);
 
+    /**
+     * <p>getInfo.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.object.ObjectInfo} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @GET
     @javax.ws.rs.Path("/{pi}/{filename}/info.json")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -122,6 +134,18 @@ public class ObjectResource {
         return resourceURIs;
     }
 
+    /**
+     * <p>getObject.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @GET
     @javax.ws.rs.Path("/{pi}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
@@ -156,6 +180,19 @@ public class ObjectResource {
         return new ObjectStreamingOutput(objectPath);
     }
 
+    /**
+     * <p>getObjectResource.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param subfolder a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @GET
     @javax.ws.rs.Path("/{pi}/{subfolder}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
@@ -171,6 +208,19 @@ public class ObjectResource {
         return new ObjectStreamingOutput(objectPath);
     }
 
+    /**
+     * <p>getObjectResource2.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param subfolder a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @GET
     @javax.ws.rs.Path("/{pi}/{subfolder}//{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
@@ -179,6 +229,20 @@ public class ObjectResource {
         return getObjectResource(request, response, pi, subfolder, filename);
     }
 
+    /**
+     * <p>getObjectResource.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param subfolder1 a {@link java.lang.String} object.
+     * @param subfolder2 a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @GET
     @javax.ws.rs.Path("/{pi}/{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
@@ -195,6 +259,20 @@ public class ObjectResource {
         return new ObjectStreamingOutput(objectPath);
     }
 
+    /**
+     * <p>getObjectResource2.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param subfolder1 a {@link java.lang.String} object.
+     * @param subfolder2 a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @GET
     @javax.ws.rs.Path("/{pi}//{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })

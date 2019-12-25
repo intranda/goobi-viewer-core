@@ -36,6 +36,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
+/**
+ * <p>MetadataElement class.</p>
+ *
+ */
 public class MetadataElement {
 
     /**
@@ -157,12 +161,14 @@ public class MetadataElement {
     private String selectedRecordLanguage;
 
     /**
-     * @param se {@link StructElement}
-     * @param sessionLocale
-     * @param selectedRecordLanguage
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>Constructor for MetadataElement.</p>
+     *
+     * @param se {@link io.goobi.viewer.model.viewer.StructElement}
+     * @param sessionLocale a {@link java.util.Locale} object.
+     * @param selectedRecordLanguage a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -262,7 +268,7 @@ public class MetadataElement {
     /**
      * Returns a sorted list of all metadata types contained in metadataList.
      *
-     * @return
+     * @return a {@link java.util.List} object.
      */
     public List<MetadataType> getMetadataTypes() {
         if (metadataTypes == null) {
@@ -281,9 +287,9 @@ public class MetadataElement {
 
     /**
      * Returns the first instance of a Metadata object whose label matches the given field name.
-     * 
-     * @param name
-     * @return
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
      */
     public Metadata getMetadata(String name) {
         Metadata md = getMetadata(name, null);
@@ -293,12 +299,12 @@ public class MetadataElement {
     /**
      * Returns the first instance of a Metadata object whose label matches the given field name. If a language is given, a localized field name will
      * be used.
-     * 
-     * @param name
+     *
+     * @param name a {@link java.lang.String} object.
      * @param language Optional language
-     * @return
      * @should return correct language metadata field
      * @should fall back to non language field if language field not found
+     * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
      */
     public Metadata getMetadata(String name, String language) {
         if (StringUtils.isEmpty(name) || metadataList.isEmpty()) {
@@ -337,8 +343,9 @@ public class MetadataElement {
     }
 
     /**
-     * 
-     * @param fields
+     * <p>getMetadata.</p>
+     *
+     * @param fields a {@link java.util.List} object.
      * @return List of Metadata objects that match the given field names
      */
     public List<Metadata> getMetadata(List<String> fields) {
@@ -358,6 +365,8 @@ public class MetadataElement {
     }
 
     /**
+     * <p>Setter for the field <code>metadataList</code>.</p>
+     *
      * @param metadataList the metadataList to set
      */
     public void setMetadataList(List<Metadata> metadataList) {
@@ -365,12 +374,19 @@ public class MetadataElement {
     }
 
     /**
+     * <p>Getter for the field <code>metadataList</code>.</p>
+     *
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
         return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
     }
 
+    /**
+     * <p>hasMetadata.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasMetadata() {
         if (metadataList != null) {
             return metadataList.stream().anyMatch(md -> !md.isBlank());
@@ -378,6 +394,11 @@ public class MetadataElement {
         return false;
     }
 
+    /**
+     * <p>hasSidebarMetadata.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasSidebarMetadata() {
         if (sidebarMetadataList != null) {
             return sidebarMetadataList.stream().anyMatch(md -> !md.isBlank());
@@ -386,6 +407,8 @@ public class MetadataElement {
     }
 
     /**
+     * <p>Getter for the field <code>sidebarMetadataList</code>.</p>
+     *
      * @return the sidebarMetadataList
      */
     public List<Metadata> getSidebarMetadataList() {
@@ -393,16 +416,28 @@ public class MetadataElement {
     }
 
     /**
+     * <p>Setter for the field <code>sidebarMetadataList</code>.</p>
+     *
      * @param sidebarMetadataList the sidebarMetadataList to set
      */
     public void setSidebarMetadataList(List<Metadata> sidebarMetadataList) {
         this.sidebarMetadataList = sidebarMetadataList;
     }
 
+    /**
+     * <p>isHasSidebarMetadata.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasSidebarMetadata() {
         return sidebarMetadataList != null && !sidebarMetadataList.isEmpty();
     }
 
+    /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         if (StringUtils.isNotEmpty(label)) {
             return label;
@@ -410,20 +445,37 @@ public class MetadataElement {
         return null;
     }
 
+    /**
+     * <p>Setter for the field <code>label</code>.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     */
     public void setLabel(String string) {
     }
 
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     * <p>Setter for the field <code>url</code>.</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     */
     public void setUrl(String url) {
         this.url = url;
     }
@@ -438,6 +490,8 @@ public class MetadataElement {
     }
 
     /**
+     * <p>Getter for the field <code>docType</code>.</p>
+     *
      * @return the docType
      */
     public String getDocType() {
@@ -445,23 +499,35 @@ public class MetadataElement {
     }
 
     /**
+     * <p>Getter for the field <code>docStructType</code>.</p>
+     *
      * @return the docStructType
      */
     public String getDocStructType() {
         return docStructType;
     }
 
+    /**
+     * <p>isAnchor.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAnchor() {
         return anchor;
     }
 
+    /**
+     * <p>isFilesOnly.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isFilesOnly() {
         return filesOnly;
     }
 
     /**
-     * 
-     * 
+     * <p>getFirstMetadataValue.</p>
+     *
      * @param name The name of the metadata
      * @return the best available metadata value, or an empty string if no metadata was found
      */
@@ -480,6 +546,12 @@ public class MetadataElement {
         return "";
     }
 
+    /**
+     * <p>getFirstMetadataValueIfExists.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<String> getFirstMetadataValueIfExists(String name) {
         String value = getFirstMetadataValue(name);
         if (StringUtils.isNotBlank(value)) {
@@ -488,6 +560,14 @@ public class MetadataElement {
         return Optional.empty();
     }
 
+    /**
+     * <p>getFirstMetadataValue.</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param suffix a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
         String value = getFirstMetadataValue(name);
         if (StringUtils.isNotBlank(value)) {
@@ -496,6 +576,11 @@ public class MetadataElement {
         return value;
     }
     
+    /**
+     * <p>Setter for the field <code>selectedRecordLanguage</code>.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     */
     public void setSelectedRecordLanguage(String language) {
         this.selectedRecordLanguage = language;
     }

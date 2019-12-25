@@ -17,12 +17,18 @@ package io.goobi.viewer.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * <p>ModuleMissingException class.</p>
+ *
+ */
 public class ModuleMissingException extends Exception implements Serializable {
 
     private static final long serialVersionUID = 6421734792359424553L;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for ModuleMissingException.</p>
+     *
+     * @param string {@link java.lang.String}
      */
     public ModuleMissingException(String string) {
         super(string);

@@ -29,6 +29,8 @@ public class RecordsRequestParameters {
     private boolean randomize;
 
     /**
+     * <p>Getter for the field <code>query</code>.</p>
+     *
      * @return the query
      */
     public String getQuery() {
@@ -36,6 +38,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>query</code>.</p>
+     *
      * @param query the query to set
      */
     public void setQuery(String query) {
@@ -43,6 +47,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Getter for the field <code>sortFields</code>.</p>
+     *
      * @return the sortFields
      */
     public String getSortFields() {
@@ -50,6 +56,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>sortFields</code>.</p>
+     *
      * @param sortFields the sortFields to set
      */
     public void setSortFields(String sortFields) {
@@ -57,6 +65,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Getter for the field <code>sortOrder</code>.</p>
+     *
      * @return the sortOrder
      */
     public String getSortOrder() {
@@ -64,6 +74,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>sortOrder</code>.</p>
+     *
      * @param sortOrder the sortOrder to set
      */
     public void setSortOrder(String sortOrder) {
@@ -71,6 +83,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Getter for the field <code>jsonFormat</code>.</p>
+     *
      * @return the jsonFormat
      */
     public String getJsonFormat() {
@@ -78,6 +92,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>jsonFormat</code>.</p>
+     *
      * @param jsonFormat the jsonFormat to set
      */
     public void setJsonFormat(String jsonFormat) {
@@ -85,6 +101,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Getter for the field <code>count</code>.</p>
+     *
      * @return the count
      */
     public int getCount() {
@@ -92,6 +110,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>count</code>.</p>
+     *
      * @param count the count to set
      */
     public void setCount(int count) {
@@ -99,6 +119,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Getter for the field <code>offset</code>.</p>
+     *
      * @return the offset
      */
     public int getOffset() {
@@ -106,6 +128,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>offset</code>.</p>
+     *
      * @param offset the offset to set
      */
     public void setOffset(int offset) {
@@ -113,6 +137,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>isRandomize.</p>
+     *
      * @return the randomize
      */
     public boolean isRandomize() {
@@ -120,6 +146,8 @@ public class RecordsRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>randomize</code>.</p>
+     *
      * @param randomize the randomize to set
      */
     public void setRandomize(boolean randomize) {

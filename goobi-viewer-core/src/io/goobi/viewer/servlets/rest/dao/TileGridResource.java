@@ -38,16 +38,32 @@ import io.goobi.viewer.model.cms.tilegrid.TileGrid;
 import io.goobi.viewer.model.cms.tilegrid.TileGridBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
+/**
+ * <p>TileGridResource class.</p>
+ *
+ */
 @Path("/tilegrid")
 @ViewerRestServiceBinding
 public class TileGridResource {
 
+    /** Constant <code>TAG_SEPARATOR_REGEX="\\$"</code> */
     public static final String TAG_SEPARATOR_REGEX = "\\$";
+    /** Constant <code>TAG_SEPARATOR="$"</code> */
     public static final String TAG_SEPARATOR = "$";
 
     @Context
     private HttpServletRequest servletRequest;
     
+    /**
+     * <p>getTileGrid.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @param gridSize a int.
+     * @param priorityPlaces a int.
+     * @param tagString a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGrid} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @GET
     @Path("/{language}/{size}/{priorityPlaces}/{tags}/")
     @Produces({ MediaType.APPLICATION_JSON })

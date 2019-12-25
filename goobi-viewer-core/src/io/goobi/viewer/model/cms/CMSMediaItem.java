@@ -65,6 +65,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile;
 import io.goobi.viewer.model.viewer.BrowseElementInfo;
 
+/**
+ * <p>CMSMediaItem class.</p>
+ *
+ */
 @Entity
 @Table(name = "cms_media_items")
 public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Comparable<CMSMediaItem> {
@@ -72,15 +76,25 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	/** Logger for this class. */
 	private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
 
+	/** Constant <code>CONTENT_TYPE_DOCX="application/vnd.openxmlformats-officedo"{trunked}</code> */
 	public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	/** Constant <code>CONTENT_TYPE_DOC="application/msword"</code> */
 	public static final String CONTENT_TYPE_DOC = "application/msword";
+	/** Constant <code>CONTENT_TYPE_RTF="application/rtf"</code> */
 	public static final String CONTENT_TYPE_RTF = "application/rtf";
+	/** Constant <code>CONTENT_TYPE_RTF2="application/x-rtf"</code> */
 	public static final String CONTENT_TYPE_RTF2 = "application/x-rtf";
+	/** Constant <code>CONTENT_TYPE_RTF3="text/rtf"</code> */
 	public static final String CONTENT_TYPE_RTF3 = "text/rtf";
+	/** Constant <code>CONTENT_TYPE_RTF4="text/richtext"</code> */
 	public static final String CONTENT_TYPE_RTF4 = "text/richtext";
+	/** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
 	public static final String CONTENT_TYPE_XML = "text/xml";
+	/** Constant <code>CONTENT_TYPE_HTML="text/html"</code> */
 	public static final String CONTENT_TYPE_HTML = "text/html";
+	/** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
 	public static final String CONTENT_TYPE_SVG = "image/svg+xml";
+    /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code> */
     public static final String CONTENT_TYPE_PDF = "application/pdf";
 
 	@Id
@@ -124,8 +138,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	/**
 	 * copy constructor
-	 * 
-	 * @param currentMediaItem
+	 *
+	 * @param orig a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 */
 	public CMSMediaItem(CMSMediaItem orig) {
 		if (orig.id != null) {
@@ -148,6 +162,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -161,6 +176,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -185,9 +201,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	/**
 	 * Perform any necessary post-upload processing (e.g. format conversions).
-	 * 
-	 * @throws IOException
-	 * @throws JDOMException
+	 *
+	 * @param mediaFile a {@link java.nio.file.Path} object.
 	 */
 	public void processMediaFile(Path mediaFile) {
 		if (mediaFile == null) {
@@ -206,7 +221,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	/**
 	 * Determines this media item's file's content type via the extension.
-	 * 
+	 *
 	 * @return Content type string
 	 */
 	public String getContentType() {
@@ -247,7 +262,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	/**
 	 * Checks whether this media item contains a text file that can be exported for
 	 * indexing.
-	 * 
+	 *
 	 * @return true if item content types allows for text export; false otherwise
 	 */
 	public boolean isHasExportableText() {
@@ -263,6 +278,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Getter for the field <code>id</code>.</p>
+	 *
 	 * @return the id
 	 */
 	public Long getId() {
@@ -270,6 +287,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Setter for the field <code>id</code>.</p>
+	 *
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
@@ -277,6 +296,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Getter for the field <code>fileName</code>.</p>
+	 *
 	 * @return the fileName
 	 */
 	public String getFileName() {
@@ -284,6 +305,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Setter for the field <code>fileName</code>.</p>
+	 *
 	 * @param fileName the fileName to set
 	 */
 	public void setFileName(String fileName) {
@@ -292,6 +315,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Getter for the field <code>alternativeText</code>.</p>
+	 *
 	 * @return the alternativeText
 	 */
 	public String getAlternativeText() {
@@ -299,6 +324,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Setter for the field <code>alternativeText</code>.</p>
+	 *
 	 * @param alternativeText the alternativeText to set
 	 */
 	public void setAlternativeText(String alternativeText) {
@@ -306,8 +333,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
-	 * 
-	 * @param locale
+	 * <p>getMetadataForLocale.</p>
+	 *
+	 * @param locale a {@link java.util.Locale} object.
 	 * @return media item metadata for the given locale; null if no locale given
 	 */
 	public CMSMediaItemMetadata getMetadataForLocale(Locale locale) {
@@ -319,8 +347,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
-	 * 
-	 * @param language
+	 * <p>getMetadataForLanguage.</p>
+	 *
+	 * @param language a {@link java.lang.String} object.
 	 * @return media item metadata for the given locale
 	 */
 	public CMSMediaItemMetadata getMetadataForLanguage(String language) {
@@ -337,6 +366,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Getter for the field <code>metadata</code>.</p>
+	 *
 	 * @return the metadata
 	 */
 	public List<CMSMediaItemMetadata> getMetadata() {
@@ -344,6 +375,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Setter for the field <code>metadata</code>.</p>
+	 *
 	 * @param metadata the metadata to set
 	 */
 	public void setMetadata(List<CMSMediaItemMetadata> metadata) {
@@ -354,7 +387,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * Adds a metadata item to the list of image metadata. If a metadata item with
 	 * the same language string exists, it is replaced
 	 *
-	 * @param metadata
+	 * @param metadata a {@link io.goobi.viewer.model.cms.CMSMediaItemMetadata} object.
 	 */
 	public void addMetadata(CMSMediaItemMetadata metadata) {
 		String language = metadata.getLanguage();
@@ -365,7 +398,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
-	 * 
+	 * <p>getCurrentLanguageMetadata.</p>
+	 *
 	 * @return metadata list for the current language
 	 */
 	public CMSMediaItemMetadata getCurrentLanguageMetadata() {
@@ -383,23 +417,46 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		return version;
 	}
 
+	/**
+	 * <p>hasCateories.</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean hasCateories() {
 		return !this.categories.isEmpty();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public List<CMSCategory> getCategories() {
 		return this.categories;
 	}
 
+	/**
+	 * <p>Setter for the field <code>categories</code>.</p>
+	 *
+	 * @param categories a {@link java.util.List} object.
+	 */
 	public void setCategories(List<CMSCategory> categories) {
 		this.categories = categories;
 	}
 
+	/**
+	 * <p>removeCategory.</p>
+	 *
+	 * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+	 * @return a boolean.
+	 */
 	public boolean removeCategory(CMSCategory cat) {
 		return this.categories.remove(cat);
 	}
 
+	/**
+	 * <p>addCategory.</p>
+	 *
+	 * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+	 * @return a boolean.
+	 */
 	public boolean addCategory(CMSCategory cat) {
 		if (this.categories.contains(cat)) {
 			return false;
@@ -407,18 +464,22 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		return this.categories.add(cat);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean isImportant() {
 		return Priority.IMPORTANT.equals(this.priority);
 	}
 
+	/**
+	 * <p>setImportant.</p>
+	 *
+	 * @param important a boolean.
+	 */
 	public void setImportant(boolean important) {
 		this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
 	}
 
-	/**
-	 * @return the priority
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Priority getPriority() {
 		if (priority == null) {
@@ -428,19 +489,24 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Setter for the field <code>priority</code>.</p>
+	 *
 	 * @param priority the priority to set
 	 */
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
 
+	/**
+	 * <p>getLinkURI.</p>
+	 *
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getLinkURI() {
 		return getLinkURI(BeanUtils.getRequest());
 	}
 
-	/**
-	 * @return the URI to this media item
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public URI getLinkURI(HttpServletRequest request) {
 		String link = getLink();
@@ -467,7 +533,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
-	 * 
+	 * <p>Getter for the field <code>link</code>.</p>
+	 *
 	 * @return the entered link url
 	 */
 	public String getLink() {
@@ -479,9 +546,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	/**
 	 * set the link for this media item
-	 * 
-	 * @param linkUrl
-	 * @throws URISyntaxException
+	 *
+	 * @param linkUrl a {@link java.lang.String} object.
+	 * @throws java.net.URISyntaxException
 	 */
 	public void setLink(String linkUrl) throws URISyntaxException {
 		if (StringUtils.isBlank(linkUrl)) {
@@ -497,11 +564,13 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @see io.goobi.viewer.model.viewer.BrowseElementInfo#
 	 * getDescription()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getDescription() {
 		return getCurrentLanguageMetadata().getDescription();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getName() {
 		return getCurrentLanguageMetadata().getName();
@@ -514,6 +583,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * io.goobi.viewer.model.viewer.BrowseElementInfo#getIconURI(
 	 * )
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public URI getIconURI() {
 
@@ -528,6 +598,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
 	 * getIconURI(int, int)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public URI getIconURI(int width, int height) {
 		if (getFileName() != null) {
@@ -545,6 +616,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public URI getIconURI(int size) {
 		if (getFileName() != null) {
@@ -564,6 +636,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return "ID=" + id + " (FILE=" + fileName + ")";
@@ -575,6 +648,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
 	 * getName(java.lang.String)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getName(String language) {
 		if (getMetadataForLanguage(language) != null) {
@@ -589,6 +663,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
 	 * getDescription(java.lang.String)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getDescription(String language) {
 		if (getMetadataForLanguage(language) != null) {
@@ -603,18 +678,26 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
 	 * getDisplayOrder()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public int getDisplayOrder() {
 		return this.displayOrder;
 	}
 
 	/**
+	 * <p>Setter for the field <code>displayOrder</code>.</p>
+	 *
 	 * @param displayOrder the displayOrder to set
 	 */
 	public void setDisplayOrder(int displayOrder) {
 		this.displayOrder = displayOrder;
 	}
 
+	/**
+	 * <p>getImageURI.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getImageURI() {
 
 		Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -634,6 +717,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		// return imageUrlBuilder.toString();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public IMetadataValue getTranslationsForName() {
 		Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName()))
@@ -642,16 +726,32 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		// return IMetadataValue.getTranslations(getName());
 	}
 
+	/**
+	 * <p>getTranslationsForDescription.</p>
+	 *
+	 * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+	 */
 	public IMetadataValue getTranslationsForDescription() {
 		Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getDescription()))
 				.collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
 		return new MultiLanguageMetadataValue(names);
 	}
 
+	/**
+	 * <p>isFinished.</p>
+	 *
+	 * @param locale a {@link java.util.Locale} object.
+	 * @return a boolean.
+	 */
 	public boolean isFinished(Locale locale) {
 		return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());
 	}
 
+	/**
+	 * <p>getFinishedLocales.</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Locale> getFinishedLocales() {
 		return this.getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName()))
 				.map(md -> Locale.forLanguageTag(md.getLanguage())).collect(Collectors.toList());
@@ -662,6 +762,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public int compareTo(CMSMediaItem o) {
 		FileTime myTime = getLastModifiedTime();
@@ -678,6 +779,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>Getter for the field <code>lastModifiedTime</code>.</p>
+	 *
 	 * @return the lastModifiedTime. May be null only if no file exists or last
 	 *         modified time cannot be read
 	 */
@@ -697,7 +800,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
-	 * @return
+	 * <p>getFilePath.</p>
+	 *
+	 * @return a {@link java.nio.file.Path} object.
 	 */
 	public Path getFilePath() {
 		Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -707,9 +812,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	/**
+	 * <p>wrapCategories.</p>
+	 *
 	 * @return the categoryMap. Never null. If it isn't defined yet, create a map
 	 *         from all categories
-	 * @throws DAOException TODO: check for licenses
+	 * @param categories a {@link java.util.List} object.
 	 */
 	public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories){
 		List<Selectable<CMSCategory>> wrappedCategories = categories.stream()

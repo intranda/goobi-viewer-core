@@ -23,8 +23,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * @author florian
+ * <p>CMSCategory class.</p>
  *
+ * @author florian
  */
 @Entity
 @Table(name = "cms_categories")
@@ -42,16 +43,30 @@ public class CMSCategory implements Comparable<CMSCategory> {
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
+    /**
+     * <p>Constructor for CMSCategory.</p>
+     */
     public CMSCategory() {
 
     }
 
+    /**
+     * <p>Constructor for CMSCategory.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public CMSCategory(String name) {
         this.name = name;
         this.id = null;
         this.description = "";
     }
 
+    /**
+     * <p>Constructor for CMSCategory.</p>
+     *
+     * @param blueprint a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @param keepId a boolean.
+     */
     public CMSCategory(CMSCategory blueprint, boolean keepId) {
         this.id = keepId ? blueprint.id : null;
         this.name = blueprint.name;
@@ -59,6 +74,8 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -66,6 +83,8 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -73,6 +92,8 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -80,6 +101,8 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -87,6 +110,8 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -94,6 +119,8 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -103,6 +130,7 @@ public class CMSCategory implements Comparable<CMSCategory> {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(CMSCategory.class)) {
@@ -117,6 +145,7 @@ public class CMSCategory implements Comparable<CMSCategory> {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         if (getId() != null) {
@@ -131,6 +160,7 @@ public class CMSCategory implements Comparable<CMSCategory> {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
     	return getName();
@@ -139,6 +169,7 @@ public class CMSCategory implements Comparable<CMSCategory> {
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public int compareTo(CMSCategory other) {
 		if(other != null) {

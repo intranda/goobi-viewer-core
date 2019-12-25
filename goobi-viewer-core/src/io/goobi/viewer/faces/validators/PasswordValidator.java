@@ -35,6 +35,7 @@ public class PasswordValidator implements Validator {
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!validatePassword((String) value)) {
@@ -45,13 +46,14 @@ public class PasswordValidator implements Validator {
     }
 
     /**
+     * <p>validatePassword.</p>
      *
-     * @param password
-     * @return
+     * @param password a {@link java.lang.String} object.
      * @should return true if password good
      * @should return false if password empty
      * @should return false if password blank
      * @should return false if password too short
+     * @return a boolean.
      */
     public static boolean validatePassword(String password) {
         if (StringUtils.isBlank(password)) {

@@ -25,10 +25,9 @@ import java.util.function.Function;
  * Compares objects of type T by applying the given comparisonOperator and comparing the resulting integers.
  * A comparison value of 0 is considered to come after any other values, and treated as Integer.MAX_VALUE for the comparison.
  * Equal comparison values return a semi-random value of -1, 0 or 1.
- * Each comparator instance fulfills all Comparator.compare contracts because each object gets a fixed random value which is used for all equal value comparisons. 
- * 
- * @author Florian Alpers
+ * Each comparator instance fulfills all Comparator.compare contracts because each object gets a fixed random value which is used for all equal value comparisons.
  *
+ * @author Florian Alpers
  */
 public class SemiRandomOrderComparator<T> implements Comparator<T> {
  
@@ -37,6 +36,8 @@ public class SemiRandomOrderComparator<T> implements Comparator<T> {
     private final Random random = new Random(System.nanoTime());
     
     /**
+     * <p>Constructor for SemiRandomOrderComparator.</p>
+     *
      * @param comparisonOperator A function from the object to compare to an integer value to use for comparison
      */
     public SemiRandomOrderComparator(Function<T, Integer> comparisonOperator) {
@@ -45,8 +46,9 @@ public class SemiRandomOrderComparator<T> implements Comparator<T> {
     
     
     /**
-     * Compares two objects a und b, using the comparisonOperator passed to the Comparator constructor.
+     * {@inheritDoc}
      *
+     * Compares two objects a und b, using the comparisonOperator passed to the Comparator constructor.
      */
     @Override
     public int compare(T a, T b) {

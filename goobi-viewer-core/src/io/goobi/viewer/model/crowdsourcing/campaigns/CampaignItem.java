@@ -29,11 +29,10 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- *  An item containing a campaign and a source to be annotated. 
+ *  An item containing a campaign and a source to be annotated.
  *  Used to set up a frontend annotation view in javascript as well as process status changes created by that view
  *
  * @author florian
- *
  */
 @JsonInclude(Include.NON_NULL)
 public class CampaignItem {
@@ -46,7 +45,7 @@ public class CampaignItem {
 
     /**
      * URI to a iiif manifest or other collection of iiif canvases. All generated annotations target either the source itself or one of its canvases
-     * 
+     *
      * @return the source
      */
     public URI getSource() {
@@ -54,6 +53,8 @@ public class CampaignItem {
     }
 
     /**
+     * <p>Setter for the field <code>source</code>.</p>
+     *
      * @param source the source to set
      */
     public void setSource(URI source) {
@@ -61,8 +62,8 @@ public class CampaignItem {
     }
 
     /**
-     * The {@link Campaign} to create the annotations 
-     * 
+     * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations
+     *
      * @return the campaign
      */
     public Campaign getCampaign() {
@@ -70,6 +71,8 @@ public class CampaignItem {
     }
 
     /**
+     * <p>Setter for the field <code>campaign</code>.</p>
+     *
      * @param campaign the campaign to set
      */
     public void setCampaign(Campaign campaign) {
@@ -77,6 +80,8 @@ public class CampaignItem {
     }
 
     /**
+     * <p>getQuestions.</p>
+     *
      * @return a new list containing all queries
      */
     @JsonIgnore
@@ -85,8 +90,8 @@ public class CampaignItem {
     }
 
     /**
-     * The {@link CampaignRecordStatus status} of the resource within the {@link Campaign}
-     * 
+     * The {@link CampaignRecordStatus status} of the resource within the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
+     *
      * @return the recordStatus
      */
     public CampaignRecordStatus getRecordStatus() {
@@ -94,6 +99,8 @@ public class CampaignItem {
     }
     
     /**
+     * <p>Setter for the field <code>recordStatus</code>.</p>
+     *
      * @param recordStatus the recordStatus to set
      */
     public void setRecordStatus(CampaignRecordStatus recordStatus) {
@@ -101,23 +108,27 @@ public class CampaignItem {
     }
     
     /**
-     * @return true exactly if {@link #getRecordStatus()} is {@link CampaignRecordStatus.FINISHED FINISHED}
+     * <p>isFinished.</p>
+     *
+     * @return true exactly if {@link #getRecordStatus()} is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.FINISHED FINISHED}
      */
     public boolean isFinished() {
         return CampaignRecordStatus.FINISHED.equals(getRecordStatus());
     }
 
     /**
-     * @return true exactly if {@link #getRecordStatus()} is {@link CampaignRecordStatus.REVIEW REVIEW}
+     * <p>isInReview.</p>
+     *
+     * @return true exactly if {@link #getRecordStatus()} is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.REVIEW REVIEW}
      */
     public boolean isInReview() {
         return CampaignRecordStatus.REVIEW.equals(getRecordStatus());
     }
     
     /**
-     * URI for a user who edited the status of this item in the crowdsourcing frontend. The actual {@link User}-Id
-     * may be determined by calling {@link User#getId(URI)}
-     * 
+     * URI for a user who edited the status of this item in the crowdsourcing frontend. The actual {@link io.goobi.viewer.model.security.user.User}-Id
+     * may be determined by calling {@link io.goobi.viewer.model.security.user.User#getId(URI)}
+     *
      * @return the creatorURI
      */
     public URI getCreatorURI() {
@@ -125,6 +136,8 @@ public class CampaignItem {
     }
     
     /**
+     * <p>Setter for the field <code>creatorURI</code>.</p>
+     *
      * @param creatorURI the creatorURI to set
      */
     public void setCreatorURI(URI creatorURI) {

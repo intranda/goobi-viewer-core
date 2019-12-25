@@ -46,6 +46,10 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
+/**
+ * <p>ManifestRequestFilter class.</p>
+ *
+ */
 @Provider
 @IIIFPresentationBinding
 public class ManifestRequestFilter implements ContainerRequestFilter {
@@ -57,6 +61,7 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     @Context
     private HttpServletResponse servletResponse;
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
@@ -84,9 +89,14 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param pi
-     * @param imageName
-     * @throws IOException
+     * <p>forwardToCanonicalUrl.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param imageName a {@link java.lang.String} object.
+     * @throws java.io.IOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a boolean.
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {

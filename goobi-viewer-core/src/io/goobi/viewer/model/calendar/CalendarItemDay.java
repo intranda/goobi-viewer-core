@@ -17,6 +17,10 @@ package io.goobi.viewer.model.calendar;
 
 import java.io.Serializable;
 
+/**
+ * <p>CalendarItemDay class.</p>
+ *
+ */
 public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = 6482477938806267855L;
@@ -25,11 +29,20 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
 
     private String dayOfWeek;
 
+    /**
+     * <p>Constructor for CalendarItemDay.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a int.
+     * @param hits a int.
+     */
     public CalendarItemDay(String name, int value, int hits) {
         super(name, value, hits);
     }
 
     /**
+     * <p>Getter for the field <code>query</code>.</p>
+     *
      * @return the query
      */
     public String getQuery() {
@@ -37,6 +50,8 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>query</code>.</p>
+     *
      * @param query the query to set
      */
     public void setQuery(String query) {
@@ -44,6 +59,8 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>dayOfWeek</code>.</p>
+     *
      * @return the dayOfWeek
      */
     public String getDayOfWeek() {
@@ -51,12 +68,15 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>dayOfWeek</code>.</p>
+     *
      * @param dayOfWeek the dayOfWeek to set
      */
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "CalendarItemDay [day=" + name + ", hits=" + hits + "]";

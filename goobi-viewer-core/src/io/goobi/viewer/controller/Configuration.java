@@ -67,12 +67,21 @@ import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
+/**
+ * <p>Configuration class.</p>
+ *
+ */
 public final class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private Set<String> stopwords;
 
+    /**
+     * <p>Constructor for Configuration.</p>
+     *
+     * @param configFilePath a {@link java.lang.String} object.
+     */
     public Configuration(String configFilePath) {
         // Load default config file
         try {
@@ -118,16 +127,17 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param stopwordsFilePath
-     * @return
-     * @throws IOException
-     * @throws FileNotFoundException
+     * <p>loadStopwords.</p>
+     *
+     * @param stopwordsFilePath a {@link java.lang.String} object.
+     * @throws java.io.IOException
+     * @throws java.io.FileNotFoundException
      * @should load all stopwords
      * @should remove parts starting with pipe
      * @should not add empty stopwords
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
+     * @return a {@link java.util.Set} object.
      */
     protected static Set<String> loadStopwords(String stopwordsFilePath) throws FileNotFoundException, IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
@@ -162,14 +172,19 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the stopwords loading during initialization.
-     * 
-     * @return
+     *
      * @should return all stopwords
+     * @return a {@link java.util.Set} object.
      */
     public Set<String> getStopwords() {
         return stopwords;
     }
 
+    /**
+     * <p>reloadingRequired.</p>
+     *
+     * @return a boolean.
+     */
     public boolean reloadingRequired() {
         boolean ret = false;
         if (configLocal != null) {
@@ -182,6 +197,8 @@ public final class Configuration extends AbstractConfiguration {
     /*********************************** direct config results ***************************************/
 
     /**
+     * <p>getConfigLocalPath.</p>
+     *
      * @return the path to the local config_viewer.xml file.
      */
     public String getConfigLocalPath() {
@@ -193,58 +210,78 @@ public final class Configuration extends AbstractConfiguration {
         return configLocalPath;
     }
 
+    /**
+     * <p>getLocalRessourceBundleFile.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocalRessourceBundleFile() {
         return getConfigLocalPath() + "messages_de.properties";
     }
 
     /**
-     * 
-     * @return
+     * <p>getViewerThumbnailsPerPage.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getViewerThumbnailsPerPage() {
         return getLocalInt("viewer.thumbnailsPerPage", 10);
     }
 
     /**
-     * 
-     * @return
+     * <p>getViewerMaxImageWidth.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getViewerMaxImageWidth() {
         return getLocalInt("viewer.maxImageWidth", 2000);
     }
 
     /**
-     * 
-     * @return
+     * <p>getViewerMaxImageHeight.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getViewerMaxImageHeight() {
         return getLocalInt("viewer.maxImageHeight", 2000);
     }
 
     /**
-     * 
-     * @return
+     * <p>getViewerMaxImageScale.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getViewerMaxImageScale() {
         return getLocalInt("viewer.maxImageScale", 500);
     }
 
+    /**
+     * <p>isRememberImageZoom.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRememberImageZoom() {
         return getLocalBoolean("viewer.rememberImageZoom", false);
     }
 
+    /**
+     * <p>isRememberImageRotation.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRememberImageRotation() {
         return getLocalBoolean("viewer.rememberImageRotation", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getDfgViewerUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDfgViewerUrl() {
         return getLocalString("urls.dfg-viewer", "https://dfg-viewer.de/v2?set[mets]=");
@@ -252,9 +289,9 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the list of configured metadata for the title bar component. TODO Allow templates and then retire this method.
-     * 
-     * @return
+     *
      * @should return all configured metadata elements
+     * @return a {@link java.util.List} object.
      */
     public List<Metadata> getTitleBarMetadata() {
         List<HierarchicalConfiguration> elements = getLocalConfigurationsAt("metadata.titleBarMetadataList.metadata");
@@ -297,12 +334,12 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the list of configured metadata for search hit elements.
-     * 
-     * @param template
-     * @return
+     *
+     * @param template a {@link java.lang.String} object.
      * @should return correct template configuration
      * @should return default template configuration if requested not found
      * @should return default template if template is null
+     * @return a {@link java.util.List} object.
      */
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
@@ -315,12 +352,12 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the list of configured metadata for the main metadata page.
-     * 
-     * @param template
-     * @return
+     *
+     * @param template a {@link java.lang.String} object.
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template if template is null
+     * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMainMetadataForTemplate(String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
@@ -334,7 +371,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the list of configured metadata for the sidebar.
-     * 
+     *
      * @param template Template name
      * @return List of configured metadata for configured fields
      * @should return correct template configuration
@@ -429,6 +466,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should load replace rules correctly
      */
     // TODO
+    // TODO
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
         if (sub == null) {
             throw new IllegalArgumentException("sub may not be null");
@@ -502,7 +540,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     * <p>getNormdataFieldsForTemplate.</p>
+     *
      * @param template Template name
      * @return List of normdata fields configured for the given template name
      * @should return correct template configuration
@@ -530,10 +569,12 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getTocLabelConfiguration.</p>
+     *
      * @should return correct template configuration
      * @should return default template configuration if template not found
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Metadata> getTocLabelConfiguration(String template) {
         List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
@@ -547,16 +588,18 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns number of elements displayed per paginator page in a table of contents for anchors and groups. Values below 1 disable pagination (all
      * elements are displayed on the single page).
-     * 
-     * @return
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getTocAnchorGroupElementsPerPage() {
         return getLocalInt("toc.tocAnchorGroupElementsPerPage", 0);
     }
 
     /**
-     * @return
+     * <p>isDisplayWidgetUsage.</p>
+     *
+     * @return a boolean.
      */
     public boolean isDisplayWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", false);
@@ -564,7 +607,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Get the metadata configuration for the license text in the usage widget
-     * 
+     *
      * @return the metadata configuration for the license text in the usage widget
      */
     public Metadata getWidgetUsageLicenceTextMetadata() {
@@ -582,33 +625,48 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>isDisplaySidebarUsageWidgetLinkToJpegImage.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage", false);
     }
 
     /**
-     * @return
+     * <p>isDisplaySidebarUsageWidgetLinkToMasterImage.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage", false);
     }
 
+    /**
+     * <p>getWidgetUsageMaxJpegSize.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWidgetUsageMaxJpegSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
     }
 
+    /**
+     * <p>getWidgetUsageMaxMasterImageSize.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWidgetUsageMaxMasterImageSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
     }
 
     /**
-     * 
-     * @param eleTemplate
-     * @return
+     * <p>getMetadataForTemplateFromJDOM.</p>
+     *
+     * @param eleTemplate a {@link org.jdom2.Element} object.
+     * @return a {@link java.util.List} object.
      */
     @Deprecated
     public static List<Metadata> getMetadataForTemplateFromJDOM(Element eleTemplate) {
@@ -665,27 +723,29 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the list of structure elements allowed to be shown in calendar view
-     * 
-     * @return
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getCalendarDocStructTypes() {
         return getLocalList("metadata.calendarDocstructTypes.docStruct");
     }
 
     /**
-     * 
-     * @return
+     * <p>isBrowsingMenuEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isBrowsingMenuEnabled() {
         return getLocalBoolean("metadata.browsingMenu.enabled", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getBrowsingMenuHitsPerPage.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getBrowsingMenuHitsPerPage() {
         return getLocalInt("metadata.browsingMenu.hitsPerPage", 50);
@@ -693,9 +753,9 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the list of index fields to be used for term browsing.
-     * 
-     * @return
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
         List<HierarchicalConfiguration> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
@@ -719,19 +779,21 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getDocstrctWhitelistFilterQuery.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDocstrctWhitelistFilterQuery() {
         return getLocalString("search.docstrctWhitelistFilterQuery", SearchHelper.DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY);
     }
 
     /**
-     * 
-     * @param field
-     * @return
+     * <p>getCollectionSplittingChar.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCollectionSplittingChar(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
@@ -766,10 +828,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getCollectionSorting.</p>
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<DcSortingList> getCollectionSorting(String field) {
         List<DcSortingList> superlist = new ArrayList<>();
@@ -789,9 +852,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param field
-     * @return
+     * <p>getCollectionBlacklistMode.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCollectionBlacklistMode(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -805,9 +870,9 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns collection names to be omitted from search results, listings etc.
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getCollectionBlacklist(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -820,12 +885,12 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
      *
-     * @param field
-     * @param name
-     * @return
+     * @param field a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
      * @should return correct field for collection
      * @should give priority to exact matches
      * @should return hyphen if collection not found
+     * @return a {@link java.lang.String} object.
      */
     public String getCollectionDefaultSortField(String field, String name) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -861,10 +926,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getCollectionDisplayNumberOfVolumesLevel.</p>
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
+     * @return a int.
      */
     public int getCollectionDisplayNumberOfVolumesLevel(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -875,11 +941,12 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getCollectionDisplayDepthForSearch.</p>
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
      * @should return -1 if no collection config was found
+     * @return a int.
      */
     public int getCollectionDisplayDepthForSearch(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -890,9 +957,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getCollectionHierarchyField.</p>
+     *
      * @should return first field where hierarchy enabled
+     * @return a {@link java.lang.String} object.
      */
     public String getCollectionHierarchyField() {
         for (String field : getConfiguredCollections()) {
@@ -905,11 +973,12 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @return
+     * <p>isAddCollectionHierarchyToBreadcrumbs.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
      * @should return false if no collection config was found
+     * @return a boolean.
      */
     public boolean isAddCollectionHierarchyToBreadcrumbs(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
@@ -920,9 +989,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getSolrUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSolrUrl() {
         String value = getLocalString("urls.solr", "http://localhost:8089/solr");
@@ -933,18 +1003,20 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getContentServerWrapperUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getContentServerWrapperUrl() {
         return getLocalString("urls.contentServerWrapper");
     }
 
     /**
+     * <p>getDownloadUrl.</p>
      *
-     * @return
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDownloadUrl() {
         String urlString = getLocalString("urls.download", "http://localhost:8080/viewer/download/");
@@ -958,10 +1030,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getContentRestApiUrl.</p>
      *
-     * @return
-     * @throws ViewerConfigurationException
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getContentRestApiUrl() {
         return getRestApiUrl() + "content/";
@@ -969,8 +1041,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getRestApiUrl.</p>
+     *
      * @return The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
-     * @throws ViewerConfigurationException
      */
     public String getRestApiUrl() {
         String urlString = getLocalString("urls.rest");
@@ -986,115 +1059,128 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getContentServerRealUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getContentServerRealUrl() {
         return getLocalString("urls.contentServer");
     }
 
     /**
-     * 
-     * @return
+     * <p>getMetsUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getMetsUrl() {
         return getLocalString("urls.metadata.mets");
     }
 
     /**
-     * 
-     * @return
+     * <p>getMarcUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getMarcUrl() {
         return getLocalString("urls.metadata.marc");
     }
 
     /**
-     * 
-     * @return
+     * <p>getDcUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDcUrl() {
         return getLocalString("urls.metadata.dc");
     }
 
     /**
-     * 
-     * @return
+     * <p>getEseUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getEseUrl() {
         return getLocalString("urls.metadata.ese");
     }
 
     /**
-     * 
-     * @return
+     * <p>getSearchHitsPerPage.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSearchHitsPerPage() {
         return getLocalInt("search.hitsPerPage", 10);
     }
 
     /**
-     * 
-     * @return
+     * <p>getFulltextFragmentLength.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getFulltextFragmentLength() {
         return getLocalInt("search.fulltextFragmentLength", 200);
     }
 
     /**
-     * 
-     * @return
+     * <p>isAdvancedSearchEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAdvancedSearchEnabled() {
         return getLocalBoolean("search.advanced.enabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>getAdvancedSearchDefaultItemNumber.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getAdvancedSearchDefaultItemNumber() {
         return getLocalInt("search.advanced.defaultItemNumber", 2);
     }
 
     /**
-     * 
-     * @return
+     * <p>getAdvancedSearchFields.</p>
+     *
      * @should return all values
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAdvancedSearchFields() {
         return getLocalList("search.advanced.searchFields.field");
     }
 
     /**
-     * 
-     * @return
+     * <p>isAggregateHits.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAggregateHits() {
         return getLocalBoolean("search.aggregateHits", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplayAdditionalMetadataEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayAdditionalMetadataEnabled() {
         return getLocalBoolean("search.displayAdditionalMetadata.enabled", true);
     }
 
     /**
-     * 
+     * <p>getDisplayAdditionalMetadataIgnoreFields.</p>
+     *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
      */
@@ -1103,7 +1189,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     * <p>getDisplayAdditionalMetadataTranslateFields.</p>
+     *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
      */
@@ -1112,10 +1199,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @return
+     * <p>isAdvancedSearchFieldHierarchical.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAdvancedSearchFieldHierarchical(String field) {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
@@ -1134,10 +1222,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param field
-     * @return
+     * <p>isAdvancedSearchFieldUntokenizeForPhraseSearch.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
@@ -1156,202 +1245,229 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>isTimelineSearchEnabled.</p>
      *
-     * @return
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isTimelineSearchEnabled() {
         return getLocalBoolean("search.timeline.enabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isCalendarSearchEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isCalendarSearchEnabled() {
         return getLocalBoolean("search.calendar.enabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>getStaticQuerySuffix.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getStaticQuerySuffix() {
         return getLocalString("search.staticQuerySuffix");
     }
 
     /**
-     * 
-     * @return
+     * <p>getPreviousVersionIdentifierField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getPreviousVersionIdentifierField() {
         return getLocalString("search.versioning.previousVersionIdentifierField");
     }
 
     /**
-     * 
-     * @return
+     * <p>getNextVersionIdentifierField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getNextVersionIdentifierField() {
         return getLocalString("search.versioning.nextVersionIdentifierField");
     }
 
     /**
-     * 
-     * @return
+     * <p>getVersionLabelField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getVersionLabelField() {
         return getLocalString("search.versioning.versionLabelField");
     }
 
     /**
-     * 
-     * @return
+     * <p>getIndexedMetsFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getIndexedMetsFolder() {
         return getLocalString("indexedMetsFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getIndexedLidoFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getPageSelectionFormat.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getPageSelectionFormat() {
         return getLocalString("viewer.pageSelectionFormat", "{pageno}:{pagenolabel}");
     }
 
     /**
-     * 
-     * @return
+     * <p>getMediaFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getPdfFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfFolder() {
         return getLocalString("pdfFolder", "pdf");
     }
 
+    /**
+     * <p>getVocabulariesFolder.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");
     }
 
     /**
-     * 
-     * @return
+     * <p>getOrigContentFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getOrigContentFolder() {
         return getLocalString("origContentFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getCmsTextFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCmsTextFolder() {
         return getLocalString("cmsTextFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getAltoFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getAltoFolder() {
         return getLocalString("altoFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getAbbyyFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getAbbyyFolder() {
         return getLocalString("abbyyFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getFulltextFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getTeiFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTeiFolder() {
         return getLocalString("teiFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getCmdiFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCmdiFolder() {
         return getLocalString("cmdiFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getWcFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getWcFolder() {
         return getLocalString("wcFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getAnnotationFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getAnnotationFolder() {
         return getLocalString("annotationFolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getHotfolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getHotfolder() {
         return getLocalString("hotfolder");
     }
 
     /**
-     * 
-     * @return
+     * <p>getTempFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     @SuppressWarnings("static-method")
     public String getTempFolder() {
@@ -1359,37 +1475,41 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>isUrnDoRedirect.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isUrnDoRedirect() {
         return getLocalBoolean("urnresolver.doRedirectInsteadofForward", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isUserRegistrationEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isUserRegistrationEnabled() {
         return getLocalBoolean("user.userRegistrationEnabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isShowOpenIdConnect.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isShowOpenIdConnect() {
         return getAuthenticationProviders().stream().anyMatch(provider -> OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
     }
 
     /**
-     * 
-     * @return
+     * <p>getAuthenticationProviders.</p>
+     *
      * @should return all properly configured elements
      * @should load user group names correctly
+     * @return a {@link java.util.List} object.
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = config;
@@ -1455,142 +1575,160 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getSmtpServer.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSmtpServer() {
         return getLocalString("user.smtpServer");
     }
 
     /**
-     * 
-     * @return
+     * <p>getSmtpUser.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSmtpUser() {
         return getLocalString("user.smtpUser");
     }
 
     /**
-     * 
-     * @return
+     * <p>getSmtpPassword.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSmtpPassword() {
         return getLocalString("user.smtpPassword");
     }
 
     /**
-     * 
-     * @return
+     * <p>getSmtpSenderAddress.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSmtpSenderAddress() {
         return getLocalString("user.smtpSenderAddress");
     }
 
     /**
-     * 
-     * @return
+     * <p>getSmtpSenderName.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSmtpSenderName() {
         return getLocalString("user.smtpSenderName");
     }
 
     /**
-     * 
-     * @return
+     * <p>getSmtpSecurity.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSmtpSecurity() {
         return getLocalString("user.smtpSecurity", "none");
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplayCollectionBrowsing.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayCollectionBrowsing() {
         return this.getLocalBoolean("webGuiDisplay.collectionBrowsing", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplayUserNavigation.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayUserNavigation() {
         return this.getLocalBoolean("webGuiDisplay.userAccountNavigation", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplayTagCloudNavigation.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayTagCloudNavigation() {
         return this.getLocalBoolean("webGuiDisplay.displayTagCloudNavigation", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplayStatistics.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayStatistics() {
         return this.getLocalBoolean("webGuiDisplay.displayStatistics", true);
     }
 
     /**
-     * @return
+     * <p>isDisplayTimeMatrix.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayTimeMatrix() {
         return this.getLocalBoolean("webGuiDisplay.displayTimeMatrix", false);
     }
 
     /**
-     * @return
+     * <p>isDisplayCrowdsourcingModuleLinks.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayCrowdsourcingModuleLinks() {
         return this.getLocalBoolean("webGuiDisplay.displayCrowdsourcingModuleLinks", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getTheme.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTheme() {
         return getSubthemeMainTheme();
     }
 
     /**
-     * 
-     * @return
+     * <p>getThemeRootPath.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
     }
 
     /**
-     * 
-     * @return
+     * <p>getName.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return getLocalString("viewer.name", "Goobi viewer");
     }
 
     /**
-     * 
-     * @return
+     * <p>getDescription.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDescription() {
         return getLocalString("viewer.description", "Goobi viewer");
@@ -1598,158 +1736,181 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * TagCloud auf der Startseite anzeigen lassen
-     * 
-     * @return
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayTagCloudStartpage() {
         return this.getLocalBoolean("webGuiDisplay.displayTagCloudStartpage", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplaySearchResultNavigation.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplaySearchResultNavigation() {
         return this.getLocalBoolean("webGuiDisplay.displaySearchResultNavigation", true);
     }
 
+    /**
+     * <p>isFoldout.</p>
+     *
+     * @param sidebarElement a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarPageLinkVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
         return getLocalBoolean("sidebar.page.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarCalendarLinkVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarCalendarLinkVisible() {
         return getLocalBoolean("sidebar.calendar.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarTocLinkVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarTocLinkVisible() {
         return getLocalBoolean("sidebar.toc.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarThumbsLinkVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarThumbsLinkVisible() {
         return getLocalBoolean("sidebar.thumbs.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarMetadataLinkVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarMetadataLinkVisible() {
         return getLocalBoolean("sidebar.metadata.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isShowSidebarEventMetadata.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isShowSidebarEventMetadata() {
         return getLocalBoolean("sidebar.metadata.showEventMetadata", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarFulltextLinkVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarFulltextLinkVisible() {
         return getLocalBoolean("sidebar.fulltext.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarTocVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarTocVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSidebarTocPageNumbersVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean getSidebarTocPageNumbersVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.pageNumbersVisible", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSidebarTocLengthBeforeCut.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSidebarTocLengthBeforeCut() {
         return this.getLocalInt("sidebar.sidebarToc.lengthBeforeCut", 10);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSidebarTocInitialCollapseLevel.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSidebarTocInitialCollapseLevel() {
         return this.getLocalInt("sidebar.sidebarToc.initialCollapseLevel", 2);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSidebarTocCollapseLengthThreshold.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSidebarTocCollapseLengthThreshold() {
         return this.getLocalInt("sidebar.sidebarToc.collapseLengthThreshold", 10);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSidebarTocLowestLevelToCollapseForLength.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSidebarTocLowestLevelToCollapseForLength() {
         return this.getLocalInt("sidebar.sidebarToc.collapseLengthThreshold[@lowestLevelToTest]", 2);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSidebarTocTreeView.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSidebarTocTreeView() {
         return getLocalBoolean("sidebar.sidebarToc.useTreeView", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isTocTreeView.</p>
+     *
      * @should return true for allowed docstructs
      * @should return false for other docstructs
+     * @param docStructType a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean isTocTreeView(String docStructType) {
         HierarchicalConfiguration hc = getLocalConfigurationAt("toc.useTreeView");
@@ -1777,7 +1938,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
-     * 
+     *
      * @return List of regular and hierarchical fields in the order in which they appear in the config file
      * @should return correct order
      */
@@ -1802,28 +1963,32 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getDrillDownFields.</p>
+     *
      * @should return all values
+     * @return a {@link java.util.List} object.
      */
     public List<String> getDrillDownFields() {
         return getLocalList("search.drillDown.field");
     }
 
     /**
-     * 
-     * @return
+     * <p>getHierarchicalDrillDownFields.</p>
+     *
      * @should return all values
+     * @return a {@link java.util.List} object.
      */
     public List<String> getHierarchicalDrillDownFields() {
         return getLocalList("search.drillDown.hierarchicalField");
     }
 
     /**
-     * 
-     * @return
+     * <p>getInitialDrillDownElementNumber.</p>
+     *
      * @should return correct value
      * @should return default value if field not found
+     * @param field a {@link java.lang.String} object.
+     * @return a int.
      */
     public int getInitialDrillDownElementNumber(String field) {
         if (StringUtils.isBlank(field)) {
@@ -1865,8 +2030,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @param field
-     * @return
+     * <p>getSortOrder.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getSortOrder(String field) {
         if (StringUtils.isBlank(field)) {
@@ -1915,8 +2082,8 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns a list of values to prioritize for the given drill-down field.
-     * 
-     * @param field
+     *
+     * @param field a {@link java.lang.String} object.
      * @return List of priority values; empty list if none found for the given field
      * @should return return all configured elements for regular fields
      * @should return return all configured elements for hierarchical fields
@@ -1970,7 +2137,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     * <p>getRangeFacetFields.</p>
+     *
      * @return List of facet fields to be used as range values
      */
     @SuppressWarnings("static-method")
@@ -1979,45 +2147,50 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>isSortingEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSortingEnabled() {
         return getLocalBoolean("search.sorting.enabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>getDefaultSortField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDefaultSortField() {
         return getLocalString("search.sorting.defaultSortField", null);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSortFields.</p>
+     *
      * @should return return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getSortFields() {
         return getLocalList("search.sorting.luceneField");
     }
 
     /**
-     * 
-     * @return
+     * <p>getStaticSortFields.</p>
+     *
      * @should return return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getStaticSortFields() {
         return getLocalList("search.sorting.static.field");
     }
 
     /**
-     * 
-     * @return
+     * <p>getUrnResolverUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getUrnResolverUrl() {
         return getLocalString("urls.urnResolver",
@@ -2025,45 +2198,50 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getUnconditionalImageAccessMaxWidth.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getUnconditionalImageAccessMaxWidth() {
         return getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120);
     }
 
     /**
-     * 
-     * @return
+     * <p>isFullAccessForLocalhost.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isFullAccessForLocalhost() {
         return getLocalBoolean("accessConditions.fullAccessForLocalhost", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isGeneratePdfInTaskManager.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isGeneratePdfInTaskManager() {
         return getLocalBoolean("pdf.externalPdfGeneration", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isPdfApiDisabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isPdfApiDisabled() {
         return getLocalBoolean("pdf.pdfApiDisabled", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isTitlePdfEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isTitlePdfEnabled() {
         boolean enabled = getLocalBoolean("pdf.titlePdfEnabled", true);
@@ -2071,70 +2249,83 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>isTocPdfEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isTocPdfEnabled() {
         return getLocalBoolean("pdf.tocPdfEnabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isMetadataPdfEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isMetadataPdfEnabled() {
         return getLocalBoolean("pdf.metadataPdfEnabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isPagePdfEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isPagePdfEnabled() {
         return getLocalBoolean("pdf.pagePdfEnabled", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDocHierarchyPdfEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDocHierarchyPdfEnabled() {
         return getLocalBoolean("pdf.docHierarchyPdfEnabled", false);
     }
 
     /**
-     * @return
+     * <p>isTitleEpubEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isTitleEpubEnabled() {
         return getLocalBoolean("epub.titleEpubEnabled", false);
     }
 
     /**
-     * @return
+     * <p>isTocEpubEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isTocEpubEnabled() {
         return getLocalBoolean("epub.tocEpubEnabled", false);
     }
 
     /**
-     * @return
+     * <p>isMetadataEpubEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isMetadataEpubEnabled() {
         return getLocalBoolean("epub.metadataEpubEnabled", false);
     }
 
     /**
-     * @return
+     * <p>getDownloadFolder.</p>
+     *
      * @should return correct value for pdf
      * @should return correct value for epub
      * @should return empty string if type unknown
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getDownloadFolder(String type) {
         switch (type.toLowerCase()) {
@@ -2149,204 +2340,301 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getRssFeedItems.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getRssFeedItems() {
         return getLocalInt("rss.numberOfItems", 50);
     }
 
     /**
-     * 
-     * @return
+     * <p>getRssTitle.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getRssTitle() {
         return getLocalString("rss.title", "viewer-rss");
     }
 
     /**
-     * 
-     * @return
+     * <p>getRssDescription.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getRssDescription() {
         return getLocalString("rss.description", "latest imports");
     }
 
     /**
-     * 
-     * @return
+     * <p>getRssCopyrightText.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getRssCopyrightText() {
         return getLocalString("rss.copyright");
     }
 
     /**
-     * 
-     * @return
+     * <p>getRulesetFilePath.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getRulesetFilePath() {
         return getLocalString("content.ruleset");
     }
 
     /**
-     * 
-     * @return
+     * <p>getDefaultCollection.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDefaultCollection() {
         return getLocalString("content.defaultCollection");
     }
 
     /**
-     * 
-     * @return
+     * <p>getThumbnailsWidth.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getThumbnailsWidth() {
         return getLocalInt("viewer.thumbnailsWidth", 100);
     }
 
     /**
-     * 
-     * @return
+     * <p>getThumbnailsHeight.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getThumbnailsHeight() {
         return getLocalInt("viewer.thumbnailsHeight", 120);
     }
 
+    /**
+     * <p>getThumbnailsCompression.</p>
+     *
+     * @return a int.
+     */
     public int getThumbnailsCompression() {
         return getLocalInt("viewer.thumbnailsCompression", 85);
     }
 
     /**
-     * 
-     * @return
+     * <p>getAnchorThumbnailMode.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getAnchorThumbnailMode() {
         return getLocalString("viewer.anchorThumbnailMode", "GENERIC");
     }
 
     /**
-     * 
-     * @return
+     * <p>getMultivolumeThumbnailWidth.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getMultivolumeThumbnailWidth() {
         return getLocalInt("toc.multiVolumeThumbnailsWidth", 50);
     }
 
     /**
-     * 
-     * @return
+     * <p>getMultivolumeThumbnailHeight.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getMultivolumeThumbnailHeight() {
         return getLocalInt("toc.multiVolumeThumbnailsHeight", 60);
     }
 
     /**
-     * 
-     * @return
+     * <p>getDisplayBreadcrumbs.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean getDisplayBreadcrumbs() {
         return this.getLocalBoolean("webGuiDisplay.displayBreadcrumbs", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>getDisplayMetadataPageLinkBlock.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean getDisplayMetadataPageLinkBlock() {
         return this.getLocalBoolean("webGuiDisplay.displayMetadataPageLinkBlock", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isAddDublinCoreMetaTags.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAddDublinCoreMetaTags() {
         return getLocalBoolean("metadata.addDublinCoreMetaTags", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isAddHighwirePressMetaTags.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAddHighwirePressMetaTags() {
         return getLocalBoolean("metadata.addHighwirePressMetaTags", false);
     }
 
     /**
-     * 
-     * @return
-     * @throws ViewerConfigurationException
+     * <p>useTiles.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return correct value
+     * @return a boolean.
      */
     public boolean useTiles() throws ViewerConfigurationException {
         return useTiles(PageType.viewImage, null);
     }
 
     /**
-     * 
-     * @return
-     * @throws ViewerConfigurationException
+     * <p>useTilesFullscreen.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return correct value
+     * @return a boolean.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
         return useTiles(PageType.viewFullscreen, null);
     }
 
+    /**
+     * <p>useTiles.</p>
+     *
+     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
     }
 
+    /**
+     * <p>getFooterHeight.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public int getFooterHeight() throws ViewerConfigurationException {
         return getFooterHeight(PageType.viewImage, null);
     }
 
+    /**
+     * <p>getFullscreenFooterHeight.</p>
+     *
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public int getFullscreenFooterHeight() throws ViewerConfigurationException {
         return getFooterHeight(PageType.viewFullscreen, null);
     }
 
+    /**
+     * <p>getFooterHeight.</p>
+     *
+     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return a int.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public int getFooterHeight(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getInt("[@footerHeight]", 50);
     }
 
+    /**
+     * <p>getImageViewType.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getImageViewType() throws ViewerConfigurationException {
         return getZoomImageViewType(PageType.viewImage, null);
     }
 
+    /**
+     * <p>getZoomFullscreenViewType.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getZoomFullscreenViewType() throws ViewerConfigurationException {
         return getZoomImageViewType(PageType.viewFullscreen, null);
     }
 
+    /**
+     * <p>getZoomImageViewType.</p>
+     *
+     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getZoomImageViewType(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getString("[@type]");
     }
 
+    /**
+     * <p>useOpenSeadragon.</p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public boolean useOpenSeadragon() throws ViewerConfigurationException {
         return "openseadragon".equalsIgnoreCase(getImageViewType());
     }
 
+    /**
+     * <p>getImageViewZoomScales.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public List<String> getImageViewZoomScales() throws ViewerConfigurationException {
         return getImageViewZoomScales(PageType.viewImage, null);
     }
 
+    /**
+     * <p>getImageViewZoomScales.</p>
+     *
+     * @param view a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public List<String> getImageViewZoomScales(String view) throws ViewerConfigurationException {
         return getImageViewZoomScales(PageType.valueOf(view), null);
     }
 
+    /**
+     * <p>getImageViewZoomScales.</p>
+     *
+     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public List<String> getImageViewZoomScales(PageType view, ImageType image) throws ViewerConfigurationException {
         List<String> defaultList = new ArrayList<>();
         //        defaultList.add("600");
@@ -2364,14 +2652,23 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     * <p>getTileSizes.</p>
+     *
      * @return the configured tile sizes for imageView as a hashmap linking each tile size to the list of resolutions to use with that size
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public Map<Integer, List<Integer>> getTileSizes() throws ViewerConfigurationException {
         return getTileSizes(PageType.viewImage, null);
     }
 
+    /**
+     * <p>getTileSizes.</p>
+     *
+     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return a {@link java.util.Map} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public Map<Integer, List<Integer>> getTileSizes(PageType view, ImageType image) throws ViewerConfigurationException {
         Map<Integer, List<Integer>> map = new HashMap<>();
         List<HierarchicalConfiguration> sizes = getZoomImageViewConfig(view, image).configurationsAt("tileSize");
@@ -2397,6 +2694,14 @@ public final class Configuration extends AbstractConfiguration {
         return map;
     }
 
+    /**
+     * <p>getZoomImageViewConfig.</p>
+     *
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @return a {@link org.apache.commons.configuration.SubnodeConfiguration} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public SubnodeConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
         List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("viewer.zoomImageView");
 
@@ -2426,45 +2731,50 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getBreadcrumbsClipping.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getBreadcrumbsClipping() {
         return getLocalInt("webGuiDisplay.breadcrumbsClipping", 50);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplayTopstructLabel.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayTopstructLabel() {
         return this.getLocalBoolean("metadata.searchHitMetadataList.displayTopstructLabel", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getDisplayStructType.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean getDisplayStructType() {
         return this.getLocalBoolean("metadata.searchHitMetadataList.displayStructType", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSearchHitMetadataValueNumber.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSearchHitMetadataValueNumber() {
         return getLocalInt("metadata.searchHitMetadataList.valueNumber", 1);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSearchHitMetadataValueLength.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getSearchHitMetadataValueLength() {
         return getLocalInt("metadata.searchHitMetadataList.valueLength", 0);
@@ -2472,32 +2782,39 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the preference order of data to be used as an image footer text.
-     * 
-     * @return
+     *
      * @should return all configured elements in the correct order
+     * @return a {@link java.util.List} object.
      */
     public List<String> getWatermarkTextConfiguration() {
         List<String> list = getLocalList("viewer.watermarkTextConfiguration.text");
         return list;
     }
 
+    /**
+     * <p>getWatermarkFormat.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWatermarkFormat() {
         return getLocalString("viewer.watermarkFormat", "jpg");
     }
 
     /**
-     * 
-     * @return
+     * <p>isOriginalContentDownload.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isOriginalContentDownload() {
         return getLocalBoolean("content.originalContentDownload", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getStopwordsFilePath.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getStopwordsFilePath() {
         return getLocalString("stopwordsFile");
@@ -2505,48 +2822,52 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the locally configured page type name for URLs (e.g. "bild" instead of default "image").
-     * 
-     * @param type
-     * @return
+     *
+     * @param type a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @should return the correct value for the given type
      * @should return null for non configured type
+     * @return a {@link java.lang.String} object.
      */
     public String getPageType(PageType type) {
         return getLocalString("viewer.pageTypes." + type.name());
     }
 
     /**
-     * 
-     * @param docstruct
-     * @return
+     * <p>getDocstructTargetPageType.</p>
+     *
+     * @param docstruct a {@link java.lang.String} object.
      * @should return correct value
      * @should return null if docstruct not found
+     * @return a {@link java.lang.String} object.
      */
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
     }
 
     /**
-     * 
-     * @return
+     * <p>getFulltextPercentageWarningThreshold.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getFulltextPercentageWarningThreshold() {
         return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
     }
 
     /**
-     * 
-     * @return
+     * <p>isUseViewerLocaleAsRecordLanguage.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isUseViewerLocaleAsRecordLanguage() {
         return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isTocAlwaysDisplayDocstruct.</p>
+     *
+     * @return a boolean.
      */
     @Deprecated
     public boolean isTocAlwaysDisplayDocstruct() {
@@ -2554,81 +2875,90 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getFeedbackEmailAddress.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getFeedbackEmailAddress() {
         return getLocalString("user.feedbackEmailAddress");
     }
 
     /**
-     * 
-     * @return
+     * <p>isBookmarksEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isBookmarksEnabled() {
         return getLocalBoolean("bookmarks.bookmarksEnabled", true);
     }
 
     /**
-     * 
-     * @return
+     * <p>isForceJpegConversion.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isForceJpegConversion() {
         return getLocalBoolean("viewer.forceJpegConversion", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getPageLoaderThreshold.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getPageLoaderThreshold() {
         return getLocalInt("performance.pageLoaderThreshold", 1000);
     }
 
     /**
-     * 
-     * @return
+     * <p>isPreventProxyCaching.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isUserCommentsEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isUserCommentsEnabled() {
         return getLocalBoolean(("userComments.enabled"), false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getUserCommentsConditionalQuery.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getUserCommentsConditionalQuery() {
         return getLocalString("userComments.conditionalQuery");
     }
 
     /**
-     * 
-     * @return
+     * <p>getUserCommentsNotificationEmailAddresses.</p>
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getUserCommentsNotificationEmailAddresses() {
         return getLocalList("userComments.notificationEmailAddress");
     }
 
     /**
-     * 
-     * @return
+     * <p>getViewerHome.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getViewerHome() {
         return getLocalString("viewerHome");
@@ -2644,9 +2974,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getWatermarkIdField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.util.List} object.
      */
     public List<String> getWatermarkIdField() {
         return getLocalList("viewer.watermarkIdField", Collections.singletonList(SolrConstants.DC));
@@ -2654,18 +2985,20 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>isSubthemesEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSubthemesEnabled() {
         return getLocalBoolean("viewer.theme[@subTheme]", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSubthemeMainTheme.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSubthemeMainTheme() {
         String theme = getLocalString("viewer.theme[@mainTheme]");
@@ -2676,57 +3009,65 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
+     * <p>getSubthemeDiscriminatorField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSubthemeDiscriminatorField() {
         return getLocalString("viewer.theme[@discriminatorField]");
     }
 
     /**
-     * 
-     * @return
+     * <p>isSubthemeAutoSwitch.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSubthemeAutoSwitch() {
         return getLocalBoolean("viewer.theme[@autoSwitch]", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSubthemeAddFilterQuery.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSubthemeAddFilterQuery() {
         return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isSubthemeFilterQueryVisible.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSubthemeFilterQueryVisible() {
         return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getTagCloudSampleSize.</p>
+     *
      * @should return correct value for existing fields
      * @should return INT_MAX for other fields
+     * @param fieldName a {@link java.lang.String} object.
+     * @return a int.
      */
     public int getTagCloudSampleSize(String fieldName) {
         return getLocalInt("tagclouds.sampleSizes." + fieldName, Integer.MAX_VALUE);
     }
 
     /**
-     * 
-     * @return
+     * <p>getTocVolumeSortFieldsForTemplate.</p>
+     *
      * @should return correct template configuration
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<StringPair> getTocVolumeSortFieldsForTemplate(String template) {
         HierarchicalConfiguration usingTemplate = null;
@@ -2775,9 +3116,10 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns the grouping Solr field for the given anchor TOC sort configuration.
-     * 
-     * @return
+     *
      * @should return correct value
+     * @param template a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTocVolumeGroupFieldForTemplate(String template) {
         HierarchicalConfiguration usingTemplate = null;
@@ -2815,97 +3157,120 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getDisplayTitleBreadcrumbs.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean getDisplayTitleBreadcrumbs() {
         return getLocalBoolean("webGuiDisplay.displayTitleBreadcrumbs", false);
     }
 
     /**
-     * @return
+     * <p>isDisplayTitlePURL.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayTitlePURL() {
         return this.getLocalBoolean("webGuiDisplay.displayTitlePURL", true);
     }
 
     /**
-     * @return
+     * <p>getTitleBreadcrumbsMaxTitleLength.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getTitleBreadcrumbsMaxTitleLength() {
         return this.getLocalInt("webGuiDisplay.displayTitleBreadcrumbs[@maxTitleLength]", 25);
     }
 
     /**
-     * @return
+     * <p>getIncludeAnchorInTitleBreadcrumbs.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean getIncludeAnchorInTitleBreadcrumbs() {
         return this.getLocalBoolean("webGuiDisplay.displayTitleBreadcrumbs[@includeAnchor]", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>isDisplaySearchRssLinks.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplaySearchRssLinks() {
         return getLocalBoolean("rss.displaySearchRssLinks", true);
     }
 
     /**
-     * @return
+     * <p>showThumbnailsInToc.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean showThumbnailsInToc() {
         return this.getLocalBoolean("toc.multiVolumeThumbnailsEnabled", true);
     }
 
     /**
-     * @return
+     * <p>getStartYearForTimeline.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getStartYearForTimeline() {
         return this.getLocalString("search.timeline.startyear", "1750");
     }
 
     /**
-     * @return
+     * <p>getEndYearForTimeline.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getEndYearForTimeline() {
         return this.getLocalString("search.timeline.endyear", "2014");
     }
 
     /**
-     * @return
+     * <p>getTimelineHits.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTimelineHits() {
         return this.getLocalString("search.timeline.hits", "108");
     }
 
     /**
-     * @return
+     * <p>isPiwikTrackingEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isPiwikTrackingEnabled() {
         return getLocalBoolean("piwik.enabled", false);
     }
 
     /**
-     * @return
+     * <p>getPiwikBaseURL.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getPiwikBaseURL() {
         return this.getLocalString("piwik.baseURL", "");
     }
 
     /**
-     * @return
+     * <p>getPiwikSiteID.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getPiwikSiteID() {
         return this.getLocalString("piwik.siteID", "1");
@@ -2913,56 +3278,70 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>isSearchSavingEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSearchSavingEnabled() {
         return getLocalBoolean("search.searchSavingEnabled", true);
     }
 
     /**
-     * @return
+     * <p>isBoostTopLevelDocstructs.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isBoostTopLevelDocstructs() {
         return getLocalBoolean("search.boostTopLevelDocstructs", true);
     }
 
     /**
-     * @return
+     * <p>isGroupDuplicateHits.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isGroupDuplicateHits() {
         return getLocalBoolean("search.groupDuplicateHits", true);
     }
 
     /**
-     * @return
+     * <p>getRecordGroupIdentifierFields.</p>
+     *
      * @should return all configured values
+     * @return a {@link java.util.List} object.
      */
     public List<String> getRecordGroupIdentifierFields() {
         return getLocalList("toc.recordGroupIdentifierFields.field");
     }
 
     /**
-     * @return
+     * <p>getAncestorIdentifierFields.</p>
+     *
      * @should return all configured values
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAncestorIdentifierFields() {
         return getLocalList("toc.ancestorIdentifierFields.field");
     }
 
     /**
-     * @return
+     * <p>isTocListSiblingRecords.</p>
+     *
      * @should return correctValue
+     * @return a boolean.
      */
     public boolean isTocListSiblingRecords() {
         return getLocalBoolean("toc.ancestorIdentifierFields[@listSiblingRecords]", false);
     }
 
     /**
-     * @return
+     * <p>getSearchFilters.</p>
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<SearchFilter> getSearchFilters() {
         List<String> filterStrings = getLocalList("search.filters.filter");
@@ -2979,8 +3358,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getWebApiFields.</p>
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<Map<String, String>> getWebApiFields() {
         List<HierarchicalConfiguration> elements = getLocalConfigurationsAt("webapi.fields.field");
@@ -3002,128 +3383,167 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getDbPersistenceUnit.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getDbPersistenceUnit() {
         return getLocalString("dbPersistenceUnit", null);
     }
 
     /**
-     * @return
+     * <p>isCmsEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isCmsEnabled() {
         return getLocalBoolean("cms.enabled", false);
     }
 
     /**
-     * @return
+     * <p>useCustomNavBar.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean useCustomNavBar() {
         return getLocalBoolean("cms.useCustomNavBar", false);
     }
 
     /**
-     * @return
+     * <p>getCmsTemplateFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCmsTemplateFolder() {
         return getLocalString("cms.templateFolder", "resources/cms/templates/");
     }
 
     /**
-     * @return
+     * <p>getCmsMediaFolder.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCmsMediaFolder() {
         return getLocalString("cms.mediaFolder", "cms_media");
     }
 
     /**
-     * 
-     * @return
+     * <p>getCmsClassifications.</p>
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getCmsClassifications() {
         return getLocalList("cms.classifications.classification");
     }
 
+    /**
+     * <p>getCmsMediaDisplayWidth.</p>
+     *
+     * @return a int.
+     */
     public int getCmsMediaDisplayWidth() {
         return getLocalInt("cms.mediaDisplayWidth", 0);
     }
 
+    /**
+     * <p>getCmsMediaDisplayHeight.</p>
+     *
+     * @return a int.
+     */
     public int getCmsMediaDisplayHeight() {
         return getLocalInt("cms.mediaDisplayHeight", 0);
     }
 
     /**
-     * 
-     * @return
+     * <p>isTranskribusEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isTranskribusEnabled() {
         return getLocalBoolean("transkribus[@enabled]", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getTranskribusUserName.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTranskribusUserName() {
         return getLocalString("transkribus.userName");
     }
 
     /**
-     * 
-     * @return
+     * <p>getTranskribusPassword.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTranskribusPassword() {
         return getLocalString("transkribus.password");
     }
 
     /**
-     * 
-     * @return
+     * <p>getTranskribusDefaultCollection.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTranskribusDefaultCollection() {
         return getLocalString("transkribus.defaultCollection");
     }
 
     /**
-     * 
-     * @return
+     * <p>getTranskribusRestApiUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTranskribusRestApiUrl() {
         return getLocalString("transkribus.restApiUrl", TranskribusUtils.TRANSRIBUS_REST_URL);
     }
 
     /**
-     * 
-     * @return
+     * <p>getTranskribusAllowedDocumentTypes.</p>
+     *
      * @should return all configured elements
+     * @return a {@link java.util.List} object.
      */
     public List<String> getTranskribusAllowedDocumentTypes() {
         return getLocalList("transkribus.allowedDocumentTypes.docstruct");
     }
 
     /**
-     * @return
+     * <p>getTocIndentation.</p>
+     *
      * @should return correct value
+     * @return a int.
      */
     public int getTocIndentation() {
         return getLocalInt("toc.tocIndentation", 20);
     }
 
+    /**
+     * <p>isPageBrowseEnabled.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPageBrowseEnabled() {
         return getLocalBoolean("viewer.pageBrowse.enabled", false);
     }
 
+    /**
+     * <p>getPageBrowseSteps.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Integer> getPageBrowseSteps() {
         List<String> defaultList = Collections.singletonList("1");
         List<String> stringList = getLocalList("viewer.pageBrowse.pageBrowseStep", defaultList);
@@ -3139,44 +3559,61 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getTaskManagerServiceUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTaskManagerServiceUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
     }
 
     /**
-     * @return
+     * <p>getTaskManagerRestUrl.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getTaskManagerRestUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
 
     /**
-     * @return
+     * <p>getReCaptchaSiteKey.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getReCaptchaSiteKey() {
         return getLocalString("reCaptcha.provider[@siteKey]");
     }
 
     /**
-     * @return
+     * <p>isUseReCaptcha.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isUseReCaptcha() {
         return getLocalBoolean("reCaptcha[@show]", true);
     }
 
     /**
+     * <p>isSearchInItemEnabled.</p>
+     *
      * @should return true if the search field to search the current item/work is configured to be visible
+     * @return a boolean.
      */
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem.visible", true);
     }
 
+    /**
+     * <p>getDefaultBrowseIcon.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultBrowseIcon(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
         if (subConfig != null) {
@@ -3187,54 +3624,75 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>isSearchExcelExportEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isSearchExcelExportEnabled() {
         return getLocalBoolean("search.export.excel.enabled", false);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSearchExcelExportFields.</p>
+     *
      * @should return all values
+     * @return a {@link java.util.List} object.
      */
     public List<String> getSearchExcelExportFields() {
         return getLocalList("search.export.excel.field", new ArrayList<String>(0));
     }
 
     /**
-     * @return
+     * <p>getExcelDownloadTimeout.</p>
+     *
+     * @return a int.
      */
     public int getExcelDownloadTimeout() {
         return getLocalInt("search.export.excel.timeout", 120);
     }
 
     /**
-     * @return
+     * <p>isDisplayEmptyTocInSidebar.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDisplayEmptyTocInSidebar() {
         return getLocalBoolean("sidebar.sidebarToc.visibleIfEmpty", true);
     }
 
     /**
-     * @return
+     * <p>isDoublePageModeEnabled.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isDoublePageModeEnabled() {
         return getLocalBoolean("viewer.doublePageMode.enabled", false);
     }
 
+    /**
+     * <p>getRestrictedImageUrls.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getRestrictedImageUrls() {
         return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.emptyList());
     }
 
+    /**
+     * <p>getIIIFMetadataFields.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getIIIFMetadataFields() {
         return getLocalList("webapi.iiif.metadataFields.field", Collections.emptyList());
     }
 
     /**
+     * <p>getIIIFEventFields.</p>
+     *
      * @return the list of all configured event fields for IIIF manifests All fields must contain a "/" to separate the event type and the actual
      *         field name If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from
      *         all events
@@ -3246,6 +3704,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getIIIFMetadataLabel.</p>
+     *
      * @param field the value of the field
      * @return The attribute "label" of any children of webapi.iiif.metadataFields
      * @should return correct values
@@ -3264,30 +3724,44 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
-     * 
+     *
      * @return The number of activities to display per collection page in the IIIF discovery api
      */
     public int getIIIFDiscoveryAvtivitiesPerPage() {
         return getLocalInt("webapi.iiif.discovery.activitiesPerPage", 100);
     }
 
+    /**
+     * <p>getIIIFLogo.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIIIFLogo() {
         return getLocalString("webapi.iiif.logo", null);
     }
 
     /**
-     * @return
+     * <p>getIIIFNavDateField.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getIIIFNavDateField() {
         return getLocalString("webapi.iiif.navDateField", null);
     }
 
+    /**
+     * <p>getIIIFAttribution.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIIIFAttribution() {
         return getLocalString("webapi.iiif.attribution", "provided by Goobi viewer");
     }
 
     /**
-     * @return
+     * <p>getIIIFDescriptionFields.</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", Collections.singletonList("MD_CONTENTDESCRIPTION"));
@@ -3295,23 +3769,29 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getSitelinksField.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSitelinksField() {
         return getLocalString("sitemap.sitelinksField");
     }
 
     /**
-     * @return
+     * <p>getSitelinksFilterQuery.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getSitelinksFilterQuery() {
         return getLocalString("sitemap.sitelinksFilterQuery");
     }
 
     /**
-     * 
+     * <p>getConfiguredCollections.</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getConfiguredCollections() {
         return getLocalList("collections.collection[@field]", Collections.emptyList());
@@ -3319,8 +3799,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getWebApiToken.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getWebApiToken() {
         String token = getLocalString("webapi.authorization.token", "");
@@ -3328,6 +3810,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>isAllowRedirectCollectionToWork.</p>
+     *
      * @return true if opening a collection containing only a single work should redirect to that work
      * @should return correct value
      */
@@ -3337,6 +3821,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * <p>getTwitterUserName.</p>
+     *
      * @return Configured value; null if none configured
      * @should return correct value
      */
@@ -3346,40 +3832,50 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * <p>getLimitImageHeightUpperRatioThreshold.</p>
+     *
      * @should return correct value
+     * @return a float.
      */
     public float getLimitImageHeightUpperRatioThreshold() {
         return getLocalFloat("viewer.limitImageHeight[@upperRatioThreshold]", 0.3f);
     }
 
     /**
-     * @return
+     * <p>getLimitImageHeightLowerRatioThreshold.</p>
+     *
      * @should return correct value
+     * @return a float.
      */
     public float getLimitImageHeightLowerRatioThreshold() {
         return getLocalFloat("viewer.limitImageHeight[@lowerRatioThreshold]", 3f);
     }
 
     /**
-     * @return
+     * <p>isLimitImageHeight.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isLimitImageHeight() {
         return getLocalBoolean("viewer.limitImageHeight", true);
     }
 
     /**
-     * @return
+     * <p>isAddCORSHeader.</p>
+     *
      * @should return correct value
+     * @return a boolean.
      */
     public boolean isAddCORSHeader() {
         return getLocalBoolean("webapi.cors[@use]", false);
     }
 
     /**
-     * @return
+     * <p>getCORSHeaderValue.</p>
+     *
      * @should return correct value
+     * @return a {@link java.lang.String} object.
      */
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");

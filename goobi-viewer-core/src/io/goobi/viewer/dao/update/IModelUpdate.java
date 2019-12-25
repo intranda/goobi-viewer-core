@@ -22,11 +22,18 @@ import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * Interface for classes which manipulate the database to conform to the setup required by the viewer
- * 
- * @author florian
  *
+ * @author florian
  */
 public interface IModelUpdate {
 
+	/**
+	 * <p>update.</p>
+	 *
+	 * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+	 * @return a boolean.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 * @throws java.sql.SQLException if any.
+	 */
 	public boolean update(IDAO dao) throws DAOException, SQLException;
 }

@@ -20,6 +20,10 @@ import java.util.List;
 
 import io.goobi.viewer.controller.Helper;
 
+/**
+ * <p>CalendarItemMonth class.</p>
+ *
+ */
 public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = -4930440571977358495L;
@@ -28,26 +32,54 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
 
     private List<CalendarItemDay> daysOfMonth;
 
+    /**
+     * <p>Constructor for CalendarItemMonth.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a int.
+     * @param hits a int.
+     */
     public CalendarItemMonth(String name, int value, int hits) {
         super(name, value, hits);
     }
 
+    /**
+     * <p>Getter for the field <code>daysOfMonth</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CalendarItemDay> getDaysOfMonth() {
         return daysOfMonth;
     }
 
+    /**
+     * <p>Setter for the field <code>daysOfMonth</code>.</p>
+     *
+     * @param daysOfMonth a {@link java.util.List} object.
+     */
     public void setDaysOfMonth(List<CalendarItemDay> daysOfMonth) {
         this.daysOfMonth = daysOfMonth;
     }
 
+    /**
+     * <p>Getter for the field <code>weeksOfMonth</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CalendarItemWeek> getWeeksOfMonth() {
         return weeksOfMonth;
     }
 
+    /**
+     * <p>Setter for the field <code>weeksOfMonth</code>.</p>
+     *
+     * @param weeksOfMonth a {@link java.util.List} object.
+     */
     public void setWeeksOfMonth(List<CalendarItemWeek> weeksOfMonth) {
         this.weeksOfMonth = weeksOfMonth;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "CalendarItemMonth [month=" + name + ", hits=" + hits + "]";

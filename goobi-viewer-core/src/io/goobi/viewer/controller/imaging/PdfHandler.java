@@ -35,36 +35,43 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * @author Florian Alpers
+ * <p>PdfHandler class.</p>
  *
+ * @author Florian Alpers
  */
 public class PdfHandler {
 
     private final WatermarkHandler watermarkHandler;
     private final String iiifUrl;
 
+    /**
+     * <p>Constructor for PdfHandler.</p>
+     *
+     * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
+     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     */
     public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
         this.iiifUrl = configuration.getRestApiUrl();
     }
 
     /**
-     * Return the pdf-download url for the given {@link StructElement} and {@link PhysicalElement}
-     * 
-     * @param doc
-     * @param page
-     * @return
+     * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and {@link io.goobi.viewer.model.viewer.PhysicalElement}
+     *
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(StructElement doc, PhysicalElement page) {
         return getPdfUrl(doc, new PhysicalElement[] { page });
     }
 
     /**
-     * Return the pdf-download url for the given {@link StructElement} and a number of {@link PhysicalElement}s
-     * 
-     * @param doc
-     * @param pages
-     * @return
+     * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of {@link io.goobi.viewer.model.viewer.PhysicalElement}s
+     *
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param pages an array of {@link io.goobi.viewer.model.viewer.PhysicalElement} objects.
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(StructElement doc, PhysicalElement[] pages) {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
@@ -109,10 +116,10 @@ public class PdfHandler {
 
     /**
      * Returns an existing pdf file from the media folder
-     * 
-     * @param pi
-     * @param filename
-     * @return
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(String pi, String filename) {
 
@@ -125,14 +132,13 @@ public class PdfHandler {
     }
 
     /**
-     * Gets the url to the pdf for the given {@link StructElement}. The pi is the one of the topStruct element of the given StructElement
-     * 
-     * @param divId DivID (LogID) of the docstruct for which the pdf should be generated. If this is null or empty, a pdf for the complete work is
-     *            generated
+     * Gets the url to the pdf for the given {@link io.goobi.viewer.model.viewer.StructElement}. The pi is the one of the topStruct element of the given StructElement
+     *
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
         String pi = doc.getTopStruct().getPi();
@@ -141,14 +147,13 @@ public class PdfHandler {
 
     /**
      * Gets the url to the pdf for the given pi and divId
-     * 
+     *
      * @param pi PI of the process from which to build pdf. Must be provided
-     * @param divId DivID (LogID) of the docstruct for which the pdf should be generated. If this is null or empty, a pdf for the complete work is
-     *            generated
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(StructElement doc, String pi, String label) throws PresentationException, IndexUnreachableException {
 
@@ -160,15 +165,13 @@ public class PdfHandler {
 
     /**
      * Returns the url to a PDF build from the mets file for the given {@code pi}
-     * 
-     * @param pi
-     * @param divId
-     * @param watermarkId
-     * @param watermarkText
-     * @param label
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param divId a {@link java.util.Optional} object.
+     * @param watermarkId a {@link java.util.Optional} object.
+     * @param watermarkText a {@link java.util.Optional} object.
+     * @param label a {@link java.util.Optional} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getPdfUrl(String pi, Optional<String> divId, Optional<String> watermarkId, Optional<String> watermarkText, Optional<String> label) {
 

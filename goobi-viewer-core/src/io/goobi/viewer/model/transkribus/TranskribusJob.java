@@ -38,6 +38,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+/**
+ * <p>TranskribusJob class.</p>
+ *
+ */
 @Entity
 @Table(name = "transkribus_jobs")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -121,6 +125,8 @@ public class TranskribusJob implements Serializable {
     protected List<String> observers = new ArrayList<>();
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -128,6 +134,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -135,6 +143,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>jobId</code>.</p>
+     *
      * @return the jobId
      */
     public String getJobId() {
@@ -142,6 +152,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>jobId</code>.</p>
+     *
      * @param jobId the jobId to set
      */
     public void setJobId(String jobId) {
@@ -149,6 +161,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>docId</code>.</p>
+     *
      * @return the docId
      */
     public String getDocId() {
@@ -156,6 +170,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>docId</code>.</p>
+     *
      * @param docId the docId to set
      */
     public void setDocId(String docId) {
@@ -163,6 +179,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -170,6 +188,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -177,6 +197,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>ownerId</code>.</p>
+     *
      * @return the ownerId
      */
     public String getOwnerId() {
@@ -184,6 +206,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>ownerId</code>.</p>
+     *
      * @param ownerId the ownerId to set
      */
     public void setOwnerId(String ownerId) {
@@ -191,6 +215,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>userCollectionId</code>.</p>
+     *
      * @return the userCollectionId
      */
     public String getUserCollectionId() {
@@ -198,6 +224,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>userCollectionId</code>.</p>
+     *
      * @param userCollectionId the userCollectionId to set
      */
     public void setUserCollectionId(String userCollectionId) {
@@ -205,6 +233,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>viewerCollectionId</code>.</p>
+     *
      * @return the viewerCollectionId
      */
     public String getViewerCollectionId() {
@@ -212,6 +242,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>viewerCollectionId</code>.</p>
+     *
      * @param viewerCollectionId the viewerCollectionId to set
      */
     public void setViewerCollectionId(String viewerCollectionId) {
@@ -219,6 +251,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
      * @return the message
      */
     public String getMessage() {
@@ -226,6 +260,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>message</code>.</p>
+     *
      * @param message the message to set
      */
     public void setMessage(String message) {
@@ -233,6 +269,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateCreated</code>.</p>
+     *
      * @return the dateCreated
      */
     public Date getDateCreated() {
@@ -240,6 +278,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateCreated</code>.</p>
+     *
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
@@ -247,6 +287,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
      * @return the status
      */
     public JobStatus getStatus() {
@@ -254,6 +296,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
      * @param status the status to set
      */
     public void setStatus(JobStatus status) {
@@ -261,6 +305,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -268,6 +314,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -275,6 +323,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>observers</code>.</p>
+     *
      * @return the observers
      */
     public List<String> getObservers() {
@@ -282,6 +332,8 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>observers</code>.</p>
+     *
      * @param observers the observers to set
      */
     public void setObservers(List<String> observers) {

@@ -24,12 +24,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
+/**
+ * <p>StringListConverter class.</p>
+ *
+ */
 @FacesConverter("stringListConverter")
 public class StringListConverter implements Converter {
 
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String input) {
         if (input.isEmpty() || input.equals("[]")) {
@@ -44,6 +49,7 @@ public class StringListConverter implements Converter {
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsString(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object input) {
         StringBuilder sb = new StringBuilder();

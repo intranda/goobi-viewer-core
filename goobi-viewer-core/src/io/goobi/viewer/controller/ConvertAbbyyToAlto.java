@@ -34,6 +34,10 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>ConvertAbbyyToAlto class.</p>
+ *
+ */
 public class ConvertAbbyyToAlto {
 
     private static final Logger logger = LoggerFactory.getLogger(ConvertAbbyyToAlto.class);
@@ -59,6 +63,14 @@ public class ConvertAbbyyToAlto {
 
     private int pageBlockCount = 0;
 
+    /**
+     * <p>convert.</p>
+     *
+     * @param input a {@link java.io.File} object.
+     * @return a {@link org.jdom2.Element} object.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any.
+     */
     public Element convert(File input) throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
         creationtime = new Date(input.lastModified());
@@ -73,6 +85,12 @@ public class ConvertAbbyyToAlto {
         return alto;
     }
 
+    /**
+     * <p>convert.</p>
+     *
+     * @param abbyyDoc a {@link org.jdom2.Document} object.
+     * @return a {@link org.jdom2.Element} object.
+     */
     public Element convert(Document abbyyDoc) {
         abbyy = abbyyDoc.getRootElement();
         Element alto = addAltoHeader();
@@ -510,6 +528,13 @@ public class ConvertAbbyyToAlto {
         return alto;
     }
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
+     */
     public static void main(String[] args) throws IOException, JDOMException {
         String inputfilename = "/home/florian/viewer/crowdsourcing/abbyydocument.xml";
         String outputfilename = "/home/florian/viewer/crowdsourcing/altodocument";
@@ -551,18 +576,38 @@ public class ConvertAbbyyToAlto {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>inputfilename</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInputfilename() {
         return inputfilename;
     }
 
+    /**
+     * <p>Setter for the field <code>inputfilename</code>.</p>
+     *
+     * @param inputfilename a {@link java.lang.String} object.
+     */
     public void setInputfilename(String inputfilename) {
         this.inputfilename = inputfilename;
     }
 
+    /**
+     * <p>Getter for the field <code>creationtime</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getCreationtime() {
         return creationtime;
     }
 
+    /**
+     * <p>Setter for the field <code>creationtime</code>.</p>
+     *
+     * @param creationtime a {@link java.util.Date} object.
+     */
     public void setCreationtime(Date creationtime) {
         this.creationtime = creationtime;
     }

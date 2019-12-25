@@ -37,10 +37,22 @@ public class Feedback implements Serializable {
     private String type;
     private String message;
 
+    /**
+     * <p>getEmailSubject.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getEmailSubject(String key) {
         return Helper.getTranslation(key, null);
     }
 
+    /**
+     * <p>getEmailBody.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getEmailBody(String key) {
         String body = Helper.getTranslation(key, null);
         if (body != null) {
@@ -55,6 +67,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -62,6 +76,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -69,6 +85,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>email</code>.</p>
+     *
      * @return the email
      */
     public String getEmail() {
@@ -76,6 +94,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>email</code>.</p>
+     *
      * @param email the email to set
      */
     public void setEmail(String email) {
@@ -83,6 +103,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
      * @return the url
      */
     public String getUrl() {
@@ -90,6 +112,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>url</code>.</p>
+     *
      * @param url the url to set
      */
     public void setUrl(String url) {
@@ -97,6 +121,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public String getType() {
@@ -104,6 +130,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -111,6 +139,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
      * @return the message
      */
     public String getMessage() {
@@ -118,6 +148,8 @@ public class Feedback implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>message</code>.</p>
+     *
      * @param message the message to set
      */
     public void setMessage(String message) {

@@ -17,8 +17,9 @@
 package io.goobi.viewer.model.viewer.object;
 
 /**
- * @author Florian Alpers
+ * <p>Point3D class.</p>
  *
+ * @author Florian Alpers
  */
 public class Point3D {
 
@@ -26,9 +27,11 @@ public class Point3D {
     private double y;
     private double z;
     /**
-     * @param x
-     * @param y
-     * @param z
+     * <p>Constructor for Point3D.</p>
+     *
+     * @param x a double.
+     * @param y a double.
+     * @param z a double.
      */
     public Point3D(double x, double y, double z) {
         super();
@@ -37,36 +40,48 @@ public class Point3D {
         this.z = z;
     }
     /**
+     * <p>Getter for the field <code>x</code>.</p>
+     *
      * @return the x
      */
     public double getX() {
         return x;
     }
     /**
+     * <p>Setter for the field <code>x</code>.</p>
+     *
      * @param x the x to set
      */
     public void setX(double x) {
         this.x = x;
     }
     /**
+     * <p>Getter for the field <code>y</code>.</p>
+     *
      * @return the y
      */
     public double getY() {
         return y;
     }
     /**
+     * <p>Setter for the field <code>y</code>.</p>
+     *
      * @param y the y to set
      */
     public void setY(double y) {
         this.y = y;
     }
     /**
+     * <p>Getter for the field <code>z</code>.</p>
+     *
      * @return the z
      */
     public double getZ() {
         return z;
     }
     /**
+     * <p>Setter for the field <code>z</code>.</p>
+     *
      * @param z the z to set
      */
     public void setZ(double z) {

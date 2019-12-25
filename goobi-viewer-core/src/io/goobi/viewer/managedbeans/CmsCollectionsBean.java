@@ -49,9 +49,8 @@ import io.goobi.viewer.model.viewer.CollectionView;
 
 /**
  * Bean handling cms settings for collections
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Named
 @SessionScoped
@@ -71,6 +70,9 @@ public class CmsCollectionsBean implements Serializable {
     private List<CMSCollection> collections;
     private boolean piValid = true;
 
+    /**
+     * <p>Constructor for CmsCollectionsBean.</p>
+     */
     public CmsCollectionsBean() {
         try {
             updateCollections();
@@ -81,6 +83,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentCollection</code>.</p>
+     *
      * @return the currentCollection
      */
     public CMSCollection getCurrentCollection() {
@@ -88,6 +92,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentCollection</code>.</p>
+     *
      * @param currentCollection the currentCollection to set
      */
     public void setCurrentCollection(CMSCollection currentCollection) {
@@ -95,6 +101,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>solrField</code>.</p>
+     *
      * @return the solrField
      */
     public String getSolrField() {
@@ -102,6 +110,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>solrField</code>.</p>
+     *
      * @param solrField the solrField to set
      */
     public void setSolrField(String solrField) {
@@ -115,6 +125,8 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>solrFieldValue</code>.</p>
+     *
      * @return the solrFieldValue
      */
     public String getSolrFieldValue() {
@@ -122,24 +134,38 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>solrFieldValue</code>.</p>
+     *
      * @param solrFieldValue the solrFieldValue to set
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
     }
 
+    /**
+     * <p>getAllCollectionFields.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getAllCollectionFields() {
         List<String> collections = DataManager.getInstance().getConfiguration().getConfiguredCollections();
         return collections;
     }
 
     /**
+     * <p>Getter for the field <code>collections</code>.</p>
+     *
      * @return the configuredColelctions
      */
     public List<CMSCollection> getCollections() {
         return collections;
     }
 
+    /**
+     * <p>updateCollections.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void updateCollections() throws DAOException {
         this.collections = DataManager.getInstance().getDao().getCMSCollections(getSolrField());
         this.collections.sort((c1, c2) -> Long.compare(c2.getId(), c1.getId()));
@@ -149,6 +175,11 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
+    /**
+     * <p>addCollection.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void addCollection() throws DAOException {
         if(StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {            
             CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
@@ -186,6 +217,12 @@ public class CmsCollectionsBean implements Serializable {
         
     }
 
+    /**
+     * <p>deleteCollection.</p>
+     *
+     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void deleteCollection(CMSCollection collection) throws DAOException {
         DataManager.getInstance().getDao().deleteCMSCollection(collection);
         removeFromCollectionViews(collection);
@@ -193,6 +230,12 @@ public class CmsCollectionsBean implements Serializable {
     }
 
 
+    /**
+     * <p>editCollection.</p>
+     *
+     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String editCollection(CMSCollection collection) {
         setCurrentCollection(collection);
         collection.populateDescriptions();
@@ -200,14 +243,32 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsEditCollection";
     }
 
+    /**
+     * <p>getCurrentLabel.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     */
     public CMSCollectionTranslation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
     }
 
+    /**
+     * <p>getCurrentDescription.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     */
     public CMSCollectionTranslation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);
     }
 
+    /**
+     * <p>saveCurrentCollection.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String saveCurrentCollection() throws DAOException {
         if (getCurrentCollection() != null) {
             DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
@@ -218,6 +279,12 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsCollections";
     }
 
+    /**
+     * <p>resetCurrentCollection.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public String resetCurrentCollection() throws DAOException {
         if (getCurrentCollection() != null) {
             DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
@@ -228,9 +295,8 @@ public class CmsCollectionsBean implements Serializable {
     
     /**
      * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr
-     * 
-     * @return  false only if a current collection is selected and it has a non-black {@link CMSCollecion#getRepresentativeWorkPI()} 
-     * which does not denote a work found in the solr index
+     *
+     * @return a boolean.
      */
     public boolean isCurrentCollectionValid() {
         if(getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
@@ -240,6 +306,14 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
+    /**
+     * <p>validatePI.</p>
+     *
+     * @param context a {@link javax.faces.context.FacesContext} object.
+     * @param comp a {@link javax.faces.component.UIComponent} object.
+     * @param value a {@link java.lang.Object} object.
+     * @throws javax.faces.validator.ValidatorException if any.
+     */
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException{
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
             try {
@@ -261,10 +335,11 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
-     * 
+     *
      * @return false if no current collection is set, the pi does not match any known work
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param pi a {@link java.lang.String} object.
      */
     public static boolean validatePi(String pi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotBlank(pi)) {

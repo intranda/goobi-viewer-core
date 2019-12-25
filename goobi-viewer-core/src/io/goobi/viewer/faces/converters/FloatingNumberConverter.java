@@ -23,14 +23,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author Florian Alpers
+ * <p>FloatingNumberConverter class.</p>
  *
+ * @author Florian Alpers
  */
 @FacesConverter("floatingNumberConverter")
 public class FloatingNumberConverter implements Converter{
 
     private static final String REPLACEMENT_REGEX = "[^0-9.+-]";
     
+    /** {@inheritDoc} */
     @Override
     public Object getAsObject(final FacesContext context, final UIComponent component, String value) {
         if(StringUtils.isBlank(value)) {
@@ -49,6 +51,7 @@ public class FloatingNumberConverter implements Converter{
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getAsString(final FacesContext context, final UIComponent component, final Object object) {
         if(object == null) {

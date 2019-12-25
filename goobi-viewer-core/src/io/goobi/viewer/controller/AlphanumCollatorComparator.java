@@ -30,16 +30,21 @@ import java.util.Comparator;
 
 /**
  * This is an updated version with enhancements made by Daniel Migowski, Andre Bogus, and David Koelle
- * 
+ *
  * To convert to use Templates (Java 1.5+): - Change "implements Comparator" to "implements Comparator<String>" - Change
  * "compare(Object o1, Object o2)" to "compare(String s1, String s2)" - Remove the type checking and casting in compare().
- * 
+ *
  * To use this class: Use the static "sort" method from the java.util.Collections class: Collections.sort(your list, new AlphanumComparator());
  */
 public class AlphanumCollatorComparator implements Comparator<String> {
 
 	private Collator collator;
 
+	/**
+	 * <p>Constructor for AlphanumCollatorComparator.</p>
+	 *
+	 * @param collator a {@link java.text.Collator} object.
+	 */
 	public AlphanumCollatorComparator(Collator collator) {
 		this.collator = collator;
 	}
@@ -74,6 +79,7 @@ public class AlphanumCollatorComparator implements Comparator<String> {
 		return chunk.toString();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public int compare(String s1, String s2) {
 

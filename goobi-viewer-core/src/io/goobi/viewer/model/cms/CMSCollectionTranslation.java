@@ -24,9 +24,8 @@ import io.goobi.viewer.model.misc.Translation;
 
 /**
  * A persistence object holding a translated String value
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "translations")
@@ -37,14 +36,25 @@ public class CMSCollectionTranslation extends Translation {
     @JoinColumn(name = "translation_owner_id")
     private CMSCollection owner;
 
+    /**
+     * <p>Constructor for CMSCollectionTranslation.</p>
+     */
     public CMSCollectionTranslation() {
     }
 
+    /**
+     * <p>Constructor for CMSCollectionTranslation.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public CMSCollectionTranslation(String language, String value) {
         super(language, value);
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public CMSCollection getOwner() {
@@ -52,6 +62,8 @@ public class CMSCollectionTranslation extends Translation {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(CMSCollection owner) {

@@ -27,14 +27,20 @@ import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 
 /**
  * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class IIIFPresentationAPIHandler {
 
     private final AbstractBuilder builder;
 
+    /**
+     * <p>Constructor for IIIFPresentationAPIHandler.</p>
+     *
+     * @param servletPath a {@link java.lang.String} object.
+     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
+     * @throws java.net.URISyntaxException if any.
+     */
     public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
         this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
         };
@@ -42,10 +48,10 @@ public class IIIFPresentationAPIHandler {
 
     /**
      * Returns the url to the manifest for the given pi
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return The IIIF manifest
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
      */
     public String getManifestUrl(String pi) throws URISyntaxException {
         return builder.getManifestURI(pi).toString();
@@ -53,9 +59,9 @@ public class IIIFPresentationAPIHandler {
 
     /**
      * Returns the url to a IIIF collection resource containing all top level collections for the field DC
-     * 
+     *
      * @return The IIIF collection url
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
      */
     public String getCollectionUrl() throws URISyntaxException {
         return getCollectionUrl(SolrConstants.DC);
@@ -63,9 +69,10 @@ public class IIIFPresentationAPIHandler {
 
     /**
      * Returns the url to a IIIF collection resource containing all top level collections for the given field
-     * 
+     *
      * @return The IIIF collection url
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
+     * @param field a {@link java.lang.String} object.
      */
     public String getCollectionUrl(String field) throws URISyntaxException {
         return getCollectionUrl(field, null);
@@ -73,22 +80,24 @@ public class IIIFPresentationAPIHandler {
 
     /**
      * Returns the url to a IIIF collection resource for the given collection name for the given field
-     * 
+     *
      * @return The IIIF collection url
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
+     * @param field a {@link java.lang.String} object.
+     * @param collection a {@link java.lang.String} object.
      */
     public String getCollectionUrl(String field, String collection) throws URISyntaxException {
         return builder.getCollectionURI(field, collection).toString();
     }
 
     /**
-     * 
+     *
      * Returns a IIIF layer with all annotations of the given {@link AnnotationType type} within the work of the given pi
-     * 
-     * @param pi
-     * @param annotationType
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param annotationType a {@link java.lang.String} object.
      * @return The IIIF layer url
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
      */
     public String getLayerUrl(String pi, String annotationType) throws URISyntaxException {
         AnnotationType type = AnnotationType.valueOf(annotationType.toUpperCase());
@@ -100,12 +109,12 @@ public class IIIFPresentationAPIHandler {
 
     /**
      * Returns a IIIF annotation list containing all annotations of the given type for the given page
-     * 
-     * @param pi
-     * @param pageOrder
-     * @param annotationType
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param pageOrder a int.
+     * @param annotationType a {@link java.lang.String} object.
      * @return The IIIF annotation list
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
      */
     public String getAnnotationsUrl(String pi, int pageOrder, String annotationType) throws URISyntaxException {
         AnnotationType type = AnnotationType.valueOf(annotationType.toUpperCase());
@@ -117,11 +126,11 @@ public class IIIFPresentationAPIHandler {
 
     /**
      * Returns the IIIF canvas for the given page
-     * 
-     * @param pi
-     * @param pageOrder
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param pageOrder a int.
      * @return The IIIF canvas url
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
      */
     public String getCanvasUrl(String pi, int pageOrder) throws URISyntaxException {
         return builder.getCanvasURI(pi, pageOrder).toString();
@@ -130,11 +139,11 @@ public class IIIFPresentationAPIHandler {
     /**
      * Returns a IIIF range representing the structural element for the given PI and logid. If the logid is the logid of the work itself, The
      * "CONTENT" range is returned, containing all topmost ranges but no canvases and no metadata
-     * 
-     * @param pi
-     * @param logId
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
      * @return The IIIF range url
-     * @throws URISyntaxException
+     * @throws java.net.URISyntaxException
      */
     public String getRangeUrl(String pi, String logId) throws URISyntaxException {
         return builder.getRangeURI(pi, logId).toString();

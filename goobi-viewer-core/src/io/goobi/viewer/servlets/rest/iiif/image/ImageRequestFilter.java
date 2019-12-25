@@ -49,6 +49,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 
+/**
+ * <p>ImageRequestFilter class.</p>
+ *
+ */
 @Provider
 @ContentServerImageBinding
 public class ImageRequestFilter implements ContainerRequestFilter {
@@ -60,6 +64,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     @Context
     private HttpServletResponse servletResponse;
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
@@ -115,9 +120,14 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param pi
-     * @param imageName
-     * @throws IOException
+     * <p>forwardToCanonicalUrl.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param imageName a {@link java.lang.String} object.
+     * @throws java.io.IOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a boolean.
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -185,10 +195,12 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param request
-     * @param size
-     * @param region
-     * @return
+     * <p>getIsThumbnail.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param size a {@link java.lang.String} object.
+     * @param region a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean getIsThumbnail(ContainerRequestContext request, String size, String region) {
         int imageWidth = Integer.MAX_VALUE;

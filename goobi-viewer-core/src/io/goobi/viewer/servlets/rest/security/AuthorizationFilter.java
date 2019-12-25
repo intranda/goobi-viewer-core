@@ -36,6 +36,10 @@ import io.goobi.viewer.servlets.rest.search.SearchHitsNotificationResource;
 import io.goobi.viewer.servlets.rest.utils.IndexingResource;
 import io.goobi.viewer.servlets.rest.utils.SitemapResource;
 
+/**
+ * <p>AuthorizationFilter class.</p>
+ *
+ */
 @Provider
 @AuthenticationBinding
 public class AuthorizationFilter implements ContainerRequestFilter {
@@ -45,6 +49,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest req;
 
+    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String token = requestContext.getHeaderString("token");

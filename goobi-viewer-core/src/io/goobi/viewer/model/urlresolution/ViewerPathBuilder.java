@@ -41,22 +41,21 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * This class offers static methods to create {@link ViewerPath ViewerPaths} from a http request.
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class ViewerPathBuilder {
 
     /**
-     * Returns the request path of the given {@code httpRequest} as a {@link ViewerPath}, including information on associated CMSPage and targeted
+     * Returns the request path of the given {@code httpRequest} as a {@link io.goobi.viewer.model.urlresolution.ViewerPath}, including information on associated CMSPage and targeted
      * PageType
-     * 
+     *
      * If the url has a pretty-url context and only consists of the server url, "/index" is appended to the url to redirect to the index
      * pretty-mapping Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
-     * 
+     *
      * @param httpRequest The request from which the path is generated
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.Optional} object.
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest httpRequest) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest); // http://localhost:8080/viewer
@@ -72,6 +71,14 @@ public class ViewerPathBuilder {
 
     }
 
+    /**
+     * <p>createPath.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param baseUrl a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public static Optional<ViewerPath> createPath(HttpServletRequest request, String baseUrl) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
         String serverName = request.getContextPath(); // /viewer
@@ -81,15 +88,15 @@ public class ViewerPathBuilder {
 
     /**
      * Create a combined path from the given url.
-     * 
+     *
      * If the url leads to a known PageType, associates the PageType with the combined path. If the path leads to a cmsPage, either through direct url
      * {@code /cmds/...}, the cmsPages alternative url or a static page mapping, the cmsPage is associated with this path
-     * 
+     *
      * @param applicationUrl The absolute url of the web-application including the application name ('viewer')
      * @param applicationName The name of the web-application. This is always the last part of the {@code hostUrl}. May be empty
      * @param serviceUrl The complete requested url, optionally including the hostUrl
-     * @return A {@link ViewerPath} containing the complete path information
-     * @throws DAOException
+     * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl) throws DAOException {
         serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
@@ -152,10 +159,10 @@ public class ViewerPathBuilder {
 
     /**
      * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path
-     * 
-     * @param servicePath
-     * @return
-     * @throws DAOException
+     *
+     * @param servicePath a {@link java.net.URI} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.Optional} object.
      */
     public static Optional<CMSPage> getCmsPage(URI servicePath) throws DAOException {
 
@@ -177,10 +184,11 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * 
-     * @param servicePath
-     * @return
-     * @throws DAOException
+     * <p>getCampaign.</p>
+     *
+     * @param servicePath a {@link java.net.URI} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.Optional} object.
      */
     public static Optional<Campaign> getCampaign(URI servicePath) throws DAOException {
         List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
@@ -199,10 +207,10 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * Gets the {@link PageType} that the given path refers to, if any
-     * 
-     * @param servicePath
-     * @return
+     * Gets the {@link io.goobi.viewer.model.viewer.PageType} that the given path refers to, if any
+     *
+     * @param servicePath a {@link java.net.URI} object.
+     * @return a {@link java.util.Optional} object.
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
 
@@ -217,10 +225,10 @@ public class ViewerPathBuilder {
     /**
      * Returns true if the first parts of the uri (separated by '/') are equal to all parts of the given string (separated by '/'). If the string has
      * more parts than the uri, false is returned
-     * 
-     * @param uri
-     * @param string
-     * @return
+     *
+     * @param uri a {@link java.net.URI} object.
+     * @param string a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public static boolean startsWith(URI uri, String string) {
         if (uri != null) {
@@ -245,10 +253,24 @@ public class ViewerPathBuilder {
         }
     }
 
+    /**
+     * <p>resolve.</p>
+     *
+     * @param master a {@link java.net.URI} object.
+     * @param slave a {@link java.net.URI} object.
+     * @return a {@link java.net.URI} object.
+     */
     public static URI resolve(URI master, URI slave) {
         return resolve(master, slave.toString());
     }
 
+    /**
+     * <p>resolve.</p>
+     *
+     * @param master a {@link java.net.URI} object.
+     * @param slave a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
     public static URI resolve(URI master, String slave) {
         String base = master.toString();
         if (base.endsWith("/")) {

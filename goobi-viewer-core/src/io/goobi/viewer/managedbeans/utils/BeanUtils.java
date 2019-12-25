@@ -55,22 +55,33 @@ public class BeanUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanUtils.class);
 
+    /** Constant <code>SLASH_REPLACEMENT="U002F"</code> */
     public static final String SLASH_REPLACEMENT = "U002F";
+    /** Constant <code>BACKSLASH_REPLACEMENT="U005C"</code> */
     public static final String BACKSLASH_REPLACEMENT = "U005C";
+    /** Constant <code>PIPE_REPLACEMENT="U007C"</code> */
     public static final String PIPE_REPLACEMENT = "U007C";
+    /** Constant <code>QUESTION_MARK_REPLACEMENT="U003F"</code> */
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
+    /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
     public static final String PERCENT_REPLACEMENT = "U0025";
     
     /**
      * Gets the current Request from the faces context
-     * 
-     * @return
+     *
+     * @return a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest() {
         FacesContext context = FacesContext.getCurrentInstance();
         return getRequest(context);
     }
 
+    /**
+     * <p>getRequest.</p>
+     *
+     * @param context a {@link javax.faces.context.FacesContext} object.
+     * @return a {@link javax.servlet.http.HttpServletRequest} object.
+     */
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -96,10 +107,22 @@ public class BeanUtils {
         return "";
     }
 
+    /**
+     * <p>hasJsfContext.</p>
+     *
+     * @return a boolean.
+     */
     public static boolean hasJsfContext() {
         return FacesContext.getCurrentInstance() != null;
     }
 
+    /**
+     * <p>getServletImagesPathFromRequest.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param theme a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
         StringBuilder sb = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
         if (!sb.toString().endsWith("/")) {
@@ -114,8 +137,9 @@ public class BeanUtils {
     }
 
     /**
-     * 
-     * @return
+     * <p>getServletContext.</p>
+     *
+     * @return a {@link javax.servlet.ServletContext} object.
      */
     public static ServletContext getServletContext() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -126,8 +150,9 @@ public class BeanUtils {
     }
 
     /**
-     * 
-     * @return
+     * <p>getLocale.</p>
+     *
+     * @return a {@link java.util.Locale} object.
      */
     public static Locale getLocale() {
         NavigationHelper nh = BeanUtils.getNavigationHelper();
@@ -138,6 +163,11 @@ public class BeanUtils {
         return Locale.ENGLISH;
     }
     
+    /**
+     * <p>getDefaultLocale.</p>
+     *
+     * @return a {@link java.util.Locale} object.
+     */
     public static Locale getDefaultLocale() {
         NavigationHelper nh = BeanUtils.getNavigationHelper();
         if (nh != null) {
@@ -176,6 +206,13 @@ public class BeanUtils {
         }
     }
 
+    /**
+     * <p>getBeanByName.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param clazz a {@link java.lang.Class} object.
+     * @return a {@link java.lang.Object} object.
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) {
         BeanManager bm = getBeanManager();
@@ -189,8 +226,9 @@ public class BeanUtils {
     }
 
     /**
-     * 
-     * @return
+     * <p>getNavigationHelper.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
      */
     public static NavigationHelper getNavigationHelper() {
         NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
@@ -206,40 +244,54 @@ public class BeanUtils {
 
 
     /**
-     * 
-     * @return
+     * <p>getActiveDocumentBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} object.
      */
     public static ActiveDocumentBean getActiveDocumentBean() {
         return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
 
     /**
-     * 
-     * @return
+     * <p>getSearchBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.SearchBean} object.
      */
     public static SearchBean getSearchBean() {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
 
+    /**
+     * <p>getCMSCollectionsBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CmsCollectionsBean} object.
+     */
     public static CmsCollectionsBean getCMSCollectionsBean() {
         return (CmsCollectionsBean) getBeanByName("cmsCollectionsBean", CmsCollectionsBean.class);
     }
     
+    /**
+     * <p>getMetadataBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.MetadataBean} object.
+     */
     public static MetadataBean getMetadataBean() {
         return (MetadataBean) getBeanByName("metadataBean", MetadataBean.class);
     }
 
     /**
-     * 
-     * @return
+     * <p>getCmsBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CmsBean} object.
      */
     public static CmsBean getCmsBean() {
         return (CmsBean) getBeanByName("cmsBean", CmsBean.class);
     }
 
     /**
-     * 
-     * @return
+     * <p>getCmsMediaBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CmsMediaBean} object.
      */
     public static CmsMediaBean getCmsMediaBean() {
         return (CmsMediaBean) getBeanByName("cmsMediaBean", CmsMediaBean.class);
@@ -247,21 +299,28 @@ public class BeanUtils {
 
     
     /**
-     * 
-     * @return
+     * <p>getCalendarBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CalendarBean} object.
      */
     public static CalendarBean getCalendarBean() {
         return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
     }
 
     /**
-     * 
-     * @return
+     * <p>getUserBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBean() {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
+    /**
+     * <p>getImageDeliveryBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
+     */
     public static ImageDeliveryBean getImageDeliveryBean() {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
         if (bean == null) {
@@ -279,16 +338,19 @@ public class BeanUtils {
     }
 
     /**
-     * 
-     * @return
+     * <p>getBrowseBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.BrowseBean} object.
      */
     public static BrowseBean getBrowseBean() {
         return (BrowseBean) getBeanByName("browseBean", BrowseBean.class);
     }
 
     /**
-     * 
-     * @return
+     * <p>getUserBeanFromRequest.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
         if (request != null) {
@@ -299,8 +361,10 @@ public class BeanUtils {
     }
 
     /**
-     * 
-     * @return
+     * <p>getUserFromRequest.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public static User getUserFromRequest(HttpServletRequest request) {
         UserBean ub = getUserBeanFromRequest(request);
@@ -311,15 +375,23 @@ public class BeanUtils {
         return null;
     }
 
+    /**
+     * <p>escapeCriticalUrlChracters.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String escapeCriticalUrlChracters(String value) {
         return escapeCriticalUrlChracters(value, false);
     }
 
     /**
+     * <p>escapeCriticalUrlChracters.</p>
      *
-     * @param value
-     * @return
+     * @param value a {@link java.lang.String} object.
      * @should replace characters correctly
+     * @param escapePercentCharacters a boolean.
+     * @return a {@link java.lang.String} object.
      */
     public static String escapeCriticalUrlChracters(String value, boolean escapePercentCharacters) {
         if (value == null) {
@@ -334,10 +406,11 @@ public class BeanUtils {
     }
 
     /**
+     * <p>unescapeCriticalUrlChracters.</p>
      *
-     * @param value
-     * @return
+     * @param value a {@link java.lang.String} object.
      * @should replace characters correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String unescapeCriticalUrlChracters(String value) {
         if (value == null) {
@@ -352,7 +425,9 @@ public class BeanUtils {
     }
 
     /**
-     * @return
+     * <p>getResponse.</p>
+     *
+     * @return a {@link javax.servlet.http.HttpServletResponse} object.
      */
     public static HttpServletResponse getResponse() {
         FacesContext context = FacesContext.getCurrentInstance();

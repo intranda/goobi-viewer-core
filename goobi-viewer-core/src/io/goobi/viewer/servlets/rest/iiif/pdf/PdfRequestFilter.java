@@ -41,6 +41,10 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 
+/**
+ * <p>PdfRequestFilter class.</p>
+ *
+ */
 @Provider
 @ContentServerPdfBinding
 public class PdfRequestFilter implements ContainerRequestFilter {
@@ -50,6 +54,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest servletRequest;
 
+    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {

@@ -32,11 +32,13 @@ import io.goobi.viewer.controller.Helper;
 @FacesValidator("piValidator")
 public class PIValidator implements Validator<String> {
 
+    /** Constant <code>ILLEGAL_CHARS</code> */
     protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         if (!validatePi(value)) {
@@ -47,12 +49,13 @@ public class PIValidator implements Validator<String> {
     }
 
     /**
+     * <p>validatePi.</p>
      *
-     * @param pi
-     * @return
+     * @param pi a {@link java.lang.String} object.
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if pi contains illegal characters
+     * @return a boolean.
      */
     public static boolean validatePi(String pi) {
         if (StringUtils.isBlank(pi)) {

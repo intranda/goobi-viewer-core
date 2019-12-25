@@ -17,15 +17,19 @@ package io.goobi.viewer.servlets.oembed;
 
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
+/**
+ * <p>PhotoOEmbedResponse class.</p>
+ *
+ */
 public class PhotoOEmbedResponse extends OEmbedResponse {
 
     private String url;
 
     /**
      * Constructor.
-     * 
-     * @param record
-     * @throws ViewerConfigurationException
+     *
+     * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public PhotoOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
         this.type = "photo";
@@ -49,6 +53,8 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
      * @return the url
      */
     public String getUrl() {
@@ -56,6 +62,8 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>url</code>.</p>
+     *
      * @param url the url to set
      */
     public void setUrl(String url) {

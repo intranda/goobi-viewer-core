@@ -39,6 +39,10 @@ import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
+/**
+ * <p>UserGroupBean class.</p>
+ *
+ */
 @Named
 @SessionScoped
 public class UserGroupBean implements Serializable {
@@ -53,11 +57,16 @@ public class UserGroupBean implements Serializable {
     private User currentMember;
     private Role currentRole;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public UserGroupBean() {
         // the emptiness inside
     }
 
+    /**
+     * <p>init.</p>
+     */
     @PostConstruct
     public void init() {
         if (currentOwnUserGroup == null) {
@@ -68,7 +77,8 @@ public class UserGroupBean implements Serializable {
     /**
      * Creates or updates (if already exists) currentOwnUserGroup.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param actionEvent a {@link javax.faces.event.ActionEvent} object.
      */
     public void saveCurrentOwnUserGroupAction(ActionEvent actionEvent) throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -94,7 +104,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Deletes currentUserGroup. TODO Some sort of confirmation dialog
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void deleteCurrentUserGroupAction() throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -111,7 +121,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Revokes the current user's membership in currentOtherUserGroup. TODO Some sort of confirmation dialog
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void leaveCurrentUserGroupAction() throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -132,7 +142,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Add currentMember to the member list of currentOwnUserGroup.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void saveMembershipAction() throws DAOException {
         currentRole = new Role();
@@ -155,7 +165,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Removes currentMember from the member list of currentUserGroup.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void removeCurrentMemberAction() throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -173,13 +183,13 @@ public class UserGroupBean implements Serializable {
      * Returns the names all users that are not already members of the currently selected user group. TODO Filter some user groups, if required (e.g.
      * admins)
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return all non member names
      * @should not return active user name
      * @should not return group member names
      * @should not modify global user group list
      * @should return empty list if no remaining user group names
+     * @return a {@link java.util.List} object.
      */
     public List<SelectItem> getRemainingUsers() throws DAOException {
         List<SelectItem> ret = new ArrayList<>();
@@ -199,7 +209,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * @param event {@link ValueChangeEvent}
+     * <p>memberSelectedAction.</p>
+     *
+     * @param event {@link javax.faces.event.ValueChangeEvent}
      */
     public void memberSelectedAction(ValueChangeEvent event) {
         // currentMember = DataManager.getInstance().getUserByName(String.valueOf(event.getNewValue()));
@@ -208,8 +220,8 @@ public class UserGroupBean implements Serializable {
     /**
      * Returns a list of all existing roles (minus superuser).
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<Role> getAllRoles() throws DAOException {
         List<Role> ret = new ArrayList<>();
@@ -226,6 +238,8 @@ public class UserGroupBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>currentOtherUserGroup</code>.</p>
+     *
      * @return the currentOtherUserGroup
      */
     public UserGroup getCurrentOtherUserGroup() {
@@ -233,6 +247,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentOtherUserGroup</code>.</p>
+     *
      * @param currentOtherUserGroup the currentOtherUserGroup to set
      */
     public void setCurrentOtherUserGroup(UserGroup currentOtherUserGroup) {
@@ -240,6 +256,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentOwnUserGroupId</code>.</p>
+     *
      * @return the currentOwnUserGroupId
      */
     public int getCurrentOwnUserGroupId() {
@@ -247,6 +265,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentOwnUserGroupId</code>.</p>
+     *
      * @param currentOwnUserGroupId the currentOwnUserGroupId to set
      */
     public void setCurrentOwnUserGroupId(int currentOwnUserGroupId) {
@@ -254,6 +274,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentOwnUserGroup</code>.</p>
+     *
      * @return the currentOwnUserGroup
      */
     public UserGroup getCurrentOwnUserGroup() {
@@ -261,6 +283,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentOwnUserGroup</code>.</p>
+     *
      * @param currentOwnUserGroup the currentOwnUserGroup to set
      */
     public void setCurrentOwnUserGroup(UserGroup currentOwnUserGroup) {
@@ -273,14 +297,17 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * @throws DAOException
+     * <p>Setter for the field <code>currentOwnUserGroup</code>.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentOwnUserGroup() throws DAOException {
         setCurrentOwnUserGroup(DataManager.getInstance().getDao().getUserGroup(getCurrentOwnUserGroupId()));
     }
 
     /**
+     * <p>Getter for the field <code>currentMember</code>.</p>
+     *
      * @return the currentMember
      */
     public User getCurrentMember() {
@@ -288,6 +315,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentMember</code>.</p>
+     *
      * @param currentMember the currentMember to set
      */
     public void setCurrentMember(User currentMember) {
@@ -295,6 +324,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentRole</code>.</p>
+     *
      * @return the currentRole
      */
     public Role getCurrentRole() {
@@ -302,6 +333,8 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentRole</code>.</p>
+     *
      * @param currentRole the currentRole to set
      */
     public void setCurrentRole(Role currentRole) {
@@ -311,7 +344,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Used for the 'add member' selectbox.
      *
-     * @return
+     * @return a {@link java.lang.Long} object.
      */
     public Long getCurrentId() {
         return -1L;
@@ -320,7 +353,8 @@ public class UserGroupBean implements Serializable {
     /**
      * Used for the 'add member' selectbox.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param id a {@link java.lang.Long} object.
      */
     public void setCurrentId(Long id) throws DAOException {
         if (id != null) {
@@ -328,6 +362,11 @@ public class UserGroupBean implements Serializable {
         }
     }
 
+    /**
+     * <p>isNewUserGroup.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNewUserGroup() {
         return StringUtils.isEmpty(currentOwnUserGroup.getName());
     }

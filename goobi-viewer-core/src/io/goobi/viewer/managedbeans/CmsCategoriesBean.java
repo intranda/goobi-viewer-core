@@ -37,9 +37,8 @@ import io.goobi.viewer.model.cms.CMSCategory;
 
 /**
  * Managed Bean for editing, deleting and creating {@link CMSCategory categories}
- * 
- * @author florian
  *
+ * @author florian
  */
 @Named("categories")
 @SessionScoped
@@ -66,11 +65,11 @@ public class CmsCategoriesBean implements Serializable {
 	private CMSCategory selectedCategory = null;
 
 	/**
-	 * Check if {@link #getCategoryName()} is empty or equal (ignoring case) to the name of any existing category. 
+	 * Check if {@link #getCategoryName()} is empty or equal (ignoring case) to the name of any existing category.
 	 * If we are editing a category, obviously ignore this category for the check
-	 * 
+	 *
 	 * @return	true if {@link #getCategoryName()} returns a valid name for a category
-	 * @throws DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public boolean isValid() throws DAOException {
 		if(StringUtils.isNotBlank(getCategoryName())) {
@@ -85,8 +84,8 @@ public class CmsCategoriesBean implements Serializable {
 	}
 	
 	/**
-	 * Start editing the given category. Editing will continue until either {@link #save()} or {@link #cancel()} is executed 
-	 * 
+	 * Start editing the given category. Editing will continue until either {@link #save()} or {@link #cancel()} is executed
+	 *
 	 * @param category	The category to edit
 	 */
 	public void edit(CMSCategory category) {
@@ -96,13 +95,13 @@ public class CmsCategoriesBean implements Serializable {
 	}
 	
 	/**
-	 * If editing mode is active, set categoryName and categoryDescription to the currently selected category, 
-	 * persist it and end the editing mode. 
-	 * Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()} 
-	 * and {@link CmsCategoriesBean#getCategoryDescription()} and persist it.
+	 * If editing mode is active, set categoryName and categoryDescription to the currently selected category,
+	 * persist it and end the editing mode.
+	 * Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()}
+	 * and {@link io.goobi.viewer.managedbeans.CmsCategoriesBean#getCategoryDescription()} and persist it.
 	 *  Also clear categoryName and categoryDescription.
-	 * 
-	 * @throws DAOException 
+	 *
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public void save() throws DAOException {
 		if(isValid()) {			
@@ -123,9 +122,8 @@ public class CmsCategoriesBean implements Serializable {
 	
 	/**
 	 * Delete the given Category in DAO.  Also clear categoryName and categoryDescription
-	 * 
-	 * @param category
-	 * @throws DAOException
+	 *
+	 * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
 	 */
 	public void delete(CMSCategory category) {
 		if(getSelectedCategory() != null && getSelectedCategory().equals(category)) {
@@ -157,7 +155,7 @@ public class CmsCategoriesBean implements Serializable {
 	
 	/**
 	 * Check is we are currently editing an existing category, i.e. {@link #getSelectedCategory} doesn't return null
-	 * 
+	 *
 	 * @return true if we are currently editing an existing category, i.e. {@link #getSelectedCategory} doesn't return null
 	 */
 	public boolean isEditing() {
@@ -172,15 +170,17 @@ public class CmsCategoriesBean implements Serializable {
 	
 	/**
 	 * Returns a newly created list of all saved categories
-	 * 
+	 *
 	 * @return a newly created list of all saved categories
-	 * @throws DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public List<CMSCategory> getAllCategories() throws DAOException {
 		return new ArrayList<CMSCategory>(DataManager.getInstance().getDao().getAllCategories());
 	}
 	
 	/**
+	 * <p>Getter for the field <code>categoryName</code>.</p>
+	 *
 	 * @return the categoryName
 	 */
 	public String getCategoryName() {
@@ -188,6 +188,8 @@ public class CmsCategoriesBean implements Serializable {
 	}
 
 	/**
+	 * <p>Setter for the field <code>categoryName</code>.</p>
+	 *
 	 * @param categoryName the categoryName to set
 	 */
 	public void setCategoryName(String categoryName) {
@@ -195,6 +197,8 @@ public class CmsCategoriesBean implements Serializable {
 	}
 
 	/**
+	 * <p>Getter for the field <code>categoryDescription</code>.</p>
+	 *
 	 * @return the categoryDescription
 	 */
 	public String getCategoryDescription() {
@@ -202,6 +206,8 @@ public class CmsCategoriesBean implements Serializable {
 	}
 
 	/**
+	 * <p>Setter for the field <code>categoryDescription</code>.</p>
+	 *
 	 * @param categoryDescription the categoryDescription to set
 	 */
 	public void setCategoryDescription(String categoryDescription) {
@@ -209,6 +215,8 @@ public class CmsCategoriesBean implements Serializable {
 	}
 
 	/**
+	 * <p>Getter for the field <code>selectedCategory</code>.</p>
+	 *
 	 * @return the selectedCategory
 	 */
 	public CMSCategory getSelectedCategory() {

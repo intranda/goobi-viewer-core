@@ -46,8 +46,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * @author florian
+ * <p>AnnotationResource class.</p>
  *
+ * @author florian
  */
 @Path("/annotations")
 public class AnnotationResource {
@@ -57,6 +58,18 @@ public class AnnotationResource {
     @Context
     private HttpServletResponse servletResponse;
     
+    /**
+     * <p>getAnnotation.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.annotation.IAnnotation} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
+     */
     @GET
     @Path("/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -75,6 +88,18 @@ public class AnnotationResource {
         return anno;
     }
     
+    /**
+     * <p>getOpenAnnotation.</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link de.intranda.api.annotation.IAnnotation} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
+     */
     @GET
     @Path("/{type}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -94,6 +119,18 @@ public class AnnotationResource {
     }
     
     
+    /**
+     * <p>getAnnotationsForPage.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.annotation.wa.collection.AnnotationPage} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
+     */
     @GET
     @Path("/collection/{pi}/{page}/")
     @Produces({ MediaType.APPLICATION_JSON })

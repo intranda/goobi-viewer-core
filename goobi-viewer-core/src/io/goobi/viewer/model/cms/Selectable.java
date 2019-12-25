@@ -17,21 +17,28 @@ package io.goobi.viewer.model.cms;
 
 /**
  * An entity holding an object which can be selected or deselected
- * 
- * @author florian
  *
+ * @author florian
  */
 public class Selectable<T> implements Comparable<Selectable<T>> {
 
     private final T value;
     private boolean selected;
 
+    /**
+     * <p>Constructor for Selectable.</p>
+     *
+     * @param value a T object.
+     * @param selected a boolean.
+     */
     public Selectable(T value, boolean selected) {
         this.value = value;
         this.selected = selected;
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public T getValue() {
@@ -39,6 +46,8 @@ public class Selectable<T> implements Comparable<Selectable<T>> {
     }
 
     /**
+     * <p>isSelected.</p>
+     *
      * @return the selected
      */
     public boolean isSelected() {
@@ -46,6 +55,8 @@ public class Selectable<T> implements Comparable<Selectable<T>> {
     }
 
     /**
+     * <p>Setter for the field <code>selected</code>.</p>
+     *
      * @param selected the selected to set
      */
     public void setSelected(boolean selected) {
@@ -55,6 +66,7 @@ public class Selectable<T> implements Comparable<Selectable<T>> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public int compareTo(Selectable<T> other) {
@@ -68,6 +80,7 @@ public class Selectable<T> implements Comparable<Selectable<T>> {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return (isSelected() ? "SELECTED" : "") + getValue().toString();

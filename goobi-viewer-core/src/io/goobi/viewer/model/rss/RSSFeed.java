@@ -52,6 +52,10 @@ import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
+/**
+ * <p>RSSFeed class.</p>
+ *
+ */
 public class RSSFeed {
     /**
      * 
@@ -60,6 +64,7 @@ public class RSSFeed {
 
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
+    /** Constant <code>FIELDS</code> */
     public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PERSON_ONEFIELD,
@@ -67,20 +72,27 @@ public class RSSFeed {
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
+     * <p>createRss.</p>
      *
-     * @param rootPath
-     * @param query
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @param rootPath a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
      */
     public static SyndFeed createRss(String rootPath, String query)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return createRss(rootPath, query, null, null);
     }
 
+    /**
+     * <p>getFieldsWithTranslation.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<String> getFieldsWithTranslation(Locale locale) {
         List<String> allFields = new ArrayList<>();
         for (String string : FIELDS) {
@@ -91,15 +103,16 @@ public class RSSFeed {
     }
 
     /**
-     * 
-     * @param rootPath
-     * @param query
-     * @param filterQueries
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
+     * <p>createRss.</p>
+     *
+     * @param rootPath a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
      */
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
@@ -348,22 +361,34 @@ public class RSSFeed {
         return feed;
     }
 
+    /**
+     * <p>createRssFeed.</p>
+     *
+     * @param rootPath a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param rssFeedItems a int.
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         return createRssFeed(rootPath, query, null, rssFeedItems, null);
     }
 
     /**
-     * 
-     * @param rootPath
-     * @param query
-     * @param filterQueries
-     * @param rssFeedItems
-     * @param language
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
+     * <p>createRssFeed.</p>
+     *
+     * @param rootPath a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param rssFeedItems a int.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
      */
     public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
@@ -598,9 +623,12 @@ public class RSSFeed {
     }
 
     /**
-     * @param rootPath
-     * @param pi
-     * @param pageType
+     * <p>createLink.</p>
+     *
+     * @param rootPath a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String createLink(String rootPath, String pi, PageType pageType) {
         StringBuilder link = new StringBuilder();
@@ -609,13 +637,16 @@ public class RSSFeed {
     }
 
     /**
-     * @param rootPath
-     * @param anchor
-     * @param ePublication
-     * @param pi
-     * @param thumbnail
-     * @param thumbWidth
-     * @param thumbHeight
+     * <p>createImageUrl.</p>
+     *
+     * @param rootPath a {@link java.lang.String} object.
+     * @param anchor a boolean.
+     * @param ePublication a boolean.
+     * @param pi a {@link java.lang.String} object.
+     * @param thumbnail a {@link java.lang.String} object.
+     * @param thumbWidth a int.
+     * @param thumbHeight a int.
+     * @return a {@link java.lang.String} object.
      */
     @Deprecated
     public static String createImageUrl(String rootPath, boolean anchor, boolean ePublication, String pi, String thumbnail, int thumbWidth,

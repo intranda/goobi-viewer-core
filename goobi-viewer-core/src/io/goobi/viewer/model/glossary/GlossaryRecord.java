@@ -16,8 +16,9 @@
 package io.goobi.viewer.model.glossary;
 
 /**
- * @author Florian Alpers
+ * <p>GlossaryRecord class.</p>
  *
+ * @author Florian Alpers
  */
 public class GlossaryRecord {
     
@@ -26,36 +27,48 @@ public class GlossaryRecord {
     private String description;
     private String source;
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
         return title;
     }
     /**
+     * <p>Setter for the field <code>title</code>.</p>
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
         this.title = title;
     }
     /**
+     * <p>Getter for the field <code>keywords</code>.</p>
+     *
      * @return the keywords
      */
     public String getKeywords() {
         return keywords;
     }
     /**
+     * <p>Setter for the field <code>keywords</code>.</p>
+     *
      * @param keywords the keywords to set
      */
     public void setKeywords(String keywords) {
         this.keywords = keywords;
     }
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
         return description;
     }
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -63,6 +76,8 @@ public class GlossaryRecord {
     }
     
     /**
+     * <p>Getter for the field <code>source</code>.</p>
+     *
      * @return the source
      */
     public String getSource() {
@@ -70,6 +85,8 @@ public class GlossaryRecord {
     }
     
     /**
+     * <p>Setter for the field <code>source</code>.</p>
+     *
      * @param source the source to set
      */
     public void setSource(String source) {

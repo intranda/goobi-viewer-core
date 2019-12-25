@@ -29,6 +29,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>Abstract Translation class.</p>
+ *
+ */
 @MappedSuperclass
 public abstract class Translation {
 
@@ -51,13 +55,17 @@ public abstract class Translation {
     @Column(name = "value", nullable = true, columnDefinition = "LONGTEXT")
     protected String value;
 
+    /**
+     * <p>Constructor for Translation.</p>
+     */
     public Translation() {
     }
 
     /**
-     * 
-     * @param language
-     * @param value
+     * <p>Constructor for Translation.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public Translation(String language, String value) {
         this.language = language;
@@ -65,10 +73,11 @@ public abstract class Translation {
     }
 
     /**
-     * 
-     * @param language
-     * @param tag
-     * @param value
+     * <p>Constructor for Translation.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @param tag a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public Translation(String language, String tag, String value) {
         this.language = language;
@@ -77,21 +86,25 @@ public abstract class Translation {
     }
     
     /**
-     * 
-     * @param tag
-     * @param lang
-     * @return
+     * <p>getTranslation.</p>
+     *
+     * @param tag a {@link java.lang.String} object.
+     * @param lang a {@link java.lang.String} object.
+     * @param translations a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag) {
         return getTranslation(translations, lang, tag, false);
     }
 
     /**
-     * 
-     * @param tag
-     * @param lang
+     * <p>getTranslation.</p>
+     *
+     * @param tag a {@link java.lang.String} object.
+     * @param lang a {@link java.lang.String} object.
      * @param useFallback   if no translation for lang exists, use the application default language
-     * @return
+     * @param translations a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag, boolean useFallback) {
         if (tag == null || lang == null) {
@@ -114,6 +127,8 @@ public abstract class Translation {
 
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -121,6 +136,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -128,6 +145,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Getter for the field <code>tag</code>.</p>
+     *
      * @return the tag
      */
     public String getTag() {
@@ -135,6 +154,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Setter for the field <code>tag</code>.</p>
+     *
      * @param tag the tag to set
      */
     public void setTag(String tag) {
@@ -142,6 +163,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Getter for the field <code>language</code>.</p>
+     *
      * @return the language
      */
     public String getLanguage() {
@@ -149,6 +172,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Setter for the field <code>language</code>.</p>
+     *
      * @param language the language to set
      */
     public void setLanguage(String language) {
@@ -156,6 +181,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -163,6 +190,8 @@ public abstract class Translation {
     }
 
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -172,6 +201,7 @@ public abstract class Translation {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return value;

@@ -35,8 +35,9 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * @author Florian Alpers
+ * <p>RestApiExceptionMapper class.</p>
  *
+ * @author Florian Alpers
  */
 @Provider
 public class RestApiExceptionMapper implements ExceptionMapper<RestApiException>{
@@ -48,6 +49,7 @@ public class RestApiExceptionMapper implements ExceptionMapper<RestApiException>
         /* (non-Javadoc)
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)
          */
+        /** {@inheritDoc} */
         @Override
         public Response toResponse(RestApiException exception) {
             return Response.status(exception.getStatusCode())

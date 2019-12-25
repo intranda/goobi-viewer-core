@@ -34,6 +34,10 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
+/**
+ * <p>OpenSearchResource class.</p>
+ *
+ */
 @Path("/opensearch")
 @ViewerRestServiceBinding
 public class OpenSearchResource {
@@ -43,6 +47,11 @@ public class OpenSearchResource {
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * <p>getXml.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Path("/getxml")
     @Produces({ MediaType.TEXT_XML })

@@ -28,8 +28,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 
 /**
- * @author Florian Alpers
+ * <p>CompoundLabeledLink class.</p>
  *
+ * @author Florian Alpers
  */
 public class CompoundLabeledLink extends LabeledLink {
 
@@ -41,9 +42,12 @@ public class CompoundLabeledLink extends LabeledLink {
     protected final List<String> hierarchy;
 
     /**
-     * @param name
-     * @param url
-     * @param weight
+     * <p>Constructor for CompoundLabeledLink.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param weight a int.
+     * @param field a {@link java.lang.String} object.
      */
     public CompoundLabeledLink(String name, String url, String field, int weight) {
         super(name, url, weight);
@@ -52,12 +56,13 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * 
-     * @param name
-     * @param url
-     * @param field
-     * @param hierarchy
-     * @param weight
+     * <p>Constructor for CompoundLabeledLink.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param field a {@link java.lang.String} object.
+     * @param hierarchy a {@link java.util.List} object.
+     * @param weight a int.
      */
     public CompoundLabeledLink(String name, String url, String field, List<String> hierarchy, int weight) {
         super(name, url, weight);
@@ -66,7 +71,8 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * 
+     * <p>getSubLinks.</p>
+     *
      * @return List of labeled links, one for each hierarchy level
      */
     public List<LabeledLink> getSubLinks() {

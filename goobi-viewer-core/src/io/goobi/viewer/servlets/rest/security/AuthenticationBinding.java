@@ -20,6 +20,10 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.ws.rs.NameBinding;
 
+/**
+ * <p>AuthenticationBinding class.</p>
+ *
+ */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthenticationBinding {

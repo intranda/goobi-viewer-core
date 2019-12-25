@@ -48,6 +48,10 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * <p>CMSTemplateManager class.</p>
+ *
+ */
 public final class CMSTemplateManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSTemplateManager.class);
@@ -76,6 +80,11 @@ public final class CMSTemplateManager {
     private Optional<Path> coreFolderPath = Optional.empty();
     private Optional<Path> themeFolderPath = Optional.empty();
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSTemplateManager} object.
+     */
     public static CMSTemplateManager getInstance() {
 //                        instance = null;
         CMSTemplateManager ctm = instance;
@@ -97,6 +106,14 @@ public final class CMSTemplateManager {
         return ctm;
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @param templateFolderPath a {@link java.lang.String} object.
+     * @param themeRootPath a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSTemplateManager} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public static CMSTemplateManager getInstance(String templateFolderPath, String themeRootPath) throws PresentationException {
         synchronized (lock) {
             instance = new CMSTemplateManager(templateFolderPath, themeRootPath);
@@ -181,9 +198,10 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * @param url
-     * @return
-     * @throws URISyntaxException
+     * <p>toURI.</p>
+     *
+     * @param url a {@link java.net.URL} object.
+     * @return a {@link java.nio.file.Path} object.
      */
     public static Path toURI(URL url) {
         try {
@@ -194,13 +212,15 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * @param filesystemPath
-     * @param servletContext
-     * @param templateFolderUrl
-     * @return
-     * @throws MalformedURLException
-     * @throws UnsupportedEncodingException
-     * @throws URISyntaxException
+     * <p>Getter for the field <code>coreTemplateFolderUrl</code>.</p>
+     *
+     * @param filesystemPath a {@link java.lang.String} object.
+     * @param servletContext a {@link javax.servlet.ServletContext} object.
+     * @param templateFolderUrl a {@link java.lang.String} object.
+     * @throws java.net.MalformedURLException
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.net.URISyntaxException
+     * @return a {@link java.util.Optional} object.
      */
     public static Optional<URL> getCoreTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
             throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
@@ -295,6 +315,12 @@ public final class CMSTemplateManager {
         return templates;
     }
 
+    /**
+     * <p>updateTemplates.</p>
+     *
+     * @param corePath a {@link java.util.Optional} object.
+     * @param themePath a {@link java.util.Optional} object.
+     */
     public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
         templates = new HashMap<>();
         //        logger.trace("themePath: {}", themePath.orElse(Paths.get("none")).toAbsolutePath().toString());
@@ -323,10 +349,21 @@ public final class CMSTemplateManager {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>templates</code>.</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<CMSPageTemplate> getTemplates() {
         return templates.values();
     }
 
+    /**
+     * <p>getTemplate.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     */
     public CMSPageTemplate getTemplate(String id) {
         return templates.get(id);
     }
@@ -359,6 +396,8 @@ public final class CMSTemplateManager {
     }
 
     /**
+     * <p>Getter for the field <code>themeFolderPath</code>.</p>
+     *
      * @return the themeFolderPath
      */
     public Optional<Path> getThemeFolderPath() {
@@ -366,31 +405,55 @@ public final class CMSTemplateManager {
     }
 
     /**
+     * <p>Getter for the field <code>coreFolderPath</code>.</p>
+     *
      * @return the coreFolderPath
      */
     public Optional<Path> getCoreFolderPath() {
         return coreFolderPath;
     }
 
+    /**
+     * <p>getCoreViewFolderPath.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<Path> getCoreViewFolderPath() {
         return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
     }
 
+    /**
+     * <p>getThemeViewFolderPath.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<Path> getThemeViewFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
     }
 
+    /**
+     * <p>getCoreIconFolderPath.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<Path> getCoreIconFolderPath() {
         return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
     }
 
+    /**
+     * <p>getThemeIconFolderPath.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<Path> getThemeIconFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
     }
 
     /**
-     * @param templateId
-     * @return
+     * <p>getTemplateViewUrl.</p>
+     *
+     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTemplateViewUrl(CMSPageTemplate template) {
         if (template != null) {
@@ -402,8 +465,10 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * @param templateId
-     * @return
+     * <p>getTemplateViewUrl.</p>
+     *
+     * @param templateId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTemplateViewUrl(String templateId) {
         CMSPageTemplate template = getTemplate(templateId);
@@ -411,8 +476,10 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * @param templateId
-     * @return
+     * <p>getTemplateIconUrl.</p>
+     *
+     * @param templateId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTemplateIconUrl(String templateId) {
         if (StringUtils.isNotBlank(templateId)) {
@@ -424,8 +491,10 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * @param templateId
-     * @return
+     * <p>getTemplateIconUrl.</p>
+     *
+     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getTemplateIconUrl(CMSPageTemplate template) {
         if (template != null) {

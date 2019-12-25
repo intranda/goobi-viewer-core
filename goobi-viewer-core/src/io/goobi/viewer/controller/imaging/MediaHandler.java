@@ -20,9 +20,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
  * Resolves urls audio or video files
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class MediaHandler {
     
@@ -30,13 +29,18 @@ public class MediaHandler {
 
     private final String mediaRestApiUrl;
     
+    /**
+     * <p>Constructor for MediaHandler.</p>
+     *
+     * @param config a {@link io.goobi.viewer.controller.Configuration} object.
+     */
     public MediaHandler(Configuration config) {
         this.mediaRestApiUrl = config.getRestApiUrl();
     }
     
     /**
      * Returns the url to the media object for the given pi and filename
-     * 
+     *
      * @param mimeType  The mime type to use
      * @param pi        The pi of the requested work
      * @param filename  The media filename

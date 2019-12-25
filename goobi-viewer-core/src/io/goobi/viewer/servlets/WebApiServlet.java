@@ -50,7 +50,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Web API servlet.
- * 
+ *
  * @deprecated Use the corresponding REST services at /rest/records/*.
  */
 @Deprecated
@@ -60,18 +60,19 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(WebApiServlet.class);
 
+    /** Constant <code>MAX_HITS=1000000</code> */
     public static final int MAX_HITS = 1000000;
 
     /**
+     * <p>Constructor for WebApiServlet.</p>
+     *
      * @see HttpServlet#HttpServlet()
      */
     public WebApiServlet() {
         super();
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -349,9 +350,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
         }
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);

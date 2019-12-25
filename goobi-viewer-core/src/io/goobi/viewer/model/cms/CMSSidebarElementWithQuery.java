@@ -20,6 +20,10 @@ import javax.persistence.Entity;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * <p>CMSSidebarElementWithQuery class.</p>
+ *
+ */
 @Entity
 public class CMSSidebarElementWithQuery extends CMSSidebarElement {
 
@@ -35,12 +39,18 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     @Column(name = "descending_order")
     private boolean descendingOrder = false;
 
+    /**
+     * <p>Constructor for CMSSidebarElementWithQuery.</p>
+     */
     public CMSSidebarElementWithQuery() {
         
     }
     
     /**
-     * @param original
+     * <p>Constructor for CMSSidebarElementWithQuery.</p>
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSSidebarElementWithQuery} object.
+     * @param owner a {@link io.goobi.viewer.model.cms.CMSPage} object.
      */
     public CMSSidebarElementWithQuery(CMSSidebarElementWithQuery original, CMSPage owner) {
         super(original, owner);
@@ -51,6 +61,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>searchField</code>.</p>
+     *
      * @return the searchField
      */
     public String getSearchField() {
@@ -58,6 +70,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>searchField</code>.</p>
+     *
      * @param searchField the searchField to set
      */
     public void setSearchField(String searchField) {
@@ -65,6 +79,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>resultDisplayLimit</code>.</p>
+     *
      * @return the resultDisplayLimit
      */
     public Integer getResultDisplayLimit() {
@@ -72,6 +88,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>resultDisplayLimit</code>.</p>
+     *
      * @param resultDisplayLimit the resultDisplayLimit to set
      */
     public void setResultDisplayLimit(Integer resultDisplayLimit) {
@@ -83,7 +101,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * 
+     * <p>getAdditionalQuerySuffix.</p>
+     *
      * @return additionalQuery with an AND() wrapper
      * @should build suffix correctly
      */
@@ -96,6 +115,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>additionalQuery</code>.</p>
+     *
      * @return the additionalQuery
      */
     public String getAdditionalQuery() {
@@ -103,6 +124,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>additionalQuery</code>.</p>
+     *
      * @param additionalQuery the additionalQuery to set
      */
     public void setAdditionalQuery(String additionalQuery) {
@@ -110,6 +133,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>isDescendingOrder.</p>
+     *
      * @return the descendingOrder
      */
     public boolean isDescendingOrder() {
@@ -117,6 +142,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>descendingOrder</code>.</p>
+     *
      * @param descendingOrder the descendingOrder to set
      */
     public void setDescendingOrder(boolean descendingOrder) {
@@ -126,6 +153,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSSidebarElement#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int code = super.hashCode();
@@ -138,6 +166,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
         return code;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         return o.getClass().equals(CMSSidebarElementWithQuery.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
@@ -145,6 +174,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
                 && bothNullOrEqual(getSearchField(), ((CMSSidebarElementWithQuery) o).getSearchField());
     }
     
+    /** {@inheritDoc} */
     @Override
     public PageList getLinkedPages() {
         if(super.getLinkedPages() == null) {

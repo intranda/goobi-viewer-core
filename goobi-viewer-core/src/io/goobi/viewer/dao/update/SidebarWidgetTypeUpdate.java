@@ -24,16 +24,16 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 
 /**
- * Sets a default value for all {@link CMSSidebarElement#widgetType} which governs the exact class to be used for entities from that table
- * 
- * @author florian
+ * Sets a default value for all {@link io.goobi.viewer.model.cms.CMSSidebarElement#widgetType} which governs the exact class to be used for entities from that table
  *
+ * @author florian
  */
 public class SidebarWidgetTypeUpdate implements IModelUpdate{
 
 	/* (non-Javadoc)
 	 * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean update(IDAO dao) throws DAOException {
 		return createDiscriminatorRow(dao);

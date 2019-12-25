@@ -30,6 +30,7 @@ public enum MimeType {
     SANDBOXED_HTML("text"),
     OBJECT("object");
 
+    /** Constant <code>logger</code> */
     private static final Logger logger = LoggerFactory.getLogger(MimeType.class);
 
     private final String name;
@@ -44,11 +45,12 @@ public enum MimeType {
     }
 
     /**
-     * 
-     * @param name
-     * @return
+     * <p>getByName.</p>
+     *
+     * @param name a {@link java.lang.String} object.
      * @should find mime type by short name correctly
      * @should find mime type by full name correctly
+     * @return a {@link io.goobi.viewer.model.viewer.MimeType} object.
      */
     public static MimeType getByName(String name) {
         if (name == null) {
@@ -63,6 +65,8 @@ public enum MimeType {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -70,7 +74,8 @@ public enum MimeType {
     }
 
     /**
-     * 
+     * <p>isImageOrPdfDownloadAllowed.</p>
+     *
      * @return true if image or PDF download is allowed for this mime type; false otherwise
      */
     public boolean isImageOrPdfDownloadAllowed() {
@@ -85,8 +90,10 @@ public enum MimeType {
     }
 
     /**
-     * 
+     * <p>isImageOrPdfDownloadAllowed.</p>
+     *
      * @return true if image or PDF download is allowed for the given mime type name; false otherwise
+     * @param mimeTypeName a {@link java.lang.String} object.
      */
     public static boolean isImageOrPdfDownloadAllowed(String mimeTypeName) {
         MimeType mimeType = MimeType.getByName(mimeTypeName);

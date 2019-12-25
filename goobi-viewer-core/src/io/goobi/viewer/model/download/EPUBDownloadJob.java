@@ -41,20 +41,36 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 
+/**
+ * <p>EPUBDownloadJob class.</p>
+ *
+ */
 @Entity
 @DiscriminatorValue(EPUBDownloadJob.TYPE)
 public class EPUBDownloadJob extends DownloadJob {
 
     private static final long serialVersionUID = 5799943793394080870L;
 
+    /** Constant <code>TYPE="epub"</code> */
     public static final String TYPE = "epub";
 
     private static final Logger logger = LoggerFactory.getLogger(EPUBDownloadJob.class);
 
+    /**
+     * <p>Constructor for EPUBDownloadJob.</p>
+     */
     public EPUBDownloadJob() {
         type = TYPE;
     }
 
+    /**
+     * <p>Constructor for EPUBDownloadJob.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logid a {@link java.lang.String} object.
+     * @param lastRequested a {@link java.util.Date} object.
+     * @param ttl a long.
+     */
     public EPUBDownloadJob(String pi, String logid, Date lastRequested, long ttl) {
         type = TYPE;
         this.pi = pi;
@@ -68,6 +84,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.DownloadJob#generateDownloadIdentifier()
      */
+    /** {@inheritDoc} */
     @Override
     public final void generateDownloadIdentifier() {
         this.identifier = generateDownloadJobId(TYPE, pi, logId);
@@ -76,6 +93,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.DownloadJob#getMimeType()
      */
+    /** {@inheritDoc} */
     @Override
     public String getMimeType() {
         return "application/epub+zip";
@@ -84,6 +102,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.DownloadJob#getFileExtension()
      */
+    /** {@inheritDoc} */
     @Override
     public String getFileExtension() {
         return ".epub";
@@ -92,6 +111,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getDisplayName()
      */
+    /** {@inheritDoc} */
     @Override
     public String getDisplayName() {
         return "EPUB";
@@ -100,6 +120,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getSize()
      */
+    /** {@inheritDoc} */
     @Override
     public long getSize() {
         File downloadFile = getDownloadFileStatic(identifier, type, getFileExtension());
@@ -113,6 +134,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
      */
+    /** {@inheritDoc} */
     @Override
     public int getQueuePosition() {
         switch (status) {
@@ -125,6 +147,12 @@ public class EPUBDownloadJob extends DownloadJob {
         }
     }
 
+    /**
+     * <p>getEpubSizeFromTaskManager.</p>
+     *
+     * @param identifier a {@link java.lang.String} object.
+     * @return a long.
+     */
     protected static long getEpubSizeFromTaskManager(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
@@ -143,6 +171,12 @@ public class EPUBDownloadJob extends DownloadJob {
         }
     }
 
+    /**
+     * <p>getEPUBJobsInQueue.</p>
+     *
+     * @param identifier a {@link java.lang.String} object.
+     * @return a int.
+     */
     public static int getEPUBJobsInQueue(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
@@ -164,19 +198,21 @@ public class EPUBDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     protected void triggerCreation() throws PresentationException, IndexUnreachableException {
         triggerCreation(pi, identifier, DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.TYPE));
     }
 
     /**
+     * <p>triggerCreation.</p>
      *
-     * @param pi
-     * @param downloadIdentifier
-     * @param targetFolderPath
-     * @return null if successful; error msg otherwise
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param pi a {@link java.lang.String} object.
+     * @param downloadIdentifier a {@link java.lang.String} object.
+     * @param targetFolderPath a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public static void triggerCreation(String pi, String downloadIdentifier, String targetFolderPath)
             throws PresentationException, IndexUnreachableException, DownloadException {

@@ -33,6 +33,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>CMSNavigationManager class.</p>
+ *
+ */
 public class CMSNavigationManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSNavigationManager.class);
@@ -46,6 +50,11 @@ public class CMSNavigationManager {
     //        return instance;
     //    }
 
+    /**
+     * <p>Constructor for CMSNavigationManager.</p>
+     *
+     * @param associatedTheme a {@link java.lang.String} object.
+     */
     public CMSNavigationManager(String associatedTheme) {
         this.associatedTheme = associatedTheme;
         try {
@@ -55,6 +64,11 @@ public class CMSNavigationManager {
         }
     }
 
+    /**
+     * <p>loadItems.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public final void loadItems() throws DAOException {
         logger.trace("Loading available navigation items");
         availableItems = new ArrayList<>();
@@ -87,7 +101,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * @throws DAOException
+     * <p>addCMSPageItems.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void addCMSPageItems() throws DAOException {
         List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
@@ -114,19 +130,29 @@ public class CMSNavigationManager {
 
     }
 
+    /**
+     * <p>addAvailableItem.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.SelectableNavigationItem} object.
+     */
     public void addAvailableItem(SelectableNavigationItem item) {
         if (!availableItems.contains(item)) {
             availableItems.add(item);
         }
     }
 
+    /**
+     * <p>Getter for the field <code>availableItems</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<SelectableNavigationItem> getAvailableItems() {
         return availableItems;
     }
 
     /**
-     * Add all items from {@link #availableItems} to {@link #visibleItems} for which {@link SelectableNavigationItem#isSelected()} is true. Afterwards
-     * sets {@link SelectableNavigationItem#isSelected()} to fals for all {@link #availableItems}
+     * Add all items from {@link #availableItems} to {@link #visibleItems} for which {@link io.goobi.viewer.model.cms.SelectableNavigationItem#isSelected()} is true. Afterwards
+     * sets {@link io.goobi.viewer.model.cms.SelectableNavigationItem#isSelected()} to fals for all {@link #availableItems}
      */
     public void addSelectedItemsToMenu() {
         getAvailableItems().stream()
@@ -137,8 +163,10 @@ public class CMSNavigationManager {
     }
 
     /**
+     * <p>loadVisibleItems.</p>
+     *
      * @return the sublist of available menu items matching the navigationMenuItem-list from the database (in label and url)
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public final List<CMSNavigationItem> loadVisibleItems() throws DAOException {
         List<CMSNavigationItem> daoList = loadItemsFromDatabase().stream().collect(Collectors.toList());
@@ -165,8 +193,10 @@ public class CMSNavigationManager {
     }
 
     /**
-     * @return
-     * @throws DAOException
+     * <p>loadItemsFromDatabase.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
         String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
@@ -180,6 +210,11 @@ public class CMSNavigationManager {
         return daoList;
     }
 
+    /**
+     * <p>Getter for the field <code>visibleItems</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSNavigationItem> getVisibleItems() {
         return visibleItems;
     }
@@ -187,7 +222,7 @@ public class CMSNavigationManager {
     /**
      * Adds the given item, along with all their descendants to the visible item list
      *
-     * @param items
+     * @param items a {@link java.util.List} object.
      */
     public void setVisibleItems(List<CMSNavigationItem> items) {
         this.visibleItems = new ArrayList<>();
@@ -197,8 +232,8 @@ public class CMSNavigationManager {
     /**
      * Replaces the complete navigation-item database table with the elements of 'visibleItems'
      *
-     * @param selectedItems
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param theme a {@link java.lang.String} object.
      */
     public void saveVisibleItems(String theme) throws DAOException {
 
@@ -258,7 +293,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * @param navigationItem
+     * <p>addVisibleItem.</p>
+     *
+     * @param navigationItem a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public void addVisibleItem(CMSNavigationItem navigationItem) {
         if (navigationItem.getItemLabel() == null || navigationItem.getPageUrl() == null) {
@@ -272,15 +309,18 @@ public class CMSNavigationManager {
     }
 
     /**
-     * @throws DAOException
+     * <p>reload.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void reload() throws DAOException {
         loadVisibleItems();
     }
 
     /**
-     * @param id the item's {@link CMSNavigationItem#getSortingListId()}
+     * <p>getItem.</p>
+     *
+     * @param id the item's {@link io.goobi.viewer.model.cms.CMSNavigationItem#getSortingListId()}
      * @return The first matching item from all visible items as optional. Empty optional if no matching item was found
      */
     public Optional<CMSNavigationItem> getItem(String id) {
@@ -288,6 +328,8 @@ public class CMSNavigationManager {
     }
 
     /**
+     * <p>Getter for the field <code>associatedTheme</code>.</p>
+     *
      * @return the associatedTheme
      */
     public String getAssociatedTheme() {

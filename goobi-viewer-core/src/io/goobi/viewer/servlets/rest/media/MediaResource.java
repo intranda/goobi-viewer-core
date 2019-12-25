@@ -38,9 +38,8 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
  * A rest resource for delivering video and audio files
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Path("/media")
 public class MediaResource {
@@ -52,6 +51,18 @@ public class MediaResource {
     @Context
     private HttpServletResponse response;
 
+    /**
+     * <p>serveMediaContent.</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param format a {@link java.lang.String} object.
+     * @param identifier a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     */
     @GET
     @Path("/{type}/{format}/{identifier}/{filename}")
     public String serveMediaContent(@PathParam("type") String type, @PathParam("format") String format, @PathParam("identifier") String identifier,
@@ -75,8 +86,12 @@ public class MediaResource {
     }
 
     /**
-     * @param mediaFilePath
-     * @throws AccessDeniedException if access is not granted
+     * <p>checkAccess.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if access is not granted
+     * @param action a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFilename a {@link java.lang.String} object.
      */
     public void checkAccess(String action, String pi, String contentFilename) throws AccessDeniedException {
         boolean access = false;

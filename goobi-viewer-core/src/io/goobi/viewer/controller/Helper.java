@@ -112,30 +112,48 @@ public class Helper {
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
+    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code> */
     public static final String REGEX_QUOTATION_MARKS = "\"[^()]*?\"";
+    /** Constant <code>REGEX_PARENTHESES="\\([^()]*\\)"</code> */
     public static final String REGEX_PARENTHESES = "\\([^()]*\\)";
+    /** Constant <code>REGEX_PARENTESES_DATES="\\([\\w|\\s|\\-|\\.|\\?]+\\)"</code> */
     public static final String REGEX_PARENTESES_DATES = "\\([\\w|\\s|\\-|\\.|\\?]+\\)";
+    /** Constant <code>REGEX_BRACES="\\{(\\w+)\\}"</code> */
     public static final String REGEX_BRACES = "\\{(\\w+)\\}";
+    /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code> */
     public static final String REGEX_WORDS = "[a-zäáàâöóòôüúùûëéèêßñ0123456789]+";
+    /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
+    /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
+    /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
     public static final String DEFAULT_ENCODING = "UTF-8";
 
+    /** Constant <code>SUFFIX_FULLTEXT_CROWDSOURCING="_txtcrowd"</code> */
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
+    /** Constant <code>SUFFIX_ALTO_CROWDSOURCING="_altocrowd"</code> */
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
+    /** Constant <code>SUFFIX_USER_GENERATED_CONTENT="_ugc"</code> */
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
+    /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
     public static final String SUFFIX_ANNOTATIONS = "_annotations";
+    /** Constant <code>SUFFIX_CMS="_cms"</code> */
     public static final String SUFFIX_CMS = "_cms";
 
     private static final int HTTP_TIMEOUT = 30000;
 
+    /** Constant <code>dfTwoDecimals</code> */
     public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
+    /** Constant <code>dfTwoDigitInteger</code> */
     public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
+    /** Constant <code>nsAlto</code> */
     public static Namespace nsAlto = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
     // TODO final namespaces
+    /** Constant <code>nsIntrandaViewerOverviewPage</code> */
     public static Namespace nsIntrandaViewerOverviewPage =
             Namespace.getNamespace("iv_overviewpage", "http://www.intranda.com/digiverso/intrandaviewer/overviewpage");
+    /** Constant <code>nsIntrandaViewerCrowdsourcing</code> */
     public static Namespace nsIntrandaViewerCrowdsourcing =
             Namespace.getNamespace("iv_crowdsourcing", "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
 
@@ -143,8 +161,8 @@ public class Helper {
      * Translation method for Java code. (Re-)loads resource bundles if necessary.
      *
      * @param text Message key to translate.
-     * @param locale
-     * @return
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(String text, Locale locale) {
         return ViewerResourceBundle.getTranslation(text, locale);
@@ -153,7 +171,7 @@ public class Helper {
     /**
      * Creates an MD5 hash of the given String.
      *
-     * @param myString
+     * @param myString a {@link java.lang.String} object.
      * @return MD5 hash
      * @should hash string correctly
      */
@@ -188,8 +206,8 @@ public class Helper {
      * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the last in the list is
      * returned.
      *
-     * @param request
-     * @return
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getIpAddress(HttpServletRequest request) {
         String address = ADDRESS_LOCALHOST_IPV4;
@@ -224,10 +242,11 @@ public class Helper {
     }
 
     /**
+     * <p>parseMultipleIpAddresses.</p>
      *
-     * @param address
-     * @return
+     * @param address a {@link java.lang.String} object.
      * @should filter multiple addresses correctly
+     * @return a {@link java.lang.String} object.
      */
     protected static String parseMultipleIpAddresses(String address) {
         if (address == null) {
@@ -248,12 +267,12 @@ public class Helper {
     /**
      * Sends an email to with the given subject and body to the given recipient list.
      *
-     * @param recipients
-     * @param subject
-     * @param body
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws MessagingException
+     * @param recipients a {@link java.util.List} object.
+     * @param subject a {@link java.lang.String} object.
+     * @param body a {@link java.lang.String} object.
+     * @throws java.io.UnsupportedEncodingException
+     * @throws javax.mail.MessagingException
+     * @return a boolean.
      */
     public static boolean postMail(List<String> recipients, String subject, String body) throws UnsupportedEncodingException, MessagingException {
         return Helper.postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(),
@@ -388,9 +407,11 @@ public class Helper {
     }
 
     /**
+     * <p>serializeWithXStream.</p>
      *
      * @param object Object to serialize.
-     * @return
+     * @param converter a {@link com.thoughtworks.xstream.converters.Converter} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String serializeWithXStream(Object object, Converter converter) {
         XStream xStream = new XStream();
@@ -414,8 +435,12 @@ public class Helper {
     }
 
     /**
-     * @param data
-     * @return
+     * <p>deSerializeWithXStream.</p>
+     *
+     * @param data a {@link java.lang.String} object.
+     * @param clazz a {@link java.lang.Class} object.
+     * @param converter a {@link com.thoughtworks.xstream.converters.Converter} object.
+     * @return a {@link java.lang.Object} object.
      */
     @SuppressWarnings("rawtypes")
     public static Object deSerializeWithXStream(String data, Class clazz, Converter converter) {
@@ -429,9 +454,8 @@ public class Helper {
 
     /**
      * Re-index in background thread to significantly decrease saving times.
-     * 
-     * @param pi
-     * @throws ModuleMissingException
+     *
+     * @param pi a {@link java.lang.String} object.
      */
     public static void triggerReIndexRecord(String pi) {
         Thread backgroundThread = new Thread(new Runnable() {
@@ -459,12 +483,12 @@ public class Helper {
     /**
      * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws RecordNotFoundException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.RecordNotFoundException
      * @should write overview page data
+     * @return a boolean.
      */
     public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
@@ -588,14 +612,15 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param pi
-     * @param createTraceDocument
-     * @param
-     * @return
-     * @throws IOException
+     * <p>deleteRecord.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param createTraceDocument a boolean.
+     * @throws java.io.IOException
      * @should create delete file correctly
      * @should create purge file correctly
+     * @param hotfolderPath a {@link java.nio.file.Path} object.
+     * @return a boolean.
      */
     public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {
         if (pi == null) {
@@ -616,15 +641,15 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param pi
-     * @param page
-     * @param recordType
-     * @return
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws IOException
+     * <p>reIndexPage.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.io.IOException
+     * @return a boolean.
      */
     public static synchronized boolean reIndexPage(String pi, int page)
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
@@ -684,10 +709,11 @@ public class Helper {
     }
 
     /**
+     * <p>sendDataAsStream.</p>
      *
      * @param url Destination URL. Must contain all required GET parameters.
      * @param data String to send as a stream.
-     * @return
+     * @return a boolean.
      */
     public static synchronized boolean sendDataAsStream(String url, String data) {
         try (InputStream is = IOUtils.toInputStream(data, "UTF-8")) {
@@ -706,8 +732,9 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param url
+     * <p>callUrlGET.</p>
+     *
+     * @param url a {@link java.lang.String} object.
      * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
      *         or the error message.
      */
@@ -777,10 +804,10 @@ public class Helper {
 
     /**
      * Builds full-text document REST URL.
-     * 
-     * @param filePath
+     *
+     * @param filePath a {@link java.lang.String} object.
      * @return Full REST URL
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should build url correctly
      */
     public static String buildFullTextUrl(String filePath) throws ViewerConfigurationException {
@@ -793,12 +820,13 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param urlString
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
+     * <p>getWebContentGET.</p>
+     *
+     * @param urlString a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @return a {@link java.lang.String} object.
      */
     public static String getWebContentGET(String urlString) throws ClientProtocolException, IOException, HTTPException {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
@@ -823,14 +851,15 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param url
-     * @param params
-     * @param cookies
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws HTTPException
+     * <p>getWebContentPOST.</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     * @param params a {@link java.util.Map} object.
+     * @param cookies a {@link java.util.Map} object.
+     * @throws org.apache.http.client.ClientProtocolException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.HTTPException
+     * @return a {@link java.lang.String} object.
      */
     public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies)
             throws ClientProtocolException, IOException, HTTPException {
@@ -889,11 +918,11 @@ public class Helper {
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
-     * 
+     *
      * @param pi Record identifier
      * @return The root folder path of the data repositories; viewer home if none are used
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public static String getDataRepositoryPathForRecord(String pi) throws PresentationException, IndexUnreachableException {
         String dataRepositoryPath = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
@@ -924,11 +953,11 @@ public class Helper {
 
     /**
      * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository
-     * 
+     *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the media folder for the given PI
-     * @throws IndexUnreachableException If the repository could not be requested from the solr
-     * @throws PresentationException If an error occured resolving folders
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException If the repository could not be requested from the solr
+     * @throws io.goobi.viewer.exceptions.PresentationException If an error occured resolving folders
      */
     public static Path getMediaFolder(String pi) throws PresentationException, IndexUnreachableException {
         return getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder());
@@ -936,13 +965,13 @@ public class Helper {
 
     /**
      * Returns a map of Paths for each data folder name passed as an argument.
-     * 
+     *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
-     * @param dataFolderName the data folder within the repository; e.g 'media' or 'alto'
      * @return HashMap<dataFolderName,Path>
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return all requested data folders
+     * @param dataFolderNames a {@link java.lang.String} object.
      */
     public static Map<String, Path> getDataFolders(String pi, String... dataFolderNames) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -964,12 +993,12 @@ public class Helper {
 
     /**
      * Constructs the folder path for data of the given pi, either directly in viewer-home or within a data repository.
-     * 
+     *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
      * @param dataFolderName the data folder within the repository; e.g 'media' or 'alto'
      * @return A Path to the data folder for the given PI
-     * @throws IndexUnreachableException If the repository could not be requested from the solr
-     * @throws PresentationException If an error occurred resolving folders
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException If the repository could not be requested from the solr
+     * @throws io.goobi.viewer.exceptions.PresentationException If an error occurred resolving folders
      */
     public static Path getDataFolder(String pi, String dataFolderName) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -982,13 +1011,13 @@ public class Helper {
 
     /**
      * Returns the data folder path for the given record identifier. To be used in clients that already possess the data repository name.
-     * 
-     * @param pi
-     * @param dataFolderName
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param dataFolderName a {@link java.lang.String} object.
      * @param dataRepositoryFolder Absolute path to the data repository folder or just the folder name
-     * @return
      * @should return correct folder if no data repository used
      * @should return correct folder if data repository used
+     * @return a {@link java.nio.file.Path} object.
      */
     public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
@@ -1006,14 +1035,15 @@ public class Helper {
     }
 
     /**
-     * 
+     * <p>getDataFilePath.</p>
+     *
      * @param pi Record identifier
      * @param dataFolderName Name of the data folder (e.g. 'alto') - first choice
      * @param altDataFolderName Name of the data folder - second choice
      * @param fileName Name of the content file
      * @return Path to the requested file
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
             throws PresentationException, IndexUnreachableException {
@@ -1029,12 +1059,13 @@ public class Helper {
     }
 
     /**
-     * 
+     * <p>getDataFilePath.</p>
+     *
      * @param pi Record identifier
      * @param relativeFilePath File path relative to data repositories root
      * @return File represented by the relative file path
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public static Path getDataFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -1049,12 +1080,12 @@ public class Helper {
 
     /**
      * Returns the absolute path to the source (METS/LIDO) file with the given file name.
-     * 
-     * @param fileName
-     * @param format
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     *
+     * @param fileName a {@link java.lang.String} object.
+     * @param format a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link java.lang.String} object.
      */
     public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
         String pi = FilenameUtils.getBaseName(fileName);
@@ -1064,15 +1095,15 @@ public class Helper {
 
     /**
      * Returns the absolute path to the source (METS/LIDO) file with the given file name.
-     * 
-     * @param fileName
-     * @param dataRepository
-     * @param format
-     * @return
+     *
+     * @param fileName a {@link java.lang.String} object.
+     * @param dataRepository a {@link java.lang.String} object.
+     * @param format a {@link java.lang.String} object.
      * @should construct METS file path correctly
      * @should construct LIDO file path correctly
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
+     * @return a {@link java.lang.String} object.
      */
     public static String getSourceFilePath(String fileName, String dataRepository, String format) {
         if (StringUtils.isEmpty(fileName)) {
@@ -1097,14 +1128,15 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param pi
-     * @param fileName
-     * @param format
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>getTextFilePath.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @param format a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return correct path
+     * @return a {@link java.lang.String} object.
      */
     public static String getTextFilePath(String pi, String fileName, String format) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(fileName)) {
@@ -1131,12 +1163,13 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param pi
+     * <p>getTextFilePath.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
      * @param relativeFilePath ALTO/text file path relative to the data folder
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.nio.file.Path} object.
      */
     public static Path getTextFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(relativeFilePath)) {
@@ -1152,12 +1185,18 @@ public class Helper {
     /**
      * Returns the application version number.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public static String getVersion() {
         return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
     }
 
+    /**
+     * <p>intern.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String intern(String string) {
         if (string == null) {
             return null;
@@ -1167,22 +1206,21 @@ public class Helper {
 
     /**
      * Loads plain full-text via the REST service. ALTO is preferred (and converted to plain text, with a plain text fallback.
-     * 
-     * @param pi
-     * @param dataRepository
+     *
+     * @param dataRepository a {@link java.lang.String} object.
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
-     * @param mergeLineBreakWords
-     * @param request
-     * @return
-     * @throws AccessDeniedException
-     * @throws IOException
-     * @throws FileNotFoundException
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
+     * @param mergeLineBreakWords a boolean.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException
+     * @throws java.io.IOException
+     * @throws java.io.FileNotFoundException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
             HttpServletRequest request)
@@ -1208,18 +1246,17 @@ public class Helper {
 
     /**
      * Loads given text file path as a string, if the client has full-text access permission.
-     * 
-     * @param pi
+     *
      * @param filePath File path consisting of three party (datafolder/pi/filename); There must be two separators in the path!
-     * @param request
-     * @return
-     * @throws AccessDeniedException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return file content correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String loadFulltext(String filePath, HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -1243,14 +1280,15 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param pi
-     * @param language
-     * @return
-     * @throws AccessDeniedException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws ViewerConfigurationException
+     * <p>loadTei.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link java.lang.String} object.
      */
     public static String loadTei(String pi, String language)
             throws AccessDeniedException, FileNotFoundException, IOException, ViewerConfigurationException {
@@ -1280,9 +1318,11 @@ public class Helper {
     }
 
     /**
-     * @param childText
-     * @param b
-     * @return
+     * <p>parseBoolean.</p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @param defaultValue a boolean.
+     * @return a boolean.
      */
     public static boolean parseBoolean(String text, boolean defaultValue) {
         if ("FALSE".equalsIgnoreCase(text)) {
@@ -1295,8 +1335,10 @@ public class Helper {
     }
 
     /**
-     * @param childText
-     * @return
+     * <p>parseBoolean.</p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);

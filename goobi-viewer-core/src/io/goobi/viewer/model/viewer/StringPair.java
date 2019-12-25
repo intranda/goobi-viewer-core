@@ -18,6 +18,10 @@ package io.goobi.viewer.model.viewer;
 import java.io.Serializable;
 import java.util.Comparator;
 
+/**
+ * <p>StringPair class.</p>
+ *
+ */
 public class StringPair implements Comparable<StringPair>, Serializable {
 
     private static final long serialVersionUID = 2587406123069125825L;
@@ -25,6 +29,12 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     private String one;
     private String two;
 
+    /**
+     * <p>Constructor for StringPair.</p>
+     *
+     * @param one a {@link java.lang.String} object.
+     * @param two a {@link java.lang.String} object.
+     */
     public StringPair(String one, String two) {
         if (one == null || two == null) {
             throw new IllegalArgumentException("one and two must be not null.");
@@ -36,6 +46,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -48,6 +59,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -71,6 +83,8 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Compare by translation.
      */
     @Override
@@ -79,6 +93,8 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>one</code>.</p>
+     *
      * @return the one
      */
     public String getOne() {
@@ -86,6 +102,8 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>one</code>.</p>
+     *
      * @param one the one to set
      */
     public void setOne(String one) {
@@ -93,6 +111,8 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>two</code>.</p>
+     *
      * @return the two
      */
     public String getTwo() {
@@ -100,12 +120,15 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>two</code>.</p>
+     *
      * @param two the two to set
      */
     public void setTwo(String two) {
         this.two = two;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return one + ":" + two;

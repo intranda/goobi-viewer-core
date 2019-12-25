@@ -51,27 +51,32 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * @author Florian Alpers
+ * <p>StructureBuilder class.</p>
  *
+ * @author Florian Alpers
  */
 public class StructureBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(StructureBuilder.class);
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
+    /** Constant <code>BASE_RANGE_LABEL="CONTENT"</code> */
     public static final String BASE_RANGE_LABEL = "CONTENT";
 
     /**
-     * @param request
-     * @throws URISyntaxException
+     * <p>Constructor for StructureBuilder.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public StructureBuilder(HttpServletRequest request) {
         super(request);
     }
 
     /**
-     * @param servletUri
-     * @param requestURI
+     * <p>Constructor for StructureBuilder.</p>
+     *
+     * @param servletUri a {@link java.net.URI} object.
+     * @param requestURI a {@link java.net.URI} object.
      */
     public StructureBuilder(URI servletUri, URI requestURI) {
         super(servletUri, requestURI);
@@ -80,16 +85,16 @@ public class StructureBuilder extends AbstractBuilder {
     /**
      * Generates the topmost range from the given elements. This is an abstract "CONTENT" range if baseElement is a work, or the range representing
      * the given baseElement otherwise
-     * 
+     *
      * @param elements All elements to include in the list
-     * @param uri
-     * @param useMembers
-     * @return
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws URISyntaxException
+     * @param useMembers a boolean.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws java.net.URISyntaxException
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Range> generateStructure(List<StructElement> elements, String pi, boolean useMembers)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
@@ -142,13 +147,14 @@ public class StructureBuilder extends AbstractBuilder {
 
     /**
      * Adds Metadata and links to external services to a range
-     * 
-     * @param ele
-     * @param manifest
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
+     *
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param pi a {@link java.lang.String} object.
+     * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
      */
     public void populate(StructElement ele, String pi, final Range range)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
@@ -195,10 +201,13 @@ public class StructureBuilder extends AbstractBuilder {
 
 
     /**
-     * @param doc
-     * @param topRange
-     * @throws URISyntaxException
-     * @throws IndexUnreachableException
+     * <p>populatePages.</p>
+     *
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param pi a {@link java.lang.String} object.
+     * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
      */
     public void populatePages(StructElement doc, String pi, Range range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();
@@ -218,7 +227,10 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param topRange
+     * <p>getDescendents.</p>
+     *
+     * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Range> getDescendents(Range range) {
         List<Range> children = new ArrayList<>();

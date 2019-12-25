@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 
+/**
+ * <p>SessionListener class.</p>
+ *
+ */
 @WebListener
 public class SessionListener implements HttpSessionListener {
 
@@ -34,6 +38,7 @@ public class SessionListener implements HttpSessionListener {
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpSessionListener#sessionCreated(javax.servlet.http.HttpSessionEvent)
      */
+    /** {@inheritDoc} */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
 //        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
@@ -44,6 +49,7 @@ public class SessionListener implements HttpSessionListener {
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpSessionListener#sessionDestroyed(javax.servlet.http.HttpSessionEvent)
      */
+    /** {@inheritDoc} */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
         if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {

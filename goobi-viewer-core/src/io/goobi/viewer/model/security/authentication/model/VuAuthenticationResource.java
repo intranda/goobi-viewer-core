@@ -32,9 +32,8 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * Test resource for receiving vu authorization responses as POST requests
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 //@Path("/authentication/vufind")
 public class VuAuthenticationResource {
@@ -43,6 +42,13 @@ public class VuAuthenticationResource {
 //    @Path("/user/auth")
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.APPLICATION_JSON)
+    /**
+     * <p>handleAuthorizationResponse.</p>
+     *
+     * @param request a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public VuAuthenticationResponse handleAuthorizationResponse(VuAuthenticationRequest request) throws DAOException {
         
         VuAuthenticationResponse.User vuUser = new VuAuthenticationResponse.User();
@@ -84,6 +90,12 @@ public class VuAuthenticationResource {
 //    @Path("/send")
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.APPLICATION_JSON)
+    /**
+     * <p>handleAuthorizationResponse.</p>
+     *
+     * @param response a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
+     */
     public VuAuthenticationResponse handleAuthorizationResponse(VuAuthenticationResponse response) {
         return response;
     }
@@ -91,6 +103,11 @@ public class VuAuthenticationResource {
 //    @GET
 //    @Path("/get")
 //    @Produces(MediaType.APPLICATION_JSON)
+    /**
+     * <p>getRequest.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest} object.
+     */
     public VuAuthenticationRequest getRequest() {
         return new VuAuthenticationRequest("test", "testtesttest");
     }

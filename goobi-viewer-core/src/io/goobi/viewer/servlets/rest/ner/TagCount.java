@@ -30,6 +30,10 @@ import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * <p>TagCount class.</p>
+ *
+ */
 @XmlRootElement(name = "tag")
 @XmlType(propOrder = { "value", "type", "counter", "references" })
 @JsonPropertyOrder({ "value", "type", "counter", "references" })
@@ -41,10 +45,11 @@ public class TagCount implements Comparable<TagCount> {
     private List<ElementReference> references = new ArrayList<>();
 
     /**
-     * @param id
-     * @param value2
-     * @param type2
-     * @param element
+     * <p>Constructor for TagCount.</p>
+     *
+     * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     * @param value a {@link java.lang.String} object.
+     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
      */
     public TagCount(String value, Type type, ElementReference element) {
         this.value = value;
@@ -55,6 +60,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -62,6 +69,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -69,6 +78,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>getCounter.</p>
+     *
      * @return the counter
      */
     @JsonProperty("counter")
@@ -78,6 +89,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public NERTag.Type getType() {
@@ -85,6 +98,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(NERTag.Type type) {
@@ -92,6 +107,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>Getter for the field <code>references</code>.</p>
+     *
      * @return the references
      */
     public List<ElementReference> getReferences() {
@@ -99,6 +116,8 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * <p>Setter for the field <code>references</code>.</p>
+     *
      * @param references the references to set
      */
     public void setReferences(List<ElementReference> references) {
@@ -108,6 +127,7 @@ public class TagCount implements Comparable<TagCount> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compareTo(TagCount o) {
         return getCounter().compareTo(o.getCounter());
@@ -116,6 +136,7 @@ public class TagCount implements Comparable<TagCount> {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getValue().hashCode();
@@ -124,6 +145,7 @@ public class TagCount implements Comparable<TagCount> {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
@@ -133,7 +155,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * @param references2
+     * <p>addReferences.</p>
+     *
+     * @param references a {@link java.util.List} object.
      */
     public void addReferences(List<ElementReference> references) {
         for (ElementReference ref : references) {

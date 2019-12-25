@@ -63,14 +63,15 @@ public class XmlTools {
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
 
     /**
+     * <p>readXmlFile.</p>
      *
-     * @param filePath
-     * @return
-     * @throws FileNotFoundException if file not found
-     * @throws IOException in case of errors
-     * @throws JDOMException
+     * @param filePath a {@link java.lang.String} object.
+     * @throws java.io.FileNotFoundException if file not found
+     * @throws java.io.IOException in case of errors
+     * @throws org.jdom2.JDOMException
      * @should build document from string correctly
      * @should throw FileNotFoundException if file not found
+     * @return a {@link org.jdom2.Document} object.
      */
     public static Document readXmlFile(String filePath) throws FileNotFoundException, IOException, JDOMException {
         try (FileInputStream fis = new FileInputStream(new File(filePath))) {
@@ -80,13 +81,13 @@ public class XmlTools {
 
     /**
      * Reads an XML document from the given URL and returns a JDOM2 document. Works with XML files within JARs.
-     * 
-     * @param url
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws JDOMException
+     *
+     * @param url a {@link java.net.URL} object.
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
+     * @throws org.jdom2.JDOMException
      * @should build document from url correctly
+     * @return a {@link org.jdom2.Document} object.
      */
     public static Document readXmlFile(URL url) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = url.openStream()) {
@@ -95,13 +96,14 @@ public class XmlTools {
     }
 
     /**
-     * 
-     * @param path
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws JDOMException
+     * <p>readXmlFile.</p>
+     *
+     * @param path a {@link java.nio.file.Path} object.
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
+     * @throws org.jdom2.JDOMException
      * @should build document from path correctly
+     * @return a {@link org.jdom2.Document} object.
      */
     public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = Files.newInputStream(path)) {
@@ -110,14 +112,15 @@ public class XmlTools {
     }
 
     /**
+     * <p>writeXmlFile.</p>
      *
-     * @param doc
-     * @param filePath
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @param doc a {@link org.jdom2.Document} object.
+     * @param filePath a {@link java.lang.String} object.
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
      * @should write file correctly
      * @should throw FileNotFoundException if file is directory
+     * @return a {@link java.io.File} object.
      */
     public static File writeXmlFile(Document doc, String filePath) throws FileNotFoundException, IOException {
         return FileTools.getFileFromString(getStringFromElement(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
@@ -126,11 +129,12 @@ public class XmlTools {
     /**
      * Create a JDOM document from an XML string.
      *
-     * @param string
-     * @return
-     * @throws IOException
-     * @throws JDOMException
+     * @param string a {@link java.lang.String} object.
+     * @throws java.io.IOException
+     * @throws org.jdom2.JDOMException
      * @should build document correctly
+     * @param encoding a {@link java.lang.String} object.
+     * @return a {@link org.jdom2.Document} object.
      */
     public static Document getDocumentFromString(String string, String encoding) throws JDOMException, IOException {
         if (encoding == null) {
@@ -152,11 +156,13 @@ public class XmlTools {
     }
 
     /**
-     * @param element
-     * @param encoding
-     * @return
+     * <p>getStringFromElement.</p>
+     *
+     * @param element a {@link java.lang.Object} object.
+     * @param encoding a {@link java.lang.String} object.
      * @should return XML string correctly for documents
      * @should return XML string correctly for elements
+     * @return a {@link java.lang.String} object.
      */
     public static String getStringFromElement(Object element, String encoding) {
         if (element == null) {
@@ -186,12 +192,12 @@ public class XmlTools {
 
     /**
      * Evaluates the given XPath expression to a list of elements.
-     * 
+     *
      * @param expr XPath expression to evaluate.
-     * @param parent If not null, the expression is evaluated relative to this element.
-     * @param namespaces
-     * @return {@link ArrayList} or null
+     * @param namespaces a {@link java.util.List} object.
+     * @return {@link java.util.ArrayList} or null
      * @should return all values
+     * @param element a {@link org.jdom2.Element} object.
      */
     public static List<Element> evaluateToElements(String expr, Element element, List<Namespace> namespaces) {
         List<Element> retList = new ArrayList<>();
@@ -210,12 +216,12 @@ public class XmlTools {
 
     /**
      * XPath evaluation with a given return type filter.
-     * 
+     *
      * @param expr XPath expression to evaluate.
      * @param parent If not null, the expression is evaluated relative to this element.
      * @param filter Return type filter.
-     * @param namespaces
-     * @return
+     * @param namespaces a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Object> evaluate(String expr, Object parent, Filter filter, List<Namespace> namespaces) {
@@ -230,6 +236,15 @@ public class XmlTools {
 
     }
 
+    /**
+     * <p>determineFileFormat.</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @param encoding a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any.
+     */
     public static String determineFileFormat(String xml, String encoding) throws JDOMException, IOException {
         if (xml == null) {
             return null;
@@ -240,13 +255,13 @@ public class XmlTools {
 
     /**
      * Determines the format of the given XML file by checking for namespaces.
-     * 
-     * @param path
-     * @return
+     *
      * @should detect mets files correctly
      * @should detect lido files correctly
      * @should detect abbyy files correctly
      * @should detect tei files correctly
+     * @param doc a {@link org.jdom2.Document} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String determineFileFormat(Document doc) {
         if (doc == null || doc.getRootElement() == null) {
@@ -271,7 +286,7 @@ public class XmlTools {
 
     /**
      * Transforms the given JDOM document via the given XSLT stylesheet.
-     * 
+     *
      * @param doc JDOM document to transform
      * @param stylesheetPath Absolute path to the XSLT stylesheet file
      * @param params Optional transformer parameters

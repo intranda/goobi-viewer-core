@@ -38,6 +38,10 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
+/**
+ * <p>DataManager class.</p>
+ *
+ */
 public final class DataManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DataManager.class);
@@ -66,6 +70,11 @@ public final class DataManager {
 
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.controller.DataManager} object.
+     */
     public static DataManager getInstance() {
         DataManager dm = instance;
         if (dm == null) {
@@ -86,6 +95,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>Getter for the field <code>modules</code>.</p>
+     *
      * @return the modules
      */
     public List<IModule> getModules() {
@@ -93,6 +104,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>getUrlBuilder.</p>
+     *
      * @return the urlBuilder
      */
     public IURLBuilder getUrlBuilder() {
@@ -105,9 +118,11 @@ public final class DataManager {
     }
 
     /**
-     * 
-     * @return
-     * @throws ModuleMissingException
+     * <p>getModule.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.ModuleMissingException
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.modules.IModule} object.
      */
     public IModule getModule(String id) throws ModuleMissingException {
         if (StringUtils.isEmpty(id)) {
@@ -124,9 +139,10 @@ public final class DataManager {
     }
 
     /**
-     * 
-     * @param id
-     * @return
+     * <p>isModuleLoaded.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean isModuleLoaded(String id) {
         if (StringUtils.isEmpty(id)) {
@@ -143,9 +159,11 @@ public final class DataManager {
     }
 
     /**
-     * 
-     * @param module
+     * <p>registerModule.</p>
+     *
+     * @param module a {@link io.goobi.viewer.modules.IModule} object.
      * @should not add module if it's already registered
+     * @return a boolean.
      */
     public boolean registerModule(IModule module) {
         if (module == null) {
@@ -167,14 +185,17 @@ public final class DataManager {
     }
 
     /**
-     * 
-     * @return
+     * <p>getSessionCount.</p>
+     *
+     * @return a int.
      */
     public int getSessionCount() {
         return sessionMap.size();
     }
 
     /**
+     * <p>Getter for the field <code>sessionMap</code>.</p>
+     *
      * @return the sessionMap
      */
     public Map<String, Map<String, String>> getSessionMap() {
@@ -182,6 +203,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>Getter for the field <code>configuration</code>.</p>
+     *
      * @return the configuration
      */
     public Configuration getConfiguration() {
@@ -195,6 +218,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>Getter for the field <code>languageHelper</code>.</p>
+     *
      * @return the languageHelper
      */
     public LanguageHelper getLanguageHelper() {
@@ -208,6 +233,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>Getter for the field <code>searchIndex</code>.</p>
+     *
      * @return the searchIndex
      */
     public SolrSearchIndex getSearchIndex() {
@@ -222,7 +249,10 @@ public final class DataManager {
     }
 
     /**
+     * <p>Getter for the field <code>dao</code>.</p>
+     *
      * @return the dao
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public IDAO getDao() throws DAOException {
         if (dao == null) {
@@ -237,8 +267,8 @@ public final class DataManager {
 
     /**
      * Sets custom Configuration object (used for unit testing).
-     * 
-     * @param dao
+     *
+     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      */
     public void injectConfiguration(Configuration configuration) {
         if (configuration != null) {
@@ -248,8 +278,8 @@ public final class DataManager {
 
     /**
      * Sets custom SolrSearchIndex object (used for unit testing).
-     * 
-     * @param dao
+     *
+     * @param searchIndex a {@link io.goobi.viewer.controller.SolrSearchIndex} object.
      */
     public void injectSearchIndex(SolrSearchIndex searchIndex) {
         if (searchIndex != null) {
@@ -259,13 +289,18 @@ public final class DataManager {
 
     /**
      * Sets custom IDAO object (used for unit testing).
-     * 
-     * @param dao
+     *
+     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      */
     public void injectDao(IDAO dao) {
         this.dao = dao;
     }
 
+    /**
+     * <p>Getter for the field <code>bookmarkManager</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
+     */
     public SessionStoreBookmarkManager getBookmarkManager() {
         if (this.bookmarkManager == null) {
             synchronized (lock) {
@@ -275,16 +310,31 @@ public final class DataManager {
         return this.bookmarkManager;
     }
 
+    /**
+     * <p>injectBookmarkManager.</p>
+     *
+     * @param bookmarkManager a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
+     */
     public void injectBookmarkManager(SessionStoreBookmarkManager bookmarkManager) {
         this.bookmarkManager = bookmarkManager;
     }
 
+    /**
+     * <p>injectOAuthResponseListener.</p>
+     *
+     * @param listener a {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} object.
+     */
     public void injectOAuthResponseListener(IOAuthResponseListener listener) {
         if (listener != null) {
             this.oAuthResponseListener = listener;
         }
     }
 
+    /**
+     * <p>Getter for the field <code>oAuthResponseListener</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} object.
+     */
     public IOAuthResponseListener getOAuthResponseListener() {
         if (oAuthResponseListener == null) {
             synchronized (lock) {
@@ -296,6 +346,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>Getter for the field <code>recordCampaignMap</code>.</p>
+     *
      * @return the recordCampaignMap
      */
     public Map<String, List<Campaign>> getRecordCampaignMap() {
@@ -303,6 +355,8 @@ public final class DataManager {
     }
 
     /**
+     * <p>Setter for the field <code>recordCampaignMap</code>.</p>
+     *
      * @param recordCampaignMap the recordCampaignMap to set
      */
     public void setRecordCampaignMap(Map<String, List<Campaign>> recordCampaignMap) {

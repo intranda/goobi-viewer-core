@@ -20,26 +20,27 @@ import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * Interface for creating module-specific urls for viewer pages
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public interface IURLBuilder {
 
     /**
-     * 
+     * <p>generateURL.</p>
+     *
      * @param browseElement The browseElement for which we want to build a url
      * @return The url the the given BrowseElement should link to
      */
     public String generateURL(BrowseElement browseElement);
 
     /**
-     * 
-     * @param pi
-     * @param imageNo
-     * @param logId
-     * @param pageType
-     * @return
+     * <p>buildPageUrl.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param imageNo a int.
+     * @param logId a {@link java.lang.String} object.
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return a {@link java.lang.String} object.
      */
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType);
 }

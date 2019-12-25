@@ -16,19 +16,23 @@
 package io.goobi.viewer.model.cms.itemfunctionality;
 
 /**
- * @author Florian Alpers
+ * <p>Functionality interface.</p>
  *
+ * @author Florian Alpers
  */
 public interface Functionality {
 
     /**
-     * @param listPage
-     * @return
+     * <p>setPageNo.</p>
+     *
+     * @param pageNo a int.
      */
     public void setPageNo(int pageNo);
 
     /**
-     * @return
+     * <p>getPageNo.</p>
+     *
+     * @return a int.
      */
     int getPageNo();
 

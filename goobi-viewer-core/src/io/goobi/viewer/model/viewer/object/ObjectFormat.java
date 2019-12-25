@@ -19,8 +19,9 @@ package io.goobi.viewer.model.viewer.object;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * @author Florian Alpers
+ * <p>ObjectFormat class.</p>
  *
+ * @author Florian Alpers
  */
 public enum ObjectFormat {
     PLY,
@@ -29,8 +30,10 @@ public enum ObjectFormat {
     TDS;
 
     /**
-     * @param substring
-     * @return
+     * <p>getByFileExtension.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
      */
     public static ObjectFormat getByFileExtension(String filename) {
         switch (FilenameUtils.getExtension(filename.toLowerCase())) {

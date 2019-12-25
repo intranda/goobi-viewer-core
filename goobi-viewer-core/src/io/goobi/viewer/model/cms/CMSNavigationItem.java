@@ -44,6 +44,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>CMSNavigationItem class.</p>
+ *
+ */
 @Entity
 @Table(name = "cms_navigation_items")
 public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
@@ -108,7 +112,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     @Transient
     private Integer sortingListId = null;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public CMSNavigationItem() {
         // the emptiness inside
     }
@@ -116,7 +122,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     /**
      * Created a copy of the passed item ignoring all data concerning the item hierarchy (order, child and parent items)
      *
-     * @param original
+     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public CMSNavigationItem(CMSNavigationItem original) {
         setItemLabel(original.getItemLabel());
@@ -129,11 +135,22 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         setAssociatedTheme(original.getAssociatedTheme());
     }
 
+    /**
+     * <p>Constructor for CMSNavigationItem.</p>
+     *
+     * @param targetUrl a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     */
     public CMSNavigationItem(String targetUrl, String label) {
         setPageUrl(targetUrl);
         setItemLabel(label);
     }
 
+    /**
+     * <p>Constructor for CMSNavigationItem.</p>
+     *
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     */
     public CMSNavigationItem(CMSPage cmsPage) {
         setCmsPage(cmsPage);
     }
@@ -143,6 +160,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compareTo(CMSNavigationItem o) {
         if (this == o) {
@@ -157,14 +175,29 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * <p>Getter for the field <code>itemLabel</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getItemLabel() {
         if (cmsPage != null) {
             return cmsPage.getMenuTitle();
@@ -172,11 +205,18 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return itemLabel;
     }
 
+    /**
+     * <p>Setter for the field <code>itemLabel</code>.</p>
+     *
+     * @param itemLabel a {@link java.lang.String} object.
+     */
     public void setItemLabel(String itemLabel) {
         this.itemLabel = itemLabel;
     }
 
     /**
+     * <p>Getter for the field <code>order</code>.</p>
+     *
      * @return the order
      */
     public Integer getOrder() {
@@ -184,6 +224,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>Setter for the field <code>order</code>.</p>
+     *
      * @param order the order to set
      */
     public void setOrder(Integer order) {
@@ -191,6 +233,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>Getter for the field <code>parentItem</code>.</p>
+     *
      * @return the parentItem
      */
     public CMSNavigationItem getParentItem() {
@@ -198,6 +242,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>Setter for the field <code>parentItem</code>.</p>
+     *
      * @param parentItem the parentItem to set
      */
     public void setParentItem(CMSNavigationItem parentItem) {
@@ -207,34 +253,69 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>childItems</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSNavigationItem> getChildItems() {
         return childItems;
     }
 
+    /**
+     * <p>Setter for the field <code>childItems</code>.</p>
+     *
+     * @param childItems a {@link java.util.List} object.
+     */
     public void setChildItems(List<CMSNavigationItem> childItems) {
         this.childItems = childItems;
     }
 
+    /**
+     * <p>addChildItem.</p>
+     *
+     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     */
     public void addChildItem(CMSNavigationItem child) {
         if (!childItems.contains(child)) {
             childItems.add(child);
         }
     }
 
+    /**
+     * <p>removeChildItem.</p>
+     *
+     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     */
     public void removeChildItem(CMSNavigationItem child) {
         if (childItems.contains(child)) {
             childItems.remove(child);
         }
     }
 
+    /**
+     * <p>Getter for the field <code>cmsPage</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     */
     public CMSPage getCmsPage() {
         return cmsPage;
     }
 
+    /**
+     * <p>Setter for the field <code>cmsPage</code>.</p>
+     *
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = cmsPage;
     }
 
+    /**
+     * <p>getNavigationUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNavigationUrl() {
         String url = (isAbsolute(getPageUrl()) || isOnSameRessource(getPageUrl()) ? "" : BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/")
                 + getPageUrl();
@@ -263,6 +344,11 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>pageUrl</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPageUrl() {
         if (cmsPage != null) {
             return cmsPage.getRelativeUrlPath(true);
@@ -270,6 +356,11 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return pageUrl;
     }
 
+    /**
+     * <p>Setter for the field <code>pageUrl</code>.</p>
+     *
+     * @param pageUrl a {@link java.lang.String} object.
+     */
     public void setPageUrl(String pageUrl) {
         if(StringUtils.isNotBlank(pageUrl) && pageUrl.toLowerCase().startsWith("www.")) {
             pageUrl = "http://" + pageUrl;
@@ -278,16 +369,28 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>hasUnpublishedCmsPage.</p>
+     *
      * @return true if this item has an associated cmsPage and this page's status is unpublished
      */
     public boolean hasUnpublishedCmsPage() {
         return getCmsPage() != null && !getCmsPage().isPublished();
     }
 
+    /**
+     * <p>isValid.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isValid() {
         return !hasUnpublishedCmsPage() && !hasDeletedCmsPage();
     }
 
+    /**
+     * <p>isShouldDisplay.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isShouldDisplay() {
         UserBean userBean = BeanUtils.getUserBean();
         switch (getDisplayRule()) {
@@ -309,12 +412,19 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>hasDeletedCmsPage.</p>
+     *
      * @return true if this item has no associated cmsPage, but the url is that of a cms page or is empty
      */
     public boolean hasDeletedCmsPage() {
         return getCmsPage() == null && (getPageUrl().matches("/?cms/.+/?") || StringUtils.isEmpty(getPageUrl()));
     }
 
+    /**
+     * <p>hasCmsPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasCmsPage() {
         return getCmsPage() != null;
     }
@@ -322,8 +432,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     /**
      * Check to highlight this item as 'currentPage'. Checks both the items label and all child labels whether they equal currentPage
      *
-     * @param currentPage
-     * @return
+     * @param currentPage a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean matchesLabel(String currentPage) {
         if (getItemLabel().equals(currentPage)) {
@@ -343,7 +453,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     /**
      * Returns the hierarchy level of this item, i.e. the number of ancestor items
      *
-     * @return
+     * @return a int.
      */
     public int getLevel() {
         int level = 0;
@@ -356,6 +466,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>Getter for the field <code>sortingListId</code>.</p>
+     *
      * @return the sortingListId
      */
     public Integer getSortingListId() {
@@ -363,12 +475,15 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
     
     /**
+     * <p>Setter for the field <code>sortingListId</code>.</p>
+     *
      * @param sortingListId the sortingListId to set
      */
     public void setSortingListId(Integer sortingListId) {
         this.sortingListId = sortingListId;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other instanceof CMSNavigationItem && ((getParentItem() == null && ((CMSNavigationItem) other).getParentItem() == null)
@@ -384,18 +499,34 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return false;
     }
 
+    /**
+     * <p>isAbsoluteLink.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAbsoluteLink() {
         return absoluteLink;
     }
 
+    /**
+     * <p>Setter for the field <code>absoluteLink</code>.</p>
+     *
+     * @param absoluteLink a boolean.
+     */
     public void setAbsoluteLink(boolean absoluteLink) {
         this.absoluteLink = absoluteLink;
     }
 
+    /**
+     * <p>isVisible.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isVisible() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(super.toString());
@@ -408,10 +539,20 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return sb.toString();
     }
 
+    /**
+     * <p>Setter for the field <code>displayRule</code>.</p>
+     *
+     * @param rule a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
+     */
     public void setDisplayRule(DisplayRule rule) {
         this.displayRule = rule;
     }
 
+    /**
+     * <p>Getter for the field <code>displayRule</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
+     */
     public DisplayRule getDisplayRule() {
         if (this.displayRule == null) {
             this.displayRule = DisplayRule.ALWAYS;
@@ -419,25 +560,45 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return this.displayRule;
     }
 
+    /**
+     * <p>setDisplayForUsersOnly.</p>
+     *
+     * @param display a boolean.
+     */
     public void setDisplayForUsersOnly(boolean display) {
         this.displayRule = display ? DisplayRule.LOGGED_IN : DisplayRule.ALWAYS;
     }
 
+    /**
+     * <p>isDisplayForUsersOnly.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayForUsersOnly() {
         return displayRule.equals(DisplayRule.LOGGED_IN) || displayRule.equals(DisplayRule.ADMIN);
     }
 
+    /**
+     * <p>setDisplayForAdminsOnly.</p>
+     *
+     * @param display a boolean.
+     */
     public void setDisplayForAdminsOnly(boolean display) {
         this.displayRule = display ? DisplayRule.ADMIN : DisplayRule.ALWAYS;
     }
 
+    /**
+     * <p>isDisplayForAdminsOnly.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayForAdminsOnly() {
         return displayRule.equals(DisplayRule.ADMIN);
     }
 
     /**
      * Sets the {@link #associatedTheme} to the given theme, or to null if the given theme is empty or blank
-     * 
+     *
      * @param associatedTheme the associatedTheme to set
      */
     public void setAssociatedTheme(String associatedTheme) {
@@ -445,6 +606,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>Getter for the field <code>associatedTheme</code>.</p>
+     *
      * @return the associatedTheme; null if no associated theme exists
      */
     public String getAssociatedTheme() {
@@ -455,6 +618,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
+     * <p>Setter for the field <code>openInNewWindow</code>.</p>
+     *
      * @param openInNewWindow if the link should open in a new tab/window
      */
     public void setOpenInNewWindow(boolean openInNewWindow) {
@@ -462,6 +627,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
     
     /**
+     * <p>isOpenInNewWindow.</p>
+     *
      * @return if the link should open in a new tab/window
      */
     public boolean isOpenInNewWindow() {
@@ -479,6 +646,11 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         ADMIN;
     }
     
+    /**
+     * <p>getMeWithDescendants.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSNavigationItem> getMeWithDescendants() {
         List<CMSNavigationItem> items = new ArrayList<>();
         items.add(this);

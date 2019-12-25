@@ -50,11 +50,20 @@ public class UserRole {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public UserRole() {
         // the emptiness inside
     }
 
+    /**
+     * <p>Constructor for UserRole.</p>
+     *
+     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     */
     public UserRole(UserGroup userGroup, User user, Role role) {
         this.userGroup = userGroup;
         this.user = user;
@@ -66,6 +75,7 @@ public class UserRole {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -80,6 +90,7 @@ public class UserRole {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -110,6 +121,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -117,6 +130,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -124,6 +139,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Getter for the field <code>userGroup</code>.</p>
+     *
      * @return the userGroup
      */
     public UserGroup getUserGroup() {
@@ -131,6 +148,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Setter for the field <code>userGroup</code>.</p>
+     *
      * @param userGroup the userGroup to set
      */
     public void setUserGroup(UserGroup userGroup) {
@@ -138,6 +157,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
      * @return the user
      */
     public User getUser() {
@@ -145,6 +166,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Setter for the field <code>user</code>.</p>
+     *
      * @param user the user to set
      */
     public void setUser(User user) {
@@ -152,6 +175,8 @@ public class UserRole {
     }
 
     /**
+     * <p>Getter for the field <code>role</code>.</p>
+     *
      * @return the role
      */
     public Role getRole() {
@@ -159,12 +184,15 @@ public class UserRole {
     }
 
     /**
+     * <p>Setter for the field <code>role</code>.</p>
+     *
      * @param role the role to set
      */
     public void setRole(Role role) {
         this.role = role;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "User '" + user + "' with the role '" + role + "' in group '" + userGroup + "'";

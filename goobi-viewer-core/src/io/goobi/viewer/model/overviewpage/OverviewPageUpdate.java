@@ -33,8 +33,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * Database entry for overview page history updates.
- * 
- * @deprecated
  */
 @Deprecated
 @Entity
@@ -70,6 +68,8 @@ public class OverviewPageUpdate {
     private boolean publicationTextChanged = false;
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -77,6 +77,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -84,6 +86,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     *
      * @return the dateUpdated
      */
     public Date getDateUpdated() {
@@ -91,6 +95,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -98,6 +104,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -105,6 +113,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -112,6 +122,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Getter for the field <code>updatedBy</code>.</p>
+     *
      * @return the updatedBy
      */
     public User getUpdatedBy() {
@@ -119,6 +131,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>updatedBy</code>.</p>
+     *
      * @param updatedBy the updatedBy to set
      */
     public void setUpdatedBy(User updatedBy) {
@@ -126,6 +140,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Getter for the field <code>config</code>.</p>
+     *
      * @return the config
      */
     public String getConfig() {
@@ -133,6 +149,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>config</code>.</p>
+     *
      * @param config the config to set
      */
     public void setConfig(String config) {
@@ -140,6 +158,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>isMetadataChanged.</p>
+     *
      * @return the metadataChanged
      */
     public boolean isMetadataChanged() {
@@ -147,6 +167,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>metadataChanged</code>.</p>
+     *
      * @param metadataChanged the metadataChanged to set
      */
     public void setMetadataChanged(boolean metadataChanged) {
@@ -154,6 +176,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>isDescriptionChanged.</p>
+     *
      * @return the descriptionChanged
      */
     public boolean isDescriptionChanged() {
@@ -161,6 +185,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>descriptionChanged</code>.</p>
+     *
      * @param descriptionChanged the descriptionChanged to set
      */
     public void setDescriptionChanged(boolean descriptionChanged) {
@@ -168,6 +194,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>isPublicationTextChanged.</p>
+     *
      * @return the publicationTextChanged
      */
     public boolean isPublicationTextChanged() {
@@ -175,6 +203,8 @@ public class OverviewPageUpdate {
     }
 
     /**
+     * <p>Setter for the field <code>publicationTextChanged</code>.</p>
+     *
      * @param publicationTextChanged the publicationTextChanged to set
      */
     public void setPublicationTextChanged(boolean publicationTextChanged) {

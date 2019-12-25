@@ -44,6 +44,7 @@ public class HttpResponseFilter implements Filter {
     private static boolean preventProxyCaching = DataManager.getInstance().getConfiguration().isPreventProxyCaching();
     private static String alwaysCacheRegex = "/css|jquery|primefaces|\\.js|\\.gif|\\.png|\\.ico|\\.jpg|\\.jpeg";
 
+    /** {@inheritDoc} */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -82,10 +83,12 @@ public class HttpResponseFilter implements Filter {
 //        });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void destroy() {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
     }

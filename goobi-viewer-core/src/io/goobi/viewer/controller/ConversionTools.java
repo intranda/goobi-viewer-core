@@ -34,14 +34,18 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+/**
+ * <p>ConversionTools class.</p>
+ *
+ */
 public class ConversionTools {
 
     private static final Logger logger = LoggerFactory.getLogger(ConversionTools.class);
 
     /**
      * Converts given file to HTML, if supported by Tika.
-     * 
-     * @param file
+     *
+     * @param file a {@link java.nio.file.Path} object.
      * @return String containing the HTML
      * @throws @throws FileNotFoundException
      * @should convert docx file correctly
@@ -89,10 +93,10 @@ public class ConversionTools {
 
     /**
      * Converts given DOCX file to HTML using DOCX4J (usually with better results than using Tika).
-     * 
-     * @param file
+     *
+     * @param file a {@link java.nio.file.Path} object.
      * @return String containing the HTML
-     * @throws IOException
+     * @throws java.io.IOException
      * @should convert docx correctly
      */
     public static String convertDocxToHtml(Path file) throws IOException {

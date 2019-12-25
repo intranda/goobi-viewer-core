@@ -18,11 +18,20 @@ package io.goobi.viewer.model.iiif.search.parser;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author florian
+ * <p>Abstract AbstractSearchParser class.</p>
  *
+ * @author florian
  */
 public abstract class AbstractSearchParser {
 
+    /**
+     * <p>getPrecedingText.</p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @param hitStartIndex a int.
+     * @param maxLength a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getPrecedingText(String text, int hitStartIndex, int maxLength) {
         String before = "";
         int index = hitStartIndex-1;
@@ -39,6 +48,14 @@ public abstract class AbstractSearchParser {
         return before;
     }
     
+    /**
+     * <p>getSucceedingText.</p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @param hitEndIndex a int.
+     * @param maxLength a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
         String after = "";
         int index = hitEndIndex;
@@ -57,7 +74,9 @@ public abstract class AbstractSearchParser {
     
     
     /**
-     * @param query
+     * <p>getSingleWordRegex.</p>
+     *
+     * @param query a {@link java.lang.String} object.
      * @return a regex matching a single word matching the given query regex (ignoring case)
      */
     public static String getSingleWordRegex(String query) {
@@ -66,8 +85,9 @@ public abstract class AbstractSearchParser {
     }
 
     /**
-     * 
-     * @param query
+     * <p>getContainedWordRegex.</p>
+     *
+     * @param query a {@link java.lang.String} object.
      * @return a regex matching any text containing the given query regex as single word
      */
     public static String getContainedWordRegex(String query) {
@@ -76,7 +96,10 @@ public abstract class AbstractSearchParser {
     }
     
     /**
+     * <p>getQueryRegex.</p>
+     *
      * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
+     * @param query a {@link java.lang.String} object.
      */
     public static String getQueryRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
@@ -87,8 +110,8 @@ public abstract class AbstractSearchParser {
     /**
      * Create a regular expression matching all anything starting with the given query followed by an arbitrary number of word characters and ignoring
      * case
-     * 
-     * @param query
+     *
+     * @param query a {@link java.lang.String} object.
      * @return the regular expression {@code (?i){query}[\w\d-]*}
      */
     public static String getAutoSuggestRegex(String query) {

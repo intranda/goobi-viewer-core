@@ -47,9 +47,10 @@ public class SearchQueryGroup implements Serializable {
     private final Locale locale;
 
     /**
-     * 
-     * @param locale
-     * @param initSize
+     * <p>Constructor for SearchQueryGroup.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @param initSize a int.
      */
     public SearchQueryGroup(Locale locale, int initSize) {
         this.locale = locale;
@@ -58,11 +59,18 @@ public class SearchQueryGroup implements Serializable {
         }
     }
 
+    /**
+     * <p>getAvailableOperators.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<SearchQueryGroupOperator> getAvailableOperators() {
         return Arrays.asList(SearchQueryGroupOperator.values());
     }
 
     /**
+     * <p>Getter for the field <code>queryItems</code>.</p>
+     *
      * @return the queryItems
      */
     public List<SearchQueryItem> getQueryItems() {
@@ -70,20 +78,22 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * 
-     * @return
+     * <p>addNewQueryItem.</p>
+     *
      * @should add item correctly
+     * @return a boolean.
      */
     public boolean addNewQueryItem() {
         return queryItems.add(new SearchQueryItem(BeanUtils.getLocale()));
     }
 
     /**
-     * 
-     * @param item
-     * @return
+     * <p>removeQueryItem.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
      * @should remove item correctly
      * @should not remove last remaining item
+     * @return a boolean.
      */
     public boolean removeQueryItem(SearchQueryItem item) {
         if (queryItems.size() > 1) {
@@ -94,6 +104,8 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>operator</code>.</p>
+     *
      * @return the operator
      */
     public SearchQueryGroupOperator getOperator() {
@@ -101,6 +113,8 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>operator</code>.</p>
+     *
      * @param operator the operator to set
      */
     public void setOperator(SearchQueryGroupOperator operator) {
@@ -108,6 +122,8 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>locale</code>.</p>
+     *
      * @return the locale
      */
     public Locale getLocale() {

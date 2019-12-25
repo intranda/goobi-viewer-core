@@ -42,6 +42,7 @@ public class PIInSolrValidator implements Validator {
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         try {
@@ -59,10 +60,11 @@ public class PIInSolrValidator implements Validator {
 
     /**
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
-     * 
+     *
      * @return false if no current collection is set, the pi does not match any known work
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param pi a {@link java.lang.String} object.
      */
     public static boolean validatePi(String pi) throws IndexUnreachableException, PresentationException {
         if(StringUtils.isNotBlank(pi)) {            

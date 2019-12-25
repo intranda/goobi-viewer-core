@@ -23,32 +23,75 @@ import javax.faces.context.FacesContext;
 
 import io.goobi.viewer.controller.Helper;
 
+/**
+ * <p>Messages class.</p>
+ *
+ */
 public class Messages {
 
+    /**
+     * <p>error.</p>
+     *
+     * @param targetId a {@link java.lang.String} object.
+     * @param message a {@link java.lang.String} object.
+     * @param messageParams a {@link java.lang.String} object.
+     */
     public static void error(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_ERROR, messageParams);
     }
 
+    /**
+     * <p>error.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public static void error(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_ERROR);
     }
 
+    /**
+     * <p>info.</p>
+     *
+     * @param targetId a {@link java.lang.String} object.
+     * @param message a {@link java.lang.String} object.
+     * @param messageParams a {@link java.lang.String} object.
+     */
     public static void info(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_INFO, messageParams);
     }
 
+    /**
+     * <p>info.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public static void info(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_INFO);
     }
 
+    /**
+     * <p>warn.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public static void warn(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_WARN);
     }
 
+    /**
+     * <p>warn.</p>
+     *
+     * @param targetId a {@link java.lang.String} object.
+     * @param message a {@link java.lang.String} object.
+     * @param messageParams a {@link java.lang.String} object.
+     */
     public static void warn(String targetId, String message, String... messageParams) {
         showMessage(targetId, message, FacesMessage.SEVERITY_WARN, messageParams);
     }
 
+    /**
+     * <p>clear.</p>
+     */
     public static void clear() {
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.getMessageList().clear();
@@ -68,9 +111,12 @@ public class Messages {
     }
 
 	/**
-	 * @param inMessage
-	 * @param messageParams
-	 * @return
+	 * <p>translate.</p>
+	 *
+	 * @param inMessage a {@link java.lang.String} object.
+	 * @param messageParams a {@link java.lang.String} object.
+	 * @param locale a {@link java.util.Locale} object.
+	 * @return a {@link java.lang.String} object.
 	 */
 	public static String translate(String inMessage, Locale locale, String... messageParams) {
 		String translatedMessage = Helper.getTranslation(inMessage, locale);

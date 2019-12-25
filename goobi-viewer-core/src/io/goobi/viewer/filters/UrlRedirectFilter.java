@@ -41,7 +41,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 /**
  * Filter for redirecting prettified calls to cmsPages
  * <p>
- * Forwarding is handled by {@link RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't change, but
+ * Forwarding is handled by {@link javax.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't change, but
  * the internal handling of the request is according to the forwarded url
  * </p>
  * <p>
@@ -53,7 +53,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  * forward)
  * </p>
  * <p>
- * This filter also stores the called url to the session map using {@link ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to
+ * This filter also stores the called url to the session map using {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to
  * leaving a view to return to a previous view (for example when leaving the reading mode)
  * </p>
  */
@@ -62,11 +62,10 @@ public class UrlRedirectFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(UrlRedirectFilter.class);
 
     /**
+     * {@inheritDoc}
+     *
      * Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage pretty-url
      * that is) Also stores the actually requested path in the current http session using {@link ViewHistory#setCurrentView(ViewerPath, HttpSession)}
-     * 
-     * @throws IOException If forwarding fails due to IOException
-     * @throws ServletException If the path could not be evaluated due to a DAOException or if forwarding fails due to ServletException
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -125,10 +124,12 @@ public class UrlRedirectFilter implements Filter {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void destroy() {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
     }

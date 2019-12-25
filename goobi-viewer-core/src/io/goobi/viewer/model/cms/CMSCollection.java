@@ -60,9 +60,8 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  * A class representing persistent configurations for a collection. A collections is identified by a SOLR-field name and a label. The most common
  * SOLR-field is "DC" and label is the internal name of the collection to edit. This class allows setting a representative image, names in multiple
  * languages and a uri linking to a collection page.
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_collections")
@@ -99,17 +98,19 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @PrivateOwned
     private List<CMSCollectionTranslation> translations = new ArrayList<>();
 
+    /**
+     * <p>Constructor for CMSCollection.</p>
+     */
     public CMSCollection() {
 
     }
 
     /**
-     * Default constructor, creating a Collection from the identifying fields {@link CMSCollection#solrField} and {@link CMSCollection#solrFieldValue}
-     * 
+     * Default constructor, creating a Collection from the identifying fields {@link io.goobi.viewer.model.cms.CMSCollection#solrField} and {@link io.goobi.viewer.model.cms.CMSCollection#solrFieldValue}
+     *
      * @param solrField The name of the SOLR field holding the values for the collection
      * @param solrFieldValue The value of the solrField identifying this collection
-     * 
-     * @throws IllegalArgumentException If either argument returns true for {@link StringUtils#isBlank(CharSequence)}
+     * @throws java.lang.IllegalArgumentException If either argument returns true for {@link org.apache.commons.lang3.StringUtils#isBlank(CharSequence)}
      */
     public CMSCollection(String solrField, String solrFieldValue) {
         if (StringUtils.isBlank(solrField) || StringUtils.isBlank(solrFieldValue)) {
@@ -120,20 +121,22 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * <p>Getter for the field <code>mediaItem</code>.</p>
+     *
      * @return the mediaItem
      */
     public CMSMediaItem getMediaItem() {
         return mediaItem;
     }
 
-    /**
-     * @param mediaItem the mediaItem to set
-     */
+    /** {@inheritDoc} */
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
     }
 
     /**
+     * <p>Getter for the field <code>collectionUrl</code>.</p>
+     *
      * @return the collectionUri
      */
     public String getCollectionUrl() {
@@ -141,7 +144,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @param collectionUri the collectionUri to set
+     * <p>Setter for the field <code>collectionUrl</code>.</p>
+     *
+     * @param collectionUrl a {@link java.lang.String} object.
      */
     public void setCollectionUrl(String collectionUrl) {
         this.collectionUrl = collectionUrl;
@@ -149,8 +154,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * Adds a translation for the collection label
-     * 
-     * @param label
+     *
+     * @param label a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
      */
     public void addLabel(CMSCollectionTranslation label) {
         label.setTag(LABEL_TAG);
@@ -160,8 +165,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * Adds a translation for the collection description
-     * 
-     * @param label
+     *
+     * @param description a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
      */
     public void addDescription(CMSCollectionTranslation description) {
         description.setTag(DESCRIPTION_TAG);
@@ -171,7 +176,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * returns all translations of this page with the tag {@link #LABEL_TAG}
-     * 
+     *
      * @return all labels for this collections
      */
     public List<CMSCollectionTranslation> getLabels() {
@@ -180,7 +185,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * returns all translations of this page with the tag {@link #DESCRIPTION_TAG}
-     * 
+     *
      * @return all descriptions for this collections
      */
     public List<CMSCollectionTranslation> getDescriptions() {
@@ -189,9 +194,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * get the label for the given {@code language}, or an empty string if no matching label exists the language should be the language code of a
-     * {@link Locale} and is case insensitive
-     * 
-     * @param language
+     * {@link java.util.Locale} and is case insensitive
+     *
+     * @param language a {@link java.lang.String} object.
      * @return The string value of the label of the given language, or an empty string
      */
     public String getLabel(String language) {
@@ -205,8 +210,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * get the label for the given {@code locale}, or an empty string if no matching label exists
-     * 
-     * @param locale
+     *
+     * @param locale a {@link java.util.Locale} object.
      * @return The string value of the label of the given locale, or an empty string
      */
     public String getLabel(Locale locale) {
@@ -214,26 +219,39 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * get the label for the current locale (given by {@link BeanUtils#getLocale()}, or an empty string if no matching label exists
-     * 
+     * get the label for the current locale (given by {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getLocale()}, or an empty string if no matching label exists
+     *
      * @return The string value of the label of the current locale, or an empty string
      */
     public String getLabel() {
         return getLabel(BeanUtils.getLocale());
     }
 
+    /**
+     * <p>getLabelAsTranslation.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     */
     public CMSCollectionTranslation getLabelAsTranslation(String language) {
         return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
     }
 
+    /**
+     * <p>getDescriptionAsTranslation.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     */
     public CMSCollectionTranslation getDescriptionAsTranslation(String language) {
         return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
     }
 
     /**
-     * @param label
-     * @param language
-     * @return
+     * <p>setLabel.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void setLabel(String value, String language) {
         getLabels().stream().filter(label -> label.getLanguage().equalsIgnoreCase(language)).findFirst().ifPresent(label -> label.setValue(value));
@@ -241,9 +259,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * get the description for the given {@code language}, or an empty string if no matching description exists the language should be the language
-     * code of a {@link Locale} and is case insensitive
-     * 
-     * @param language
+     * code of a {@link java.util.Locale} and is case insensitive
+     *
+     * @param language a {@link java.lang.String} object.
      * @return The string value of the description of the given language, or an empty string
      */
     public String getDescription(String language) {
@@ -258,8 +276,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /**
      * get the description for the given {@code locale}, or an empty string if no matching description exists
-     * 
-     * @param locale
+     *
+     * @param locale a {@link java.util.Locale} object.
      * @return The string value of the description of the given locale, or an empty string
      */
     public String getDescription(Locale locale) {
@@ -267,14 +285,20 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * get the description for the current locale (given by {@link BeanUtils#getLocale()}, or an empty string if no matching description exists
-     * 
+     * get the description for the current locale (given by {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getLocale()}, or an empty string if no matching description exists
+     *
      * @return The string value of the description of the current locale, or an empty string
      */
     public String getDescription() {
         return getDescription(BeanUtils.getLocale());
     }
 
+    /**
+     * <p>setDescription.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     */
     public void setDescription(String value, String language) {
         getDescriptions().stream()
                 .filter(label -> label.getLanguage().equalsIgnoreCase(language))
@@ -283,6 +307,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * <p>Getter for the field <code>solrField</code>.</p>
+     *
      * @return the solrField. Guaranteed to hold a non-blank value
      */
     public String getSolrField() {
@@ -290,6 +316,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * <p>Getter for the field <code>solrFieldValue</code>.</p>
+     *
      * @return the solrFieldValue. Guaranteed to hold a non-blank value
      */
     public String getSolrFieldValue() {
@@ -297,6 +325,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Compares collection by the alphabatical sorting of their {@link CMSCollection#getSolrFieldValue()}
      */
     @Override
@@ -305,6 +335,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns the hashCode of {@link CMSCollection#getSolrFieldValue()}
      */
     @Override
@@ -313,6 +345,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * {@inheritDoc}
+     *
      * A {@link CMSCollection} is equal to any other object if that is also a CMSCollection and returns the same values for
      * {@link CMSCollection#getSolrField()} and {@link CMSCollection#getSolrFieldValue()}
      */
@@ -326,6 +360,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         }
     }
 
+    /**
+     * <p>populateLabels.</p>
+     */
     public void populateLabels() {
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
@@ -335,6 +372,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         }
     }
 
+    /**
+     * <p>populateDescriptions.</p>
+     */
     public void populateDescriptions() {
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
@@ -344,25 +384,43 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         }
     }
 
+    /**
+     * <p>hasMediaItem.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasMediaItem() {
         return getMediaItem() != null;
     }
 
+    /**
+     * <p>hasRepresentativeWork.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasRepresentativeWork() {
         return StringUtils.isNotBlank(getRepresentativeWorkPI());
     }
 
+    /**
+     * <p>hasImage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasImage() {
         return hasRepresentativeWork() || hasMediaItem();
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
         return id;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getSolrField() + "/" + getSolrFieldValue();
@@ -371,11 +429,13 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getName()
      */
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return getLabel();
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getLinkURI() {
         return getLinkURI(BeanUtils.getRequest());
@@ -384,6 +444,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getLinkURI(javax.servlet.http.HttpServletRequest)
      */
+    /** {@inheritDoc} */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
         if (StringUtils.isNotBlank(getCollectionUrl())) {
@@ -403,6 +464,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getIconURI()
      */
+    /** {@inheritDoc} */
     @Override
     public URI getIconURI() {
         return getRepresentativeWork()
@@ -414,6 +476,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 //        return getMediaItem().getIconURI();
     }
     
+    /** {@inheritDoc} */
     @Override
     public URI getIconURI(int width, int height) {
         return getRepresentativeWork()
@@ -425,6 +488,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 //        return getMediaItem().getIconURI();
     }
     
+    /** {@inheritDoc} */
     @Override
     public URI getIconURI(int size) {
         return getRepresentativeWork()
@@ -445,9 +509,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * @return
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * <p>getRepresentativeWork.</p>
+     *
+     * @return a {@link java.util.Optional} object.
      */
     public Optional<StructElement> getRepresentativeWork() {
         if(hasRepresentativeWork()) {
@@ -464,6 +528,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
+     * <p>Getter for the field <code>representativeWorkPI</code>.</p>
+     *
      * @return the representativeWorkPI
      */
     public String getRepresentativeWorkPI() {
@@ -471,7 +537,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>representativeWorkPI</code>.</p>
+     *
      * @param representativeWorkPI the representativeWorkPI to set
      */
     public void setRepresentativeWorkPI(String representativeWorkPI) {
@@ -481,6 +548,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForName()
      */
+    /** {@inheritDoc} */
     @Override
     public IMetadataValue getTranslationsForName() {
         Map<String, String> labels = getLabels().stream()
@@ -497,6 +565,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 	/* (non-Javadoc)
 	 * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaFilter()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getMediaFilter() {
 		return CmsMediaBean.getImageFilter();
@@ -505,6 +574,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 	/* (non-Javadoc)
 	 * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
 		if(hasMediaItem()) {

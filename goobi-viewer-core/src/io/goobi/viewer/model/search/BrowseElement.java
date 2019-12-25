@@ -436,8 +436,10 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * @param structElement
-     * @param locale
+     * <p>createMultiLanguageLabel.</p>
+     *
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
 
@@ -711,21 +713,36 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
         return label.getValue(BeanUtils.getLocale()).orElse(label.getValue().orElse(""));
     }
 
+    /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse("");
     }
 
+    /**
+     * <p>getLabelAsMetadataValue.</p>
+     *
+     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     */
     public IMetadataValue getLabelAsMetadataValue() {
         return label;
     }
 
     /**
+     * <p>Getter for the field <code>labelShort</code>.</p>
+     *
      * @return the labelShort
      */
     public String getLabelShort() {
@@ -733,6 +750,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>labelShort</code>.</p>
+     *
      * @param labelShort the labelShort to set
      */
     public void setLabelShort(IMetadataValue labelShort) {
@@ -740,6 +759,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>docStructType</code>.</p>
+     *
      * @return the type
      */
     public String getDocStructType() {
@@ -747,6 +768,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>iddoc</code>.</p>
+     *
      * @return the iddoc
      */
     public long getIddoc() {
@@ -754,6 +777,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>thumbnailUrl</code>.</p>
+     *
      * @return the thumbnailUrl
      */
     public String getThumbnailUrl() {
@@ -764,9 +789,9 @@ public class BrowseElement implements Serializable {
     /**
      * Called from HTML.
      *
-     * @param width
-     * @param height
-     * @return
+     * @param width a {@link java.lang.String} object.
+     * @param height a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
@@ -777,11 +802,18 @@ public class BrowseElement implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>imageNo</code>.</p>
+     *
+     * @return a int.
+     */
     public int getImageNo() {
         return imageNo;
     }
 
     /**
+     * <p>Setter for the field <code>structElements</code>.</p>
+     *
      * @param structElements the structElements to set
      */
     public void setStructElements(List<StructElementStub> structElements) {
@@ -789,6 +821,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>structElements</code>.</p>
+     *
      * @return the structElements
      */
     public List<StructElementStub> getStructElements() {
@@ -796,6 +830,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>fulltext</code>.</p>
+     *
      * @param fulltext the fulltext to set
      */
     public void setFulltext(String fulltext) {
@@ -803,6 +839,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>fulltext</code>.</p>
+     *
      * @return the fulltext
      */
     public String getFulltext() {
@@ -829,6 +867,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>volumeNo</code>.</p>
+     *
      * @return the volumeNo
      */
     public String getVolumeNo() {
@@ -836,6 +876,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>volumeNo</code>.</p>
+     *
      * @param volumeNo the volumeNo to set
      */
     public void setVolumeNo(String volumeNo) {
@@ -843,6 +885,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>isAnchor.</p>
+     *
      * @return the anchor
      */
     public boolean isAnchor() {
@@ -850,6 +894,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>anchor</code>.</p>
+     *
      * @param anchor the anchor to set
      */
     public void setAnchor(boolean anchor) {
@@ -857,6 +903,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>isHasImages.</p>
+     *
      * @return the hasImages
      */
     public boolean isHasImages() {
@@ -864,6 +912,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>hasImages</code>.</p>
+     *
      * @param hasImages the hasImages to set
      */
     public void setHasImages(boolean hasImages) {
@@ -871,6 +921,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>numVolumes</code>.</p>
+     *
      * @return the numVolumes
      */
     public long getNumVolumes() {
@@ -878,6 +930,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the identifier to set
      */
     public void setPi(String pi) {
@@ -885,6 +939,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the identifier
      */
     public String getPi() {
@@ -893,7 +949,7 @@ public class BrowseElement implements Serializable {
 
     /**
      * Returns the search hint URL (without the application root!).
-     * 
+     *
      * @return the url
      */
     public String getUrl() {
@@ -901,6 +957,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sidebarPrevUrl</code>.</p>
+     *
      * @return the sidebarPrevUrl
      */
     public String getSidebarPrevUrl() {
@@ -908,6 +966,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sidebarNextUrl</code>.</p>
+     *
      * @return the sidebarNextUrl
      */
     public String getSidebarNextUrl() {
@@ -1027,23 +1087,46 @@ public class BrowseElement implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * <p>Getter for the field <code>metadataList</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Metadata> getMetadataList() {
         return metadataList;
     }
 
+    /**
+     * <p>getMetadataListForLocale.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<Metadata> getMetadataListForLocale(Locale locale) {
         return Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
     }
 
+    /**
+     * <p>getMetadataListForCurrentLocale.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Metadata> getMetadataListForCurrentLocale() {
         return getMetadataListForLocale(BeanUtils.getLocale());
     }
 
+    /**
+     * <p>Setter for the field <code>metadataList</code>.</p>
+     *
+     * @param metadataList a {@link java.util.List} object.
+     */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
     }
 
     /**
+     * <p>isThumbnailAccessDenied.</p>
+     *
      * @return the thumbnailAccessDenied
      */
     public boolean isThumbnailAccessDenied() {
@@ -1051,6 +1134,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>metadataGroupType</code>.</p>
+     *
      * @return the metadataGroupType
      */
     public MetadataGroupType getMetadataGroupType() {
@@ -1058,8 +1143,10 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * @param metadataName
-     * @return
+     * <p>Getter for the field <code>metadataList</code>.</p>
+     *
+     * @param metadataLabel a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Metadata> getMetadataList(String metadataLabel) {
         List<Metadata> list = new ArrayList<>();
@@ -1072,6 +1159,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>additionalMetadataList</code>.</p>
+     *
      * @return the additionalMetadataList
      */
     public List<Metadata> getAdditionalMetadataList() {
@@ -1079,6 +1168,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dataRepository</code>.</p>
+     *
      * @return the dataRepository
      */
     public String getDataRepository() {
@@ -1088,7 +1179,7 @@ public class BrowseElement implements Serializable {
     /**
      * Returns the ContextObject value for a COinS element using the docstruct hierarchy for this search hit..
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getContextObject() {
         if (contextObject == null && !structElements.isEmpty()) {
@@ -1107,6 +1198,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>recordLanguages</code>.</p>
+     *
      * @return the recordLanguages
      */
     public List<String> getRecordLanguages() {
@@ -1114,6 +1207,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>hasMedia</code>.</p>
+     *
      * @param hasMedia the hasMedia to set
      */
     public void setHasMedia(boolean hasMedia) {
@@ -1121,6 +1216,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>isHasMedia.</p>
+     *
      * @return the hasMedia
      */
     public boolean isHasMedia() {
@@ -1128,17 +1225,26 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>originalFieldName</code>.</p>
+     *
      * @return the originalFieldName
      */
     public String getOriginalFieldName() {
         return originalFieldName;
     }
 
+    /**
+     * <p>determinePageType.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     */
     public PageType determinePageType() {
         return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false);
     }
 
     /**
+     * <p>Getter for the field <code>logId</code>.</p>
+     *
      * @return the logId
      */
     public String getLogId() {
@@ -1146,6 +1252,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>docType</code>.</p>
+     *
      * @return the docType
      */
     public DocType getDocType() {

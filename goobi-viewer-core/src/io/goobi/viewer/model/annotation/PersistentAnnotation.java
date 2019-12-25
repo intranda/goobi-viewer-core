@@ -67,9 +67,8 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * An Annotation class to store annotation in a database
- * 
- * @author florian
  *
+ * @author florian
  */
 @Entity
 @Table(name = "annotations")
@@ -143,8 +142,8 @@ public class PersistentAnnotation {
 
     /**
      * creates a new PersistentAnnotation from a WebAnnotation
-     * 
-     * @param source
+     *
+     * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public PersistentAnnotation(WebAnnotation source) {
         this.dateCreated = source.getCreated();
@@ -191,9 +190,9 @@ public class PersistentAnnotation {
 
     /**
      * Get the PI of the annotation target from its URI id
-     * 
-     * @param id2
-     * @return
+     *
+     * @param uri a {@link java.net.URI} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String parsePI(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
@@ -205,9 +204,9 @@ public class PersistentAnnotation {
 
     /**
      * Extract the page order from a canvas url. If the url points to a manifest, return null
-     * 
-     * @param uri
-     * @return
+     *
+     * @param uri a {@link java.net.URI} object.
+     * @return a {@link java.lang.Integer} object.
      */
     public static Integer parsePageOrder(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
@@ -222,6 +221,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -229,12 +230,20 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @param idAsURI a {@link java.net.URI} object.
+     * @return a {@link java.lang.Long} object.
+     */
     public static Long getId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
@@ -244,15 +253,28 @@ public class PersistentAnnotation {
         return null;
     }
 
+    /**
+     * <p>getIdAsURI.</p>
+     *
+     * @return a {@link java.net.URI} object.
+     */
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
+    /**
+     * <p>getIdAsURI.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
     public static URI getIdAsURI(String id) {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", id));
     }
 
     /**
+     * <p>Getter for the field <code>dateCreated</code>.</p>
+     *
      * @return the dateCreated
      */
     public Date getDateCreated() {
@@ -260,6 +282,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>dateCreated</code>.</p>
+     *
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
@@ -267,6 +291,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>dateModified</code>.</p>
+     *
      * @return the dateModified
      */
     public Date getDateModified() {
@@ -274,6 +300,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>dateModified</code>.</p>
+     *
      * @param dateModified the dateModified to set
      */
     public void setDateModified(Date dateModified) {
@@ -281,8 +309,10 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>getCreator.</p>
+     *
      * @return the creator
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public User getCreator() throws DAOException {
         if (getCreatorId() != null) {
@@ -292,6 +322,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>setCreator.</p>
+     *
      * @param creator the creator to set
      */
     public void setCreator(User creator) {
@@ -299,8 +331,10 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>getGenerator.</p>
+     *
      * @return the generator
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public Question getGenerator() throws DAOException {
         if (getGeneratorId() != null) {
@@ -310,6 +344,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>setGenerator.</p>
+     *
      * @param generator the generator to set
      */
     public void setGenerator(Question generator) {
@@ -317,6 +353,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>creatorId</code>.</p>
+     *
      * @return the creatorId
      */
     public Long getCreatorId() {
@@ -324,6 +362,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>creatorId</code>.</p>
+     *
      * @param creatorId the creatorId to set
      */
     public void setCreatorId(Long creatorId) {
@@ -331,6 +371,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>reviewerId</code>.</p>
+     *
      * @return the reviewerId
      */
     public Long getReviewerId() {
@@ -338,6 +380,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>reviewerId</code>.</p>
+     *
      * @param reviewerId the reviewerId to set
      */
     public void setReviewerId(Long reviewerId) {
@@ -345,6 +389,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>generatorId</code>.</p>
+     *
      * @return the generatorId
      */
     public Long getGeneratorId() {
@@ -352,6 +398,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>generatorId</code>.</p>
+     *
      * @param generatorId the generatorId to set
      */
     public void setGeneratorId(Long generatorId) {
@@ -359,7 +407,8 @@ public class PersistentAnnotation {
     }
 
     /**
-     * 
+     * <p>Getter for the field <code>body</code>.</p>
+     *
      * @return the body
      */
     public String getBody() {
@@ -367,6 +416,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>body</code>.</p>
+     *
      * @param body the body to set
      */
     public void setBody(String body) {
@@ -374,6 +425,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>motivation</code>.</p>
+     *
      * @return the motivation
      */
     public String getMotivation() {
@@ -381,6 +434,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>motivation</code>.</p>
+     *
      * @param motivation the motivation to set
      */
     public void setMotivation(String motivation) {
@@ -389,11 +444,11 @@ public class PersistentAnnotation {
 
     /**
      * Get the
-     * 
-     * @return
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     *
+     * @throws com.fasterxml.jackson.core.JsonParseException
+     * @throws com.fasterxml.jackson.databind.JsonMappingException
+     * @throws java.io.IOException
+     * @return a {@link de.intranda.api.annotation.IResource} object.
      */
     public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.body != null) {
@@ -406,6 +461,14 @@ public class PersistentAnnotation {
         return null;
     }
 
+    /**
+     * <p>getBodyAsOAResource.</p>
+     *
+     * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
+     */
     public IResource getBodyAsOAResource() throws JsonParseException, JsonMappingException, IOException {
         TextualResource resource = (TextualResource) getBodyAsResource();
         if (resource != null) {
@@ -416,6 +479,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>target</code>.</p>
+     *
      * @return the target
      */
     public String getTarget() {
@@ -423,6 +488,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>targetPI</code>.</p>
+     *
      * @return the targetPI
      */
     public String getTargetPI() {
@@ -430,6 +497,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Getter for the field <code>targetPageOrder</code>.</p>
+     *
      * @return the targetPageOrder
      */
     public Integer getTargetPageOrder() {
@@ -437,6 +506,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>targetPI</code>.</p>
+     *
      * @param targetPI the targetPI to set
      */
     public void setTargetPI(String targetPI) {
@@ -444,6 +515,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>targetPageOrder</code>.</p>
+     *
      * @param targetPageOrder the targetPageOrder to set
      */
     public void setTargetPageOrder(Integer targetPageOrder) {
@@ -451,6 +524,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * <p>Setter for the field <code>target</code>.</p>
+     *
      * @param target the target to set
      */
     public void setTarget(String target) {
@@ -458,12 +533,12 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Get the annotation target as an WebAnnotation {@link IResource} java object
-     * 
-     * @return
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
+     *
+     * @throws com.fasterxml.jackson.core.JsonParseException
+     * @throws com.fasterxml.jackson.databind.JsonMappingException
+     * @throws java.io.IOException
+     * @return a {@link de.intranda.api.annotation.IResource} object.
      */
     public IResource getTargetAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.target != null) {
@@ -482,12 +557,12 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Get the annotation target as an OpenAnnotation {@link IResource} java object
+     * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
      *
-     * @return
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * @throws com.fasterxml.jackson.core.JsonParseException
+     * @throws com.fasterxml.jackson.databind.JsonMappingException
+     * @throws java.io.IOException
+     * @return a {@link de.intranda.api.annotation.IResource} object.
      */
     public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
         IResource resource = getTargetAsResource();
@@ -505,13 +580,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Get the annotation as an {@link WebAnnotation} java object
-     * 
-     * @return
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
-     * @throws DAOException
+     * Get the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object
+     *
+     * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
     public WebAnnotation getAsAnnotation() {
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
@@ -540,12 +611,12 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Get the annotation as an {@link OpenAnnotation} java object
+     * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
      *
-     * @return
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
+     * @throws com.fasterxml.jackson.core.JsonParseException
+     * @throws com.fasterxml.jackson.databind.JsonMappingException
+     * @throws java.io.IOException
+     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException {
         OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
@@ -558,9 +629,9 @@ public class PersistentAnnotation {
 
     /**
      * Deletes exported JSON annotations from a related record's data folder. Should be called when deleting this annotation.
-     * 
+     *
      * @return Number of deleted files
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public int deleteExportedTextFiles() throws ViewerConfigurationException {
         if (DataManager.getInstance().getConfiguration().getAnnotationFolder() == null) {
@@ -614,12 +685,13 @@ public class PersistentAnnotation {
     }
 
     /**
-     * 
+     * <p>getContentString.</p>
+     *
      * @return Just the string value of the body document
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
-     * @throws DAOException
+     * @throws com.fasterxml.jackson.core.JsonParseException
+     * @throws com.fasterxml.jackson.databind.JsonMappingException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public String getContentString() throws JsonParseException, JsonMappingException, IOException, DAOException {
         // Value
@@ -632,7 +704,8 @@ public class PersistentAnnotation {
     }
 
     /**
-     * 
+     * <p>getTargetLink.</p>
+     *
      * @return URL string to the record view
      */
     public String getTargetLink() {

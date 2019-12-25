@@ -24,91 +24,117 @@ import org.apache.solr.common.SolrDocument;
 import io.goobi.viewer.controller.AbstractConfiguration;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
+/**
+ * <p>IModule interface.</p>
+ *
+ */
 public interface IModule {
 
+    /**
+     * <p>getId.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId();
 
+    /**
+     * <p>getName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName();
 
+    /**
+     * <p>getVersion.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getVersion();
 
+    /**
+     * <p>isLoaded.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isLoaded();
 
     /**
      * Module configuration object.
-     * 
-     * @return
+     *
+     * @return a {@link io.goobi.viewer.controller.AbstractConfiguration} object.
      */
     public AbstractConfiguration getConfiguration();
 
     /**
      * URLs for the CMS menu.
-     * 
-     * @return
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getCmsMenuContributions();
 
     /**
      * URLs to sidebar widgets.
-     * 
-     * @return
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getSidebarContributions();
 
     /**
      * URLs to widgets containing admin menu links.
-     * 
-     * @return
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAdminContributions();
 
     /**
      * URLs to widgets containing navigation menu links.
-     * 
-     * @return
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getLoginNavigationContributions();
 
     /**
      * Generic widget URLs than can be used from virtually anywhere. The URLs are configured in the config file.
-     * 
-     * @param type
-     * @return
+     *
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<String> getWidgets(String type);
 
     /**
      * Any additional tasks this module needs to perform when re-indexing a record (e.g. putting additional files into the hotfolder).
-     * 
-     * @param pi
-     * @param dataRepository
-     * @param namingScheme
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param dataRepository a {@link java.lang.String} object.
+     * @param namingScheme a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception;
 
     /**
      * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
-     * 
-     * @param pi
-     * @param page
-     * @param doc
-     * @param recordType
-     * @param dataRepository
-     * @param namingScheme
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param dataRepository a {@link java.lang.String} object.
+     * @param namingScheme a {@link java.lang.String} object.
      * @return true if successful; false otherwise
+     * @throws java.lang.Exception if any.
      */
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception;
 
     /**
      * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
-     * 
-     * @param pi
-     * @param page
-     * @param doc
-     * @param recordType
-     * @param dataRepository
-     * @param namingScheme
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param recordType a {@link java.lang.String} object.
+     * @param dataRepository a {@link java.lang.String} object.
+     * @param namingScheme a {@link java.lang.String} object.
      * @return true if successful; false otherwise
+     * @throws java.lang.Exception if any.
      */
     @Deprecated
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String recordType, String dataRepository, String namingScheme)
@@ -116,14 +142,15 @@ public interface IModule {
 
     /**
      * Any clean-up the module might want to do when resetting the currently loaded record.
-     * 
+     *
      * @return true if successful; false otherwise
      */
     public boolean augmentResetRecord();
 
     /**
-     * 
-     * @return the {@link IURLBuilder} for this module, if any. If this module should not alter url building, an empty optional should be returned
+     * <p>getURLBuilder.</p>
+     *
+     * @return the {@link io.goobi.viewer.modules.interfaces.IURLBuilder} for this module, if any. If this module should not alter url building, an empty optional should be returned
      */
     default Optional<IURLBuilder> getURLBuilder() {
         return Optional.empty();

@@ -41,19 +41,23 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
+/**
+ * <p>Abstract AbstractPageLoader class.</p>
+ *
+ */
 public abstract class AbstractPageLoader implements IPageLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPageLoader.class);
 
     /**
      * Replaces the static variable placeholders (the ones that don't change depending on the page) of the given label format with values.
-     * 
-     * @param format
-     * @param locale
-     * @return
-     * @throws IndexUnreachableException
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should replace numpages currectly
      * @should replace message keys correctly
+     * @return a {@link java.lang.String} object.
      */
     protected String buildPageLabelTemplate(String format, Locale locale) throws IndexUnreachableException {
         if (format == null) {
@@ -69,6 +73,15 @@ public abstract class AbstractPageLoader implements IPageLoader {
         return labelTemplate;
     }
 
+    /**
+     * <p>loadPage.</p>
+     *
+     * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param page a int.
+     * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public static PhysicalElement loadPage(StructElement topElement, int page) throws PresentationException, IndexUnreachableException {
         if (topElement.isAnchor() || topElement.isGroup()) {
             logger.debug("Anchor or group document, no pages.");
@@ -103,7 +116,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * 
+     * <p>loadPageFromDoc.</p>
+     *
      * @param doc Solr document from which to construct the page
      * @param pi Record identifier
      * @param topElement StructElement of the top record element

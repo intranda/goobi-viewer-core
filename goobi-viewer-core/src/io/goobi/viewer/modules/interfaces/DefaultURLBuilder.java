@@ -28,8 +28,9 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
- * @author Florian Alpers
+ * <p>DefaultURLBuilder class.</p>
  *
+ * @author Florian Alpers
  */
 public class DefaultURLBuilder implements IURLBuilder {
 
@@ -38,6 +39,7 @@ public class DefaultURLBuilder implements IURLBuilder {
     /* (non-Javadoc)
      * @see io.goobi.viewer.modules.interfaces.IURLBuilder#generateURL(io.goobi.viewer.model.search.BrowseElement)
      */
+    /** {@inheritDoc} */
     @Override
     public String generateURL(BrowseElement ele) {
 
@@ -70,14 +72,7 @@ public class DefaultURLBuilder implements IURLBuilder {
 
     }
 
-    /**
-     * 
-     * @param pi
-     * @param imageNo
-     * @param logId
-     * @param pageType
-     * @return the constructed URL
-     */
+    /** {@inheritDoc} */
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
         StringBuilder sb = new StringBuilder();
@@ -94,8 +89,10 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * @param ele
-     * @return
+     * <p>getPageType.</p>
+     *
+     * @param ele a {@link io.goobi.viewer.model.search.BrowseElement} object.
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     protected PageType getPageType(BrowseElement ele) {
         PageType pageType = ele.determinePageType();
@@ -109,9 +106,11 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * @param ele
-     * @param sb
-     * @return
+     * <p>buildSearchUrl.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @param fieldValue a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String buildSearchUrl(String fieldName, String fieldValue) {
         StringBuilder sb = new StringBuilder();

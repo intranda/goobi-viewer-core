@@ -24,8 +24,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * @author Florian Alpers
+ * <p>VuAuthenticationResponse class.</p>
  *
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_EMPTY)
 public class VuAuthenticationResponse {
@@ -36,48 +37,64 @@ public class VuAuthenticationResponse {
     private Request request;
     
     /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
      * @return the user
      */
     public User getUser() {
         return user;
     }
     /**
+     * <p>Setter for the field <code>user</code>.</p>
+     *
      * @param user the user to set
      */
     public void setUser(User user) {
         this.user = user;
     }
     /**
+     * <p>Getter for the field <code>expired</code>.</p>
+     *
      * @return the expired
      */
     public Expired getExpired() {
         return expired;
     }
     /**
+     * <p>Setter for the field <code>expired</code>.</p>
+     *
      * @param expired the expired to set
      */
     public void setExpired(Expired expired) {
         this.expired = expired;
     }
     /**
+     * <p>Getter for the field <code>blocks</code>.</p>
+     *
      * @return the blocks
      */
     public Blocks getBlocks() {
         return blocks;
     }
     /**
+     * <p>Setter for the field <code>blocks</code>.</p>
+     *
      * @param blocks the blocks to set
      */
     public void setBlocks(Blocks blocks) {
         this.blocks = blocks;
     }
     /**
+     * <p>Getter for the field <code>request</code>.</p>
+     *
      * @return the request
      */
     public Request getRequest() {
         return request;
     }
     /**
+     * <p>Setter for the field <code>request</code>.</p>
+     *
      * @param request the request to set
      */
     public void setRequest(Request request) {
@@ -246,6 +263,7 @@ public class VuAuthenticationResponse {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getUser().toString() + "\n\tExpired: " + Boolean.TRUE.equals(getExpired().getIsExpired()) + "\n\tBlocked: " + Boolean.TRUE.equals(getBlocks().getIsBlocked());

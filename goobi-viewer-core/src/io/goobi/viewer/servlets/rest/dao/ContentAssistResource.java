@@ -34,11 +34,24 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
+/**
+ * <p>ContentAssistResource class.</p>
+ *
+ */
 @Path("/contentAssist")
 @ViewerRestServiceBinding
 public class ContentAssistResource {
 
 
+    /**
+     * <p>getCollections.</p>
+     *
+     * @param solrField a {@link java.lang.String} object.
+     * @param inputString a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     @GET
     @Path("/collections/{solrField}/{input}")
     @Produces({ MediaType.APPLICATION_JSON })

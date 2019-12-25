@@ -73,9 +73,8 @@ import io.goobi.viewer.model.iiif.search.parser.SolrSearchParser;
 
 /**
  * Converts resources found in a search to IIIF Search objects
- * 
- * @author florian
  *
+ * @author florian
  */
 public class SearchResultConverter {
 
@@ -94,7 +93,7 @@ public class SearchResultConverter {
 
     /**
      * Create a new converter; parameters are used to construct urls or result resources
-     * 
+     *
      * @param requestURI    The URI of the search request
      * @param restApiURI    The URI of the viewer rest api
      * @param pi            The PI of the manifest to search
@@ -107,33 +106,58 @@ public class SearchResultConverter {
         this.pageNo = pageNo;
     }
 
+    /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     */
     public void setPi(String pi) {
         this.pi = pi;
     }
 
+    /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPi() {
         return pi;
     }
 
+    /**
+     * <p>Setter for the field <code>pageNo</code>.</p>
+     *
+     * @param pageNo a {@link java.lang.Integer} object.
+     */
     public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
     }
 
+    /**
+     * <p>Getter for the field <code>pageNo</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getPageNo() {
         return pageNo;
     }
 
+    /**
+     * <p>Getter for the field <code>presentationBuilder</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder} object.
+     */
     public AbstractBuilder getPresentationBuilder() {
         return presentationBuilder;
     };
     
     /**
-     * Generates a search hit from a {@link Comment}
-     * 
+     * Generates a search hit from a {@link io.goobi.viewer.model.annotation.Comment}
+     *
      * @param pi            The PI of the work containing the comment
      * @param queryRegex    The regex matching the search terms
      * @param comment       The comment containing the search terms
-     * @return a {@link SearchHit}
+     * @return a {@link de.intranda.api.iiif.search.SearchHit}
      */
     public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();
@@ -168,10 +192,10 @@ public class SearchResultConverter {
     
     /**
      * Create a IIIF Search hit from a UGC solr document (usually a crowdsouring created comment/metadata)
-     * 
-     * @param queryRegex
-     * @param doc
+     *
+     * @param queryRegex a {@link java.lang.String} object.
      * @return  A search hit matching the queryRegex within the given UGC SolrDocument
+     * @param ugc a {@link org.apache.solr.common.SolrDocument} object.
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
 
@@ -210,10 +234,10 @@ public class SearchResultConverter {
     
     /**
      * Create a IIIF Search hit from the field fieldName within the SolrDocumnet doc
-     * 
-     * @param queryRegex
-     * @param fieldName
-     * @param doc
+     *
+     * @param queryRegex a {@link java.lang.String} object.
+     * @param fieldName a {@link java.lang.String} object.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return A search hit for a Solr field search
      */
     public SearchHit convertMetadataToHit(String queryRegex, String fieldName, SolrDocument doc) {
@@ -248,10 +272,10 @@ public class SearchResultConverter {
 
     /**
      *  Create annotations for all matches of the given query within the given alto file
-     * 
-     * @param doc  The {@link AltoDocument}
-     * @param query a regex; each match of the query within the alto document creates a {@link SearchHit} with one or more annotations referencing alto word or line elements
-     * @return  A result list containing hits for each mach of the query and annotations containing the hits 
+     *
+     * @param doc  The {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument}
+     * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more annotations referencing alto word or line elements
+     * @return  A result list containing hits for each mach of the query and annotations containing the hits
      */
     public AnnotationResultList getAnnotationsFromAlto(AltoDocument doc, String query) {
         AnnotationResultList results = new AnnotationResultList();
@@ -280,7 +304,7 @@ public class SearchResultConverter {
     /**
      *  Create annotations for all matches of the given query within the given text file
      *  Returns only a partial result if the firstIndex is larger than 0 and numHits is smaller than the total number of hits
-     * 
+     *
      * @param text              the text to search
      * @param pi                the PI of the work containing the annotations
      * @param pageNo            The page number of the canvas containing the annotations
@@ -304,12 +328,12 @@ public class SearchResultConverter {
 
     /**
      * Get all matches to the given regex in the fieldsToSearch of the given doc as {@link SearchTerm SearchTerms}
-     * 
+     *
      * @param regex A regex matching all text wich should be returned as a searchTerm
      * @param doc   The document within to search
      * @param fieldsToSearch    The fields to search for the regex
      * @param searchMotivation  The motivation to be set for the search url of the searchTerms
-     * @return  A list of search terms 
+     * @return  A list of search terms
      */
     public SearchTermList getSearchTerms(String regex, SolrDocument doc, List<String> fieldsToSearch, List<String> searchMotivation) {
         SearchTermList terms = new SearchTermList();
@@ -322,11 +346,11 @@ public class SearchResultConverter {
 
     /**
      * Get all matches to the given regex in the given value as {@link SearchTerm SearchTerms}
-     * 
+     *
      * @param regex A regex matching all text wich should be returned as a searchTerm
      * @param value The text to be searched with the regex
      * @param searchMotivation  The motivation to be set for the search url of the searchTerms
-     * @return  A list of search terms 
+     * @return  A list of search terms
      */
     public SearchTermList getSearchTerms(String regex, String value, List<String> searchMotivation) {
         SearchTermList terms = new SearchTermList();
@@ -344,7 +368,7 @@ public class SearchResultConverter {
 
     /**
      * Convert a list of also word elements to a search hit, containing an annotation for each word in the list
-     * 
+     *
      * @param altoElements  A list of ALTO word elements
      * @return  A hit of the combined words
      */
@@ -367,8 +391,8 @@ public class SearchResultConverter {
     }
 
     /**
-     * Creates a {@link SearchHit} of the text within the given position within the given lines. 
-     * 
+     * Creates a {@link de.intranda.api.iiif.search.SearchHit} of the text within the given position within the given lines.
+     *
      * @param lines             The lines containing the hit
      * @param position          A range covering character positions of the matched text. the position is relative to the entire text of the given lines
      * @param containingLines   The lines to be included as annotations in the hit
@@ -402,14 +426,12 @@ public class SearchResultConverter {
 
     /**
      * Create a SearchHit for the given text. Each match of the given queryRegex in the text is included as a TextQuoteSelector in the hit
-     * 
-     * @param queryRegex        The regex matching the hit  
+     *
+     * @param queryRegex        The regex matching the hit
      * @param text              The text to search
      * @param pi                The PI of the manifest containing the annotations
      * @param pageNo            The order of the canvas containing the annotations
      * @return  A search hit containing a TextQuoteSelector for each match of the regex and a single annotations covering the entire text
-     * @throws UnsupportedEncodingException
-     * @throws IOException
      */
     public SearchHit createFulltextHit(String queryRegex, String text, String pi, Integer pageNo) {
 

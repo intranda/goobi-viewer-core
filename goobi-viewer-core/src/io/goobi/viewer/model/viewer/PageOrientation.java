@@ -15,10 +15,19 @@
  */
 package io.goobi.viewer.model.viewer;
 
+/**
+ * <p>PageOrientation class.</p>
+ *
+ */
 public enum PageOrientation {
     left,
     right;
     
+    /**
+     * <p>opposite.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PageOrientation} object.
+     */
     public PageOrientation opposite() {
         return this.equals(left) ? right : left;
     }

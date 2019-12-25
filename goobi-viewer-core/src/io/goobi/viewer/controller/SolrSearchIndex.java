@@ -67,6 +67,10 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
 
+/**
+ * <p>SolrSearchIndex class.</p>
+ *
+ */
 public final class SolrSearchIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
@@ -76,6 +80,7 @@ public final class SolrSearchIndex {
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
     private static final int MULTILANGUAGE_FIELD_NAME_GROUP = 1;
     private static final int MULTILANGUAGE_FIELD_LANGUAGE_GROUP = 2;
+    /** Constant <code>MAX_HITS=1000000</code> */
     public static final int MAX_HITS = 1000000;
     private static final int TIMEOUT_SO = 30000;
     private static final int TIMEOUT_CONNECTION = 30000;
@@ -87,6 +92,11 @@ public final class SolrSearchIndex {
 
     private SolrServer server;
 
+    /**
+     * <p>Constructor for SolrSearchIndex.</p>
+     *
+     * @param server a {@link org.apache.solr.client.solrj.SolrServer} object.
+     */
     public SolrSearchIndex(SolrServer server) {
         if (server == null) {
             this.server = getNewHttpSolrServer();
@@ -109,6 +119,11 @@ public final class SolrSearchIndex {
         }
     }
 
+    /**
+     * <p>getNewHttpSolrServer.</p>
+     *
+     * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
+     */
     public static HttpSolrServer getNewHttpSolrServer() {
         HttpSolrServer server = new HttpSolrServer(DataManager.getInstance().getConfiguration().getSolrUrl());
         server.setSoTimeout(TIMEOUT_SO); // socket read timeout
@@ -124,6 +139,13 @@ public final class SolrSearchIndex {
         return server;
     }
 
+    /**
+     * <p>testQuery.</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @throws org.apache.solr.client.solrj.SolrServerException if any.
+     */
     public QueryResponse testQuery(String query) throws SolrServerException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
@@ -135,18 +157,18 @@ public final class SolrSearchIndex {
     /**
      * Main Solr search method.
      *
-     * @param query {@link String}
-     * @param first {@link Integer}
-     * @param rows {@link Integer}
-     * @param sortFields
-     * @param facetFields
-     * @param facetSort
+     * @param query {@link java.lang.String}
+     * @param first {@link java.lang.Integer}
+     * @param rows {@link java.lang.Integer}
+     * @param sortFields a {@link java.util.List} object.
+     * @param facetFields a {@link java.util.List} object.
+     * @param facetSort a {@link java.lang.String} object.
      * @param fieldList If not null, only the fields in the list will be returned.
-     * @param filterQueries
+     * @param filterQueries a {@link java.util.List} object.
      * @param params Additional query parameters.
-     * @return {@link QueryResponse}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct results
      * @should return correct number of rows
      * @should sort results correctly
@@ -245,18 +267,19 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>search.</p>
      *
-     * @param query {@link String}
-     * @param first {@link Integer}
-     * @param rows {@link Integer}
-     * @param sortFields
-     * @param facetFields
+     * @param query {@link java.lang.String}
+     * @param first {@link java.lang.Integer}
+     * @param rows {@link java.lang.Integer}
+     * @param sortFields a {@link java.util.List} object.
+     * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
-     * @param filterQueries
-     * @param params
-     * @return {@link QueryResponse}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
             List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
@@ -265,16 +288,17 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>search.</p>
      *
-     * @param query {@link String}
-     * @param first {@link Integer}
-     * @param rows {@link Integer}
-     * @param sortFields
-     * @param facetFields
+     * @param query {@link java.lang.String}
+     * @param first {@link java.lang.Integer}
+     * @param rows {@link java.lang.Integer}
+     * @param sortFields a {@link java.util.List} object.
+     * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
-     * @return {@link QueryResponse}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
@@ -283,14 +307,15 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>search.</p>
      *
-     * @param query
-     * @param rows
-     * @param sortFields
+     * @param query a {@link java.lang.String} object.
+     * @param rows a int.
+     * @param sortFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link org.apache.solr.common.SolrDocumentList} object.
      */
     public SolrDocumentList search(String query, int rows, List<StringPair> sortFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
@@ -301,12 +326,11 @@ public final class SolrSearchIndex {
     /**
      * Diese Methode führt eine Suche im Lucene durch.
      *
-     * @param query
+     * @param query a {@link java.lang.String} object.
      * @return {@link Hits}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws SolrServerException
-     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param fieldList a {@link java.util.List} object.
      */
     public SolrDocumentList search(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
@@ -316,18 +340,24 @@ public final class SolrSearchIndex {
     /**
      * Diese Methode führt eine Suche im Lucene durch.
      *
-     * @param query
+     * @param query a {@link java.lang.String} object.
      * @return {@link Hits}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws SolrServerException
-     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public SolrDocumentList search(String query) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
         return search(query, 0, MAX_HITS, null, null, null).getResults();
     }
 
+    /**
+     * <p>count.</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @return a long.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public long count(String query) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
         return search(query, 0, 0, null, null, null).getResults().getNumFound();
@@ -336,12 +366,11 @@ public final class SolrSearchIndex {
     /**
      * Retrieves the first document found by the given query
      *
-     * @param query
-     * @param fieldList
-     * @param sortFields
+     * @param query a {@link java.lang.String} object.
+     * @param fieldList a {@link java.util.List} object.
      * @return The first hit returned by the query
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct doc
      */
     public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
@@ -349,15 +378,15 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * Retrieves the first document found by the given query
-     * 
+     *
      * @param query The query to search
      * @param fieldList The fields retrieved
      * @param sortFields Sorting - the first volume according to this sorting is returned
      * @return The first hit returned by the query
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields)
             throws PresentationException, IndexUnreachableException {
@@ -373,12 +402,12 @@ public final class SolrSearchIndex {
     /**
      * Returns all SolrDocuments matching the given query. If no documents were found, null is returned
      *
-     * @param query
-     * @param fieldList
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param query a {@link java.lang.String} object.
+     * @param fieldList a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return SolrDocumentList containing all hits, or null if no hits are found
+     * @return a {@link org.apache.solr.common.SolrDocumentList} object.
      */
     public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
         logger.trace("getDocs: {}", query);
@@ -391,12 +420,13 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getDocumentByIddoc.</p>
      *
-     * @param iddoc
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param iddoc a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return correct doc
+     * @return a {@link org.apache.solr.common.SolrDocument} object.
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
@@ -411,12 +441,13 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getDocumentByPI.</p>
      *
-     * @param iddoc
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return correct doc
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link org.apache.solr.common.SolrDocument} object.
      */
     public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
@@ -433,10 +464,10 @@ public final class SolrSearchIndex {
      * Returns a list of Tags created from the terms for the given field name. This method uses the slower doc search instead of term search, but can
      * be filtered with a query.
      *
-     * @param fieldName
-     * @param querySuffix
-     * @return
-     * @throws IndexUnreachableException
+     * @param fieldName a {@link java.lang.String} object.
+     * @param querySuffix a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.List} object.
      */
     @SuppressWarnings("unchecked")
     public List<Tag> generateFilteredTagCloud(String fieldName, String querySuffix) throws IndexUnreachableException {
@@ -524,11 +555,11 @@ public final class SolrSearchIndex {
     /**
      * Returns the value of the IDDOC field for the document with the given PI (or 0 if none found).
      *
-     * @param identifier
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param identifier a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should retrieve correct IDDOC
+     * @return a long.
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
         // logger.trace("getIddocFromIdentifier: {}", identifier);
@@ -541,12 +572,13 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getIdentifierFromIddoc.</p>
      *
-     * @param identifier
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should retrieve correct identifier
+     * @param iddoc a long.
+     * @return a {@link java.lang.String} object.
      */
     public String getIdentifierFromIddoc(long iddoc) throws PresentationException, IndexUnreachableException {
         logger.trace("getIdentifierFromIddoc: {}", iddoc);
@@ -582,12 +614,12 @@ public final class SolrSearchIndex {
     /**
      * Returns the IDDOC of the logical document to which the given page belongs.
      *
-     * @param pi
-     * @param pageNo
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param pi a {@link java.lang.String} object.
+     * @param pageNo a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should retrieve correct IDDOC
+     * @return a long.
      */
     public long getImageOwnerIddoc(String pi, int pageNo) throws IndexUnreachableException, PresentationException {
         logger.trace("getImageOwnerIddoc: {}:{}", pi, pageNo);
@@ -621,12 +653,12 @@ public final class SolrSearchIndex {
     /**
      * Returns the IDDOC of the logical document to which the given LOGID belongs.
      *
-     * @param pi
-     * @param logId
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should retrieve correct IDDOC
+     * @return a long.
      */
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
@@ -647,10 +679,11 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getSingleFieldValue.</p>
      *
-     * @param doc
-     * @param field
-     * @return
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.Object} object.
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
         //        if(field.equals("MD_TITLE")) {            
@@ -665,27 +698,37 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getSingleFieldStringValue.</p>
      *
-     * @param doc
-     * @param field
-     * @return
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param field a {@link java.lang.String} object.
      * @should return value as string correctly
      * @should not return null as string if value is null
+     * @return a {@link java.lang.String} object.
      */
     public static String getSingleFieldStringValue(SolrDocument doc, String field) {
         Object val = getSingleFieldValue(doc, field);
         return val != null ? String.valueOf(val) : null;
     }
 
+    /**
+     * <p>getSingleFieldIntegerValue.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
+     */
     public static Integer getSingleFieldIntegerValue(SolrDocument doc, String field) {
         Object val = getSingleFieldValue(doc, field);
         return getAsInt(val);
     }
 
     /**
-     * @param doc
-     * @param iswork
-     * @return
+     * <p>getSingleFieldBooleanValue.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.Boolean} object.
      */
     public static Boolean getSingleFieldBooleanValue(SolrDocument doc, String field) {
         Object val = getSingleFieldValue(doc, field);
@@ -703,10 +746,10 @@ public final class SolrSearchIndex {
     /**
      * Returns a list with all (string) values for the given field name in the given SolrDocument.
      *
-     * @param doc
-     * @param fieldName
-     * @return
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param fieldName a {@link java.lang.String} object.
      * @should return all values for the given field
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
         if (doc != null) {
@@ -731,9 +774,9 @@ public final class SolrSearchIndex {
      * Converts the given SolrDocument to a value map. IMAGEURN_OAI and PAGEURNS are not returned because they have no relevance in this application
      * and can get quite large.
      *
-     * @param doc
-     * @return
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @should return all fields in the given doc except page urns
+     * @return a {@link java.util.Map} object.
      */
     public static Map<String, List<String>> getFieldValueMap(SolrDocument doc) {
         Map<String, List<String>> ret = new HashMap<>();
@@ -760,9 +803,9 @@ public final class SolrSearchIndex {
      * Converts the given SolrDocument to a value map. IMAGEURN_OAI and PAGEURNS are not returned because they have no relevance in this application
      * and can get quite large.
      *
-     * @param doc
-     * @return
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @should return all fields in the given doc except page urns
+     * @return a {@link java.util.Map} object.
      */
     public static Map<String, List<IMetadataValue>> getMultiLanguageFieldValueMap(SolrDocument doc) {
         Map<String, List<IMetadataValue>> ret = new HashMap<>();
@@ -789,8 +832,10 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * @param mdValues
-     * @return
+     * <p>getMultiLanguageMetadata.</p>
+     *
+     * @param mdValues a {@link java.util.Map} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<IMetadataValue> getMultiLanguageMetadata(Map<String, List<String>> mdValues) {
         List<IMetadataValue> values = new ArrayList<>();
@@ -841,10 +886,10 @@ public final class SolrSearchIndex {
     /**
      * Returns the number of hits for the given query without actually returning any documents.
      *
-     * @param query
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param query a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a long.
      */
     public long getHitCount(String query) throws IndexUnreachableException, PresentationException {
         SolrDocumentList result = search(query, 0, null, Collections.singletonList(SolrConstants.IDDOC));
@@ -940,6 +985,11 @@ public final class SolrSearchIndex {
         return null;
     }
 
+    /**
+     * <p>checkSolrSchemaName.</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public static String[] checkSolrSchemaName() {
         String[] ret = { "200", "" };
         Document doc = getSolrSchemaDocument();
@@ -999,14 +1049,14 @@ public final class SolrSearchIndex {
      *
      * @param query The query to use.
      * @param facetFields List of facet fields.
-     * @param facetMinCount
+     * @param facetMinCount a int.
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
+     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
@@ -1018,15 +1068,15 @@ public final class SolrSearchIndex {
      *
      * @param query The query to use.
      * @param facetFields List of facet fields.
-     * @param facetMinCount
+     * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
+     * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, String facetPrefix,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
@@ -1074,15 +1124,15 @@ public final class SolrSearchIndex {
     /**
      * Returns the comma-separated sorting fields in <code>solrSortFields</code> as a List<StringPair>.
      *
-     * @param solrSortFields
+     * @param solrSortFields a {@link java.lang.String} object.
      * @param splitFieldsBy String by which the individual field configurations are split
      * @param splitNameOrderBy String by which the field name and sorting order are split
-     * @return
      * @should split fields correctly
      * @should split single field correctly
      * @should throw IllegalArgumentException if solrSortFields is null
      * @should throw IllegalArgumentException if splitFieldsBy is null
      * @should throw IllegalArgumentException if splitNameOrderBy is null
+     * @return a {@link java.util.List} object.
      */
     public static List<StringPair> getSolrSortFieldsAsList(String solrSortFields, String splitFieldsBy, String splitNameOrderBy) {
         if (solrSortFields == null) {
@@ -1122,9 +1172,9 @@ public final class SolrSearchIndex {
 
     /**
      * Parses a Solr-Field value in order to return it as String
-     * 
-     * @param fieldValue
-     * @return
+     *
+     * @param fieldValue a {@link java.lang.Object} object.
+     * @return a {@link java.lang.String} object.
      */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue) {
@@ -1146,9 +1196,10 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * 
-     * @param fieldValue
-     * @return
+     * <p>getAsInt.</p>
+     *
+     * @param fieldValue a {@link java.lang.Object} object.
+     * @return a {@link java.lang.Integer} object.
      */
     public static Integer getAsInt(Object fieldValue) {
         if (fieldValue == null) {
@@ -1165,9 +1216,10 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>isQuerySyntaxError.</p>
      *
-     * @param e
-     * @return
+     * @param e a {@link java.lang.Exception} object.
+     * @return a boolean.
      */
     public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
@@ -1175,9 +1227,11 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * @return
-     * @throws IOException
-     * @throws SolrServerException
+     * <p>getAllFieldNames.</p>
+     *
+     * @throws java.io.IOException
+     * @throws org.apache.solr.client.solrj.SolrServerException
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
@@ -1197,6 +1251,13 @@ public final class SolrSearchIndex {
         return list;
     }
 
+    /**
+     * <p>getAllSortFieldNames.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.apache.solr.client.solrj.SolrServerException if any.
+     * @throws java.io.IOException if any.
+     */
     public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
@@ -1215,6 +1276,8 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getMetadataValuesForLanguage.</p>
+     *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
      * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match the given key but have
@@ -1243,6 +1306,8 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * <p>getMetadataValuesForLanguage.</p>
+     *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
      * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match the given key but have
@@ -1274,12 +1339,13 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * 
-     * @param pi
-     * @param page
+     * <p>getDisplayUserGeneratedContentsForPage.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
      * @return contents for the given page
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
             throws PresentationException, IndexUnreachableException {
@@ -1315,13 +1381,13 @@ public final class SolrSearchIndex {
 
     /**
      * Catches the filename of the page with the given order under the given ip
-     * 
+     *
      * @param pi The topstruct pi
      * @param order The page order (1-based
      * @return An optíonal containing the filename of the page with the given order under the given ip. Or an empty optional if no matching page was
      *         found.
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public Optional<String> getFilename(String pi, int order) throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
@@ -1345,6 +1411,13 @@ public final class SolrSearchIndex {
         return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
 
+    /**
+     * <p>getTranslations.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
@@ -1356,6 +1429,14 @@ public final class SolrSearchIndex {
         }
     }
 
+    /**
+     * <p>getTranslations.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc, BinaryOperator<String> combiner) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
@@ -1367,6 +1448,14 @@ public final class SolrSearchIndex {
         }
     }
 
+    /**
+     * <p>getTranslations.</p>
+     *
+     * @param fieldName a {@link java.lang.String} object.
+     * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param combiner a {@link java.util.function.BinaryOperator} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
@@ -1380,11 +1469,13 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * @param doc
-     * @return
-     * @throws IndexUnreachableException
+     * <p>isHasImages.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
+     * @return a boolean.
      */
     public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
         StructElement structElement = new StructElement(0, doc);

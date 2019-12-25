@@ -32,11 +32,19 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 import de.intranda.digiverso.ocr.alto.model.superclasses.Child;
 
 /**
- * @author florian
+ * <p>AltoSearchParser class.</p>
  *
+ * @author florian
  */
 public class AltoSearchParser extends AbstractSearchParser{
 
+    /**
+     * <p>findWordMatches.</p>
+     *
+     * @param words a {@link java.util.List} object.
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<List<Word>> findWordMatches(List<Word> words, String regex) {
         ListIterator<Word> iterator = words.listIterator();
         List<List<Word>> results = new ArrayList<>();
@@ -59,6 +67,13 @@ public class AltoSearchParser extends AbstractSearchParser{
         return results;
     }
     
+    /**
+     * <p>findLineMatches.</p>
+     *
+     * @param lines a {@link java.util.List} object.
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Range<Integer>, List<Line>> findLineMatches(List<Line> lines, String regex) {
         String text = getText(lines);
         Map<Range<Integer>, List<Line>> map = new LinkedHashMap<>();
@@ -75,27 +90,43 @@ public class AltoSearchParser extends AbstractSearchParser{
     }
 
     /**
-     * @param lines
-     * @return
+     * <p>getText.</p>
+     *
+     * @param lines a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getText(List<Line> lines) {
         String text = lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
         return text;
     }
     
+    /**
+     * <p>getLines.</p>
+     *
+     * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<Line> getLines(AltoDocument doc) {
         return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllLinesAsList().stream()).collect(Collectors.toList());
     }
     
+    /**
+     * <p>getWords.</p>
+     *
+     * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<Word> getWords(AltoDocument doc) {
         return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllWordsAsList().stream().filter(w -> w instanceof Word).map(w -> (Word)w)).collect(Collectors.toList());
     }
     
     /**
-     * @param altoElements
-     * @param indexStart
-     * @param indexEnd
-     * @return
+     * <p>getContainingLines.</p>
+     *
+     * @param indexStart a int.
+     * @param indexEnd a int.
+     * @param allLines a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Line> getContainingLines(List<Line> allLines, int indexStart, int indexEnd) {
         List<Line> containingLines = new ArrayList<>();
@@ -110,6 +141,13 @@ public class AltoSearchParser extends AbstractSearchParser{
         return containingLines;
     }
     
+    /**
+     * <p>getLineStartIndex.</p>
+     *
+     * @param allLines a {@link java.util.List} object.
+     * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
+     * @return a int.
+     */
     public int getLineStartIndex(List<Line> allLines, Line line) {
         int lineStartIndex = 0;
         for (Line l : allLines) {
@@ -122,6 +160,13 @@ public class AltoSearchParser extends AbstractSearchParser{
         return -1;
     }
     
+    /**
+     * <p>getLineEndIndex.</p>
+     *
+     * @param allLines a {@link java.util.List} object.
+     * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
+     * @return a int.
+     */
     public int getLineEndIndex(List<Line> allLines, Line line) {
         int lineStartIndex = 0;
         for (Line l : allLines) {
@@ -135,6 +180,13 @@ public class AltoSearchParser extends AbstractSearchParser{
     }
 
 
+    /**
+     * <p>getPrecedingText.</p>
+     *
+     * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
+     * @param maxLength a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getPrecedingText(Word w, int maxLength) {
         String before = "";
         Child sibling = w.getPreviousSibling();
@@ -147,6 +199,13 @@ public class AltoSearchParser extends AbstractSearchParser{
         return before;
     }
     
+    /**
+     * <p>getSucceedingText.</p>
+     *
+     * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
+     * @param maxLength a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSucceedingText(Word w, int maxLength) {
         String after = "";
         Child sibling = w.getNextSibling();

@@ -27,8 +27,9 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * @author Florian Alpers
+ * <p>Abstract AbstractResource class.</p>
  *
+ * @author Florian Alpers
  */
 public abstract class AbstractResource {
 
@@ -41,9 +42,9 @@ public abstract class AbstractResource {
     
     /**
      * Unit test constructor injecting request and response
-     * 
-     * @param request
-     * @param response
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      */
     public AbstractResource(HttpServletRequest request, HttpServletResponse response) {
         this.servletRequest = request;
@@ -52,6 +53,8 @@ public abstract class AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
     
     /**
+     * <p>getServletURI.</p>
+     *
      * @return the servletURI
      */
     public URI getServletURI() {
@@ -59,6 +62,8 @@ public abstract class AbstractResource {
     }
     
     /**
+     * <p>getRequestURI.</p>
+     *
      * @return the requestURI
      */
     public URI getRequestURI() {

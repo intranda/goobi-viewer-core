@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * 
+ * <p>SessionCounterFilter class.</p>
  */
 @WebFilter
 public class SessionCounterFilter implements Filter {
@@ -48,6 +48,7 @@ public class SessionCounterFilter implements Filter {
 	 * 
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
 	}
@@ -58,6 +59,7 @@ public class SessionCounterFilter implements Filter {
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
 	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc)
 			throws IOException, ServletException {
@@ -95,6 +97,7 @@ public class SessionCounterFilter implements Filter {
 	 * 
 	 * @see javax.servlet.Filter#destroy()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public void destroy() {
 	}

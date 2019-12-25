@@ -28,26 +28,44 @@ import io.goobi.viewer.servlets.rest.ner.DocumentReference;
 import io.goobi.viewer.servlets.rest.ner.ElementReference;
 import io.goobi.viewer.servlets.rest.ner.NERTag;
 
+/**
+ * <p>GenericList class.</p>
+ *
+ */
 @XmlRootElement(name = "list")
 @XmlSeeAlso({ NERTag.class, NERTag.Type.class, DocumentReference.class, ElementReference.class })
 public class GenericList<T> {
 
     private List<T> list;
 
+    /**
+     * <p>Constructor for GenericList.</p>
+     */
     public GenericList() {
         this.list = Collections.emptyList();
     }
 
+    /**
+     * <p>Constructor for GenericList.</p>
+     *
+     * @param theList a {@link java.util.List} object.
+     */
     public GenericList(List<T> theList) {
         this.list = Collections.unmodifiableList(theList);
     }
 
+    /**
+     * <p>Getter for the field <code>list</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @XmlAnyElement
     @JsonValue
     public List<T> getList() {
         return list;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return list.toString();

@@ -36,8 +36,9 @@ public class Tag implements Comparable<Tag>, Serializable {
     /**
      * Konstruktor.
      *
-     * @param size {@link Integer}
-     * @param name {@link String}
+     * @param size {@link java.lang.Integer}
+     * @param name {@link java.lang.String}
+     * @param field a {@link java.lang.String} object.
      */
     public Tag(long size, String name, String field) {
         super();
@@ -46,6 +47,7 @@ public class Tag implements Comparable<Tag>, Serializable {
         this.field = field;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(Tag otherTag) {
         if (otherTag.getSize() > this.getSize()) {
@@ -56,17 +58,27 @@ public class Tag implements Comparable<Tag>, Serializable {
         return 0;
     }
 
-    /*********************************** Getter and Setter ***************************************/
-
+    /**
+     ********************************* Getter and Setter **************************************
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCss() {
         return css;
     }
 
+    /**
+     * <p>Setter for the field <code>css</code>.</p>
+     *
+     * @param css a {@link java.lang.String} object.
+     */
     public void setCss(String css) {
         this.css = css;
     }
 
     /**
+     * <p>Setter for the field <code>size</code>.</p>
+     *
      * @param size the size to set
      */
     public void setSize(long size) {
@@ -74,6 +86,8 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>size</code>.</p>
+     *
      * @return the size
      */
     public long getSize() {
@@ -81,6 +95,8 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -88,12 +104,19 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
         return name;
     }
 
+    /**
+     * <p>getEscapedName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getEscapedName() {
         try {
             return URLEncoder.encode(name, SearchBean.URL_ENCODING);
@@ -103,6 +126,8 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
      * @return the field
      */
     public String getField() {
@@ -110,6 +135,8 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>field</code>.</p>
+     *
      * @param field the field to set
      */
     public void setField(String field) {

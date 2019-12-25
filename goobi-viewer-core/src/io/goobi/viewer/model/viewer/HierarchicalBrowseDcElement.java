@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * <p>HierarchicalBrowseDcElement class.</p>
+ *
+ */
 public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
     private static final long serialVersionUID = -4369053276327316515L;
@@ -37,38 +41,68 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     private boolean opensInNewWindow;
 
     /**
-     * @param name
-     * @param number
-     * @param sortField
-     * @throws PresentationException
+     * <p>Constructor for HierarchicalBrowseDcElement.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param number a long.
+     * @param sortField a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param field a {@link java.lang.String} object.
      */
     public HierarchicalBrowseDcElement(String name, long number, String field, String sortField) throws PresentationException {
         super(name, number, field, sortField);
     }
     
+    /**
+     * <p>Constructor for HierarchicalBrowseDcElement.</p>
+     *
+     * @param blueprint a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     */
     public HierarchicalBrowseDcElement(HierarchicalBrowseDcElement blueprint) {
         super(blueprint);
         blueprint.children.stream().map(child -> new HierarchicalBrowseDcElement(child)).forEach(child -> this.addChild(child));
     }
 
+    /**
+     * <p>Getter for the field <code>children</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<HierarchicalBrowseDcElement> getChildren() {
         return children;
     }
 
+    /**
+     * <p>Setter for the field <code>children</code>.</p>
+     *
+     * @param children a {@link java.util.List} object.
+     */
     public void setChildren(List<HierarchicalBrowseDcElement> children) {
         this.children = children;
     }
 
+    /**
+     * <p>Getter for the field <code>parent</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     */
     public HierarchicalBrowseDcElement getParent() {
         return parent;
     }
 
+    /**
+     * <p>Setter for the field <code>parent</code>.</p>
+     *
+     * @param parent a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     */
     public void setParent(HierarchicalBrowseDcElement parent) {
         this.parent = parent;
     }
 
     /**
-     * @param dc
+     * <p>addChild.</p>
+     *
+     * @param dc a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      */
     public void addChild(HierarchicalBrowseDcElement dc) {
         this.children.add(dc);
@@ -79,29 +113,53 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseDcElement#isHasSubelements()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean isHasSubelements() {
         return children.size() > 0;
     }
 
+    /**
+     * <p>isOpensInNewWindow.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isOpensInNewWindow() {
         return opensInNewWindow && isHasSubelements();
     }
 
+    /**
+     * <p>Setter for the field <code>opensInNewWindow</code>.</p>
+     *
+     * @param opensInNewWindow a boolean.
+     */
     public void setOpensInNewWindow(boolean opensInNewWindow) {
         this.opensInNewWindow = opensInNewWindow;
     }
 
+    /**
+     * <p>isRedirectsToWork.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRedirectsToWork() {
         return DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() &&  !isOpensInNewWindow() && getNumberOfVolumes() == 1;
     }
 
+    /**
+     * <p>isOpensInSearch.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isOpensInSearch() {
         return !isOpensInNewWindow() && !isRedirectsToWork();
     }
 
     /**
-     * @return
+     * <p>getAllVisibleDescendents.</p>
+     *
+     * @param checkAllDescendents a boolean.
+     * @return a {@link java.util.Collection} object.
      */
     public Collection<? extends HierarchicalBrowseDcElement> getAllVisibleDescendents(boolean checkAllDescendents) {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();
@@ -119,6 +177,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseDcElement#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getName());
@@ -129,7 +188,9 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * @return
+     * <p>getChildrenAndVisibleDescendants.</p>
+     *
+     * @return a {@link java.util.Collection} object.
      */
     public Collection<HierarchicalBrowseDcElement> getChildrenAndVisibleDescendants() {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();
@@ -143,6 +204,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseDcElement#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -157,14 +219,17 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.viewer.BrowseDcElement#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return this.getName().hashCode();
     }
 
     /**
-     * @param b
-     * @return
+     * <p>getAllDescendents.</p>
+     *
+     * @param includeMyself a boolean.
+     * @return a {@link java.util.List} object.
      */
     public List<HierarchicalBrowseDcElement> getAllDescendents(final boolean includeMyself) {
         List<HierarchicalBrowseDcElement> list = getChildren().stream()

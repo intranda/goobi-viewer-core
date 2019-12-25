@@ -51,6 +51,10 @@ import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 
+/**
+ * <p>IpRange class.</p>
+ *
+ */
 @Entity
 @Table(name = "ip_ranges")
 // @DiscriminatorValue("IpRange")
@@ -83,6 +87,7 @@ public class IpRange implements ILicensee {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -96,6 +101,7 @@ public class IpRange implements ILicensee {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -118,6 +124,12 @@ public class IpRange implements ILicensee {
         return true;
     }
 
+    /**
+     * <p>matchIp.</p>
+     *
+     * @param inIp a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean matchIp(String inIp) {
         //        if (inIp.equals(Helper.ADDRESS_LOCALHOST_IPV6) || inIp.equals(Helper.ADDRESS_LOCALHOST_IPV4)) {
         //            return true;
@@ -142,6 +154,7 @@ public class IpRange implements ILicensee {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
         for (License license : getLicenses()) {
@@ -169,19 +182,20 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * 
-     * @param conditionList
+     * <p>canSatisfyAllAccessConditions.</p>
+     *
+     * @param conditionList a {@link java.util.Set} object.
      * @param licenseTypes  a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
-     * @param privilegeName
-     * @param pi
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException 
+     * @param privilegeName a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return true if condition is open access
      * @should return true if ip range has license
      * @should return false if ip range has no license
      * @should return true if condition list empty
+     * @return a boolean.
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, List<LicenseType> licenseTypes,  String privilegeName, String pi) throws PresentationException,
             IndexUnreachableException, DAOException {
@@ -204,6 +218,7 @@ public class IpRange implements ILicensee {
 //        return !permissionMap.containsValue(false);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean addLicense(License license) {
         if (licenses == null) {
@@ -218,6 +233,7 @@ public class IpRange implements ILicensee {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean removeLicense(License license) {
         if (license != null && licenses != null) {
@@ -229,6 +245,8 @@ public class IpRange implements ILicensee {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -236,21 +254,23 @@ public class IpRange implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the name
-     */
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -258,6 +278,8 @@ public class IpRange implements ILicensee {
     }
 
     /**
+     * <p>Getter for the field <code>subnetMask</code>.</p>
+     *
      * @return the subnetMask
      */
     public String getSubnetMask() {
@@ -265,6 +287,8 @@ public class IpRange implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>subnetMask</code>.</p>
+     *
      * @param subnetMask the subnetMask to set
      */
     public void setSubnetMask(String subnetMask) {
@@ -272,6 +296,8 @@ public class IpRange implements ILicensee {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -279,27 +305,34 @@ public class IpRange implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the licenses
-     */
+    /** {@inheritDoc} */
     @Override
     public List<License> getLicenses() {
         return licenses;
     }
 
     /**
+     * <p>Setter for the field <code>licenses</code>.</p>
+     *
      * @param licenses the licenses to set
      */
     public void setLicenses(List<License> licenses) {
         this.licenses = licenses;
     }
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         try {
             SubnetInfo subnet = new SubnetUtils("255.255.255.0").getInfo();

@@ -17,12 +17,18 @@ package io.goobi.viewer.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * <p>ThemeException class.</p>
+ *
+ */
 public class ThemeException extends Exception implements Serializable {
 
     private static final long serialVersionUID = 7603440377069980303L;
 
     /**
-     * @param string {@link String}
+     * <p>Constructor for ThemeException.</p>
+     *
+     * @param string {@link java.lang.String}
      */
     public ThemeException(String string) {
         super(string);

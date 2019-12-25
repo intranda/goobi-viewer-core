@@ -18,24 +18,46 @@ package io.goobi.viewer.model.calendar;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * <p>CalendarItemYear class.</p>
+ *
+ */
 public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = -3123380483405975449L;
 
     private List<CalendarItemMonth> monthsOfYear;
 
+    /**
+     * <p>Constructor for CalendarItemYear.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a int.
+     * @param hits a int.
+     */
     public CalendarItemYear(String name, int value, int hits) {
         super(name, value, hits);
     }
 
+    /**
+     * <p>Getter for the field <code>monthsOfYear</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CalendarItemMonth> getMonthsOfYear() {
         return monthsOfYear;
     }
 
+    /**
+     * <p>Setter for the field <code>monthsOfYear</code>.</p>
+     *
+     * @param monthsOfYear a {@link java.util.List} object.
+     */
     public void setMonthsOfYear(List<CalendarItemMonth> monthsOfYear) {
         this.monthsOfYear = monthsOfYear;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "CalendarItemYear [year=" + name + ", hits=" + hits + "]";

@@ -63,8 +63,9 @@ import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * @author Florian Alpers
+ * <p>BookmarkResource class.</p>
  *
+ * @author Florian Alpers
  */
 @Path("/bookmarks")
 @ViewerRestServiceBinding
@@ -77,11 +78,20 @@ public class BookmarkResource {
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * <p>Constructor for BookmarkResource.</p>
+     */
     public BookmarkResource() {
         this.testing = false;
         this.userBean = BeanUtils.getUserBean();
     }
 
+    /**
+     * <p>Constructor for BookmarkResource.</p>
+     *
+     * @param userBean a {@link io.goobi.viewer.managedbeans.UserBean} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     */
     public BookmarkResource(UserBean userBean, HttpServletRequest request) {
         this.testing = true;
         this.userBean = userBean;
@@ -90,11 +100,11 @@ public class BookmarkResource {
 
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      */
     @GET
     @Path("/session/get/")
@@ -110,14 +120,14 @@ public class BookmarkResource {
 
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/session/mirador")
@@ -137,12 +147,12 @@ public class BookmarkResource {
 
     /**
      * Adds an item with the given pi to the session stored bookmark list, creating a new bookmark list if needed
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @POST
     @Path("/session/add/{pi}")
@@ -153,14 +163,14 @@ public class BookmarkResource {
 
     /**
      * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed
-     * 
-     * @param pi
-     * @param logId
-     * @param pageString
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @POST
     @Path("/session/add/{pi}/{page}/{logid}")
@@ -187,12 +197,12 @@ public class BookmarkResource {
      * Deletes the bookmark with the given pi from the session store bookmark list This operation returns an object with the property "success: false"
      * if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return object contains "success:
      * true"
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
      */
     @DELETE
     @Path("/session/delete/{pi}")
@@ -205,14 +215,14 @@ public class BookmarkResource {
      * Deletes the bookmark with the given pi, logid and page number from the session store bookmark list This operation returns an object with the
      * property "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return
      * object contains "success: true"
-     * 
-     * @param pi
-     * @param logId
-     * @param pageString
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
      */
     @GET
     @Path("/session/delete/{pi}/{page}/{logid}")
@@ -238,9 +248,9 @@ public class BookmarkResource {
     /**
      * Deletes the entry bookmark list from the session store. Always returns an object with the property "success: true", unless an error occurs in
      * which case an error status code and an error object is returned
-     * 
-     * @return
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @DELETE
     @Path("/session/delete")
@@ -256,12 +266,12 @@ public class BookmarkResource {
 
     /**
      * Returns "true" if the object with the given IP is in the session store bookmark list, "false" otherwise
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.lang.Boolean} object.
      */
     @GET
     @Path("/session/contains/{pi}")
@@ -272,14 +282,14 @@ public class BookmarkResource {
 
     /**
      * Returns "true" if the object with the given IP, logid and page number is in the session store bookmark list, "false" otherwise
-     * 
-     * @param pi
-     * @param logId
-     * @param pageString
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.lang.Boolean} object.
      */
     @GET
     @Path("/session/contains/{pi}/{page}/{logid}")
@@ -308,9 +318,9 @@ public class BookmarkResource {
     /**
      * Counts the items contained in the session store bookmark list and returns the number as plain integer If no session store bookmark list exists,
      * 0 is returned
-     * 
-     * @return
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.lang.Integer} object.
      */
     @GET
     @Path("/session/count")
@@ -326,11 +336,11 @@ public class BookmarkResource {
 
     /**
      * Returns all BookmarkList owned by the current user
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.util.List} object.
      */
     @GET
     @Path("/user/get/")
@@ -345,11 +355,11 @@ public class BookmarkResource {
 
     /**
      * Returns all bookmark lists shared with the current user and not owned by him
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.util.List} object.
      */
     @GET
     @Path("/shared/get/")
@@ -371,11 +381,11 @@ public class BookmarkResource {
 
     /**
      * Returns all public bookmark lists
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.util.List} object.
      */
     @GET
     @Path("/public/get/")
@@ -386,11 +396,12 @@ public class BookmarkResource {
 
     /**
      * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      */
     @GET
     @Path("/user/get/{id}")
@@ -421,7 +432,13 @@ public class BookmarkResource {
 
     /**
      * Sets the name of the BookmarkList with the given id to the given name - provided the user owns such a bookmark list; otherwise 204 is returned
-     * 
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @GET
     @Path("/user/get/{id}/set/name/{name}")
@@ -441,7 +458,15 @@ public class BookmarkResource {
     /**
      * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id Returns 203 if no matching
      * bookmark list was found or 400 if the Bookmark could not be created (wrong pi/logid/page)
-     * 
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @POST
     @Path("/user/get/{id}/add/{pi}/{page}/{logid}")
@@ -468,7 +493,13 @@ public class BookmarkResource {
     /**
      * Adds a new Bookmark with the given pi to the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
      * or 400 if the Bookmark could not be created (wrong pi)
-     * 
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @POST
     @Path("/user/get/{id}/add/{pi}")
@@ -481,7 +512,15 @@ public class BookmarkResource {
     /**
      * Removes a Bookmark with the given pi, logid and page number from the current users bookmark list with the given id Returns 203 if no matching
      * bookmark list was found or 400 if the requested Bookmark is invalid (wrong pi/logid/page)
-     * 
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     @DELETE
     @Path("/user/get/{id}/delete/{pi}/{page}/{logid}")
@@ -508,11 +547,13 @@ public class BookmarkResource {
     /**
      * Removes a Bookmark with the given pi from the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
      * or 400 if the requested Bookmark is invalid (wrong pi)
-     * 
-     * @throws RestApiException
-     * @throws IOException
-     * @throws DAOException
-     * 
+     *
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param id a {@link java.lang.Long} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @DELETE
     @Path("/user/get/{id}/delete/{pi}")
@@ -524,12 +565,12 @@ public class BookmarkResource {
 
     /**
      * Adds a new BookmarkList with the given name to the current users bookmark lists
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @POST
     @Path("/user/add/{name}")
@@ -554,12 +595,11 @@ public class BookmarkResource {
 
     /**
      * Adds a new BookmarkList with the given name to the current users bookmark lists
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @POST
     @Path("/user/add")
@@ -571,12 +611,11 @@ public class BookmarkResource {
 
     /**
      * Adds the current session bookmark list to the current user bookmark lists under a newly generated name
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @GET
     @Path("/user/addSessionBookmarkList")
@@ -588,12 +627,12 @@ public class BookmarkResource {
 
     /**
      * Adds the current session bookmark list to the current user's bookmark lists under the given name
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
      */
     @GET
     @Path("/user/addSessionBookmarkList/{name}")
@@ -617,12 +656,12 @@ public class BookmarkResource {
     /**
      * Deletes the current user's bookmark list with the given id. If no such bookmark list could be found a message with 'success:false' is returned,
      * otherwise one with 'success:true'
-     * 
+     *
      * @param id The bookmark list id
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException if no current user was found
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException if no current user was found
      */
     @DELETE
     @Path("/user/delete/{id}")
@@ -644,15 +683,15 @@ public class BookmarkResource {
 
     /**
      * Returns the user bookmark list with the given ID.
-     * 
-     * @param id
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/user/mirador/{id}/")
@@ -674,12 +713,14 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list containing the object with the given pi, logid and page number if is contained in any bookmark list of the current
      * user Otherwise an json object with the property "success:false" is returned
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @param logId a {@link java.lang.String} object.
+     * @param pageString a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
@@ -704,12 +745,12 @@ public class BookmarkResource {
     /**
      * Returns the bookmark list containing the object with the given pi if is contained in any bookmark list of the current user Otherwise an json
      * object with the property "success:false" is returned
-     * 
-     * @param pi
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @return a {@link java.util.List} object.
      */
     @GET
     @Path("/user/contains/{pi}")
@@ -721,11 +762,12 @@ public class BookmarkResource {
     /**
      * Counts the items contained in the current user's bookmark list with the given id and returns the number as plain integer If no session store
      * bookmark list exists, 0 is returned
-     * 
-     * @return
-     * @throws RestApiException
-     * @throws IOException
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.RestApiException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link java.lang.Long} object.
      */
     @GET
     @Path("/user/get/{id}/count")
@@ -735,8 +777,10 @@ public class BookmarkResource {
     }
 
     /**
-     * @param pageString
-     * @return
+     * <p>getPageOrder.</p>
+     *
+     * @param pageString a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getPageOrder(String pageString) {
         Integer order = null;
@@ -808,10 +852,11 @@ public class BookmarkResource {
     }
 
     /**
-     * @param user
-     * @param group
-     * @return
-     * @throws DAOException
+     * <p>isInGroup.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @return a boolean.
      */
     public boolean isInGroup(User user, UserGroup group) {
         try {
@@ -822,6 +867,14 @@ public class BookmarkResource {
         }
     }
     
+    /**
+     * <p>getAsCollection.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.RestApiException if any.
+     */
     @GET
     @Path("/user/get/{id}/collection")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -856,7 +909,9 @@ public class BookmarkResource {
     }
 
     /**
-     * @return
+     * <p>getCollectionURI.</p>
+     *
+     * @return a {@link java.net.URI} object.
      */
     public URI getCollectionURI() {
         String baseURI = ServletUtils.getServletPathWithoutHostAsUrlFromRequest(servletRequest);

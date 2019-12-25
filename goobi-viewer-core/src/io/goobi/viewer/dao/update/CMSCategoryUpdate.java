@@ -41,11 +41,10 @@ import io.goobi.viewer.model.cms.CMSPage;
 
 /**
  * Converts all Tags and Classifications from previous viewer-cms versions to
- * the {@link CMSCategory} system. This includes updating references in CMSPages
+ * the {@link io.goobi.viewer.model.cms.CMSCategory} system. This includes updating references in CMSPages
  * CMSContentItems and CMSMediaItems to keep the existing structure intact
- * 
- * @author florian
  *
+ * @author florian
  */
 public class CMSCategoryUpdate implements IModelUpdate {
 
@@ -62,6 +61,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
 	protected List<CMSContentItem> content = null;
 	protected List<CMSCategory> categories = null;
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean update(IDAO dao) throws DAOException, SQLException {
 		loadData(dao);
@@ -74,8 +74,10 @@ public class CMSCategoryUpdate implements IModelUpdate {
 	}
 
 	/**
-	 * @param dao
-	 * @throws DAOException
+	 * <p>persistData.</p>
+	 *
+	 * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public void persistData(IDAO dao) throws DAOException {
 
@@ -112,6 +114,13 @@ public class CMSCategoryUpdate implements IModelUpdate {
 		dao.commitTransaction();
 	}
 
+	/**
+	 * <p>loadData.</p>
+	 *
+	 * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 * @throws java.sql.SQLException if any.
+	 */
 	public void loadData(IDAO dao) throws DAOException, SQLException {
 
 		this.entityMap = createEntityMap(dao);
@@ -122,6 +131,12 @@ public class CMSCategoryUpdate implements IModelUpdate {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * <p>convertData.</p>
+	 *
+	 * @return a boolean.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public boolean convertData() throws DAOException {
 
 		if (this.entityMap == null || this.media == null || this.pages == null || this.content == null
@@ -316,8 +331,10 @@ public class CMSCategoryUpdate implements IModelUpdate {
 	}
 
 	/**
-	 * @param collect
-	 * @return
+	 * <p>createCategories.</p>
+	 *
+	 * @param entityMap a {@link java.util.Map} object.
+	 * @return a {@link java.util.List} object.
 	 */
 	protected List<CMSCategory> createCategories(Map<String, Map<String, List<Long>>> entityMap) {
 		return entityMap.values().stream().flatMap(map -> map.keySet().stream())

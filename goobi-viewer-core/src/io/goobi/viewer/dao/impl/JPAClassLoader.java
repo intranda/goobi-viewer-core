@@ -35,12 +35,18 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
+/**
+ * <p>JPAClassLoader class.</p>
+ *
+ */
 public class JPAClassLoader extends ClassLoader {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(JPAClassLoader.class);
 
+    /** Constant <code>PERSISTENCE_XML="META-INF/persistence.xml"</code> */
     public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
+    /** Constant <code>PERSISTENCE_XML_MODULE="META-INF/persistence-module.xml"</code> */
     public static final String PERSISTENCE_XML_MODULE = "META-INF/persistence-module.xml";
     //    private static final String MASTER_URL_SUFFIX = "Viewer/build/classes/" + PERSISTENCE_XML;
     //    private static final String MODULE_URL_SUFFIX = ".jar!/" + PERSISTENCE_XML;
@@ -66,6 +72,11 @@ public class JPAClassLoader extends ClassLoader {
     //        public abstract boolean filter(URL url);
     //    }
 
+    /**
+     * <p>Constructor for JPAClassLoader.</p>
+     *
+     * @param parent a {@link java.lang.ClassLoader} object.
+     */
     public JPAClassLoader(final ClassLoader parent) {
         super(parent);
     }
@@ -167,6 +178,7 @@ public class JPAClassLoader extends ClassLoader {
         return docMerged;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Enumeration<URL> getResources(final String name) throws IOException {
         // logger.trace("getResources: {}", name);

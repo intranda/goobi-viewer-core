@@ -27,13 +27,15 @@ import javax.persistence.Table;
 import org.apache.logging.log4j.core.pattern.NotANumber;
 
 /**
- * @author Florian Alpers
+ * <p>CMSProperty class.</p>
  *
+ * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_properties")
 public class CMSProperty {
     
+    /** Constant <code>KEY_EMPTY="EMPTY"</code> */
     public static final String KEY_EMPTY= "EMPTY";
     
     /**
@@ -58,13 +60,15 @@ public class CMSProperty {
 //    private CMSPage owner;
     
     /**
-     * 
+     * <p>Constructor for CMSProperty.</p>
      */
     public CMSProperty() {
     }
     
     /**
-     * @param key2
+     * <p>Constructor for CMSProperty.</p>
+     *
+     * @param key a {@link java.lang.String} object.
      */
     public CMSProperty(String key) {
        this.key = key;
@@ -72,7 +76,8 @@ public class CMSProperty {
 
     /**
      * Creates a clone of the given property
-     * @param property
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSProperty} object.
      */
     public CMSProperty(CMSProperty original) {
         if(original.id != null) {            
@@ -84,6 +89,8 @@ public class CMSProperty {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -91,6 +98,8 @@ public class CMSProperty {
     }
     
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -98,6 +107,8 @@ public class CMSProperty {
     }
     
     /**
+     * <p>Getter for the field <code>key</code>.</p>
+     *
      * @return the key
      */
     public String getKey() {
@@ -105,6 +116,8 @@ public class CMSProperty {
     }
     
     /**
+     * <p>Setter for the field <code>key</code>.</p>
+     *
      * @param key the key to set
      */
     public void setKey(String key) {
@@ -112,6 +125,8 @@ public class CMSProperty {
     }
     
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -119,6 +134,8 @@ public class CMSProperty {
     }
     
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -128,15 +145,26 @@ public class CMSProperty {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return key + " - " + value;
     }
 
+    /**
+     * <p>getBooleanValue.</p>
+     *
+     * @return a boolean.
+     */
     public boolean getBooleanValue() {
         return Boolean.parseBoolean(value);
     }
     
+    /**
+     * <p>getLongValue.</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getLongValue() {
         try {
             return Long.parseLong(value);
@@ -145,6 +173,11 @@ public class CMSProperty {
         }
     }
     
+    /**
+     * <p>getDoubleValue.</p>
+     *
+     * @return a {@link java.lang.Double} object.
+     */
     public Double getDoubleValue() {
         try {
             return Double.parseDouble(value);

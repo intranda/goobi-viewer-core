@@ -38,9 +38,8 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * IIIF REST resource providing a collection object as defined in the IIIF presentation api
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 
 @Path("/iiif/collections")
@@ -56,15 +55,13 @@ public class CollectionResource extends AbstractResource {
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
      * to set the language for all metadata values
-     * 
-     * @param language
-     * @param collectionField
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
      */
     @GET
     @Path("/{collectionField}")
@@ -84,11 +81,14 @@ public class CollectionResource extends AbstractResource {
      * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
      * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
-     * 
-     * @throws URISyntaxException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
-     * 
+     *
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
     @Path("/{collectionField}/{topElement}")
@@ -105,6 +105,8 @@ public class CollectionResource extends AbstractResource {
     }
 
     /**
+     * <p>Getter for the field <code>collectionBuilder</code>.</p>
+     *
      * @return the manifestBuilder
      */
     public CollectionBuilder getCollectionBuilder() {

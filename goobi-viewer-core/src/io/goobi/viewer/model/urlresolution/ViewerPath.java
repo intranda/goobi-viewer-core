@@ -31,19 +31,18 @@ import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls can be
- * retrieved independendly. If applicable, the {@link PageType} of the requested view and an associated {@link CMSPage} are also referenced
+ * retrieved independendly. If applicable, the {@link io.goobi.viewer.model.viewer.PageType} of the requested view and an associated {@link io.goobi.viewer.model.cms.CMSPage} are also referenced
  * <p>
  * This information helps calling the correct url in different contexts and is also used to redirect to CMSPages and store a brief view history to
  * allow returning to a previous view The entire url always consists of the properties {@link #applicationUrl} + {@link #pagePath} +
  * {@link parameterPath}
  * </p>
  * <p>
- * The easiest way to create ViewerPath based on a http request is by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or
- * {@link ViewerPathBuilder#createPath(String, String, String)}
+ * The easiest way to create ViewerPath based on a http request is by calling {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(HttpServletRequest)} or
+ * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String)}
  * </p>
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class ViewerPath {
     /**
@@ -77,9 +76,8 @@ public class ViewerPath {
     private Campaign campaign = null;
 
     /**
-     * Creates an empty {@link ViewerPath}. Usually this does not need to be called directly. Instead a ViewerPath should be created by calling
-     * {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
-     * 
+     * Creates an empty {@link io.goobi.viewer.model.urlresolution.ViewerPath}. Usually this does not need to be called directly. Instead a ViewerPath should be created by calling
+     * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(HttpServletRequest)} or {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String)}
      */
     public ViewerPath() {
         applicationUrl = "";
@@ -108,7 +106,7 @@ public class ViewerPath {
     /**
      * Creates an exact copy of the passed {@code blueprint}. This only creates a shallow copy, which is irrelevant to almost all properties which are
      * immutables, {@link #cmsPage} being the only exception (but that is ok since all paths should indeed point to the same CMSPage)
-     * 
+     *
      * @param blueprint The ViewerPath to be copied
      */
     public ViewerPath(ViewerPath blueprint) {
@@ -121,6 +119,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Getter for the field <code>applicationUrl</code>.</p>
+     *
      * @return the {@link #applicationUrl}
      */
     public String getApplicationUrl() {
@@ -128,6 +128,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Setter for the field <code>applicationUrl</code>.</p>
+     *
      * @param applicationUrl The {@link #applicationUrl} to set
      */
     public void setApplicationUrl(String applicationUrl) {
@@ -135,6 +137,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Getter for the field <code>pagePath</code>.</p>
+     *
      * @return the {@link #pagePath}
      */
     public URI getPagePath() {
@@ -142,6 +146,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Setter for the field <code>pagePath</code>.</p>
+     *
      * @param pagePath the {@link #pagePath} to set
      */
     public void setPagePath(URI pagePath) {
@@ -149,6 +155,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Getter for the field <code>parameterPath</code>.</p>
+     *
      * @return the {@link #parameterPath}
      */
     public URI getParameterPath() {
@@ -156,6 +164,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Setter for the field <code>parameterPath</code>.</p>
+     *
      * @param parameterPath the {@link #parameterPath} to set
      */
     public void setParameterPath(URI parameterPath) {
@@ -163,7 +173,8 @@ public class ViewerPath {
     }
 
     /**
-     * 
+     * <p>getPrettifiedPagePath.</p>
+     *
      * @return The alternative url or static page url of a CMSPage if present, otherwise {@link #pagePath}
      */
     public URI getPrettifiedPagePath() {
@@ -190,6 +201,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>getCombinedPrettyfiedPath.</p>
+     *
      * @return the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
      */
     public URI getCombinedPrettyfiedPath() {
@@ -197,6 +210,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>getCombinedPrettyfiedUrl.</p>
+     *
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
@@ -205,6 +220,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>getCombinedPath.</p>
+     *
      * @return the entire request url as a path <b>except</b> the application url
      */
     public URI getCombinedPath() {
@@ -212,6 +229,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>getCombinedUrl.</p>
+     *
      * @return the entire request url <b>except</b> the application url
      */
     public String getCombinedUrl() {
@@ -220,15 +239,15 @@ public class ViewerPath {
         return url;
     }
 
-    /**
-     * @return The {@link #getCombinedUrl() combined url}
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getCombinedUrl();
     }
 
     /**
+     * <p>isPage.</p>
+     *
      * @return true if this path has been associated with a pageType other than 'other'
      */
     public boolean isPage() {
@@ -237,13 +256,17 @@ public class ViewerPath {
     }
 
     /**
-     * @param pageType the {@link PageType} to set
+     * <p>Setter for the field <code>pageType</code>.</p>
+     *
+     * @param pageType the {@link io.goobi.viewer.model.viewer.PageType} to set
      */
     public void setPageType(PageType pageType) {
         this.pageType = pageType;
     }
 
     /**
+     * <p>Getter for the field <code>pageType</code>.</p>
+     *
      * @return the {@link #pageType}
      */
     public PageType getPageType() {
@@ -251,9 +274,11 @@ public class ViewerPath {
     }
 
     /**
+     * <p>matches.</p>
+     *
      * @see PageType#matches(Path)
-     * @param pageType
-     * @return The matching {@link PageType} or null if no PageType matches
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return The matching {@link io.goobi.viewer.model.viewer.PageType} or null if no PageType matches
      */
     public boolean matches(PageType pageType) {
         if (getPageType() != null) {
@@ -263,6 +288,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Getter for the field <code>cmsPage</code>.</p>
+     *
      * @return the {@link #cmsPage} if one is associated with this path. Otherwise null
      */
     public CMSPage getCmsPage() {
@@ -270,6 +297,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Setter for the field <code>cmsPage</code>.</p>
+     *
      * @param cmsPage the {@link #cmsPage} to set
      */
     public void setCmsPage(CMSPage cmsPage) {
@@ -277,6 +306,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Getter for the field <code>campaign</code>.</p>
+     *
      * @return the campaign
      */
     public Campaign getCampaign() {
@@ -284,6 +315,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Setter for the field <code>campaign</code>.</p>
+     *
      * @param campaign the campaign to set
      */
     public void setCampaign(Campaign campaign) {
@@ -291,6 +324,8 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Getter for the field <code>applicationName</code>.</p>
+     *
      * @return the {@link #applicationName}
      */
     public String getApplicationName() {
@@ -298,12 +333,19 @@ public class ViewerPath {
     }
 
     /**
+     * <p>Setter for the field <code>applicationName</code>.</p>
+     *
      * @param applicationName the {@link #applicationName} to set
      */
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
 
+    /**
+     * <p>isCmsPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCmsPage() {
         return getCmsPage() != null;
     }

@@ -59,20 +59,25 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
+/**
+ * <p>AccessConditionUtils class.</p>
+ *
+ */
 public class AccessConditionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessConditionUtils.class);
 
     /**
-     * 
-     * @param request
-     * @param action
-     * @param pi
-     * @param contentFileName
-     * @param isThumbnail
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>checkAccess.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param action a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @param isThumbnail a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public static boolean checkAccess(HttpServletRequest request, String action, String pi, String contentFileName, boolean isThumbnail)
             throws IndexUnreachableException, DAOException {
@@ -182,8 +187,9 @@ public class AccessConditionUtils {
      * @param fileName Image file name. For all files of a record, use "*".
      * @param request Calling HttpServiceRequest.
      * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param privilegeName a {@link java.lang.String} object.
      */
     protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
@@ -239,12 +245,12 @@ public class AccessConditionUtils {
     /**
      * Checks whether the client may access an image (by PI + file name).
      *
-     * @param identifier Work identifier (PI).
-     * @param fileName Image file name. For all files of a record, use "*".
      * @param request Calling HttpServiceRequest.
      * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param privilegeName a {@link java.lang.String} object.
      */
     protected static boolean checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
@@ -279,10 +285,10 @@ public class AccessConditionUtils {
      * @param identifier The PI to check.
      * @param logId The LOGID to check (optional).
      * @param privilegeName Particular privilege for which to check the permission.
-     * @param request
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
@@ -336,13 +342,13 @@ public class AccessConditionUtils {
 
     /**
      * Checks whether the current users has the given access permissions each element of the record with the given identifier.
-     * 
-     * @param identifier
-     * @param privilegeName
-     * @param request
+     *
+     * @param identifier a {@link java.lang.String} object.
+     * @param privilegeName a {@link java.lang.String} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return Map with true/false for each LOGID
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should fill map completely
      */
     @SuppressWarnings("unchecked")
@@ -425,15 +431,15 @@ public class AccessConditionUtils {
     /**
      * Checks access conditions for all files in the given files list. If possible the conditions are stored in the request's session as a session
      * attribute. Access is checked for general access, ip-range access, user access for both the given PI and the individual filenames if the
-     * relevant {@link LicenseType}s define a 'FILENAME' condition
-     * 
+     * relevant {@link io.goobi.viewer.model.security.LicenseType}s define a 'FILENAME' condition
+     *
      * @param identifier The PI of the work to check
-     * @param request The HttpRequest which may provide a {@link HttpSession} to store the access map
+     * @param request The HttpRequest which may provide a {@link javax.servlet.http.HttpSession} to store the access map
      * @param files The files to check access for. Must be non-empty
      * @return A map of filePaths and their corresponding access rights
-     * @throws IndexUnreachableException If the index could not be queried for the identifier's access conditions
-     * @throws DAOException If the database could not be queried for existing licenses
-     * @throws SecurityException if no or an empty file list is given
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException If the index could not be queried for the identifier's access conditions
+     * @throws io.goobi.viewer.exceptions.DAOException If the database could not be queried for existing licenses
+     * @throws java.lang.SecurityException if no or an empty file list is given
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Boolean> checkContentFileAccessPermission(String identifier, HttpServletRequest request, List<Path> files)
@@ -511,8 +517,9 @@ public class AccessConditionUtils {
      * @param imageUrn Image URN.
      * @param request Calling HttpServiceRequest.
      * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param privilegeName a {@link java.lang.String} object.
      */
     public static boolean checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
@@ -554,15 +561,16 @@ public class AccessConditionUtils {
     }
 
     /**
+     * <p>checkAccessPermission.</p>
      *
-     * @param requiredAccessConditions
-     * @param privilegeName
-     * @param pi
-     * @param request
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @param requiredAccessConditions a {@link java.util.Set} object.
+     * @param privilegeName a {@link java.lang.String} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param query a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public static boolean checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query, HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException {
@@ -580,12 +588,12 @@ public class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public static boolean checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
             throws IndexUnreachableException, DAOException {
@@ -596,12 +604,12 @@ public class AccessConditionUtils {
     /**
      * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
      *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public static boolean checkAccessPermissionForThumbnail(HttpServletRequest request, String pi, String contentFileName)
             throws IndexUnreachableException, DAOException {
@@ -611,12 +619,11 @@ public class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return a boolean.
      */
     public static boolean checkAccessPermissionForPagePdf(HttpServletRequest request, PhysicalElement page)
             throws IndexUnreachableException, DAOException {
@@ -628,13 +635,14 @@ public class AccessConditionUtils {
     }
 
     /**
-     * 
-     * @param request
+     * <p>checkAccessPermissionByIdentifierAndFilePathWithSessionMap.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
-     * @param privilegeType
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @param privilegeType a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     public static boolean checkAccessPermissionByIdentifierAndFilePathWithSessionMap(HttpServletRequest request, String filePath,
             String privilegeType) throws IndexUnreachableException, DAOException {
@@ -652,13 +660,13 @@ public class AccessConditionUtils {
     /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @param privilegeType
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @param privilegeType a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a boolean.
      */
     @SuppressWarnings("unchecked")
     public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
@@ -716,24 +724,26 @@ public class AccessConditionUtils {
     }
 
     /**
+     * <p>checkAccessPermission.</p>
      *
-     * @param allLicenseTypes
+     * @param allLicenseTypes a {@link java.util.List} object.
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
      * @param privilegeName The particular privilege to check.
      * @param user Logged in user.
      * @param query Solr query describing the resource in question.
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return true if required access conditions empty
      * @should return true if required access conditions contain only open access
      * @should return true if all license types allow privilege by default
      * @should return false if not all license types allow privilege by default
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
-     * 
+     *
      *         TODO user license checks
+     * @param remoteAddress a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
             User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
@@ -742,24 +752,27 @@ public class AccessConditionUtils {
     }
 
     /**
+     * <p>checkAccessPermission.</p>
      *
-     * @param allLicenseTypes
+     * @param allLicenseTypes a {@link java.util.List} object.
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
      * @param privilegeName The particular privilege to check.
      * @param user Logged in user.
      * @param query Solr query describing the resource in question.
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return true if required access conditions empty
      * @should return true if required access conditions contain only open access
      * @should return true if all license types allow privilege by default
      * @should return false if not all license types allow privilege by default
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
-     * 
+     *
      *         TODO user license checks
+     * @param remoteAddress a {@link java.lang.String} object.
+     * @param files a {@link java.util.List} object.
+     * @return a {@link java.util.Map} object.
      */
     public static Map<String, Boolean> checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, String query, List<Path> files)
@@ -853,14 +866,14 @@ public class AccessConditionUtils {
     }
 
     /**
-     * Check whether the requiredAccessConditions consist only of the {@link SolrConstants#OPEN_ACCESS_VALUE OPENACCESS} condition and OPENACCESS is
+     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.controller.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS} condition and OPENACCESS is
      * not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If OPENACCESS is in the
      * database then it likely contains some access restrictions which need to be checked
-     * 
-     * @param requiredAccessConditions
+     *
+     * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param allLicenseTypes all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
      * @return true if we can savely assume that we have entirely open access
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions, Collection<LicenseType> allLicenseTypes) throws DAOException {
 

@@ -28,6 +28,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
+/**
+ * <p>PageType class.</p>
+ *
+ */
 public enum PageType {
 
     viewImage("image"),
@@ -108,14 +112,29 @@ public enum PageType {
         this.handling = handling;
     }
 
+    /**
+     * <p>Getter for the field <code>handling</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PageType.PageTypeHandling} object.
+     */
     public PageTypeHandling getHandling() {
         return this.handling;
     }
 
+    /**
+     * <p>isHandledWithCms.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHandledWithCms() {
         return this.handling.equals(PageTypeHandling.cms);
     }
 
+    /**
+     * <p>isCmsPage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCmsPage() {
         switch (this) {
             case editContent:
@@ -136,8 +155,9 @@ public enum PageType {
     }
 
     /**
-     * 
-     * @return
+     * <p>isDocumentPage.</p>
+     *
+     * @return a boolean.
      */
     public boolean isDocumentPage() {
         switch (this) {
@@ -159,6 +179,11 @@ public enum PageType {
         }
     }
 
+    /**
+     * <p>getTypesHandledByCms.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public static List<PageType> getTypesHandledByCms() {
         Set<PageType> all = EnumSet.allOf(PageType.class);
         List<PageType> cmsPages = new ArrayList<>();
@@ -171,12 +196,13 @@ public enum PageType {
     }
 
     /**
-     * 
-     * @param name
-     * @return
+     * <p>getByName.</p>
+     *
+     * @param name a {@link java.lang.String} object.
      * @should return correct type for raw names
      * @should return correct type for mapped names
      * @should return correct type for enum names
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public static PageType getByName(String name) {
         if (name == null) {
@@ -197,12 +223,18 @@ public enum PageType {
         return PageType.other;
     }
 
+    /**
+     * <p>getRawName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRawName() {
         return name;
     }
 
     /**
-     * 
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return Mapped alternative name, if available; raw name otherwise
      */
     public String getName() {
@@ -220,9 +252,10 @@ public enum PageType {
     }
 
     /**
-     * 
-     * @param docStructType
-     * @return
+     * <p>getPageTypeForDocStructType.</p>
+     *
+     * @param docStructType a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public static PageType getPageTypeForDocStructType(String docStructType) {
         // First choice: Use preferred target page type for this docstruct type, if configured
@@ -250,18 +283,19 @@ public enum PageType {
     }
 
     /**
-     * 
-     * @param docStructType
-     * @param mimeType
-     * @param anchorOrGroup
-     * @param hasImages
+     * <p>determinePageType.</p>
+     *
+     * @param docStructType a {@link java.lang.String} object.
+     * @param mimeType a {@link java.lang.String} object.
+     * @param anchorOrGroup a boolean.
+     * @param hasImages a boolean.
      * @param pageResolverUrl If this page type is for a page resolver url, ignore certain preferences
-     * @return
      * @should return configured page type correctly
      * @should return metadata page type for application mime type
      * @should return toc page type for anchors
      * @should return image page type correctly
      * @should return medatata page type if nothing else matches
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public static PageType determinePageType(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasImages,
             boolean pageResolverUrl) {
@@ -286,7 +320,9 @@ public enum PageType {
     }
 
     /**
-     * @param pagePath
+     * <p>matches.</p>
+     *
+     * @param pagePath a {@link java.lang.String} object.
      * @return true if the given path equals either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */
@@ -299,7 +335,9 @@ public enum PageType {
     }
 
     /**
-     * @param pagePath
+     * <p>matches.</p>
+     *
+     * @param pagePath a {@link java.net.URI} object.
      * @return true if the given path starts with either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */
@@ -312,7 +350,9 @@ public enum PageType {
     }
 
     /**
-     * @return
+     * <p>isRestricted.</p>
+     *
+     * @return a boolean.
      */
     public boolean isRestricted() {
         switch (this) {

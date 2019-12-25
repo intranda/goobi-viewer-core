@@ -16,8 +16,9 @@
 package io.goobi.viewer.model.iiif.presentation.builder;
 
 /**
- * @author Florian Alpers
+ * <p>BuildMode class.</p>
  *
+ * @author Florian Alpers
  */
 public enum BuildMode {
 

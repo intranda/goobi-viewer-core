@@ -25,30 +25,44 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * <p>PageReference class.</p>
+ *
+ */
 @XmlRootElement
 public class PageReference implements TagGroup {
 
     private final Integer pageOrder;
     private List<TagCount> tags;
 
+    /**
+     * <p>Constructor for PageReference.</p>
+     */
     public PageReference() {
         super();
         this.pageOrder = null;
         this.tags = new ArrayList<>();
     }
 
+    /**
+     * <p>Constructor for PageReference.</p>
+     *
+     * @param pageOrder a int.
+     */
     public PageReference(int pageOrder) {
         super();
         this.pageOrder = pageOrder;
         this.tags = new ArrayList<>();
     }
 
+    /** {@inheritDoc} */
     @Override
     @XmlElement
     public Integer getPageOrder() {
         return pageOrder;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonProperty("tags")
     @XmlElementWrapper(name = "tags")
@@ -58,13 +72,16 @@ public class PageReference implements TagGroup {
     }
 
     /**
-     * @param nerTags
+     * <p>Setter for the field <code>tags</code>.</p>
+     *
+     * @param nerTags a {@link java.util.List} object.
      */
     public void setTags(List<TagCount> nerTags) {
         this.tags = nerTags;
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(TagGroup o) {
         return this.getPageOrder().compareTo(o.getPageOrder());
@@ -73,6 +90,7 @@ public class PageReference implements TagGroup {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         if (getPageOrder() != null) {
@@ -85,6 +103,7 @@ public class PageReference implements TagGroup {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(PageReference.class)) {
@@ -97,12 +116,14 @@ public class PageReference implements TagGroup {
         return false;
     }
 
+    /** {@inheritDoc} */
     @JsonIgnore
     @Override
     public int getPages() {
         return 1;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addTags(List<TagCount> tags) {
         for (TagCount tagCount : tags) {

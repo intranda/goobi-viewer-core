@@ -50,6 +50,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
+/**
+ * <p>NERTagResource class.</p>
+ *
+ */
 @Path("/ner")
 @ViewerRestServiceBinding
 public class NERTagResource {
@@ -59,6 +63,16 @@ public class NERTagResource {
     @Context
     private ResourceContext resourceContext;
 
+    /**
+     * <p>getTagsForPageJson.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/{pi}.json")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -67,6 +81,14 @@ public class NERTagResource {
         return getNERTags(pi, null, null, null, 1);
     }
 
+    /**
+     * <p>getTagsForPage.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     @GET
     @Path("/tags/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -78,6 +100,16 @@ public class NERTagResource {
         }
     }
 
+    /**
+     * <p>getTagsForPageXml.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/{pi}.xml")
     @Produces({ MediaType.APPLICATION_XML })
@@ -86,6 +118,17 @@ public class NERTagResource {
         return getNERTags(pi, null, null, null, 1);
     }
 
+    /**
+     * <p>getTagsForPageJson.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param order a {@link java.lang.Integer} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/{pi}/{pageOrder}.json")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -94,6 +137,15 @@ public class NERTagResource {
         return getNERTags(pi, null, order, order, 1);
     }
 
+    /**
+     * <p>getTagsForPage.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param order a {@link java.lang.Long} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     @GET
     @Path("/tags/{pi}/{pageOrder}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -106,6 +158,17 @@ public class NERTagResource {
         }
     }
 
+    /**
+     * <p>getTagsForPageXml.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param order a {@link java.lang.Integer} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/{pi}/{pageOrder}.xml")
     @Produces({ MediaType.APPLICATION_XML })
@@ -149,6 +212,17 @@ public class NERTagResource {
     //        return getNERTagCountByQuery(query.toString(), type);
     //    }
 
+    /**
+     * <p>getTagsByType.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/type/{type}/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -202,6 +276,18 @@ public class NERTagResource {
     //        return ref;
     //    }
 
+    /**
+     * <p>getTagsForPageArea.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param startpage a int.
+     * @param endpage a int.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/{startpage}/{endpage}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -215,6 +301,19 @@ public class NERTagResource {
         return ref;
     }
 
+    /**
+     * <p>getTagsForPageArea.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param startpage a int.
+     * @param type a {@link java.lang.String} object.
+     * @param endpage a int.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/{startpage}/{endpage}/{type}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -231,6 +330,18 @@ public class NERTagResource {
         return ref;
     }
 
+    /**
+     * <p>getTagRangesByType.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param rangeSize a int.
+     * @param type a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/ranges/{range}/{type}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -241,6 +352,17 @@ public class NERTagResource {
         return ref;
     }
 
+    /**
+     * <p>getTagRanges.</p>
+     *
+     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param rangeSize a int.
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.DocumentReference} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/tags/ranges/{range}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })

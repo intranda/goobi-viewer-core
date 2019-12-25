@@ -17,12 +17,17 @@ package io.goobi.viewer.servlets.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * <p>ServletUtils class.</p>
+ *
+ */
 public class ServletUtils {
 
     /**
      * retrieve complete Servlet url from servlet context, including Url, Port, Servletname etc. callable without jsf context
      *
      * @return complete url as string
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static String getServletPathWithHostAsUrlFromRequest(HttpServletRequest request) {
         String scheme = request.getScheme(); // http
@@ -43,6 +48,7 @@ public class ServletUtils {
      * retrieve complete Servlet url from servlet context, including Url, Port, callable without jsf servletName
      *
      * @return complete url as string
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public static String getServletPathWithoutHostAsUrlFromRequest(HttpServletRequest request) {
         String scheme = request.getScheme(); // http

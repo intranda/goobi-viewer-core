@@ -25,16 +25,17 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * Provides a context for the extent service used in the viewer IIIF Presentation collection responses
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Path("/api/collections/extent")
 @ViewerRestServiceBinding
 public class CollectionExtentDefinitionResource {
 
     /**
-     * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained works 
+     * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained works
+     *
+     * @return a {@link de.intranda.api.services.CollectionExtentDefinition} object.
      */
     @GET
     @Path("/context.json")

@@ -31,6 +31,10 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 import io.goobi.viewer.controller.Helper;
 
+/**
+ * <p>PdfInformationFilter class.</p>
+ *
+ */
 @Provider
 @ContentServerPdfInfoBinding
 public class PdfInformationFilter implements ContainerResponseFilter {
@@ -41,6 +45,7 @@ public class PdfInformationFilter implements ContainerResponseFilter {
     @Context
     private HttpServletRequest servletRequest;
 
+    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
 

@@ -19,18 +19,19 @@ import java.util.Comparator;
 import java.util.Locale;
 
 /**
- * Sorts {@link CMSPageLanguageVersion}s so that the version for the given locale is at the beginning of the Collection, followed by
+ * Sorts {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s so that the version for the given locale is at the beginning of the Collection, followed by
  * the given defaultLocale, followed by the English and German locale, followed by all others in alphabetical order. The global language version is always the last element of the Collection
  * Language Versions that don't exist are ignored silently, as are the passed local and defaultLocale if they are null
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class CMSPageLanguageVersionComparator implements Comparator<CMSPageLanguageVersion> {
 
     private final Locale locale;
     private final Locale defaultLocale;
     /**
+     * <p>Constructor for CMSPageLanguageVersionComparator.</p>
+     *
      * @param locale            The preferred locale, ignored if null
      * @param defaultLocale     The default locale, ignored if null
      */
@@ -42,6 +43,7 @@ public class CMSPageLanguageVersionComparator implements Comparator<CMSPageLangu
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compare(CMSPageLanguageVersion l1, CMSPageLanguageVersion l2) {
         {

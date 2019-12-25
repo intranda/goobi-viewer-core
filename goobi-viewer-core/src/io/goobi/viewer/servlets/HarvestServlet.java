@@ -65,6 +65,8 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     // private HttpClient httpClient;
 
     /**
+     * <p>Constructor for HarvestServlet.</p>
+     *
      * @see HttpServlet#HttpServlet()
      */
     public HarvestServlet() {
@@ -74,9 +76,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
         // httpClient.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = null;
@@ -326,19 +326,18 @@ public class HarvestServlet extends HttpServlet implements Serializable {
 
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 
     /**
+     * <p>convertToJSON.</p>
      *
-     * @param totalCount
-     * @param identifiers
-     * @return
+     * @param totalCount a long.
+     * @param objects a {@link java.util.List} object.
+     * @return a {@link org.json.simple.JSONArray} object.
      */
     @SuppressWarnings("unchecked")
     protected static JSONArray convertToJSON(long totalCount, List<? extends Harvestable> objects) {

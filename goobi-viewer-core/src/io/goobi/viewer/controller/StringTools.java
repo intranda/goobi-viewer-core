@@ -43,10 +43,20 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>StringTools class.</p>
+ *
+ */
 public class StringTools {
 
     private static final Logger logger = LoggerFactory.getLogger(StringTools.class);
 
+    /**
+     * <p>encodeUrl.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String encodeUrl(String string) {
         try {
             //            return BeanUtils.escapeCriticalUrlChracters(string);
@@ -57,6 +67,12 @@ public class StringTools {
         }
     }
 
+    /**
+     * <p>decodeUrl.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String decodeUrl(String string) {
         //    string = string.replace("%", "\\u");
         String encodedString = string;
@@ -72,11 +88,12 @@ public class StringTools {
     }
 
     /**
-     * Finds the first String matching a regex within another string and return it as an {@link Optional}
-     * 
+     * Finds the first String matching a regex within another string and return it as an {@link java.util.Optional}
+     *
      * @param text The String in which to search
      * @param regex The regex to search for
      * @return An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
+     * @param group a int.
      */
     public static Optional<String> findFirstMatch(String text, String regex, int group) {
         Matcher matcher = Pattern.compile(regex).matcher(text);
@@ -90,9 +107,9 @@ public class StringTools {
     /**
      * Escapes special HTML characters in the given string.
      *
-     * @param str
-     * @return
+     * @param str a {@link java.lang.String} object.
      * @should escape all characters correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String escapeHtmlChars(String str) {
         return StringUtils.replaceEach(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
@@ -101,7 +118,7 @@ public class StringTools {
     /**
      * Removed diacritical marks from each letter in the given String.
      *
-     * @param s
+     * @param s a {@link java.lang.String} object.
      * @return String without diacritical marks
      * @should remove diacritical marks correctly
      */
@@ -115,11 +132,12 @@ public class StringTools {
 
     /**
      * Removes regular and HTML line breaks from the given String.
-     * 
-     * @param s
+     *
+     * @param s a {@link java.lang.String} object.
      * @return String without line breaks
      * @should remove line breaks correctly
      * @should remove html line breaks correctly
+     * @param replaceWith a {@link java.lang.String} object.
      */
     public static String removeLineBreaks(String s, String replaceWith) {
         if (s == null) {
@@ -138,7 +156,8 @@ public class StringTools {
     }
 
     /**
-     * 
+     * <p>stripJS.</p>
+     *
      * @param s String to clean
      * @return String sans any script-tag blocks
      * @should remove JS blocks correctly
@@ -153,8 +172,8 @@ public class StringTools {
 
     /**
      * Return the length of the given string, or 0 if the string is null
-     * 
-     * @param s
+     *
+     * @param s a {@link java.lang.String} object.
      * @return the length of the string if it exists, 0 otherwise
      */
     public static int getLength(String s) {
@@ -165,10 +184,10 @@ public class StringTools {
     }
 
     /**
-     * Escapes the given string using {@link StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks (\r\n, \r, \n) to html
+     * Escapes the given string using {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks (\r\n, \r, \n) to html
      * line breaks ({@code <br/>
      * })
-     * 
+     *
      * @param text the text to escape
      * @return the escaped string
      */
@@ -182,9 +201,10 @@ public class StringTools {
     }
 
     /**
-     * 
-     * @param s
-     * @return
+     * <p>escapeQuotes.</p>
+     *
+     * @param s a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String escapeQuotes(String s) {
         if (s != null) {
@@ -196,7 +216,7 @@ public class StringTools {
 
     /**
      * Converts a <code>String</code> from one given encoding to the other.
-     * 
+     *
      * @param string The string to convert.
      * @param from Source encoding.
      * @param to Destination encoding.
@@ -222,8 +242,9 @@ public class StringTools {
     }
 
     /**
-     * 
-     * @param url
+     * <p>isImageUrl.</p>
+     *
+     * @param url a {@link java.lang.String} object.
      * @return true if this is an image URL; false otherwise
      * @should return true for image urls
      */
@@ -253,7 +274,7 @@ public class StringTools {
 
     /**
      * Renames CSS classes that start with digits in the given html code due to Chrome ignoring such classes.
-     * 
+     *
      * @param html The HTML to fix
      * @return Same HTML document but with Chrome-compatible CSS class names
      * @should rename classes correctly
@@ -293,9 +314,10 @@ public class StringTools {
     }
 
     /**
-     * 
-     * @param collection
-     * @param split
+     * <p>getHierarchyForCollection.</p>
+     *
+     * @param collection a {@link java.lang.String} object.
+     * @param split a {@link java.lang.String} object.
      * @return List of string containing every (sub-)collection name
      * @should create list correctly
      * @should return single value correctly
@@ -322,8 +344,8 @@ public class StringTools {
 
     /**
      * Normalizes WebAnnotation coordinates for rectangle rendering (x,y,w,h -> minX,minY,maxX,maxY).
-     * 
-     * @param coords
+     *
+     * @param coords a {@link java.lang.String} object.
      * @return Legacy format coordinates
      * @should normalize coordinates correctly
      * @should preserve legacy coordinates

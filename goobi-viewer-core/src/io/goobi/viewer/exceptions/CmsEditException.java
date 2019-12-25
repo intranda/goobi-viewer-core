@@ -17,15 +17,16 @@ package io.goobi.viewer.exceptions;
 
 /**
  * Exception to throw if an invalid state is reached when editing/creating a cms page
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class CmsEditException extends PresentationException {
 
     /**
-     * @param string
-     * @param e
+     * <p>Constructor for CmsEditException.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @param e a {@link java.lang.Throwable} object.
      */
     public CmsEditException(String string, Throwable e) {
         super(string, e);
@@ -33,7 +34,9 @@ public class CmsEditException extends PresentationException {
     }
 
     /**
-     * @param string
+     * <p>Constructor for CmsEditException.</p>
+     *
+     * @param string a {@link java.lang.String} object.
      */
     public CmsEditException(String string) {
         super(string);

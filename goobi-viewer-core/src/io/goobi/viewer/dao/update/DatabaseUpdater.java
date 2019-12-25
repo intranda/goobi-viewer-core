@@ -42,10 +42,9 @@ import io.goobi.viewer.model.cms.CMSSidebarElement;
 
 /**
  * Management tool to updated deprecated viewer database setups to the one required by the viewer. to be run at viewer start, right after initializing the dao
- * Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link IDAO} which are responsible to make the required changes
- * 
- * @author florian
+ * Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link io.goobi.viewer.dao.IDAO} which are responsible to make the required changes
  *
+ * @author florian
  */
 public class DatabaseUpdater {
 
@@ -56,12 +55,17 @@ public class DatabaseUpdater {
 	private final IDAO dao;
 
 	/**
-	 * 
+	 * <p>Constructor for DatabaseUpdater.</p>
+	 *
+	 * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
 	 */
 	public DatabaseUpdater(IDAO dao) {
 		this.dao = dao;
 	}
 
+	/**
+	 * <p>update.</p>
+	 */
 	public void update(){
 		for (IModelUpdate update : updates) {
 			try {

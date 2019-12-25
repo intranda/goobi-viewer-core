@@ -53,10 +53,9 @@ import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
- * Creates a IIIF Search API v1.0 response as {@link SearchResult}
- * 
- * @author florian
+ * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}
  *
+ * @author florian
  */
 public class IIIFSearchBuilder {
 
@@ -79,7 +78,7 @@ public class IIIFSearchBuilder {
 
     /**
      * Initializes the builder with all required parameters
-     * 
+     *
      * @param requestURI The request url, including all query parameters
      * @param query the query string
      * @param pi the pi of the manifest to search
@@ -96,6 +95,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>query</code>.</p>
+     *
      * @return the query
      */
     public String getQuery() {
@@ -103,6 +104,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -110,7 +113,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>motivation</code>.</p>
+     *
      * @param motivation the motivation to set
+     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setMotivation(String motivation) {
         if (StringUtils.isNotBlank(motivation)) {
@@ -121,6 +127,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>motivation</code>.</p>
+     *
      * @return the motivation
      */
     public List<String> getMotivation() {
@@ -128,7 +136,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>user</code>.</p>
+     *
      * @param user the user to set
+     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setUser(String user) {
         this.user = user;
@@ -136,6 +147,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
      * @return the user
      */
     public String getUser() {
@@ -143,7 +156,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>date</code>.</p>
+     *
      * @param date the date to set
+     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setDate(String date) {
         this.date = date;
@@ -151,6 +167,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>date</code>.</p>
+     *
      * @return the date
      */
     public String getDate() {
@@ -158,6 +176,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>min</code>.</p>
+     *
      * @return the min
      */
     public String getMin() {
@@ -165,7 +185,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>min</code>.</p>
+     *
      * @param min the min to set
+     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setMin(String min) {
         this.min = min;
@@ -173,7 +196,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>page</code>.</p>
+     *
      * @param page the page to set
+     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setPage(Integer page) {
         if (page != null) {
@@ -183,6 +209,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>page</code>.</p>
+     *
      * @return the page
      */
     public int getPage() {
@@ -190,6 +218,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>hitsPerPage</code>.</p>
+     *
      * @return the hitsPerPage
      */
     public int getHitsPerPage() {
@@ -197,7 +227,10 @@ public class IIIFSearchBuilder {
     }
 
     /**
+     * <p>Setter for the field <code>hitsPerPage</code>.</p>
+     *
      * @param hitsPerPage the hitsPerPage to set
+     * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
     public IIIFSearchBuilder setHitsPerPage(int hitsPerPage) {
         this.hitsPerPage = hitsPerPage;
@@ -222,12 +255,12 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Creates a {@link SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}. The answer may contain more than
+     * Creates a {@link de.intranda.api.iiif.search.SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}. The answer may contain more than
      * {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than {@link #getHitsPerPage()} hits per motivation.
-     * 
+     *
      * @return the search result
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public SearchResult build() throws PresentationException, IndexUnreachableException {
 
@@ -289,11 +322,11 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Creates a {@link AutoSuggestResult} containing searchTerms matching {@link #getQuery()} within {@link #getPi()}.
-     * 
+     * Creates a {@link de.intranda.api.iiif.search.AutoSuggestResult} containing searchTerms matching {@link #getQuery()} within {@link #getPi()}.
+     *
      * @return The searchTerm list
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public AutoSuggestResult buildAutoSuggest() throws PresentationException, IndexUnreachableException {
 

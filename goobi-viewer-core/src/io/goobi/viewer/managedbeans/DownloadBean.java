@@ -42,6 +42,10 @@ import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 
+/**
+ * <p>DownloadBean class.</p>
+ *
+ */
 @Named
 @SessionScoped
 public class DownloadBean implements Serializable {
@@ -55,6 +59,9 @@ public class DownloadBean implements Serializable {
     private String downloadIdentifier;
     private DownloadJob downloadJob;
 
+    /**
+     * <p>reset.</p>
+     */
     public void reset() {
         synchronized (this) {
             logger.debug("reset (thread {})", Thread.currentThread().getId());
@@ -63,20 +70,26 @@ public class DownloadBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getTimeToLive.</p>
+     *
+     * @return a long.
+     */
     public static long getTimeToLive() {
         return ttl;
     }
 
     /**
+     * <p>checkDownloadAction.</p>
      *
-     * @param type
-     * @param email
-     * @param pi
-     * @param logId
-     * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @param type a {@link java.lang.String} object.
+     * @param email a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @return a {@link java.lang.String} object.
      */
     @Deprecated
     public String checkDownloadAction(String type, String email, String pi, String logId) throws DAOException, PresentationException,
@@ -89,10 +102,11 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     * @throws DAOException
-     * @throws DownloadException if download job not found
+     * <p>openDownloadAction.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DownloadException if download job not found
+     * @return a {@link java.lang.String} object.
      */
     public String openDownloadAction() throws DAOException, DownloadException {
         downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
@@ -104,6 +118,12 @@ public class DownloadBean implements Serializable {
         return "";
     }
 
+    /**
+     * <p>downloadFileAction.</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.DownloadException if any.
+     */
     public void downloadFileAction() throws IOException, DownloadException {
         if (downloadJob != null) {
             Path file = downloadJob.getFile();
@@ -147,15 +167,18 @@ public class DownloadBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>downloadIdentifier</code>.</p>
      *
-     * @param criteria
-     * @return
+     * @param criteria a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getDownloadIdentifier(String... criteria) {
         return DownloadJob.generateDownloadJobId(criteria);
     }
 
     /**
+     * <p>Getter for the field <code>downloadIdentifier</code>.</p>
+     *
      * @return the downloadIdentifier
      */
     public String getDownloadIdentifier() {
@@ -163,6 +186,8 @@ public class DownloadBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>downloadIdentifier</code>.</p>
+     *
      * @param downloadIdentifier the downloadIdentifier to set
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
@@ -170,6 +195,8 @@ public class DownloadBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>downloadJob</code>.</p>
+     *
      * @return the downloadJob
      */
     public DownloadJob getDownloadJob() {
@@ -177,12 +204,19 @@ public class DownloadBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>downloadJob</code>.</p>
+     *
      * @param downloadJob the downloadJob to set
      */
     public void setDownloadJob(DownloadJob downloadJob) {
         this.downloadJob = downloadJob;
     }
 
+    /**
+     * <p>getDownloadSize.</p>
+     *
+     * @return a long.
+     */
     public long getDownloadSize() {
         return downloadJob.getSize();
     }

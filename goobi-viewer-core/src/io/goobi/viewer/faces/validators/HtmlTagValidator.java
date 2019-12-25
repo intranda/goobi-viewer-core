@@ -34,9 +34,8 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * Validates that any input text has no html-tags other than <br> <
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @FacesValidator("htmlTagValidator")
 public class HtmlTagValidator implements Validator<String> {
@@ -44,6 +43,8 @@ public class HtmlTagValidator implements Validator<String> {
     private static final List<String> allowedTags = Arrays.asList(new String[]{"br", "b", "strong", "em", "i", "mark", "small", "del", "ins", "sub", "sup"});
 
     /**
+     * {@inheritDoc}
+     *
      * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag}  if {@link #validate(String)} returns false
      */
     @Override
@@ -58,9 +59,9 @@ public class HtmlTagValidator implements Validator<String> {
     
     /**
      * Returns false if the input string is not blank and does not contain any tags other than the allowed
-     * 
-     * @param input
-     * @return
+     *
+     * @param input a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean validate(String input) {
         if(StringUtils.isNotBlank(input)) {            

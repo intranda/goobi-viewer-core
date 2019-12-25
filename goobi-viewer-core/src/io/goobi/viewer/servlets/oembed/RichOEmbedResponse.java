@@ -18,15 +18,19 @@ package io.goobi.viewer.servlets.oembed;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.MimeType;
 
+/**
+ * <p>RichOEmbedResponse class.</p>
+ *
+ */
 public class RichOEmbedResponse extends OEmbedResponse {
 
     private String html;
 
     /**
      * Constructor.
-     * 
-     * @param record
-     * @throws ViewerConfigurationException
+     *
+     * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public RichOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
         this.type = "rich";
@@ -66,6 +70,8 @@ public class RichOEmbedResponse extends OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>html</code>.</p>
+     *
      * @return the html
      */
     public String getHtml() {
@@ -73,6 +79,8 @@ public class RichOEmbedResponse extends OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>html</code>.</p>
+     *
      * @param html the html to set
      */
     public void setHtml(String html) {

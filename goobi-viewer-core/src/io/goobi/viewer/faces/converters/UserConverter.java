@@ -24,9 +24,14 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>UserConverter class.</p>
+ *
+ */
 @FacesConverter("userConverter")
 public class UserConverter implements Converter {
 
+    /** {@inheritDoc} */
     @Override
     public final Object getAsObject(final FacesContext context, final UIComponent component, final String value) {
         int id = Integer.valueOf(value);
@@ -37,6 +42,7 @@ public class UserConverter implements Converter {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public final String getAsString(final FacesContext context, final UIComponent component, final Object object) {
         if (object == null) {

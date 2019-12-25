@@ -18,14 +18,24 @@ package io.goobi.viewer.exceptions;
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerFactory;
 
+/**
+ * <p>MyExceptionHandlerFactory class.</p>
+ *
+ */
 public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
 
     private ExceptionHandlerFactory parent;
 
+    /**
+     * <p>Constructor for MyExceptionHandlerFactory.</p>
+     *
+     * @param parent a {@link javax.faces.context.ExceptionHandlerFactory} object.
+     */
     public MyExceptionHandlerFactory(ExceptionHandlerFactory parent) {
         this.parent = parent;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ExceptionHandler getExceptionHandler() {
         ExceptionHandler result = parent.getExceptionHandler();

@@ -36,11 +36,10 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * This class offers methods to store information about the current and previous html-view (page) in the session store
- * 
- * The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a seperate page
- * 
- * @author Florian Alpers
  *
+ * The fullscreen view is explicitly excluded from the recorded views, since it acts only as a magnification of the image view, not as a seperate page
+ *
+ * @author Florian Alpers
  */
 public class ViewHistory {
 
@@ -52,11 +51,10 @@ public class ViewHistory {
     private static final PageType[] IGNORED_VIEWS = new PageType[] { PageType.viewFullscreen};
 
     /**
-     * Saves the current view information to the session map. 
+     * Saves the current view information to the session map.
      * Also saves the previous view information to the session map if it represents a different view than the current view
-     * 
-     * @param request
-     * @throws DAOException
+     *
+     * @param request a {@link javax.servlet.ServletRequest} object.
      */
     public synchronized static void setCurrentView(final ServletRequest request) {
 
@@ -90,12 +88,12 @@ public class ViewHistory {
     }
 
     /**
-     * Saves the given {@code currentPath} to the session map, keeping the previously stored currentPath as previousPath if 
+     * Saves the given {@code currentPath} to the session map, keeping the previously stored currentPath as previousPath if
      * it has a different PageType than the current path
-     * 
+     *
      * The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path
      * can be retrieved by {@link #getPreviousView(ServletRequest)}
-     * 
+     *
      * @param session       The http session to store the path in
      * @param currentPath   The path to store
      */
@@ -131,9 +129,7 @@ public class ViewHistory {
     
     /**
      * Retrieves the stored currentPath from the session associated the the passed {@code request}
-     * 
-     * @param request   The request linking the the session which stores the path. May be retrieved by 
-     * {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getRequest() BeanUtils.getRequest}
+     *
      * @return          An optional containing the last stored current path if available. An empty optional if no session is available or no path has been stored yet
      */
     public synchronized static Optional<ViewerPath> getCurrentView(ServletRequest request) {
@@ -153,9 +149,7 @@ public class ViewHistory {
 
     /**
      * Retrieves the stored previousPath from the session associated the the passed {@code request}
-     * 
-     * @param request   The request linking the the session which stores the path. May be retrieved by 
-     * {@link io.goobi.viewer.managedbeans.utils.BeanUtils#getRequest() BeanUtils.getRequest}
+     *
      * @return          An optional containing the last stored previous path if available. An empty optional if no session is available or no previous path has been stored yet
      */
     public synchronized static Optional<ViewerPath> getPreviousView(ServletRequest request) {
@@ -175,9 +169,9 @@ public class ViewHistory {
 
     /**
      * Directly redirect to the given url
-     *  
+     *
      * @param url           The url to redirect to
-     * @throws IOException  If redirect fails
+     * @throws java.io.IOException  If redirect fails
      */
     public synchronized static void redirectToUrl(String url) throws IOException {
 

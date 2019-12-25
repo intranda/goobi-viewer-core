@@ -90,17 +90,27 @@ public class CMSPageLanguageVersion {
     @Transient
     private List<CMSContentItem> completeContentItemList = null;
 
+    /**
+     * <p>Constructor for CMSPageLanguageVersion.</p>
+     */
     public CMSPageLanguageVersion() {
 
     }
 
+    /**
+     * <p>Constructor for CMSPageLanguageVersion.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     */
     public CMSPageLanguageVersion(String language) {
         this.language = language;
     }
 
     /**
-     * @param language2
-     * @param cmsPage
+     * <p>Constructor for CMSPageLanguageVersion.</p>
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
+     * @param ownerPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
      */
     public CMSPageLanguageVersion(CMSPageLanguageVersion original, CMSPage ownerPage) {
         if (original.id != null) {
@@ -122,6 +132,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -129,6 +141,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -136,6 +150,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>ownerPage</code>.</p>
+     *
      * @return the ownerPage
      */
     public CMSPage getOwnerPage() {
@@ -143,6 +159,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>ownerPage</code>.</p>
+     *
      * @param ownerPage the ownerPage to set
      */
     public void setOwnerPage(CMSPage ownerPage) {
@@ -150,6 +168,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>language</code>.</p>
+     *
      * @return the language
      */
     public String getLanguage() {
@@ -157,6 +177,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>language</code>.</p>
+     *
      * @param language the language to set
      */
     public void setLanguage(String language) {
@@ -164,6 +186,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
      * @return the status
      */
     public CMSPageStatus getStatus() {
@@ -171,6 +195,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
      * @param status the status to set
      */
     public void setStatus(CMSPageStatus status) {
@@ -178,6 +204,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
@@ -185,6 +213,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>title</code>.</p>
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -192,6 +222,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>menuTitle</code>.</p>
+     *
      * @return the menuTitle
      */
     public String getMenuTitle() {
@@ -199,6 +231,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>getMenuTitleOrTitle.</p>
+     *
      * @return the menuTitle or the title if no menu title exists
      */
     public String getMenuTitleOrTitle() {
@@ -206,6 +240,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>menuTitle</code>.</p>
+     *
      * @param menuTitle the menuTitle to set
      */
     public void setMenuTitle(String menuTitle) {
@@ -213,6 +249,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Getter for the field <code>contentItems</code>.</p>
+     *
      * @return the contentItems
      */
     public List<CMSContentItem> getContentItems() {
@@ -221,6 +259,8 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * <p>Setter for the field <code>contentItems</code>.</p>
+     *
      * @param contentItems the contentItems to set
      */
     public void setContentItems(List<CMSContentItem> contentItems) {
@@ -228,9 +268,11 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * @param itemId
-     * @return
-     * @throws CmsElementNotFoundException
+     * <p>getContentItem.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException
+     * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */
     public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
         if (getCompleteContentItemList() != null) {
@@ -243,6 +285,11 @@ public class CMSPageLanguageVersion {
         throw new CmsElementNotFoundException("No element of id " + itemId + " found in " + this);
     }
 
+    /**
+     * <p>Getter for the field <code>completeContentItemList</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSContentItem> getCompleteContentItemList() {
         if (completeContentItemList == null) {
             generateCompleteContentItemList();
@@ -251,8 +298,10 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * @param itemId
-     * @return
+     * <p>hasContentItem.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean hasContentItem(final String itemId) {
         //        logger.trace("template item id: {}", itemId);
@@ -308,6 +357,7 @@ public class CMSPageLanguageVersion {
         Collections.sort(items);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return CMSPageLanguageVersion.class.getSimpleName() + ": " + getLanguage();
@@ -315,9 +365,10 @@ public class CMSPageLanguageVersion {
 
     /**
      * Adds a new content item from a template item.
-     * 
-     * @param templateItem
+     *
+     * @param templateItem a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      * @should return false if content item already in list
+     * @return a boolean.
      */
     public boolean addContentItemFromTemplateItem(CMSContentItem templateItem) {
         if (templateItem == null) {
@@ -346,7 +397,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * @param item
+     * <p>addContentItem.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */
     public void addContentItem(CMSContentItem item) {
         if (item == null) {
@@ -368,7 +421,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * @param itemId
+     * <p>removeContentItem.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */
     public void removeContentItem(CMSContentItem item) {
         contentItems.remove(item);

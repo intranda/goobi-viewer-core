@@ -37,6 +37,10 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>FacetItem class.</p>
+ *
+ */
 public class FacetItem implements Comparable<FacetItem>, Serializable {
 
     private static final long serialVersionUID = 5033196184122928247L;
@@ -60,8 +64,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
      *
-     * @param link
-     * @param hierarchical
+     * @param link a {@link java.lang.String} object.
+     * @param hierarchical a boolean.
      * @should split field and value correctly
      * @should split field and value range correctly
      */
@@ -96,6 +100,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -108,6 +113,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -137,6 +143,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(FacetItem facetItem) {
         //                return facetItem.getTranslatedLabel().toLowerCase().compareTo(translatedLabel.toLowerCase());
@@ -172,8 +179,12 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Constructs Lucene queries for the drill-down. Always sorted by the label translation.
      *
-     * @return {@link ArrayList} of {@link FacetItem}
+     * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
+     * @param field a {@link java.lang.String} object.
+     * @param values a {@link java.util.Map} object.
+     * @param hierarchical a boolean.
+     * @param locale a {@link java.util.Locale} object.
      */
     public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale) {
         List<FacetItem> retList = new ArrayList<>();
@@ -241,14 +252,14 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Constructs a list of FilterLink objects for the drill-down. Optionally sorted by the raw values.
      *
-     * @param field
-     * @param values
-     * @param sort
-     * @param reverseOrder
-     * @param hierarchical
-     * @param locale
-     * @return
+     * @param field a {@link java.lang.String} object.
+     * @param values a {@link java.util.Map} object.
+     * @param sort a boolean.
+     * @param reverseOrder a boolean.
+     * @param hierarchical a boolean.
+     * @param locale a {@link java.util.Locale} object.
      * @should sort items correctly
+     * @return a {@link java.util.List} object.
      */
     public static List<FacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder, boolean hierarchical,
             Locale locale) {
@@ -309,11 +320,11 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Returns field:value (with the value escaped for the Solr query).
      *
-     * @return
      * @should construct link correctly
      * @should escape values containing whitespaces
      * @should construct hierarchical link correctly
      * @should construct range link correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getQueryEscapedLink() {
         String escapedValue = getEscapedValue(value);
@@ -357,7 +368,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * Link after slash/backslash replacements for partner collection, static drill-down components and topic browsing (HU Berlin).
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getEscapedLink() {
         return BeanUtils.escapeCriticalUrlChracters(link);
@@ -366,7 +377,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     /**
      * URL escaped link for using in search drill-downs.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getUrlEscapedLink() {
         String ret = getEscapedLink();
@@ -378,6 +389,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
      * @return the field
      */
     public String getField() {
@@ -385,6 +398,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>field</code>.</p>
+     *
      * @param field the field to set
      */
     public void setField(String field) {
@@ -392,7 +407,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * 
+     * <p>getFullValue.</p>
+     *
      * @return Range of value - value2; just value if value2 empty
      * @should build full value correctly
      */
@@ -406,6 +422,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
      * @return the value
      */
     public String getValue() {
@@ -413,6 +431,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -420,6 +440,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>value2</code>.</p>
+     *
      * @return the value2
      */
     public String getValue2() {
@@ -427,6 +449,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>value2</code>.</p>
+     *
      * @param value2 the value2 to set
      */
     public void setValue2(String value2) {
@@ -434,6 +458,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>link</code>.</p>
+     *
      * @return the link
      */
     public String getLink() {
@@ -441,6 +467,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>link</code>.</p>
+     *
      * @param link the link to set
      */
     public void setLink(String link) {
@@ -449,6 +477,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -456,6 +486,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>label</code>.</p>
+     *
      * @param label the label to set
      */
     public void setLabel(String label) {
@@ -463,6 +495,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>translatedLabel</code>.</p>
+     *
      * @return the translatedLabel
      */
     public String getTranslatedLabel() {
@@ -470,6 +504,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>translatedLabel</code>.</p>
+     *
      * @param translatedLabel the translatedLabel to set
      */
     public void setTranslatedLabel(String translatedLabel) {
@@ -477,6 +513,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>count</code>.</p>
+     *
      * @return the count
      */
     public long getCount() {
@@ -484,6 +522,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>count</code>.</p>
+     *
      * @param count the count to set
      */
     public void setCount(long count) {
@@ -491,6 +531,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * <p>isHierarchial.</p>
+     *
      * @return the hierarchial
      */
     public boolean isHierarchial() {

@@ -11,12 +11,17 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 
+/**
+ * <p>CORSHeaderFilter class.</p>
+ *
+ */
 @Provider
 @CORSBinding
 public class CORSHeaderFilter implements ContainerResponseFilter {
 
     private static final Configuration config = DataManager.getInstance().getConfiguration();
 
+    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
         if (config.isAddCORSHeader()) {

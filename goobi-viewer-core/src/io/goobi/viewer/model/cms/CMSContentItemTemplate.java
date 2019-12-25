@@ -18,11 +18,10 @@ package io.goobi.viewer.model.cms;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A contentItem to be used in a CMSPage template. Stores a value for 
+ * A contentItem to be used in a CMSPage template. Stores a value for
  * content item mode
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class CMSContentItemTemplate extends CMSContentItem {
 	
@@ -32,36 +31,38 @@ public class CMSContentItemTemplate extends CMSContentItem {
     private boolean preview = false;
     
     /**
-     * @param type
+     * <p>Constructor for CMSContentItemTemplate.</p>
+     *
+     * @param type a CMSContentItemType object.
      */
     public CMSContentItemTemplate(CMSContentItemType type) {
         super(type);
     }
 
     /**
+     * <p>Setter for the field <code>mode</code>.</p>
+     *
      * @param mode the mode to set
      */
     public void setMode(ContentItemMode mode) {
         this.mode = mode;
     }
     
-    /**
-     * @return the mode
-     */
+    /** {@inheritDoc} */
     @Override
     public ContentItemMode getMode() {
         return mode;
     }
     
-    /**
-     * @return true if the item has a non-empty inline help text
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean isHasInlineHelp() {
         return StringUtils.isNotBlank(inlineHelp);
     }
     
     /**
+     * {@inheritDoc}
+     *
      * Message key to display when clicking the inline help button
      */
     @Override
@@ -70,18 +71,23 @@ public class CMSContentItemTemplate extends CMSContentItem {
     }
     
     /**
+     * <p>Setter for the field <code>inlineHelp</code>.</p>
+     *
      * @param inlineHelp the inlineHelp to set
      */
     public void setInlineHelp(String inlineHelp) {
         this.inlineHelp = inlineHelp;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
     	return mediaFilter;
     }
 
-    /**
+	/**
+	 * <p>Setter for the field <code>mediaFilter</code>.</p>
+	 *
 	 * @param mediaFilter the mediaFilter to set
 	 */
 	public void setMediaFilter(String mediaFilter) {
@@ -91,12 +97,15 @@ public class CMSContentItemTemplate extends CMSContentItem {
 	/* (non-Javadoc)
 	 * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean isPreview() {
 	    return this.preview;
 	}
 	
-	/**
+    /**
+     * <p>Setter for the field <code>preview</code>.</p>
+     *
      * @param preview the preview to set
      */
     public void setPreview(boolean preview) {

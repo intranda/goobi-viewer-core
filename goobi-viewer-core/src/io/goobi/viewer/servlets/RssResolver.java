@@ -51,9 +51,7 @@ public class RssResolver extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(RssResolver.class);
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String query = null;
@@ -145,9 +143,7 @@ public class RssResolver extends HttpServlet {
 
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);

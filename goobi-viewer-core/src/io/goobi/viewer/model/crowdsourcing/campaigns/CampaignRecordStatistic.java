@@ -129,6 +129,7 @@ public class CampaignRecordStatistic implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -141,6 +142,7 @@ public class CampaignRecordStatistic implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -164,6 +166,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -171,6 +175,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -178,6 +184,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateCreated</code>.</p>
+     *
      * @return the dateCreated
      */
     public Date getDateCreated() {
@@ -185,6 +193,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateCreated</code>.</p>
+     *
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
@@ -192,6 +202,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     *
      * @return the dateUpdated
      */
     public Date getDateUpdated() {
@@ -199,6 +211,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -206,6 +220,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public Campaign getOwner() {
@@ -213,6 +229,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(Campaign owner) {
@@ -220,6 +238,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -227,6 +247,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -234,6 +256,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
      * @return the status
      */
     public CampaignRecordStatus getStatus() {
@@ -241,6 +265,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
      * @param status the status to set
      */
     public void setStatus(CampaignRecordStatus status) {
@@ -248,6 +274,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>annotators</code>.</p>
+     *
      * @return the annotators
      */
     public List<User> getAnnotators() {
@@ -255,6 +283,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>annotators</code>.</p>
+     *
      * @param annotators the annotators to set
      */
     public void setAnnotators(List<User> annotators) {
@@ -262,6 +292,8 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>reviewers</code>.</p>
+     *
      * @return the reviewers
      */
     public List<User> getReviewers() {
@@ -269,18 +301,30 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>reviewers</code>.</p>
+     *
      * @param reviewers the reviewers to set
      */
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;
     }
     
+    /**
+     * <p>addAnnotater.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     */
     public void addAnnotater(User user) {
         if(user != null && !getAnnotators().contains(user)) {
             getAnnotators().add(user);
         }
     }
     
+    /**
+     * <p>addReviewer.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     */
     public void addReviewer(User user) {
         if(user != null && !getReviewers().contains(user)) {
             getReviewers().add(user);

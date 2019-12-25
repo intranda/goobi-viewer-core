@@ -16,16 +16,19 @@
 package io.goobi.viewer.model.cms.itemfunctionality;
 
 /**
- * @author Florian Alpers
+ * <p>TrivialFunctionality class.</p>
  *
+ * @author Florian Alpers
  */
 public class TrivialFunctionality implements Functionality{
 
+    /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getPageNo() {
         return 1;

@@ -48,6 +48,10 @@ import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>Comment class.</p>
+ *
+ */
 @Entity
 @Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
 @Table(name = "comments")
@@ -92,17 +96,21 @@ public class Comment implements Comparable<Comment> {
     @PrivateOwned
     private List<Comment> children;
 
+    /**
+     * <p>Constructor for Comment.</p>
+     */
     public Comment() {
         // the emptiness inside
     }
 
     /**
-     * 
-     * @param pi
-     * @param page
-     * @param owner
-     * @param text
-     * @param parent
+     * <p>Constructor for Comment.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param page a int.
+     * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param text a {@link java.lang.String} object.
+     * @param parent a {@link io.goobi.viewer.model.annotation.Comment} object.
      * @should construct object correctly
      */
     public Comment(String pi, int page, User owner, String text, Comment parent) {
@@ -113,6 +121,7 @@ public class Comment implements Comparable<Comment> {
         this.parent = parent;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(Comment o) {
         if (dateCreated != null) {
@@ -125,10 +134,10 @@ public class Comment implements Comparable<Comment> {
     /**
      * Sends an email notification about a new or altered comment to the configured recipient addresses.
      *
-     * @param comment
-     * @param oldText
+     * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
+     * @param oldText a {@link java.lang.String} object.
      * @param locale Language locale for the email text.
-     * @return
+     * @return a boolean.
      */
     public static boolean sendEmailNotifications(Comment comment, String oldText, Locale locale) {
         List<String> addresses = DataManager.getInstance().getConfiguration().getUserCommentsNotificationEmailAddresses();
@@ -165,23 +174,29 @@ public class Comment implements Comparable<Comment> {
     /**
      * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
      *
-     * @param userId The id of the querying user.
      * @return true if allowed; false otherwise
      * @should return true if use id equals owner id
      * @should return false if owner id is null
      * @should return false if user is null
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public boolean mayEdit(User user) {
         return owner.getId() != null && user != null && owner.getId() == user.getId();
     }
 
+    /**
+     * <p>getDisplayDate.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayDate(Date date) {
         return DateTools.formatterDEDateTime.print(date.getTime());
     }
 
     /**
      * Removes any script tags from the text value.
-     * 
+     *
      * @should remove scripts correctly
      */
     public void checkAndCleanScripts() {
@@ -197,6 +212,8 @@ public class Comment implements Comparable<Comment> {
     // Property accessors
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -204,6 +221,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -211,6 +230,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -218,6 +239,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -225,6 +248,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>page</code>.</p>
+     *
      * @return the page
      */
     public int getPage() {
@@ -232,6 +257,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>page</code>.</p>
+     *
      * @param page the page to set
      */
     public void setPage(int page) {
@@ -239,6 +266,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public User getOwner() {
@@ -246,6 +275,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(User owner) {
@@ -253,6 +284,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>text</code>.</p>
+     *
      * @param text the text to set
      */
     public void setText(String text) {
@@ -261,17 +294,26 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>text</code>.</p>
+     *
      * @return the text
      */
     public String getText() {
         return text;
     }
 
+    /**
+     * <p>getDisplayText.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayText() {
         return StringTools.stripJS(text);
     }
 
     /**
+     * <p>Getter for the field <code>oldText</code>.</p>
+     *
      * @return the oldText
      */
     public String getOldText() {
@@ -279,6 +321,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>dateCreated</code>.</p>
+     *
      * @return the dateCreated
      */
     public Date getDateCreated() {
@@ -286,6 +330,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>dateCreated</code>.</p>
+     *
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
@@ -293,6 +339,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     *
      * @return the dateUpdated
      */
     public Date getDateUpdated() {
@@ -300,6 +348,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -307,6 +357,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>parent</code>.</p>
+     *
      * @return the parent
      */
     public Comment getParent() {
@@ -314,6 +366,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>parent</code>.</p>
+     *
      * @param parent the parent to set
      */
     public void setParent(Comment parent) {
@@ -321,6 +375,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Getter for the field <code>children</code>.</p>
+     *
      * @return the children
      */
     public List<Comment> getChildren() {
@@ -328,6 +384,8 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
+     * <p>Setter for the field <code>children</code>.</p>
+     *
      * @param children the children to set
      */
     public void setChildren(List<Comment> children) {

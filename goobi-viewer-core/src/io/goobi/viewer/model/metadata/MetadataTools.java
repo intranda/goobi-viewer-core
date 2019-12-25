@@ -35,14 +35,19 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
+/**
+ * <p>MetadataTools class.</p>
+ *
+ */
 public class MetadataTools {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(MetadataTools.class);
 
     /**
-     * 
-     * @param structElement
+     * <p>generateDublinCoreMetaTags.</p>
+     *
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return String containing meta tags
      */
     public static String generateDublinCoreMetaTags(StructElement structElement) {
@@ -174,13 +179,14 @@ public class MetadataTools {
     }
 
     /**
-     * 
-     * @param structElement
-     * @param pages
+     * <p>generateHighwirePressMetaTags.</p>
+     *
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param pages a {@link java.util.List} object.
      * @return String containing meta tags
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages)
             throws IndexUnreachableException, ViewerConfigurationException, PresentationException {
@@ -266,9 +272,10 @@ public class MetadataTools {
     }
 
     /**
-     * 
-     * @param structElement
-     * @return
+     * <p>generateRIS.</p>
+     *
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String generateRIS(StructElement structElement) {
         if (structElement == null) {
@@ -413,8 +420,8 @@ public class MetadataTools {
 
     /**
      * Converts given language name or ISO-3 code to ISO-2, if possible.
-     * 
-     * @param language
+     *
+     * @param language a {@link java.lang.String} object.
      * @return ISO-2 representation; original string if none found
      */
     public static String convertLanguageToIso2(String language) {
@@ -453,11 +460,12 @@ public class MetadataTools {
     }
 
     /**
-     * 
-     * @param value
-     * @param replaceRules
-     * @return
+     * <p>applyReplaceRules.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @param replaceRules a {@link java.util.Map} object.
      * @should apply rules correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String applyReplaceRules(String value, Map<Object, String> replaceRules) {
         if (value == null) {
@@ -489,8 +497,9 @@ public class MetadataTools {
     }
 
     /**
-     * 
-     * @param gndspec
+     * <p>findMetadataGroupType.</p>
+     *
+     * @param gndspec a {@link java.lang.String} object.
      * @return MetadataGroupType value corresponding to the given gndspec type
      * @should map values correctly
      */

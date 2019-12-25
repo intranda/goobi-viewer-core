@@ -48,12 +48,17 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 
+/**
+ * <p>SearchHitsNotificationResource class.</p>
+ *
+ */
 @Path(SearchHitsNotificationResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
 public class SearchHitsNotificationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotificationResource.class);
 
+    /** Constant <code>RESOURCE_PATH="/search"</code> */
     public static final String RESOURCE_PATH = "/search";
 
     @Context
@@ -61,6 +66,15 @@ public class SearchHitsNotificationResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>sendNewHitsNotifications.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     @GET
     @Path("/sendnotifications/")
     @Produces({ MediaType.TEXT_HTML })

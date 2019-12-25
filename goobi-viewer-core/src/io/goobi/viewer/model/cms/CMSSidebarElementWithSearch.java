@@ -20,18 +20,28 @@ import javax.persistence.Entity;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * <p>CMSSidebarElementWithSearch class.</p>
+ *
+ */
 @Entity
 public class CMSSidebarElementWithSearch extends CMSSidebarElement {
 
     @Column(name = "additional_query")
     private String additionalQuery = "";
 
+    /**
+     * <p>Constructor for CMSSidebarElementWithSearch.</p>
+     */
     public CMSSidebarElementWithSearch() {
         
     }
     
     /**
-     * @param original
+     * <p>Constructor for CMSSidebarElementWithSearch.</p>
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSSidebarElementWithSearch} object.
+     * @param owner a {@link io.goobi.viewer.model.cms.CMSPage} object.
      */
     public CMSSidebarElementWithSearch(CMSSidebarElementWithSearch original, CMSPage owner) {
         super(original, owner);
@@ -39,6 +49,8 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     }
 
     /**
+     * <p>Getter for the field <code>additionalQuery</code>.</p>
+     *
      * @return the additionalQuery
      */
     public String getAdditionalQuery() {
@@ -46,6 +58,8 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     }
 
     /**
+     * <p>Setter for the field <code>additionalQuery</code>.</p>
+     *
      * @param additionalQuery the additionalQuery to set
      */
     public void setAdditionalQuery(String additionalQuery) {
@@ -55,6 +69,7 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSSidebarElement#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int code = super.hashCode();
@@ -67,6 +82,7 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
         return code;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         return o.getClass().equals(CMSSidebarElementWithSearch.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
@@ -74,6 +90,7 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
                         ((CMSSidebarElementWithSearch) o).getAdditionalQuery());
     }
     
+    /** {@inheritDoc} */
     @Override
     public PageList getLinkedPages() {
         if(super.getLinkedPages() == null) {

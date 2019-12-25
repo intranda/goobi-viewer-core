@@ -21,8 +21,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * @author Florian Alpers
+ * <p>Glossary class.</p>
  *
+ * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class Glossary {
@@ -32,9 +33,11 @@ public class Glossary {
     private final String description;
     private List<GlossaryRecord> records;
     /**
-     * @param title
-     * @param filename
-     * @param description
+     * <p>Constructor for Glossary.</p>
+     *
+     * @param title a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
      */
     public Glossary(String title, String filename, String description) {
         super();
@@ -43,18 +46,24 @@ public class Glossary {
         this.description = description;
     }
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
         return title;
     }
     /**
+     * <p>Getter for the field <code>filename</code>.</p>
+     *
      * @return the filename
      */
     public String getFilename() {
         return filename;
     }
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -62,6 +71,8 @@ public class Glossary {
     }
     
     /**
+     * <p>Getter for the field <code>records</code>.</p>
+     *
      * @return the records
      */
     public List<GlossaryRecord> getRecords() {
@@ -69,6 +80,8 @@ public class Glossary {
     }
     
     /**
+     * <p>Setter for the field <code>records</code>.</p>
+     *
      * @param records the records to set
      */
     public void setRecords(List<GlossaryRecord> records) {

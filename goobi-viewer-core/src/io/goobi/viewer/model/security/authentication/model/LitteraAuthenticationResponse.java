@@ -19,25 +19,34 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Representation of the Littera authentication response which is delivered as xml. It only contains 
+ * Representation of the Littera authentication response which is delivered as xml. It only contains
  * the single information if a login attempt succeeded or not
- * 
- * @author florian
  *
+ * @author florian
  */
 @XmlRootElement(name="Response")
 public class LitteraAuthenticationResponse {
 	
 	private boolean authenticationSuccessful;
 
+	/**
+	 * <p>Constructor for LitteraAuthenticationResponse.</p>
+	 */
 	public LitteraAuthenticationResponse() {
 	}
 	
+	/**
+	 * <p>Constructor for LitteraAuthenticationResponse.</p>
+	 *
+	 * @param success a boolean.
+	 */
 	public LitteraAuthenticationResponse(boolean success) {
 		this.authenticationSuccessful = success;
 	}
 	
 	/**
+	 * <p>isAuthenticationSuccessful.</p>
+	 *
 	 * @return the authenticationSuccessful
 	 */
 	@XmlAttribute
@@ -46,6 +55,8 @@ public class LitteraAuthenticationResponse {
 	}
 	
 	/**
+	 * <p>Setter for the field <code>authenticationSuccessful</code>.</p>
+	 *
 	 * @param authenticationSuccessful the authenticationSuccessful to set
 	 */
 	public void setAuthenticationSuccessful(boolean authenticationSuccessful) {

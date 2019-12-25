@@ -26,14 +26,19 @@ import org.apache.commons.lang3.StringUtils;
  *      <item type="expanded">...</item>
  * </content>
  * If no value is set, "simple" is assumed
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public enum ContentItemMode {
     simple,
     expanded;
     
+    /**
+     * <p>get.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.ContentItemMode} object.
+     */
     public static ContentItemMode get(String name) {
         if(StringUtils.isBlank(name)) {
             return simple;

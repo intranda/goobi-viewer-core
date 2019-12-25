@@ -46,6 +46,10 @@ import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.Role;
 
+/**
+ * <p>UserGroup class.</p>
+ *
+ */
 @Entity
 @Table(name = "user_groups")
 // @DiscriminatorValue("UserGroup")
@@ -80,6 +84,7 @@ public class UserGroup implements ILicensee {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -96,6 +101,7 @@ public class UserGroup implements ILicensee {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -124,9 +130,11 @@ public class UserGroup implements ILicensee {
     /**
      * add User to group
      *
-     * @return
-     * @throws PresentationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     * @return a boolean.
      */
     public boolean addMember(User user, Role role) throws PresentationException, DAOException {
         if (user != null && role != null) {
@@ -138,10 +146,11 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>changeMemberRole.</p>
      *
-     * @param user
-     * @param role
-     * @return
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     * @return a boolean.
      */
     public boolean changeMemberRole(User user, Role role) {
         if (user != null && role != null) {
@@ -156,8 +165,9 @@ public class UserGroup implements ILicensee {
     /**
      * remove User from Group
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @return a boolean.
      */
     public boolean removeMember(User user) throws DAOException {
         if (user != null) {
@@ -169,6 +179,7 @@ public class UserGroup implements ILicensee {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
@@ -200,6 +211,13 @@ public class UserGroup implements ILicensee {
         return false;
     }
 
+    /**
+     * <p>hasUserPrivilege.</p>
+     *
+     * @param privilegeName a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean hasUserPrivilege(String privilegeName) throws DAOException {
         for (UserRole role : DataManager.getInstance().getDao().getUserRoles(this, null, null)) {
             if (role.getRole().hasPrivilege(privilegeName)) {
@@ -210,6 +228,7 @@ public class UserGroup implements ILicensee {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean addLicense(License license) {
         if (licenses == null) {
@@ -224,6 +243,7 @@ public class UserGroup implements ILicensee {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean removeLicense(License license) {
         if (license != null && licenses != null) {
@@ -237,6 +257,8 @@ public class UserGroup implements ILicensee {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -244,21 +266,23 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the name
-     */
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -266,6 +290,8 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -273,6 +299,8 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -280,6 +308,8 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return the owner
      */
     public User getOwner() {
@@ -287,6 +317,8 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner the owner to set
      */
     public void setOwner(User owner) {
@@ -294,6 +326,8 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>isActive.</p>
+     *
      * @return the active
      */
     public boolean isActive() {
@@ -301,21 +335,23 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * <p>Setter for the field <code>active</code>.</p>
+     *
      * @param active the active to set
      */
     public void setActive(boolean active) {
         this.active = active;
     }
 
-    /**
-     * @return the licenses
-     */
+    /** {@inheritDoc} */
     @Override
     public List<License> getLicenses() {
         return licenses;
     }
 
     /**
+     * <p>Setter for the field <code>licenses</code>.</p>
+     *
      * @param licenses the licenses to set
      */
     public void setLicenses(List<License> licenses) {
@@ -323,8 +359,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * 
-     * @param core
+     * <p>Getter for the field <code>licenses</code>.</p>
+     *
+     * @param core a boolean.
      * @return List of filtered licenses whose type's core attribute matches the given value
      */
     public List<License> getLicenses(boolean core) {
@@ -343,13 +380,21 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * @throws DAOException
+     * <p>getMemberships.</p>
      *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<UserRole> getMemberships() throws DAOException {
         return DataManager.getInstance().getDao().getUserRoles(this, null, null);
     }
 
+    /**
+     * <p>getMembers.</p>
+     *
+     * @return a {@link java.util.Set} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public Set<User> getMembers() throws DAOException {
         Set<User> ret = new HashSet<>();
 
@@ -360,6 +405,7 @@ public class UserGroup implements ILicensee {
         return ret;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;

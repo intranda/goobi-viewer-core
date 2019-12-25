@@ -42,9 +42,8 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
  * Provides urls to download pdfs, images and image footer
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class ImageHandler {
 
@@ -53,9 +52,10 @@ public class ImageHandler {
     /**
      * Returns the image link for the given page and pageType. For external images, this links to the IIIF image information json+ls For external
      * images, this may either also be a IIIF image information or the image itself
-     * 
-     * @param page
-     * @return
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
         if (page == null) {
@@ -96,23 +96,24 @@ public class ImageHandler {
     /**
      * Returns the image link for the given page. For external images, this links to the IIIF image information json+ls For external images, this may
      * either also be a IIIF image information or the image itself
-     * 
-     * @param page
-     * @return
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getImageUrl(PhysicalElement page) {
         return getImageUrl(page, PageType.viewImage);
     }
 
     /**
-     * 
-     * @param page
+     * <p>getImageInformation.</p>
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return The image information for the image file of the given page
-     * @throws IllegalPathSyntaxException
-     * @throws ContentLibException
-     * @throws URISyntaxException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public ImageInformation getImageInformation(PhysicalElement page)
             throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
@@ -131,11 +132,13 @@ public class ImageHandler {
     }
 
     /**
-     * @param url
-     * @return
-     * @throws IllegalPathSyntaxException
-     * @throws URISyntaxException
-     * @throws ContentLibException
+     * <p>getImageInformation.</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException
+     * @throws java.net.URISyntaxException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException
+     * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
      */
     public ImageInformation getImageInformation(String url) throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
         if (url.endsWith("info.json")) {
@@ -151,7 +154,9 @@ public class ImageHandler {
     }
 
     /**
-     * @param path
+     * <p>isExternalUrl.</p>
+     *
+     * @param path a {@link java.lang.String} object.
      * @return true exactly if the given path starts with {@code http://} or {@code https://}
      */
     protected static boolean isExternalUrl(String path) {
@@ -159,9 +164,11 @@ public class ImageHandler {
     }
 
     /**
-     * 
+     * <p>isImageUrl.</p>
+     *
      * @param displayableTypesOnly if true, the method only returns true for images that can be directly displayed in a browser (jpg and png)
      * @return true if the url ends with an image file suffix
+     * @param url a {@link java.lang.String} object.
      */
     protected static boolean isImageUrl(String url, boolean displayableTypesOnly) {
         if (url.endsWith("/")) {
@@ -183,7 +190,10 @@ public class ImageHandler {
     }
 
     /**
+     * <p>isRestrictedUrl.</p>
+     *
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
+     * @param path a {@link java.lang.String} object.
      */
     public static boolean isRestrictedUrl(String path) {
         return DataManager.getInstance()
@@ -193,6 +203,12 @@ public class ImageHandler {
                 .anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
     }
 
+    /**
+     * <p>getImageType.</p>
+     *
+     * @param info a {@link de.intranda.api.iiif.image.ImageInformation} object.
+     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     */
     protected static ImageType getImageType(ImageInformation info) {
         String id = info.getId();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);

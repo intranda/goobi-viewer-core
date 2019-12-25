@@ -71,6 +71,10 @@ import io.goobi.viewer.model.viewer.Feedback;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
+/**
+ * <p>UserBean class.</p>
+ *
+ */
 @Named
 @SessionScoped
 public class UserBean implements Serializable {
@@ -102,7 +106,9 @@ public class UserBean implements Serializable {
 
     // private CompletableFuture<Optional<User>> loginFuture = null;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public UserBean() {
         // the emptiness inside
         this.authenticationProvider = getLocalAuthenticationProvider();
@@ -110,7 +116,7 @@ public class UserBean implements Serializable {
 
     /**
      * Required setter for ManagedProperty injection
-     * 
+     *
      * @param navigationHelper the navigationHelper to set
      */
     public void setNavigationHelper(NavigationHelper navigationHelper) {
@@ -120,7 +126,8 @@ public class UserBean implements Serializable {
     /**
      * Create a new local User and save the data (in moment by xstream)
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String createNewUserAccount() throws DAOException {
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
@@ -157,9 +164,10 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     * @throws DAOException
+     * <p>activateUserAccountAction.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String activateUserAccountAction() throws DAOException {
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(activationKey)) {
@@ -191,17 +199,26 @@ public class UserBean implements Serializable {
     /**
      * Login action method for local accounts.
      *
-     * @throws AuthenticationProviderException If an error occured while logging in
-     * @throws IllegalStateException If a user is already logged in
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException If an error occured while logging in
+     * @throws java.lang.IllegalStateException If a user is already logged in
      * @return the url mapping to navigate to
-     * @throws ExecutionException
-     * @throws InterruptedException
-     *
+     * @throws java.util.concurrent.ExecutionException
+     * @throws java.lang.InterruptedException
      */
     public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         return login(getAuthenticationProvider());
     }
 
+    /**
+     * <p>login.</p>
+     *
+     * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     * @throws java.lang.IllegalStateException if any.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
+     */
     public String login(IAuthenticationProvider provider) throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if (getUser() != null) {
             throw new IllegalStateException("errAlreadyLoggedIn");
@@ -298,11 +315,9 @@ public class UserBean implements Serializable {
 
     /**
      * Logout action method.
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      */
     public String logout() throws AuthenticationProviderException {
         logger.trace("logout");
@@ -372,11 +387,11 @@ public class UserBean implements Serializable {
 
     /**
      * Removes the user and permission attributes from the session.
-     * 
-     * @param request
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("wipeSession");
@@ -416,9 +431,10 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     * @throws DAOException
+     * <p>saveUserAction.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String saveUserAction() throws DAOException {
         try {
@@ -473,8 +489,8 @@ public class UserBean implements Serializable {
     /**
      * Returns a list of all existing users (minus the superusers and the current user).
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.util.List} object.
      */
     public List<User> getAllUsers() throws DAOException {
         List<User> ret = new ArrayList<>();
@@ -539,8 +555,8 @@ public class UserBean implements Serializable {
     /**
      * Sends a password reset link to the current e-mail address.
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String sendPasswordResetLinkAction() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
@@ -594,8 +610,8 @@ public class UserBean implements Serializable {
     /**
      * Generates a new user password if the key is correct.
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String resetPasswordAction() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
@@ -632,10 +648,10 @@ public class UserBean implements Serializable {
     /**
      * Returns saved searches for the logged in user.
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return searches for correct user
      * @should return null if no user logged in
+     * @return a {@link java.util.List} object.
      */
     public List<Search> getSearches() throws DAOException {
         if (user != null) {
@@ -647,10 +663,10 @@ public class UserBean implements Serializable {
 
     /**
      * Deletes the given persistent user search.
-     * 
-     * @param search
-     * @return
-     * @throws DAOException
+     *
+     * @param search a {@link io.goobi.viewer.model.search.Search} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String deleteSearchAction(Search search) throws DAOException {
         if (search != null) {
@@ -668,8 +684,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
-     * @return
+     * <p>transkribusLoginAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String transkribusLoginAction() {
         if (transkribusUserName == null || transkribusPassword == null) {
@@ -697,6 +714,9 @@ public class UserBean implements Serializable {
         return "";
     }
 
+    /**
+     * <p>createFeedback.</p>
+     */
     public void createFeedback() {
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
@@ -709,6 +729,11 @@ public class UserBean implements Serializable {
         feedback.setUrl(url);
     }
 
+    /**
+     * <p>submitFeedbackAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String submitFeedbackAction() {
         try {
             if (Helper.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
@@ -732,6 +757,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
      * @return the user
      */
     public User getUser() {
@@ -739,6 +766,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>user</code>.</p>
+     *
      * @param user the user to set
      */
     public void setUser(User user) {
@@ -746,6 +775,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>nickName</code>.</p>
+     *
      * @return the nickName
      */
     public String getNickName() {
@@ -753,6 +784,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>nickName</code>.</p>
+     *
      * @param nickName the nickName to set
      */
     public void setNickName(String nickName) {
@@ -760,6 +793,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>email</code>.</p>
+     *
      * @return the email
      */
     public String getEmail() {
@@ -767,6 +802,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>email</code>.</p>
+     *
      * @param email the email to set
      */
     public void setEmail(String email) {
@@ -774,6 +811,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>password</code>.</p>
+     *
      * @return the password
      */
     public String getPassword() {
@@ -781,36 +820,55 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>password</code>.</p>
+     *
      * @param password the password to set
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * <p>isLoggedIn.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isLoggedIn() {
         return user != null && user.isActive() && !user.isSuspended();
     }
 
+    /**
+     * <p>isAdmin.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAdmin() {
         return user != null && user.isSuperuser();
     }
 
     /**
+     * <p>isUserRegistrationEnabled.</p>
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isUserRegistrationEnabled() {
         return DataManager.getInstance().getConfiguration().isUserRegistrationEnabled();
     }
 
     /**
+     * <p>isShowOpenId.</p>
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isShowOpenId() {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
     }
 
+    /**
+     * <p>Getter for the field <code>authenticationProviders</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
         if (this.authenticationProviders == null) {
             this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
@@ -818,26 +876,56 @@ public class UserBean implements Serializable {
         return this.authenticationProviders;
     }
 
+    /**
+     * <p>getLocalAuthenticationProvider.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     */
     public IAuthenticationProvider getLocalAuthenticationProvider() {
         return getProvidersOfType("local").stream().findFirst().orElse(null);
     }
 
+    /**
+     * <p>getXserviceAuthenticationProvider.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     */
     public IAuthenticationProvider getXserviceAuthenticationProvider() {
         return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
     }
 
+    /**
+     * <p>Setter for the field <code>authenticationProvider</code>.</p>
+     *
+     * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     */
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
         this.authenticationProvider = provider;
     }
 
+    /**
+     * <p>Getter for the field <code>authenticationProvider</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
+     */
     public IAuthenticationProvider getAuthenticationProvider() {
         return authenticationProvider;
     }
 
+    /**
+     * <p>setAuthenticationProviderName.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setAuthenticationProviderName(String name) {
         this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(getLocalAuthenticationProvider());
     }
 
+    /**
+     * <p>getAuthenticationProviderName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthenticationProviderName() {
         if (this.authenticationProvider != null) {
             return this.authenticationProvider.getName();
@@ -846,33 +934,63 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * <p>loginTest.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String loginTest() {
         user = new User();
         return null;
     }
 
+    /**
+     * <p>Getter for the field <code>passwordOne</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPasswordOne() {
         return this.passwordOne;
     }
 
+    /**
+     * <p>Setter for the field <code>passwordOne</code>.</p>
+     *
+     * @param passwordOne a {@link java.lang.String} object.
+     */
     public void setPasswordOne(String passwordOne) {
         this.passwordOne = passwordOne;
     }
 
+    /**
+     * <p>Getter for the field <code>passwordTwo</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPasswordTwo() {
         return this.passwordTwo;
     }
 
+    /**
+     * <p>Setter for the field <code>passwordTwo</code>.</p>
+     *
+     * @param passwordTwo a {@link java.lang.String} object.
+     */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
     }
 
+    /**
+     * <p>resetPasswordFields.</p>
+     */
     public void resetPasswordFields() {
         passwordOne = "";
         passwordTwo = "";
     }
 
     /**
+     * <p>Getter for the field <code>redirectUrl</code>.</p>
+     *
      * @return the redirectUrl
      */
     public String getRedirectUrl() {
@@ -880,6 +998,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>redirectUrl</code>.</p>
+     *
      * @param redirectUrl the redirectUrl to set
      */
     public void setRedirectUrl(String redirectUrl) {
@@ -890,6 +1010,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>activationKey</code>.</p>
+     *
      * @return the activationKey
      */
     public String getActivationKey() {
@@ -897,6 +1019,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>activationKey</code>.</p>
+     *
      * @param activationKey the activationKey to set
      */
     public void setActivationKey(String activationKey) {
@@ -904,6 +1028,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>feedback</code>.</p>
+     *
      * @return the feedback
      */
     public Feedback getFeedback() {
@@ -911,6 +1037,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>feedback</code>.</p>
+     *
      * @param feedback the feedback to set
      */
     public void setFeedback(Feedback feedback) {
@@ -918,6 +1046,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>transkribusUserName</code>.</p>
+     *
      * @return the transkribusUserName
      */
     public String getTranskribusUserName() {
@@ -925,6 +1055,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>transkribusUserName</code>.</p>
+     *
      * @param transkribusUserName the transkribusUserName to set
      */
     public void setTranskribusUserName(String transkribusUserName) {
@@ -932,6 +1064,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>transkribusPassword</code>.</p>
+     *
      * @return the transkribusPassword
      */
     public String getTranskribusPassword() {
@@ -939,16 +1073,30 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>transkribusPassword</code>.</p>
+     *
      * @param transkribusPassword the transkribusPassword to set
      */
     public void setTranskribusPassword(String transkribusPassword) {
         this.transkribusPassword = transkribusPassword;
     }
 
+    /**
+     * <p>userEquals.</p>
+     *
+     * @param id a long.
+     * @return a boolean.
+     */
     public boolean userEquals(long id) {
         return getUser().getId().equals(id);
     }
 
+    /**
+     * <p>hasProvidersOfType.</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean hasProvidersOfType(String type) {
         if (type != null) {
             return getAuthenticationProviders().stream().anyMatch(provider -> type.equalsIgnoreCase(provider.getType()));
@@ -956,6 +1104,12 @@ public class UserBean implements Serializable {
         return false;
     }
 
+    /**
+     * <p>getProvidersOfType.</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<IAuthenticationProvider> getProvidersOfType(String type) {
         if (type != null) {
             return getAuthenticationProviders().stream().filter(provider -> type.equalsIgnoreCase(provider.getType())).collect(Collectors.toList());
@@ -963,19 +1117,39 @@ public class UserBean implements Serializable {
         return Collections.emptyList();
     }
 
+    /**
+     * <p>getNumberOfProviderTypes.</p>
+     *
+     * @return a int.
+     */
     public int getNumberOfProviderTypes() {
         return getAuthenticationProviders().stream().collect(Collectors.groupingBy(IAuthenticationProvider::getType, Collectors.counting())).size();
     }
 
+    /**
+     * <p>isAllowPasswordChange.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAllowPasswordChange() {
         return loggedInProvider != null && loggedInProvider.allowsPasswordChange();
     }
 
+    /**
+     * <p>isAllowNickNameChange.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAllowNickNameChange() {
         return loggedInProvider != null && loggedInProvider.allowsNicknameChange();
 
     }
 
+    /**
+     * <p>isAllowEmailChange.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAllowEmailChange() {
         return loggedInProvider != null && loggedInProvider.allowsEmailChange();
 

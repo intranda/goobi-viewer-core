@@ -46,11 +46,13 @@ import io.goobi.viewer.model.security.authentication.model.VuAuthenticationReque
 import io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse;
 
 /**
- * @author Florian Alpers
+ * <p>Abstract HttpAuthenticationProvider class.</p>
  *
+ * @author Florian Alpers
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
 
+    /** Constant <code>connectionManager</code> */
     protected static PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected final String name;
@@ -62,10 +64,14 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected List<String> addUserToGroups;
 
     /**
-     * @param name
-     * @param label
-     * @param url
-     * @param image
+     * <p>Constructor for HttpAuthenticationProvider.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param image a {@link java.lang.String} object.
+     * @param type a {@link java.lang.String} object.
+     * @param timeoutMillis a long.
      */
     public HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
         super();
@@ -78,6 +84,8 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
+     * <p>Getter for the field <code>timeoutMillis</code>.</p>
+     *
      * @return the timeoutMillis
      */
     public long getTimeoutMillis() {
@@ -87,12 +95,15 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getName()
      */
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -101,6 +112,8 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
 
     
     /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
      * @return the url
      */
     public String getUrl() {
@@ -108,12 +121,19 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
+     * <p>Getter for the field <code>image</code>.</p>
+     *
      * @return the image
      */
     public String getImage() {
         return image;
     }
 
+    /**
+     * <p>getImageUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getImageUrl() {
         try {
             URI uri = new URI(image);
@@ -129,9 +149,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         return url.toString();
     }
 
-    /**
-     * @return the type
-     */
+    /** {@inheritDoc} */
     @Override
     public String getType() {
         return type;
@@ -140,6 +158,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
      */
+    /** {@inheritDoc} */
     @Override
     public List<String> getAddUserToGroups() {
         return addUserToGroups;
@@ -148,11 +167,20 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
      */
+    /** {@inheritDoc} */
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;
     }
     
+    /**
+     * <p>post.</p>
+     *
+     * @param url a {@link java.net.URI} object.
+     * @param requestEntity a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws javax.ws.rs.WebApplicationException if any.
+     */
     protected String post(URI url, String requestEntity) throws WebApplicationException {
         //client from connectionManager is reused, so don't close it
         CloseableHttpClient client =
@@ -175,6 +203,13 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         }
     }
     
+    /**
+     * <p>get.</p>
+     *
+     * @param url a {@link java.net.URI} object.
+     * @return a {@link java.lang.String} object.
+     * @throws javax.ws.rs.WebApplicationException if any.
+     */
     protected String get(URI url) throws WebApplicationException {
         //client from connectionManager is reused, so don't close it
         CloseableHttpClient client =

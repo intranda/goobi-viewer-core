@@ -82,6 +82,10 @@ import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 import io.goobi.viewer.servlets.rest.dao.TileGridResource;
 
+/**
+ * <p>CMSPage class.</p>
+ *
+ */
 @Entity
 @Table(name = "cms_pages")
 public class CMSPage implements Comparable<CMSPage>, Harvestable {
@@ -89,7 +93,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
 
+    /** Constant <code>GLOBAL_LANGUAGE="global"</code> */
     public static final String GLOBAL_LANGUAGE = "global";
+    /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
 
     @Id
@@ -188,12 +194,16 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 
+    /**
+     * <p>Constructor for CMSPage.</p>
+     */
     public CMSPage() {
     }
 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compareTo(CMSPage o) {
         if (o == null || o.getId() == null) {
@@ -208,8 +218,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
-     * 
-     * @param original
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSPage} object.
      */
     public CMSPage(CMSPage original) {
         if (original.id != null) {
@@ -256,6 +266,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    /**
+     * <p>saveSidebarElements.</p>
+     *
+     * @return a boolean.
+     */
     public boolean saveSidebarElements() {
         logger.trace("selected elements:{}\n", sidebarElementString);
         if (sidebarElementString != null) {
@@ -284,6 +299,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return false;
     }
 
+    /**
+     * <p>resetItemData.</p>
+     */
     public void resetItemData() {
         logger.trace("Resetting item data");
         for (CMSPageLanguageVersion lv : getLanguageVersions()) {
@@ -311,6 +329,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return null;
     }
 
+    /**
+     * <p>Getter for the field <code>unusedSidebarElements</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSSidebarElement> getUnusedSidebarElements() {
         if (unusedSidebarElements == null) {
             createUnusedSidebarElementList();
@@ -337,6 +360,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     }
 
+    /**
+     * <p>addSidebarElement.</p>
+     *
+     * @param element a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
+     */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {
             sidebarElements.add(element);
@@ -344,6 +372,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -351,6 +381,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -358,6 +390,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>templateId</code>.</p>
+     *
      * @return the templateId
      */
     public String getTemplateId() {
@@ -365,6 +399,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>templateId</code>.</p>
+     *
      * @param templateId the templateId to set
      */
     public void setTemplateId(String templateId) {
@@ -372,6 +408,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>dateCreated</code>.</p>
+     *
      * @return the dateCreated
      */
     public Date getDateCreated() {
@@ -379,21 +417,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>dateCreated</code>.</p>
+     *
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    /**
-     * @return the dateUpdated
-     */
+    /** {@inheritDoc} */
     @Override
     public Date getDateUpdated() {
         return dateUpdated;
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -401,6 +441,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>isPublished.</p>
+     *
      * @return the published
      */
     public boolean isPublished() {
@@ -408,6 +450,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>published</code>.</p>
+     *
      * @param published the published to set
      */
     public void setPublished(boolean published) {
@@ -415,6 +459,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>isUseDefaultSidebar.</p>
+     *
      * @return the useDefaultSidebar
      */
     public boolean isUseDefaultSidebar() {
@@ -422,6 +468,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>useDefaultSidebar</code>.</p>
+     *
      * @param useDefaultSidebar the useDefaultSidebar to set
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
@@ -429,6 +477,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>languageVersions</code>.</p>
+     *
      * @return the languageVersions
      */
     public List<CMSPageLanguageVersion> getLanguageVersions() {
@@ -436,6 +486,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>languageVersions</code>.</p>
+     *
      * @param languageVersions the languageVersions to set
      */
     public void setLanguageVersions(List<CMSPageLanguageVersion> languageVersions) {
@@ -443,6 +495,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>sidebarElements</code>.</p>
+     *
      * @return the sidebarElements
      */
     public List<CMSSidebarElement> getSidebarElements() {
@@ -450,6 +504,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>sidebarElements</code>.</p>
+     *
      * @param sidebarElements the sidebarElements to set
      */
     public void setSidebarElements(List<CMSSidebarElement> sidebarElements) {
@@ -459,6 +515,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>categories</code>.</p>
+     *
      * @return the classifications
      */
     public List<CMSCategory> getCategories() {
@@ -466,23 +524,37 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * @param classifications the classifications to set
+     * <p>Setter for the field <code>categories</code>.</p>
+     *
+     * @param categories a {@link java.util.List} object.
      */
     public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
     }
 
+    /**
+     * <p>addCategory.</p>
+     *
+     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     */
     public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
             categories.add(category);
         }
     }
 
+    /**
+     * <p>removeCategory.</p>
+     *
+     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     */
     public void removeCategory(CMSCategory category) {
         categories.remove(category);
     }
 
     /**
+     * <p>Getter for the field <code>sidebarElementString</code>.</p>
+     *
      * @return the sidebarElementString
      */
     public String getSidebarElementString() {
@@ -490,6 +562,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>sidebarElementString</code>.</p>
+     *
      * @param sidebarElementString the sidebarElementString to set
      */
     public void setSidebarElementString(String sidebarElementString) {
@@ -497,6 +571,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         this.sidebarElementString = sidebarElementString;
     }
 
+    /**
+     * <p>isLanguageComplete.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a boolean.
+     */
     public boolean isLanguageComplete(Locale locale) {
         for (CMSPageLanguageVersion version : getLanguageVersions()) {
             try {
@@ -510,17 +590,24 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * 
-     * @param itemId
-     * @param language
+     * <p>getContentItem.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
      * @return The item in the language version for the given language
-     * @throws CmsElementNotFoundException if no version exists for the given language
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if no version exists for the given language
      */
     public CMSContentItem getContentItem(String itemId, String language) throws CmsElementNotFoundException {
         CMSPageLanguageVersion version = getBestLanguage(Locale.forLanguageTag(language));
         return version.getContentItem(itemId);
     }
 
+    /**
+     * <p>getDefaultLanguage.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
+     */
     public CMSPageLanguageVersion getDefaultLanguage() throws CmsElementNotFoundException {
         CMSPageLanguageVersion version = null;
         String language = ViewerResourceBundle.getDefaultLocale().getLanguage();
@@ -531,11 +618,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return version;
     }
 
+    /**
+     * <p>getLanguageVersion.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
+     */
     public CMSPageLanguageVersion getLanguageVersion(Locale locale) throws CmsElementNotFoundException {
         String language = locale.getLanguage();
         return getLanguageVersion(language);
     }
 
+    /**
+     * <p>getLanguageVersion.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
+     */
     public CMSPageLanguageVersion getLanguageVersion(String language) throws CmsElementNotFoundException {
         for (CMSPageLanguageVersion version : getLanguageVersions()) {
             if (version.getLanguage().equals(language)) {
@@ -555,6 +656,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         //        }
     }
 
+    /**
+     * <p>getTitle.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         String title;
         try {
@@ -569,6 +675,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return title;
     }
 
+    /**
+     * <p>getTitle.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle(Locale locale) {
         try {
             return getLanguageVersion(locale.getLanguage()).getTitle();
@@ -577,6 +689,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    /**
+     * <p>getMenuTitle.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMenuTitle() {
         String title;
         try {
@@ -591,6 +708,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return title;
     }
 
+    /**
+     * <p>getMenuTitle.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getMenuTitle(Locale locale) {
         try {
             return getLanguageVersion(locale.getLanguage()).getMenuTitle();
@@ -599,6 +722,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    /**
+     * <p>getMenuTitleOrTitle.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMenuTitleOrTitle() {
         String title;
         try {
@@ -613,6 +741,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return title;
     }
 
+    /**
+     * <p>getMenuTitleOrTitle.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getMenuTitleOrTitle(Locale locale) {
         try {
             return getLanguageVersion(locale.getLanguage()).getMenuTitleOrTitle();
@@ -621,15 +755,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>pageSorting</code>.</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getPageSorting() {
         return pageSorting;
     }
 
+    /**
+     * <p>Setter for the field <code>pageSorting</code>.</p>
+     *
+     * @param pageSorting a {@link java.lang.Long} object.
+     */
     public void setPageSorting(Long pageSorting) {
         this.pageSorting = pageSorting;
     }
 
     /**
+     * <p>Getter for the field <code>subThemeDiscriminatorValue</code>.</p>
+     *
      * @return the subThemeDiscriminatorValue
      */
     public String getSubThemeDiscriminatorValue() {
@@ -637,24 +783,40 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>subThemeDiscriminatorValue</code>.</p>
+     *
      * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
      */
     public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
         this.subThemeDiscriminatorValue = subThemeDiscriminatorValue == null ? "" : subThemeDiscriminatorValue;
     }
 
+    /**
+     * <p>getMediaName.</p>
+     *
+     * @param contentId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getMediaName(String contentId) {
         CMSMediaItemMetadata metadata = getMediaMetadata(contentId);
         return metadata == null ? "" : metadata.getName();
     }
 
+    /**
+     * <p>getMediaDescription.</p>
+     *
+     * @param contentId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getMediaDescription(String contentId) {
         CMSMediaItemMetadata metadata = getMediaMetadata(contentId);
         return metadata == null ? "" : metadata.getDescription();
     }
 
     /**
-     * @param itemId
+     * <p>getMediaMetadata.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
      * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
      *         such item exists
      */
@@ -672,7 +834,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * @param itemId
+     * <p>getMedia.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
      * @return The media item associated with the contentItem with the given itemId. May return null if no such item exists
      */
     public CMSMediaItem getMedia(String itemId) {
@@ -688,6 +852,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return null;
     }
 
+    /**
+     * <p>getContentItemIfExists.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<CMSContentItem> getContentItemIfExists(String itemId) {
         try {
             return Optional.of(getContentItem(itemId));
@@ -699,10 +869,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * Return the content item of the given id for the most suitable language using {@link #getBestLanguage()} and - failing that
      * {@link #getBestLanguageIncludeUnfinished()}.
-     * 
-     * @param itemId
-     * @return
-     * @throws CmsElementNotFoundException If absolutely no matching element was found
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException If absolutely no matching element was found
+     * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */
     public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
         CMSPageLanguageVersion language;
@@ -786,6 +956,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>getPageUrl.</p>
+     *
      * @return the pretty url to this page (using alternative url if set)
      */
     public String getPageUrl() {
@@ -794,7 +966,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * Like getPageUrl() but does not require CmsBean (which is unavailable in different threads).
-     * 
+     *
      * @return URL to this page
      */
     public String getUrl() {
@@ -802,8 +974,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * 
-     * @param itemId
+     * <p>hasContent.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
      * @return true if content item with the given item ID has content matching its type; false otherwisee
      */
     public boolean hasContent(String itemId) {
@@ -826,12 +999,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    /**
+     * <p>getContent.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getContent(String itemId) {
         return getContent(itemId, null, null);
     }
 
     /**
-     * 
+     * <p>getPreviewContent.</p>
+     *
      * @return the first TEXT or HTML contentItem with preview="true"
      */
     public String getPreviewContent() {
@@ -843,10 +1023,21 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 .orElse("");
     }
 
+    /**
+     * <p>getMediaItem.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<CMSMediaItem> getMediaItem(String itemId) {
         return getContentItemIfExists(itemId).map(content -> content.getMediaItem());
     }
 
+    /**
+     * <p>getMediaItem.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<CMSMediaItem> getMediaItem() {
         return getGlobalContentItems().stream()
                 .filter(content -> CMSContentItemType.MEDIA.equals(content.getType()))
@@ -858,12 +1049,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * Returns the content of the content item with the given item ID as a string. Depending on the content item's type, this can be either text, a
      * URL, a JSON object, etc.
-     * 
-     * @param itemId
-     * @param width
-     * @param height
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @param width a {@link java.lang.String} object.
+     * @param height a {@link java.lang.String} object.
      * @return the content of the content item with the given item ID as a string
-     * @throws ViewerConfigurationException
      */
     public String getContent(String itemId, String width, String height) {
         logger.trace("Getting content {} from page {}", itemId, getId());
@@ -937,6 +1127,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    /**
+     * <p>getGlobalContentItems.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSContentItem> getGlobalContentItems() {
         CMSPageLanguageVersion defaultVersion;
         try {
@@ -948,6 +1143,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return items;
     }
 
+    /**
+     * <p>getContentItems.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSContentItem> getContentItems() {
         CMSPageLanguageVersion defaultVersion;
         try {
@@ -959,6 +1159,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return items;
     }
 
+    /**
+     * <p>getContentItems.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<CMSContentItem> getContentItems(Locale locale) {
         if (locale != null) {
             CMSPageLanguageVersion version;
@@ -977,6 +1183,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return CMSTemplateManager.getInstance().getTemplate(id);
     }
 
+    /**
+     * <p>getTemplate.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     */
     public CMSPageTemplate getTemplate() {
         return getTemplateById(getTemplateId());
     }
@@ -984,7 +1195,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * Gets the pagination number for this page's main list if it contains one
      *
-     * @return
+     * @return a int.
      */
     public int getListPage() {
         return listPage;
@@ -993,7 +1204,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * Sets the pagination number for this page's main list if it contains one
      *
-     * @param listPage
+     * @param listPage a int.
      */
     public void setListPage(int listPage) {
         resetItemData();
@@ -1003,6 +1214,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>persistentUrl</code>.</p>
+     *
      * @return the persistentUrl
      */
     public String getPersistentUrl() {
@@ -1010,6 +1223,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>persistentUrl</code>.</p>
+     *
      * @param persistentUrl the persistentUrl to set
      */
     public void setPersistentUrl(String persistentUrl) {
@@ -1019,7 +1234,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     *
+     * <p>resetEditorItemVisibility.</p>
      */
     public void resetEditorItemVisibility() {
         if (getGlobalContentItems() != null) {
@@ -1045,6 +1260,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>staticPageName</code>.</p>
+     *
      * @return the staticPageName
      */
     @Deprecated
@@ -1053,6 +1270,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>staticPageName</code>.</p>
+     *
      * @param staticPageName the staticPageName to set
      */
     @Deprecated
@@ -1060,6 +1279,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         this.staticPageName = staticPageName;
     }
 
+    /**
+     * <p>getTileGridUrl.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
+     */
     public String getTileGridUrl(String itemId) throws IllegalRequestException {
         CMSContentItem item;
         try {
@@ -1083,12 +1309,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
     }
 
+    /**
+     * <p>getRelativeUrlPath.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativeUrlPath() {
         return getRelativeUrlPath(true);
     }
 
     /**
-     * @return
+     * <p>getRelativeUrlPath.</p>
+     *
+     * @param pretty a boolean.
+     * @return a {@link java.lang.String} object.
      */
     public String getRelativeUrlPath(boolean pretty) {
 
@@ -1113,8 +1347,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * TODO HTML/text content items are only added to the last language version in the list, not all of them
-     * 
-     * @param item
+     *
+     * @param templateItem a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */
     public void addContentItem(CMSContentItem templateItem) {
         synchronized (languageVersions) {
@@ -1133,8 +1367,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * @param itemId
-     * @return
+     * <p>hasContentItem.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean hasContentItem(final String itemId) {
         synchronized (languageVersions) {
@@ -1151,7 +1387,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * Returns the first found SearchFunctionality of any contained content items If no fitting item is found, a new default SearchFunctionality is
      * returned
-     * 
+     *
      * @return SearchFunctionality, not null
      */
     public SearchFunctionality getSearch() {
@@ -1164,6 +1400,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return new SearchFunctionality("", getPageUrl());
     }
 
+    /**
+     * <p>hasSearchFunctionality.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasSearchFunctionality() {
         Optional<CMSContentItem> searchItem =
                 getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
@@ -1171,6 +1412,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     }
 
+    /**
+     * <p>isHasSidebarElements.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasSidebarElements() {
         if (!isUseDefaultSidebar()) {
             return getSidebarElements() != null && !getSidebarElements().isEmpty();
@@ -1178,12 +1424,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return true;
     }
 
+    /**
+     * <p>addLanguageVersion.</p>
+     *
+     * @param version a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
+     */
     public void addLanguageVersion(CMSPageLanguageVersion version) {
         this.languageVersions.add(version);
         version.setOwnerPage(this);
     }
 
     /**
+     * <p>Setter for the field <code>parentPageId</code>.</p>
+     *
      * @param parentPageId the parentPageId to set
      */
     public void setParentPageId(String parentPageId) {
@@ -1191,6 +1444,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>parentPageId</code>.</p>
+     *
      * @return the parentPageId
      */
     public String getParentPageId() {
@@ -1198,6 +1453,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>validityStatus</code>.</p>
+     *
      * @return the validityStatus
      */
     public PageValidityStatus getValidityStatus() {
@@ -1205,6 +1462,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>validityStatus</code>.</p>
+     *
      * @param validityStatus the validityStatus to set
      */
     public void setValidityStatus(PageValidityStatus validityStatus) {
@@ -1212,6 +1471,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>isMayContainUrlParameters.</p>
+     *
      * @return the mayContainUrlParameters
      */
     public boolean isMayContainUrlParameters() {
@@ -1219,6 +1480,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>mayContainUrlParameters</code>.</p>
+     *
      * @param mayContainUrlParameters the mayContainUrlParameters to set
      */
     public void setMayContainUrlParameters(boolean mayContainUrlParameters) {
@@ -1242,6 +1505,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     //    }
 
     /**
+     * <p>Getter for the field <code>relatedPI</code>.</p>
+     *
      * @return the relatedPI
      */
     public String getRelatedPI() {
@@ -1249,21 +1514,30 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>relatedPI</code>.</p>
+     *
      * @param relatedPI the relatedPI to set
      */
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;
     }
 
+    /**
+     * <p>getCollection.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         return BeanUtils.getCmsBean().getCollection(this);
     }
 
     /**
      * Returns the property with the given key or else creates a new one with that key and returns it
-     * 
-     * @param key
-     * @throws ClassCastException if the returned property has the wrong generic type
+     *
+     * @param key a {@link java.lang.String} object.
+     * @throws java.lang.ClassCastException if the returned property has the wrong generic type
      * @return the property with the given key or else creates a new one with that key and returns it
      */
     public CMSProperty getProperty(String key) throws ClassCastException {
@@ -1280,6 +1554,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * 
      * @see java.lang.Object#toString()
      */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         try {
@@ -1309,20 +1584,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * Return true if the page has a {@link CMSPageLanguageVersion} for the given locale
-     * 
-     * @param locale
-     * @return true if the page has a {@link CMSPageLanguageVersion} for the given locale, false otherwise
+     * Return true if the page has a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} for the given locale
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @return true if the page has a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} for the given locale, false otherwise
      */
     public boolean hasLanguageVersion(Locale locale) {
         return this.languageVersions.stream().anyMatch(l -> l.getLanguage().equals(locale.getLanguage()));
     }
 
     /**
-     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no language versions already exist
-     * 
-     * @param page
-     * @param locales
+     * Adds {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s for all given {@link java.util.Locale}s for which no language versions already exist
+     *
+     * @param locales a {@link java.util.List} object.
      */
     public void createMissingLanguageVersions(List<Locale> locales) {
         for (Locale locale : locales) {
@@ -1343,6 +1617,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>wrapperElementClass</code>.</p>
+     *
      * @return the {@link #wrapperElementClass}
      */
     public String getWrapperElementClass() {
@@ -1350,6 +1626,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Setter for the field <code>wrapperElementClass</code>.</p>
+     *
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */
     public void setWrapperElementClass(String wrapperElementClass) {
@@ -1357,7 +1635,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * @param itemId
+     * <p>removeContentItem.</p>
+     *
+     * @param itemId a {@link java.lang.String} object.
      */
     public void removeContentItem(String itemId) {
         for (CMSPageLanguageVersion languageVersion : languageVersions) {
@@ -1373,9 +1653,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
-     * 
+     *
      * @return Number of deleted files
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public int deleteExportedTextFiles() throws ViewerConfigurationException {
         if (StringUtils.isEmpty(relatedPI)) {
@@ -1453,10 +1733,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * Exports text/html fragments from this page's content items for indexing.
-     * 
-     * @param outputFolderPath
-     * @param namingScheme
-     * @throws IOException
+     *
+     * @param outputFolderPath a {@link java.lang.String} object.
+     * @param namingScheme a {@link java.lang.String} object.
+     * @throws java.io.IOException
+     * @return a {@link java.util.List} object.
      */
     public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {
         List<File> ret = new ArrayList<>();
@@ -1533,8 +1814,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * <p>Getter for the field <code>selectableCategories</code>.</p>
+     *
      * @return the selectableCategories
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
         if (selectableCategories == null) {
@@ -1548,6 +1831,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.Harvestable#getPi()
      */
+    /** {@inheritDoc} */
     @Override
     public String getPi() {
         return getRelatedPI();

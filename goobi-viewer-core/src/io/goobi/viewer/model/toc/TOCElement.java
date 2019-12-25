@@ -69,21 +69,22 @@ public class TOCElement implements Serializable {
     private PageType pageType = PageType.viewMetadata;
 
     /**
+     * <p>Constructor for TOCElement.</p>
      *
-     * @param label
-     * @param pageNo
-     * @param pageNoLabel
-     * @param iddoc
-     * @param logId
-     * @param level
-     * @param topStructPi
-     * @param thumbnailUrl
-     * @param accessPermissionPdf
-     * @param anchorOrGroup
-     * @param hasImages
-     * @param recordMimeType
-     * @param docStructType
-     * @param footerId
+     * @param label a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @param pageNo a {@link java.lang.String} object.
+     * @param pageNoLabel a {@link java.lang.String} object.
+     * @param iddoc a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param level a int.
+     * @param topStructPi a {@link java.lang.String} object.
+     * @param thumbnailUrl a {@link java.lang.String} object.
+     * @param accessPermissionPdf a boolean.
+     * @param anchorOrGroup a boolean.
+     * @param hasImages a boolean.
+     * @param recordMimeType a {@link java.lang.String} object.
+     * @param docStructType a {@link java.lang.String} object.
+     * @param footerId a {@link java.lang.String} object.
      * @should add logId to url
      * @should set correct view url for given docStructType
      */
@@ -112,6 +113,7 @@ public class TOCElement implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -125,6 +127,7 @@ public class TOCElement implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -162,9 +165,10 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * @param str {@link String}
-     * @return {@link String}
-     * @throws ViewerConfigurationException
+     * <p>getContentServerPdfUrl.</p>
+     *
+     * @return {@link java.lang.String}
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getContentServerPdfUrl() throws ViewerConfigurationException {
         return BeanUtils.getImageDeliveryBean()
@@ -180,16 +184,28 @@ public class TOCElement implements Serializable {
     /**
      * Checks whether the current user has permissions to download a PDFs for this element.
      *
-     * @return
+     * @return a boolean.
      */
     public boolean isAccessPermissionPdf() {
         return accessPermissionPdf;
     }
 
+    /**
+     * <p>Getter for the field <code>thumbnailUrl</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
+    /**
+     * <p>Getter for the field <code>thumbnailUrl</code>.</p>
+     *
+     * @param width a int.
+     * @param height a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getThumbnailUrl(int width, int height) {
 
         String url = new String(thumbnailUrl);
@@ -211,6 +227,8 @@ public class TOCElement implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
      */
     public String getLabel() {
@@ -223,31 +241,47 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
+     * @param locale a {@link java.util.Locale} object.
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return the label
+     * @param locale a {@link java.lang.String} object.
      */
     public String getLabel(String locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
+     * <p>Getter for the field <code>metadata</code>.</p>
+     *
      * @return the metadata
      */
     public Map<String, String> getMetadata() {
         return metadata;
     }
 
+    /**
+     * <p>getMetadataValue.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getMetadataValue(String key) {
         return metadata.get(key);
     }
 
     /**
+     * <p>Getter for the field <code>pageNo</code>.</p>
+     *
      * @return the pageNo
      */
     public String getPageNo() {
@@ -255,6 +289,8 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>iddoc</code>.</p>
+     *
      * @return the iddoc
      */
     public String getIddoc() {
@@ -262,6 +298,8 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pageNoLabel</code>.</p>
+     *
      * @return the pageNoLabel
      */
     public String getPageNoLabel() {
@@ -269,6 +307,8 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>topStructPi</code>.</p>
+     *
      * @return the topStructPi
      */
     public String getTopStructPi() {
@@ -284,11 +324,18 @@ public class TOCElement implements Serializable {
         return this.logId;
     }
 
+    /**
+     * <p>Getter for the field <code>level</code>.</p>
+     *
+     * @return a int.
+     */
     public int getLevel() {
         return level;
     }
 
     /**
+     * <p>getSubLabel.</p>
+     *
      * @return the subLabel
      */
     @Deprecated
@@ -296,17 +343,22 @@ public class TOCElement implements Serializable {
         return label.getValue().orElse("");
     }
 
+    /**
+     * <p>getUrl.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return urlPrefix + urlSuffix;
     }
 
     /**
      * Returns the URL for this element that links to the requested view type.
-     * 
-     * @param viewType
-     * @return
+     *
+     * @param viewType a {@link java.lang.String} object.
      * @should construct full screen url correctly
      * @should construct reading mode url correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getUrl(String viewType) {
         if (anchorOrGroup) {
@@ -335,14 +387,17 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>getFullscreenUrl.</p>
+     *
      * @return the fullscreenUrl
-     * @deprecated
      */
     public String getFullscreenUrl() {
         return getUrl(PageType.viewFullscreen.name());
     }
 
     /**
+     * <p>getReadingModeUrl.</p>
+     *
      * @return the fullscreenUrl
      * @deprecated renamed to fullscreen
      */
@@ -351,47 +406,99 @@ public class TOCElement implements Serializable {
         return getFullscreenUrl();
     }
 
+    /**
+     * <p>isVisible.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * <p>Setter for the field <code>visible</code>.</p>
+     *
+     * @param visible a boolean.
+     */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
+    /**
+     * <p>Getter for the field <code>parentId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getParentId() {
         return parentId;
     }
 
+    /**
+     * <p>Setter for the field <code>parentId</code>.</p>
+     *
+     * @param parentId a int.
+     */
     public void setParentId(int parentId) {
         this.parentId = parentId;
     }
 
+    /**
+     * <p>getID.</p>
+     *
+     * @return a int.
+     */
     public int getID() {
         return id;
     }
 
+    /**
+     * <p>setID.</p>
+     *
+     * @param iD a int.
+     */
     public void setID(int iD) {
         id = iD;
     }
 
+    /**
+     * <p>isExpanded.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isExpanded() {
         return expanded;
     }
 
+    /**
+     * <p>Setter for the field <code>expanded</code>.</p>
+     *
+     * @param expanded a boolean.
+     */
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
     }
 
+    /**
+     * <p>isHasChild.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasChild() {
         return hasChild;
     }
 
+    /**
+     * <p>Setter for the field <code>hasChild</code>.</p>
+     *
+     * @param hasChild a boolean.
+     */
     public void setHasChild(boolean hasChild) {
         this.hasChild = hasChild;
     }
 
     /**
+     * <p>Getter for the field <code>groupIds</code>.</p>
+     *
      * @return the groupIds
      */
     public List<String> getGroupIds() {
@@ -399,6 +506,8 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>groupIds</code>.</p>
+     *
      * @param groupIds the groupIds to set
      */
     public void setGroupIds(List<String> groupIds) {
@@ -406,6 +515,8 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>recordMimeType</code>.</p>
+     *
      * @return the recordMimeType
      */
     public String getRecordMimeType() {
@@ -413,7 +524,8 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * 
+     * <p>isEmpty.</p>
+     *
      * @return true if label is null, empty or blank
      */
     public boolean isEmpty() {

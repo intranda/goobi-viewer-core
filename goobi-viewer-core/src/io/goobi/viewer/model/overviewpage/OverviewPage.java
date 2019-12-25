@@ -75,7 +75,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * Data and methods for the overview page view.
- * 
+ *
  * @deprecated Overview page functionality is now part of CMS
  */
 @Entity
@@ -88,6 +88,7 @@ public class OverviewPage implements Harvestable, Serializable {
     private static final Logger logger = LoggerFactory.getLogger(OverviewPage.class);
 
     private static final String DEFAULT_OVERVIEW_PAGE_FILE_NAME = "overviewpage.default.xml";
+    /** Constant <code>PAGE_BREAK_REGEX="<span class=\"pagebreak\"></span>"</code> */
     protected static final String PAGE_BREAK_REGEX = "<span class=\"pagebreak\"></span>";
 
     private static int imageWidth = 400;
@@ -146,15 +147,15 @@ public class OverviewPage implements Harvestable, Serializable {
      * Loads the overview page for the given StructElement. The object the client receives is a copy of the object returned from the database. Each
      * user session receives a separate copy of the page so that not everyone works on the same object.
      *
-     * @param structElement
-     * @param locale
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws IllegalArgumentException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.lang.IllegalArgumentException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load overview page correctly
+     * @return a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
      */
     public static OverviewPage loadOverviewPage(StructElement structElement, Locale locale)
             throws IllegalArgumentException, IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -190,7 +191,7 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * Clones the fields from the given object to this object.
      *
-     * @param sourceOverviewPage
+     * @param sourceOverviewPage a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
      * @should copy fields correctly
      * @should throw IllegalArgumentException if sourceOverviewPage is null
      */
@@ -209,12 +210,12 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * Loads transient data for this overview page.
      *
-     * @param structElement
-     * @param locale
-     * @throws IllegalArgumentException
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
-     * @throws PresentationException 
+     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @throws java.lang.IllegalArgumentException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public void init(StructElement structElement, Locale locale)
             throws IllegalArgumentException, IndexUnreachableException, ViewerConfigurationException, PresentationException {
@@ -282,8 +283,9 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>parseConfig.</p>
      *
-     * @param config
+     * @param config a {@link org.jdom2.Document} object.
      * @should parse config document correctly
      */
     protected void parseConfig(Document config) {
@@ -338,6 +340,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -345,21 +349,23 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the pi
-     */
+    /** {@inheritDoc} */
     @Override
     public String getPi() {
         return pi;
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -367,6 +373,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>configXml</code>.</p>
+     *
      * @return the configXml
      */
     public String getConfigXml() {
@@ -374,6 +382,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>configXml</code>.</p>
+     *
      * @param configXml the configXml to set
      */
     public void setConfigXml(String configXml) {
@@ -381,6 +391,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>publicationText</code>.</p>
+     *
      * @return the publicationText
      */
     public String getPublicationText() {
@@ -388,6 +400,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>publicationText</code>.</p>
+     *
      * @param publicationText the publicationText to set
      */
     public void setPublicationText(String publicationText) {
@@ -399,7 +413,7 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * Returns the text part of publicationText that belongs to the current page number.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getPublicationTextCurrentPage() {
         String[] publicationTextSplit = publicationText.split(PAGE_BREAK_REGEX);
@@ -414,8 +428,8 @@ public class OverviewPage implements Harvestable, Serializable {
      * Returns the number of pages in <code>publicationText</code>. The number of pages is determined by the amount of line break char sequences in
      * the string.
      *
-     * @return
      * @should return correct number
+     * @return a int.
      */
     public int getPublicationTextNumPages() {
         if (publicationText != null) {
@@ -427,6 +441,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>publicationTextCurrentPageNumber</code>.</p>
+     *
      * @return the publicationTextCurrentPageNumber
      */
     public int getPublicationTextCurrentPageNumber() {
@@ -434,6 +450,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>publicationTextCurrentPageNumber</code>.</p>
+     *
      * @param publicationTextCurrentPageNumber the publicationTextCurrentPageNumber to set
      */
     public void setPublicationTextCurrentPageNumber(int publicationTextCurrentPageNumber) {
@@ -444,12 +462,22 @@ public class OverviewPage implements Harvestable, Serializable {
         }
     }
 
+    /**
+     * <p>publicationTextFirstPageAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String publicationTextFirstPageAction() {
         logger.trace("publicationTextFirstPageAction");
         publicationTextCurrentPageNumber = 1;
         return "";
     }
 
+    /**
+     * <p>publicationTextPrevPageAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String publicationTextPrevPageAction() {
         logger.trace("publicationTextPrevPageAction");
         if (publicationTextCurrentPageNumber > 1) {
@@ -458,27 +486,37 @@ public class OverviewPage implements Harvestable, Serializable {
         return "";
     }
 
+    /**
+     * <p>publicationTextNextPageAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String publicationTextNextPageAction() {
         logger.trace("publicationTextNextPageAction");
         publicationTextCurrentPageNumber++;
         return "";
     }
 
+    /**
+     * <p>publicationTextLastPageAction.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String publicationTextLastPageAction() {
         logger.trace("publicationTextLastPageAction");
         publicationTextCurrentPageNumber = getPublicationTextNumPages();
         return "";
     }
 
-    /**
-     * @return the dateUpdated
-     */
+    /** {@inheritDoc} */
     @Override
     public Date getDateUpdated() {
         return dateUpdated;
     }
 
     /**
+     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     *
      * @param dateUpdated the dateUpdated to set
      */
     public void setDateUpdated(Date dateUpdated) {
@@ -489,23 +527,44 @@ public class OverviewPage implements Harvestable, Serializable {
      * Returns whether the sidebar overview link is visible (= overview pages are enabled at all).
      *
      * @should return the value in sidenbarOverviewLinkVisible
+     * @return a boolean.
      */
     public boolean isEnabled() {
         return false;
     }
 
+    /**
+     * <p>isDisplayImage.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayImage() {
         return imageUrl != null;
     }
 
+    /**
+     * <p>Getter for the field <code>imageUrl</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getImageUrl() {
         return imageUrl;
     }
 
+    /**
+     * <p>isDisplayMetadata.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayMetadata() {
         return !metadata.isEmpty();
     }
 
+    /**
+     * <p>Getter for the field <code>metadata</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null && adb.isRecordLoaded()) {
@@ -515,11 +574,18 @@ public class OverviewPage implements Harvestable, Serializable {
         return metadata;
     }
 
+    /**
+     * <p>isDisplayDescription.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayDescription() {
         return StringUtils.isNotEmpty(description);
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -527,6 +593,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -534,6 +602,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>isMetadataDirty.</p>
+     *
      * @return the metadataDirty
      */
     public boolean isMetadataDirty() {
@@ -541,6 +611,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>isDescriptionDirty.</p>
+     *
      * @return the descriptionDirty
      */
     public boolean isDescriptionDirty() {
@@ -548,10 +620,11 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>getAvailableMetadataFields.</p>
      *
-     * @return
      * @should return names of configured main metadata elements
      * @should not return names already in use
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAvailableMetadataFields() {
         List<String> ret = new ArrayList<>();
@@ -566,12 +639,13 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>addMetadataFieldAction.</p>
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException 
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should add given field correctly
      * @should add given field's label to usedMetaadataNames
+     * @return a {@link java.lang.String} object.
      */
     public String addMetadataFieldAction() throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotEmpty(metadataFieldNameToAdd)) {
@@ -595,11 +669,12 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>removeMetadataFieldAction.</p>
      *
-     * @param field
-     * @return
      * @should remove given field correctly
      * @should remove the given field's label from usedMetadataNames
+     * @param index a int.
+     * @return a {@link java.lang.String} object.
      */
     public String removeMetadataFieldAction(int index) {
         if (index < metadata.size()) {
@@ -612,6 +687,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>isEditDescriptionMode.</p>
+     *
      * @return the editDescriptionMode
      */
     public boolean isEditDescriptionMode() {
@@ -619,9 +696,10 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>toggleEditDescriptionModeAction.</p>
      *
-     * @return
      * @should toggle boolean correctly
+     * @return a {@link java.lang.String} object.
      */
     public String toggleEditDescriptionModeAction() {
         editDescriptionMode = !editDescriptionMode;
@@ -629,6 +707,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>isEditPublicationMode.</p>
+     *
      * @return the editPublicationMode
      */
     public boolean isEditPublicationMode() {
@@ -637,9 +717,10 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>toggleEditPublicationModeAction.</p>
      *
-     * @return
      * @should toggle boolean correctly
+     * @return a {@link java.lang.String} object.
      */
     public String toggleEditPublicationModeAction() {
         logger.trace("toggleEditPublicationModeAction: {}", !editPublicationMode);
@@ -647,6 +728,11 @@ public class OverviewPage implements Harvestable, Serializable {
         return "";
     }
 
+    /**
+     * <p>resetEditModes.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String resetEditModes() {
         logger.trace("resetEditModes");
         editDescriptionMode = false;
@@ -656,6 +742,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>metadataFieldNameToAdd</code>.</p>
+     *
      * @return the metadataFieldNameToAdd
      */
     public String getMetadataFieldNameToAdd() {
@@ -663,6 +751,8 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>metadataFieldNameToAdd</code>.</p>
+     *
      * @param metadataFieldNameToAdd the metadataFieldNameToAdd to set
      */
     public void setMetadataFieldNameToAdd(String metadataFieldNameToAdd) {
@@ -670,9 +760,10 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
+     * <p>migrateToCMS.</p>
      *
      * @return true if successful; false otherwise
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean migrateToCMS() throws DAOException {
         logger.info("Migrating overview page for '{}' to CMS...", pi);
@@ -793,20 +884,22 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
-     * 
-     * @param updatedBy
-     * @return
-     * @throws DAOException
+     * <p>saveAction.</p>
+     *
+     * @param updatedBy a {@link io.goobi.viewer.model.security.user.User} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String saveAction(User updatedBy) throws DAOException {
         return saveAction(updatedBy, true);
     }
 
     /**
+     * <p>saveAction.</p>
+     *
      * @param updatedBy User responsible for the update.
-     * @param exportToGoobi
-     * @return
-     * @throws DAOException
+     * @param exportToGoobi a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should update metadata list correctly
      * @should update description correctly
      * @should update publication text correctly
@@ -814,6 +907,7 @@ public class OverviewPage implements Harvestable, Serializable {
      * @should update timestamp
      * @should add history entry
      * @should reset edit modes
+     * @return a {@link java.lang.String} object.
      */
     public String saveAction(User updatedBy, boolean exportToGoobi) throws DAOException {
         logger.debug("saveAction");
@@ -961,8 +1055,8 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * Deletes this overview page from the database.
      *
-     * @return
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String deleteAction() throws DAOException {
         logger.debug("deleteAction: {}", this.getId());
@@ -978,6 +1072,12 @@ public class OverviewPage implements Harvestable, Serializable {
         return "";
     }
 
+    /**
+     * <p>getHistory.</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public List<OverviewPageUpdate> getHistory() throws DAOException {
         return DataManager.getInstance().getDao().getOverviewPageUpdatesForRecord(pi);
     }
@@ -985,8 +1085,8 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * Creates an export XML string (config XML with additional PI and publicationText elements).
      *
-     * @return
      * @should create export xml correctly
+     * @return a {@link java.lang.String} object.
      */
     public String getExportFormat() {
         if (config == null) {
@@ -1006,11 +1106,11 @@ public class OverviewPage implements Harvestable, Serializable {
 
     /**
      * Writes description and publicationText values as files for re-indexing.
-     * 
-     * @param hotfolder
-     * @param namingScheme
-     * @throws IOException
+     *
+     * @param namingScheme a {@link java.lang.String} object.
+     * @throws java.io.IOException
      * @should write files correctly
+     * @param hotfolderPath a {@link java.lang.String} object.
      */
     public void exportTextData(String hotfolderPath, String namingScheme) throws IOException {
         if (StringUtils.isEmpty(hotfolderPath)) {

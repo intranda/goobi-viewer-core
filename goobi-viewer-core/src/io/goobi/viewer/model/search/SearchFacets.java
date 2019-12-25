@@ -62,16 +62,25 @@ public class SearchFacets {
 
     private String tempValue;
 
+    /**
+     * <p>resetAvailableFacets.</p>
+     */
     public void resetAvailableFacets() {
         logger.trace("resetAvailableFacets");
         availableFacets.clear();
         drillDownExpanded.clear();
     }
 
+    /**
+     * <p>resetCurrentFacets.</p>
+     */
     public void resetCurrentFacets() {
         resetCurrentFacetString();
     }
 
+    /**
+     * <p>resetSliderRange.</p>
+     */
     public void resetSliderRange() {
         logger.trace("resetSliderRange");
         minValues.clear();
@@ -81,9 +90,10 @@ public class SearchFacets {
 
     /**
      * Generates a list containing filter queries for the selected regular and hierarchical facets.
-     * 
-     * @param advancedSearchGroupOperator
-     * @return
+     *
+     * @param advancedSearchGroupOperator a int.
+     * @param includeRangeFacets a boolean.
+     * @return a {@link java.util.List} object.
      */
     public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets) {
         List<String> ret = new ArrayList<>(2);
@@ -209,7 +219,7 @@ public class SearchFacets {
      * Returns the first FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
      *
      * @param field The field name to match.
-     * @return
+     * @return a {@link io.goobi.viewer.model.search.FacetItem} object.
      */
     public FacetItem getCurrentFacetForField(String field) {
         List<FacetItem> ret = getCurrentFacetsForField(field);
@@ -224,7 +234,7 @@ public class SearchFacets {
      * Returns a list of FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
      *
      * @param field The field name to match.
-     * @return
+     * @return a {@link java.util.List} object.
      */
     public List<FacetItem> getCurrentFacetsForField(String field) {
         List<FacetItem> ret = new ArrayList<>();
@@ -242,7 +252,7 @@ public class SearchFacets {
      * Checks whether the given facet is currently in use.
      *
      * @param facet The facet to check.
-     * @return
+     * @return a boolean.
      */
     public boolean isFacetCurrentlyUsed(FacetItem facet) {
         for (FacetItem fi : getCurrentFacetsForField(facet.getField())) {
@@ -254,6 +264,12 @@ public class SearchFacets {
         return false;
     }
 
+    /**
+     * <p>isFacetListSizeSufficient.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean isFacetListSizeSufficient(String field) {
         if (availableFacets.get(field) != null) {
             if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
@@ -267,6 +283,9 @@ public class SearchFacets {
 
     /**
      * Returns the size of the full element list of the facet for the given field.
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a int.
      */
     public int getAvailableFacetsListSizeForField(String field) {
         if (availableFacets.get(field) != null) {
@@ -277,8 +296,10 @@ public class SearchFacets {
     }
 
     /**
+     * <p>getCurrentFacetsSizeForField.</p>
      *
      * @return Size of <code>currentFacets</code>.
+     * @param field a {@link java.lang.String} object.
      */
     public int getCurrentFacetsSizeForField(String field) {
         return getCurrentFacetsForField(field).size();
@@ -287,8 +308,7 @@ public class SearchFacets {
     /**
      * Returns a collapsed sublist of the available facet elements for the given field.
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return full DC facet list if expanded
      * @should return full DC facet list if list size less than default
      * @should return reduced DC facet list if list size larger than default
@@ -296,6 +316,7 @@ public class SearchFacets {
      * @should return full facet list if list size less than default
      * @should return reduced facet list if list size larger than default
      * @should not contain currently used facets
+     * @return a {@link java.util.List} object.
      */
     public List<FacetItem> getLimitedFacetListForField(String field) {
         logger.trace("getLimitedFacetListForField: {}", field);
@@ -318,9 +339,10 @@ public class SearchFacets {
      * If the drill-down for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as
      * configured.
      *
-     * @return
      * @should return full facet size if expanded
      * @should return default if collapsed
+     * @param field a {@link java.lang.String} object.
+     * @return a int.
      */
     public int getDrillDownElementDisplayNumber(String field) {
         if (isDrillDownExpanded(field) && availableFacets.get(field) != null) {
@@ -332,7 +354,7 @@ public class SearchFacets {
     /**
      * Sets the expanded flag to <code>true</code> for the given drill-down field.
      *
-     * @param field
+     * @param field a {@link java.lang.String} object.
      */
     public void expandDrillDown(String field) {
         logger.trace("expandDrillDown: {}", field);
@@ -342,7 +364,7 @@ public class SearchFacets {
     /**
      * Sets the expanded flag to <code>false</code> for the given drill-down field.
      *
-     * @param field
+     * @param field a {@link java.lang.String} object.
      */
     public void collapseDrillDown(String field) {
         logger.trace("collapseDrillDown: {}", field);
@@ -353,14 +375,14 @@ public class SearchFacets {
      * Returns true if the "(more)" link is to be displayed for a drill-down box. This is the case if the facet has more elements than the initial
      * number of displayed elements and the facet hasn't been manually expanded yet.
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return true if DC facet collapsed and has more elements than default
      * @should return true if facet collapsed and has more elements than default
      * @should return false if DC facet expanded
      * @should return false if facet expanded
      * @should return false if DC facet smaller than default
      * @should return false if facet smaller than default
+     * @return a boolean.
      */
     public boolean isDisplayDrillDownExpandLink(String field) {
         List<FacetItem> facetItems = availableFacets.get(field);
@@ -373,9 +395,10 @@ public class SearchFacets {
     }
 
     /**
+     * <p>isDisplayDrillDownCollapseLink.</p>
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean isDisplayDrillDownCollapseLink(String field) {
         return isDrillDownExpanded(field);
@@ -400,6 +423,12 @@ public class SearchFacets {
         }
     }
 
+    /**
+     * <p>getCurrentFacetString.</p>
+     *
+     * @param urlEncode a boolean.
+     * @return a {@link java.lang.String} object.
+     */
     public String getCurrentFacetString(boolean urlEncode) {
         String ret = generateFacetPrefix(currentFacets, true);
         if (StringUtils.isEmpty(ret)) {
@@ -413,6 +442,8 @@ public class SearchFacets {
     }
 
     /**
+     * <p>getCurrentHierarchicalFacetString.</p>
+     *
      * @return the currentCollection
      */
     @Deprecated
@@ -421,6 +452,8 @@ public class SearchFacets {
     }
 
     /**
+     * <p>getCurrentCollection.</p>
+     *
      * @return the currentCollection
      */
     @Deprecated
@@ -431,7 +464,7 @@ public class SearchFacets {
     /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
-     * @param currentFacetString
+     * @param currentFacetString a {@link java.lang.String} object.
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
      * @should reset slider range if no slider field among current facets
@@ -446,13 +479,15 @@ public class SearchFacets {
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for
      * currentHierarchicalFacets.
      *
-     * @param currentFacetString
+     * @param currentHierarchicalFacetString a {@link java.lang.String} object.
      */
     @Deprecated
     public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
     }
 
     /**
+     * <p>setCurrentCollection.</p>
+     *
      * @param currentCollection the currentCollection to set
      */
     @Deprecated
@@ -506,9 +541,10 @@ public class SearchFacets {
 
     /**
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
-     * 
-     * @param field
-     * @param hierarchical
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param hierarchical a boolean.
+     * @return a {@link java.lang.String} object.
      */
     public String updateFacetItem(String field, boolean hierarchical) {
         updateFacetItem(field, tempValue, currentFacets, hierarchical);
@@ -555,9 +591,11 @@ public class SearchFacets {
     }
 
     /**
-     * @param facetString
-     * @param hierarchicalDrillDownFields
-     * @return
+     * <p>getHierarchicalFacets.</p>
+     *
+     * @param facetString a {@link java.lang.String} object.
+     * @param facetFields a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getHierarchicalFacets(String facetString, List<String> facetFields) {
         List<String> facets = Arrays.asList(StringUtils.split(facetString, ";;"));
@@ -580,8 +618,10 @@ public class SearchFacets {
     }
 
     /**
-     * @param facet
-     * @return
+     * <p>splitHierarchicalFacet.</p>
+     *
+     * @param facet a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> splitHierarchicalFacet(String facet) {
         List<String> facets = new ArrayList<>();
@@ -597,11 +637,12 @@ public class SearchFacets {
     }
 
     /**
-     * 
-     * @param field
+     * <p>getCurrentMinRangeValue.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @return Current min value, if facet in use; otherwise absolute min value for that field
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
@@ -615,11 +656,12 @@ public class SearchFacets {
     }
 
     /**
-     * 
-     * @param field
+     * <p>getCurrentMaxRangeValue.</p>
+     *
+     * @param field a {@link java.lang.String} object.
      * @return Current max value, if facet in use; otherwise absolute max value for that field
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
@@ -636,11 +678,11 @@ public class SearchFacets {
 
     /**
      * Returns the minimum value for the given field available in the search index.
-     * 
-     * @param field
+     *
+     * @param field a {@link java.lang.String} object.
      * @return Smallest available value
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getAbsoluteMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!minValues.containsKey(field)) {
@@ -652,11 +694,11 @@ public class SearchFacets {
 
     /**
      * Returns the maximum value for the given field available in the search index.
-     * 
-     * @param field
+     *
+     * @param field a {@link java.lang.String} object.
      * @return Largest available value
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getAbsoluteMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
@@ -668,11 +710,11 @@ public class SearchFacets {
 
     /**
      * Returns a sorted list of all available values for the given field among available facet values.
-     * 
-     * @param field
+     *
+     * @param field a {@link java.lang.String} object.
      * @return sorted list of all values for the given field among available facet values
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public List<Integer> getValueRange(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
@@ -726,7 +768,7 @@ public class SearchFacets {
     }
 
     /**
-     * 
+     * <p>resetCurrentFacetString.</p>
      */
     public void resetCurrentFacetString() {
         logger.trace("resetCurrentFacetString");
@@ -736,7 +778,7 @@ public class SearchFacets {
     /**
      * Returns a URL encoded value returned by generateFacetPrefix() for regular facets.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getCurrentFacetStringPrefix() {
         try {
@@ -749,7 +791,7 @@ public class SearchFacets {
     /**
      * Returns a URL encoded value returned by generateFacetPrefix() for hierarchical facets.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     @Deprecated
     public String getCurrentHierarchicalFacetPrefix() {
@@ -782,12 +824,13 @@ public class SearchFacets {
     }
 
     /**
-     * 
-     * @param facetQuery
-     * @param
-     * @return
+     * <p>removeFacetAction.</p>
+     *
+     * @param facetQuery a {@link java.lang.String} object.
      * @should remove facet correctly
      * @should remove facet containing reserved chars
+     * @param ret a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
         logger.trace("removeFacetAction: {}", facetQuery);
@@ -803,28 +846,30 @@ public class SearchFacets {
     /**
      * Returns true if the value for the given field type in <code>drillDownExpanded</code> has been previously set to true.
      *
-     * @param field
-     * @return
+     * @param field a {@link java.lang.String} object.
      * @should return false if value null
      * @should return true if value true
+     * @return a boolean.
      */
     public boolean isDrillDownExpanded(String field) {
         return drillDownExpanded.get(field) != null && drillDownExpanded.get(field);
     }
 
     /**
-     * 
-     * @param field
-     * @return
+     * <p>isDrillDownCollapsed.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean isDrillDownCollapsed(String field) {
         return !isDrillDownExpanded(field);
     }
 
     /**
-     * 
-     * @return
+     * <p>getAllAvailableFacets.</p>
+     *
      * @should return all facet items in correct order
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, List<FacetItem>> getAllAvailableFacets() {
         Map<String, List<FacetItem>> ret = new LinkedHashMap<>();
@@ -840,7 +885,8 @@ public class SearchFacets {
     }
 
     /**
-     * 
+     * <p>getConfiguredSubelementFacetFields.</p>
+     *
      * @return Configured subelement fields names only
      */
     public List<String> getConfiguredSubelementFacetFields() {
@@ -856,6 +902,8 @@ public class SearchFacets {
     }
 
     /**
+     * <p>Getter for the field <code>availableFacets</code>.</p>
+     *
      * @return the availableFacets
      */
     public Map<String, List<FacetItem>> getAvailableFacets() {
@@ -863,6 +911,8 @@ public class SearchFacets {
     }
 
     /**
+     * <p>Getter for the field <code>currentFacets</code>.</p>
+     *
      * @return the currentFacets
      */
     public List<FacetItem> getCurrentFacets() {
@@ -870,6 +920,8 @@ public class SearchFacets {
     }
 
     /**
+     * <p>Getter for the field <code>tempValue</code>.</p>
+     *
      * @return the tempValue
      */
     public String getTempValue() {
@@ -877,6 +929,8 @@ public class SearchFacets {
     }
 
     /**
+     * <p>Setter for the field <code>tempValue</code>.</p>
+     *
      * @param tempValue the tempValue to set
      */
     public void setTempValue(String tempValue) {
@@ -885,13 +939,13 @@ public class SearchFacets {
 
     /**
      * Returns true if the given <code>field</code> is language-specific to a different language than the given <code>language</code>.
-     * 
-     * @param field
-     * @param language
-     * @return
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
      * @should return true if language code different
      * @should return false if language code same
      * @should return false if no language code
+     * @return a boolean.
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
         if (field == null) {
@@ -907,10 +961,22 @@ public class SearchFacets {
         return false;
     }
 
+    /**
+     * <p>getFacetValue.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getFacetValue(String field) {
         return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(facet -> getFacetName(facet)).findFirst().orElse("");
     }
 
+    /**
+     * <p>getFacetDescription.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getFacetDescription(String field) {
         return getCurrentFacets().stream()
                 .filter(facet -> facet.getField().equals(field))
@@ -919,10 +985,21 @@ public class SearchFacets {
                 .orElse("");
     }
 
+    /**
+     * <p>getFirstHierarchicalFacetValue.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFirstHierarchicalFacetValue() {
         return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetName(facet)).findFirst().orElse("");
     }
 
+    /**
+     * <p>getFirstHierarchicalFacetDescription.</p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getFirstHierarchicalFacetDescription(String field) {
         return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetDescription(facet)).findFirst().orElse("");
     }

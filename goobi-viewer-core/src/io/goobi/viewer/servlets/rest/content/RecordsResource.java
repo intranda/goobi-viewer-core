@@ -84,13 +84,16 @@ public class RecordsResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for RecordsResource.</p>
+     */
     public RecordsResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected RecordsResource(HttpServletRequest request) {
         this.servletRequest = request;
@@ -98,17 +101,16 @@ public class RecordsResource {
 
     /**
      * Returns a JSON array containing time matrix content data for the given Solr query and size.
-     * 
+     *
      * @param query Solr query
      * @param count Max number of records
      * @return JOSN array
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
@@ -163,17 +165,17 @@ public class RecordsResource {
 
     /**
      * Returns a JSON array containing time matrix content data for the given date range and size.
-     * 
+     *
      * @param startDate Lower date limit
      * @param endDate Upper date limit
      * @param count Max number of records
      * @return JSON array
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     @GET
     @Path("/timematrix/range/{startDate}/{endDate}/{count}")
@@ -204,22 +206,17 @@ public class RecordsResource {
     }
 
     /**
-     * 
-     * @param query Solr query
-     * @param sortFields
-     * @param sortOrder
-     * @param jsonFormat
-     * @param count Max number of records
-     * @param offset
-     * @param randomize If true, the result will contain random records within the given search parameters
+     * <p>getRecordsForQuery.</p>
+     *
      * @return JSON array
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param params a {@link io.goobi.viewer.servlets.rest.content.RecordsRequestParameters} object.
      */
     @SuppressWarnings("unchecked")
     @POST
@@ -293,12 +290,12 @@ public class RecordsResource {
 
     /**
      * Returns the hit count for the given query in a JSON object.
-     * 
-     * @param query
+     *
      * @return JSON object containing the count
-     * @throws ContentNotFoundException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @param params a {@link io.goobi.viewer.servlets.rest.content.RecordsRequestParameters} object.
      */
     @SuppressWarnings("unchecked")
     @POST
@@ -323,14 +320,15 @@ public class RecordsResource {
     }
 
     /**
-     * 
-     * @param iddoc
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws ContentNotFoundException
-     * @throws DAOException
-     * @throws IOException
+     * <p>getRISAsFile.</p>
+     *
+     * @param iddoc a long.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      */
     @GET
     @Path("/ris/file/{iddoc}")
@@ -365,13 +363,14 @@ public class RecordsResource {
     }
 
     /**
-     * 
-     * @param iddoc
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws ContentNotFoundException
-     * @throws DAOException
+     * <p>getRISAsText.</p>
+     *
+     * @param iddoc a long.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/ris/text/{iddoc}")

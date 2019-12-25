@@ -18,14 +18,19 @@ package io.goobi.viewer.controller.language;
 import java.util.Comparator;
 import java.util.Locale;
 
+/**
+ * <p>LocaleComparator class.</p>
+ *
+ */
 public class LocaleComparator implements Comparator<Locale> {
 
     private final Locale primaryLocale;
     private final Locale secondaryLocale;
 
     /**
+     * <p>Constructor for LocaleComparator.</p>
      *
-     * @param locale
+     * @param locale a {@link java.util.Locale} object.
      */
     public LocaleComparator(Locale locale) {
         this.primaryLocale = locale;
@@ -35,6 +40,7 @@ public class LocaleComparator implements Comparator<Locale> {
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compare(Locale l1, Locale l2) {
         if (l1 == null && l2 == null) {

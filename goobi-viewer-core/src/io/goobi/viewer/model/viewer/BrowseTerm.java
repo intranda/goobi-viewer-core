@@ -31,6 +31,10 @@ import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>BrowseTerm class.</p>
+ *
+ */
 public class BrowseTerm implements Serializable {
 
     private static final long serialVersionUID = -55691065713339706L;
@@ -45,8 +49,8 @@ public class BrowseTerm implements Serializable {
     /**
      * Constructor that sets <code>hitCount</code> to 1.
      *
-     * @param term
-     * @param sortTerm
+     * @param term a {@link java.lang.String} object.
+     * @param sortTerm a {@link java.lang.String} object.
      */
     public BrowseTerm(String term, String sortTerm) {
         this.term = term;
@@ -54,6 +58,13 @@ public class BrowseTerm implements Serializable {
         this.hitCount = 1;
     }
 
+    /**
+     * <p>Constructor for BrowseTerm.</p>
+     *
+     * @param term a {@link java.lang.String} object.
+     * @param sortTerm a {@link java.lang.String} object.
+     * @param hitCount a long.
+     */
     public BrowseTerm(String term, String sortTerm, long hitCount) {
         this.term = term;
         this.sortTerm = sortTerm;
@@ -65,6 +76,7 @@ public class BrowseTerm implements Serializable {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -78,6 +90,7 @@ public class BrowseTerm implements Serializable {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -101,6 +114,8 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>term</code>.</p>
+     *
      * @return the term
      */
     public String getTerm() {
@@ -108,6 +123,8 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sortTerm</code>.</p>
+     *
      * @return the sortTerm
      */
     public String getSortTerm() {
@@ -218,11 +235,18 @@ public class BrowseTerm implements Serializable {
         }
     }
 
+    /**
+     * <p>addToHitCount.</p>
+     *
+     * @param num a int.
+     */
     public void addToHitCount(int num) {
         hitCount += num;
     }
 
     /**
+     * <p>Getter for the field <code>hitCount</code>.</p>
+     *
      * @return the hitCount
      */
     public long getHitCount() {
@@ -230,6 +254,8 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>piList</code>.</p>
+     *
      * @return the piList
      */
     public Set<String> getPiList() {

@@ -20,11 +20,35 @@ import java.util.Map;
 
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
+/**
+ * <p>TableDataSource interface.</p>
+ *
+ */
 public interface TableDataSource<T> {
 
+    /**
+     * <p>getEntries.</p>
+     *
+     * @param first a int.
+     * @param pageSize a int.
+     * @param sortField a {@link java.lang.String} object.
+     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
+     * @param filters a {@link java.util.Map} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     */
     public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) throws TableDataSourceException;
 
+    /**
+     * <p>getTotalNumberOfRecords.</p>
+     *
+     * @param filters a {@link java.util.Map} object.
+     * @return a long.
+     */
     long getTotalNumberOfRecords(Map<String, String> filters);
+    /**
+     * <p>resetTotalNumberOfRecords.</p>
+     */
     void resetTotalNumberOfRecords();
 
 }

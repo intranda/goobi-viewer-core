@@ -48,6 +48,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
 
+    /**
+     * <p>Constructor for BrowseDcElement.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param number a long.
+     * @param field a {@link java.lang.String} object.
+     * @param sortField a {@link java.lang.String} object.
+     */
     public BrowseDcElement(String name, long number, String field, String sortField) {
         this.name = name != null ? name.intern() : name;
         this.field = field;
@@ -64,7 +72,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * 
+     * <p>Constructor for BrowseDcElement.</p>
+     *
+     * @param blueprint a {@link io.goobi.viewer.model.viewer.BrowseDcElement} object.
      */
     public BrowseDcElement(BrowseDcElement blueprint) {
         this.name = blueprint.name;
@@ -77,6 +87,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         this.info = blueprint.info;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(BrowseDcElement o) {
         return this.getName().compareTo(o.getName());
@@ -85,6 +96,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -96,6 +108,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         //        BrowseDcElement in = (BrowseDcElement) obj;
@@ -121,12 +134,19 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
         return name;
     }
 
+    /**
+     * <p>getLabel.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         if (getInfo() != null) {
             return getInfo().getName();
@@ -137,7 +157,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     /**
      * Returns the message key for the collection description.
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getDescription() {
         if (getInfo() != null) {
@@ -149,7 +169,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     /**
      * Returns the message key for the collection representative image url
      *
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public String getRepresentant() {
         if (getInfo() != null && getInfo().getIconURI() != null) {
@@ -159,29 +179,52 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
+     * <p>getLuceneName.</p>
+     *
      * @return the name
      */
     public String getLuceneName() {
         return getName();
     }
 
+    /**
+     * <p>addToNumber.</p>
+     *
+     * @param inNumber a long.
+     */
     public void addToNumber(long inNumber) {
         number += inNumber;
     }
 
+    /**
+     * <p>Setter for the field <code>hasSubelements</code>.</p>
+     *
+     * @param hasSubelements a boolean.
+     */
     public void setHasSubelements(boolean hasSubelements) {
         this.hasSubelements = hasSubelements;
     }
 
+    /**
+     * <p>isHasSubelements.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHasSubelements() {
         return hasSubelements;
     }
 
+    /**
+     * <p>isDisplayNumberOfVolumes.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayNumberOfVolumes() {
         return getLevel() >= displayNumberOfVolumesLevel;
     }
 
     /**
+     * <p>getNumberOfVolumes.</p>
      *
      * @return number of elements
      */
@@ -189,6 +232,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         return number;
     }
 
+    /**
+     * <p>getLevel.</p>
+     *
+     * @return a int.
+     */
     public int getLevel() {
         if (StringUtils.isNotEmpty(splittingChar)) {
             return name.split("\\" + splittingChar).length - 1;
@@ -196,6 +244,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         return 0;
     }
 
+    /**
+     * <p>getParentName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParentName() {
         if (getLevel() > 0) {
             String parentTitle = name;
@@ -205,6 +258,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>sortField</code>.</p>
+     *
      * @return the sortField
      */
     public String getSortField() {
@@ -212,21 +267,35 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>sortField</code>.</p>
+     *
      * @param sortField the sortField to set
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
 
+    /**
+     * <p>isShowSubElements.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isShowSubElements() {
         return showSubElements;
     }
 
+    /**
+     * <p>Setter for the field <code>showSubElements</code>.</p>
+     *
+     * @param showSubElements a boolean.
+     */
     public void setShowSubElements(boolean showSubElements) {
         this.showSubElements = showSubElements;
     }
 
     /**
+     * <p>isShowDescription.</p>
+     *
      * @return the showDescription
      */
     public boolean isShowDescription() {
@@ -234,6 +303,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
+     * <p>Setter for the field <code>showDescription</code>.</p>
+     *
      * @param showDescription the showDescription to set
      */
     public void setShowDescription(boolean showDescription) {
@@ -244,17 +315,18 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * Returns the RSS feed URL for this collection using the JSF context.
      *
      * @return RSS feed URL for this collection
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getRssUrl() throws ViewerConfigurationException {
         return buildRssUrl();
     }
 
     /**
-     * 
+     * <p>getRssUrl.</p>
+     *
      * @param request HttpServletRequest
      * @return RSS feed URL for this collection
-     * @throws ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String getRssUrl(HttpServletRequest request) throws ViewerConfigurationException {
         return buildRssUrl();
@@ -292,12 +364,15 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;
     }
 
     /**
+     * <p>Setter for the field <code>info</code>.</p>
+     *
      * @param info the info to set
      */
     public void setInfo(BrowseElementInfo info) {
@@ -305,6 +380,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
+     * <p>Getter for the field <code>info</code>.</p>
+     *
      * @return the info
      */
     public BrowseElementInfo getInfo() {
@@ -325,14 +402,29 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     }
 
+    /**
+     * <p>hasCMSDescription.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasCMSDescription() {
         return !(this.info instanceof SimpleBrowseElementInfo);
     }
 
+    /**
+     * <p>hasIcon.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasIcon() {
         return getInfo() != null && getInfo().getIconURI() != null;
     }
 
+    /**
+     * <p>getIcon.</p>
+     *
+     * @return a {@link java.net.URI} object.
+     */
     public URI getIcon() {
         if (getInfo() != null) {
             return getInfo().getIconURI();

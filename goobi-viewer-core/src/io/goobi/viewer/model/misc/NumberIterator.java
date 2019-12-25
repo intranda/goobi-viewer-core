@@ -17,6 +17,10 @@ package io.goobi.viewer.model.misc;
 
 import java.util.Iterator;
 
+/**
+ * <p>NumberIterator class.</p>
+ *
+ */
 public class NumberIterator implements Iterator<Integer> {
 
     private Integer counter = 0;
@@ -24,6 +28,7 @@ public class NumberIterator implements Iterator<Integer> {
     /* (non-Javadoc)
      * @see java.util.Iterator#hasNext()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         synchronized (counter) {
@@ -34,6 +39,7 @@ public class NumberIterator implements Iterator<Integer> {
     /* (non-Javadoc)
      * @see java.util.Iterator#next()
      */
+    /** {@inheritDoc} */
     @Override
     public Integer next() {
         synchronized (counter) {
@@ -44,6 +50,7 @@ public class NumberIterator implements Iterator<Integer> {
     /* (non-Javadoc)
      * @see java.util.Iterator#remove()
      */
+    /** {@inheritDoc} */
     @Override
     public void remove() {
         //Do nothing

@@ -36,10 +36,11 @@ public abstract class AbstractConfiguration {
     protected XMLConfiguration configLocal;
 
     /**
-     * 
-     * @param inPath
-     * @param inDefault
-     * @return
+     * <p>getLocalInt.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @param inDefault a int.
+     * @return a int.
      */
     protected int getLocalInt(String inPath, int inDefault) {
         try {
@@ -54,14 +55,22 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @return
+     * <p>getLocalFloat.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @return a float.
      */
     protected float getLocalFloat(String inPath) {
         return configLocal.getFloat(inPath, config.getFloat(inPath));
     }
     
+    /**
+     * <p>getLocalFloat.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @param inDefault a float.
+     * @return a float.
+     */
     protected float getLocalFloat(String inPath, float inDefault) {
         try {
             return configLocal.getFloat(inPath, config.getFloat(inPath, inDefault));
@@ -75,10 +84,11 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @param inDefault
-     * @return
+     * <p>getLocalString.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @param inDefault a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String getLocalString(String inPath, String inDefault) {
         try {
@@ -90,21 +100,23 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @return
+     * <p>getLocalString.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String getLocalString(String inPath) {
         return configLocal.getString(inPath, config.getString(inPath));
     }
 
     /**
-     * 
+     * <p>getLocalList.</p>
+     *
      * @param config Preferred configuration
      * @param altConfig Alternative configuration
      * @param inPath XML path
      * @param defaultList List of default values to return if none found in config
-     * @return
+     * @return a {@link java.util.List} object.
      */
     protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath, List<String> defaultList) {
         if (config == null) {
@@ -123,9 +135,10 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @return
+     * <p>getLocalNodeList.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     protected List<Object> getLocalNodeList(String inPath) {
         List<Object> objects = ((HierarchicalConfiguration) configLocal).getList(inPath, ((HierarchicalConfiguration) config).getList(inPath));
@@ -141,9 +154,10 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @param defaultList
+     * <p>getLocalList.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @param defaultList a {@link java.util.List} object.
      * @return configured list; defaultList if none found
      */
     protected List<String> getLocalList(String inPath, List<String> defaultList) {
@@ -151,8 +165,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
+     * <p>getLocalList.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
      * @return configured list; empty list if none found
      */
     protected List<String> getLocalList(String inPath) {
@@ -160,10 +175,11 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @param inDefault
-     * @return
+     * <p>getLocalBoolean.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @param inDefault a boolean.
+     * @return a boolean.
      */
     protected boolean getLocalBoolean(String inPath, boolean inDefault) {
         try {
@@ -175,9 +191,10 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @return
+     * <p>getLocalConfigurationsAt.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     protected List<HierarchicalConfiguration> getLocalConfigurationsAt(String inPath) {
         List<HierarchicalConfiguration> ret = configLocal.configurationsAt(inPath);
@@ -189,9 +206,10 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * 
-     * @param inPath
-     * @return
+     * <p>getLocalConfigurationAt.</p>
+     *
+     * @param inPath a {@link java.lang.String} object.
+     * @return a {@link org.apache.commons.configuration.HierarchicalConfiguration} object.
      */
     protected HierarchicalConfiguration getLocalConfigurationAt(String inPath) {
         HierarchicalConfiguration ret = null;

@@ -41,8 +41,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author Florian Alpers
+ * <p>DFGViewerImage class.</p>
  *
+ * @author Florian Alpers
  */
 public class DFGViewerImage extends HttpServlet implements Serializable {
 
@@ -53,6 +54,9 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
      */
     private static final long serialVersionUID = 683037127834153441L;
 
+    /**
+     * <p>Constructor for DFGViewerImage.</p>
+     */
     public DFGViewerImage() {
         super();
     }
@@ -60,6 +64,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

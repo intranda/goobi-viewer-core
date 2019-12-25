@@ -4,11 +4,10 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Handle checked exception in java 8 streams. 
+ * Handle checked exception in java 8 streams.
  * Usage: stream.map(Try.lift(function)).map(try -> try.getValue().orElse(try.getException));
- * 
- * @author florian
  *
+ * @author florian
  * @param <R>
  */
 @SuppressWarnings("rawtypes")
@@ -26,6 +25,14 @@ public class Try<R> {
 
     }
 
+    /**
+     * <p>lift.</p>
+     *
+     * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
+     * @param <T> a T object.
+     * @param <R> a R object.
+     * @return a {@link java.util.function.Function} object.
+     */
     public static <T,R> Function<T, Try> lift(CheckedFunction<T,R> function) {
 
         return t -> {
@@ -46,6 +53,13 @@ public class Try<R> {
     
 
 
+/**
+ * <p>liftWithValue.</p>
+ *
+ * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
+ * @param <R> a R object.
+ * @return a {@link java.util.function.Function} object.
+ */
 public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Exception,R> function) {
 
   return t -> {
@@ -64,42 +78,83 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
 
 }
     
+    /**
+     * <p>Exception.</p>
+     *
+     * @param value a {@link java.lang.Exception} object.
+     * @param <R> a R object.
+     * @return a {@link io.goobi.viewer.exceptions.streams.Try} object.
+     */
     public static <R> Try<R> Exception(Exception value) {
 
         return new Try<R>(value, null);
 
     }
 
+    /**
+     * <p>Success.</p>
+     *
+     * @param value a R object.
+     * @param <R> a R object.
+     * @return a {@link io.goobi.viewer.exceptions.streams.Try} object.
+     */
     public static <R> Try<R> Success( R value) {
 
         return new Try<R>(null, value);
 
     }
 
+    /**
+     * <p>Getter for the field <code>exception</code>.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<Exception> getException() {
 
         return Optional.ofNullable(exception);
 
     }
 
+    /**
+     * <p>getValue.</p>
+     *
+     * @return a {@link java.util.Optional} object.
+     */
     public Optional<R> getValue() {
 
         return Optional.ofNullable(success);
 
     }
 
+    /**
+     * <p>isException.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isException() {
 
         return exception != null;
 
     }
 
+    /**
+     * <p>isSuccess.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSuccess() {
 
         return success != null;
 
     }
 
+    /**
+     * <p>mapLeft.</p>
+     *
+     * @param mapper a {@link java.util.function.Function} object.
+     * @param <T> a T object.
+     * @return a {@link java.util.Optional} object.
+     */
     public <T> Optional<T> mapLeft(Function<? super Exception, T> mapper) {
 
         if (isException()) {
@@ -112,6 +167,13 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
 
     }
 
+    /**
+     * <p>mapRight.</p>
+     *
+     * @param mapper a {@link java.util.function.Function} object.
+     * @param <T> a T object.
+     * @return a {@link java.util.Optional} object.
+     */
     public <T> Optional<T> mapRight(Function<? super R, T> mapper) {
 
         if (isSuccess()) {
@@ -124,6 +186,11 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
 
     }
 
+    /**
+     * <p>toString.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
 
         if (isException()) {

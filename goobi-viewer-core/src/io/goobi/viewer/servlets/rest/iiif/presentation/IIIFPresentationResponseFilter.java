@@ -27,22 +27,26 @@ import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 
 /**
+ * <p>IIIFPresentationResponseFilter class.</p>
+ *
  * @author Florian Alpers
  *
  *Adds the @context property to all IIIF Presentation responses in the topmost json element
- *
  */
 @Provider
 @IIIFPresentationBinding
 public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
 
+    /** Constant <code>CONTEXT="http://iiif.io/api/presentation/2/conte"{trunked}</code> */
     public static final String CONTEXT = "http://iiif.io/api/presentation/2/context.json";
+    /** Constant <code>CONTEXT_SEARCH="http://iiif.io/api/search/1/context.jso"{trunked}</code> */
     public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
 
     
     /* (non-Javadoc)
      * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, javax.ws.rs.container.ContainerResponseContext)
      */
+    /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
 
@@ -67,7 +71,10 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param response
+     * <p>setResponseCharset.</p>
+     *
+     * @param response a {@link javax.ws.rs.container.ContainerResponseContext} object.
+     * @param charset a {@link java.lang.String} object.
      */
     public void setResponseCharset(ContainerResponseContext response, String charset) {
         String contentType = response.getHeaderString("Content-Type") + ";charset=" + charset;

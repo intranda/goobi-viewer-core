@@ -69,13 +69,16 @@ public class NormdataResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for NormdataResource.</p>
+     */
     public NormdataResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected NormdataResource(HttpServletRequest request) {
         this.servletRequest = request;
@@ -84,19 +87,16 @@ public class NormdataResource {
     /**
      * Retrieves JSON representation of norm data fetched via the given URL. Only fields configured for the given template are returned (_DEFAULT if
      * template is null or not found).
-     * 
-     * @param url
+     *
+     * @param url a {@link java.lang.String} object.
      * @param template Type of normdata set (person, corporation, etc.)
      * @param lang Locale for field name translations
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link java.lang.String} object.
      */
     @SuppressWarnings("unchecked")
     @GET
@@ -238,16 +238,13 @@ public class NormdataResource {
 
     /**
      * Retrieves JSON representation of norm data fetched via the given URL.
-     * 
-     * @param url
+     *
+     * @param url a {@link java.lang.String} object.
      * @param lang Locale for field name translations
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/get/{url}/{lang}")

@@ -52,6 +52,7 @@ public class StatisticsBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
 
+    /** Constant <code>SEPARATOR="::"</code> */
     public static final String SEPARATOR = "::";
     private static final int DAY_MS = 86400000;
 
@@ -59,10 +60,11 @@ public class StatisticsBean implements Serializable {
     private Map<String, Object> valueMap = new HashMap<>();
 
     /**
-     * 
-     * @param days
-     * @param dataPoints
-     * @return
+     * <p>getImportedRecordsTrend.</p>
+     *
+     * @param days a int.
+     * @param dataPoints a int.
+     * @return a {@link java.util.List} object.
      */
     public List<String> getImportedRecordsTrend(int days, int dataPoints) {
         logger.debug("getImportedRecordsTrend start");
@@ -138,7 +140,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns a list of size two arrays which each contain the name and total number of imported works of a type of work (DocStructType).
      *
-     * @return
+     * @return a {@link java.util.List} object.
      */
     public List<String> getTopStructTypesByNumber() {
         logger.debug("getTopStructTypesByNumber start");
@@ -181,7 +183,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns the total number of imported pages.
      *
-     * @return
+     * @return a {@link java.lang.Long} object.
      */
     public Long getImportedPages() {
         logger.debug("getImportedPages start");
@@ -214,7 +216,7 @@ public class StatisticsBean implements Serializable {
     /**
      * Returns the total number of pages with OCR data.
      *
-     * @return
+     * @return a {@link java.lang.Long} object.
      */
     public Long getImportedFullTexts() {
         logger.debug("getImportedFullTexts start");
@@ -261,6 +263,11 @@ public class StatisticsBean implements Serializable {
         return true;
     }
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         //        for (String[] pair : new StatisticsBean().getMostEditedRecords(10)) {
         //            System.out.println(pair[0] + ": " + pair[1]);

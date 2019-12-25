@@ -18,6 +18,10 @@ package io.goobi.viewer.managedbeans.tabledata;
 import java.io.Serializable;
 import java.util.Optional;
 
+/**
+ * <p>TableDataFilter class.</p>
+ *
+ */
 public class TableDataFilter implements Serializable {
 
     private static final long serialVersionUID = 9120268561536080056L;
@@ -27,6 +31,13 @@ public class TableDataFilter implements Serializable {
     private String value;
     private final TableDataProvider<?> owner;
 
+    /**
+     * <p>Constructor for TableDataFilter.</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
+     */
     public TableDataFilter(String column, String value, TableDataProvider<?> owner) {
         super();
         this.column = column;
@@ -34,6 +45,14 @@ public class TableDataFilter implements Serializable {
         this.owner = owner;
     }
 
+    /**
+     * <p>Constructor for TableDataFilter.</p>
+     *
+     * @param joinTable a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
+     */
     public TableDataFilter(String joinTable, String column, String value, TableDataProvider<?> owner) {
         super();
         this.joinTable = joinTable;
@@ -42,18 +61,38 @@ public class TableDataFilter implements Serializable {
         this.owner = owner;
     }
 
+    /**
+     * <p>Getter for the field <code>column</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getColumn() {
         return column;
     }
 
+    /**
+     * <p>Setter for the field <code>column</code>.</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     */
     public void setColumn(String column) {
         this.column = column;
     }
 
+    /**
+     * <p>Getter for the field <code>value</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * <p>Setter for the field <code>value</code>.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setValue(String value) {
         this.value = value;
         // Reset number of records as soon as the value has changed so that the paginator etc. can be updated on time
@@ -61,6 +100,8 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>joinTable</code>.</p>
+     *
      * @param joinTable the joinTable to set
      */
     public void setJoinTable(String joinTable) {
@@ -68,6 +109,8 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>joinTable</code>.</p>
+     *
      * @return the joinTable
      */
     public Optional<String> getJoinTable() {

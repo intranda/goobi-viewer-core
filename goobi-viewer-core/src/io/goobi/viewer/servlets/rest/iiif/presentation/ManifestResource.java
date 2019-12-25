@@ -76,8 +76,9 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
- * @author Florian Alpers
+ * <p>ManifestResource class.</p>
  *
+ * @author Florian Alpers
  */
 @Path("/iiif/manifests")
 @ViewerRestServiceBinding
@@ -101,9 +102,9 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Unit test constructor injecting request and response
-     * 
-     * @param request
-     * @param response
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      */
     public ManifestResource(HttpServletRequest request, HttpServletResponse response) {
         super(request, response);
@@ -111,16 +112,16 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * forwards to {@link #getManifest(String)}
-     * 
-     * @param request
-     * @param response
-     * @param pi
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ConfigurationException
-     * @throws DAOException
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws org.apache.commons.configuration.ConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @GET
     @Path("/{pi}")
@@ -134,15 +135,15 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Returns the entire IIIF manifest for the given pi. If the given pi points to an anchor, a IIIF collection is returned instead
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return The manifest or collection
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If no object with the given pi was found in the index
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If no object with the given pi was found in the index
      */
     @GET
     @Path("/{pi}/manifest")
@@ -156,8 +157,7 @@ public class ManifestResource extends AbstractResource {
     /**
      * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
      * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
-     * 
-     * 
+     *
      * @param pi The pi of the manifest to search
      * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
      *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
@@ -171,9 +171,9 @@ public class ManifestResource extends AbstractResource {
      * @param date not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
      * @param user not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
      * @param page the page number for paged result sets. if this is empty, page=1 is assumed
-     * @return a {@link SearchResult} containing all annotations matching the query in the 'resources' property
-     * @throws IndexUnreachableException If the index cannot be reached
-     * @throws PresentationException if an error occured in the search
+     * @return a {@link de.intranda.api.iiif.search.SearchResult} containing all annotations matching the query in the 'resources' property
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException If the index cannot be reached
+     * @throws io.goobi.viewer.exceptions.PresentationException if an error occured in the search
      */
     @GET
     @Path("/{pi}/manifest/search")
@@ -184,6 +184,19 @@ public class ManifestResource extends AbstractResource {
         return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
 
+    /**
+     * <p>autoCompleteInManifest.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param motivation a {@link java.lang.String} object.
+     * @param date a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param page a {@link java.lang.Integer} object.
+     * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     @GET
     @Path("/{pi}/manifest/autocomplete")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -200,15 +213,15 @@ public class ManifestResource extends AbstractResource {
     /**
      * Returns the entire IIIF manifest for the given pi, excluding all "seeAlso" references and annotation lists other than the images themselves. If
      * the given pi points to an anchor, a IIIF collection is returned instead
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return The manifest or collection
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If no object with the given pi was found in the index
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If no object with the given pi was found in the index
      */
     @GET
     @Path("/{pi}/manifest/simple")
@@ -222,15 +235,15 @@ public class ManifestResource extends AbstractResource {
     /**
      * Returns the entire IIIF manifest for the given pi without the sequence and structure lists. If the given pi points to an anchor, a IIIF
      * collection is returned instead
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return The manifest or collection
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If no object with the given pi was found in the index
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If no object with the given pi was found in the index
      */
     @GET
     @Path("/{pi}/manifest/base")
@@ -289,16 +302,16 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Creates A IIIF sequence containing all pages belonging to the given pi
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return A IIIF sequence with all pages of the book (if applicable)
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws IllegalRequestException If the document for the given pi can not contain any pages, usually because it is an anchor
-     * @throws ContentNotFoundException If no document was found for the given pi
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException If the document for the given pi can not contain any pages, usually because it is an anchor
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If no document was found for the given pi
      */
     @GET
     @Path("/{pi}/sequence/basic")
@@ -322,16 +335,17 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Creates A IIIF sequence containing all pages belonging to the given pi
-     * 
-     * @param pi
+     *
+     * @param pi a {@link java.lang.String} object.
      * @return A IIIF sequence with all pages of the book (if applicable)
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws IllegalRequestException If the document for the given pi can not contain any pages, usually because it is an anchor
-     * @throws ContentNotFoundException If no document was found for the given pi
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException If the document for the given pi can not contain any pages, usually because it is an anchor
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If no document was found for the given pi
+     * @param preferredView a {@link java.lang.String} object.
      */
     @GET
     @Path("/{pi}/{preferredView}/thumbnails")
@@ -362,16 +376,16 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Creates a IIIF range for the structural element denoted by the given pi and logid
-     * 
+     *
      * @param pi The pi of the containing work
      * @param logId The METS logid of the structural element to return
      * @return A IIIF range
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If no structural element was found for the given pi and logid
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If no structural element was found for the given pi and logid
      */
     @GET
     @Path("/{pi}/range/{logId}")
@@ -391,16 +405,16 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Creates a canvas for the page with the given pyhsPageNo (order) within the work with the given pi
-     * 
+     *
      * @param pi The pi of the containing work
      * @param physPageNo The physical ordering of the page (1-based)
      * @return A IIIF canvas
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
      */
     @GET
     @Path("/{pi}/canvas/{physPageNo}")
@@ -425,18 +439,18 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Creates an annotation list for the given page of annotations of the given {@link AnnotationType type}
-     * 
+     *
      * @param pi The pi of the containing work
      * @param physPageNo The physical ordering of the page (1-based)
-     * @param typeName The name of the {@link AnnotationType} for which annotations should be returned
+     * @param typeName The name of the {@link de.intranda.api.iiif.presentation.enums.AnnotationType} for which annotations should be returned
      * @return A IIIF AnnotationList
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
-     * @throws IllegalRequestException If there is no annotation type of the given name
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException If there is no annotation type of the given name
      */
     @GET
     @Path("/{pi}/list/{physPageNo}/{type}")
@@ -485,18 +499,18 @@ public class ManifestResource extends AbstractResource {
 
     /**
      * Creates an annotation list for a annotations of the given {@link AnnotationType type} not bound to a page
-     * 
+     *
      * @param pi The pi of the containing work
-     * @param typeName The name of the {@link AnnotationType} for which annotations should be returned
+     * @param typeName The name of the {@link de.intranda.api.iiif.presentation.enums.AnnotationType} for which annotations should be returned
      * @return A IIIF AnnotationList
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
-     * @throws IllegalRequestException If there is no annotation type of the given name
-     * @throws IOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException If there is no annotation type of the given name
+     * @throws java.io.IOException
      */
     @GET
     @Path("/{pi}/list/{type}")
@@ -537,18 +551,18 @@ public class ManifestResource extends AbstractResource {
     /**
      * Creates a layer containing all annnotations of the given {@link AnnotationType type} for the work with the given pi. The annotations are groupd
      * into annotation lists by page, if they belong to a page. Otherwise they are grouped in a single annotation list
-     * 
+     *
      * @param pi The pi of the containing work
-     * @param typeName The name of the {@link AnnotationType} for which annotations should be returned
+     * @param typeName The name of the {@link de.intranda.api.iiif.presentation.enums.AnnotationType} for which annotations should be returned
      * @return A IIIF layer
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws ContentNotFoundException If there is no work with the given pi
-     * @throws IllegalRequestException If there is no annotation type of the given name
-     * @throws IOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException If there is no work with the given pi
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException If there is no annotation type of the given name
+     * @throws java.io.IOException
      */
     @GET
     @Path("/{pi}/layer/{type}")
@@ -583,6 +597,11 @@ public class ManifestResource extends AbstractResource {
         return this.structureBuilder;
     }
 
+    /**
+     * <p>Getter for the field <code>manifestBuilder</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.
+     */
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
             this.manifestBuilder = new ManifestBuilder(servletRequest);
@@ -590,6 +609,11 @@ public class ManifestResource extends AbstractResource {
         return manifestBuilder;
     }
 
+    /**
+     * <p>Getter for the field <code>sequenceBuilder</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
+     */
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
             this.sequenceBuilder = new SequenceBuilder(servletRequest);
@@ -597,6 +621,11 @@ public class ManifestResource extends AbstractResource {
         return sequenceBuilder;
     }
 
+    /**
+     * <p>Getter for the field <code>layerBuilder</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder} object.
+     */
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
             this.layerBuilder = new LayerBuilder(servletRequest);

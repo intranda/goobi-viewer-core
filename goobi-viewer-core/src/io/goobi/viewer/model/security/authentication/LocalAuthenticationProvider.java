@@ -32,18 +32,23 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * An authentication provider using the local login provided by the viewer database
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
+    /** Constant <code>TYPE_LOCAL="local"</code> */
     public static final String TYPE_LOCAL = "local";
     private final String name;
     protected List<String> addUserToGroups;
 
     private BCrypt bcrypt = new BCrypt();
 
+    /**
+     * <p>Constructor for LocalAuthenticationProvider.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public LocalAuthenticationProvider(String name) {
         this.name = name;
     }
@@ -51,6 +56,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login()
      */
+    /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String email, String password) throws AuthenticationProviderException {
         HttpServletRequest request = BeanUtils.getRequest();
@@ -74,6 +80,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
      */
+    /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
@@ -82,6 +89,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return true;
@@ -90,6 +98,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getProviderName()
      */
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return name;
@@ -98,6 +107,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getType()
      */
+    /** {@inheritDoc} */
     @Override
     public String getType() {
         return TYPE_LOCAL;
@@ -105,7 +115,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
     /**
      * Set custom bcrypt for testing
-     * 
+     *
      * @param bcrypt the bcrypt to set
      */
     protected void setBcrypt(BCrypt bcrypt) {
@@ -115,6 +125,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return true;
@@ -123,6 +134,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {
         return false;
@@ -131,6 +143,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
      */
+    /** {@inheritDoc} */
     @Override
     public List<String> getAddUserToGroups() {
         return addUserToGroups;
@@ -139,6 +152,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
      */
+    /** {@inheritDoc} */
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;

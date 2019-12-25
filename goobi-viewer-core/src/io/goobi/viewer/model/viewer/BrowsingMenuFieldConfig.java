@@ -23,6 +23,10 @@ import org.apache.commons.lang.StringUtils;
 
 import io.goobi.viewer.controller.SolrConstants;
 
+/**
+ * <p>BrowsingMenuFieldConfig class.</p>
+ *
+ */
 public class BrowsingMenuFieldConfig implements Serializable {
 
     private static final long serialVersionUID = 3986773493941416989L;
@@ -33,12 +37,12 @@ public class BrowsingMenuFieldConfig implements Serializable {
 
     /**
      * Constructor.
-     * 
-     * @param field
-     * @param sortField
-     * @param filterQuery
-     * @param docstructFilterString
-     * @param recordsAndAnchorsOnly
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param sortField a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
+     * @param docstructFilterString a {@link java.lang.String} object.
+     * @param recordsAndAnchorsOnly a boolean.
      */
     public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, @Deprecated String docstructFilterString,
             @Deprecated boolean recordsAndAnchorsOnly) {
@@ -53,6 +57,8 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>field</code>.</p>
+     *
      * @return the field
      */
     public String getField() {
@@ -60,6 +66,8 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sortField</code>.</p>
+     *
      * @return the sortField
      */
     public String getSortField() {
@@ -67,6 +75,8 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>filterQueries</code>.</p>
+     *
      * @return the filterQueries
      */
     public List<String> getFilterQueries() {

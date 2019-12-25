@@ -30,6 +30,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * <p>DocumentReference class.</p>
+ *
+ */
 @XmlRootElement
 @XmlType(propOrder = { "pi", "pages" })
 @JsonInclude(Include.NON_NULL)
@@ -38,38 +42,71 @@ public class DocumentReference {
     private final String pi;
     private List<TagGroup> pageRanges;
 
+    /**
+     * <p>Constructor for DocumentReference.</p>
+     */
     public DocumentReference() {
         super();
         this.pi = null;
         pageRanges = new ArrayList<>();
     }
 
+    /**
+     * <p>Constructor for DocumentReference.</p>
+     *
+     * @param piTopStruct a {@link java.lang.String} object.
+     */
     public DocumentReference(String piTopStruct) {
         super();
         this.pi = piTopStruct;
         pageRanges = new ArrayList<>();
     }
 
+    /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement
     public String getPi() {
         return pi;
     }
 
+    /**
+     * <p>Setter for the field <code>pageRanges</code>.</p>
+     *
+     * @param ranges a {@link java.util.List} object.
+     */
     public void setPageRanges(List<TagGroup> ranges) {
         this.pageRanges = ranges;
         Collections.sort(this.pageRanges);
     }
 
+    /**
+     * <p>addPageRange.</p>
+     *
+     * @param range a {@link io.goobi.viewer.servlets.rest.ner.TagGroup} object.
+     */
     public void addPageRange(TagGroup range) {
         this.pageRanges.add(range);
         Collections.sort(this.pageRanges);
     }
 
+    /**
+     * <p>addPageRanges.</p>
+     *
+     * @param ranges a {@link java.util.Collection} object.
+     */
     public void addPageRanges(Collection<TagGroup> ranges) {
         this.pageRanges.addAll(ranges);
         Collections.sort(this.pageRanges);
     }
 
+    /**
+     * <p>Getter for the field <code>pageRanges</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @JsonProperty("pages")
     @XmlElementWrapper(name = "pages")
     @XmlElement(name = "pages")
@@ -78,9 +115,10 @@ public class DocumentReference {
     }
 
     /**
-     * 
-     * @param order 1-based page number
-     * @return
+     * <p>getPageRange.</p>
+     *
+     * @param startPage a int.
+     * @return a {@link io.goobi.viewer.servlets.rest.ner.TagGroup} object.
      */
     public TagGroup getPageRange(int startPage) {
         try {
@@ -106,6 +144,11 @@ public class DocumentReference {
         return null;
     }
 
+    /**
+     * <p>getRangeSize.</p>
+     *
+     * @return a int.
+     */
     public int getRangeSize() {
         if (pageRanges != null && !pageRanges.isEmpty()) {
             return pageRanges.get(0).getPages();
@@ -117,6 +160,7 @@ public class DocumentReference {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         if (pi != null) {
@@ -129,6 +173,7 @@ public class DocumentReference {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(DocumentReference.class)) {

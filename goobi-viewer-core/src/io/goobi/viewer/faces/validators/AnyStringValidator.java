@@ -31,6 +31,7 @@ public class AnyStringValidator implements Validator<String> {
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
     }

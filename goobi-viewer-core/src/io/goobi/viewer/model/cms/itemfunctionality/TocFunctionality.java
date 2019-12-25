@@ -31,8 +31,9 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * @author Florian Alpers
+ * <p>TocFunctionality class.</p>
  *
+ * @author Florian Alpers
  */
 public class TocFunctionality implements Functionality {
 
@@ -46,12 +47,19 @@ public class TocFunctionality implements Functionality {
 
     private final String pi;
 
+    /**
+     * <p>Constructor for TocFunctionality.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     */
     public TocFunctionality(String pi) {
         this.pi = pi;
     }
 
     /**
-     * @param cmsContentItemPeriodical
+     * <p>Constructor for TocFunctionality.</p>
+     *
+     * @param blueprint a {@link io.goobi.viewer.model.cms.itemfunctionality.TocFunctionality} object.
      */
     public TocFunctionality(TocFunctionality blueprint) {
         this.toc = blueprint.toc;
@@ -60,6 +68,17 @@ public class TocFunctionality implements Functionality {
         this.pi = blueprint.pi;
     }
 
+    /**
+     * <p>getBannerUrl.</p>
+     *
+     * @param width a int.
+     * @param height a int.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public String getBannerUrl(int width, int height)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         String url = getDocStruct().getImageUrl(width, height);
@@ -74,6 +93,15 @@ public class TocFunctionality implements Functionality {
         return url;
     }
 
+    /**
+     * <p>Getter for the field <code>toc</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.toc.TOC} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (toc == null || toc.getCurrentPage() != this.getPageNo()) {
             toc = createToc();
@@ -81,6 +109,13 @@ public class TocFunctionality implements Functionality {
         return toc;
     }
 
+    /**
+     * <p>Getter for the field <code>docStruct</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
     public StructElement getDocStruct() throws IndexUnreachableException, PresentationException {
         if (docStruct == null) {
             docStruct = createDocStruct();
@@ -117,6 +152,7 @@ public class TocFunctionality implements Functionality {
         return toc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public TocFunctionality clone() {
         TocFunctionality clone = new TocFunctionality(this);
@@ -124,6 +160,8 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the piPeriodical
      */
     public String getPi() {
@@ -133,11 +171,13 @@ public class TocFunctionality implements Functionality {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
         this.currentPage = pageNo;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getPageNo() {
         return this.currentPage;

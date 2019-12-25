@@ -39,6 +39,10 @@ import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSNavigationManager;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
 
+/**
+ * <p>CmsNavigationBean class.</p>
+ *
+ */
 @Named
 @SessionScoped
 public class CmsNavigationBean implements Serializable {
@@ -58,6 +62,9 @@ public class CmsNavigationBean implements Serializable {
     private boolean editMode = false;
     private List<String> selectableThemes = null;
 
+    /**
+     * <p>init.</p>
+     */
     @PostConstruct
     public void init() {
     	try {
@@ -69,17 +76,29 @@ public class CmsNavigationBean implements Serializable {
 		}
     }
 
+    /**
+     * <p>Getter for the field <code>menuItemList</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMenuItemList() {
         return menuItemList;
     }
 
+    /**
+     * <p>Setter for the field <code>menuItemList</code>.</p>
+     *
+     * @param menuItemList a {@link java.lang.String} object.
+     */
     public void setMenuItemList(String menuItemList) {
         this.menuItemList = menuItemList;
     }
 
     /**
      * Creates the visible items hiearchy from the string argument
+     *
      * @return true if the items could be serialized. False if the item ids don't match any items
+     * @param itemString a {@link java.lang.String} object.
      */
     public boolean deserializeMenuItems(String itemString) {
         logger.trace("menu items:\n" + itemString);
@@ -126,6 +145,11 @@ public class CmsNavigationBean implements Serializable {
         return true;
     }
 
+    /**
+     * <p>saveMenuItems.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void saveMenuItems() throws DAOException {
         try {
             if(deserializeMenuItems(getMenuItemList())) {                
@@ -138,6 +162,9 @@ public class CmsNavigationBean implements Serializable {
         }
     }
 
+    /**
+     * <p>createNavigationItem.</p>
+     */
     public void createNavigationItem() {
         selectedNavigationItem = new CMSNavigationItem();
         selectedNavigationItem.setAbsoluteLink(true);
@@ -145,6 +172,11 @@ public class CmsNavigationBean implements Serializable {
         setEditMode(false);
     }
 
+    /**
+     * <p>getNavigationItem.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
+     */
     public CMSNavigationItem getNavigationItem() {
         if (selectedNavigationItem == null) {
             createNavigationItem();
@@ -152,13 +184,18 @@ public class CmsNavigationBean implements Serializable {
         return selectedNavigationItem;
     }
 
+    /**
+     * <p>getAvailableMenuItems.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<SelectableNavigationItem> getAvailableMenuItems() {
         return getItemManager().getAvailableItems();
     }
 
     /**
-     * 
-     * @param theme
+     * <p>getVisibleMenuItems.</p>
+     *
      * @return the list from {@link #getVisibleMenuItems()} filtered for items associated with the given theme. Items without theme are associated
      *         with the main theme If the given theme is blank, all items are returned
      */
@@ -166,6 +203,9 @@ public class CmsNavigationBean implements Serializable {
         return getItemManager().getVisibleItems();
     }
 
+    /**
+     * <p>saveNavigationItem.</p>
+     */
     public void saveNavigationItem() {
         if(deserializeMenuItems(getMenuItemList())) {            
             if (getNavigationItem().getSortingListId() == null) {
@@ -176,19 +216,36 @@ public class CmsNavigationBean implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>itemManager</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
+     */
     public CMSNavigationManager getItemManager() {
         return itemManager;
     }
 
+    /**
+     * <p>Setter for the field <code>itemManager</code>.</p>
+     *
+     * @param itemManager a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
+     */
     public void setItemManager(CMSNavigationManager itemManager) {
         this.itemManager = itemManager;
     }
 
+    /**
+     * <p>isEditMode.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEditMode() {
         return this.editMode;
     }
 
     /**
+     * <p>Setter for the field <code>editMode</code>.</p>
+     *
      * @param editMode the editMode to set
      */
     public void setEditMode(boolean editMode) {
@@ -196,10 +253,11 @@ public class CmsNavigationBean implements Serializable {
     }
 
     /**
-     * 
+     * <p>Getter for the field <code>selectableThemes</code>.</p>
+     *
      * @return a list of all configured themes for which we may create menus
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
         if (selectableThemes == null) {
@@ -212,6 +270,8 @@ public class CmsNavigationBean implements Serializable {
     }
 
     /**
+     * <p>getSelectedTheme.</p>
+     *
      * @return the selectedTheme
      */
     public String getSelectedTheme() {
@@ -219,6 +279,8 @@ public class CmsNavigationBean implements Serializable {
     }
 
     /**
+     * <p>setSelectedTheme.</p>
+     *
      * @param selectedTheme the selectedTheme to set
      */
     public void setSelectedTheme(String selectedTheme) {
@@ -227,6 +289,9 @@ public class CmsNavigationBean implements Serializable {
         }
     }
 
+    /**
+     * <p>addSelectedItemsToMenu.</p>
+     */
     public void addSelectedItemsToMenu() {
         getItemManager().addSelectedItemsToMenu();
     }

@@ -68,14 +68,14 @@ public class Sitemap {
 
     /**
      * Generates sitemap files and writes them to the given outputPath (or web root).
-     * 
+     *
      * @param viewerRootUrl Root URL of the Goobi viewer instance
      * @param outputPath Destination folder path for the sitemap files.
      * @return File list
-     * @throws IOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should generate sitemap element for each sitemap in index file
      * @should set correct lastmod date for each sitemap in index file
      * @should generate sitemap files correctly
@@ -346,13 +346,14 @@ public class Sitemap {
 
     /**
      * Writes givent sitemap XML documents into the file system.
-     * 
-     * @param outputDirPath
-     * @param docIndex
-     * @param docListSitemap
-     * @throws IOException
+     *
+     * @param outputDirPath a {@link java.lang.String} object.
+     * @param docIndex a {@link org.jdom2.Document} object.
+     * @param docListSitemap a {@link java.util.List} object.
+     * @throws java.io.IOException
      * @should write index file correctly
      * @should write gzip files correctly
+     * @return a {@link java.util.List} object.
      */
     protected List<File> writeFiles(String outputDirPath, Document docIndex, List<Document> docListSitemap) throws IOException {
         List<File> ret = null;

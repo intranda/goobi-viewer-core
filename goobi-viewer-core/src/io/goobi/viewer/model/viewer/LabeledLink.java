@@ -23,6 +23,10 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
+/**
+ * <p>LabeledLink class.</p>
+ *
+ */
 public class LabeledLink implements Serializable {
 
     private static final long serialVersionUID = -2546718627110716169L;
@@ -32,10 +36,11 @@ public class LabeledLink implements Serializable {
     protected int weight;
 
     /**
-     * 
-     * @param name
-     * @param url
-     * @param weight
+     * <p>Constructor for LabeledLink.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param weight a int.
      */
     public LabeledLink(String name, String url, int weight) {
         this.name = new SimpleMetadataValue(name);
@@ -44,10 +49,11 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * 
-     * @param name
-     * @param url
-     * @param weight
+     * <p>Constructor for LabeledLink.</p>
+     *
+     * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     * @param url a {@link java.lang.String} object.
+     * @param weight a int.
      */
     public LabeledLink(IMetadataValue name, String url, int weight) {
         this.name = name;
@@ -58,6 +64,7 @@ public class LabeledLink implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -69,6 +76,7 @@ public class LabeledLink implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -92,6 +100,8 @@ public class LabeledLink implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -99,17 +109,26 @@ public class LabeledLink implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = new SimpleMetadataValue(name);
     }
 
+    /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
+     * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     */
     public void setName(IMetadataValue name) {
         this.name = name;
     }
 
     /**
+     * <p>Getter for the field <code>url</code>.</p>
+     *
      * @return the url
      */
     public String getUrl() {
@@ -117,6 +136,8 @@ public class LabeledLink implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>url</code>.</p>
+     *
      * @param url the url to set
      */
     public void setUrl(String url) {
@@ -124,6 +145,8 @@ public class LabeledLink implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>weight</code>.</p>
+     *
      * @return the weight
      */
     public int getWeight() {
@@ -131,16 +154,24 @@ public class LabeledLink implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>weight</code>.</p>
+     *
      * @param weight the weight to set
      */
     public void setWeight(int weight) {
         this.weight = weight;
     }
 
+    /**
+     * <p>isLink.</p>
+     *
+     * @return a boolean.
+     */
     public boolean isLink() {
         return StringUtils.isNotBlank(getUrl());
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name + " : " + url + " : " + weight;

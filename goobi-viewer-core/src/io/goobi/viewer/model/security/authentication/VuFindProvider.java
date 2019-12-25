@@ -67,22 +67,29 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * @author Florian Alpers
+ * <p>VuFindProvider class.</p>
  *
+ * @author Florian Alpers
  */
 public class VuFindProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(VuFindProvider.class);
+    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
+    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */
     protected static final String TYPE_USER_PASSWORD = "userPassword";
     private static final String USER_GROUP_ROLE_MEMBER = "member";
 
     private VuAuthenticationResponse authenticationResponse;
 
     /**
-     * @param name
-     * @param url
-     * @param image
+     * <p>Constructor for VuFindProvider.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param image a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param timeoutMillis a long.
      */
     public VuFindProvider(String name, String label, String url, String image, long timeoutMillis) {
         super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
@@ -91,6 +98,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
      */
+    /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
@@ -99,6 +107,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
         try {
@@ -213,6 +222,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;
@@ -221,6 +231,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return false;
@@ -229,6 +240,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
      */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {
         return true;

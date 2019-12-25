@@ -35,9 +35,8 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * Sample littera authentication server mock for testing
- * 
- * @author florian
  *
+ * @author florian
  */
 @Path("/littera")
 public class LitteraAuthenticationResource {
@@ -54,6 +53,12 @@ public class LitteraAuthenticationResource {
     @Context
     protected HttpServletResponse servletResponse;
 	
+    /**
+     * <p>getResponse.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
+     * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
+     */
     @GET
 	@Path("/externalauth")
 	@Produces(MediaType.TEXT_XML)

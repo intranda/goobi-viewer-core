@@ -20,21 +20,25 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Florian Alpers
+ * <p>PersistentTableDataProvider class.</p>
  *
+ * @author Florian Alpers
  */
 public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
     
     private Optional<List<T>> currentList = Optional.empty();
     
     /**
-     * @param source
+     * <p>Constructor for PersistentTableDataProvider.</p>
+     *
+     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      */
     public PersistentTableDataProvider(TableDataSource<T> source) {
         super(source);
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public List<T> getPaginatorList() throws TableDataSourceException {
         return this.currentList.orElseGet(() -> {
@@ -43,6 +47,9 @@ public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
         });
     }
     
+    /**
+     * <p>resetCurrentList.</p>
+     */
     protected void resetCurrentList() {
         this.currentList = Optional.empty();
     }

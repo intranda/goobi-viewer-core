@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.servlets.oembed;
 
+/**
+ * <p>Abstract OEmbedResponse class.</p>
+ *
+ */
 public abstract class OEmbedResponse {
 
     // Required
@@ -37,6 +41,8 @@ public abstract class OEmbedResponse {
     protected Integer thumbnailHeight;
 
     /**
+     * <p>Getter for the field <code>version</code>.</p>
+     *
      * @return the version
      */
     public String getVersion() {
@@ -44,6 +50,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>version</code>.</p>
+     *
      * @param version the version to set
      */
     public void setVersion(String version) {
@@ -51,6 +59,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public String getType() {
@@ -58,6 +68,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -65,6 +77,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>width</code>.</p>
+     *
      * @return the width
      */
     public Integer getWidth() {
@@ -72,6 +86,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>width</code>.</p>
+     *
      * @param width the width to set
      */
     public void setWidth(Integer width) {
@@ -79,6 +95,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>height</code>.</p>
+     *
      * @return the height
      */
     public Integer getHeight() {
@@ -86,6 +104,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>height</code>.</p>
+     *
      * @param height the height to set
      */
     public void setHeight(Integer height) {
@@ -93,6 +113,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
@@ -100,6 +122,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>title</code>.</p>
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -107,6 +131,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>authorName</code>.</p>
+     *
      * @return the authorName
      */
     public String getAuthorName() {
@@ -114,6 +140,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>authorName</code>.</p>
+     *
      * @param authorName the authorName to set
      */
     public void setAuthorName(String authorName) {
@@ -121,6 +149,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>authorUrl</code>.</p>
+     *
      * @return the authorUrl
      */
     public String getAuthorUrl() {
@@ -128,6 +158,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>authorUrl</code>.</p>
+     *
      * @param authorUrl the authorUrl to set
      */
     public void setAuthorUrl(String authorUrl) {
@@ -135,6 +167,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>providerName</code>.</p>
+     *
      * @return the providerName
      */
     public String getProviderName() {
@@ -142,6 +176,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>providerName</code>.</p>
+     *
      * @param providerName the providerName to set
      */
     public void setProviderName(String providerName) {
@@ -149,6 +185,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>providerUrl</code>.</p>
+     *
      * @return the providerUrl
      */
     public String getProviderUrl() {
@@ -156,6 +194,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>providerUrl</code>.</p>
+     *
      * @param providerUrl the providerUrl to set
      */
     public void setProviderUrl(String providerUrl) {
@@ -163,6 +203,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>cacheAge</code>.</p>
+     *
      * @return the cacheAge
      */
     public Integer getCacheAge() {
@@ -170,6 +212,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>cacheAge</code>.</p>
+     *
      * @param cacheAge the cacheAge to set
      */
     public void setCacheAge(Integer cacheAge) {
@@ -177,6 +221,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>thumbnailUrl</code>.</p>
+     *
      * @return the thumbnailUrl
      */
     public String getThumbnailUrl() {
@@ -184,6 +230,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>thumbnailUrl</code>.</p>
+     *
      * @param thumbnailUrl the thumbnailUrl to set
      */
     public void setThumbnailUrl(String thumbnailUrl) {
@@ -191,6 +239,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>thumbnailWidth</code>.</p>
+     *
      * @return the thumbnailWidth
      */
     public Integer getThumbnailWidth() {
@@ -198,6 +248,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>thumbnailWidth</code>.</p>
+     *
      * @param thumbnailWidth the thumbnailWidth to set
      */
     public void setThumbnailWidth(Integer thumbnailWidth) {
@@ -205,6 +257,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Getter for the field <code>thumbnailHeight</code>.</p>
+     *
      * @return the thumbnailHeight
      */
     public Integer getThumbnailHeight() {
@@ -212,6 +266,8 @@ public abstract class OEmbedResponse {
     }
 
     /**
+     * <p>Setter for the field <code>thumbnailHeight</code>.</p>
+     *
      * @param thumbnailHeight the thumbnailHeight to set
      */
     public void setThumbnailHeight(Integer thumbnailHeight) {

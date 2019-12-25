@@ -24,8 +24,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author Florian Alpers
+ * <p>GeoLocation class.</p>
  *
+ * @author Florian Alpers
  */
 public class GeoLocation {
 
@@ -40,16 +41,31 @@ public class GeoLocation {
     private String info = null;
     private String link = null;
 
+    /**
+     * <p>Constructor for GeoLocation.</p>
+     */
     public GeoLocation() {
         // TODO Auto-generated constructor stub
     }
 
+    /**
+     * <p>Constructor for GeoLocation.</p>
+     *
+     * @param latitude a {@link java.lang.Double} object.
+     * @param longitude a {@link java.lang.Double} object.
+     */
     public GeoLocation(Double latitude, Double longitude) {
         super();
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
+    /**
+     * <p>Constructor for GeoLocation.</p>
+     *
+     * @param json a {@link org.json.JSONObject} object.
+     * @throws org.json.JSONException if any.
+     */
     public GeoLocation(JSONObject json) throws JSONException {
         if (json.has(JSON_PROPERTYNAME_LATITUDE)) {
             try {
@@ -82,6 +98,8 @@ public class GeoLocation {
     }
 
     /**
+     * <p>Getter for the field <code>latitude</code>.</p>
+     *
      * @return the langitude
      */
     public Double getLatitude() {
@@ -89,13 +107,17 @@ public class GeoLocation {
     }
 
     /**
-     * @param langitude the langitude to set
+     * <p>Setter for the field <code>latitude</code>.</p>
+     *
+     * @param latitude a {@link java.lang.Double} object.
      */
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
     /**
+     * <p>Getter for the field <code>longitude</code>.</p>
+     *
      * @return the longitude
      */
     public Double getLongitude() {
@@ -103,12 +125,19 @@ public class GeoLocation {
     }
 
     /**
+     * <p>Setter for the field <code>longitude</code>.</p>
+     *
      * @param longitude the longitude to set
      */
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
+    /**
+     * <p>getAsJson.</p>
+     *
+     * @return a {@link org.json.JSONObject} object.
+     */
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
         map.put(JSON_PROPERTYNAME_LATITUDE, getLatitude() == null ? "" : getLatitude());
@@ -125,7 +154,8 @@ public class GeoLocation {
     }
 
     /**
-     * 
+     * <p>isEmpty.</p>
+     *
      * @return true if either latitude or longitude is not set or set to NULL
      */
     public boolean isEmpty() {
@@ -133,6 +163,8 @@ public class GeoLocation {
     }
 
     /**
+     * <p>Getter for the field <code>info</code>.</p>
+     *
      * @return the info
      */
     public String getInfo() {
@@ -140,6 +172,8 @@ public class GeoLocation {
     }
 
     /**
+     * <p>Setter for the field <code>info</code>.</p>
+     *
      * @param info the info to set
      */
     public void setInfo(String info) {
@@ -147,6 +181,8 @@ public class GeoLocation {
     }
 
     /**
+     * <p>Getter for the field <code>link</code>.</p>
+     *
      * @return the link
      */
     public String getLink() {
@@ -154,6 +190,8 @@ public class GeoLocation {
     }
 
     /**
+     * <p>Setter for the field <code>link</code>.</p>
+     *
      * @param link the link to set
      */
     public void setLink(String link) {

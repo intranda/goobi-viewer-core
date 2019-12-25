@@ -31,6 +31,10 @@ import org.apache.commons.collections.CollectionUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile.Priority;
 
+/**
+ * <p>TileGridBuilder class.</p>
+ *
+ */
 public class TileGridBuilder {
 
     private int gridSize = 9;
@@ -41,27 +45,53 @@ public class TileGridBuilder {
     private final HttpServletRequest request;
     
     /**
-     * @param servletRequest
+     * <p>Constructor for TileGridBuilder.</p>
+     *
+     * @param servletRequest a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public TileGridBuilder(HttpServletRequest servletRequest) {
         this.request = servletRequest;
     }
 
+    /**
+     * <p>size.</p>
+     *
+     * @param size a int.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
+     */
     public TileGridBuilder size(int size) {
         this.gridSize = size;
         return this;
     }
 
+    /**
+     * <p>reserveForHighPriority.</p>
+     *
+     * @param reserve a int.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
+     */
     public TileGridBuilder reserveForHighPriority(int reserve) {
         this.reserveForHighPriority = reserve;
         return this;
     }
 
+    /**
+     * <p>tags.</p>
+     *
+     * @param tags a {@link java.util.Collection} object.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
+     */
     public TileGridBuilder tags(Collection<String> tags) {
         this.tags.addAll(tags);
         return this;
     }
 
+    /**
+     * <p>tags.</p>
+     *
+     * @param tags a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
+     */
     public TileGridBuilder tags(String... tags) {
         for (String tag : tags) {
             this.tags.add(tag);
@@ -69,6 +99,12 @@ public class TileGridBuilder {
         return this;
     }
 
+    /**
+     * <p>build.</p>
+     *
+     * @param items a {@link java.util.List} object.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGrid} object.
+     */
     public TileGrid build(List<ImageGalleryTile> items) {
         if (!tags.isEmpty()) {
             items = filter(items, tags);
@@ -148,18 +184,20 @@ public class TileGridBuilder {
 
     /**
      * Returns the number of tags that are both in the collection 'tags' and in the tag-list of the GalleryTile item
-     * 
-     * @param item
-     * @param tags
-     * @return
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile} object.
+     * @param tags a {@link java.util.Collection} object.
+     * @return a int.
      */
     protected static int countTags(ImageGalleryTile item, Collection<String> tags) {
         return CollectionUtils.intersection(item.getCategories().stream().map(c -> c.getName()).collect(Collectors.toList()), tags).size();
     }
 
     /**
-     * @param language
-     * @return
+     * <p>language.</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
      */
     public TileGridBuilder language(String language) {
         this.language = language;

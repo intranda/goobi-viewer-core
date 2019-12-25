@@ -39,20 +39,36 @@ import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
+/**
+ * <p>PDFDownloadJob class.</p>
+ *
+ */
 @Entity
 @DiscriminatorValue(PDFDownloadJob.TYPE)
 public class PDFDownloadJob extends DownloadJob {
 
     private static final long serialVersionUID = 250689453571003230L;
 
+    /** Constant <code>TYPE="pdf"</code> */
     public static final String TYPE = "pdf";
 
     private static final Logger logger = LoggerFactory.getLogger(PDFDownloadJob.class);
 
+    /**
+     * <p>Constructor for PDFDownloadJob.</p>
+     */
     public PDFDownloadJob() {
         type = TYPE;
     }
 
+    /**
+     * <p>Constructor for PDFDownloadJob.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logid a {@link java.lang.String} object.
+     * @param lastRequested a {@link java.util.Date} object.
+     * @param ttl a long.
+     */
     public PDFDownloadJob(String pi, String logid, Date lastRequested, long ttl) {
         type = TYPE;
         this.pi = pi;
@@ -66,6 +82,7 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.DownloadJob#generateDownloadIdentifier()
      */
+    /** {@inheritDoc} */
     @Override
     public final void generateDownloadIdentifier() {
         this.identifier = generateDownloadJobId(TYPE, pi, logId);
@@ -74,6 +91,7 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.DownloadJob#getMimeType()
      */
+    /** {@inheritDoc} */
     @Override
     public String getMimeType() {
         return "application/pdf";
@@ -82,6 +100,7 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.misc.DownloadJob#getFileExtension()
      */
+    /** {@inheritDoc} */
     @Override
     public String getFileExtension() {
         return ".pdf";
@@ -90,6 +109,7 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getDisplayName()
      */
+    /** {@inheritDoc} */
     @Override
     public String getDisplayName() {
         return "PDF";
@@ -98,6 +118,7 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getSize()
      */
+    /** {@inheritDoc} */
     @Override
     public long getSize() {
         File downloadFile = getDownloadFileStatic(identifier, type, getFileExtension());
@@ -111,19 +132,21 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
      */
+    /** {@inheritDoc} */
     @Override
     protected void triggerCreation() throws PresentationException, IndexUnreachableException {
         triggerCreation(pi, logId, identifier);
     }
 
     /**
+     * <p>triggerCreation.</p>
      *
-     * @param pi
-     * @param logId
-     * @param downloadIdentifier
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param downloadIdentifier a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public static void triggerCreation(String pi, String logId, String downloadIdentifier)
             throws PresentationException, IndexUnreachableException, DownloadException {
@@ -166,9 +189,10 @@ public class PDFDownloadJob extends DownloadJob {
     }
 
     /**
+     * <p>getPDFJobsInQueue.</p>
      *
-     * @param identtifier The identifier/has of the last job to count
-     * @return
+     * @param identifier a {@link java.lang.String} object.
+     * @return a int.
      */
     public static int getPDFJobsInQueue(String identifier) {
         StringBuilder url = new StringBuilder();
@@ -189,7 +213,10 @@ public class PDFDownloadJob extends DownloadJob {
     }
 
     /**
-     * @param identifier
+     * <p>getPdfSizeFromTaskManager.</p>
+     *
+     * @param identifier a {@link java.lang.String} object.
+     * @return a long.
      */
     protected static long getPdfSizeFromTaskManager(String identifier) {
         StringBuilder url = new StringBuilder();
@@ -212,6 +239,7 @@ public class PDFDownloadJob extends DownloadJob {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
      */
+    /** {@inheritDoc} */
     @Override
     public int getQueuePosition() {
         switch (status) {

@@ -18,18 +18,20 @@ package io.goobi.viewer.model.cms;
 import java.util.Locale;
 
 /**
- * A {@link Selectable} which may also hold a locale to indicate the currently visible language/translation
- * 
- * @author florian
+ * A {@link io.goobi.viewer.model.cms.Selectable} which may also hold a locale to indicate the currently visible language/translation
  *
+ * @author florian
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
 
 	private Locale locale;
 	
 	/**
-	 * @param value
-	 * @param selected
+	 * <p>Constructor for TranslatedSelectable.</p>
+	 *
+	 * @param value a T object.
+	 * @param selected a boolean.
+	 * @param defaultLocale a {@link java.util.Locale} object.
 	 */
 	public TranslatedSelectable(T value, boolean selected, Locale defaultLocale) {
 		super(value, selected);
@@ -38,6 +40,8 @@ public class TranslatedSelectable<T> extends Selectable<T> {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>locale</code>.</p>
+	 *
 	 * @return the locale
 	 */
 	public Locale getLocale() {
@@ -45,16 +49,28 @@ public class TranslatedSelectable<T> extends Selectable<T> {
 	}
 	
 	/**
+	 * <p>Setter for the field <code>locale</code>.</p>
+	 *
 	 * @param locale the locale to set
 	 */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 	
+	/**
+	 * <p>getLanguage.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLanguage() {
 		return locale.getLanguage();
 	}
 	
+	/**
+	 * <p>setLanguage.</p>
+	 *
+	 * @param language a {@link java.lang.String} object.
+	 */
 	public void setLanguage(String language) {
 		this.locale = Locale.forLanguageTag(language);
 	}
@@ -64,6 +80,7 @@ public class TranslatedSelectable<T> extends Selectable<T> {
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public int compareTo(Selectable<T> other) {
 		return super.compareTo(other);
@@ -72,6 +89,7 @@ public class TranslatedSelectable<T> extends Selectable<T> {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if(obj == null) {

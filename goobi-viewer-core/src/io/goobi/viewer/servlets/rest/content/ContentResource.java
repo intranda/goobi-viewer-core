@@ -97,13 +97,16 @@ public class ContentResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>Constructor for ContentResource.</p>
+     */
     public ContentResource() {
     }
 
     /**
      * For testing
-     * 
-     * @param request
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     protected ContentResource(HttpServletRequest request) {
         this.servletRequest = request;
@@ -111,19 +114,20 @@ public class ContentResource {
 
     /**
      * API method for retrieving any type of content by its relative path within its data repository.
-     * 
+     *
      * @param pi Record identifier
      * @param dataRepository Absolute path of the data repository
-     * @param filePath File path relative to the data repository
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @param contentFolder a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
@@ -152,17 +156,17 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * <p>getAltoDocument.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
     @GET
     @Path("/alto/{pi}")
@@ -208,17 +212,19 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * <p>getAltoDocument.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/alto/{pi}/{fileName}")
@@ -250,17 +256,17 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws IOException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * <p>getFulltextDocument.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.io.IOException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
     @GET
     @Path("/fulltext/{pi}")
@@ -301,17 +307,19 @@ public class ContentResource {
     }
 
     /**
+     * <p>getFulltextDocument.</p>
+     *
      * @param pi Record identifier
-     * @param fileName
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
+     * @param fileName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.MalformedURLException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @return a {@link java.lang.String} object.
      */
     @GET
     @Path("/fulltext/{pi}/{fileName}")
@@ -326,17 +334,18 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param lang
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException * @throws DAOException
-     * @throws JDOMException
-     * @throws ContentNotFoundException
-     * @throws IOException
-     * @throws ServiceNotAllowedException
+     * <p>getFulltextAsTEI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException * @throws DAOException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @param filename a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @Path("/tei/{pi}/{filename}/{lang}")
@@ -372,16 +381,18 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param lang
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException * @throws DAOException
-     * @throws IOException
-     * @throws ContentLibException
-     * @throws JDOMException
+     * <p>getTeiDocument.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException * @throws DAOException
+     * @throws java.io.IOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @param langCode a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @Path("/tei/{pi}/{lang}")
@@ -452,16 +463,19 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param lang
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException * @throws DAOException
-     * @throws ContentNotFoundException
-     * @throws IOException
-     * @throws ServiceNotAllowedException
+     * <p>getCmdiDocument.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException * @throws DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws java.io.IOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
+     * @param langCode a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @Path("/cmdi/{pi}/{lang}")
@@ -493,12 +507,14 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @param privilegeType
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ServiceNotAllowedException
+     * <p>checkAccess.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @param privilegeType a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      */
     public void checkAccess(String pi, String fileName, String privilegeType)
             throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
@@ -509,11 +525,13 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param privilegeType
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ServiceNotAllowedException
+     * <p>checkAccess.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param privilegeType a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      */
     public void checkAccess(String pi, String privilegeType) throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeType, servletRequest);
@@ -523,7 +541,9 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
+     * <p>setResponseHeader.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
      */
     public void setResponseHeader(String filename) {
         if (servletResponse != null) {
@@ -535,11 +555,14 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @param fileName
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws ContentNotFoundException
+     * <p>getFulltext.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param fileName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @return a {@link java.lang.String} object.
      */
     public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         java.nio.file.Path file = Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
@@ -570,11 +593,13 @@ public class ContentResource {
     }
 
     /**
-     * @param pi
-     * @return
-     * @throws IOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * <p>getFulltext.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link java.util.Map} object.
      */
     public Map<java.nio.file.Path, String> getFulltext(String pi) throws IOException, PresentationException, IndexUnreachableException {
         Map<java.nio.file.Path, String> fileMap;
@@ -605,6 +630,18 @@ public class ContentResource {
         return fileMap;
     }
 
+    /**
+     * <p>getFiles.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param foldername a {@link java.lang.String} object.
+     * @param altFoldername a {@link java.lang.String} object.
+     * @param filter a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter)
             throws IOException, PresentationException, IndexUnreachableException {
 
@@ -615,9 +652,13 @@ public class ContentResource {
     }
 
     /**
-     * @param filePath
-     * @return
-     * @throws IOException
+     * <p>getFiles.</p>
+     *
+     * @throws java.io.IOException
+     * @param folder a {@link java.nio.file.Path} object.
+     * @param altFolder a {@link java.nio.file.Path} object.
+     * @param filter a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter) throws IOException {
 
@@ -649,8 +690,10 @@ public class ContentResource {
     }
 
     /**
-     * @param solrDoc
-     * @return
+     * <p>createTEIHeader.</p>
+     *
+     * @param solrDoc a {@link org.apache.solr.common.SolrDocument} object.
+     * @return a {@link de.intranda.digiverso.ocr.tei.header.TEIHeaderBuilder} object.
      */
     public TEIHeaderBuilder createTEIHeader(SolrDocument solrDoc) {
         TEIHeaderBuilder header = new TEIHeaderBuilder();
@@ -715,18 +758,41 @@ public class ContentResource {
         return ret;
     }
 
+    /**
+     * <p>getAltoURI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     * @throws java.net.URISyntaxException if any.
+     */
     public static URI getAltoURI(String pi, String filename) throws URISyntaxException {
         URI uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
         uri = uri.resolve("content/alto/" + pi + "/" + filename);
         return uri;
     }
 
+    /**
+     * <p>getFulltextURI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     * @throws java.net.URISyntaxException if any.
+     */
     public static URI getFulltextURI(String pi, String filename) throws URISyntaxException {
         URI uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
         uri = uri.resolve("content/fulltext/" + pi + "/" + filename);
         return uri;
     }
 
+    /**
+     * <p>getTEIURI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param locale a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
     public static URI getTEIURI(String pi, String locale) {
         URI uri = null;
         try {
@@ -738,6 +804,13 @@ public class ContentResource {
         return uri;
     }
 
+    /**
+     * <p>getCMDIURI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param locale a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
     public static URI getCMDIURI(String pi, String locale) {
         URI uri = null;
         try {
@@ -777,6 +850,12 @@ public class ContentResource {
     //        return filePath;
     //    }
 
+    /**
+     * <p>getTEIFiles.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<java.nio.file.Path> getTEIFiles(String pi) {
         try {
             java.nio.file.Path teiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder());
@@ -800,6 +879,16 @@ public class ContentResource {
         return Collections.emptyList();
     }
 
+    /**
+     * <p>getCMDIFile.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param langCode a {@link java.lang.String} object.
+     * @return a {@link java.nio.file.Path} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public static java.nio.file.Path getCMDIFile(String pi, String langCode) throws IOException, PresentationException, IndexUnreachableException {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
@@ -815,6 +904,12 @@ public class ContentResource {
         return filePath;
     }
 
+    /**
+     * <p>getCMDIFiles.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<java.nio.file.Path> getCMDIFiles(String pi) {
 
         try {
@@ -839,8 +934,10 @@ public class ContentResource {
     }
 
     /**
-     * @param string
-     * @return
+     * <p>getLanguage.</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
      */
     public static Optional<String> getLanguage(String filename) {
         String regex = "([a-z]{1,3})\\.[a-z]+";

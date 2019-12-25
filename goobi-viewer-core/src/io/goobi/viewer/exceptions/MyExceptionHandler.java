@@ -47,21 +47,32 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * taken from here:
  * http://www.facebook.com/note.php?note_id=125229397708&comments&ref=mf
  */
+/**
+ * <p>MyExceptionHandler class.</p>
+ *
+ */
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     private static final Logger logger = LoggerFactory.getLogger(MyExceptionHandler.class);
 
     private ExceptionHandler wrapped;
 
+    /**
+     * <p>Constructor for MyExceptionHandler.</p>
+     *
+     * @param wrapped a {@link javax.faces.context.ExceptionHandler} object.
+     */
     public MyExceptionHandler(ExceptionHandler wrapped) {
         this.wrapped = wrapped;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ExceptionHandler getWrapped() {
         return this.wrapped;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handle() throws FacesException {
         for (Iterator<ExceptionQueuedEvent> i = getUnhandledExceptionQueuedEvents().iterator(); i.hasNext();) {

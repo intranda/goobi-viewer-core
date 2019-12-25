@@ -23,8 +23,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
- * @author Florian Alpers
+ * <p>BooleanDeserializer class.</p>
  *
+ * @author Florian Alpers
  */
 public class BooleanDeserializer extends JsonDeserializer<Boolean> {
 
@@ -33,9 +34,11 @@ public class BooleanDeserializer extends JsonDeserializer<Boolean> {
 
 
     /**
-     * Returns {@link Boolean#TRUE} if and only if the next value read by the {@link JsonParser parser} is the String "Y" or "y". 
+     * {@inheritDoc}
+     *
+     * Returns {@link Boolean#TRUE} if and only if the next value read by the {@link JsonParser parser} is the String "Y" or "y".
      * Returns {@link Boolean#FALSE} if and only if the next value read by the {@link JsonParser parser} is the String "N" or "n".
-     * Otherwise return null. Usually this happens if the value is encoded with "U" for unknown 
+     * Otherwise return null. Usually this happens if the value is encoded with "U" for unknown
      */
     @Override
     public Boolean deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {

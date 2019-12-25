@@ -66,6 +66,10 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.TranslatedSelectable;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>CmsMediaBean class.</p>
+ *
+ */
 @Named
 @SessionScoped
 public class CmsMediaBean implements Serializable {
@@ -91,13 +95,16 @@ public class CmsMediaBean implements Serializable {
 	private boolean allSelected = false;
 	
 
+	/**
+	 * <p>Constructor for CmsMediaBean.</p>
+	 */
 	public CmsMediaBean() {
 		super();
 		resetData();
 	}
 	
 	/**
-	 * Reload all media items, along with the available categories 
+	 * Reload all media items, along with the available categories
 	 */
 	public void resetData() {
 	    dataProvider = initDataProvider();
@@ -243,6 +250,11 @@ public class CmsMediaBean implements Serializable {
 		}
 	}
 
+	/**
+	 * <p>createMediaItem.</p>
+	 *
+	 * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 */
 	public CMSMediaItem createMediaItem() {
 		CMSMediaItem item = new CMSMediaItem();
 		for (Locale locale : CmsBean.getAllLocales()) {
@@ -253,6 +265,13 @@ public class CmsMediaBean implements Serializable {
 		return item;
 	}
 
+	/**
+	 * <p>getMediaOwnerPages.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @return a {@link java.util.List} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public List<CMSPage> getMediaOwnerPages(CMSMediaItem item) throws DAOException {
 		IDAO dao = DataManager.getInstance().getDao();
 		List<CMSPage> owners = new ArrayList<>();
@@ -262,6 +281,12 @@ public class CmsMediaBean implements Serializable {
 		return owners;
 	}
 
+	/**
+	 * <p>deleteMedia.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public void deleteMedia(CMSMediaItem item) throws DAOException {
 		IDAO dao = DataManager.getInstance().getDao();
 		if (dao != null) {
@@ -294,6 +319,12 @@ public class CmsMediaBean implements Serializable {
 		}
 	}
 
+	/**
+	 * <p>getAllMedia.</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public List<CMSMediaItem> getAllMedia() throws DAOException {
 		List<CMSMediaItem> items = new ArrayList<>(DataManager.getInstance().getDao().getAllCMSMediaItems());
 
@@ -316,18 +347,37 @@ public class CmsMediaBean implements Serializable {
 
 	}
 	
+	/**
+	 * <p>Getter for the field <code>dataProvider</code>.</p>
+	 *
+	 * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
+	 */
 	public TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> getDataProvider() {
 		return this.dataProvider;
 	}
 
+	/**
+	 * <p>getMediaItems.</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public List<CategorizableTranslatedSelectable<CMSMediaItem>> getMediaItems() throws DAOException {
 		return this.dataProvider.getPaginatorList();
 	}
 
+	/**
+	 * <p>reloadMediaList.</p>
+	 */
 	public void reloadMediaList() {
 		reloadMediaList(true);
 	}
 	
+	/**
+	 * <p>reloadMediaList.</p>
+	 *
+	 * @param resetCurrentPage a boolean.
+	 */
 	public void reloadMediaList(boolean resetCurrentPage) {
 		long page = this.dataProvider.getPageNumberCurrent();
 		this.dataProvider.resetAll();
@@ -341,8 +391,8 @@ public class CmsMediaBean implements Serializable {
 	/**
 	 * Deletes all mediaItems from {@link #mediaItems} which are are marked as
 	 * selected. Reloads the media list
-	 * 
-	 * @throws DAOException
+	 *
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public void deleteSelectedItems() throws DAOException {
 			Stream<CategorizableTranslatedSelectable<CMSMediaItem>> stream = this.dataProvider.getPaginatorList().stream();
@@ -360,8 +410,8 @@ public class CmsMediaBean implements Serializable {
 	/**
 	 * Saves all mediaItems from {@link #mediaItems} which are are marked as
 	 * selected. Reloads the media list
-	 * 
-	 * @throws DAOException
+	 *
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public void saveSelectedItems() throws DAOException {
 			List<CategorizableTranslatedSelectable<CMSMediaItem>> itemsToSave = this.dataProvider.getPaginatorList().stream().filter(Selectable::isSelected)
@@ -371,16 +421,26 @@ public class CmsMediaBean implements Serializable {
 			}
 	}
 
+	/**
+	 * <p>getMediaUrl.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @return a {@link java.lang.String} object.
+	 * @throws java.lang.NumberFormatException if any.
+	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+	 */
 	public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
 		return getMediaUrl(item, null, null);
 	}
 
 	/**
-	 * @param item
-	 * @param width
-	 * @param height
-	 * @return
-	 * @throws ViewerConfigurationException
+	 * <p>getMediaUrl.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @param width a {@link java.lang.String} object.
+	 * @param height a {@link java.lang.String} object.
+	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+	 * @return a {@link java.lang.String} object.
 	 */
 	public static String getMediaUrl(CMSMediaItem item, String width, String height)
 			throws ViewerConfigurationException {
@@ -403,10 +463,11 @@ public class CmsMediaBean implements Serializable {
 	}
 
 	/**
-	 * 
-	 * @param item
-	 * @return
-	 * @throws ViewerConfigurationException
+	 * <p>getMediaFileAsString.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+	 * @return a {@link java.lang.String} object.
 	 */
 	public static String getMediaFileAsString(CMSMediaItem item) throws ViewerConfigurationException {
 		if (item == null || StringUtils.isEmpty(item.getFileName())) {
@@ -430,6 +491,14 @@ public class CmsMediaBean implements Serializable {
 		return "";
 	}
 
+	/**
+	 * <p>getMediaPreviewUrl.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @return a {@link java.lang.String} object.
+	 * @throws java.lang.NumberFormatException if any.
+	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+	 */
 	public static String getMediaPreviewUrl(CMSMediaItem item)
 			throws NumberFormatException, ViewerConfigurationException {
 		if (item != null && item.getFileName() != null) {
@@ -438,14 +507,31 @@ public class CmsMediaBean implements Serializable {
 		return "";
 	}
 
+	/**
+	 * <p>isImage.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @return a boolean.
+	 */
 	public boolean isImage(CMSMediaItem item) {
 		return item.getFileName().matches(getImageFilter());
 	}
 
+	/**
+	 * <p>isText.</p>
+	 *
+	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @return a boolean.
+	 */
 	public boolean isText(CMSMediaItem item) {
 		return !item.getFileName().matches(getImageFilter());
 	}
 	
+	/**
+	 * <p>saveSelectedMediaItem.</p>
+	 *
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public void saveSelectedMediaItem( ) throws DAOException {
 		if(this.selectedMediaItem != null) {
 			saveMedia(this.selectedMediaItem.getValue());
@@ -454,12 +540,12 @@ public class CmsMediaBean implements Serializable {
 	
 	/**
 	 * Save media item, adding or removing the given categories, depending wether they are selected or not.
-	 * if {@link User#hasPrivilegeForAllSubthemeDiscriminatorValues()} is false for the current user
+	 * if {@link io.goobi.viewer.model.security.user.User#hasPrivilegeForAllSubthemeDiscriminatorValues()} is false for the current user
 	 *  and none of the given categories is selected, then don't change the media categories since doing so would break category restrictions
-	 * 
-	 * @param media
-	 * @param categories
-	 * @throws DAOException
+	 *
+	 * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @param categories a {@link java.util.List} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException
 	 */
 	public void saveMedia(CMSMediaItem media, List<Selectable<CMSCategory>> categories) throws DAOException {
 		if(media != null) {
@@ -482,6 +568,12 @@ public class CmsMediaBean implements Serializable {
 	}
 
 
+	/**
+	 * <p>saveMedia.</p>
+	 *
+	 * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
+	 */
 	public void saveMedia(CMSMediaItem media) throws DAOException {
 		if (media != null) {
 			if (media.getId() == null) {
@@ -494,6 +586,12 @@ public class CmsMediaBean implements Serializable {
 		reloadMediaList(false);
 	}
 
+	/**
+	 * <p>getFileName.</p>
+	 *
+	 * @param filePart a {@link javax.servlet.http.Part} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public static String getFileName(Part filePart) {
 		if (filePart != null) {
 			// String basename = filePart.getName();
@@ -519,6 +617,8 @@ public class CmsMediaBean implements Serializable {
 	}
 
 	/**
+	 * <p>Setter for the field <code>selectedTag</code>.</p>
+	 *
 	 * @param selectedTag the selectedTag to set
 	 */
 	public void setSelectedTag(String selectedTag) {
@@ -526,6 +626,8 @@ public class CmsMediaBean implements Serializable {
 	}
 
 	/**
+	 * <p>Getter for the field <code>selectedTag</code>.</p>
+	 *
 	 * @return the selectedTag
 	 */
 	public String getSelectedTag() {
@@ -533,20 +635,28 @@ public class CmsMediaBean implements Serializable {
 	}
 
 	/**
-	 * @return
-	 * @throws DAOException
+	 * <p>getAllMediaCategories.</p>
+	 *
+	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @return a {@link java.util.List} object.
 	 */
 	public List<CMSCategory> getAllMediaCategories() throws DAOException {
 		return DataManager.getInstance().getDao().getAllCategories();
 	}
 
+	/**
+	 * <p>getMediaItemDisplaySizes.</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
 		Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
 		return sizes;
 	}
 
 	/**
-	 * 
+	 * <p>getImageFilter.</p>
+	 *
 	 * @return a regex matching only filenames ending with one of the supported
 	 *         image format suffixes
 	 */
@@ -554,11 +664,18 @@ public class CmsMediaBean implements Serializable {
 		return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
 	}
 	
+	/**
+	 * <p>getDocumentFilter.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public static String getDocumentFilter() {
 		return "(?i).*\\.(docx?|rtf|x?h?tml|txt)";
 	}
 
 	/**
+	 * <p>Getter for the field <code>filter</code>.</p>
+	 *
 	 * @return the filter
 	 */
 	public String getFilter() {
@@ -566,6 +683,8 @@ public class CmsMediaBean implements Serializable {
 	}
 
 	/**
+	 * <p>Setter for the field <code>filter</code>.</p>
+	 *
 	 * @param filter the filter to set
 	 */
 	public void setFilter(String filter) {
@@ -576,6 +695,8 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>filenameFilter</code>.</p>
+	 *
 	 * @return the filter
 	 */
 	public String getFilenameFilter() {
@@ -583,6 +704,8 @@ public class CmsMediaBean implements Serializable {
 	}
 
 	/**
+	 * <p>Setter for the field <code>filenameFilter</code>.</p>
+	 *
 	 * @param filter the filter to set
 	 */
 	public void setFilenameFilter(String filter) {
@@ -593,12 +716,19 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	/**
+	 * <p>Setter for the field <code>selectedMediaItem</code>.</p>
+	 *
 	 * @param selectedMediaItem the selectedMediaItem to set
 	 */
 	public void setSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
 		this.selectedMediaItem = selectedMediaItem;
 	}
 	
+	/**
+	 * <p>toggleSelectedMediaItem.</p>
+	 *
+	 * @param selectedMediaItem a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
+	 */
 	public void toggleSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
 		if(this.selectedMediaItem != null && this.selectedMediaItem.equals(selectedMediaItem)) {
 			setSelectedMediaItem(null);
@@ -608,6 +738,8 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>selectedMediaItem</code>.</p>
+	 *
 	 * @return the selectedMediaItem
 	 */
 	public TranslatedSelectable<CMSMediaItem> getSelectedMediaItem() {
@@ -615,6 +747,8 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	/**
+	 * <p>Setter for the field <code>allSelected</code>.</p>
+	 *
 	 * @param allSelected the allSelected to set
 	 */
 	public void setAllSelected(boolean allSelected) {
@@ -622,6 +756,8 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	/**
+	 * <p>isAllSelected.</p>
+	 *
 	 * @return the allSelected
 	 */
 	public boolean isAllSelected() {
@@ -629,7 +765,8 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * <p>needsPaginator.</p>
+	 *
 	 * @return true if there is more than one page in the data-provider. False otherwise
 	 */
 	public boolean needsPaginator() {

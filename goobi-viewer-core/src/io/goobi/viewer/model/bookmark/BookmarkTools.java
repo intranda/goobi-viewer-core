@@ -27,17 +27,22 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
+/**
+ * <p>BookmarkTools class.</p>
+ *
+ */
 public class BookmarkTools {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(BookmarkTools.class);
 
     /**
-     * 
-     * @param user
-     * @return
-     * @throws DAOException
+     * <p>getBookmarkListsSharedWithUser.</p>
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return shared bookmark lists
+     * @return a {@link java.util.List} object.
      */
     public static List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {
         if (user == null) {

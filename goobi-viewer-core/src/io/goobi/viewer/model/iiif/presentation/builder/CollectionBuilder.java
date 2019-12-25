@@ -57,8 +57,9 @@ import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.SimpleBrowseElementInfo;
 
 /**
- * @author Florian Alpers
+ * <p>CollectionBuilder class.</p>
  *
+ * @author Florian Alpers
  */
 public class CollectionBuilder extends AbstractBuilder {
 
@@ -66,7 +67,9 @@ public class CollectionBuilder extends AbstractBuilder {
 
     private static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT };
+    /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
     public final static String RSS_FEED_LABEL = "Rss feed";
+    /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */
     public final static String RSS_FEED_FORMAT = "Rss feed";
 
     /**
@@ -76,31 +79,36 @@ public class CollectionBuilder extends AbstractBuilder {
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
 
     /**
-     * @param request
-     * @throws URISyntaxException
+     * <p>Constructor for CollectionBuilder.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws java.net.URISyntaxException
      */
     public CollectionBuilder(HttpServletRequest request) throws URISyntaxException {
         super(request);
     }
 
     /**
-     * @param servletUri
-     * @param requestURI
+     * <p>Constructor for CollectionBuilder.</p>
+     *
+     * @param servletUri a {@link java.net.URI} object.
+     * @param requestURI a {@link java.net.URI} object.
      */
     public CollectionBuilder(URI servletUri, URI requestURI) {
         super(servletUri, requestURI);
     }
 
     /**
-     * @param collectionField
-     * @param topElement
-     * @param splittingChar
-     * @return
-     * @throws IndexUnreachableException
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
+     * <p>generateCollection.</p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @param splittingChar a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
      */
     public Collection generateCollection(String collectionField, final String topElement, final String splittingChar)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
@@ -162,12 +170,14 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param collectionField
-     * @param topElement
-     * @param collection
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws URISyntaxException
+     * <p>addContainedWorks.</p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @param collection a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws java.net.URISyntaxException
      */
     public void addContainedWorks(String collectionField, final String topElement, Collection collection)
             throws PresentationException, IndexUnreachableException, URISyntaxException {
@@ -203,9 +213,11 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param collectionField
-     * @param topElement
-     * @return
+     * <p>createCollectionQuery.</p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String createCollectionQuery(String collectionField, final String topElement) {
         String query;
@@ -219,12 +231,14 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param url
-     * @param baseElement
-     * @return
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws ContentLibException
+     * <p>createCollection.</p>
+     *
+     * @param baseElement a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
+     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @param collectionView a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @param uri a {@link java.net.URI} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
      */
     public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri)
             throws URISyntaxException, ViewerConfigurationException {
@@ -283,11 +297,13 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param collectionField
-     * @param facetField
-     * @param splittingChar
-     * @return
-     * @throws IndexUnreachableException
+     * <p>getCollectionView.</p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param facetField a {@link java.lang.String} object.
+     * @param splittingChar a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      */
     public CollectionView getCollectionView(String collectionField, final String facetField, final String splittingChar)
             throws IndexUnreachableException {
@@ -312,8 +328,10 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param collectionField
-     * @return
+     * <p>getFacetField.</p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getFacetField(String collectionField) {
 

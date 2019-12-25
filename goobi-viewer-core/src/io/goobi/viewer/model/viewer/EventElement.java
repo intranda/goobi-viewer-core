@@ -56,11 +56,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private List<Metadata> sidebarMetadata;
 
     /**
-     * 
-     * @param doc
-     * @param locale
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * <p>Constructor for EventElement.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should fill in missing dateStart from displayDate
      * @should fill in missing dateEnd from dateStart
      */
@@ -114,6 +115,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public int compareTo(EventElement o) {
         if (o.getDateStart() != null && o.getDateEnd() != null && getDateStart() != null && getDateEnd() != null) {
@@ -175,6 +177,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         // logger.debug("dateEnd: " + dateEnd.toString());
     }
 
+    /**
+     * <p>Getter for the field <code>displayDate</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayDate() {
         if (StringUtils.isNotEmpty(displayDate)) {
             return displayDate;
@@ -190,6 +197,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return sb.toString();
     }
 
+    /**
+     * <p>getLabel.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         String type = getType();
         String date = getDisplayDate();
@@ -200,6 +212,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public String getType() {
@@ -207,6 +221,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -214,6 +230,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateStart</code>.</p>
+     *
      * @return the dateStart
      */
     public Date getDateStart() {
@@ -221,6 +239,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateStart</code>.</p>
+     *
      * @param dateStart the dateStart to set
      */
     public void setDateStart(Date dateStart) {
@@ -228,6 +248,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateEnd</code>.</p>
+     *
      * @return the dateEnd
      */
     public Date getDateEnd() {
@@ -235,6 +257,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateEnd</code>.</p>
+     *
      * @param dateEnd the dateEnd to set
      */
     public void setDateEnd(Date dateEnd) {
@@ -242,6 +266,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>metadata</code>.</p>
+     *
      * @return the metadata
      */
     public List<Metadata> getMetadata() {
@@ -254,6 +280,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return metadata;
     }
 
+    /**
+     * <p>hasMetadata.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasMetadata() {
         if (metadata != null) {
             return metadata.stream().anyMatch(md -> !md.isBlank());
@@ -262,6 +293,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return false;
     }
 
+    /**
+     * <p>hasSidebarMetadata.</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasSidebarMetadata() {
         if (sidebarMetadata != null) {
             return sidebarMetadata.stream().anyMatch(md -> !md.isBlank());
@@ -271,6 +307,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>sidebarMetadata</code>.</p>
+     *
      * @return the sidebarMetadata
      */
     public List<Metadata> getSidebarMetadata() {

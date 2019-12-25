@@ -22,6 +22,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>MetadataParameter class.</p>
+ *
+ */
 public class MetadataParameter implements Serializable {
 
     public enum MetadataParameterType {
@@ -93,6 +97,7 @@ public class MetadataParameter implements Serializable {
      *
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -107,6 +112,7 @@ public class MetadataParameter implements Serializable {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -133,16 +139,19 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * 
-     * @param type
-     * @param source
-     * @param key
-     * @param masterValueFragment
-     * @param defaultValue
-     * @param prefix
-     * @param suffix
-     * @param addUrl
-     * @param topstructValueFallback
+     * <p>Constructor for MetadataParameter.</p>
+     *
+     * @param type a {@link io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType} object.
+     * @param source a {@link java.lang.String} object.
+     * @param key a {@link java.lang.String} object.
+     * @param masterValueFragment a {@link java.lang.String} object.
+     * @param defaultValue a {@link java.lang.String} object.
+     * @param prefix a {@link java.lang.String} object.
+     * @param suffix a {@link java.lang.String} object.
+     * @param addUrl a boolean.
+     * @param topstructValueFallback a boolean.
+     * @param topstructOnly a boolean.
+     * @param replaceRules a {@link java.util.Map} object.
      */
     public MetadataParameter(MetadataParameterType type, String source, String key, String masterValueFragment, String defaultValue, String prefix,
             String suffix, boolean addUrl, boolean topstructValueFallback, boolean topstructOnly, Map<Object, String> replaceRules) {
@@ -160,6 +169,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>source</code>.</p>
+     *
      * @return the source
      */
     public String getSource() {
@@ -167,6 +178,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return the type
      */
     public MetadataParameterType getType() {
@@ -174,6 +187,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type the type to set
      */
     public void setType(MetadataParameterType type) {
@@ -181,6 +196,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>key</code>.</p>
+     *
      * @return the key
      */
     public String getKey() {
@@ -188,6 +205,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>masterValueFragment</code>.</p>
+     *
      * @return the masterValueFragment
      */
     public String getMasterValueFragment() {
@@ -195,6 +214,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>defaultValue</code>.</p>
+     *
      * @return the defaultValue
      */
     public String getDefaultValue() {
@@ -202,6 +223,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>prefix</code>.</p>
+     *
      * @return the prefix
      */
     public String getPrefix() {
@@ -209,6 +232,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>suffix</code>.</p>
+     *
      * @return the suffix
      */
     public String getSuffix() {
@@ -216,6 +241,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>isAddUrl.</p>
+     *
      * @return the addUrl
      */
     public boolean isAddUrl() {
@@ -223,6 +250,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>isTopstructValueFallback.</p>
+     *
      * @return the dontUseTopstructValue
      */
     public boolean isTopstructValueFallback() {
@@ -230,6 +259,8 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>isTopstructOnly.</p>
+     *
      * @return the topstructOnly
      */
     public boolean isTopstructOnly() {
@@ -237,12 +268,15 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>replaceRules</code>.</p>
+     *
      * @return the replaceRules
      */
     public Map<Object, String> getReplaceRules() {
         return replaceRules;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new StringBuilder("Key: ").append(key)

@@ -25,9 +25,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Represents a single object within an RSS feed
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
@@ -42,6 +41,8 @@ public class RssItem implements Comparable<RssItem> {
     String docType;
 
     /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
      * @return the title
      */
     public String getTitle() {
@@ -49,6 +50,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Setter for the field <code>title</code>.</p>
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -56,6 +59,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Getter for the field <code>link</code>.</p>
+     *
      * @return the link
      */
     public String getLink() {
@@ -63,6 +68,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Setter for the field <code>link</code>.</p>
+     *
      * @param link the link to set
      */
     public void setLink(String link) {
@@ -70,6 +77,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public Description getDescription() {
@@ -77,6 +86,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(Description description) {
@@ -84,6 +95,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Getter for the field <code>pubDate</code>.</p>
+     *
      * @return the pubDate
      */
     public Date getPubDate() {
@@ -91,6 +104,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Setter for the field <code>pubDate</code>.</p>
+     *
      * @param pubDate the pubDate to set
      */
     public void setPubDate(Date pubDate) {
@@ -98,6 +113,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Getter for the field <code>creator</code>.</p>
+     *
      * @return the creator
      */
     public String getCreator() {
@@ -105,6 +122,8 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * <p>Setter for the field <code>creator</code>.</p>
+     *
      * @param creator the creator to set
      */
     public void setCreator(String creator) {
@@ -112,6 +131,8 @@ public class RssItem implements Comparable<RssItem> {
     }
     
     /**
+     * <p>Setter for the field <code>docType</code>.</p>
+     *
      * @param docType the docType to set
      */
     public void setDocType(String docType) {
@@ -119,6 +140,8 @@ public class RssItem implements Comparable<RssItem> {
     }
     
     /**
+     * <p>Getter for the field <code>docType</code>.</p>
+     *
      * @return the docType
      */
     public String getDocType() {
@@ -126,8 +149,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Sorts the items accoring to their publication date
-     * 
      */
     @Override
     public int compareTo(RssItem other) {

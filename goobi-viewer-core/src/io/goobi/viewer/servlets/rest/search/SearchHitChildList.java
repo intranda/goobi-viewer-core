@@ -22,6 +22,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import io.goobi.viewer.model.search.SearchHit;
 
+/**
+ * <p>SearchHitChildList class.</p>
+ *
+ */
 @XmlRootElement(name = "childHits")
 public class SearchHitChildList {
 
@@ -29,6 +33,13 @@ public class SearchHitChildList {
     final private int hitsDisplayed;
     final private List<SearchHit> children;
 
+    /**
+     * <p>Constructor for SearchHitChildList.</p>
+     *
+     * @param children a {@link java.util.List} object.
+     * @param hits a int.
+     * @param hasMoreChildren a boolean.
+     */
     public SearchHitChildList(List<SearchHit> children, int hits, boolean hasMoreChildren) {
         this.hasMoreChildren = hasMoreChildren;
         this.hitsDisplayed = hits;
@@ -36,6 +47,8 @@ public class SearchHitChildList {
     }
 
     /**
+     * <p>Getter for the field <code>hitsDisplayed</code>.</p>
+     *
      * @return the hitsDisplayed
      */
     public int getHitsDisplayed() {
@@ -43,6 +56,8 @@ public class SearchHitChildList {
     }
 
     /**
+     * <p>isHasMoreChildren.</p>
+     *
      * @return the hasMoreChildren
      */
     public boolean isHasMoreChildren() {
@@ -50,6 +65,8 @@ public class SearchHitChildList {
     }
 
     /**
+     * <p>Getter for the field <code>children</code>.</p>
+     *
      * @return the children
      */
     public List<SearchHit> getChildren() {

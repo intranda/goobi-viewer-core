@@ -25,6 +25,8 @@ public class IndexingRequestParameters {
     private boolean createTraceDocument = false;
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -32,6 +34,8 @@ public class IndexingRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -39,6 +43,8 @@ public class IndexingRequestParameters {
     }
 
     /**
+     * <p>isCreateTraceDocument.</p>
+     *
      * @return the createTraceDocument
      */
     public boolean isCreateTraceDocument() {
@@ -46,6 +52,8 @@ public class IndexingRequestParameters {
     }
 
     /**
+     * <p>Setter for the field <code>createTraceDocument</code>.</p>
+     *
      * @param createTraceDocument the createTraceDocument to set
      */
     public void setCreateTraceDocument(boolean createTraceDocument) {

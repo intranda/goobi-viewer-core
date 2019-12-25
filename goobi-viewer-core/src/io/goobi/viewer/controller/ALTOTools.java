@@ -54,6 +54,10 @@ import io.goobi.viewer.servlets.rest.ner.NERTag;
 import io.goobi.viewer.servlets.rest.ner.TagCount;
 import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
 
+/**
+ * <p>ALTOTools class.</p>
+ *
+ */
 public class ALTOTools {
 
     private static final Logger logger = LoggerFactory.getLogger(ALTOTools.class);
@@ -69,15 +73,17 @@ public class ALTOTools {
     private final static String URI = "URI";
     private final static String LABEL = "LABEL";
 
+    /** Constant <code>TAG_LABEL_IGNORE_REGEX="^\\W+|\\W+$"</code> */
     public static final String TAG_LABEL_IGNORE_REGEX = "^\\W+|\\W+$";
 
     /**
+     * <p>getFullText.</p>
      *
-     * @param alto
-     * @param mergeLineBreakWords
-     * @param request
-     * @return
+     * @param alto a {@link java.lang.String} object.
+     * @param mergeLineBreakWords a boolean.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @should extract fulltext correctly
+     * @return a {@link java.lang.String} object.
      */
     public static String getFullText(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
@@ -91,6 +97,13 @@ public class ALTOTools {
         return null;
     }
 
+    /**
+     * <p>getNERTags.</p>
+     *
+     * @param alto a {@link java.lang.String} object.
+     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<TagCount> getNERTags(String alto, NERTag.Type type) {
         List<TagCount> tags = new ArrayList<>();
         try {
@@ -149,14 +162,15 @@ public class ALTOTools {
     }
 
     /**
-     * 
-     * @param alto
-     * @param mergeLineBreakWords
-     * @param request
-     * @return
-     * @throws IOException
-     * @throws XMLStreamException
+     * <p>alto2Txt.</p>
+     *
+     * @param alto a {@link java.lang.String} object.
+     * @param mergeLineBreakWords a boolean.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws java.io.IOException
+     * @throws javax.xml.stream.XMLStreamException
      * @should use extract fulltext correctly
+     * @return a {@link java.lang.String} object.
      */
     protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request) throws IOException, XMLStreamException {
         if (alto == null) {
@@ -319,10 +333,25 @@ public class ALTOTools {
         return strings.toString();
     }
 
+    /**
+     * <p>getWordCoords.</p>
+     *
+     * @param altoString a {@link java.lang.String} object.
+     * @param searchTerms a {@link java.util.Set} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<String> getWordCoords(String altoString, Set<String> searchTerms) {
         return getWordCoords(altoString, searchTerms, 0, 0);
     }
 
+    /**
+     * <p>getRotatedCoordinates.</p>
+     *
+     * @param coords a {@link java.lang.String} object.
+     * @param rotation a int.
+     * @param pageSize a {@link java.awt.Dimension} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getRotatedCoordinates(String coords, int rotation, Dimension pageSize) {
         if (rotation != 0) {
             try {
@@ -341,10 +370,12 @@ public class ALTOTools {
     /**
      * TODO Re-implement using stream
      *
-     * @param altoDoc
-     * @param searchTerms
-     * @return
+     * @param searchTerms a {@link java.util.Set} object.
      * @should throw IllegalArgumentException if altoDoc is null
+     * @param altoString a {@link java.lang.String} object.
+     * @param rotation a int.
+     * @param imageFooterHeight a int.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation, int imageFooterHeight) {
         if (altoString == null) {
@@ -448,9 +479,12 @@ public class ALTOTools {
     }
 
     /**
-     * @param rect
-     * @param rotation
-     * @return
+     * <p>rotate.</p>
+     *
+     * @param rect a {@link java.awt.Rectangle} object.
+     * @param rotation a int.
+     * @param imageSize a {@link java.awt.Dimension} object.
+     * @return a {@link java.awt.Rectangle} object.
      */
     protected static Rectangle rotate(Rectangle rect, int rotation, Dimension imageSize) {
 
@@ -543,9 +577,9 @@ public class ALTOTools {
     /**
      * An ALTO ComposedBlock can theoretically contain n levels of nested ComposedBlocks. Collect all words from contained TextBlocks recursively.
      *
-     * @param eleComposedBlock
-     * @return
+     * @param eleComposedBlock a {@link org.jdom2.Element} object.
      * @should return all words from nested ComposedBlocks
+     * @return a {@link java.util.List} object.
      */
     @Deprecated
     public static List<Element> handleAltoComposedBlock(Element eleComposedBlock) {
@@ -570,9 +604,11 @@ public class ALTOTools {
     }
 
     /**
-     * @param eleWord
-     * @param words
-     * @return
+     * <p>getMatchALTOWord.</p>
+     *
+     * @param eleWord a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
+     * @param words an array of {@link java.lang.String} objects.
+     * @return a int.
      */
     public static int getMatchALTOWord(Word eleWord, String[] words) {
         if (words == null || words.length == 0) {
@@ -630,9 +666,10 @@ public class ALTOTools {
     }
 
     /**
+     * <p>getALTOCoords.</p>
      *
-     * @param element
-     * @return
+     * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getALTOCoords(GeometricData element) {
         if (element == null) {

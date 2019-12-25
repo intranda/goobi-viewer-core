@@ -75,13 +75,15 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * @author Florian Alpers
+ * <p>Abstract AbstractBuilder class.</p>
  *
+ * @author Florian Alpers
  */
 public abstract class AbstractBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
 
+	/** Constant <code>REQUIRED_SOLR_FIELDS</code> */
 	public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE,
 			SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT,
 			SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM,
@@ -90,6 +92,7 @@ public abstract class AbstractBuilder {
 			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
 			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 	
+	/** Constant <code>UGC_SOLR_FIELDS</code> */
 	public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS};
 
 
@@ -97,6 +100,11 @@ public abstract class AbstractBuilder {
 	private final URI requestURI;
 	private final Optional<HttpServletRequest> request;
 
+	/**
+	 * <p>Constructor for AbstractBuilder.</p>
+	 *
+	 * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+	 */
 	public AbstractBuilder(HttpServletRequest request) {
 		this.request = Optional.ofNullable(request);
 		this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
@@ -104,6 +112,12 @@ public abstract class AbstractBuilder {
 				ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
 	}
 
+	/**
+	 * <p>Constructor for AbstractBuilder.</p>
+	 *
+	 * @param servletUri a {@link java.net.URI} object.
+	 * @param requestURI a {@link java.net.URI} object.
+	 */
 	public AbstractBuilder(URI servletUri, URI requestURI) {
 		this.request = Optional.empty();
 		this.servletURI = servletUri;
@@ -111,8 +125,10 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @param language
-	 * @return
+	 * <p>getLocale.</p>
+	 *
+	 * @param language a {@link java.lang.String} object.
+	 * @return a {@link java.util.Locale} object.
 	 */
 	protected Locale getLocale(String language) {
 		Locale locale = Locale.forLanguageTag(language);
@@ -122,10 +138,22 @@ public abstract class AbstractBuilder {
 		return locale;
 	}
 
+	/**
+	 * <p>Getter for the field <code>servletURI</code>.</p>
+	 *
+	 * @return a {@link java.net.URI} object.
+	 */
 	protected URI getServletURI() {
 		return servletURI;
 	}
 
+	/**
+	 * <p>absolutize.</p>
+	 *
+	 * @param uri a {@link java.net.URI} object.
+	 * @return a {@link java.net.URI} object.
+	 * @throws java.net.URISyntaxException if any.
+	 */
 	protected URI absolutize(URI uri) throws URISyntaxException {
 		if (uri != null && !uri.isAbsolute()) {
 			return new URI(getServletURI().toString() + uri.toString());
@@ -134,9 +162,11 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @param rssUrl
-	 * @return
-	 * @throws URISyntaxException
+	 * <p>absolutize.</p>
+	 *
+	 * @throws java.net.URISyntaxException
+	 * @param url a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
 	 */
 	protected URI absolutize(String url) throws URISyntaxException {
 		if (url != null) {
@@ -146,6 +176,8 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
+	 * <p>getBaseUrl.</p>
+	 *
 	 * @return The requested url before any presentation specific parts. Generally
 	 *         the rest api url. Includes a trailing slash
 	 */
@@ -164,7 +196,9 @@ public abstract class AbstractBuilder {
 
 	}
 	
-	/**
+    /**
+     * <p>Getter for the field <code>requestURI</code>.</p>
+     *
      * @return the requestURI
      */
     public URI getRequestURI() {
@@ -172,7 +206,10 @@ public abstract class AbstractBuilder {
     }
 
 	/**
+	 * <p>getMetsResolverUrl.</p>
+	 *
 	 * @return METS resolver link for the DFG Viewer
+	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
 	 */
 	public String getMetsResolverUrl(StructElement ele) {
 		try {
@@ -185,7 +222,10 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
+	 * <p>getLidoResolverUrl.</p>
+	 *
 	 * @return LIDO resolver link for the DFG Viewer
+	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
 	 */
 	public String getLidoResolverUrl(StructElement ele) {
 		try {
@@ -198,7 +238,11 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @return viewer url for the given page in the given {@link PageType}
+	 * <p>getViewUrl.</p>
+	 *
+	 * @return viewer url for the given page in the given {@link io.goobi.viewer.model.viewer.PageType}
+	 * @param ele a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+	 * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
 	 */
 	public String getViewUrl(PhysicalElement ele, PageType pageType) {
 		try {
@@ -211,12 +255,12 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * Simple method to create a label for a {@link SolrDocument} from
-	 * {@link SolrConstants.LABEL}, {@link SolrConstants.TITLE} or
-	 * {@link SolrConstants.DOCSTRUCT}
-	 * 
-	 * @param solrDocument
-	 * @return
+	 * Simple method to create a label for a {@link org.apache.solr.common.SolrDocument} from
+	 * {@link io.goobi.viewer.controller.SolrConstants.LABEL}, {@link io.goobi.viewer.controller.SolrConstants.TITLE} or
+	 * {@link io.goobi.viewer.controller.SolrConstants.DOCSTRUCT}
+	 *
+	 * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
+	 * @return a {@link java.util.Optional} object.
 	 */
 	public static Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
 
@@ -236,8 +280,10 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @param manifest
-	 * @param ele
+	 * <p>addMetadata.</p>
+	 *
+	 * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
 	 */
 	public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
 		List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
@@ -307,14 +353,14 @@ public abstract class AbstractBuilder {
 	/**
 	 * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or
 	 * are the anchor themselves). Works are sorted by a
-	 * {@link StructElementComparator} If no hits are found, an empty list is
+	 * {@link io.goobi.viewer.model.iiif.presentation.builder.StructElementComparator} If no hits are found, an empty list is
 	 * returned
-	 * 
-	 * @param pi
+	 *
+	 * @param pi a {@link java.lang.String} object.
 	 * @return A list of all docstructs with the given pi or children thereof. An
 	 *         empty list if no hits are found
-	 * @throws PresentationException
-	 * @throws IndexUnreachableException
+	 * @throws io.goobi.viewer.exceptions.PresentationException
+	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException
 	 */
 	public List<StructElement> getDocumentWithChildren(String pi)
 			throws PresentationException, IndexUnreachableException {
@@ -363,7 +409,7 @@ public abstract class AbstractBuilder {
 	 * Adds all metadata from the given events to the first work document contained
 	 * in eles. All metadata will be attached twice, once in the form "/[fieldName]"
 	 * and once in the form "[eventType]/[fieldName]"
-	 * 
+	 *
 	 * @param eles   The list of StructElements from which to select the first work
 	 *               document. All metadata are attached to this document
 	 * @param events The list of event SolrDocuments from which to take the metadata
@@ -389,7 +435,9 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @return
+	 * <p>getEventFields.</p>
+	 *
+	 * @return a {@link java.util.Map} object.
 	 */
 	protected Map<String, List<String>> getEventFields() {
 		List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
@@ -415,10 +463,12 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @param pi
-	 * @return
-	 * @throws PresentationException
-	 * @throws IndexUnreachableException
+	 * <p>getDocument.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @throws io.goobi.viewer.exceptions.PresentationException
+	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+	 * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
 	 */
 	public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
 		String query = "PI:" + pi;
@@ -433,15 +483,16 @@ public abstract class AbstractBuilder {
 		return null;
 	}
 	
-	/**
-	 * Get all annotations for the given PI from the SOLR index, sorted by page number.
-	 * The annotations are stored as DOCTYPE:UGC in the SOLR and are converted to OpenAnnotations here
-	 * 
-	 * @param pi   The persistent identifier of the work to query
-	 * @return     A map of page numbers (1-based) mapped to a list of associated annotations
-	 * @throws PresentationException
-	 * @throws IndexUnreachableException
-	 */
+    /**
+     * Get all annotations for the given PI from the SOLR index, sorted by page number.
+     * The annotations are stored as DOCTYPE:UGC in the SOLR and are converted to OpenAnnotations here
+     *
+     * @param pi   The persistent identifier of the work to query
+     * @return     A map of page numbers (1-based) mapped to a list of associated annotations
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @param urlOnlyTarget a boolean.
+     */
     public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget) throws PresentationException, IndexUnreachableException {
         String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
         List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
@@ -462,6 +513,13 @@ public abstract class AbstractBuilder {
         return annoMap;
     }
 
+    /**
+     * <p>createOpenAnnotation.</p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param urlOnlyTarget a boolean.
+     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     */
     public OpenAnnotation createOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
         String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(Object::toString).orElse("");
         return createOpenAnnotation(pi, doc, urlOnlyTarget);
@@ -469,9 +527,12 @@ public abstract class AbstractBuilder {
     }
     
     /**
-     * @param pi
-     * @param doc
-     * @return
+     * <p>createOpenAnnotation.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param urlOnlyTarget a boolean.
+     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         OpenAnnotation anno;
@@ -542,10 +603,10 @@ public abstract class AbstractBuilder {
     
 
     /**
-     * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap 
-     * 
+     * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap
+     *
      * @param canvases  The list of canvases which should receive the annotations as otherContent
-     * @param crowdsourcingAnnotations  A map of annotations by page number 
+     * @param crowdsourcingAnnotations  A map of annotations by page number
      * @param annotationMap     A global annotation map for a whole manifest; may be null if not needed
      */
     public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations, Map<AnnotationType, List<AnnotationList>> annotationMap) {
@@ -573,7 +634,9 @@ public abstract class AbstractBuilder {
     }
 
 	/**
-	 * @return
+	 * <p>getSolrFieldList.</p>
+	 *
+	 * @return a {@link java.util.List} object.
 	 */
 	public List<String> getSolrFieldList() {
 		List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
@@ -593,7 +656,7 @@ public abstract class AbstractBuilder {
 	/**
 	 * Gets the attribution text configured in webapi.iiif.attribution and returns
 	 * all translations if any are found, or the configured string itself otherwise
-	 * 
+	 *
 	 * @return the configured attribution
 	 */
 	protected IMetadataValue getAttribution() {
@@ -601,6 +664,12 @@ public abstract class AbstractBuilder {
 		return ViewerResourceBundle.getTranslations(message);
 	}
 
+	/**
+	 * <p>getDescription.</p>
+	 *
+	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+	 * @return a {@link java.util.Optional} object.
+	 */
 	protected Optional<IMetadataValue> getDescription(StructElement ele) {
 		List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
 		for (String field : fields) {
@@ -617,12 +686,21 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
+	 * <p>Getter for the field <code>request</code>.</p>
+	 *
 	 * @return the request
 	 */
 	protected Optional<HttpServletRequest> getRequest() {
 		return request;
 	}
 
+	/**
+	 * <p>getCollectionURI.</p>
+	 *
+	 * @param collectionField a {@link java.lang.String} object.
+	 * @param baseCollectionName a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getCollectionURI(String collectionField, String baseCollectionName) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/collections/")
 				.append(collectionField).append("/");
@@ -632,12 +710,25 @@ public abstract class AbstractBuilder {
 		return URI.create(sb.toString());
 	}
 
+	/**
+	 * <p>getManifestURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getManifestURI(String pi) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/manifest/");
 		return URI.create(sb.toString());
 	}
 	
+	   /**
+	    * <p>getManifestURI.</p>
+	    *
+	    * @param pi a {@link java.lang.String} object.
+	    * @param mode a {@link io.goobi.viewer.model.iiif.presentation.builder.BuildMode} object.
+	    * @return a {@link java.net.URI} object.
+	    */
 	   public URI getManifestURI(String pi, BuildMode mode) {
 	        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 	                .append("/manifest/");
@@ -649,12 +740,26 @@ public abstract class AbstractBuilder {
 	        return URI.create(sb.toString());
 	    }
 
+	/**
+	 * <p>getRangeURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param logId a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getRangeURI(String pi, String logId) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/range/").append(logId).append("/");;
 		return URI.create(sb.toString());
 	}
 
+	/**
+	 * <p>getSequenceURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param label a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getSequenceURI(String pi, String label) {
 		if (StringUtils.isBlank(label)) {
 			label = "basic";
@@ -664,6 +769,13 @@ public abstract class AbstractBuilder {
 		return URI.create(sb.toString());
 	}
 
+	/**
+	 * <p>getCanvasURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param pageNo a int.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getCanvasURI(String pi, int pageNo) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/canvas/").append(pageNo).append("/");;
@@ -673,9 +785,9 @@ public abstract class AbstractBuilder {
 	/**
 	 * Get the page order (1-based) from a canavs URI. That is the number in the last path paramter after '/canvas/'
 	 * If the URI doesn't match a canvas URI, null is returned
-	 * 
-	 * @param uri
-	 * @return
+	 *
+	 * @param uri a {@link java.net.URI} object.
+	 * @return a {@link java.lang.Integer} object.
 	 */
 	public Integer getPageOrderFromCanvasURI(URI uri) {
 	    String regex = "/canvas/(\\d+)/$";
@@ -687,12 +799,12 @@ public abstract class AbstractBuilder {
 	    }
 	}
 	
-	/**
-	 * Get the persistent identifier from a canvas URI. This is the URI path param between '/iiif/manifests/' and '/canvas/'
-	 * 
-	 * @param uri
-	 * @return The pi, or null if the URI doesn't match a iiif canvas URI
-	 */
+    /**
+     * Get the persistent identifier from a canvas URI. This is the URI path param between '/iiif/manifests/' and '/canvas/'
+     *
+     * @param uri a {@link java.net.URI} object.
+     * @return The pi, or null if the URI doesn't match a iiif canvas URI
+     */
     public String getPIFromCanvasURI(URI uri) {
         String regex = "/iiif/manifests/([\\w\\-\\s]+)/canvas/(\\d+)/$";
         Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
@@ -703,12 +815,27 @@ public abstract class AbstractBuilder {
         }
     }
 
+	/**
+	 * <p>getAnnotationListURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param pageNo a int.
+	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/list/").append(pageNo).append("/").append(type.name()).append("/");
 		return URI.create(sb.toString());
 	}
 
+	/**
+	 * <p>getAnnotationListURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getAnnotationListURI(String pi, AnnotationType type) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/list/").append(type.name()).append("/");
@@ -716,12 +843,27 @@ public abstract class AbstractBuilder {
 	}
 
 	
+   /**
+    * <p>getCommentAnnotationURI.</p>
+    *
+    * @param pi a {@link java.lang.String} object.
+    * @param pageNo a int.
+    * @param id a long.
+    * @return a {@link java.net.URI} object.
+    */
    public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("webannotation/comments/").append(pi)
                 .append("/").append(pageNo).append("/").append(id).append("/");
         return URI.create(sb.toString());
     }
 
+	/**
+	 * <p>getLayerURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getLayerURI(String pi, AnnotationType type) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/layer");
@@ -729,6 +871,13 @@ public abstract class AbstractBuilder {
 		return URI.create(sb.toString());
 	}
 
+	/**
+	 * <p>getLayerURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param logId a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getLayerURI(String pi, String logId) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/layer/");
@@ -741,10 +890,11 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @param pi
-	 * @param order
-	 * @return
-	 * @throws URISyntaxException
+	 * <p>getImageAnnotationURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param order a int.
+	 * @return a {@link java.net.URI} object.
 	 */
 	public URI getImageAnnotationURI(String pi, int order) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
@@ -752,18 +902,42 @@ public abstract class AbstractBuilder {
 		return URI.create(sb.toString());
 	}
 
+	/**
+	 * <p>getAnnotationURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param order a int.
+	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+	 * @param annoNum a int.
+	 * @return a {@link java.net.URI} object.
+	 * @throws java.net.URISyntaxException if any.
+	 */
 	public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
 				.append("/canvas/").append(order).append("/").append(type.name()).append("/").append(annoNum).append("/");
 		return URI.create(sb.toString());
 	}
 	
+	/**
+	 * <p>getAnnotationURI.</p>
+	 *
+	 * @param pi a {@link java.lang.String} object.
+	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+	 * @param id a {@link java.lang.String} object.
+	 * @return a {@link java.net.URI} object.
+	 */
 	public URI getAnnotationURI(String pi, AnnotationType type, String id) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/")
                 .append(type.name()).append("/").append(id).append("/");
         return URI.create(sb.toString());
     }
 	
+    /**
+     * <p>getSearchServiceURI.</p>
+     *
+     * @param target a {@link java.net.URI} object.
+     * @return a {@link java.net.URI} object.
+     */
     public URI getSearchServiceURI(URI target) {
         String baseURI = target.toString();
         if(!baseURI.endsWith("/")) {
@@ -773,8 +947,10 @@ public abstract class AbstractBuilder {
     }
     
     /**
-     * @param id
-     * @return
+     * <p>getAutoSuggestServiceURI.</p>
+     *
+     * @param target a {@link java.net.URI} object.
+     * @return a {@link java.net.URI} object.
      */
     public URI getAutoSuggestServiceURI(URI target) {
         String baseURI = target.toString();
@@ -785,10 +961,12 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param pi
-     * @param query
-     * @param motivation
-     * @return
+     * <p>getSearchURI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param motivation a {@link java.util.List} object.
+     * @return a {@link java.net.URI} object.
      */
     public URI getSearchURI(String pi, String query, List<String> motivation) {
         String uri = getSearchServiceURI(getManifestURI(pi)).toString();
@@ -799,6 +977,14 @@ public abstract class AbstractBuilder {
         return URI.create(uri);
     }
     
+    /**
+     * <p>getAutoSuggestURI.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param motivation a {@link java.util.List} object.
+     * @return a {@link java.net.URI} object.
+     */
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
         String uri = getAutoSuggestServiceURI(getManifestURI(pi)).toString();
         if(StringUtils.isNotBlank(query)) {            

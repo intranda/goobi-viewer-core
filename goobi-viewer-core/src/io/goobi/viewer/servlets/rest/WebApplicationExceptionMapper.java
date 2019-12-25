@@ -39,9 +39,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * Catches general exceptions encountered during rest-api calls and creates an error response
- * 
- * @author Florian Alpers
  *
+ * @author Florian Alpers
  */
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
@@ -53,6 +52,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     @Context
     HttpServletRequest request;
 
+    /** {@inheritDoc} */
     @Override
     public Response toResponse(WebApplicationException eParent) {
         Response.Status status = Status.INTERNAL_SERVER_ERROR;
@@ -81,7 +81,9 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     }
 
     /**
-     * @return
+     * <p>getRequestHeaders.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getRequestHeaders() {
         String headers = Collections.list(request.getHeaderNames())

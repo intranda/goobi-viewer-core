@@ -69,6 +69,7 @@ public class OAuthServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuthServlet.class);
 
+    /** Constant <code>URL="oauth"</code> */
     public static final String URL = "oauth";
     
     private BCrypt bcrypt = new BCrypt();
@@ -80,17 +81,13 @@ public class OAuthServlet extends HttpServlet {
      */
     Future<Boolean> redirected = null;
     
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

@@ -31,23 +31,24 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * 
- * This class handles the bookmark list stored in the session store
- * 
- * @author Florian Alpers
  *
+ * This class handles the bookmark list stored in the session store
+ *
+ * @author Florian Alpers
  */
 public class SessionStoreBookmarkManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionStoreBookmarkManager.class);
 
+    /** Constant <code>BOOKMARK_LIST_ATTRIBUTE_NAME="bookmarkList"</code> */
     public static final String BOOKMARK_LIST_ATTRIBUTE_NAME = "bookmarkList";
 
     /**
-     * 
+     * <p>getBookmarkList.</p>
+     *
      * @return An optional containing the stored bookmark list if one exists
-     * 
-     * @throws NullPointerException if the session is NULL
+     * @throws java.lang.NullPointerException if the session is NULL
+     * @param session a {@link javax.servlet.http.HttpSession} object.
      */
     public Optional<BookmarkList> getBookmarkList(HttpSession session) {
         if (session == null) {
@@ -67,13 +68,12 @@ public class SessionStoreBookmarkManager {
 
     /**
      * Create a new BookmarkList and store it in the session store in the attribute "bookmarkList"
-     * 
-     * @param session
-     * @return
-     * 
-     * @throws IllegalArgumentException if a bookmark list already exists
-     * @throws IllegalStateException if the bookmark list could not be stored in the session
-     * @throws NullPointerException if the session is NULL
+     *
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @throws java.lang.IllegalArgumentException if a bookmark list already exists
+     * @throws java.lang.IllegalStateException if the bookmark list could not be stored in the session
+     * @throws java.lang.NullPointerException if the session is NULL
+     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      */
     public BookmarkList createBookmarkList(HttpSession session) {
 
@@ -88,10 +88,10 @@ public class SessionStoreBookmarkManager {
 
     /**
      * Gets the bookmark list stored in the session. If no bookmark list exists, a new one is created, stored and returned
-     * 
-     * @param session
-     * @return
-     * @throws NullPointerException if the session is NULL
+     *
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @throws java.lang.NullPointerException if the session is NULL
+     * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      */
     public synchronized BookmarkList getOrCreateBookmarkList(HttpSession session) {
         return getBookmarkList(session).orElseGet(() -> createBookmarkList(session));
@@ -99,11 +99,11 @@ public class SessionStoreBookmarkManager {
 
     /**
      * Adds the given item to the session bookmark list, creating a new bookmark list if required
-     * 
-     * @param item
-     * @param session
+     *
+     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param session a {@link javax.servlet.http.HttpSession} object.
      * @return false if the item could not be added (usually because it already exists), true otherwise
-     * @throws NullPointerException if the session is NULL
+     * @throws java.lang.NullPointerException if the session is NULL
      */
     public boolean addToBookmarkList(Bookmark item, HttpSession session) {
         return getOrCreateBookmarkList(session).addItem(item);
@@ -112,11 +112,11 @@ public class SessionStoreBookmarkManager {
     /**
      * Remove the given item (or one with identical pi, logId and order) from the session bookmark list if it exists If no session bookmark list
      * exists, it doesn't contain the item or the item could not be removed for some other reason, false is returned
-     * 
-     * @param item
-     * @param session
-     * @return
-     * @throws NullPointerException if the session is NULL
+     *
+     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @throws java.lang.NullPointerException if the session is NULL
+     * @return a boolean.
      */
     public boolean removeFromBookself(Bookmark item, HttpSession session) {
         Optional<BookmarkList> o = getBookmarkList(session);
@@ -127,16 +127,22 @@ public class SessionStoreBookmarkManager {
     }
 
     /**
-     * 
-     * 
-     * @param session
-     * 
-     * @throws NullPointerException if the session is NULL
+     * <p>deleteBookmarkList.</p>
+     *
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @throws java.lang.NullPointerException if the session is NULL
      */
     public void deleteBookmarkList(HttpSession session) {
         session.removeAttribute(BOOKMARK_LIST_ATTRIBUTE_NAME);
     }
 
+    /**
+     * <p>isInBookmarkList.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @return a boolean.
+     */
     public boolean isInBookmarkList(Bookmark item, HttpSession session) {
         Optional<BookmarkList> o = getBookmarkList(session);
         if (o.isPresent()) {
@@ -148,10 +154,10 @@ public class SessionStoreBookmarkManager {
     /**
      * Assigns the current session bookmark list (if any) to the given user and saves the bookmark list to the database The bookmark list gets a newly
      * generated name provided by {@link #generateNewBookmarkListName(List)}
-     * 
-     * @param user
-     * @param request
-     * @throws DAOException
+     *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void addSessionBookmarkListToUser(User user, HttpServletRequest request) throws DAOException {
         if (request == null) {
@@ -171,9 +177,9 @@ public class SessionStoreBookmarkManager {
     /**
      * Returns a String of the pattern "List {n}" where {n} is the lowest positive integer such that no bookmark list named "List {n}" exists in the
      * given list
-     * 
-     * @param bookmarkLists
-     * @return
+     *
+     * @param bookmarkLists a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String generateNewBookmarkListName(List<BookmarkList> bookmarkLists) {
         String nameTemplate = "List {num}";
@@ -204,10 +210,12 @@ public class SessionStoreBookmarkManager {
      * contains the complete text with a placeholder {0} which is replaced by the text generated from the bookmarks. {@code itemText} is the text for
      * each bookmark with placeholder {0} which is replaced by the link to the bookmarked item, and {1} which is replaced by the title of that item.
      * The parameter {@code bookmarkList} is the bookmark list containing the items to be inserted
-     * 
-     * @param text
-     * @param itemText
-     * @return
+     *
+     * @param text a {@link java.lang.String} object.
+     * @param itemText a {@link java.lang.String} object.
+     * @param emptyListText a {@link java.lang.String} object.
+     * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String generateBookmarkListInfo(String text, String itemText, String emptyListText, BookmarkList bookmarkList) {
         StringBuilder itemList = new StringBuilder();

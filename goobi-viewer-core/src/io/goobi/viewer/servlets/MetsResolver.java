@@ -55,22 +55,18 @@ public class MetsResolver extends HttpServlet {
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         String s = "/opt/digiverso/data/";
         URI p = URI.create(s);
         System.out.println(p + " is absolute: " + p.isAbsolute());
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     * @should return METS file correctly via pi
-     * @should return METS file correctly via urn
-     * @should return LIDO file correctly
-     * @should return 404 if access denied
-     * @should return 404 if file not found
-     * @should return 409 if more than one record matched
-     * @should return 500 if record identifier bad
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
@@ -148,9 +144,7 @@ public class MetsResolver extends HttpServlet {
 
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
+    /** {@inheritDoc} */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);

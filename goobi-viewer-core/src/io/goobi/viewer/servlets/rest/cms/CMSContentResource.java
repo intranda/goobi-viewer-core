@@ -52,7 +52,7 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * Provides methods to access cms-content to be embedded into pages with <ui:include>
- * 
+ *
  * getPageUrl(), getContentUrl() and getSidebarElementUrl() provide urls to cms-pages, content and sidebar-element respectively. The other methods
  * resolve these urls and return the appropriate html content. All urls are absolute urls including scheme information (http), as ui:include cannot
  * resolve them otherwise (only file urls can be resolved with relative paths)
@@ -75,6 +75,17 @@ public class CMSContentResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * <p>getContentHtml.</p>
+     *
+     * @param pageId a {@link java.lang.Long} object.
+     * @param language a {@link java.lang.String} object.
+     * @param contentId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws javax.servlet.ServletException if any.
+     */
     @GET
     @Path("/content/{pageId}/{language}/{contentId}")
     @Produces({ MediaType.TEXT_HTML })
@@ -87,6 +98,15 @@ public class CMSContentResource {
         return wrap(output, false);
     }
 
+    /**
+     * <p>getPageUrl.</p>
+     *
+     * @param pageId a {@link java.lang.Long} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws javax.servlet.ServletException if any.
+     */
     @GET
     @Path("/page/{pageId}")
     @Produces({ MediaType.TEXT_HTML })
@@ -95,6 +115,15 @@ public class CMSContentResource {
         return wrap(output, true);
     }
 
+    /**
+     * <p>getSidebarElementHtml.</p>
+     *
+     * @param elementId a {@link java.lang.Long} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws javax.servlet.ServletException if any.
+     */
     @GET
     @Path("/sidebar/{elementId}")
     @Produces({ MediaType.TEXT_PLAIN })
@@ -104,9 +133,11 @@ public class CMSContentResource {
     }
 
     /**
-     * @param string
-     * @param escapeHtml
-     * @return
+     * <p>wrap.</p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @param escapeHtml a boolean.
+     * @return a {@link java.lang.String} object.
      */
     protected String wrap(String string, boolean escapeHtml) {
         String output = "";
@@ -243,8 +274,10 @@ public class CMSContentResource {
     }
 
     /**
-     * @param cmsPage
-     * @return
+     * <p>getPageUrl.</p>
+     *
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getPageUrl(CMSPage cmsPage) {
         if (cmsPage != null) {
@@ -261,8 +294,10 @@ public class CMSContentResource {
     }
 
     /**
-     * @param page
-     * @param item
+     * <p>getContentUrl.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getContentUrl(CMSContentItem item) {
         if (item != null) {
@@ -284,6 +319,12 @@ public class CMSContentResource {
         return "";
     }
 
+    /**
+     * <p>getSidebarElementUrl.</p>
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSidebarElementUrl(CMSSidebarElement item) {
         if (item != null && item.hasHtml()) {
             StringBuilder urlBuilder = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());

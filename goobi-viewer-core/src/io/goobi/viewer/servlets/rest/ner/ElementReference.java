@@ -24,6 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
+/**
+ * <p>ElementReference class.</p>
+ *
+ */
 @XmlRootElement
 @XmlType(propOrder={"id", "content", "coordinates"})
 public class ElementReference {
@@ -35,6 +39,9 @@ public class ElementReference {
 
     
     
+    /**
+     * <p>Constructor for ElementReference.</p>
+     */
     public ElementReference() {
         super();
         this.id = null;
@@ -44,6 +51,13 @@ public class ElementReference {
 
 
 
+    /**
+     * <p>Constructor for ElementReference.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @param coordinates a {@link java.awt.Rectangle} object.
+     * @param content a {@link java.lang.String} object.
+     */
     public ElementReference(String id, Rectangle coordinates, String content) {
         super();
         this.id = id;
@@ -51,27 +65,52 @@ public class ElementReference {
         this.content = content;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement
     public String getId() {
         return id;
     }
 
+    /**
+     * <p>Getter for the field <code>coordinates</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement
     public String getCoordinates() {
         return getAsString(coordinates);
     }
 
+    /**
+     * <p>getCoordinatesAsRect.</p>
+     *
+     * @return a {@link java.awt.Rectangle} object.
+     */
     @JsonIgnore
     public Rectangle getCoordinatesAsRect() {
         return coordinates;
     }
 
 
+    /**
+     * <p>Setter for the field <code>coordinates</code>.</p>
+     *
+     * @param coordinates a {@link java.awt.Rectangle} object.
+     */
     public void setCoordinates(Rectangle coordinates) {
         this.coordinates = coordinates;
     }
 
 
+    /**
+     * <p>Getter for the field <code>content</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement
     public String getContent() {
         return content;
@@ -79,11 +118,18 @@ public class ElementReference {
 
 
 
+    /**
+     * <p>Setter for the field <code>content</code>.</p>
+     *
+     * @param content a {@link java.lang.String} object.
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
     /**
+     * <p>Getter for the field <code>page</code>.</p>
+     *
      * @return the pageNo
      */
     public int getPage() {
@@ -91,6 +137,8 @@ public class ElementReference {
     }
     
     /**
+     * <p>Setter for the field <code>page</code>.</p>
+     *
      * @param pageNo the pageNo to set
      */
     public void setPage(int pageNo) {

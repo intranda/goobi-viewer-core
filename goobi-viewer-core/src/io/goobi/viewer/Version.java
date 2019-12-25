@@ -16,11 +16,20 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 
+/**
+ * <p>Version class.</p>
+ *
+ */
 public class Version {
+    /** Constant <code>APPLICATION_NAME</code> */
     public final static String APPLICATION_NAME;
+    /** Constant <code>VERSION</code> */
     public final static String VERSION;
+    /** Constant <code>PUBLIC_VERSION</code> */
     public final static String PUBLIC_VERSION;
+    /** Constant <code>BUILDVERSION</code> */
     public final static String BUILDVERSION;
+    /** Constant <code>BUILDDATE</code> */
     public final static String BUILDDATE;
     
     private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd_HH-mm";
@@ -76,13 +85,23 @@ public class Version {
         }
     }
     
+    /**
+     * <p>getBuildDate.</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getBuildDate(String pattern) {
         return convertDate(BUILDDATE, MANIFEST_DATE_PATTERN, pattern);
     }
 
     /**
-     * @param pattern
-     * @param dateString
+     * <p>convertDate.</p>
+     *
+     * @param inputString a {@link java.lang.String} object.
+     * @param inputPattern a {@link java.lang.String} object.
+     * @param outputPattern a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String convertDate(String inputString, String inputPattern, String outputPattern) {
         DateTimeFormatter in = DateTimeFormatter.ofPattern(inputPattern);

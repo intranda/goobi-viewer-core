@@ -24,16 +24,30 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.model.misc.Translation;
 
 /**
- * @author florian
+ * <p>MessagesTranslation class.</p>
  *
+ * @author florian
  */
 public class MessagesTranslation extends Translation {
 
+    /**
+     * <p>Constructor for MessagesTranslation.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     * @param language a {@link java.lang.String} object.
+     */
     public MessagesTranslation(String key, String value, String language) {
         super(language, key, value);
         this.id = 0l;   //just to prevent nullpointer
     }
     
+    /**
+     * <p>getTranslations.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public static Collection<Translation> getTranslations(String key) {
         Collection<Translation> translations = new ArrayList<>();
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {

@@ -53,6 +53,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
+/**
+ * <p>Bookmark class.</p>
+ *
+ */
 @Entity
 @Table(name = "bookshelf_items")
 public class Bookmark implements Serializable {
@@ -103,11 +107,20 @@ public class Bookmark implements Serializable {
     @Transient
     private String url;
 
-    /** Empty constructor. */
+    /**
+     * Empty constructor.
+     */
     public Bookmark() {
         // the emptiness inside
     }
 
+    /**
+     * <p>Constructor for Bookmark.</p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param mainTitle a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     */
     public Bookmark(String pi, String mainTitle, String name) {
         this.pi = pi;
         this.name = name;
@@ -118,13 +131,13 @@ public class Bookmark implements Serializable {
      * Creates a new bookmark based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
-     * 
-     * @param pi
-     * @param logId
-     * @param order
-     * @throws IndexUnreachableException if the Solr index could not be reached
-     * @throws PresentationException if the pi/logId could not be resolved
-     * @throws NullPointerException if pi is null or blank
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param order a {@link java.lang.Integer} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if the Solr index could not be reached
+     * @throws io.goobi.viewer.exceptions.PresentationException if the pi/logId could not be resolved
+     * @throws java.lang.NullPointerException if pi is null or blank
      */
     public Bookmark(String pi, String logId, Integer order) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
@@ -138,14 +151,14 @@ public class Bookmark implements Serializable {
      * Creates a new bookmark based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
      * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
      * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
-     * 
-     * @param pi
-     * @param logId
-     * @param order
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param order a {@link java.lang.Integer} object.
      * @param ignoreMissingSolrDoc should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
-     * @throws IndexUnreachableException if the Solr index could not be reached
-     * @throws PresentationException if the pi/logId could not be resolved
-     * @throws NullPointerException if pi is null or blank
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if the Solr index could not be reached
+     * @throws io.goobi.viewer.exceptions.PresentationException if the pi/logId could not be resolved
+     * @throws java.lang.NullPointerException if pi is null or blank
      */
     public Bookmark(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
@@ -166,6 +179,7 @@ public class Bookmark implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -177,6 +191,7 @@ public class Bookmark implements Serializable {
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -193,8 +208,11 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * @param other
-     * @return
+     * <p>bothEqualOrNull.</p>
+     *
+     * @param o1 a {@link java.lang.Object} object.
+     * @param o2 a {@link java.lang.Object} object.
+     * @return a boolean.
      */
     public boolean bothEqualOrNull(Object o1, Object o2) {
         if (o1 == null) {
@@ -204,8 +222,11 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * @param other
-     * @return
+     * <p>bothEqualOrBlank.</p>
+     *
+     * @param o1 a {@link java.lang.String} object.
+     * @param o2 a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean bothEqualOrBlank(String o1, String o2) {
         if (StringUtils.isBlank(o1)) {
@@ -221,8 +242,8 @@ public class Bookmark implements Serializable {
      * Returns the image view URL for this bookmark. If this is the first call, the url is constructed first.
      *
      * @return The URL as string.
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getUrl() throws PresentationException, IndexUnreachableException {
         if (url != null) {
@@ -271,11 +292,11 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @return a {@link java.lang.String} object.
      */
     public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         int width = 90;
@@ -286,11 +307,13 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @param width a int.
+     * @param height a int.
+     * @return a {@link java.lang.String} object.
      */
     public String getRepresentativeImageUrl(int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
@@ -328,10 +351,10 @@ public class Bookmark implements Serializable {
 
     /**
      * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId
-     * 
-     * @return
-     * @throws IndexUnreachableException if the Solr index could not be reached
-     * @throws PresentationException if the pi/logId could not be resolved
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if the Solr index could not be reached
+     * @throws io.goobi.viewer.exceptions.PresentationException if the pi/logId could not be resolved
+     * @return a {@link java.lang.String} object.
      */
     @JsonIgnore
     public String getDocumentTitle() throws IndexUnreachableException, PresentationException {
@@ -360,6 +383,8 @@ public class Bookmark implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the id
      */
     public Long getId() {
@@ -367,6 +392,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id the id to set
      */
     public void setId(Long id) {
@@ -374,6 +401,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>bookmarkList</code>.</p>
+     *
      * @return the bookmarkList
      */
     public BookmarkList getBookmarkList() {
@@ -381,6 +410,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>bookmarkList</code>.</p>
+     *
      * @param bookmarkList the bookmarkList to set
      */
     public void setBookmarkList(BookmarkList bookmarkList) {
@@ -388,6 +419,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>pi</code>.</p>
+     *
      * @return the pi
      */
     public String getPi() {
@@ -395,6 +428,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>pi</code>.</p>
+     *
      * @param pi the pi to set
      */
     public void setPi(String pi) {
@@ -402,6 +437,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>logId</code>.</p>
+     *
      * @return the logId
      */
     public String getLogId() {
@@ -409,6 +446,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>logId</code>.</p>
+     *
      * @param logId the logId to set
      */
     public void setLogId(String logId) {
@@ -416,6 +455,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>urn</code>.</p>
+     *
      * @return the urn
      */
     public String getUrn() {
@@ -423,18 +464,27 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>urn</code>.</p>
+     *
      * @param urn the urn to set
      */
     public void setUrn(String urn) {
         this.urn = urn;
     }
 
+    /**
+     * <p>getMainTitleUnescaped.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @JsonIgnore
     public String getMainTitleUnescaped() {
         return StringEscapeUtils.unescapeHtml(mainTitle);
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return the name
      */
     public String getName() {
@@ -442,6 +492,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -449,6 +501,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
      * @return the description
      */
     public String getDescription() {
@@ -456,6 +510,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>description</code>.</p>
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -463,6 +519,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>dateAdded</code>.</p>
+     *
      * @return the dateAdded
      */
     public Date getDateAdded() {
@@ -470,6 +528,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>dateAdded</code>.</p>
+     *
      * @param dateAdded the dateAdded to set
      */
     public void setDateAdded(Date dateAdded) {
@@ -477,6 +537,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>order</code>.</p>
+     *
      * @return the order
      */
     public Integer getOrder() {
@@ -484,6 +546,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>order</code>.</p>
+     *
      * @param order the order to set
      */
     public void setOrder(Integer order) {
@@ -491,6 +555,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>mainTitle</code>.</p>
+     *
      * @return the mainTitle
      */
     @Deprecated
@@ -499,6 +565,8 @@ public class Bookmark implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>mainTitle</code>.</p>
+     *
      * @param mainTitle the mainTitle to set
      */
     @Deprecated

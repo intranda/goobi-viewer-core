@@ -50,6 +50,7 @@ public class LoginFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#destroy()
      */
+    /** {@inheritDoc} */
     @Override
     public void destroy() {
     }
@@ -57,6 +58,7 @@ public class LoginFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
+    /** {@inheritDoc} */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -121,7 +123,7 @@ public class LoginFilter implements Filter {
     /**
      * Checks whether the given URI requires a logged in user.
      *
-     * @param uri
+     * @param uri a {@link java.lang.String} object.
      * @return true if restricted; false otherwise.
      * @should return true for certain pretty uris
      * @should return true for crowdsourcing uris
@@ -162,6 +164,7 @@ public class LoginFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
+    /** {@inheritDoc} */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
     }

@@ -32,8 +32,9 @@ import javax.validation.metadata.BeanDescriptor;
 import io.goobi.viewer.controller.Helper;
 
 /**
- * @author Florian Alpers
+ * <p>URISyntaxValidator class.</p>
  *
+ * @author Florian Alpers
  */
 @FacesValidator("URISyntaxValidator")
 public class URISyntaxValidator implements Validator<String>{
@@ -41,6 +42,7 @@ public class URISyntaxValidator implements Validator<String>{
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
+    /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         try {

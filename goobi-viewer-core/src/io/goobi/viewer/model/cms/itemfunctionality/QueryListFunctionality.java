@@ -18,14 +18,16 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * @author Florian Alpers
+ * <p>QueryListFunctionality class.</p>
  *
+ * @author Florian Alpers
  */
 public class QueryListFunctionality implements Functionality {
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
      */
+    /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
         BeanUtils.getSearchBean().setCurrentPage(pageNo);
@@ -34,6 +36,7 @@ public class QueryListFunctionality implements Functionality {
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
      */
+    /** {@inheritDoc} */
     @Override
     public int getPageNo() {
         return BeanUtils.getSearchBean().getCurrentPage();

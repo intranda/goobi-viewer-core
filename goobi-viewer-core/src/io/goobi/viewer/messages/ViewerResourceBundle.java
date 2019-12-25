@@ -55,19 +55,30 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 
+/**
+ * <p>ViewerResourceBundle class.</p>
+ *
+ */
 public class ViewerResourceBundle extends ResourceBundle {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
 
     private static final Object lock = new Object();
     private static final Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
+    /** Constant <code>localBundles</code> */
     protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
+    /** Constant <code>reloadNeededMap</code> */
     protected static final Map<String, Boolean> reloadNeededMap = new ConcurrentHashMap<>();
+    /** Constant <code>defaultLocale</code> */
     protected static volatile Locale defaultLocale;
     private static List<Locale> allLocales = null;
 
+    /** Constant <code>backgroundThread</code> */
     public static Thread backgroundThread;
 
+    /**
+     * <p>Constructor for ViewerResourceBundle.</p>
+     */
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
     }
@@ -134,6 +145,11 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>defaultLocale</code>.</p>
+     *
+     * @return a {@link java.util.Locale} object.
+     */
     public static Locale getDefaultLocale() {
         return defaultLocale != null ? defaultLocale : Locale.ENGLISH;
     }
@@ -224,6 +240,8 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This is the method that is called for HTML translations.
      */
     @Override
@@ -232,21 +250,23 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
-     * @param key
-     * @param locale
-     * @return
+     * <p>getTranslation.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(final String key, Locale locale) {
         return getTranslation(key, locale, true);
     }
 
     /**
-     * 
-     * @param key
-     * @param locale
+     * <p>getTranslationWithParameters.</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
      * @param params One or more parameter values to replace the placeholders
-     * @return
+     * @return a {@link java.lang.String} object.
      */
     public static String getTranslationWithParameters(final String key, final Locale locale, final String... params) {
         String ret = getTranslation(key, locale);
@@ -277,11 +297,12 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
-     * @param text
-     * @param locale
+     * <p>getTranslation.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
      * @param useFallback If true, get default locale translation if there is none for the given locale
      * @return Translated message key
+     * @param key a {@link java.lang.String} object.
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
@@ -301,7 +322,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Translation method with ResourceBundle parameters. It can be overridden from inheriting classes which may pass their own bundles.
-     * 
+     *
      * @param key Message key
      * @param fallbackBundle Fallback bundle if no value is found in preferredBundle
      * @param preferredBundle Check for a translation in this bundle first
@@ -433,8 +454,8 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Removes the "zzz" marker from the given string.
-     * 
-     * @param value
+     *
+     * @param value a {@link java.lang.String} object.
      * @return Cleaned-up value
      */
     public static String cleanUpTranslation(String value) {
@@ -448,10 +469,11 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
-     * @param locale
-     * @param keyPrefix
-     * @return
+     * <p>getMessagesValues.</p>
+     *
+     * @param locale a {@link java.util.Locale} object.
+     * @param keyPrefix a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
@@ -468,11 +490,17 @@ public class ViewerResourceBundle extends ResourceBundle {
         return res;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Enumeration<String> getKeys() {
         return null;
     }
 
+    /**
+     * <p>Getter for the field <code>allLocales</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
 
@@ -521,7 +549,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
-     * 
+     *
      * @param key the message key
      * @return A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
      */

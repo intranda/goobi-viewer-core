@@ -16,11 +16,10 @@
 package io.goobi.viewer.model.cms;
 
 /**
- * 
- * A {@link CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems to be used in the navigation menu
- * 
- * @author Florian Alpers
  *
+ * A {@link io.goobi.viewer.model.cms.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems to be used in the navigation menu
+ *
+ * @author Florian Alpers
  */
 public class SelectableNavigationItem extends CMSNavigationItem {
 
@@ -29,35 +28,43 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     
     
     /**
-     * 
+     * <p>Constructor for SelectableNavigationItem.</p>
      */
     public SelectableNavigationItem() {
         super();
     }
 
     /**
-     * @param original
+     * <p>Constructor for SelectableNavigationItem.</p>
+     *
+     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public SelectableNavigationItem(CMSNavigationItem original) {
         super(original);
     }
 
     /**
-     * @param cmsPage
+     * <p>Constructor for SelectableNavigationItem.</p>
+     *
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
      */
     public SelectableNavigationItem(CMSPage cmsPage) {
         super(cmsPage);
     }
 
     /**
-     * @param targetUrl
-     * @param label
+     * <p>Constructor for SelectableNavigationItem.</p>
+     *
+     * @param targetUrl a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
      */
     public SelectableNavigationItem(String targetUrl, String label) {
         super(targetUrl, label);
     }
 
     /**
+     * <p>Setter for the field <code>selected</code>.</p>
+     *
      * @param selected the selected to set
      */
     public void setSelected(boolean selected) {
@@ -65,6 +72,8 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
     
     /**
+     * <p>isSelected.</p>
+     *
      * @return the selected
      */
     public boolean isSelected() {
