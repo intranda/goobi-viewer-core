@@ -13,7 +13,50 @@
 
 
 	<name>Goobi viewer - Core</name>
+	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
 	<url>https://github.com/intranda/goobi-viewer-core</url>
+
+	<organization>
+		<name>Goobi</name>
+		<url>https://goobi.io</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GPL v2 or later</name>
+			<url>https://raw.githubusercontent.com/intranda/goobi-viewer-core/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>scm:git:https://github.com/intranda/goobi-viewer-core/</url>
+		<connection>scm:git:https://github.com/intranda/goobi-viewer-core/</connection>
+	</scm>
+
+
+	<repositories>
+		<repository>
+			<id>intranda-public</id>
+			<url>https://nexus.intranda.com/repository/maven-public</url>
+		</repository>
+	</repositories>
+
+
+	<distributionManagement>
+		<repository>
+			<id>intranda-releases</id>
+			<url>https://nexus.intranda.com/repository/maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>intranda-snapshots</id>
+			<url>https://nexus.intranda.com/repository/maven-snapshots</url>
+		</snapshotRepository>
+		<site>
+			<id>intranda-snapshots</id>
+			<url>dav:https://nexus.intranda.com/repository/maven-raw/goobi-viewer/</url>
+		</site>
+	</distributionManagement>
 
 
 	<properties>
@@ -115,32 +158,6 @@
 		<xerces.version>2.12.0</xerces.version>
 		<xstream.version>1.4.11.1</xstream.version>
 	</properties>
-
-
-	<scm>
-		<url>scm:git:https://github.com/intranda/goobi-viewer-core/</url>
-		<connection>scm:git:https://github.com/intranda/goobi-viewer-core/</connection>
-	</scm>
-
-
-	<repositories>
-		<repository>
-			<id>intranda-public</id>
-			<url>https://nexus.intranda.com/repository/maven-public</url>
-		</repository>
-	</repositories>
-
-
-	<distributionManagement>
-		<repository>
-			<id>intranda-releases</id>
-			<url>https://nexus.intranda.com/repository/maven-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>intranda-snapshots</id>
-			<url>https://nexus.intranda.com/repository/maven-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 
 	<dependencies>
@@ -302,20 +319,20 @@
 			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 			<version>${docx4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-compress</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -504,10 +521,10 @@
 			<artifactId>jersey-hk2</artifactId>
 			<version>${jersey-hk2.version}</version>
 		</dependency>
-	    <dependency>
-		  <groupId>com.fasterxml.jackson.datatype</groupId>
-		  <artifactId>jackson-datatype-json-org</artifactId>
-		  <version>2.9.0</version>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-json-org</artifactId>
+			<version>2.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.timgroup</groupId>
@@ -866,44 +883,12 @@
 				</excludes>
 			</resource>
 		</resources>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M3</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.1.1</version>
-				</plugin>
-				<plugin>
-					<groupId>pl.project13.maven</groupId>
-					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.2.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>1.4</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
@@ -911,7 +896,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M4</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -920,7 +907,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.1</version>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
@@ -938,6 +927,7 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.1</version>
 				<configuration>
 					<commitIdGenerationMode>flat</commitIdGenerationMode>
 					<gitDescribe>
@@ -955,6 +945,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
 				<configuration>
 					<shortRevisionLength>7</shortRevisionLength>
 					<doCheck>false</doCheck>
@@ -969,7 +960,50 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.8.2</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-webdav-jackrabbit</artifactId>
+						<version>2.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-project-info-reports-plugin</artifactId>
+			<version>3.0.0</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>team</report>
+							<report>mailing-lists</report>
+							<report>ci-management</report>
+							<report>issue-management</report>
+							<report>licenses</report>
+							<report>scm</report>
+							<report>distribution-management</report>
+							<report>index</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
@@ -980,14 +1014,14 @@
 						</tag>
 					</tags>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
-	</build>
+	</reporting>
 </project>
