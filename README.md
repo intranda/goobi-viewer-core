@@ -1,5 +1,5 @@
 # Goobi viewer - Core
-[![Build Status](https://travis-ci.org/intranda/goobi-viewer-core.svg?branch=master)](https://travis-ci.org/intranda/goobi-viewer-core)
+[![](https://github.com/intranda/goobi-viewer-core/workflows/.github/workflows/maven.yml/badge.svg)
 > A highly flexible digital library framework - made by the Goobi developer team
 
 
