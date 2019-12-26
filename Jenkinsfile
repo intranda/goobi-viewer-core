@@ -25,7 +25,7 @@ pipeline {
               recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }
-    stage('deployment to maven repository') {
+    stage('deployment of artifacts to maven repository') {
       when {
         anyOf {
         branch 'master'
@@ -34,6 +34,26 @@ pipeline {
       }
       steps {
         sh 'mvn -f goobi-viewer-core/pom.xml deploy'
+      }
+    }
+    stage('maven site generation') {
+      when {
+        anyOf {
+        branch 'master'
+        }
+      }
+      steps {
+        sh 'mvn -f goobi-viewer-core/pom.xml site'
+      }
+    }
+    stage('deployment of site to maven repository') {
+      when {
+        anyOf {
+        branch 'master'
+        }
+      }
+      steps {
+        sh 'mvn -f goobi-viewer-core/pom.xml site:deploy'
       }
     }
   }
