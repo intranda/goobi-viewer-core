@@ -866,22 +866,52 @@
 				</excludes>
 			</resource>
 		</resources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>1.4</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
-			<!-- Maven Compiler Plugin -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
 				</configuration>
 			</plugin>
-			<!-- Maven Surefire Plugin -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M3</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -889,10 +919,8 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- Maven JAR Plugin -->
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.1</version>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
@@ -906,12 +934,16 @@
 					</archive>
 				</configuration>
 			</plugin>
-
 			<!-- get git version number -->
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.1</version>
+				<configuration>
+					<commitIdGenerationMode>flat</commitIdGenerationMode>
+					<gitDescribe>
+						<skip>true</skip>
+					</gitDescribe>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -919,18 +951,14 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<commitIdGenerationMode>flat</commitIdGenerationMode>
-					<gitDescribe>
-						<skip>true</skip>
-					</gitDescribe>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.4</version>
-
+				<configuration>
+					<shortRevisionLength>7</shortRevisionLength>
+					<doCheck>false</doCheck>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -939,15 +967,9 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<shortRevisionLength>7</shortRevisionLength>
-					<doCheck>false</doCheck>
-				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.1.1</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
