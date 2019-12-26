@@ -1,5 +1,5 @@
 # Goobi viewer - Core
-[![](https://github.com/intranda/goobi-viewer-core/workflows/.github/workflows/maven.yml/badge.svg)
+[![](https://github.com/intranda/goobi-viewer-core/workflows/.github/workflows/default.yml/badge.svg)
 > A highly flexible digital library framework - made by the Goobi developer team
 
 
