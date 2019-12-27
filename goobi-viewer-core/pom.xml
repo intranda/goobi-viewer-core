@@ -96,6 +96,7 @@
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<commons-net.version>3.6</commons-net.version>
 		<commons-pool.version>1.6</commons-pool.version>
+		<commons-text.version>1.8</commons-text.version>
 		<cxf-rt-rs-extension-providers.version>3.3.4</cxf-rt-rs-extension-providers.version>
 		<dbunit.version>2.6.0</dbunit.version>
 		<docx4j.version>8.1.0</docx4j.version>
@@ -252,6 +253,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>${commons-collections4.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>${commons-text.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
