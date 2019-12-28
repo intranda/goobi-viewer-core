@@ -141,7 +141,7 @@
 		<poi.version>4.1.1</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>6.2</primefaces.version>
-		<rome.version>1.0</rome.version>
+		<rome.version>1.12.2</rome.version>
 		<rs-api.version>2.1.1</rs-api.version>
 		<saxon.version>9.0</saxon.version>
 		<slf4j.version>1.7.26</slf4j.version>
@@ -765,7 +765,7 @@
 			<version>${primefaces.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>rome</groupId>
+			<groupId>com.rometools</groupId>
 			<artifactId>rome</artifactId>
 			<version>${rome.version}</version>
 		</dependency>
