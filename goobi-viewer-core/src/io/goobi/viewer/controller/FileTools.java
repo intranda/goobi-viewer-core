@@ -309,7 +309,7 @@ public class FileTools {
                 zos.setLevel(level);
             }
             for (Path path : contentMap.keySet()) {
-                try (InputStream in = IOUtils.toInputStream(contentMap.get(path))) {
+                try (InputStream in = IOUtils.toInputStream(contentMap.get(path), "UTF-8")) {
                     zos.putNextEntry(new ZipEntry(path.getFileName().toString()));
                     byte[] buffer = new byte[1024];
                     int len;

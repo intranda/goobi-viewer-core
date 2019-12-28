@@ -210,7 +210,7 @@ public class CmsMediaBean implements Serializable {
 	 */
 	private static boolean validate(File file, String contentType) throws IOException {
 		if (CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
-			String content = FileUtils.readFileToString(file);
+			String content = FileUtils.readFileToString(file, "UTF-8");
 			return !content.toLowerCase().contains("<script");
 		}
 
