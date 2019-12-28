@@ -35,7 +35,11 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
 
     private static IDatabaseTester databaseTester;
 
-    @Before
+    //    protected static IDataSet getDataSet() throws Exception {
+    //        return new XmlDataSet(new FileInputStream("resources/test_db_dataset.xml"));
+    //    }
+
+    @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
 
@@ -44,20 +48,25 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
         try (FileInputStream fis = new FileInputStream("resources/test/test_db_dataset.xml")) {
             databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(fis));
         }
+        // databaseTester.setDataSet(getDataSet());
     }
-//
-//    @Before
-//    public void setUp() throws Exception {
-//        databaseTester.onSetup();
-//    }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//        databaseTester.onTearDown();
-//        ((JPADAO) DataManager.getInstance().getDao()).getEntityManager().clear();
-//    }
-//
+
+    @Before
+    public void setUp() throws Exception {
+        // databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(new FileInputStream("resources/test_db_dataset.xml")));
+        databaseTester.onSetup();
+    }
+
     @After
+    public void tearDown() throws Exception {
+        databaseTester.onTearDown();
+        ((JPADAO) DataManager.getInstance().getDao()).getEntityManager().clear();
+
+        // FlatXmlDataSet
+        // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
+    }
+
+    @AfterClass
     public static void tearDownClass() throws Exception {
         if (DataManager.getInstance().getDao() != null) {
             DataManager.getInstance().getDao().shutdown();
