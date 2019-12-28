@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             String requestPath = servletRequest.getRequestURI();
             requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
             // logger.trace("Filtering request {}", requestPath);
-            StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
+            StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
             String imageName = pathSegments.get(1);
