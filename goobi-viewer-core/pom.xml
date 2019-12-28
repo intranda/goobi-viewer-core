@@ -123,7 +123,7 @@
 		<oauth.version>1.0.2</oauth.version>
 		<poi.version>4.1.1</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
-		<primefaces.version>6.2</primefaces.version>
+		<primefaces.version>7.0</primefaces.version>
 		<rome.version>1.12.2</rome.version>
 		<rs-api.version>2.1.1</rs-api.version>
 		<saxon.version>9.0</saxon.version>
