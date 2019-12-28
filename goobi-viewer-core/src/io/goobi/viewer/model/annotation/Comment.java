@@ -50,7 +50,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * <p>Comment class.</p>
- *
  */
 @Entity
 @Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })

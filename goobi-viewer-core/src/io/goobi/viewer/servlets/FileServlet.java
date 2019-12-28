@@ -170,9 +170,9 @@ public class FileServlet extends HttpServlet implements Serializable {
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
      * @param page a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.nio.file.Path} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Path getFile(String pi, String fileName, String page) throws PresentationException, IndexUnreachableException {
 //        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);

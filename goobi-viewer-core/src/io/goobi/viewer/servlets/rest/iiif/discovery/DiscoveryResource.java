@@ -62,8 +62,8 @@ public class DiscoveryResource {
      * This resource also contains a count of the total number of activities
      *
      * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Activities}
-     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
     @Path("/activities")
@@ -84,8 +84,8 @@ public class DiscoveryResource {
      *
      * @param pageNo    The page number, starting with 0
      * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of {@link Activity Activities}
-     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
     @Path("/activities/{pageNo}")

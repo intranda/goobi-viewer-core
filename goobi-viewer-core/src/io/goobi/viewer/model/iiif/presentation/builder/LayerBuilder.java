@@ -82,11 +82,11 @@ public class LayerBuilder extends AbstractBuilder {
      * @param motivation a {@link java.lang.String} object.
      * @param fileGetter a {@link java.util.function.BiFunction} object.
      * @param linkGetter a {@link java.util.function.BiFunction} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws java.io.IOException
-     * @throws java.net.URISyntaxException
      * @return a {@link de.intranda.api.iiif.presentation.Layer} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.net.URISyntaxException if any.
      */
     public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter,
             BiFunction<String, String, URI> linkGetter) throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
@@ -162,9 +162,9 @@ public class LayerBuilder extends AbstractBuilder {
      *
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.
-     * @throws java.net.URISyntaxException
      * @param logId a {@link java.lang.String} object.
      * @return a {@link de.intranda.api.iiif.presentation.Layer} object.
+     * @throws java.net.URISyntaxException if any.
      */
     public Layer generateContentLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, String logId) throws URISyntaxException {
         Layer layer = new Layer(getLayerURI(pi, logId));

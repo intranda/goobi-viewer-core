@@ -2,10 +2,8 @@ package io.goobi.viewer.exceptions.streams;
 
 /**
  * <p>CheckedFunction interface.</p>
- *
  */
 @FunctionalInterface
-
 public interface CheckedFunction<T,R> {
 
     /**

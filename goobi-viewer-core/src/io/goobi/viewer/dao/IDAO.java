@@ -54,7 +54,6 @@ import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>IDAO interface.</p>
- *
  */
 public interface IDAO {
 
@@ -1553,8 +1552,8 @@ public interface IDAO {
      * <p>getCMSPageForEditing.</p>
      *
      * @param id a long.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
@@ -1562,8 +1561,8 @@ public interface IDAO {
      * <p>getPagesWithComments.</p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Integer> getPagesWithComments(String pi) throws DAOException;
 
@@ -1571,8 +1570,8 @@ public interface IDAO {
      * <p>getCMSCollections.</p>
      *
      * @param solrField a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException;
 

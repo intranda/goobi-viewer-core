@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>AccessDeniedException class.</p>
- *
  */
 public class AccessDeniedException extends Exception implements Serializable {
 

@@ -37,7 +37,6 @@ import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * <p>JPAClassLoader class.</p>
- *
  */
 public class JPAClassLoader extends ClassLoader {
 

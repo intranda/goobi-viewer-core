@@ -259,8 +259,8 @@ public class IIIFSearchBuilder {
      * {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than {@link #getHitsPerPage()} hits per motivation.
      *
      * @return the search result
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SearchResult build() throws PresentationException, IndexUnreachableException {
 
@@ -325,8 +325,8 @@ public class IIIFSearchBuilder {
      * Creates a {@link de.intranda.api.iiif.search.AutoSuggestResult} containing searchTerms matching {@link #getQuery()} within {@link #getPi()}.
      *
      * @return The searchTerm list
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public AutoSuggestResult buildAutoSuggest() throws PresentationException, IndexUnreachableException {
 

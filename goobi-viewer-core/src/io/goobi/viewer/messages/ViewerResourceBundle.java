@@ -57,7 +57,6 @@ import io.goobi.viewer.controller.StringTools;
 
 /**
  * <p>ViewerResourceBundle class.</p>
- *
  */
 public class ViewerResourceBundle extends ResourceBundle {
 

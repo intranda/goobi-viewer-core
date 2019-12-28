@@ -30,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * <p>NERTag class.</p>
- *
  */
 @XmlRootElement(name = "tag")
 @XmlType(propOrder = { "id", "type", "value", "element" })

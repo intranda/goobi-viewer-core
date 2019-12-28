@@ -51,7 +51,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBi
 
 /**
  * <p>ImageRequestFilter class.</p>
- *
  */
 @Provider
 @ContentServerImageBinding
@@ -124,10 +123,10 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      *
      * @param pi a {@link java.lang.String} object.
      * @param imageName a {@link java.lang.String} object.
-     * @throws java.io.IOException
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @return a boolean.
+     * @throws java.io.IOException if any.
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {

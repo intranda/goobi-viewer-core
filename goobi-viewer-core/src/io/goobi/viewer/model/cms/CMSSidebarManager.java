@@ -33,7 +33,6 @@ import io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode;
 
 /**
  * <p>CMSSidebarManager class.</p>
- *
  */
 public final class CMSSidebarManager {
 

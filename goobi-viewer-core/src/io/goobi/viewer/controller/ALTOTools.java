@@ -56,7 +56,6 @@ import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
 
 /**
  * <p>ALTOTools class.</p>
- *
  */
 public class ALTOTools {
 
@@ -167,10 +166,10 @@ public class ALTOTools {
      * @param alto a {@link java.lang.String} object.
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws java.io.IOException
-     * @throws javax.xml.stream.XMLStreamException
      * @should use extract fulltext correctly
      * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws javax.xml.stream.XMLStreamException if any.
      */
     protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request) throws IOException, XMLStreamException {
         if (alto == null) {

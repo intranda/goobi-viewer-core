@@ -25,7 +25,6 @@ import io.goobi.viewer.controller.SolrConstants;
 
 /**
  * <p>BrowsingMenuFieldConfig class.</p>
- *
  */
 public class BrowsingMenuFieldConfig implements Serializable {
 

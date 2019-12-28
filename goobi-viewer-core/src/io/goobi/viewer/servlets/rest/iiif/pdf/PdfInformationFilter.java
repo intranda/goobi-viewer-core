@@ -33,7 +33,6 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * <p>PdfInformationFilter class.</p>
- *
  */
 @Provider
 @ContentServerPdfInfoBinding

@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>ConvertAbbyyToAlto class.</p>
- *
  */
 public class ConvertAbbyyToAlto {
 

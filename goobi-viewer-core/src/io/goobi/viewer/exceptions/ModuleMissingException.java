@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>ModuleMissingException class.</p>
- *
  */
 public class ModuleMissingException extends Exception implements Serializable {
 

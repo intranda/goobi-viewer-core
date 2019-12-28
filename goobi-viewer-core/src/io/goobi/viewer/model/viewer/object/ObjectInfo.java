@@ -49,8 +49,8 @@ public class ObjectInfo {
     /**
      * <p>Constructor for ObjectInfo.</p>
      *
-     * @throws java.net.URISyntaxException
      * @param uri a {@link java.lang.String} object.
+     * @throws java.net.URISyntaxException if any.
      */
     public ObjectInfo(String uri) throws URISyntaxException {
         this.uri = new URI(uri);

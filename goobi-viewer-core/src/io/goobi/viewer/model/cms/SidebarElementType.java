@@ -20,7 +20,6 @@ import io.goobi.viewer.model.misc.GeoLocationInfo;
 
 /**
  * <p>SidebarElementType class.</p>
- *
  */
 public enum SidebarElementType {
 

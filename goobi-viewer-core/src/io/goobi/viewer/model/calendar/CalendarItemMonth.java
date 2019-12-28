@@ -22,7 +22,6 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * <p>CalendarItemMonth class.</p>
- *
  */
 public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 

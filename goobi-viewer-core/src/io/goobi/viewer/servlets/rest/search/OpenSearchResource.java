@@ -36,7 +36,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * <p>OpenSearchResource class.</p>
- *
  */
 @Path("/opensearch")
 @ViewerRestServiceBinding

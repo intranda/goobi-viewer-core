@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>CompareYearSolrDocWrapper class.</p>
- *
  */
 public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocWrapper> {
 

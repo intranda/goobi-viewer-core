@@ -104,9 +104,9 @@ public class CampaignItemResource {
      * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
      * @return  a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem}
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
     @GET
     @Path("/{campaignId}/{pi}")
@@ -134,7 +134,7 @@ public class CampaignItemResource {
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
      * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
     @Path("/{campaignId}/{pi}/")
@@ -166,8 +166,8 @@ public class CampaignItemResource {
      * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
      * @return A map of target URIs (manifest or canvas) mapped to a submap of question URIs mapped to questions
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @Path("/{campaignId}/{pi}/annotations")
@@ -194,9 +194,9 @@ public class CampaignItemResource {
      *
      * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param pages a {@link java.util.List} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @PUT
     @Path("/{campaignId}/{pi}/annotations")

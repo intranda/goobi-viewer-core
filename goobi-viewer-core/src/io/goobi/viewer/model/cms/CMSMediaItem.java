@@ -67,7 +67,6 @@ import io.goobi.viewer.model.viewer.BrowseElementInfo;
 
 /**
  * <p>CMSMediaItem class.</p>
- *
  */
 @Entity
 @Table(name = "cms_media_items")
@@ -548,7 +547,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * set the link for this media item
 	 *
 	 * @param linkUrl a {@link java.lang.String} object.
-	 * @throws java.net.URISyntaxException
+	 * @throws java.net.URISyntaxException if any.
 	 */
 	public void setLink(String linkUrl) throws URISyntaxException {
 		if (StringUtils.isBlank(linkUrl)) {

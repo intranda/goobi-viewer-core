@@ -30,7 +30,6 @@ import io.goobi.viewer.servlets.rest.ner.NERTag;
 
 /**
  * <p>GenericList class.</p>
- *
  */
 @XmlRootElement(name = "list")
 @XmlSeeAlso({ NERTag.class, NERTag.Type.class, DocumentReference.class, ElementReference.class })

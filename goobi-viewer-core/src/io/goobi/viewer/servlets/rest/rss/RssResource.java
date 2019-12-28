@@ -75,11 +75,11 @@ public class RssResource {
      *
      * @param numHits a int.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("/{language}/{numhits}")
@@ -106,11 +106,11 @@ public class RssResource {
      * @param numHits a int.
      * @param language a {@link java.lang.String} object.
      * @param partnerId a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("/{language}/{partnerId}/{numhits}")
@@ -143,10 +143,10 @@ public class RssResource {
      * @param numHits a int.
      * @param query a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
@@ -181,11 +181,11 @@ public class RssResource {
      * @param bookshelfIdString a {@link java.lang.String} object.
      * @param numHits a int.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("bookshelf/{bookshelfId}/{language}/{numhits}")
@@ -218,11 +218,11 @@ public class RssResource {
      * @param numHits a int.
      * @param query a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("/{query}/{language}/{bookshelfId}/{partnerId}/{numhits}")
@@ -256,13 +256,13 @@ public class RssResource {
      * @param query a {@link java.lang.String} object.
      * @param facets a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws com.sun.syndication.io.FeedException
      * @param advancedSearchGroupOperator a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws com.rometools.rome.io.FeedException if any.
      */
     @GET
     @Path("/search/{query}/{facets}/{advancedSearchGroupOperator}/{language}")

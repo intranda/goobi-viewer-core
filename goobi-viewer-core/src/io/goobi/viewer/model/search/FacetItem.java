@@ -39,7 +39,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>FacetItem class.</p>
- *
  */
 public class FacetItem implements Comparable<FacetItem>, Serializable {
 

@@ -792,9 +792,9 @@ public class ConfigurationBean implements Serializable {
     /**
      * <p>getTimeMatrixStartYear.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public int getTimeMatrixStartYear() throws PresentationException, IndexUnreachableException {
         String value = DataManager.getInstance().getConfiguration().getStartYearForTimeline();
@@ -812,9 +812,9 @@ public class ConfigurationBean implements Serializable {
     /**
      * <p>getTimeMatrixEndYear.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public int getTimeMatrixEndYear() throws PresentationException, IndexUnreachableException {
         String value = DataManager.getInstance().getConfiguration().getEndYearForTimeline();
@@ -1097,7 +1097,7 @@ public class ConfigurationBean implements Serializable {
      * <p>getRestApiUrl.</p>
      *
      * @return REST API URL
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getRestApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();

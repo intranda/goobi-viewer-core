@@ -36,7 +36,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * <p>SingleWorkCollectionRedirect class.</p>
- *
  */
 @Path("/redirect/toFirstWork")
 @ViewerRestServiceBinding

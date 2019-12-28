@@ -80,7 +80,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * <p>Constructor for StructElement.</p>
      *
      * @param luceneId {@link java.lang.Long}
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement(long luceneId) throws IndexUnreachableException {
         super(luceneId);
@@ -242,9 +242,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * <p>isHasParentOrChildren.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isHasParentOrChildren() throws PresentationException, IndexUnreachableException {
         return isHasParent() || isHasChildren();
@@ -263,8 +263,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Loads and returns the immediate parent StructElement of this element.
      *
      * @return {@link io.goobi.viewer.model.viewer.StructElement}
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return parent correctly
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getParent() throws IndexUnreachableException {
         //        logger.trace("getParent");
@@ -284,9 +284,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Checks whether the Solr document represented by this StructElement has child elements in the index.
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
@@ -305,10 +305,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true).
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should retrieve top struct correctly
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
         StructElement topStruct = this;
@@ -350,8 +350,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param groupIdentifier Group record identifier
      * @param altValue Message key to return if no label was found
      * @return label value for the group record; given message key if none found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return altValue of no label was found
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getGroupLabel(String groupIdentifier, String altValue) throws IndexUnreachableException {
         if (groupIdentifier == null) {
@@ -432,8 +432,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param width a int.
      * @param height a int.
      * @return Image URL
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should construct url correctly
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getImageUrl(int width, int height) throws ViewerConfigurationException {
         String filename = getMetadataValue(SolrConstants.THUMBNAIL);
@@ -448,8 +448,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * <p>generateEventElements.</p>
      *
      * @param locale a {@link java.util.Locale} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<EventElement> generateEventElements(Locale locale) throws IndexUnreachableException {
         logger.trace("generateEventElements");
@@ -481,10 +481,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * <p>isAnchorChild.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return true if current record is volume
      * @should return false if current record is not volume
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isAnchorChild() throws IndexUnreachableException {
         if (isWork() && isHasParent()) {
@@ -535,8 +535,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Returns true if the record has any ALTO documents indexed in its pages; false otherwise.
      *
      * @return the altoAvailable
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public boolean isAltoAvailable() throws IndexUnreachableException, PresentationException {
         if (altoAvailable == null) {
@@ -552,8 +552,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Returns true if the record has any NE_* tags indexed in its pages; false otherwise.
      *
      * @return the nerAvailable
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public boolean isNerAvailable() throws IndexUnreachableException, PresentationException {
         if (nerAvailable == null) {
@@ -666,13 +666,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * <p>getFirstVolumeFieldValue.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct value
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFirstVolumeFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
@@ -696,13 +696,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * <p>getFirstVolume.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct value
      * @should return null if StructElement not anchor
      * @should throw IllegalArgumentException if field is null
      * @param fields a {@link java.util.List} object.
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getFirstVolume(List<String> fields) throws PresentationException, IndexUnreachableException {
 

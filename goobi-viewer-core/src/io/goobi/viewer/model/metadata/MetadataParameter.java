@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>MetadataParameter class.</p>
- *
  */
 public class MetadataParameter implements Serializable {
 

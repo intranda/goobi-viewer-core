@@ -26,7 +26,6 @@ import io.goobi.viewer.model.security.LicenseType;
 
 /**
  * <p>LicenseTypeConverter class.</p>
- *
  */
 @FacesConverter("licenseTypeConverter")
 public class LicenseTypeConverter implements Converter {

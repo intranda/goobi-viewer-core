@@ -25,7 +25,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>LabeledLink class.</p>
- *
  */
 public class LabeledLink implements Serializable {
 

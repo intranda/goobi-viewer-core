@@ -73,7 +73,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * <p>UserBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -126,8 +125,8 @@ public class UserBean implements Serializable {
     /**
      * Create a new local User and save the data (in moment by xstream)
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
@@ -166,8 +165,8 @@ public class UserBean implements Serializable {
     /**
      * <p>activateUserAccountAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String activateUserAccountAction() throws DAOException {
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(activationKey)) {
@@ -199,11 +198,12 @@ public class UserBean implements Serializable {
     /**
      * Login action method for local accounts.
      *
-     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException If an error occured while logging in
      * @throws java.lang.IllegalStateException If a user is already logged in
      * @return the url mapping to navigate to
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.lang.InterruptedException
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     * @throws java.lang.IllegalStateException if any.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
      */
     public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         return login(getAuthenticationProvider());
@@ -214,6 +214,7 @@ public class UserBean implements Serializable {
      *
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      * @return a {@link java.lang.String} object.
+     * @throws java.lang.IllegalStateException if any.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws java.lang.IllegalStateException if any.
      * @throws java.lang.InterruptedException if any.
@@ -389,9 +390,9 @@ public class UserBean implements Serializable {
      * Removes the user and permission attributes from the session.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("wipeSession");
@@ -433,8 +434,8 @@ public class UserBean implements Serializable {
     /**
      * <p>saveUserAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveUserAction() throws DAOException {
         try {
@@ -489,8 +490,8 @@ public class UserBean implements Serializable {
     /**
      * Returns a list of all existing users (minus the superusers and the current user).
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsers() throws DAOException {
         List<User> ret = new ArrayList<>();
@@ -555,8 +556,8 @@ public class UserBean implements Serializable {
     /**
      * Sends a password reset link to the current e-mail address.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String sendPasswordResetLinkAction() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
@@ -610,8 +611,8 @@ public class UserBean implements Serializable {
     /**
      * Generates a new user password if the key is correct.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetPasswordAction() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
@@ -648,10 +649,10 @@ public class UserBean implements Serializable {
     /**
      * Returns saved searches for the logged in user.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return searches for correct user
      * @should return null if no user logged in
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Search> getSearches() throws DAOException {
         if (user != null) {
@@ -665,8 +666,8 @@ public class UserBean implements Serializable {
      * Deletes the given persistent user search.
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteSearchAction(Search search) throws DAOException {
         if (search != null) {

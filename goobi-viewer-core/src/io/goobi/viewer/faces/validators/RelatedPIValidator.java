@@ -84,13 +84,13 @@ public class RelatedPIValidator extends PIValidator {
      *
      * @param pi a {@link java.lang.String} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if user is null
      * @should return true if user is superuser
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String validatePi(String pi, User user) throws PresentationException, IndexUnreachableException {
         // Allow for related PI to be optional

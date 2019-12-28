@@ -80,7 +80,6 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 
 /**
  * <p>User class.</p>
- *
  */
 @Entity
 @Table(name = "users")
@@ -346,8 +345,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * Checks whether the user has the role with the given name.
      *
      * @param roleName The role name to check.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @Deprecated
     public boolean hasRole(String roleName) throws DAOException {
@@ -361,8 +360,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * Checks whether the user has the given privilege directly.
      *
      * @param privilegeName a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @Deprecated
     public boolean hasUserPrivilege(String privilegeName) throws DAOException {
@@ -378,8 +377,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Returns a list of UserGroups of which this user is the owner.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getUserGroupOwnerships() throws DAOException {
         return DataManager.getInstance().getDao().getUserGroups(this);
@@ -388,8 +387,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * <p>getUserGroupMemberships.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getUserGroupMemberships() throws DAOException {
         return DataManager.getInstance().getDao().getUserRoles(null, this, null);
@@ -398,8 +397,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Returns a list of UserGroups of which this user is a member.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getUserGroupsWithMembership() throws DAOException {
         List<UserGroup> ret = new ArrayList<>();
@@ -431,8 +430,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Returns a list of all groups with this user's involvement (either as owner or member).
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserGroup> getAllUserGroups() throws DAOException {
         List<UserGroup> ret = getUserGroupsWithMembership();
@@ -448,15 +447,15 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * @param conditionList a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return true if user is superuser
      * @should return true if condition is open access
      * @should return true if user has license
      * @should return false if user has no license
      * @should return true if condition list empty
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -529,10 +528,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * <p>isHasCmsPrivilege.</p>
      *
      * @param privilege a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isHasCmsPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return isHasPrivilege(LicenseType.LICENSE_TYPE_CMS, privilege);
@@ -542,10 +541,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * <p>isHasCrowdsourcingPrivilege.</p>
      *
      * @param privilege a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isHasCrowdsourcingPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return isHasPrivilege(LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS, privilege);
@@ -556,10 +555,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      *
      * @param licenseType a {@link java.lang.String} object.
      * @param privilege a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isHasPrivilege(String licenseType, String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null);
@@ -569,10 +568,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * Checks whether this user has the permission to set the representative image for the currently open record. TODO For some reason this method is
      * called 8x in a row.
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMaySetRepresentativeImage() throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("isMaySetRepresentativeImage");
@@ -583,10 +582,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /**
      * Checks whether this user has the permission to delete all ocr-content of one page in crowdsourcing.
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMayDeleteCrowdsourcingFulltext() throws IndexUnreachableException, PresentationException, DAOException {
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE,
@@ -729,8 +728,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * @param email a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      * @return The user, if successful.
-     * @throws io.goobi.viewer.exceptions.AuthenticationException if login data incorrect
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User auth(String email, String password) throws AuthenticationException, DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);

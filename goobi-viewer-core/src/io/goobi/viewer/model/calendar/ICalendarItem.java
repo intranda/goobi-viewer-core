@@ -17,7 +17,6 @@ package io.goobi.viewer.model.calendar;
 
 /**
  * <p>ICalendarItem interface.</p>
- *
  */
 public interface ICalendarItem {
 

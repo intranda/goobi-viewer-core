@@ -57,7 +57,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>BookmarkList class.</p>
- *
  */
 @Entity
 @Table(name = "bookshelves")
@@ -523,11 +522,11 @@ public class BookmarkList implements Serializable {
      * <p>getMiradorJsonObject.</p>
      *
      * @param applicationRoot a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate JSON object correctly
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @SuppressWarnings("unchecked")
     public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {

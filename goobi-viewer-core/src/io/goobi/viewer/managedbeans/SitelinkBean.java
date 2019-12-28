@@ -64,8 +64,8 @@ public class SitelinkBean implements Serializable {
      * <p>getAvailableValues.</p>
      *
      * @return List of facet values for the configured field and query
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getAvailableValues() throws PresentationException, IndexUnreachableException {
         return getAvailableValuesForField(DataManager.getInstance().getConfiguration().getSitelinksField(),
@@ -78,9 +78,9 @@ public class SitelinkBean implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
      * @return List of facet values for the given field and query
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return all existing values for the given field
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
         if (field == null) {
@@ -114,9 +114,9 @@ public class SitelinkBean implements Serializable {
      * <p>searchAction.</p>
      *
      * @return Target page
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String searchAction() throws IndexUnreachableException, PresentationException, DAOException {
         String field = DataManager.getInstance().getConfiguration().getSitelinksField();

@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>TagCount class.</p>
- *
  */
 @XmlRootElement(name = "tag")
 @XmlType(propOrder = { "value", "type", "counter", "references" })

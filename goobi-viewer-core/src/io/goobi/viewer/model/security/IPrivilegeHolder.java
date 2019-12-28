@@ -17,7 +17,6 @@ package io.goobi.viewer.model.security;
 
 /**
  * <p>IPrivilegeHolder interface.</p>
- *
  */
 public interface IPrivilegeHolder {
 

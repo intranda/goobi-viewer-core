@@ -753,7 +753,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * <p>getNestedPagesShuffled.</p>
      *
      * @return nestedPages in a random order
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getNestedPagesShuffled() throws DAOException {
         List<CMSPage> ret = new ArrayList<>(getNestedPages());
@@ -947,8 +947,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * Querys solr for a list of all values of the set collectionField which my serve as a collection
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
         if (StringUtils.isBlank(collectionField)) {
@@ -965,8 +965,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * Querys solr for a list of all values of the set collectionField which my serve as a collection
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getPossibleIgnoreCollectionList() throws IndexUnreachableException {
         if (StringUtils.isBlank(collectionField)) {
@@ -987,9 +987,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * Gets the current collection, creating it if neccessary
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         if (this.collection == null) {
@@ -1001,9 +1001,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * Creates a collection view object from the item's collection related properties
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(getCollectionField())) {
@@ -1195,6 +1195,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * <p>getGlossary.</p>
      *
      * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
+     * @throws org.json.JSONException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws org.json.JSONException if any.
@@ -1424,7 +1425,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * <p>Getter for the field <code>selectableCategories</code>.</p>
      *
      * @return the selectableCategories
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
         if (selectableCategories == null) {
@@ -1443,8 +1444,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @param outputFolderPath a {@link java.lang.String} object.
      * @param namingScheme a {@link java.lang.String} object.
      * @return Exported Files
-     * @throws java.io.IOException
      * @should write files correctly
+     * @throws java.io.IOException if any.
      */
     public List<File> exportHtmlFragment(long pageId, String outputFolderPath, String namingScheme) throws IOException {
         if (StringUtils.isEmpty(outputFolderPath)) {

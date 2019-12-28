@@ -316,8 +316,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns a URL to this element (but for the metadata view).
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String getMetadataUrl() throws PresentationException {
         return getUrl(PageType.viewMetadata);
@@ -380,8 +380,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /**
      * Returns the number of pages (for the entire record, not a particular docstruct).
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public int getNumPages() throws IndexUnreachableException {
 
@@ -572,9 +572,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param currentUrl a {@link java.lang.String} object.
      * @param topStruct StructElementStub representing the top structure element.
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should generate string element correctly
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String generateContextObject(String currentUrl, StructElementStub topStruct) throws PresentationException {
         StringBuilder sb = new StringBuilder("ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:");

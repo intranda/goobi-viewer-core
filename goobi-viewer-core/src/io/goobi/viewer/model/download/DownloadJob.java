@@ -76,7 +76,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * <p>Abstract DownloadJob class.</p>
- *
  */
 @Entity
 @Table(name = "download_jobs")
@@ -202,10 +201,10 @@ public abstract class DownloadJob implements Serializable {
      * @param logId a {@link java.lang.String} object.
      * @param downloadIdentifier Identifier has (Construct via DownloadJob.generateDownloadJobId()).
      * @param ttl Number of ms before the job expires.
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static boolean checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier, long ttl)
             throws DAOException, PresentationException, IndexUnreachableException {
@@ -289,8 +288,8 @@ public abstract class DownloadJob implements Serializable {
     /**
      * <p>triggerCreation.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException, DownloadException;
@@ -299,9 +298,9 @@ public abstract class DownloadJob implements Serializable {
      * <p>ocrFolderExists.</p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static boolean ocrFolderExists(String pi) throws PresentationException, IndexUnreachableException {
         Path abbyyFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
@@ -312,9 +311,9 @@ public abstract class DownloadJob implements Serializable {
     /**
      * <p>cleanupExpiredDownloads.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should delete expired jobs correctly
      * @return a int.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static int cleanupExpiredDownloads() throws DAOException {
         List<DownloadJob> jobs = DataManager.getInstance().getDao().getAllDownloadJobs();
@@ -413,12 +412,12 @@ public abstract class DownloadJob implements Serializable {
     /**
      * <p>notifyObservers.</p>
      *
-     * @throws javax.mail.MessagingException
-     * @throws javax.mail.AuthenticationFailedException
-     * @throws java.io.UnsupportedEncodingException
      * @param status a {@link io.goobi.viewer.model.download.DownloadJob.JobStatus} object.
      * @param message a {@link java.lang.String} object.
      * @return a boolean.
+     * @throws java.io.UnsupportedEncodingException if any.
+     * @throws javax.mail.AuthenticationFailedException if any.
+     * @throws javax.mail.MessagingException if any.
      */
     public boolean notifyObservers(JobStatus status, String message)
             throws UnsupportedEncodingException, AuthenticationFailedException, MessagingException {

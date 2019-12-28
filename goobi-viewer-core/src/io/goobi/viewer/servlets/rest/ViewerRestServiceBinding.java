@@ -22,7 +22,6 @@ import javax.ws.rs.NameBinding;
 
 /**
  * <p>ViewerRestServiceBinding class.</p>
- *
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

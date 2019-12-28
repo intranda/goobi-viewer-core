@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>CMSSidebarElementWithQuery class.</p>
- *
  */
 @Entity
 public class CMSSidebarElementWithQuery extends CMSSidebarElement {

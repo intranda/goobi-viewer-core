@@ -135,10 +135,10 @@ public class PdfHandler {
      * Gets the url to the pdf for the given {@link io.goobi.viewer.model.viewer.StructElement}. The pi is the one of the topStruct element of the given StructElement
      *
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
         String pi = doc.getTopStruct().getPi();
@@ -150,10 +150,10 @@ public class PdfHandler {
      *
      * @param pi PI of the process from which to build pdf. Must be provided
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPdfUrl(StructElement doc, String pi, String label) throws PresentationException, IndexUnreachableException {
 

@@ -20,7 +20,6 @@ import java.util.Optional;
 
 /**
  * <p>TableDataFilter class.</p>
- *
  */
 public class TableDataFilter implements Serializable {
 

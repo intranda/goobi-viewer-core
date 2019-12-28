@@ -35,7 +35,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>CMSNavigationManager class.</p>
- *
  */
 public class CMSNavigationManager {
 
@@ -103,7 +102,7 @@ public class CMSNavigationManager {
     /**
      * <p>addCMSPageItems.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addCMSPageItems() throws DAOException {
         List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
@@ -166,7 +165,7 @@ public class CMSNavigationManager {
      * <p>loadVisibleItems.</p>
      *
      * @return the sublist of available menu items matching the navigationMenuItem-list from the database (in label and url)
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public final List<CMSNavigationItem> loadVisibleItems() throws DAOException {
         List<CMSNavigationItem> daoList = loadItemsFromDatabase().stream().collect(Collectors.toList());
@@ -195,8 +194,8 @@ public class CMSNavigationManager {
     /**
      * <p>loadItemsFromDatabase.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
         String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
@@ -232,8 +231,8 @@ public class CMSNavigationManager {
     /**
      * Replaces the complete navigation-item database table with the elements of 'visibleItems'
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param theme a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveVisibleItems(String theme) throws DAOException {
 
@@ -311,7 +310,7 @@ public class CMSNavigationManager {
     /**
      * <p>reload.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void reload() throws DAOException {
         loadVisibleItems();

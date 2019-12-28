@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>AuthenticationException class.</p>
- *
  */
 public class AuthenticationException extends Exception implements Serializable {
 

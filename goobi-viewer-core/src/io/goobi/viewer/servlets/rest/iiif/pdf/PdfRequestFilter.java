@@ -43,7 +43,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBind
 
 /**
  * <p>PdfRequestFilter class.</p>
- *
  */
 @Provider
 @ContentServerPdfBinding

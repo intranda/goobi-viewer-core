@@ -50,7 +50,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * <p>CMSTemplateManager class.</p>
- *
  */
 public final class CMSTemplateManager {
 
@@ -217,10 +216,10 @@ public final class CMSTemplateManager {
      * @param filesystemPath a {@link java.lang.String} object.
      * @param servletContext a {@link javax.servlet.ServletContext} object.
      * @param templateFolderUrl a {@link java.lang.String} object.
-     * @throws java.net.MalformedURLException
-     * @throws java.io.UnsupportedEncodingException
-     * @throws java.net.URISyntaxException
      * @return a {@link java.util.Optional} object.
+     * @throws java.net.MalformedURLException if any.
+     * @throws java.io.UnsupportedEncodingException if any.
+     * @throws java.net.URISyntaxException if any.
      */
     public static Optional<URL> getCoreTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
             throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {

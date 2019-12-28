@@ -82,7 +82,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * <p>Constructor for CollectionBuilder.</p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws java.net.URISyntaxException
+     * @throws java.net.URISyntaxException if any.
      */
     public CollectionBuilder(HttpServletRequest request) throws URISyntaxException {
         super(request);
@@ -104,11 +104,11 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Collection generateCollection(String collectionField, final String topElement, final String splittingChar)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
@@ -175,9 +175,9 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
      * @param collection a {@link de.intranda.api.iiif.presentation.Collection} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws java.net.URISyntaxException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
      */
     public void addContainedWorks(String collectionField, final String topElement, Collection collection)
             throws PresentationException, IndexUnreachableException, URISyntaxException {
@@ -234,11 +234,11 @@ public class CollectionBuilder extends AbstractBuilder {
      * <p>createCollection.</p>
      *
      * @param baseElement a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param collectionView a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @param uri a {@link java.net.URI} object.
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri)
             throws URISyntaxException, ViewerConfigurationException {
@@ -302,8 +302,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField a {@link java.lang.String} object.
      * @param facetField a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public CollectionView getCollectionView(String collectionField, final String facetField, final String splittingChar)
             throws IndexUnreachableException {

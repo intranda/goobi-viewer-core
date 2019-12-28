@@ -33,7 +33,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>BrowseTerm class.</p>
- *
  */
 public class BrowseTerm implements Serializable {
 

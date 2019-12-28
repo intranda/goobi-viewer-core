@@ -54,7 +54,6 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * <p>SearchDownloadResource class.</p>
- *
  */
 @Path("/download/search")
 @ViewerRestServiceBinding

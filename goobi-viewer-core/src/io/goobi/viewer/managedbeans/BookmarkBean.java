@@ -55,7 +55,6 @@ import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
  * <p>BookmarkBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -326,11 +325,11 @@ public class BookmarkBean implements Serializable {
      * Returns the names all existing user groups (minus the ones currentBookmarkList is already shared with). TODO Filter some user groups, if
      * required (e.g. admins)
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should not return any used group names
      * @should not modify global user group list
      * @should return empty list if no remaining user group names
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<String> getRemainingUserGroupNames() throws DAOException {
         List<String> ret = new ArrayList<>();
@@ -348,8 +347,8 @@ public class BookmarkBean implements Serializable {
     /**
      * Returns a list of all existing bookmark list that are marked public.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<BookmarkList> getPublicBookmarkLists() throws DAOException {
         return DataManager.getInstance().getDao().getPublicBookmarkLists();
@@ -359,8 +358,8 @@ public class BookmarkBean implements Serializable {
      * <p>getBookmarkListsSharedWithUser.</p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {
         return BookmarkTools.getBookmarkListsSharedWithUser(user);
@@ -369,8 +368,8 @@ public class BookmarkBean implements Serializable {
     /**
      * Returns a list of all existing bookmark lists owned by current user
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<BookmarkList> getBookmarkLists() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
@@ -441,7 +440,7 @@ public class BookmarkBean implements Serializable {
      * <p>userGroupSelectedAction.</p>
      *
      * @param event {@link javax.faces.event.ValueChangeEvent}
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void userGroupSelectedAction(ValueChangeEvent event) throws DAOException {
         currentUserGroup = DataManager.getInstance().getDao().getUserGroup(String.valueOf(event.getNewValue()));
@@ -453,6 +452,7 @@ public class BookmarkBean implements Serializable {
      * @param context a {@link javax.faces.context.FacesContext} object.
      * @param toValidate a {@link javax.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
+     * @throws javax.faces.validator.ValidatorException if any.
      * @throws javax.faces.validator.ValidatorException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -558,9 +558,9 @@ public class BookmarkBean implements Serializable {
     /**
      * <p>setCurrentBookmarkListId.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param bookmarkListId a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setCurrentBookmarkListId(String bookmarkListId) throws PresentationException, DAOException {
         if (bookmarkListId == null) {
@@ -701,7 +701,7 @@ public class BookmarkBean implements Serializable {
      * <p>setShareKey.</p>
      *
      * @param key a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setShareKey(String key) throws DAOException {
         if (key == null) {

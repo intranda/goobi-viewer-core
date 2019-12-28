@@ -24,7 +24,6 @@ import io.goobi.viewer.model.search.SearchHit;
 
 /**
  * <p>SearchHitChildList class.</p>
- *
  */
 @XmlRootElement(name = "childHits")
 public class SearchHitChildList {

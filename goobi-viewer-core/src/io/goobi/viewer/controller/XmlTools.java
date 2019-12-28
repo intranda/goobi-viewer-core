@@ -66,12 +66,12 @@ public class XmlTools {
      * <p>readXmlFile.</p>
      *
      * @param filePath a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException if file not found
-     * @throws java.io.IOException in case of errors
-     * @throws org.jdom2.JDOMException
      * @should build document from string correctly
      * @should throw FileNotFoundException if file not found
      * @return a {@link org.jdom2.Document} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     public static Document readXmlFile(String filePath) throws FileNotFoundException, IOException, JDOMException {
         try (FileInputStream fis = new FileInputStream(new File(filePath))) {
@@ -83,11 +83,11 @@ public class XmlTools {
      * Reads an XML document from the given URL and returns a JDOM2 document. Works with XML files within JARs.
      *
      * @param url a {@link java.net.URL} object.
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
-     * @throws org.jdom2.JDOMException
      * @should build document from url correctly
      * @return a {@link org.jdom2.Document} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     public static Document readXmlFile(URL url) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = url.openStream()) {
@@ -99,11 +99,11 @@ public class XmlTools {
      * <p>readXmlFile.</p>
      *
      * @param path a {@link java.nio.file.Path} object.
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
-     * @throws org.jdom2.JDOMException
      * @should build document from path correctly
      * @return a {@link org.jdom2.Document} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = Files.newInputStream(path)) {
@@ -116,11 +116,11 @@ public class XmlTools {
      *
      * @param doc a {@link org.jdom2.Document} object.
      * @param filePath a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
      * @should write file correctly
      * @should throw FileNotFoundException if file is directory
      * @return a {@link java.io.File} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
      */
     public static File writeXmlFile(Document doc, String filePath) throws FileNotFoundException, IOException {
         return FileTools.getFileFromString(getStringFromElement(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
@@ -130,11 +130,11 @@ public class XmlTools {
      * Create a JDOM document from an XML string.
      *
      * @param string a {@link java.lang.String} object.
-     * @throws java.io.IOException
-     * @throws org.jdom2.JDOMException
      * @should build document correctly
      * @param encoding a {@link java.lang.String} object.
      * @return a {@link org.jdom2.Document} object.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any.
      */
     public static Document getDocumentFromString(String string, String encoding) throws JDOMException, IOException {
         if (encoding == null) {

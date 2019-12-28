@@ -88,13 +88,13 @@ public class StructureBuilder extends AbstractBuilder {
      *
      * @param elements All elements to include in the list
      * @param useMembers a boolean.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws java.net.URISyntaxException
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws java.net.URISyntaxException if any.
      */
     public List<Range> generateStructure(List<StructElement> elements, String pi, boolean useMembers)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
@@ -149,12 +149,12 @@ public class StructureBuilder extends AbstractBuilder {
      * Adds Metadata and links to external services to a range
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param pi a {@link java.lang.String} object.
      * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public void populate(StructElement ele, String pi, final Range range)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
@@ -204,10 +204,10 @@ public class StructureBuilder extends AbstractBuilder {
      * <p>populatePages.</p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @param pi a {@link java.lang.String} object.
      * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void populatePages(StructElement doc, String pi, Range range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();

@@ -37,7 +37,6 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 
 /**
  * <p>CollectionView class.</p>
- *
  */
 public class CollectionView {
 
@@ -656,9 +655,9 @@ public class CollectionView {
      * Resets the top visible element so the topmost hierarchy level is shown
      *
      * @reset only actually resets if true
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param reset a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void reset(boolean reset) throws DAOException, IndexUnreachableException {
         if (reset && StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName())) {

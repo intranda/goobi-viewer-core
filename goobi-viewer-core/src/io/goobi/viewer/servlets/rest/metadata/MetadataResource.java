@@ -38,7 +38,6 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * <p>MetadataResource class.</p>
- *
  */
 @Path("/metadata")
 @ViewerRestServiceBinding

@@ -40,7 +40,6 @@ import javax.persistence.TemporalType;
 
 /**
  * <p>TranskribusJob class.</p>
- *
  */
 @Entity
 @Table(name = "transkribus_jobs")

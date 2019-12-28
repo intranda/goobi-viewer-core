@@ -48,7 +48,6 @@ import io.goobi.viewer.model.security.Role;
 
 /**
  * <p>UserGroup class.</p>
- *
  */
 @Entity
 @Table(name = "user_groups")
@@ -130,11 +129,11 @@ public class UserGroup implements ILicensee {
     /**
      * add User to group
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean addMember(User user, Role role) throws PresentationException, DAOException {
         if (user != null && role != null) {
@@ -165,9 +164,9 @@ public class UserGroup implements ILicensee {
     /**
      * remove User from Group
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean removeMember(User user) throws DAOException {
         if (user != null) {
@@ -382,8 +381,8 @@ public class UserGroup implements ILicensee {
     /**
      * <p>getMemberships.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getMemberships() throws DAOException {
         return DataManager.getInstance().getDao().getUserRoles(this, null, null);

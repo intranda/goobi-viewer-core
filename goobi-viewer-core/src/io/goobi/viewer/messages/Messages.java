@@ -25,7 +25,6 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * <p>Messages class.</p>
- *
  */
 public class Messages {
 

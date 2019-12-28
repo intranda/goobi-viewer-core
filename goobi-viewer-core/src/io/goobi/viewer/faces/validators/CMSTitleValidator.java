@@ -28,7 +28,6 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * <p>CMSTitleValidator class.</p>
- *
  */
 @FacesValidator("cmsTitleValidator")
 public class CMSTitleValidator implements Validator {

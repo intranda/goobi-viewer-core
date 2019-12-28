@@ -313,6 +313,7 @@ public class CmsCollectionsBean implements Serializable {
      * @param comp a {@link javax.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
      * @throws javax.faces.validator.ValidatorException if any.
+     * @throws javax.faces.validator.ValidatorException if any.
      */
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException{
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
@@ -337,9 +338,9 @@ public class CmsCollectionsBean implements Serializable {
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
      *
      * @return false if no current collection is set, the pi does not match any known work
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static boolean validatePi(String pi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotBlank(pi)) {

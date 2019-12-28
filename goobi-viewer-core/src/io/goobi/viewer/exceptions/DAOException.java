@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>DAOException class.</p>
- *
  */
 public class DAOException extends Exception implements Serializable {
 

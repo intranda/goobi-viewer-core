@@ -17,7 +17,6 @@ package io.goobi.viewer.model.toc.export.pdf;
 
 /**
  * <p>WriteTocException class.</p>
- *
  */
 public class WriteTocException extends Exception {
 

@@ -31,7 +31,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>SimpleBrowseElementInfo class.</p>
- *
  */
 public class SimpleBrowseElementInfo implements BrowseElementInfo {
 

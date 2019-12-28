@@ -53,12 +53,12 @@ public class LitteraAuthenticationResource {
     @Context
     protected HttpServletResponse servletResponse;
 	
-    /**
-     * <p>getResponse.</p>
-     *
-     * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
-     * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
-     */
+	/**
+	 * <p>getResponse.</p>
+	 *
+	 * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
+	 * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
+	 */
     @GET
 	@Path("/externalauth")
 	@Produces(MediaType.TEXT_XML)

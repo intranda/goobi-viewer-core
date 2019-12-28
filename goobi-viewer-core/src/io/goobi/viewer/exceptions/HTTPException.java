@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>HTTPException class.</p>
- *
  */
 public class HTTPException extends Exception implements Serializable {
 

@@ -20,7 +20,6 @@ import io.goobi.viewer.controller.Helper;
 
 /**
  * <p>Abstract AbstractCalendarItem class.</p>
- *
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
 

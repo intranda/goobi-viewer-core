@@ -28,7 +28,6 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
  * <p>IPageLoader interface.</p>
- *
  */
 public interface IPageLoader {
 
@@ -101,7 +100,7 @@ public interface IPageLoader {
      * @param urlRoot a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
      * @param recordBelowFulltextThreshold a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
             boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException;

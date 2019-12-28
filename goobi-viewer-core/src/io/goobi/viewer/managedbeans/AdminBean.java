@@ -326,9 +326,9 @@ public class AdminBean implements Serializable {
      * <p>getAllUsersExcept.</p>
      *
      * @param usersToExclude a {@link java.util.Set} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return all users except given
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getAllUsersExcept(Set<User> usersToExclude) throws DAOException {
         List<User> ret = getAllUsers();
@@ -342,8 +342,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>saveUserAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveUserAction() throws DAOException {
         // Retrieving a new user from the DB overrides the current object and resets the field, so save a copy
@@ -407,8 +407,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>deleteUserAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserAction(User user) throws DAOException {
         logger.debug("Deleting user: " + user.getDisplayName());
@@ -429,7 +429,7 @@ public class AdminBean implements Serializable {
     /**
      * Persists changes in <code>currentUserGroup</code>.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveUserGroupAction() throws DAOException {
         if (currentUserGroup != null) {
@@ -453,8 +453,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>deleteUserGroupAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserGroupAction(UserGroup userGroup) throws DAOException {
         if (DataManager.getInstance().getDao().deleteUserGroup(userGroup)) {
@@ -476,8 +476,8 @@ public class AdminBean implements Serializable {
     /**
      * Returns a list of all existing roles. Required for admin tab components.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Role> getAllRoles() throws DAOException {
         return DataManager.getInstance().getDao().getAllRoles();
@@ -486,7 +486,7 @@ public class AdminBean implements Serializable {
     /**
      * <p>saveRoleAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveRoleAction() throws DAOException {
         // String name = getCurrentRole().getName();
@@ -509,8 +509,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>deleteRoleAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteRoleAction(Role role) throws DAOException {
         if (DataManager.getInstance().getDao().deleteRole(role)) {
@@ -539,7 +539,7 @@ public class AdminBean implements Serializable {
     /**
      * <p>saveUserRoleAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveUserRoleAction() throws DAOException {
         if (currentUserRole == null) {
@@ -569,8 +569,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>deleteUserRoleAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
         if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
@@ -587,7 +587,7 @@ public class AdminBean implements Serializable {
      * Returns all existing license types. Required for admin tabs.
      *
      * @return all license types in the database
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         return DataManager.getInstance().getDao().getAllLicenseTypes();
@@ -619,7 +619,7 @@ public class AdminBean implements Serializable {
      * <p>getAllRoleLicenseTypes.</p>
      *
      * @return all license types in the database where core=true
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<LicenseType> getAllRoleLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(true);
@@ -629,7 +629,7 @@ public class AdminBean implements Serializable {
      * <p>getAllRecordLicenseTypes.</p>
      *
      * @return all license types in the database where core=false
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<LicenseType> getAllRecordLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(false);
@@ -661,8 +661,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>saveLicenseTypeAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveLicenseTypeAction() throws DAOException {
         // String name = getCurrentLicenseType().getName();
@@ -687,8 +687,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>deleteLicenseTypeAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
         if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
@@ -719,7 +719,7 @@ public class AdminBean implements Serializable {
     /**
      * <p>saveIpRangeAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveIpRangeAction() throws DAOException {
         // String name = getCurrentIpRange().getName();
@@ -742,8 +742,8 @@ public class AdminBean implements Serializable {
     /**
      * <p>deleteIpRangeAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteIpRangeAction(IpRange ipRange) throws DAOException {
         if (DataManager.getInstance().getDao().deleteIpRange(ipRange)) {
@@ -812,9 +812,9 @@ public class AdminBean implements Serializable {
      * Adds the current License to the licensee (User, UserGroup or IpRange). It is imperative that the licensee object is refreshed after updating so
      * that a new license object is an ID attached. Otherwise the list of licenses will throw an NPE!
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveLicenseAction(License license) throws DAOException {
         logger.trace("saveLicenseAction");
@@ -1351,8 +1351,8 @@ public class AdminBean implements Serializable {
      * <p>toggleSuspendUserAction.</p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String toggleSuspendUserAction(User user) throws DAOException {
         if (user == null) {
@@ -1370,8 +1370,8 @@ public class AdminBean implements Serializable {
      * Querys solr for a list of all values of the set ACCESSCONDITION
      *
      * @return A list of all indexed ACCESSCONDITIONs
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
 

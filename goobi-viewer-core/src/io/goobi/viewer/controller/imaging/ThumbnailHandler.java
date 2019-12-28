@@ -131,9 +131,9 @@ public class ThumbnailHandler {
      *
      * @param pi the persistent identifier of the work which representative we want
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
@@ -148,9 +148,9 @@ public class ThumbnailHandler {
      * @param width the width of the image
      * @param height the height of the image
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(String pi, int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
@@ -166,9 +166,9 @@ public class ThumbnailHandler {
      *
      * @param pi the persistent identifier of the work which representative we want
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getSquareThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
@@ -180,9 +180,9 @@ public class ThumbnailHandler {
      * @param pi the persistent identifier of the work which representative we want
      * @param size the size (width and heigt) of the image
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(String pi, int size) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
@@ -199,10 +199,10 @@ public class ThumbnailHandler {
      * @param order the page number
      * @param pi the persistent identifier of the work which representative we want
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(int order, String pi)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -219,10 +219,10 @@ public class ThumbnailHandler {
      * @param width the width of the image
      * @param height the height of the image
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(int order, String pi, int width, int height)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -240,10 +240,10 @@ public class ThumbnailHandler {
      * @param order the page number
      * @param pi the persistent identifier of the work which representative we want
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(int order, String pi)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -258,10 +258,10 @@ public class ThumbnailHandler {
      * @param pi the persistent identifier of the work which representative we want
      * @param size the width and height of the image
      * @return The url string or null of no work is found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(int order, String pi, int size)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -277,10 +277,10 @@ public class ThumbnailHandler {
      *
      * @param pi a {@link java.lang.String} object.
      * @param order a int.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
@@ -389,9 +389,9 @@ public class ThumbnailHandler {
     /**
      * Returns a link to a small image representating the given document. The size depends on viewer configuration
      *
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
         return getThumbnailUrl(getStructElement(doc), thumbWidth, thumbHeight);
@@ -401,9 +401,9 @@ public class ThumbnailHandler {
      * Returns a link to a small image representating the given document. The size depends on viewer configuration. The image may be cut at the longer
      * side to provide a square image
      *
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
         return getSquareThumbnailUrl(getStructElement(doc), thumbWidth);
@@ -432,11 +432,11 @@ public class ThumbnailHandler {
      * Returns a link to an image representating the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      *
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param width a int.
      * @param height a int.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(SolrDocument doc, int width, int height) throws ViewerConfigurationException {
         return getThumbnailUrl(getStructElement(doc), width, height);
@@ -446,10 +446,10 @@ public class ThumbnailHandler {
     /**
      * Returns a link to an image representating the given page of the given size. The image will be cut at the longer side to create a square image
      *
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param size a int.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(SolrDocument doc, int size) throws ViewerConfigurationException {
         return getSquareThumbnailUrl(getStructElement(doc), size);

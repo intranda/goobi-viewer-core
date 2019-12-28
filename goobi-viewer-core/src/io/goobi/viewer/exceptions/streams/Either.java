@@ -7,7 +7,6 @@ import org.apache.commons.math3.util.Pair;
 
 /**
  * <p>Either class.</p>
- *
  */
 @SuppressWarnings("rawtypes")
 public class Either<L, R> {

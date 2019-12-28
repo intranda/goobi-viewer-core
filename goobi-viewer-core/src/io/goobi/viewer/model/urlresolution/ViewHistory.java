@@ -131,6 +131,7 @@ public class ViewHistory {
      * Retrieves the stored currentPath from the session associated the the passed {@code request}
      *
      * @return          An optional containing the last stored current path if available. An empty optional if no session is available or no path has been stored yet
+     * @param request a {@link javax.servlet.ServletRequest} object.
      */
     public synchronized static Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
@@ -151,6 +152,7 @@ public class ViewHistory {
      * Retrieves the stored previousPath from the session associated the the passed {@code request}
      *
      * @return          An optional containing the last stored previous path if available. An empty optional if no session is available or no previous path has been stored yet
+     * @param request a {@link javax.servlet.ServletRequest} object.
      */
     public synchronized static Optional<ViewerPath> getPreviousView(ServletRequest request) {
         if (request != null) {
@@ -171,7 +173,7 @@ public class ViewHistory {
      * Directly redirect to the given url
      *
      * @param url           The url to redirect to
-     * @throws java.io.IOException  If redirect fails
+     * @throws java.io.IOException if any.
      */
     public synchronized static void redirectToUrl(String url) throws IOException {
 

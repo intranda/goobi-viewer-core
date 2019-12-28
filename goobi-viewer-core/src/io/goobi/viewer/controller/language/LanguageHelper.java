@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>LanguageHelper class.</p>
- *
  */
 public class LanguageHelper {
 

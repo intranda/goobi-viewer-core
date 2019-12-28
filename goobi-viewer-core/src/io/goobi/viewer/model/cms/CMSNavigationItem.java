@@ -46,7 +46,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>CMSNavigationItem class.</p>
- *
  */
 @Entity
 @Table(name = "cms_navigation_items")

@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>IndexUnreachableException class.</p>
- *
  */
 public class IndexUnreachableException extends Exception implements Serializable {
 

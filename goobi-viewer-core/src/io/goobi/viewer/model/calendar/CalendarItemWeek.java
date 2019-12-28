@@ -21,7 +21,6 @@ import java.util.List;
 
 /**
  * <p>CalendarItemWeek class.</p>
- *
  */
 public class CalendarItemWeek extends AbstractCalendarItem implements Serializable {
     private static final long serialVersionUID = -6938153715941936763L;

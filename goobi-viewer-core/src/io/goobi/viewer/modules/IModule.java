@@ -26,7 +26,6 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 /**
  * <p>IModule interface.</p>
- *
  */
 public interface IModule {
 

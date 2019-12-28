@@ -92,8 +92,8 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      * <p>addRepositoryPathIfRequired.</p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
         try {

@@ -168,7 +168,7 @@ public class TOCElement implements Serializable {
      * <p>getContentServerPdfUrl.</p>
      *
      * @return {@link java.lang.String}
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getContentServerPdfUrl() throws ViewerConfigurationException {
         return BeanUtils.getImageDeliveryBean()

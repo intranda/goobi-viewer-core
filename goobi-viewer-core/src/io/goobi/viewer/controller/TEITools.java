@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>TEITools class.</p>
- *
  */
 public class TEITools {
 
@@ -41,9 +40,9 @@ public class TEITools {
      *
      * @param tei Full TEI document as string
      * @return TEI full-text element
-     * @throws org.jdom2.JDOMException
-     * @throws java.io.IOException
      * @should extract fulltext correctly
+     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any.
      */
     public static String getTeiFulltext(String tei) throws JDOMException, IOException {
         if (tei == null) {
@@ -77,9 +76,9 @@ public class TEITools {
      *
      * @param tei a {@link java.lang.String} object.
      * @return HTML conversion of the TEI
-     * @throws java.io.IOException
-     * @throws org.jdom2.JDOMException
      * @should convert tei to html correctly
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     public static String convertTeiToHtml(String tei) throws IOException, JDOMException {
         if (tei == null) {
@@ -100,9 +99,9 @@ public class TEITools {
      * <p>convertDocxToTei.</p>
      *
      * @param docxFile a {@link java.nio.file.Path} object.
-     * @throws java.io.IOException
      * @should convert docx to tei correctly
      * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
      */
     public static String convertDocxToTei(Path docxFile) throws IOException {
         if (docxFile == null) {

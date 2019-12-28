@@ -22,7 +22,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * <p>ILicensee interface.</p>
- *
  */
 public interface ILicensee {
 
@@ -47,9 +46,9 @@ public interface ILicensee {
      * @param licenseName License name.
      * @param privilegeName Required privilege (optional).
      * @param pi Checks the privilege in connection with a specific record identifier (optional).
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException;
 

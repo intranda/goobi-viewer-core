@@ -28,7 +28,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 
 /**
  * <p>FullscreenResource class.</p>
- *
  */
 @ContentServerImageInfoBinding
 @Path("/fullscreen")

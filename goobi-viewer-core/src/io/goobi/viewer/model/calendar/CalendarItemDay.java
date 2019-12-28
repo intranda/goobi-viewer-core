@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>CalendarItemDay class.</p>
- *
  */
 public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 

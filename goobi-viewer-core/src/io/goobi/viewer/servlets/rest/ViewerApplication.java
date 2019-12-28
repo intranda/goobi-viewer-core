@@ -22,7 +22,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 /**
  * <p>ViewerApplication class.</p>
- *
  */
 @ApplicationPath("rest")
 @ViewerRestServiceBinding

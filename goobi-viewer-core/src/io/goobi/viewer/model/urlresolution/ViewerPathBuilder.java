@@ -54,8 +54,8 @@ public class ViewerPathBuilder {
      * pretty-mapping Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
      *
      * @param httpRequest The request from which the path is generated
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest httpRequest) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest); // http://localhost:8080/viewer
@@ -96,7 +96,7 @@ public class ViewerPathBuilder {
      * @param applicationName The name of the web-application. This is always the last part of the {@code hostUrl}. May be empty
      * @param serviceUrl The complete requested url, optionally including the hostUrl
      * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl) throws DAOException {
         serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
@@ -161,8 +161,8 @@ public class ViewerPathBuilder {
      * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path
      *
      * @param servicePath a {@link java.net.URI} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<CMSPage> getCmsPage(URI servicePath) throws DAOException {
 
@@ -187,8 +187,8 @@ public class ViewerPathBuilder {
      * <p>getCampaign.</p>
      *
      * @param servicePath a {@link java.net.URI} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static Optional<Campaign> getCampaign(URI servicePath) throws DAOException {
         List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();

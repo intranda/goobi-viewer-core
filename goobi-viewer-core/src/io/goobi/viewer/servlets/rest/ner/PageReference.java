@@ -27,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>PageReference class.</p>
- *
  */
 @XmlRootElement
 public class PageReference implements TagGroup {

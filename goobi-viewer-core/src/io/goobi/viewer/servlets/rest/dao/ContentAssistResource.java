@@ -36,7 +36,6 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * <p>ContentAssistResource class.</p>
- *
  */
 @Path("/contentAssist")
 @ViewerRestServiceBinding

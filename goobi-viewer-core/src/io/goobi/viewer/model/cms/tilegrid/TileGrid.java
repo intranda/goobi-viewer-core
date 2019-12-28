@@ -27,7 +27,6 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 
 /**
  * <p>TileGrid class.</p>
- *
  */
 public class TileGrid {
 

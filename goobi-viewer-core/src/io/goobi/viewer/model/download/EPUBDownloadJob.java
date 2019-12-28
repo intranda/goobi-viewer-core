@@ -43,7 +43,6 @@ import io.goobi.viewer.managedbeans.CmsBean;
 
 /**
  * <p>EPUBDownloadJob class.</p>
- *
  */
 @Entity
 @DiscriminatorValue(EPUBDownloadJob.TYPE)
@@ -210,8 +209,8 @@ public class EPUBDownloadJob extends DownloadJob {
      * @param pi a {@link java.lang.String} object.
      * @param downloadIdentifier a {@link java.lang.String} object.
      * @param targetFolderPath a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public static void triggerCreation(String pi, String downloadIdentifier, String targetFolderPath)

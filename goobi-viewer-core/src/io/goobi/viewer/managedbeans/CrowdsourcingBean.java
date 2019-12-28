@@ -67,7 +67,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * <p>CrowdsourcingBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -203,7 +202,7 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param visibility a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility} object.
      * @return The total number of campaigns of a certain {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility}
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
         Map<String, String> filters = visibility != null ? Collections.singletonMap("visibility", visibility.name()) : null;
@@ -270,8 +269,8 @@ public class CrowdsourcingBean implements Serializable {
      * Delete the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} from the database and the loaded list of campaigns
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteCampaignAction(Campaign campaign) throws DAOException {
         if (campaign != null) {
@@ -331,7 +330,7 @@ public class CrowdsourcingBean implements Serializable {
      * <p>getAllCampaigns.</p>
      *
      * @return All campaigns from the database
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Campaign> getAllCampaigns() throws DAOException {
         List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns();
@@ -343,7 +342,7 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param visibility a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility} object.
      * @return All camapaigns of the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility} from the database
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Campaign> getAllCampaigns(CampaignVisibility visibility) throws DAOException {
         List<Campaign> pages = DataManager.getInstance()
@@ -360,7 +359,7 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return list of campaigns visible to the given user; only public campaigns if user is null
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
         logger.trace("getAllowedCampaigns");
@@ -391,8 +390,8 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAllowed(User user, Campaign campaign) throws DAOException {
         if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
@@ -407,9 +406,9 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void saveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");
@@ -480,7 +479,7 @@ public class CrowdsourcingBean implements Serializable {
      *
      * @param annotation a {@link io.goobi.viewer.model.annotation.PersistentAnnotation} object.
      * @return empty string
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
         if (annotation != null) {
@@ -557,7 +556,7 @@ public class CrowdsourcingBean implements Serializable {
      * Set the {@link io.goobi.viewer.managedbeans.CrowdsourcingBean#selectedCampaign} by a String containing the campaign id
      *
      * @param id a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setSelectedCampaignId(String id) throws DAOException {
         if (id != null) {
@@ -602,9 +601,10 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * <p>setTargetCampaignId.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @throws java.lang.NumberFormatException
      * @param id a {@link java.lang.String} object.
+     * @throws java.lang.NumberFormatException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setTargetCampaignId(String id) throws NumberFormatException, DAOException {
         if (id != null) {
@@ -618,8 +618,8 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for annotating
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
@@ -631,8 +631,8 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for reviewing
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
@@ -810,10 +810,10 @@ public class CrowdsourcingBean implements Serializable {
      * Returns a list of active campaigns for the given identifier that are visible to the current user.
      *
      * @return List of campaigns
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param pi a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<Campaign> getActiveCampaignsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("getActiveCampaignsForRecord: {}", pi);
@@ -852,9 +852,9 @@ public class CrowdsourcingBean implements Serializable {
      * Searches for all identifiers that are encompassed by the Solr query of each active campaign and initializes and fills a map of active campaigns
      * for each identifier. Should be called once after the application first starts (or upon first access) or when a campaign has been updated.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void updateActiveCampaigns() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("updateActiveCampaigns");

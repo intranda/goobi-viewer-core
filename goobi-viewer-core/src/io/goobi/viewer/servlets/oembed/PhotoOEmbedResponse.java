@@ -19,7 +19,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
  * <p>PhotoOEmbedResponse class.</p>
- *
  */
 public class PhotoOEmbedResponse extends OEmbedResponse {
 
@@ -29,7 +28,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
      * Constructor.
      *
      * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public PhotoOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
         this.type = "photo";

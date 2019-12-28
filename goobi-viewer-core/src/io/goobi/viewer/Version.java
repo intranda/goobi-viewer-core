@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>Version class.</p>
- *
  */
 public class Version {
     /** Constant <code>APPLICATION_NAME</code> */

@@ -113,13 +113,13 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param manifest The manifest to include the sequence. May be null
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param manifestId a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -167,10 +167,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * <p>addSeeAlsos.</p>
      *
      * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws java.net.URISyntaxException
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
 
@@ -208,9 +208,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param pi The pi of the work containing the pages
      * @param populate if true, the actual annotations will be included in the resources property
      * @return a map with the list of all annotationlists (one list per page)
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<AnnotationList> addComments(Map<Integer, Canvas> canvases, String pi, boolean populate)
             throws DAOException, URISyntaxException, ViewerConfigurationException {
@@ -288,11 +288,11 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a {@link de.intranda.api.iiif.presentation.Canvas} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public Canvas generateCanvas(StructElement doc, PhysicalElement page)
             throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException {

@@ -33,7 +33,6 @@ import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * <p>CMSStaticPage class.</p>
- *
  */
 @Entity
 @Table(name = "cms_static_pages")

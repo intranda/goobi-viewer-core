@@ -17,7 +17,6 @@ package io.goobi.viewer.model.viewer;
 
 /**
  * <p>PageOrientation class.</p>
- *
  */
 public enum PageOrientation {
     left,

@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>ThemeException class.</p>
- *
  */
 public class ThemeException extends Exception implements Serializable {
 

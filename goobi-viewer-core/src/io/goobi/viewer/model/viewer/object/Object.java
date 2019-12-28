@@ -47,8 +47,8 @@ public class Object {
     /**
      * <p>Constructor for Object.</p>
      *
-     * @throws java.net.URISyntaxException
      * @param uri a {@link java.lang.String} object.
+     * @throws java.net.URISyntaxException if any.
      */
     public Object(String uri) throws URISyntaxException {
         this.uri = new URI(uri);

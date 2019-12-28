@@ -69,7 +69,7 @@ public class CmsCategoriesBean implements Serializable {
 	 * If we are editing a category, obviously ignore this category for the check
 	 *
 	 * @return	true if {@link #getCategoryName()} returns a valid name for a category
-	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public boolean isValid() throws DAOException {
 		if(StringUtils.isNotBlank(getCategoryName())) {
@@ -101,7 +101,7 @@ public class CmsCategoriesBean implements Serializable {
 	 * and {@link io.goobi.viewer.managedbeans.CmsCategoriesBean#getCategoryDescription()} and persist it.
 	 *  Also clear categoryName and categoryDescription.
 	 *
-	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public void save() throws DAOException {
 		if(isValid()) {			
@@ -172,7 +172,7 @@ public class CmsCategoriesBean implements Serializable {
 	 * Returns a newly created list of all saved categories
 	 *
 	 * @return a newly created list of all saved categories
-	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public List<CMSCategory> getAllCategories() throws DAOException {
 		return new ArrayList<CMSCategory>(DataManager.getInstance().getDao().getAllCategories());

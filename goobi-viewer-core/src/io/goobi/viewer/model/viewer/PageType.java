@@ -30,7 +30,6 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
  * <p>PageType class.</p>
- *
  */
 public enum PageType {
 

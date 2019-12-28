@@ -315,7 +315,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * Returns the RSS feed URL for this collection using the JSF context.
      *
      * @return RSS feed URL for this collection
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getRssUrl() throws ViewerConfigurationException {
         return buildRssUrl();
@@ -326,7 +326,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      *
      * @param request HttpServletRequest
      * @return RSS feed URL for this collection
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getRssUrl(HttpServletRequest request) throws ViewerConfigurationException {
         return buildRssUrl();

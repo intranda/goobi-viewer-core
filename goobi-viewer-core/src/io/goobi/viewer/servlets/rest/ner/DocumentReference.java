@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>DocumentReference class.</p>
- *
  */
 @XmlRootElement
 @XmlType(propOrder = { "pi", "pages" })

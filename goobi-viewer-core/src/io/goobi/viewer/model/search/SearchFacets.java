@@ -641,8 +641,8 @@ public class SearchFacets {
      *
      * @param field a {@link java.lang.String} object.
      * @return Current min value, if facet in use; otherwise absolute min value for that field
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
@@ -660,8 +660,8 @@ public class SearchFacets {
      *
      * @param field a {@link java.lang.String} object.
      * @return Current max value, if facet in use; otherwise absolute max value for that field
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
@@ -681,8 +681,8 @@ public class SearchFacets {
      *
      * @param field a {@link java.lang.String} object.
      * @return Smallest available value
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAbsoluteMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!minValues.containsKey(field)) {
@@ -697,8 +697,8 @@ public class SearchFacets {
      *
      * @param field a {@link java.lang.String} object.
      * @return Largest available value
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAbsoluteMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
@@ -713,8 +713,8 @@ public class SearchFacets {
      *
      * @param field a {@link java.lang.String} object.
      * @return sorted list of all values for the given field among available facet values
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<Integer> getValueRange(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {

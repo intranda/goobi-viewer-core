@@ -49,7 +49,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 /**
  * <p>MyExceptionHandler class.</p>
- *
  */
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 

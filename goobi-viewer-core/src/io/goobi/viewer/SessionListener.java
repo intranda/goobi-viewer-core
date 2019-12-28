@@ -28,7 +28,6 @@ import io.goobi.viewer.controller.DataManager;
 
 /**
  * <p>SessionListener class.</p>
- *
  */
 @WebListener
 public class SessionListener implements HttpSessionListener {

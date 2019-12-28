@@ -42,7 +42,6 @@ import io.goobi.viewer.model.toc.TOCElement;
 
 /**
  * <p>TocWriter class.</p>
- *
  */
 public class TocWriter {
 

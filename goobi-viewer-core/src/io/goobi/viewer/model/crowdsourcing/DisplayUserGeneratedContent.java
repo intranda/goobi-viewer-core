@@ -379,8 +379,8 @@ public class DisplayUserGeneratedContent {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return UserGeneratedContent generated from the given Solr document
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should construct content correctly
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static DisplayUserGeneratedContent buildFromSolrDoc(SolrDocument doc) throws IndexUnreachableException {
         if (doc == null) {

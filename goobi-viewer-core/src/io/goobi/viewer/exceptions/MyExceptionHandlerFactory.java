@@ -20,7 +20,6 @@ import javax.faces.context.ExceptionHandlerFactory;
 
 /**
  * <p>MyExceptionHandlerFactory class.</p>
- *
  */
 public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
 

@@ -55,7 +55,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * <p>Bookmark class.</p>
- *
  */
 @Entity
 @Table(name = "bookshelf_items")
@@ -135,9 +134,9 @@ public class Bookmark implements Serializable {
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
      * @param order a {@link java.lang.Integer} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if the Solr index could not be reached
-     * @throws io.goobi.viewer.exceptions.PresentationException if the pi/logId could not be resolved
      * @throws java.lang.NullPointerException if pi is null or blank
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public Bookmark(String pi, String logId, Integer order) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
@@ -156,9 +155,9 @@ public class Bookmark implements Serializable {
      * @param logId a {@link java.lang.String} object.
      * @param order a {@link java.lang.Integer} object.
      * @param ignoreMissingSolrDoc should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if the Solr index could not be reached
-     * @throws io.goobi.viewer.exceptions.PresentationException if the pi/logId could not be resolved
      * @throws java.lang.NullPointerException if pi is null or blank
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public Bookmark(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
@@ -242,8 +241,8 @@ public class Bookmark implements Serializable {
      * Returns the image view URL for this bookmark. If this is the first call, the url is constructed first.
      *
      * @return The URL as string.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getUrl() throws PresentationException, IndexUnreachableException {
         if (url != null) {
@@ -292,11 +291,11 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         int width = 90;
@@ -307,13 +306,13 @@ public class Bookmark implements Serializable {
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param width a int.
      * @param height a int.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getRepresentativeImageUrl(int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
@@ -352,9 +351,9 @@ public class Bookmark implements Serializable {
     /**
      * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if the Solr index could not be reached
-     * @throws io.goobi.viewer.exceptions.PresentationException if the pi/logId could not be resolved
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @JsonIgnore
     public String getDocumentTitle() throws IndexUnreachableException, PresentationException {

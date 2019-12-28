@@ -270,9 +270,9 @@ public class Helper {
      * @param recipients a {@link java.util.List} object.
      * @param subject a {@link java.lang.String} object.
      * @param body a {@link java.lang.String} object.
-     * @throws java.io.UnsupportedEncodingException
-     * @throws javax.mail.MessagingException
      * @return a boolean.
+     * @throws java.io.UnsupportedEncodingException if any.
+     * @throws javax.mail.MessagingException if any.
      */
     public static boolean postMail(List<String> recipients, String subject, String body) throws UnsupportedEncodingException, MessagingException {
         return Helper.postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(),
@@ -485,10 +485,10 @@ public class Helper {
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.RecordNotFoundException
      * @should write overview page data
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
     public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
@@ -616,11 +616,11 @@ public class Helper {
      *
      * @param pi a {@link java.lang.String} object.
      * @param createTraceDocument a boolean.
-     * @throws java.io.IOException
      * @should create delete file correctly
      * @should create purge file correctly
      * @param hotfolderPath a {@link java.nio.file.Path} object.
      * @return a boolean.
+     * @throws java.io.IOException if any.
      */
     public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {
         if (pi == null) {
@@ -645,11 +645,11 @@ public class Helper {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws java.io.IOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.io.IOException if any.
      */
     public static synchronized boolean reIndexPage(String pi, int page)
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
@@ -807,8 +807,8 @@ public class Helper {
      *
      * @param filePath a {@link java.lang.String} object.
      * @return Full REST URL
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should build url correctly
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String buildFullTextUrl(String filePath) throws ViewerConfigurationException {
         return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
@@ -823,10 +823,10 @@ public class Helper {
      * <p>getWebContentGET.</p>
      *
      * @param urlString a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.HTTPException
      * @return a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
     public static String getWebContentGET(String urlString) throws ClientProtocolException, IOException, HTTPException {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
@@ -856,10 +856,10 @@ public class Helper {
      * @param url a {@link java.lang.String} object.
      * @param params a {@link java.util.Map} object.
      * @param cookies a {@link java.util.Map} object.
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.HTTPException
      * @return a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
     public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies)
             throws ClientProtocolException, IOException, HTTPException {
@@ -921,8 +921,8 @@ public class Helper {
      *
      * @param pi Record identifier
      * @return The root folder path of the data repositories; viewer home if none are used
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getDataRepositoryPathForRecord(String pi) throws PresentationException, IndexUnreachableException {
         String dataRepositoryPath = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
@@ -956,8 +956,8 @@ public class Helper {
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the media folder for the given PI
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException If the repository could not be requested from the solr
-     * @throws io.goobi.viewer.exceptions.PresentationException If an error occured resolving folders
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Path getMediaFolder(String pi) throws PresentationException, IndexUnreachableException {
         return getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder());
@@ -968,10 +968,10 @@ public class Helper {
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
      * @return HashMap<dataFolderName,Path>
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return all requested data folders
      * @param dataFolderNames a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Map<String, Path> getDataFolders(String pi, String... dataFolderNames) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -997,8 +997,8 @@ public class Helper {
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
      * @param dataFolderName the data folder within the repository; e.g 'media' or 'alto'
      * @return A Path to the data folder for the given PI
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException If the repository could not be requested from the solr
-     * @throws io.goobi.viewer.exceptions.PresentationException If an error occurred resolving folders
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Path getDataFolder(String pi, String dataFolderName) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -1042,8 +1042,8 @@ public class Helper {
      * @param altDataFolderName Name of the data folder - second choice
      * @param fileName Name of the content file
      * @return Path to the requested file
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
             throws PresentationException, IndexUnreachableException {
@@ -1064,8 +1064,8 @@ public class Helper {
      * @param pi Record identifier
      * @param relativeFilePath File path relative to data repositories root
      * @return File represented by the relative file path
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Path getDataFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -1083,9 +1083,9 @@ public class Helper {
      *
      * @param fileName a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
         String pi = FilenameUtils.getBaseName(fileName);
@@ -1133,10 +1133,10 @@ public class Helper {
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return correct path
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getTextFilePath(String pi, String fileName, String format) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(fileName)) {
@@ -1167,9 +1167,9 @@ public class Helper {
      *
      * @param pi a {@link java.lang.String} object.
      * @param relativeFilePath ALTO/text file path relative to the data folder
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.nio.file.Path} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static Path getTextFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(relativeFilePath)) {
@@ -1212,15 +1212,15 @@ public class Helper {
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException
-     * @throws java.io.IOException
-     * @throws java.io.FileNotFoundException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
             HttpServletRequest request)
@@ -1249,14 +1249,14 @@ public class Helper {
      *
      * @param filePath File path consisting of three party (datafolder/pi/filename); There must be two separators in the path!
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return file content correctly
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String loadFulltext(String filePath, HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -1284,11 +1284,11 @@ public class Helper {
      *
      * @param pi a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static String loadTei(String pi, String language)
             throws AccessDeniedException, FileNotFoundException, IOException, ViewerConfigurationException {

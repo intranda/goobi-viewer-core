@@ -26,7 +26,6 @@ import javax.faces.convert.FacesConverter;
 
 /**
  * <p>StringListConverter class.</p>
- *
  */
 @FacesConverter("stringListConverter")
 public class StringListConverter implements Converter {

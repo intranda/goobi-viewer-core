@@ -22,7 +22,6 @@ import javax.ws.rs.NameBinding;
 
 /**
  * <p>AuthenticationBinding class.</p>
- *
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

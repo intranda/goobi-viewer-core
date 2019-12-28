@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>MultiPageReference class.</p>
- *
  */
 @XmlRootElement
 @XmlType(propOrder = { "firstPage, lastPage, tags" })

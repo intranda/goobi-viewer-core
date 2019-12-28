@@ -59,7 +59,6 @@ import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * <p>ImageInformationFilter class.</p>
- *
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -158,9 +157,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * <p>getStructElement.</p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Optional<StructElement> getStructElement(String pi) throws PresentationException, IndexUnreachableException {
         String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();

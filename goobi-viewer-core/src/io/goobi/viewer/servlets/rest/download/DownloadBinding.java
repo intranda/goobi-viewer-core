@@ -23,7 +23,6 @@ import javax.ws.rs.NameBinding;
 
 /**
  * <p>DownloadBinding class.</p>
- *
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

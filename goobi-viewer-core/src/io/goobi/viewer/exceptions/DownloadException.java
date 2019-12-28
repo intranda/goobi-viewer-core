@@ -17,7 +17,6 @@ package io.goobi.viewer.exceptions;
 
 /**
  * <p>DownloadException class.</p>
- *
  */
 public class DownloadException extends PresentationException {
 

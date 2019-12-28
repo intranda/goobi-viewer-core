@@ -19,7 +19,6 @@ import java.awt.Dimension;
 
 /**
  * <p>ImageLevel class.</p>
- *
  */
 public class ImageLevel implements Comparable<ImageLevel> {
 

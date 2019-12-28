@@ -104,10 +104,11 @@ public class TaskClient {
      *
      * @param client a {@link org.apache.http.client.HttpClient} object.
      * @param post a {@link org.apache.http.client.methods.HttpPost} object.
-     * @throws java.io.IOException
-     * @throws org.apache.http.client.ClientProtocolException
      * @throws org.json.JSONException
      * @return a {@link org.json.JSONObject} object.
+     * @throws java.io.IOException if any.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws org.json.JSONException if any.
      */
     public static JSONObject getJsonResponse(HttpClient client, HttpPost post) throws IOException, ClientProtocolException, JSONException {
         // ------------------------------------------------------------------------------------------

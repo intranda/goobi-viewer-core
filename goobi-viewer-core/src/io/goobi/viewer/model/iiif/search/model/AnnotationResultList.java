@@ -23,7 +23,6 @@ import de.intranda.api.iiif.search.SearchHit;
 
 /**
  * <p>AnnotationResultList class.</p>
- *
  */
 public class AnnotationResultList {
     

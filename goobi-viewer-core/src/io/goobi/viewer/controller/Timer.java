@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>Timer class.</p>
- *
  */
 public class Timer {
 
@@ -122,6 +121,7 @@ public class Timer {
     /**
      * <p>measure.</p>
      *
+     * @throws io.goobi.viewer.controller.Timer$TimerException if any.
      * @throws io.goobi.viewer.controller.Timer.TimerException if any.
      */
     public void measure() throws TimerException {

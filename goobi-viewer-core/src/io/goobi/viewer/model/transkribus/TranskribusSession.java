@@ -17,7 +17,6 @@ package io.goobi.viewer.model.transkribus;
 
 /**
  * <p>TranskribusSession class.</p>
- *
  */
 public class TranskribusSession {
 

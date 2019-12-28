@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>ServletUtils class.</p>
- *
  */
 public class ServletUtils {
 

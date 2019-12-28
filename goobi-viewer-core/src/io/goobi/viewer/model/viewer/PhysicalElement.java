@@ -271,8 +271,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * <p>getUrl.</p>
      *
      * @return the url to the media content of the page, for example the
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
         MimeType mimeType = MimeType.getByName(this.mimeType);
@@ -375,7 +375,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * <p>getThumbnailUrl.</p>
      *
      * @return {@link java.lang.String}
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl() throws ViewerConfigurationException {
         int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
@@ -642,7 +642,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * <p>Getter for the field <code>fullText</code>.</p>
      *
      * @return the fullText
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getFullText() throws ViewerConfigurationException {
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
@@ -734,10 +734,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Returns word coordinates for words that start with any of the given search terms.
      *
      * @param searchTerms a {@link java.util.Set} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load XML document if none yet set
      * @param rotation a int.
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getWordCoords(Set<String> searchTerms, int rotation) throws ViewerConfigurationException {
         if (searchTerms == null || searchTerms.isEmpty()) {
@@ -768,14 +768,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Loads ALTO data for this page via the REST service, if not yet loaded.
      *
      * @return true if ALTO successfully loaded; false otherwise
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException
-     * @throws java.io.IOException
-     * @throws org.jdom2.JDOMException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load and set alto correctly
      * @should set wordCoordsFormat correctly
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String loadAlto()
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -860,8 +860,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Returns a "RESTful" URL for a media (audio or video) file in the given format.
      *
      * @param format a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getMediaUrl(String format) throws IndexUnreachableException {
 
@@ -1037,9 +1037,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Checks if the media type is displayable as a 3d object and access is granted for viewing it
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
@@ -1064,9 +1064,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * Checks if the media type is displayable as an image and access is granted for viewing an image
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
         // logger.trace("AccessPermissionImage");
@@ -1092,9 +1092,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Remnant from when image access had to be checked for each tile. Still used for OpenSeaDragon, so it just redirects to the access permission
      * check.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
         logger.trace("isAccessForJs");
@@ -1148,8 +1148,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * <p>isAccessPermissionBornDigital.</p>
      *
      * @return true if access is allowed for born digital files; false otherwise
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
         return isAccessPermissionObject();
@@ -1302,7 +1302,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * theme.
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCommentAction(Comment comment) throws DAOException {
         logger.trace("saveCommentAction");

@@ -42,7 +42,6 @@ import io.goobi.viewer.servlets.openid.OAuthServlet;
 
 /**
  * <p>OpenIdProvider class.</p>
- *
  */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 

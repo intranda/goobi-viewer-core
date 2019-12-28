@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>TableDataProvider class.</p>
- *
  */
 public class TableDataProvider<T> implements Serializable {
 
@@ -73,6 +72,7 @@ public class TableDataProvider<T> implements Serializable {
      * <p>getPaginatorList.</p>
      *
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public List<T> getPaginatorList() throws TableDataSourceException {
@@ -154,6 +154,7 @@ public class TableDataProvider<T> implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMoveFirst() throws TableDataSourceException {
         if (this.currentPage != 0) {
@@ -168,6 +169,7 @@ public class TableDataProvider<T> implements Serializable {
      * <p>cmdMovePrevious.</p>
      *
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMovePrevious() throws TableDataSourceException {
@@ -184,6 +186,7 @@ public class TableDataProvider<T> implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMoveNext() throws TableDataSourceException {
         if (!isLastPage()) {
@@ -199,6 +202,7 @@ public class TableDataProvider<T> implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public String cmdMoveLast() throws TableDataSourceException {
         if (this.currentPage != getLastPageNumber()) {
@@ -213,6 +217,7 @@ public class TableDataProvider<T> implements Serializable {
      * <p>setTxtMoveTo.</p>
      *
      * @param neueSeite a int.
+     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public void setTxtMoveTo(int neueSeite) throws TableDataSourceException {

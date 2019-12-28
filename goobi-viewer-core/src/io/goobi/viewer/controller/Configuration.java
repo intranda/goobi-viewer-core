@@ -69,7 +69,6 @@ import io.goobi.viewer.model.viewer.StringPair;
 
 /**
  * <p>Configuration class.</p>
- *
  */
 public final class Configuration extends AbstractConfiguration {
 
@@ -130,14 +129,14 @@ public final class Configuration extends AbstractConfiguration {
      * <p>loadStopwords.</p>
      *
      * @param stopwordsFilePath a {@link java.lang.String} object.
-     * @throws java.io.IOException
-     * @throws java.io.FileNotFoundException
      * @should load all stopwords
      * @should remove parts starting with pipe
      * @should not add empty stopwords
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
      * @return a {@link java.util.Set} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
      */
     protected static Set<String> loadStopwords(String stopwordsFilePath) throws FileNotFoundException, IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
@@ -465,6 +464,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return the resulting {@link Metadata} instance
      * @should load replace rules correctly
      */
+    // TODO
+    // TODO
     // TODO
     // TODO
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
@@ -2501,9 +2502,9 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * <p>useTiles.</p>
      *
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return correct value
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles() throws ViewerConfigurationException {
         return useTiles(PageType.viewImage, null);
@@ -2512,9 +2513,9 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * <p>useTilesFullscreen.</p>
      *
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should return correct value
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
         return useTiles(PageType.viewFullscreen, null);
@@ -2655,7 +2656,7 @@ public final class Configuration extends AbstractConfiguration {
      * <p>getTileSizes.</p>
      *
      * @return the configured tile sizes for imageView as a hashmap linking each tile size to the list of resolutions to use with that size
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes() throws ViewerConfigurationException {
         return getTileSizes(PageType.viewImage, null);

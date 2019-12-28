@@ -83,7 +83,6 @@ import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>JPADAO class.</p>
- *
  */
 public class JPADAO implements IDAO {
 

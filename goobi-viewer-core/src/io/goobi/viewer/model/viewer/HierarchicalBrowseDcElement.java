@@ -28,7 +28,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * <p>HierarchicalBrowseDcElement class.</p>
- *
  */
 public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
@@ -46,8 +45,8 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * @param name a {@link java.lang.String} object.
      * @param number a long.
      * @param sortField a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param field a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public HierarchicalBrowseDcElement(String name, long number, String field, String sortField) throws PresentationException {
         super(name, number, field, sortField);

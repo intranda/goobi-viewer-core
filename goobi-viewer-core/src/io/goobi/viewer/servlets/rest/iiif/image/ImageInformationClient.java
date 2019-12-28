@@ -36,16 +36,15 @@ import de.intranda.api.services.Service;
 
 /**
  * <p>ImageInformationClient class.</p>
- *
  */
 public class ImageInformationClient {
 
     /**
      * <p>getImageInfo.</p>
      *
-     * @throws java.io.FileNotFoundException
      * @param url a {@link java.lang.String} object.
      * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
+     * @throws java.io.FileNotFoundException if any.
      */
     public ImageInformation getImageInfo(String url) throws FileNotFoundException {
         //		Client client = ClientBuilder.newClient();

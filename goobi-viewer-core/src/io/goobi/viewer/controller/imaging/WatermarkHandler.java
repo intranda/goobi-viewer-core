@@ -91,10 +91,10 @@ public class WatermarkHandler implements Serializable {
      * @param page a {@link java.util.Optional} object.
      * @param doc a {@link java.util.Optional} object.
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
@@ -108,14 +108,14 @@ public class WatermarkHandler implements Serializable {
      * returned
      *
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
      * @param imageType a {@link java.util.Optional} object.
      * @param watermarkId a {@link java.util.Optional} object.
      * @param watermarkText a {@link java.util.Optional} object.
      * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId,
             Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ViewerConfigurationException {

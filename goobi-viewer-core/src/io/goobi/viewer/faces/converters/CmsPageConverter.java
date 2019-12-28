@@ -26,7 +26,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 
 /**
  * <p>CmsPageConverter class.</p>
- *
  */
 @FacesConverter("cmsPageConverter")
 public class CmsPageConverter implements Converter{

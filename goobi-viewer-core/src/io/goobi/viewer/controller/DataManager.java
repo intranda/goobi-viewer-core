@@ -40,7 +40,6 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 /**
  * <p>DataManager class.</p>
- *
  */
 public final class DataManager {
 
@@ -120,9 +119,9 @@ public final class DataManager {
     /**
      * <p>getModule.</p>
      *
-     * @throws io.goobi.viewer.exceptions.ModuleMissingException
      * @param id a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.modules.IModule} object.
+     * @throws io.goobi.viewer.exceptions.ModuleMissingException if any.
      */
     public IModule getModule(String id) throws ModuleMissingException {
         if (StringUtils.isEmpty(id)) {

@@ -71,9 +71,9 @@ public class ContentBean implements Serializable {
      * <p>Getter for the field <code>userGeneratedContentsForDisplay</code>.</p>
      *
      * @return User-generated contents for the given page
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException {
@@ -92,8 +92,8 @@ public class ContentBean implements Serializable {
      * <p>loadUserGeneratedContentsForDisplay.</p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void loadUserGeneratedContentsForDisplay(PhysicalElement page) throws PresentationException, IndexUnreachableException {
         logger.trace("loadUserGeneratedContentsForDisplay");

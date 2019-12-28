@@ -20,7 +20,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * <p>OEmbedRecord class.</p>
- *
  */
 public class OEmbedRecord {
 

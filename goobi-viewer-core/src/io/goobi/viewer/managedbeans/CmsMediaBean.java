@@ -68,7 +68,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * <p>CmsMediaBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -392,7 +391,7 @@ public class CmsMediaBean implements Serializable {
 	 * Deletes all mediaItems from {@link #mediaItems} which are are marked as
 	 * selected. Reloads the media list
 	 *
-	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public void deleteSelectedItems() throws DAOException {
 			Stream<CategorizableTranslatedSelectable<CMSMediaItem>> stream = this.dataProvider.getPaginatorList().stream();
@@ -411,7 +410,7 @@ public class CmsMediaBean implements Serializable {
 	 * Saves all mediaItems from {@link #mediaItems} which are are marked as
 	 * selected. Reloads the media list
 	 *
-	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public void saveSelectedItems() throws DAOException {
 			List<CategorizableTranslatedSelectable<CMSMediaItem>> itemsToSave = this.dataProvider.getPaginatorList().stream().filter(Selectable::isSelected)
@@ -427,6 +426,7 @@ public class CmsMediaBean implements Serializable {
 	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 * @return a {@link java.lang.String} object.
 	 * @throws java.lang.NumberFormatException if any.
+	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
 	 */
 	public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
@@ -439,8 +439,8 @@ public class CmsMediaBean implements Serializable {
 	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 * @param width a {@link java.lang.String} object.
 	 * @param height a {@link java.lang.String} object.
-	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
 	 * @return a {@link java.lang.String} object.
+	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
 	 */
 	public static String getMediaUrl(CMSMediaItem item, String width, String height)
 			throws ViewerConfigurationException {
@@ -466,8 +466,8 @@ public class CmsMediaBean implements Serializable {
 	 * <p>getMediaFileAsString.</p>
 	 *
 	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
-	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
 	 * @return a {@link java.lang.String} object.
+	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
 	 */
 	public static String getMediaFileAsString(CMSMediaItem item) throws ViewerConfigurationException {
 		if (item == null || StringUtils.isEmpty(item.getFileName())) {
@@ -496,6 +496,7 @@ public class CmsMediaBean implements Serializable {
 	 *
 	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 * @return a {@link java.lang.String} object.
+	 * @throws java.lang.NumberFormatException if any.
 	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
 	 */
@@ -545,7 +546,7 @@ public class CmsMediaBean implements Serializable {
 	 *
 	 * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 * @param categories a {@link java.util.List} object.
-	 * @throws io.goobi.viewer.exceptions.DAOException
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public void saveMedia(CMSMediaItem media, List<Selectable<CMSCategory>> categories) throws DAOException {
 		if(media != null) {
@@ -637,8 +638,8 @@ public class CmsMediaBean implements Serializable {
 	/**
 	 * <p>getAllMediaCategories.</p>
 	 *
-	 * @throws io.goobi.viewer.exceptions.DAOException
 	 * @return a {@link java.util.List} object.
+	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
 	public List<CMSCategory> getAllMediaCategories() throws DAOException {
 		return DataManager.getInstance().getDao().getAllCategories();

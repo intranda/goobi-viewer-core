@@ -33,7 +33,6 @@ import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile.Priority;
 
 /**
  * <p>TileGridBuilder class.</p>
- *
  */
 public class TileGridBuilder {
 

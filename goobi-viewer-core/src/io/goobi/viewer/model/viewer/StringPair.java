@@ -20,7 +20,6 @@ import java.util.Comparator;
 
 /**
  * <p>StringPair class.</p>
- *
  */
 public class StringPair implements Comparable<StringPair>, Serializable {
 

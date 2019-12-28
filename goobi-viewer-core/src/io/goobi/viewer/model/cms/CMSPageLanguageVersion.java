@@ -271,8 +271,8 @@ public class CMSPageLanguageVersion {
      * <p>getContentItem.</p>
      *
      * @param itemId a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException
      * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
      */
     public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
         if (getCompleteContentItemList() != null) {

@@ -34,7 +34,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * <p>XServiceProvider class.</p>
- *
  */
 public class XServiceProvider extends VuFindProvider {
 

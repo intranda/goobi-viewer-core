@@ -13,7 +13,6 @@ import io.goobi.viewer.controller.DataManager;
 
 /**
  * <p>CORSHeaderFilter class.</p>
- *
  */
 @Provider
 @CORSBinding

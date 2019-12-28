@@ -52,7 +52,6 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * <p>NERTagResource class.</p>
- *
  */
 @Path("/ner")
 @ViewerRestServiceBinding

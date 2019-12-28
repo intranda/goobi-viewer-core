@@ -47,7 +47,6 @@ import io.goobi.viewer.model.security.Role;
 
 /**
  * <p>ContextListener class.</p>
- *
  */
 @WebListener
 public class ContextListener implements ServletContextListener {

@@ -37,7 +37,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * <p>MetadataTools class.</p>
- *
  */
 public class MetadataTools {
 
@@ -184,9 +183,9 @@ public class MetadataTools {
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pages a {@link java.util.List} object.
      * @return String containing meta tags
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages)
             throws IndexUnreachableException, ViewerConfigurationException, PresentationException {

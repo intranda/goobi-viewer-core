@@ -91,8 +91,8 @@ public class ActivityCollectionBuilder {
      * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
      *
      * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollection}
-     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public OrderedCollection<Activity> buildCollection() throws PresentationException, IndexUnreachableException {
         OrderedCollection<Activity> collection = new OrderedCollection<>(getCollectionURI());
@@ -109,8 +109,8 @@ public class ActivityCollectionBuilder {
      *
      * @param pageNo    The number of this page, beginning with 0
      * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollectionPage}
-     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public OrderedCollectionPage<Activity> buildPage(int pageNo) throws PresentationException, IndexUnreachableException {
 
@@ -145,8 +145,8 @@ public class ActivityCollectionBuilder {
      *
      * @param startDate the earliest date of Activities to be included in this collection. If null, Activities are not filtered by date which is the default
      * @return  The Builder itself
-     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public ActivityCollectionBuilder setStartDate(Date startDate) throws PresentationException, IndexUnreachableException {
         this.startDate = startDate;
@@ -177,8 +177,8 @@ public class ActivityCollectionBuilder {
      * Get the total number of {@link Activity Activities} in the collection
      *
      * @return the total number of {@link Activity Activities} in the collection
-     * @throws io.goobi.viewer.exceptions.PresentationException       If the contained Solr query is faulty (due to configuration errors)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException   If the Solr index cannot be queried
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public int getNumActivities() throws PresentationException, IndexUnreachableException {
         if (numActivities == null) {

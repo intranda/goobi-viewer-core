@@ -60,10 +60,10 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param locale a {@link java.util.Locale} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should fill in missing dateStart from displayDate
      * @should fill in missing dateEnd from dateStart
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public EventElement(SolrDocument doc, Locale locale) throws IndexUnreachableException, PresentationException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);

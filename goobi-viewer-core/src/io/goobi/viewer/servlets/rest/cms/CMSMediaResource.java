@@ -139,9 +139,9 @@ public class CMSMediaResource {
      *
      * @param id a {@link java.lang.Long} object.
      * @return File contents as HTML
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @javax.ws.rs.Path("/get/{id}.pdf")
@@ -176,8 +176,8 @@ public class CMSMediaResource {
      *
      * @param id a {@link java.lang.Long} object.
      * @return File contents as HTML
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
     @javax.ws.rs.Path("/get/item/{id}")

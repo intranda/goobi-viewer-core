@@ -20,7 +20,6 @@ import java.util.Locale;
 
 /**
  * <p>LocaleComparator class.</p>
- *
  */
 public class LocaleComparator implements Comparator<Locale> {
 

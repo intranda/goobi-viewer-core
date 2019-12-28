@@ -180,6 +180,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @param requestEntity a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws javax.ws.rs.WebApplicationException if any.
+     * @throws javax.ws.rs.WebApplicationException if any.
      */
     protected String post(URI url, String requestEntity) throws WebApplicationException {
         //client from connectionManager is reused, so don't close it
@@ -208,6 +209,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      *
      * @param url a {@link java.net.URI} object.
      * @return a {@link java.lang.String} object.
+     * @throws javax.ws.rs.WebApplicationException if any.
      * @throws javax.ws.rs.WebApplicationException if any.
      */
     protected String get(URI url) throws WebApplicationException {

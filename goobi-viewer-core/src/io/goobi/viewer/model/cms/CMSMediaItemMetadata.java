@@ -20,7 +20,6 @@ import javax.persistence.Embeddable;
 
 /**
  * <p>CMSMediaItemMetadata class.</p>
- *
  */
 @Embeddable
 public class CMSMediaItemMetadata {

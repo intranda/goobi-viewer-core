@@ -49,7 +49,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>License class.</p>
- *
  */
 @Entity
 @Table(name = "licenses")

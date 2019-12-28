@@ -821,8 +821,8 @@ public class NavigationHelper implements Serializable {
      * <code>setSubThemeDiscriminatorValue(java.lang.String)</code> (e.g. via PrettyFacces). If a record is currently loaded and has a
      * dicriminatorField:discriminatorValue pair, the currently set value is replaced with that from the record.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
 
@@ -995,9 +995,9 @@ public class NavigationHelper implements Serializable {
      * This method checks the Solr height attribute of the current page. If this is > 0, than the current page is displayed with OpenLayers
      *
      * @return the path which viewImageFullscreen.xhtml the user should see for the current page.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
@@ -1252,7 +1252,7 @@ public class NavigationHelper implements Serializable {
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
      *
      * @param cmsPage The CMS page from which to create a breadcrumb
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
         logger.trace("updateBreadcrumbs (CMSPage): {}", cmsPage.getTitle());
@@ -1463,9 +1463,9 @@ public class NavigationHelper implements Serializable {
      * @param collection Full collection string containing all levels
      * @param field Solr field
      * @param splittingChar a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should create breadcrumbs correctly
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
             throws PresentationException, DAOException {
@@ -1697,8 +1697,8 @@ public class NavigationHelper implements Serializable {
     /**
      * <p>getSubThemeDiscriminatorQuerySuffix.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getSubThemeDiscriminatorQuerySuffix() throws IndexUnreachableException {
         return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());

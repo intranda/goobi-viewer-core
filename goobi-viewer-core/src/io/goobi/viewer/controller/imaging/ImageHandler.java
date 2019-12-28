@@ -109,11 +109,11 @@ public class ImageHandler {
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return The image information for the image file of the given page
-     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public ImageInformation getImageInformation(PhysicalElement page)
             throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
@@ -135,10 +135,10 @@ public class ImageHandler {
      * <p>getImageInformation.</p>
      *
      * @param url a {@link java.lang.String} object.
-     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException
-     * @throws java.net.URISyntaxException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException
      * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
+     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
     public ImageInformation getImageInformation(String url) throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
         if (url.endsWith("info.json")) {

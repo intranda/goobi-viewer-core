@@ -56,7 +56,7 @@ public class MediaDeliveryService {
      * @param response The response to be created.
      * @param filePath a {@link java.lang.String} object.
      * @param mimeType a {@link java.lang.String} object.
-     * @throws java.io.IOException If something fails at I/O level.
+     * @throws java.io.IOException if any.
      */
     public void processRequest(HttpServletRequest request, HttpServletResponse response, String filePath, String mimeType)
             throws IOException {

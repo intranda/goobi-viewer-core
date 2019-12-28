@@ -25,7 +25,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
  * <p>BrowseElementInfo interface.</p>
- *
  */
 public interface BrowseElementInfo {
 

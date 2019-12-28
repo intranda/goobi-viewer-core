@@ -75,10 +75,10 @@ public class TOC implements Serializable {
      * @param addAllSiblings a boolean.
      * @param mimeType a {@link java.lang.String} object.
      * @param tocCurrentPage a int.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void generate(StructElement structElement, boolean addAllSiblings, String mimeType, int tocCurrentPage)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {

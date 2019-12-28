@@ -57,11 +57,11 @@ public class CollectionResource extends AbstractResource {
      * to set the language for all metadata values
      *
      * @param collectionField a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("/{collectionField}")
@@ -82,13 +82,13 @@ public class CollectionResource extends AbstractResource {
      * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
      *
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @GET
     @Path("/{collectionField}/{topElement}")

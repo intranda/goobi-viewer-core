@@ -149,13 +149,14 @@ public class OverviewPage implements Harvestable, Serializable {
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param locale a {@link java.util.Locale} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws java.lang.IllegalArgumentException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should load overview page correctly
      * @return a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static OverviewPage loadOverviewPage(StructElement structElement, Locale locale)
             throws IllegalArgumentException, IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
@@ -213,9 +214,10 @@ public class OverviewPage implements Harvestable, Serializable {
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param locale a {@link java.util.Locale} object.
      * @throws java.lang.IllegalArgumentException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws java.lang.IllegalArgumentException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public void init(StructElement structElement, Locale locale)
             throws IllegalArgumentException, IndexUnreachableException, ViewerConfigurationException, PresentationException {
@@ -641,11 +643,11 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * <p>addMetadataFieldAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should add given field correctly
      * @should add given field's label to usedMetaadataNames
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public String addMetadataFieldAction() throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotEmpty(metadataFieldNameToAdd)) {
@@ -763,7 +765,7 @@ public class OverviewPage implements Harvestable, Serializable {
      * <p>migrateToCMS.</p>
      *
      * @return true if successful; false otherwise
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean migrateToCMS() throws DAOException {
         logger.info("Migrating overview page for '{}' to CMS...", pi);
@@ -887,8 +889,8 @@ public class OverviewPage implements Harvestable, Serializable {
      * <p>saveAction.</p>
      *
      * @param updatedBy a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveAction(User updatedBy) throws DAOException {
         return saveAction(updatedBy, true);
@@ -899,7 +901,6 @@ public class OverviewPage implements Harvestable, Serializable {
      *
      * @param updatedBy User responsible for the update.
      * @param exportToGoobi a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should update metadata list correctly
      * @should update description correctly
      * @should update publication text correctly
@@ -908,6 +909,7 @@ public class OverviewPage implements Harvestable, Serializable {
      * @should add history entry
      * @should reset edit modes
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveAction(User updatedBy, boolean exportToGoobi) throws DAOException {
         logger.debug("saveAction");
@@ -1055,8 +1057,8 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      * Deletes this overview page from the database.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteAction() throws DAOException {
         logger.debug("deleteAction: {}", this.getId());
@@ -1108,9 +1110,9 @@ public class OverviewPage implements Harvestable, Serializable {
      * Writes description and publicationText values as files for re-indexing.
      *
      * @param namingScheme a {@link java.lang.String} object.
-     * @throws java.io.IOException
      * @should write files correctly
      * @param hotfolderPath a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
      */
     public void exportTextData(String hotfolderPath, String namingScheme) throws IOException {
         if (StringUtils.isEmpty(hotfolderPath)) {

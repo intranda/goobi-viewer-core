@@ -20,7 +20,6 @@ import io.goobi.viewer.model.viewer.MimeType;
 
 /**
  * <p>RichOEmbedResponse class.</p>
- *
  */
 public class RichOEmbedResponse extends OEmbedResponse {
 
@@ -30,7 +29,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * Constructor.
      *
      * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public RichOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
         this.type = "rich";

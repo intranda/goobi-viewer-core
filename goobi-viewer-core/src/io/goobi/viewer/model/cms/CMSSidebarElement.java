@@ -49,7 +49,6 @@ import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
 /**
  * <p>CMSSidebarElement class.</p>
- *
  */
 @Entity
 @Table(name = "cms_sidebar_elements")

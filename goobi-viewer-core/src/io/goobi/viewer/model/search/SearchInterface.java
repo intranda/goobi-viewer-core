@@ -96,7 +96,7 @@ public interface SearchInterface {
      *
      * @param suggestion a {@link java.lang.String} object.
      * @return suggestions for autocomplete
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> autocomplete(String suggestion) throws IndexUnreachableException;
     

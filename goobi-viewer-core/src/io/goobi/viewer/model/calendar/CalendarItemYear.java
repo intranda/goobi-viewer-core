@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * <p>CalendarItemYear class.</p>
- *
  */
 public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
 

@@ -38,7 +38,6 @@ import io.goobi.viewer.servlets.rest.utils.SitemapResource;
 
 /**
  * <p>AuthorizationFilter class.</p>
- *
  */
 @Provider
 @AuthenticationBinding

@@ -39,7 +39,6 @@ import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 
 /**
  * <p>TranskribusUtils class.</p>
- *
  */
 public class TranskribusUtils {
 
@@ -63,13 +62,13 @@ public class TranskribusUtils {
      * @param userSession a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
      * @param pi a {@link java.lang.String} object.
      * @param metsResolverUrlRoot Root of the METS resolver URL (without the identifier).
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.HTTPException
-     * @throws org.jdom2.JDOMException
-     * @throws org.json.simple.parser.ParseException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws org.json.simple.parser.ParseException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static TranskribusJob ingestRecord(String restApiUrl, TranskribusSession userSession, String pi, String metsResolverUrlRoot)
             throws ClientProtocolException, IOException, HTTPException, JDOMException, ParseException, DAOException {
@@ -136,11 +135,11 @@ public class TranskribusUtils {
      * @param baseUrl a {@link java.lang.String} object.
      * @param userName a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws org.jdom2.JDOMException
-     * @throws io.goobi.viewer.exceptions.HTTPException
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
     public static TranskribusSession login(String baseUrl, String userName, String password) throws ClientProtocolException, IOException,
             JDOMException, HTTPException {
@@ -168,11 +167,11 @@ public class TranskribusUtils {
      * @param userName a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      * @return JDOM object containing the API response
-     * @throws java.io.IOException
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws org.jdom2.JDOMException
-     * @throws io.goobi.viewer.exceptions.HTTPException
      * @should auth correctly
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.jdom2.JDOMException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
     public static Document auth(String baseUrl, String userName, String password) throws ClientProtocolException, IOException, JDOMException,
             HTTPException {
@@ -207,12 +206,12 @@ public class TranskribusUtils {
      * @param baseUrl a {@link java.lang.String} object.
      * @param sessionId a {@link java.lang.String} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.HTTPException
-     * @throws org.json.simple.parser.ParseException
      * @should retrieve correct id
      * @return a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws org.json.simple.parser.ParseException if any.
      */
     public static String getCollectionId(String baseUrl, String sessionId, String collectionName) throws ClientProtocolException, IOException,
             HTTPException, ParseException {
@@ -251,13 +250,13 @@ public class TranskribusUtils {
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param sessionId a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.HTTPException
-     * @throws java.io.IOException
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws org.jdom2.JDOMException
      * @should create collection and return numeric id
      * @param collectionName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     protected static String createCollection(String baseUrl, String sessionId, String collectionName) throws ClientProtocolException, IOException,
             HTTPException, JDOMException {
@@ -287,12 +286,12 @@ public class TranskribusUtils {
      * @param collectionId a {@link java.lang.String} object.
      * @param recipientUserId a {@link java.lang.String} object.
      * @param sendMail a boolean.
-     * @throws io.goobi.viewer.exceptions.HTTPException
-     * @throws java.io.IOException
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws org.jdom2.JDOMException
      * @should grant privs correctly
      * @return a boolean.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     protected static boolean grantCollectionPrivsToViewer(String baseUrl, String sessionId, String collectionId, String recipientUserId,
             boolean sendMail) throws ClientProtocolException, IOException, HTTPException, JDOMException {
@@ -330,12 +329,12 @@ public class TranskribusUtils {
      * @param metsUrl a {@link java.lang.String} object.
      * @param userCollectionId a {@link java.lang.String} object.
      * @param viewerCollectionId a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.HTTPException
-     * @throws org.jdom2.JDOMException
      * @should ingest record correctly
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws org.jdom2.JDOMException if any.
      */
     protected static TranskribusJob ingestRecordToCollections(String baseUrl, TranskribusSession session, String pi, String metsUrl,
             String userCollectionId, String viewerCollectionId) throws ClientProtocolException, IOException, HTTPException, JDOMException {
@@ -381,12 +380,12 @@ public class TranskribusUtils {
      * @param baseUrl a {@link java.lang.String} object.
      * @param sessionId a {@link java.lang.String} object.
      * @param jobId a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.HTTPException
-     * @throws org.json.simple.parser.ParseException
      * @should return correct status
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus} object.
+     * @throws org.apache.http.client.ClientProtocolException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.HTTPException if any.
+     * @throws org.json.simple.parser.ParseException if any.
      */
     protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId) throws ClientProtocolException,
             IOException, HTTPException, ParseException {

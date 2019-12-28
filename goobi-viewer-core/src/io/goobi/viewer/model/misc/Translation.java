@@ -31,7 +31,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>Abstract Translation class.</p>
- *
  */
 @MappedSuperclass
 public abstract class Translation {

@@ -321,7 +321,7 @@ public class ImageDeliveryBean implements Serializable {
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFUrlHandler}, creates it if it doesn't exist yet
      *
      * @return the iiif
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public IIIFUrlHandler getIiif() throws ViewerConfigurationException {
         if (iiif == null) {
@@ -424,7 +424,7 @@ public class ImageDeliveryBean implements Serializable {
      *
      * @return whether the given string denotes to an external url resource
      * @param urlString the string to test
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isExternalUrl(String urlString) throws ViewerConfigurationException {
         try {
@@ -463,7 +463,7 @@ public class ImageDeliveryBean implements Serializable {
      *
      * @param url The url to test
      * @return true if the url points to a cms media file
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isCmsUrl(String url) throws ViewerConfigurationException {
         URI uri;
@@ -487,7 +487,7 @@ public class ImageDeliveryBean implements Serializable {
      *
      * @param url the url to test
      * @return true if the url points to a static image resource within the current theme
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isStaticImageUrl(String url) throws ViewerConfigurationException {
         return url.startsWith(getStaticImagesURI());
@@ -497,7 +497,7 @@ public class ImageDeliveryBean implements Serializable {
      * Returns the url path to the static images folder of the viewer theme (or the viewer itself if no theme is found
      *
      * @return the staticImagesURI
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getStaticImagesURI() throws ViewerConfigurationException {
         if (staticImagesURI == null) {

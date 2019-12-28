@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>RecordDeletedException class.</p>
- *
  */
 public class RecordDeletedException extends Exception implements Serializable {
 

@@ -537,10 +537,10 @@ public class Metadata implements Serializable {
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
      * @param locale a {@link java.util.Locale} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @SuppressWarnings("unchecked")
     public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {

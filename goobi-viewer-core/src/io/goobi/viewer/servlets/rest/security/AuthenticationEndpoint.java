@@ -32,7 +32,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * <p>AuthenticationEndpoint class.</p>
- *
  */
 @Path("/auth")
 public class AuthenticationEndpoint {

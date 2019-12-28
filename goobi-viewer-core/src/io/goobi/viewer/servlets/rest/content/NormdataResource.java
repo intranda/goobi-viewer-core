@@ -91,12 +91,12 @@ public class NormdataResource {
      * @param url a {@link java.lang.String} object.
      * @param template Type of normdata set (person, corporation, etc.)
      * @param lang Locale for field name translations
-     * @throws java.net.MalformedURLException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      * @return a {@link java.lang.String} object.
+     * @throws java.net.MalformedURLException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
      */
     @SuppressWarnings("unchecked")
     @GET
@@ -241,10 +241,10 @@ public class NormdataResource {
      *
      * @param url a {@link java.lang.String} object.
      * @param lang Locale for field name translations
-     * @throws java.net.MalformedURLException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException
      * @return a {@link java.lang.String} object.
+     * @throws java.net.MalformedURLException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
      */
     @GET
     @Path("/get/{url}/{lang}")

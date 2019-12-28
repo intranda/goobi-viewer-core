@@ -312,7 +312,7 @@ public class PersistentAnnotation {
      * <p>getCreator.</p>
      *
      * @return the creator
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public User getCreator() throws DAOException {
         if (getCreatorId() != null) {
@@ -334,7 +334,7 @@ public class PersistentAnnotation {
      * <p>getGenerator.</p>
      *
      * @return the generator
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Question getGenerator() throws DAOException {
         if (getGeneratorId() != null) {
@@ -445,10 +445,10 @@ public class PersistentAnnotation {
     /**
      * Get the
      *
-     * @throws com.fasterxml.jackson.core.JsonParseException
-     * @throws com.fasterxml.jackson.databind.JsonMappingException
-     * @throws java.io.IOException
      * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
      */
     public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.body != null) {
@@ -535,10 +535,10 @@ public class PersistentAnnotation {
     /**
      * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
      *
-     * @throws com.fasterxml.jackson.core.JsonParseException
-     * @throws com.fasterxml.jackson.databind.JsonMappingException
-     * @throws java.io.IOException
      * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
      */
     public IResource getTargetAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.target != null) {
@@ -559,10 +559,10 @@ public class PersistentAnnotation {
     /**
      * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
      *
-     * @throws com.fasterxml.jackson.core.JsonParseException
-     * @throws com.fasterxml.jackson.databind.JsonMappingException
-     * @throws java.io.IOException
      * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
      */
     public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
         IResource resource = getTargetAsResource();
@@ -613,10 +613,10 @@ public class PersistentAnnotation {
     /**
      * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
      *
-     * @throws com.fasterxml.jackson.core.JsonParseException
-     * @throws com.fasterxml.jackson.databind.JsonMappingException
-     * @throws java.io.IOException
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
      */
     public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException {
         OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
@@ -631,7 +631,7 @@ public class PersistentAnnotation {
      * Deletes exported JSON annotations from a related record's data folder. Should be called when deleting this annotation.
      *
      * @return Number of deleted files
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int deleteExportedTextFiles() throws ViewerConfigurationException {
         if (DataManager.getInstance().getConfiguration().getAnnotationFolder() == null) {
@@ -688,10 +688,10 @@ public class PersistentAnnotation {
      * <p>getContentString.</p>
      *
      * @return Just the string value of the body document
-     * @throws com.fasterxml.jackson.core.JsonParseException
-     * @throws com.fasterxml.jackson.databind.JsonMappingException
-     * @throws java.io.IOException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws com.fasterxml.jackson.core.JsonParseException if any.
+     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getContentString() throws JsonParseException, JsonMappingException, IOException, DAOException {
         // Value

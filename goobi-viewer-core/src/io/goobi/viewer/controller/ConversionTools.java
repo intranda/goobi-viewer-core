@@ -36,7 +36,6 @@ import org.xml.sax.SAXException;
 
 /**
  * <p>ConversionTools class.</p>
- *
  */
 public class ConversionTools {
 
@@ -96,8 +95,8 @@ public class ConversionTools {
      *
      * @param file a {@link java.nio.file.Path} object.
      * @return String containing the HTML
-     * @throws java.io.IOException
      * @should convert docx correctly
+     * @throws java.io.IOException if any.
      */
     public static String convertDocxToHtml(Path file) throws IOException {
         if (file == null) {

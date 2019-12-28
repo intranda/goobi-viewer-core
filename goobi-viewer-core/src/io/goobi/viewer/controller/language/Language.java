@@ -17,7 +17,6 @@ package io.goobi.viewer.controller.language;
 
 /**
  * <p>Language class.</p>
- *
  */
 public class Language {
 

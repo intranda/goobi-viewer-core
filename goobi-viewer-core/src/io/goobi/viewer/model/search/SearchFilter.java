@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>SearchFilter class.</p>
- *
  */
 public class SearchFilter implements Serializable {
 

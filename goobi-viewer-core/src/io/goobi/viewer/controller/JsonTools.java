@@ -44,7 +44,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * <p>JsonTools class.</p>
- *
  */
 public class JsonTools {
 
@@ -56,11 +55,11 @@ public class JsonTools {
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link org.json.simple.JSONArray} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @SuppressWarnings("unchecked")
     public static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
@@ -97,11 +96,11 @@ public class JsonTools {
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link org.json.simple.JSONArray} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @SuppressWarnings("unchecked")
     public static JSONArray getDateCentricRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
@@ -160,9 +159,9 @@ public class JsonTools {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param rootUrl a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should add all metadata
      * @return a {@link org.json.simple.JSONObject} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl) throws ViewerConfigurationException {
         return getRecordJsonObject(doc, rootUrl, null);
@@ -174,9 +173,9 @@ public class JsonTools {
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param rootUrl a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @should add all metadata
      * @return a {@link org.json.simple.JSONObject} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     @SuppressWarnings("unchecked")
     public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language) throws ViewerConfigurationException {

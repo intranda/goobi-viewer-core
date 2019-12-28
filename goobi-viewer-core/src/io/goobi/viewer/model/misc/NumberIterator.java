@@ -19,7 +19,6 @@ import java.util.Iterator;
 
 /**
  * <p>NumberIterator class.</p>
- *
  */
 public class NumberIterator implements Iterator<Integer> {
 

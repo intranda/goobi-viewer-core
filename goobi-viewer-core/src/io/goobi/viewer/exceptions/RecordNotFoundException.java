@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>RecordNotFoundException class.</p>
- *
  */
 public class RecordNotFoundException extends Exception implements Serializable {
 

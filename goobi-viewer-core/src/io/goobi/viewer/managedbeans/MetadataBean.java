@@ -74,9 +74,9 @@ public class MetadataBean {
     /**
      * <p>loadMetadata.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String loadMetadata() throws IndexUnreachableException, DAOException {
         metadataElementList = new ArrayList<>();

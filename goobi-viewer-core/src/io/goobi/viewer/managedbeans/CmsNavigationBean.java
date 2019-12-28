@@ -41,7 +41,6 @@ import io.goobi.viewer.model.cms.SelectableNavigationItem;
 
 /**
  * <p>CmsNavigationBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -256,8 +255,8 @@ public class CmsNavigationBean implements Serializable {
      * <p>Getter for the field <code>selectableThemes</code>.</p>
      *
      * @return a list of all configured themes for which we may create menus
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
         if (selectableThemes == null) {

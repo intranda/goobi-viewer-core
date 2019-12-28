@@ -44,7 +44,6 @@ import io.goobi.viewer.model.download.PDFDownloadJob;
 
 /**
  * <p>DownloadBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -86,10 +85,10 @@ public class DownloadBean implements Serializable {
      * @param email a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @Deprecated
     public String checkDownloadAction(String type, String email, String pi, String logId) throws DAOException, PresentationException,
@@ -104,9 +103,9 @@ public class DownloadBean implements Serializable {
     /**
      * <p>openDownloadAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.DownloadException if download job not found
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public String openDownloadAction() throws DAOException, DownloadException {
         downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);

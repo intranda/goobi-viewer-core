@@ -157,7 +157,7 @@ public class SessionStoreBookmarkManager {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addSessionBookmarkListToUser(User user, HttpServletRequest request) throws DAOException {
         if (request == null) {

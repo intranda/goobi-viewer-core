@@ -216,10 +216,10 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -411,8 +411,8 @@ public class Search implements Serializable {
     /**
      * Constructs a search URL using the query parameters contained in this object.
      *
-     * @throws java.io.UnsupportedEncodingException
      * @return a {@link java.lang.String} object.
+     * @throws java.io.UnsupportedEncodingException if any.
      */
     public String getUrl() throws UnsupportedEncodingException {
         StringBuilder sbUrl = new StringBuilder();
@@ -775,7 +775,7 @@ public class Search implements Serializable {
     /**
      * Toggles the status of newHitsNotification and persists this search.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void toggleNotifications() throws DAOException {
         this.newHitsNotification = !this.newHitsNotification;

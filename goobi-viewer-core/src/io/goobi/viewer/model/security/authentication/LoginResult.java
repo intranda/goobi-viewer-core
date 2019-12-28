@@ -93,7 +93,7 @@ public class LoginResult {
      * <p>Getter for the field <code>user</code>.</p>
      *
      * @return the user Optional containing the user if login was successful. Otherwise an empty optional
-     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if an internal error occured while logging in
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      */
     public Optional<User> getUser() throws AuthenticationProviderException {
         if (exception != null) {

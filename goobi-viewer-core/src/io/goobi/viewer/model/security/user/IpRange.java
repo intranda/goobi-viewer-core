@@ -53,7 +53,6 @@ import io.goobi.viewer.model.security.LicenseType;
 
 /**
  * <p>IpRange class.</p>
- *
  */
 @Entity
 @Table(name = "ip_ranges")
@@ -188,14 +187,14 @@ public class IpRange implements ILicensee {
      * @param licenseTypes  a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return true if condition is open access
      * @should return true if ip range has license
      * @should return false if ip range has no license
      * @should return true if condition list empty
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, List<LicenseType> licenseTypes,  String privilegeName, String pi) throws PresentationException,
             IndexUnreachableException, DAOException {

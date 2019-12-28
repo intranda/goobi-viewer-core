@@ -172,7 +172,7 @@ public class BrowseBean implements Serializable {
      * <p>getDcList.</p>
      *
      * @return the dcList (Collections)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<BrowseDcElement> getDcList() throws IndexUnreachableException {
         return getList(SolrConstants.DC);
@@ -215,8 +215,8 @@ public class BrowseBean implements Serializable {
     /**
      * <p>populateCollection.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @param field a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void populateCollection(String field) throws IndexUnreachableException {
         if (collections.containsKey(field)) {
@@ -242,7 +242,7 @@ public class BrowseBean implements Serializable {
      * Populates <code>visibledcList</code> with elements to be currently show in the UI. Prior to using this method, <code>dcList</code> must be
      * sorted and each <code>BrowseDcElement.hasSubElements</code> must be set correctly.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @Deprecated
     public void calculateVisibleDcElements() throws IndexUnreachableException {
@@ -296,8 +296,8 @@ public class BrowseBean implements Serializable {
     /**
      * Use this method of a certain collections needs to be expanded via URL.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @param levels a int.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void expandCollection(int levels) throws IndexUnreachableException {
         expandCollection(SolrConstants.DC, SolrConstants.FACET_DC, levels);
@@ -324,9 +324,9 @@ public class BrowseBean implements Serializable {
     /**
      * <p>searchTerms.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {

@@ -41,7 +41,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>UserGroupBean class.</p>
- *
  */
 @Named
 @SessionScoped
@@ -77,8 +76,8 @@ public class UserGroupBean implements Serializable {
     /**
      * Creates or updates (if already exists) currentOwnUserGroup.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param actionEvent a {@link javax.faces.event.ActionEvent} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCurrentOwnUserGroupAction(ActionEvent actionEvent) throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -104,7 +103,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Deletes currentUserGroup. TODO Some sort of confirmation dialog
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCurrentUserGroupAction() throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -121,7 +120,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Revokes the current user's membership in currentOtherUserGroup. TODO Some sort of confirmation dialog
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void leaveCurrentUserGroupAction() throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -142,7 +141,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Add currentMember to the member list of currentOwnUserGroup.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveMembershipAction() throws DAOException {
         currentRole = new Role();
@@ -165,7 +164,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Removes currentMember from the member list of currentUserGroup.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void removeCurrentMemberAction() throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
@@ -183,13 +182,13 @@ public class UserGroupBean implements Serializable {
      * Returns the names all users that are not already members of the currently selected user group. TODO Filter some user groups, if required (e.g.
      * admins)
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return all non member names
      * @should not return active user name
      * @should not return group member names
      * @should not modify global user group list
      * @should return empty list if no remaining user group names
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<SelectItem> getRemainingUsers() throws DAOException {
         List<SelectItem> ret = new ArrayList<>();
@@ -220,8 +219,8 @@ public class UserGroupBean implements Serializable {
     /**
      * Returns a list of all existing roles (minus superuser).
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Role> getAllRoles() throws DAOException {
         List<Role> ret = new ArrayList<>();
@@ -299,7 +298,7 @@ public class UserGroupBean implements Serializable {
     /**
      * <p>Setter for the field <code>currentOwnUserGroup</code>.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setCurrentOwnUserGroup() throws DAOException {
         setCurrentOwnUserGroup(DataManager.getInstance().getDao().getUserGroup(getCurrentOwnUserGroupId()));
@@ -353,8 +352,8 @@ public class UserGroupBean implements Serializable {
     /**
      * Used for the 'add member' selectbox.
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param id a {@link java.lang.Long} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setCurrentId(Long id) throws DAOException {
         if (id != null) {

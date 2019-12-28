@@ -88,10 +88,10 @@ public class MediaResource {
     /**
      * <p>checkAccess.</p>
      *
-     * @throws io.goobi.viewer.exceptions.AccessDeniedException if access is not granted
      * @param action a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFilename a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
     public void checkAccess(String action, String pi, String contentFilename) throws AccessDeniedException {
         boolean access = false;

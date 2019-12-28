@@ -69,7 +69,6 @@ import io.goobi.viewer.model.viewer.Tag;
 
 /**
  * <p>SolrSearchIndex class.</p>
- *
  */
 public final class SolrSearchIndex {
 
@@ -167,13 +166,13 @@ public final class SolrSearchIndex {
      * @param filterQueries a {@link java.util.List} object.
      * @param params Additional query parameters.
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct results
      * @should return correct number of rows
      * @should sort results correctly
      * @should facet results correctly
      * @should filter fields correctly
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
@@ -278,8 +277,8 @@ public final class SolrSearchIndex {
      * @param filterQueries a {@link java.util.List} object.
      * @param params a {@link java.util.Map} object.
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
             List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
@@ -297,8 +296,8 @@ public final class SolrSearchIndex {
      * @param facetFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
@@ -313,9 +312,9 @@ public final class SolrSearchIndex {
      * @param rows a int.
      * @param sortFields a {@link java.util.List} object.
      * @param fieldList If not null, only the fields in the list will be returned.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link org.apache.solr.common.SolrDocumentList} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList search(String query, int rows, List<StringPair> sortFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
@@ -328,9 +327,9 @@ public final class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @return {@link Hits}
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @param fieldList a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList search(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
@@ -342,8 +341,8 @@ public final class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @return {@link Hits}
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList search(String query) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
@@ -369,9 +368,9 @@ public final class SolrSearchIndex {
      * @param query a {@link java.lang.String} object.
      * @param fieldList a {@link java.util.List} object.
      * @return The first hit returned by the query
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct doc
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
         return getFirstDoc(query, fieldList, null);
@@ -385,8 +384,8 @@ public final class SolrSearchIndex {
      * @param fieldList The fields retrieved
      * @param sortFields Sorting - the first volume according to this sorting is returned
      * @return The first hit returned by the query
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields)
             throws PresentationException, IndexUnreachableException {
@@ -404,10 +403,10 @@ public final class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @param fieldList a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return SolrDocumentList containing all hits, or null if no hits are found
      * @return a {@link org.apache.solr.common.SolrDocumentList} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
         logger.trace("getDocs: {}", query);
@@ -423,10 +422,10 @@ public final class SolrSearchIndex {
      * <p>getDocumentByIddoc.</p>
      *
      * @param iddoc a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return correct doc
      * @return a {@link org.apache.solr.common.SolrDocument} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
@@ -443,11 +442,11 @@ public final class SolrSearchIndex {
     /**
      * <p>getDocumentByPI.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should return correct doc
      * @param pi a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.common.SolrDocument} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
@@ -466,8 +465,8 @@ public final class SolrSearchIndex {
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param querySuffix a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @SuppressWarnings("unchecked")
     public List<Tag> generateFilteredTagCloud(String fieldName, String querySuffix) throws IndexUnreachableException {
@@ -556,10 +555,10 @@ public final class SolrSearchIndex {
      * Returns the value of the IDDOC field for the document with the given PI (or 0 if none found).
      *
      * @param identifier a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should retrieve correct IDDOC
      * @return a long.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
         // logger.trace("getIddocFromIdentifier: {}", identifier);
@@ -574,11 +573,11 @@ public final class SolrSearchIndex {
     /**
      * <p>getIdentifierFromIddoc.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should retrieve correct identifier
      * @param iddoc a long.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getIdentifierFromIddoc(long iddoc) throws PresentationException, IndexUnreachableException {
         logger.trace("getIdentifierFromIddoc: {}", iddoc);
@@ -616,10 +615,10 @@ public final class SolrSearchIndex {
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a int.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should retrieve correct IDDOC
      * @return a long.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getImageOwnerIddoc(String pi, int pageNo) throws IndexUnreachableException, PresentationException {
         logger.trace("getImageOwnerIddoc: {}:{}", pi, pageNo);
@@ -655,10 +654,10 @@ public final class SolrSearchIndex {
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @should retrieve correct IDDOC
      * @return a long.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
@@ -887,9 +886,9 @@ public final class SolrSearchIndex {
      * Returns the number of hits for the given query without actually returning any documents.
      *
      * @param query a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a long.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getHitCount(String query) throws IndexUnreachableException, PresentationException {
         SolrDocumentList result = search(query, 0, null, Collections.singletonList(SolrConstants.IDDOC));
@@ -1051,12 +1050,12 @@ public final class SolrSearchIndex {
      * @param facetFields List of facet fields.
      * @param facetMinCount a int.
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
@@ -1071,12 +1070,12 @@ public final class SolrSearchIndex {
      * @param facetMinCount a int.
      * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, String facetPrefix,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
@@ -1229,9 +1228,9 @@ public final class SolrSearchIndex {
     /**
      * <p>getAllFieldNames.</p>
      *
-     * @throws java.io.IOException
-     * @throws org.apache.solr.client.solrj.SolrServerException
      * @return a {@link java.util.List} object.
+     * @throws org.apache.solr.client.solrj.SolrServerException if any.
+     * @throws java.io.IOException if any.
      */
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
@@ -1344,8 +1343,8 @@ public final class SolrSearchIndex {
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
      * @return contents for the given page
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
             throws PresentationException, IndexUnreachableException {
@@ -1386,8 +1385,8 @@ public final class SolrSearchIndex {
      * @param order The page order (1-based
      * @return An optíonal containing the filename of the page with the given order under the given ip. Or an empty optional if no matching page was
      *         found.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Optional<String> getFilename(String pi, int order) throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
@@ -1472,10 +1471,10 @@ public final class SolrSearchIndex {
      * <p>isHasImages.</p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
         StructElement structElement = new StructElement(0, doc);

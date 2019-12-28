@@ -670,8 +670,8 @@ public class CmsBean implements Serializable {
     /**
      * <p>getAllCMSPages.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getAllCMSPages() throws DAOException {
         List<CMSPage> pages = DataManager.getInstance().getDao().getAllCMSPages();
@@ -689,8 +689,8 @@ public class CmsBean implements Serializable {
      * <p>getCMSPage.</p>
      *
      * @param pageId a {@link java.lang.Long} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getCMSPage(Long pageId) throws DAOException {
         Optional<CMSPage> page = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(pageId));
@@ -749,7 +749,7 @@ public class CmsBean implements Serializable {
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @SuppressWarnings("unused")
     public void saveSelectedPage() throws DAOException {
@@ -941,7 +941,7 @@ public class CmsBean implements Serializable {
     /**
      * Same as saveCurrentPage, but also set published=true for currentPage
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void publishSelectedPage() throws DAOException {
         if (getSelectedPage() != null) {
@@ -1002,7 +1002,7 @@ public class CmsBean implements Serializable {
      * Action method for deleting selectedPage from the database.
      *
      * @return Return view
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteSelectedPage() throws DAOException {
         deletePage(selectedPage);
@@ -1013,7 +1013,7 @@ public class CmsBean implements Serializable {
      * Deletes given CMS page from the database.
      *
      * @param page Page to delete
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deletePage(CMSPage page) throws DAOException {
         if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
@@ -1159,8 +1159,8 @@ public class CmsBean implements Serializable {
      * Page ID setter for PrettyFaces.
      *
      * @param id a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
     public void setCurrentPageId(String id) throws DAOException, ContentNotFoundException {
         logger.trace("setCurrentPageId: {}", id);
@@ -1256,8 +1256,8 @@ public class CmsBean implements Serializable {
      * <p>mayRemoveCategoryFromPage.</p>
      *
      * @return false only if the user has limited privileges for categories and only one category is set for the selected page
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean mayRemoveCategoryFromPage(CMSCategory cat) throws DAOException {
         if (this.selectedPage != null) {
@@ -1321,11 +1321,11 @@ public class CmsBean implements Serializable {
     /**
      * Action method called when a CMS page is opened. The exact action depends on the page and content item type.
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return cmsContextAction(true);
@@ -1335,11 +1335,11 @@ public class CmsBean implements Serializable {
      * Action method called when a CMS page is opened. The exact action depends on the page and content item type.
      *
      * @param resetSearch If true, the search parameters in SearchBean will be reset
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String cmsContextAction(boolean resetSearch)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -1411,10 +1411,10 @@ public class CmsBean implements Serializable {
     /**
      * <p>getQueryResults.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<SearchHit> getQueryResults() throws IndexUnreachableException, PresentationException, DAOException {
         if (searchBean != null) {
@@ -1431,11 +1431,11 @@ public class CmsBean implements Serializable {
      * Uses SearchBean to execute a search.
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String searchAction(CMSContentItem item)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -1477,10 +1477,10 @@ public class CmsBean implements Serializable {
      * <p>removeFacetAction.</p>
      *
      * @param facetQuery a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String removeFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("removeFacetAction: {}", facetQuery);
@@ -1502,8 +1502,8 @@ public class CmsBean implements Serializable {
      * Calculates the number of pages needed for the paginator. The value is taken directly from {@link io.goobi.viewer.model.search.Search#getLastPage(int)}
      *
      * @return The number of pages to display in the paginator
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public long getQueryResultCount() throws PresentationException, IndexUnreachableException {
         if (searchBean != null && searchBean.getCurrentSearch() != null) {
@@ -1516,10 +1516,10 @@ public class CmsBean implements Serializable {
      * Calcs number of paginator pages for the query result.
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @deprecated use {@link #getQueryResultCount()} instead
      * @return a long.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @Deprecated
     public long getQueryResultCount(CMSContentItem item) throws PresentationException, IndexUnreachableException {
@@ -1651,8 +1651,8 @@ public class CmsBean implements Serializable {
      * @param id The ContentItemId of the ContentItem to look for
      * @param page The page containing the collection ContentItem
      * @return The CollectionView or null if no matching ContentItem was found
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException {
         String myId = page.getId() + "_" + id;
@@ -1684,8 +1684,8 @@ public class CmsBean implements Serializable {
      *
      * @param page The CMSPage to provide the collection
      * @return The CollectionView or null if none was found
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
         Optional<CMSContentItem> collectionItem =
@@ -1748,8 +1748,8 @@ public class CmsBean implements Serializable {
     /**
      * <p>Getter for the field <code>staticPages</code>.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSStaticPage> getStaticPages() throws DAOException {
         if (this.staticPages == null) {
@@ -1797,8 +1797,8 @@ public class CmsBean implements Serializable {
      * <p>getAvailableParentPages.</p>
      *
      * @return A list of all cmsPages except the given one
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
         Locale currentLocale = BeanUtils.getLocale();
@@ -1812,8 +1812,8 @@ public class CmsBean implements Serializable {
      * <p>getAvailableCmsPages.</p>
      *
      * @return A list of all cmsPages not yet registered to a static page
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
         List<CMSPage> allPages = getAllCMSPages().stream()
@@ -1833,7 +1833,7 @@ public class CmsBean implements Serializable {
      * <p>getCMSPagesWithSearch.</p>
      *
      * @return a list of all valid cms pages which contain a "search" item
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getCMSPagesWithSearch() throws DAOException {
         return DataManager.getInstance()
@@ -1848,7 +1848,7 @@ public class CmsBean implements Serializable {
     /**
      * Save static page status for all cms pages
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {
@@ -1874,7 +1874,7 @@ public class CmsBean implements Serializable {
      * <p>getValidCMSPages.</p>
      *
      * @return all cmsPages which are valid and have a menu title
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getValidCMSPages() throws DAOException {
         return getAllCMSPages().stream()
@@ -1915,8 +1915,8 @@ public class CmsBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return List of CMS templates whose IDs are among allowed template IDs
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<String> getAllowedSubthemeDiscriminatorValues(User user) throws PresentationException, IndexUnreachableException {
         if (user == null) {
@@ -1931,8 +1931,8 @@ public class CmsBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if user is limited to a subset of all available subtheme discriminator values; false otherwise
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {
         return user != null && !user.hasPrivilegeForAllSubthemeDiscriminatorValues();
@@ -1943,8 +1943,8 @@ public class CmsBean implements Serializable {
      * to their CMS license.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSCategory> getAllowedCategories(User user) throws DAOException {
         if (user == null) {
@@ -1980,8 +1980,8 @@ public class CmsBean implements Serializable {
      * <p>isHasRelatedPages.</p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isHasRelatedPages(String pi) throws DAOException {
         if (StringUtils.isEmpty(pi)) {
@@ -1995,8 +1995,8 @@ public class CmsBean implements Serializable {
      * <p>getRelatedPages.</p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getRelatedPages(String pi) throws DAOException {
         List<CMSPage> relatedPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, null);
@@ -2009,9 +2009,9 @@ public class CmsBean implements Serializable {
      * <p>getRelatedPages.</p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getRelatedPages(String pi, CMSCategory category) throws DAOException {
         return DataManager.getInstance()

@@ -26,7 +26,6 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 
 /**
  * <p>BookshelfConverter class.</p>
- *
  */
 @FacesConverter("bookshelfConverter")
 public class BookshelfConverter implements Converter {

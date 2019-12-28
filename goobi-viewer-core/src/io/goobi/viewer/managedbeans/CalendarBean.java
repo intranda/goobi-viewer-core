@@ -451,8 +451,8 @@ public class CalendarBean implements Serializable {
      * generated.
      *
      * @param currentYear a {@link io.goobi.viewer.model.calendar.CalendarItemYear} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void setCurrentYear(CalendarItemYear currentYear) throws PresentationException, IndexUnreachableException {
         if (this.currentYear == currentYear && monthRow.isSelected()) {
@@ -521,8 +521,8 @@ public class CalendarBean implements Serializable {
      * the month gets generated.
      *
      * @param currentMonth a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void setCurrentMonth(CalendarItemMonth currentMonth) throws PresentationException, IndexUnreachableException {
         if (this.currentMonth == currentMonth && dayRow.isSelected()) {
@@ -600,10 +600,10 @@ public class CalendarBean implements Serializable {
      * This method generates the search string for the time line based search tab. The search string will be handed over to the search bean to execute
      * the search.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String searchTimeline() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -678,9 +678,9 @@ public class CalendarBean implements Serializable {
      *
      * The method searches for the facet of the field 'YEAR'. If the count of a facet is greater than 0, the year is active.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<CalendarItemYear> getAllActiveYears() throws PresentationException, IndexUnreachableException {
         if (allActiveYears == null) {
@@ -732,8 +732,8 @@ public class CalendarBean implements Serializable {
     /**
      * <p>resetYears.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void resetYears() throws PresentationException, IndexUnreachableException {
         logger.trace("resetYears");
@@ -747,8 +747,8 @@ public class CalendarBean implements Serializable {
      * Select a year. If the new value differs from the old one, the data for the new value gets generated.
      *
      * @param selectYear the selectYear to set
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void setSelectYear(String selectYear) throws PresentationException, IndexUnreachableException {
         logger.trace("setSelectYear: {}", selectYear);
@@ -780,12 +780,12 @@ public class CalendarBean implements Serializable {
      * It runs a facet search for YEARMONTH and YEARMONTHDAY for the current year. For each day of the year, the method checks if the count of the
      * field YEARMONTHDAY is greater than 0. If this is the case, the day is an active element, otherwise it has no hits.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param selectYear a {@link java.lang.String} object.
      * @param collection a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @SuppressWarnings("fallthrough")
     public static List<CalendarItemMonth> populateMonthsWithDays(String selectYear, String collection, String filterQuery)
@@ -1078,8 +1078,8 @@ public class CalendarBean implements Serializable {
      * <p>Setter for the field <code>collection</code>.</p>
      *
      * @param collection the collection to set
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void setCollection(String collection) throws PresentationException, IndexUnreachableException {
         if (this.collection == null || !this.collection.equals(collection)) {
@@ -1102,11 +1102,11 @@ public class CalendarBean implements Serializable {
      *
      * @param month a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
      * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String searchCalendar(CalendarItemMonth month, CalendarItemDay day)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -1119,11 +1119,11 @@ public class CalendarBean implements Serializable {
      * This method generates the search string for the calendar search tab. The search string will be handed over to the search bean to execute the
      * search.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String searchCalendar() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (StringUtils.isEmpty(selectYear)) {
@@ -1194,9 +1194,9 @@ public class CalendarBean implements Serializable {
     /**
      * This method returns the count of all data without a value in YEARMONTHDAY for the selected year.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @return a int.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public int getCountOfIncompleteData() throws PresentationException, IndexUnreachableException {
         String year = getActualYear();
@@ -1240,11 +1240,11 @@ public class CalendarBean implements Serializable {
     /**
      * This method generates the search string for incomplete data. The search string will be handed over to the search bean to execute the search.
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String searchForIncompleteData() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String year = "";

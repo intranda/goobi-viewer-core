@@ -43,7 +43,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * <p>Abstract AbstractPageLoader class.</p>
- *
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
@@ -54,10 +53,10 @@ public abstract class AbstractPageLoader implements IPageLoader {
      *
      * @param format a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should replace numpages currectly
      * @should replace message keys correctly
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     protected String buildPageLabelTemplate(String format, Locale locale) throws IndexUnreachableException {
         if (format == null) {

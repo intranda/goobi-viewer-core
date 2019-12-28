@@ -196,9 +196,9 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     /**
      * <p>setFirstAndLastPageOrder.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should set first page order correctly
      * @should set last page order correctly
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     protected final void setFirstAndLastPageOrder() throws IndexUnreachableException {
         try {
@@ -235,13 +235,13 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      *
      * @param pageNumber a int.
      * @param fileName a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should load page correctly via page number
      * @should load page correctly via file name
      * @should return null if page not found
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     protected PhysicalElement loadPage(int pageNumber, String fileName) throws PresentationException, IndexUnreachableException, DAOException {
         String pi = topElement.getPi();

@@ -50,7 +50,6 @@ import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 
 /**
  * <p>SearchHitsNotificationResource class.</p>
- *
  */
 @Path(SearchHitsNotificationResource.RESOURCE_PATH)
 @ViewerRestServiceBinding

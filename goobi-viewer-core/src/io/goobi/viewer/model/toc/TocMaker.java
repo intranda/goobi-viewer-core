@@ -64,7 +64,6 @@ import io.goobi.viewer.model.viewer.StructElementStub;
 
 /**
  * <p>TocMaker class.</p>
- *
  */
 public class TocMaker {
 
@@ -123,11 +122,6 @@ public class TocMaker {
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
      * @param hitsPerPage Hits per page of a paginated TOC.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.PresentationException in case of errors.
      * @should generate volume TOC correctly with siblings correctly
      * @should generate volume TOC correctly without siblings correctly
      * @should generate anchor TOC correctly
@@ -135,6 +129,10 @@ public class TocMaker {
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
      * @return a {@link java.util.LinkedHashMap} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static LinkedHashMap<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {

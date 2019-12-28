@@ -19,7 +19,6 @@ import java.util.List;
 
 /**
  * <p>TagGroup interface.</p>
- *
  */
 public interface TagGroup extends Comparable<TagGroup> {
 

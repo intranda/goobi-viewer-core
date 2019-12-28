@@ -92,13 +92,13 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * <p>generateManifest.</p>
      *
-     * @throws java.net.URISyntaxException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public IPresentationModelElement generateManifest(StructElement ele)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
@@ -128,10 +128,10 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public void populate(StructElement ele, final AbstractPresentationModelElement manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
@@ -273,11 +273,11 @@ public class ManifestBuilder extends AbstractBuilder {
      * <p>addAnchor.</p>
      *
      * @param manifest a {@link de.intranda.api.iiif.presentation.Manifest} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws java.net.URISyntaxException
      * @param anchorPI a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addAnchor(Manifest manifest, String anchorPI)
             throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException {

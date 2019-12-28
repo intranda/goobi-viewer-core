@@ -38,7 +38,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * <p>MetadataElement class.</p>
- *
  */
 public class MetadataElement {
 
@@ -166,9 +165,9 @@ public class MetadataElement {
      * @param se {@link io.goobi.viewer.model.viewer.StructElement}
      * @param sessionLocale a {@link java.util.Locale} object.
      * @param selectedRecordLanguage a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage)
             throws PresentationException, IndexUnreachableException, DAOException {

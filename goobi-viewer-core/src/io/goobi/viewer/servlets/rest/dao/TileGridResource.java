@@ -40,7 +40,6 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * <p>TileGridResource class.</p>
- *
  */
 @Path("/tilegrid")
 @ViewerRestServiceBinding

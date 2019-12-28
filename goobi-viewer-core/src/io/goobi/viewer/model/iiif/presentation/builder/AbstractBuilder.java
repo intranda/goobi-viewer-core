@@ -164,9 +164,9 @@ public abstract class AbstractBuilder {
 	/**
 	 * <p>absolutize.</p>
 	 *
-	 * @throws java.net.URISyntaxException
 	 * @param url a {@link java.lang.String} object.
 	 * @return a {@link java.net.URI} object.
+	 * @throws java.net.URISyntaxException if any.
 	 */
 	protected URI absolutize(String url) throws URISyntaxException {
 		if (url != null) {
@@ -359,8 +359,8 @@ public abstract class AbstractBuilder {
 	 * @param pi a {@link java.lang.String} object.
 	 * @return A list of all docstructs with the given pi or children thereof. An
 	 *         empty list if no hits are found
-	 * @throws io.goobi.viewer.exceptions.PresentationException
-	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+	 * @throws io.goobi.viewer.exceptions.PresentationException if any.
+	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
 	 */
 	public List<StructElement> getDocumentWithChildren(String pi)
 			throws PresentationException, IndexUnreachableException {
@@ -466,9 +466,9 @@ public abstract class AbstractBuilder {
 	 * <p>getDocument.</p>
 	 *
 	 * @param pi a {@link java.lang.String} object.
-	 * @throws io.goobi.viewer.exceptions.PresentationException
-	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException
 	 * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+	 * @throws io.goobi.viewer.exceptions.PresentationException if any.
+	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
 	 */
 	public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
 		String query = "PI:" + pi;
@@ -489,9 +489,9 @@ public abstract class AbstractBuilder {
      *
      * @param pi   The persistent identifier of the work to query
      * @return     A map of page numbers (1-based) mapped to a list of associated annotations
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @param urlOnlyTarget a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget) throws PresentationException, IndexUnreachableException {
         String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;

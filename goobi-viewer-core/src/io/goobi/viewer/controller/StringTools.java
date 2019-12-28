@@ -45,7 +45,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>StringTools class.</p>
- *
  */
 public class StringTools {
 

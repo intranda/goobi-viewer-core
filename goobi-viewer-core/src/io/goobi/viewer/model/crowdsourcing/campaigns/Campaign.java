@@ -280,7 +280,7 @@ public class Campaign implements CMSMediaHolder {
      * <p>getNumRecords.</p>
      *
      * @return total number of records encompassed by the configured solrQuery
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public long getNumRecords() throws IndexUnreachableException {
         try {
@@ -317,7 +317,7 @@ public class Campaign implements CMSMediaHolder {
      * <p>getNumRecordsToAnnotate.</p>
      *
      * @return Number of records whose status is neither REVIEW nor FINISHED
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public long getNumRecordsToAnnotate() throws IndexUnreachableException {
         long all = getNumRecords();
@@ -340,7 +340,7 @@ public class Campaign implements CMSMediaHolder {
      * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
      *
      * @return number of users
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getContributorCount() throws DAOException {
         Set<Long> userIds = new HashSet<>();
@@ -360,8 +360,8 @@ public class Campaign implements CMSMediaHolder {
      * FINISHED records in percent
      *
      * @return percentage of records marked as finished relative to the total number or records
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public int getProgress() throws IndexUnreachableException, PresentationException {
         float numRecords = getNumRecords();
@@ -461,10 +461,10 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isUserAllowedAction(User user, CampaignRecordStatus status) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("isUserAllowedAction: {}", status);
@@ -986,10 +986,10 @@ public class Campaign implements CMSMediaHolder {
      * Get the targetIdentifier to a random PI from the Solr query result list.
      *
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param piToIgnore a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getRandomizedTarget(CampaignRecordStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
         User user = BeanUtils.getUserBean().getUser();
@@ -1060,8 +1060,8 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if there are any records in review status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasRecordsToReview(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
@@ -1075,8 +1075,8 @@ public class Campaign implements CMSMediaHolder {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
@@ -1091,8 +1091,8 @@ public class Campaign implements CMSMediaHolder {
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param pi a {@link java.lang.String} object.
      * @return true if the pi is ready for annotation and the user hasn't reviewed it or is a superuser
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean mayAnnotate(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.ANNOTATE) && isEligibleToEdit(pi, CampaignRecordStatus.ANNOTATE, user);
@@ -1104,8 +1104,8 @@ public class Campaign implements CMSMediaHolder {
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param pi a {@link java.lang.String} object.
      * @return true if the pi is ready for review and the user hasn't annotated it or is a superuser
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean mayReview(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.REVIEW) && isEligibleToEdit(pi, CampaignRecordStatus.REVIEW, user);

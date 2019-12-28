@@ -196,10 +196,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * Executes the search using already set parameters. Usually called from Pretty URLs.
      *
      * @return {@link java.lang.String} null
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
@@ -640,10 +640,10 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * <p>executeSearch.</p>
      *
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchString);
@@ -1377,10 +1377,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * Returns the next BrowseElement in the hit list relative to the given index.
      *
      * @return Next BrowseElement in the list; same BrowseElement if this is the last index in the list.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getNextElement: {}", currentHitIndex);
@@ -1402,10 +1402,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * Returns the previous BrowseElement in the hit list relative to the given index.
      *
      * @return Previous BrowseElement in the list; same BrowseElement if this is the first index in the list.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPreviousElement: {}", currentHitIndex);
@@ -1534,10 +1534,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param field The index field for which to get drop-down values.
      * @param language Translation language for the values.
      * @param hierarchical If true, the menu items will be listed in their corresponding hierarchy (e.g. DC)
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -1636,10 +1636,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * Returns drop-down items for all collection names. The displayed values are translated into the given language.
      *
      * @param language a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<StringPair> getAllCollections(String language) throws PresentationException, IndexUnreachableException, DAOException {
         return getAdvancedSearchSelectItems(SolrConstants.DC, language, true);
@@ -1747,9 +1747,9 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * <p>saveSearchAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should add all values correctly
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveSearchAction() throws DAOException {
         if (StringUtils.isBlank(currentSearch.getName())) {
@@ -1798,7 +1798,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * <p>getRssUrl.</p>
      *
      * @return URL to the RSS feed for the current search
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getRssUrl() throws ViewerConfigurationException {
         if (searchString == null) {
@@ -1866,8 +1866,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * <p>exportSearchAsExcelAction.</p>
      *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
         logger.trace("exportSearchAsExcelAction");
@@ -2197,10 +2197,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param field a {@link java.lang.String} object.
      * @param subQuery a {@link java.lang.String} object.
      * @param resultLimit a {@link java.lang.Integer} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
-     * @throws io.goobi.viewer.exceptions.PresentationException
      * @param reverseOrder a {@link java.lang.Boolean} object.
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public List<FacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
             throws PresentationException, IndexUnreachableException {

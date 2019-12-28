@@ -21,7 +21,6 @@ import java.util.List;
 
 /**
  * <p>CalendarRow class.</p>
- *
  */
 public class CalendarRow implements Serializable {
 

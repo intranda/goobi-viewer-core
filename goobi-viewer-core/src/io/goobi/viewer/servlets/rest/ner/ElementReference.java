@@ -26,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * <p>ElementReference class.</p>
- *
  */
 @XmlRootElement
 @XmlType(propOrder={"id", "content", "coordinates"})

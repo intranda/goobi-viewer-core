@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 /**
  * <p>PresentationException class.</p>
- *
  */
 public class PresentationException extends Exception implements Serializable {
 

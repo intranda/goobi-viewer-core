@@ -48,13 +48,15 @@ public interface IAuthenticationProvider {
      * @param password  A string to be used as a password or similar for login.
      * If the provider does not require such a string, this can be left empty or null
      * @return  A {@link java.util.concurrent.CompletableFuture} which is resolved once login is completed and contains a {@link io.goobi.viewer.model.security.authentication.LoginResult}
+     * @param loginName a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      */
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException;
     
     /**
      * Logs the user out
      *
-     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException  if an error occurred when processing the logout request
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      */
     public void logout() throws AuthenticationProviderException;
     

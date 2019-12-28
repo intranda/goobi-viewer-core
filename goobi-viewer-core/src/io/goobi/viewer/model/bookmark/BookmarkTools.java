@@ -29,7 +29,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>BookmarkTools class.</p>
- *
  */
 public class BookmarkTools {
 
@@ -40,9 +39,9 @@ public class BookmarkTools {
      * <p>getBookmarkListsSharedWithUser.</p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @throws io.goobi.viewer.exceptions.DAOException
      * @should return shared bookmark lists
      * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static List<BookmarkList> getBookmarkListsSharedWithUser(User user) throws DAOException {
         if (user == null) {

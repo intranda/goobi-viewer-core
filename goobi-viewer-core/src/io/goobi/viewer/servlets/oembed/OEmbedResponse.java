@@ -17,7 +17,6 @@ package io.goobi.viewer.servlets.oembed;
 
 /**
  * <p>Abstract OEmbedResponse class.</p>
- *
  */
 public abstract class OEmbedResponse {
 

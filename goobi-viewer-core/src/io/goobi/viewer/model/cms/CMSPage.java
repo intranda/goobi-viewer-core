@@ -84,7 +84,6 @@ import io.goobi.viewer.servlets.rest.dao.TileGridResource;
 
 /**
  * <p>CMSPage class.</p>
- *
  */
 @Entity
 @Table(name = "cms_pages")
@@ -595,7 +594,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @param itemId a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
      * @return The item in the language version for the given language
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if no version exists for the given language
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
      */
     public CMSContentItem getContentItem(String itemId, String language) throws CmsElementNotFoundException {
         CMSPageLanguageVersion version = getBestLanguage(Locale.forLanguageTag(language));
@@ -871,8 +870,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * {@link #getBestLanguageIncludeUnfinished()}.
      *
      * @param itemId a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException If absolutely no matching element was found
      * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
+     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
      */
     public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
         CMSPageLanguageVersion language;
@@ -1539,6 +1538,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @param key a {@link java.lang.String} object.
      * @throws java.lang.ClassCastException if the returned property has the wrong generic type
      * @return the property with the given key or else creates a new one with that key and returns it
+     * @throws java.lang.ClassCastException if any.
      */
     public CMSProperty getProperty(String key) throws ClassCastException {
         CMSProperty property = this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
@@ -1655,7 +1655,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
      *
      * @return Number of deleted files
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int deleteExportedTextFiles() throws ViewerConfigurationException {
         if (StringUtils.isEmpty(relatedPI)) {
@@ -1736,8 +1736,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      *
      * @param outputFolderPath a {@link java.lang.String} object.
      * @param namingScheme a {@link java.lang.String} object.
-     * @throws java.io.IOException
      * @return a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
      */
     public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {
         List<File> ret = new ArrayList<>();
@@ -1817,7 +1817,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * <p>Getter for the field <code>selectableCategories</code>.</p>
      *
      * @return the selectableCategories
-     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
         if (selectableCategories == null) {
