@@ -426,7 +426,6 @@ public class CmsMediaBean implements Serializable {
 	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 * @return a {@link java.lang.String} object.
 	 * @throws java.lang.NumberFormatException if any.
-	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
 	 */
 	public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
@@ -496,7 +495,6 @@ public class CmsMediaBean implements Serializable {
 	 *
 	 * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
 	 * @return a {@link java.lang.String} object.
-	 * @throws java.lang.NumberFormatException if any.
 	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
 	 */

@@ -1195,7 +1195,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * <p>getGlossary.</p>
      *
      * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
-     * @throws org.json.JSONException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws org.json.JSONException if any.

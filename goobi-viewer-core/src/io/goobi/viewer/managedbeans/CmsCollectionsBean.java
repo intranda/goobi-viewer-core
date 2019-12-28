@@ -313,7 +313,6 @@ public class CmsCollectionsBean implements Serializable {
      * @param comp a {@link javax.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
      * @throws javax.faces.validator.ValidatorException if any.
-     * @throws javax.faces.validator.ValidatorException if any.
      */
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException{
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {

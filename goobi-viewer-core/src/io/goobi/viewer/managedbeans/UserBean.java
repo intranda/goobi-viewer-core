@@ -198,7 +198,6 @@ public class UserBean implements Serializable {
     /**
      * Login action method for local accounts.
      *
-     * @throws java.lang.IllegalStateException If a user is already logged in
      * @return the url mapping to navigate to
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      * @throws java.lang.IllegalStateException if any.
@@ -216,7 +215,6 @@ public class UserBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws java.lang.IllegalStateException if any.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
-     * @throws java.lang.IllegalStateException if any.
      * @throws java.lang.InterruptedException if any.
      * @throws java.util.concurrent.ExecutionException if any.
      */

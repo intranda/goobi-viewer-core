@@ -1536,9 +1536,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * Returns the property with the given key or else creates a new one with that key and returns it
      *
      * @param key a {@link java.lang.String} object.
-     * @throws java.lang.ClassCastException if the returned property has the wrong generic type
      * @return the property with the given key or else creates a new one with that key and returns it
-     * @throws java.lang.ClassCastException if any.
+     * @throws java.lang.ClassCastException if the returned property has the wrong generic type.
      */
     public CMSProperty getProperty(String key) throws ClassCastException {
         CMSProperty property = this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {

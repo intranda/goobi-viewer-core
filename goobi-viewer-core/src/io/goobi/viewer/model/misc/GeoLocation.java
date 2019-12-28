@@ -65,7 +65,6 @@ public class GeoLocation {
      *
      * @param json a {@link org.json.JSONObject} object.
      * @throws org.json.JSONException if any.
-     * @throws org.json.JSONException if any.
      */
     public GeoLocation(JSONObject json) throws JSONException {
         if (json.has(JSON_PROPERTYNAME_LATITUDE)) {

@@ -75,7 +75,7 @@ public class RSSFeed {
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
-     * @return
+     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -108,7 +108,7 @@ public class RSSFeed {
      * @param query a {@link java.lang.String} object.
      * @param filterQueries a {@link java.util.List} object.
      * @param language a {@link java.lang.String} object.
-     * @return
+     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.

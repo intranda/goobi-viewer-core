@@ -453,7 +453,6 @@ public class BookmarkBean implements Serializable {
      * @param toValidate a {@link javax.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
      * @throws javax.faces.validator.ValidatorException if any.
-     * @throws javax.faces.validator.ValidatorException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void validateName(FacesContext context, UIComponent toValidate, Object value) throws ValidatorException, DAOException {

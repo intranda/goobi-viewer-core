@@ -96,7 +96,6 @@ public class GlossaryManager {
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
-     * @throws org.json.JSONException if any.
      * @throws java.io.IOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws org.json.JSONException if any.

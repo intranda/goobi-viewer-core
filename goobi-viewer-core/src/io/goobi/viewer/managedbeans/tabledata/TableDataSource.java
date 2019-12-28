@@ -35,7 +35,6 @@ public interface TableDataSource<T> {
      * @param filters a {@link java.util.Map} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
-     * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
      */
     public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) throws TableDataSourceException;
 

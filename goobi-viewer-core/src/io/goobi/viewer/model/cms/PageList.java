@@ -157,7 +157,6 @@ public class PageList implements Iterable<String> {
 	 * @return the matching {@link io.goobi.viewer.model.search.SearchInterface} for the first listed page. This
 	 *         is the {@link SearchFunctionality} of that page if any exists, or
 	 *         otherwise the {@link SearchBean}
-	 * @throws java.lang.NumberFormatException
 	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
@@ -171,7 +170,6 @@ public class PageList implements Iterable<String> {
 	 *
 	 * @param pageIndex a int.
 	 * @return a {@link io.goobi.viewer.model.search.SearchInterface} object.
-	 * @throws java.lang.NumberFormatException if any.
 	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */
@@ -195,7 +193,6 @@ public class PageList implements Iterable<String> {
 	 *
 	 * @param pageIndex	the index of the desired page in the page list
 	 * @return	the url of the page at pageIndex, relative to the host url
-	 * @throws java.lang.NumberFormatException
 	 * @throws java.lang.NumberFormatException if any.
 	 * @throws io.goobi.viewer.exceptions.DAOException if any.
 	 */

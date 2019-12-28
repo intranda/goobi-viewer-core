@@ -149,7 +149,6 @@ public class OverviewPage implements Harvestable, Serializable {
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param locale a {@link java.util.Locale} object.
-     * @throws java.lang.IllegalArgumentException
      * @should load overview page correctly
      * @return a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
      * @throws java.lang.IllegalArgumentException if any.
@@ -213,7 +212,6 @@ public class OverviewPage implements Harvestable, Serializable {
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param locale a {@link java.util.Locale} object.
-     * @throws java.lang.IllegalArgumentException
      * @throws java.lang.IllegalArgumentException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.

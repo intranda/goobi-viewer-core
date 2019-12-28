@@ -465,9 +465,6 @@ public final class Configuration extends AbstractConfiguration {
      * @should load replace rules correctly
      */
     // TODO
-    // TODO
-    // TODO
-    // TODO
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
         if (sub == null) {
             throw new IllegalArgumentException("sub may not be null");

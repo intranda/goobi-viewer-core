@@ -601,7 +601,6 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * <p>setTargetCampaignId.</p>
      *
-     * @throws java.lang.NumberFormatException
      * @param id a {@link java.lang.String} object.
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

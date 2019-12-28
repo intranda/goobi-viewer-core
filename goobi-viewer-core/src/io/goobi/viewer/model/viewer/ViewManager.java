@@ -1260,10 +1260,9 @@ public class ViewManager implements Serializable {
      * <p>dropdownAction.</p>
      *
      * @param event {@link javax.faces.event.ValueChangeEvent}
-     * @throws java.lang.NumberFormatException
-     * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws java.lang.NumberFormatException if any.
      */
     public void dropdownAction(ValueChangeEvent event) throws NumberFormatException, IndexUnreachableException, PresentationException {
         setCurrentImageNo(Integer.valueOf((String) event.getNewValue()) - 1);
