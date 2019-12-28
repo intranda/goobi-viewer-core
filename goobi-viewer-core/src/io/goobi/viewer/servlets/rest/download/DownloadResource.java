@@ -32,7 +32,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,7 +250,7 @@ public class DownloadResource {
             logId = "";
         }
         try {
-            email = StringEscapeUtils.unescapeHtml(email);
+            email = StringEscapeUtils.unescapeHtml4(email);
             String id = DownloadJob.generateDownloadJobId(type, pi, logId);
             try {
                 DownloadJob.checkDownload(type, email, pi, logId, id, DownloadBean.getTimeToLive());

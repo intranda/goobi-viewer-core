@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1266,7 +1266,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getLabelForJS() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         String label = getTitleBarLabel();
         if (label != null) {
-            return StringEscapeUtils.escapeJavaScript(label);
+            return StringEscapeUtils.escapeEcmaScript(label);
         }
 
         return null;

@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -290,7 +290,7 @@ public class SearchHit implements Comparable<SearchHit> {
             }
 
             // Escape HTML tags
-            label = StringEscapeUtils.escapeHtml(label);
+            label = StringEscapeUtils.escapeHtml4(label);
 
             // Then replace highlighting placeholders with HTML tags
             label = SearchHelper.replaceHighlightingPlaceholders(label);

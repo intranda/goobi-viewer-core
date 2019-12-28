@@ -34,8 +34,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,12 +230,12 @@ public class CMSContentResource {
         String output = input;
         if (escapeHtml) {
             // Full unescape
-            output = StringEscapeUtils.unescapeHtml(output);
+            output = StringEscapeUtils.unescapeHtml4(output);
             output = output.replace("&", "&amp;");
         } else {
             // Unescape everything except escaped <>
             output = output.replace("&lt;", "###LT###").replace("&gt;", "###GT###");
-            output = StringEscapeUtils.unescapeHtml(output);
+            output = StringEscapeUtils.unescapeHtml4(output);
             output = output.replace("&", "&amp;");
             output = output.replace("###LT###", "&lt;").replace("###GT###", "&gt;");
             output = output.replaceAll("<!--[\\w\\W]*?-->", "");

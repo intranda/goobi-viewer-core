@@ -39,7 +39,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.Index;
 import org.jdom2.Attribute;
 import org.jdom2.Document;

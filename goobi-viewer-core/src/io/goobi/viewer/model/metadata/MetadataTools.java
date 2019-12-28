@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +148,7 @@ public class MetadataTools {
         // DCTERMS.abstract
         if (structElement.getMetadataValue("MD_INFORMATION") != null) {
             String value = structElement.getMetadataValue("MD_INFORMATION");
-            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(StringEscapeUtils.escapeHtml(value)).append("\"");
+            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(StringEscapeUtils.escapeHtml4(value)).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
                 result.append(" xml:lang=\"").append(isoLanguage).append('"');
             }
@@ -200,17 +200,17 @@ public class MetadataTools {
         // citation_title
         String title = "";
         if (anchorElement != null && anchorElement.getMetadataValue("MD_TITLE") != null) {
-            title = StringEscapeUtils.escapeHtml(anchorElement.getMetadataValue("MD_TITLE")) + ": ";
+            title = StringEscapeUtils.escapeHtml4(anchorElement.getMetadataValue("MD_TITLE")) + ": ";
         }
         if (structElement.getMetadataValue("MD_TITLE") != null) {
-            title += StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_TITLE"));
+            title += StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_TITLE"));
         }
         result.append("\r\n<meta name=\"citation_title\" content=\"").append(title).append("\" />");
 
         // citation_author
         if (structElement.getMetadataValue("MD_CREATOR") != null) {
             for (Object fieldValue : structElement.getMetadataValues("MD_CREATOR")) {
-                String value = StringEscapeUtils.escapeHtml((String) fieldValue);
+                String value = StringEscapeUtils.escapeHtml4((String) fieldValue);
                 result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append("\" />");
             }
         }
@@ -229,22 +229,22 @@ public class MetadataTools {
         }
         // citation_isbn
         if (structElement.getMetadataValue("MD_ISBN") != null) {
-            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_ISBN"));
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_ISBN"));
             result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append("\" />");
         }
         // citation_issn
         if (structElement.getMetadataValue("MD_ISSN") != null) {
-            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_ISSN"));
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_ISSN"));
             result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append("\" />");
         }
         // citation_volume
         if (structElement.getMetadataValue(SolrConstants.CURRENTNO) != null) {
-            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue(SolrConstants.CURRENTNO));
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue(SolrConstants.CURRENTNO));
             result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\" />");
         }
         // citation_language
         if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
-            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_LANGUAGE"));
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_LANGUAGE"));
             value = convertLanguageToIso2(value);
             result.append("\r\n<meta name=\"citation_language\" content=\"").append(value).append("\" />");
         }
@@ -254,7 +254,7 @@ public class MetadataTools {
                 if (page == null) {
                     continue;
                 }
-                String value = StringEscapeUtils.escapeHtml(page.getUrl());
+                String value = StringEscapeUtils.escapeHtml4(page.getUrl());
                 result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\" />");
             }
         }
@@ -264,7 +264,7 @@ public class MetadataTools {
             result.append("\r\n<meta name=\"citation_abstract_html_url\" content=\"").append(structElement.getMetadataUrl()).append("\" />");
 
             // description (non-highwire)
-            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_INFORMATION"));
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_INFORMATION"));
             result.append("\r\n<meta name=\"description\" content=\"").append(value).append("\" />");
         }
 

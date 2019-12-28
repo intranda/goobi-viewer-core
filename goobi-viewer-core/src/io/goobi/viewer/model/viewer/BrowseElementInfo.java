@@ -19,7 +19,7 @@ import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 

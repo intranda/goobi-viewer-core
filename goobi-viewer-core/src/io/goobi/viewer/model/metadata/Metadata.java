@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -342,7 +342,7 @@ public class Metadata implements Serializable {
                 case TRANSLATEDFIELD:
                     // Values that are message keys
                     value = Helper.getTranslation(value, locale);
-                    value = StringEscapeUtils.escapeHtml(value);
+                    value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
                     break;
@@ -421,7 +421,7 @@ public class Metadata implements Serializable {
                     break;
                 default:
                     // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-                    value = StringEscapeUtils.escapeHtml(value);
+                    value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
             }
@@ -466,7 +466,7 @@ public class Metadata implements Serializable {
             sbHierarchy.append(s);
             String displayValue = Helper.getTranslation(sbHierarchy.toString(), locale);
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-            displayValue = StringEscapeUtils.escapeHtml(displayValue);
+            displayValue = StringEscapeUtils.escapeHtml4(displayValue);
             if (applicationUrl != null) {
                 sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append("/-/1/-/");
                 if (field != null) {

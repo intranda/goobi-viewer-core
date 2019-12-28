@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -349,7 +349,7 @@ public class TocMaker {
                     StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
                     thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
                 }
-                label.mapEach(value -> StringEscapeUtils.unescapeHtml(value));
+                label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
                 boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
                         logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
                 ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
@@ -456,7 +456,7 @@ public class TocMaker {
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
-                volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml(l));
+                volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml4(l));
                 boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
                         volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
                 TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,

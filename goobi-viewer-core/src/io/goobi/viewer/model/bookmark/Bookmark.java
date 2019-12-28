@@ -31,8 +31,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
@@ -479,7 +479,7 @@ public class Bookmark implements Serializable {
      */
     @JsonIgnore
     public String getMainTitleUnescaped() {
-        return StringEscapeUtils.unescapeHtml(mainTitle);
+        return StringEscapeUtils.unescapeHtml4(mainTitle);
     }
 
     /**
