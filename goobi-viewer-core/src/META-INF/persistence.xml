@@ -127,6 +127,8 @@
 			<property name="eclipselink.cache.shared.default"
 				value="false" />
 			<property name="eclipselink.id-validation" value="NONE" />
+			<property name="logging.level" value="SEVERE" />
+			<property name="eclipselink.logging.level" value="SEVERE" />
 		</properties>
 	</persistence-unit>
 </persistence>
