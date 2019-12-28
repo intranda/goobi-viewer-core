@@ -50,7 +50,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;

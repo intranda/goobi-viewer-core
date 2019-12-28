@@ -38,7 +38,7 @@ import javax.inject.Named;
 import javax.persistence.RollbackException;
 import javax.servlet.http.Part;
 
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
