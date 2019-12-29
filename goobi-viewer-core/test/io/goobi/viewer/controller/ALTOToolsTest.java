@@ -96,7 +96,7 @@ public class ALTOToolsTest {
         int rotation = 0;
         int imageFooterHeight = 0;
 
-        String altoString = FileUtils.readFileToString(testFile);
+        String altoString = FileUtils.readFileToString(testFile, "UTF-8");
         List<String> coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms), rotation, imageFooterHeight);
         Assert.assertFalse(coords.isEmpty());
         Assert.assertEquals("1740,2645,1794,2673", coords.get(0));

@@ -812,6 +812,7 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
+					<!--compilerArgument>-Xlint:unchecked</compilerArgument-->
 				</configuration>
 			</plugin>
 			<plugin>
