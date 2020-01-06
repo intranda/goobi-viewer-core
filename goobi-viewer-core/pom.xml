@@ -79,7 +79,7 @@
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
 		<commons-beanutils.version>1.9.4</commons-beanutils.version>
-		<commons-codec.version>1.13</commons-codec.version>
+		<commons-codec.version>1.14</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
 		<commons-fileupload.version>1.4</commons-fileupload.version>
@@ -99,7 +99,7 @@
 		<icu.version>65.1</icu.version>
 		<!-- Later versions of itext are licensed under AGPL and can not be used here -->
 		<itext.version>2.1.7</itext.version>
-		<jackson.version>2.10.1</jackson.version>
+		<jackson.version>2.10.2</jackson.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jpa.version>2.7.5</jpa.version>
 		<javax.faces.version>2.4.0</javax.faces.version>
@@ -111,7 +111,7 @@
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jgravatar.version>1.1</jgravatar.version>
 		<joda-time.version>2.10.5</joda-time.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13</junit.version>
 		<json.version>20190722</json.version>
 		<jsoup.version>1.12.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
