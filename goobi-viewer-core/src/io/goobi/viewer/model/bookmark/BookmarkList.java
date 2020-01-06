@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
@@ -60,7 +59,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
  */
 @Entity
 @Table(name = "bookshelves")
-@XStreamAlias("bookshelf")
 @JsonInclude(Include.NON_NULL)
 public class BookmarkList implements Serializable {
 

@@ -15,12 +15,10 @@
  */
 package io.goobi.viewer.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -81,10 +79,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -92,7 +86,6 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -242,7 +235,9 @@ public class Helper {
     }
 
     /**
-     * <p>parseMultipleIpAddresses.</p>
+     * <p>
+     * parseMultipleIpAddresses.
+     * </p>
      *
      * @param address a {@link java.lang.String} object.
      * @should filter multiple addresses correctly
@@ -407,52 +402,6 @@ public class Helper {
     }
 
     /**
-     * <p>serializeWithXStream.</p>
-     *
-     * @param object Object to serialize.
-     * @param converter a {@link com.thoughtworks.xstream.converters.Converter} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String serializeWithXStream(Object object, Converter converter) {
-        XStream xStream = new XStream();
-        if (converter != null) {
-            xStream.registerConverter(converter);
-        }
-        xStream.autodetectAnnotations(true);
-        HierarchicalStreamWriter xmlWriter = null;
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); OutputStreamWriter writer = new OutputStreamWriter(baos, DEFAULT_ENCODING)) {
-            xmlWriter = new PrettyPrintWriter(writer);
-            xStream.marshal(object, xmlWriter);
-            xmlWriter.close();
-            return new String(baos.toByteArray(), DEFAULT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>deSerializeWithXStream.</p>
-     *
-     * @param data a {@link java.lang.String} object.
-     * @param clazz a {@link java.lang.Class} object.
-     * @param converter a {@link com.thoughtworks.xstream.converters.Converter} object.
-     * @return a {@link java.lang.Object} object.
-     */
-    @SuppressWarnings("rawtypes")
-    public static Object deSerializeWithXStream(String data, Class clazz, Converter converter) {
-        XStream xstream = new XStream();
-        if (converter != null) {
-            xstream.registerConverter(converter);
-        }
-        xstream.processAnnotations(clazz);
-        return xstream.fromXML(data);
-    }
-
-    /**
      * Re-index in background thread to significantly decrease saving times.
      *
      * @param pi a {@link java.lang.String} object.
@@ -612,7 +561,9 @@ public class Helper {
     }
 
     /**
-     * <p>deleteRecord.</p>
+     * <p>
+     * deleteRecord.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param createTraceDocument a boolean.
@@ -641,7 +592,9 @@ public class Helper {
     }
 
     /**
-     * <p>reIndexPage.</p>
+     * <p>
+     * reIndexPage.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -709,7 +662,9 @@ public class Helper {
     }
 
     /**
-     * <p>sendDataAsStream.</p>
+     * <p>
+     * sendDataAsStream.
+     * </p>
      *
      * @param url Destination URL. Must contain all required GET parameters.
      * @param data String to send as a stream.
@@ -732,7 +687,9 @@ public class Helper {
     }
 
     /**
-     * <p>callUrlGET.</p>
+     * <p>
+     * callUrlGET.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
@@ -820,7 +777,9 @@ public class Helper {
     }
 
     /**
-     * <p>getWebContentGET.</p>
+     * <p>
+     * getWebContentGET.
+     * </p>
      *
      * @param urlString a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -851,7 +810,9 @@ public class Helper {
     }
 
     /**
-     * <p>getWebContentPOST.</p>
+     * <p>
+     * getWebContentPOST.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @param params a {@link java.util.Map} object.
@@ -1035,7 +996,9 @@ public class Helper {
     }
 
     /**
-     * <p>getDataFilePath.</p>
+     * <p>
+     * getDataFilePath.
+     * </p>
      *
      * @param pi Record identifier
      * @param dataFolderName Name of the data folder (e.g. 'alto') - first choice
@@ -1059,7 +1022,9 @@ public class Helper {
     }
 
     /**
-     * <p>getDataFilePath.</p>
+     * <p>
+     * getDataFilePath.
+     * </p>
      *
      * @param pi Record identifier
      * @param relativeFilePath File path relative to data repositories root
@@ -1128,7 +1093,9 @@ public class Helper {
     }
 
     /**
-     * <p>getTextFilePath.</p>
+     * <p>
+     * getTextFilePath.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -1163,7 +1130,9 @@ public class Helper {
     }
 
     /**
-     * <p>getTextFilePath.</p>
+     * <p>
+     * getTextFilePath.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param relativeFilePath ALTO/text file path relative to the data folder
@@ -1192,7 +1161,9 @@ public class Helper {
     }
 
     /**
-     * <p>intern.</p>
+     * <p>
+     * intern.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1280,7 +1251,9 @@ public class Helper {
     }
 
     /**
-     * <p>loadTei.</p>
+     * <p>
+     * loadTei.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
@@ -1318,7 +1291,9 @@ public class Helper {
     }
 
     /**
-     * <p>parseBoolean.</p>
+     * <p>
+     * parseBoolean.
+     * </p>
      *
      * @param text a {@link java.lang.String} object.
      * @param defaultValue a boolean.
@@ -1335,7 +1310,9 @@ public class Helper {
     }
 
     /**
-     * <p>parseBoolean.</p>
+     * <p>
+     * parseBoolean.
+     * </p>
      *
      * @param text a {@link java.lang.String} object.
      * @return a boolean.

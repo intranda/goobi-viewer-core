@@ -30,15 +30,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * Represents a role a user can have within a user group. Contains a set of privileges. A role can also inherit from other roles. The full potential
  * of this class is not in use at the moment.
  */
 @Entity
 @Table(name = "roles")
-@XStreamAlias("role")
 public class Role {
 
     /** Constant <code>SUPERUSER_ROLE="admin"</code> */

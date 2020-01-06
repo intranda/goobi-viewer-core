@@ -139,7 +139,7 @@
 		<!-- This needs to be added explicitly because otherwise Solr will use 
 		an older version that's incompatible -->
 		<xerces.version>2.12.0</xerces.version>
-		<xstream.version>1.4.11.1</xstream.version>
+
 	</properties>
 
 
@@ -778,11 +778,6 @@
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
 			<version>${xerces.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>${xstream.version}</version>
 		</dependency>
 	</dependencies>
 
