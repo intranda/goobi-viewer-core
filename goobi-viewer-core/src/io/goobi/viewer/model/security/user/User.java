@@ -52,8 +52,6 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.timgroup.jgravatar.Gravatar;
 import com.timgroup.jgravatar.GravatarDefaultImage;
 import com.timgroup.jgravatar.GravatarRating;
@@ -79,11 +77,12 @@ import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 
 /**
- * <p>User class.</p>
+ * <p>
+ * User class.
+ * </p>
  */
 @Entity
 @Table(name = "users")
-@XStreamAlias("user")
 public class User implements ILicensee, HttpSessionBindingListener {
 
     /** Logger for this class. */
@@ -162,25 +161,20 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
-    @XStreamOmitField
     private Set<String> recordsForWhichUserMaySetRepresentativeImage = new HashSet<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
-    @XStreamOmitField
     private Set<String> recordsForWhichUserMayEditOverviewPage = new HashSet<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
-    @XStreamOmitField
     private Set<String> recordsForWhichUserMayDeleteOcrPage = new HashSet<>();
 
     @Transient
-    @XStreamOmitField
     private User copy;
 
     @Transient
-    @XStreamOmitField
     private TranskribusSession transkribusSession;
 
     /**
@@ -385,7 +379,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getUserGroupMemberships.</p>
+     * <p>
+     * getUserGroupMemberships.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -411,7 +407,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isGroupMember.</p>
+     * <p>
+     * isGroupMember.
+     * </p>
      *
      * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return a boolean.
@@ -525,7 +523,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isHasCmsPrivilege.</p>
+     * <p>
+     * isHasCmsPrivilege.
+     * </p>
      *
      * @param privilege a {@link java.lang.String} object.
      * @return a boolean.
@@ -538,7 +538,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isHasCrowdsourcingPrivilege.</p>
+     * <p>
+     * isHasCrowdsourcingPrivilege.
+     * </p>
      *
      * @param privilege a {@link java.lang.String} object.
      * @return a boolean.
@@ -551,7 +553,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isHasPrivilege.</p>
+     * <p>
+     * isHasPrivilege.
+     * </p>
      *
      * @param licenseType a {@link java.lang.String} object.
      * @param privilege a {@link java.lang.String} object.
@@ -641,7 +645,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getAvatarUrl.</p>
+     * <p>
+     * getAvatarUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -654,7 +660,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getAvatarUrl.</p>
+     * <p>
+     * getAvatarUrl.
+     * </p>
      *
      * @param size a int.
      * @return a {@link java.lang.String} object.
@@ -668,7 +676,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getGravatarUrl.</p>
+     * <p>
+     * getGravatarUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -743,7 +753,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>hasPriviledgeForAllTemplates.</p>
+     * <p>
+     * hasPriviledgeForAllTemplates.
+     * </p>
      *
      * @return a boolean.
      */
@@ -770,7 +782,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>hasPrivilegesForTemplate.</p>
+     * <p>
+     * hasPrivilegesForTemplate.
+     * </p>
      *
      * @param templateId a {@link java.lang.String} object.
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
@@ -815,7 +829,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getAllowedTemplates.</p>
+     * <p>
+     * getAllowedTemplates.
+     * </p>
      *
      * @param allTemplates a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
@@ -883,7 +899,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>hasPrivilegeForAllCategories.</p>
+     * <p>
+     * hasPrivilegeForAllCategories.
+     * </p>
      *
      * @return a boolean.
      */
@@ -910,7 +928,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getAllowedCategories.</p>
+     * <p>
+     * getAllowedCategories.
+     * </p>
      *
      * @param allCategories a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
@@ -966,7 +986,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>hasPrivilegeForAllSubthemeDiscriminatorValues.</p>
+     * <p>
+     * hasPrivilegeForAllSubthemeDiscriminatorValues.
+     * </p>
      *
      * @return a boolean.
      */
@@ -993,7 +1015,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getAllowedSubthemeDiscriminatorValues.</p>
+     * <p>
+     * getAllowedSubthemeDiscriminatorValues.
+     * </p>
      *
      * @param rawValues All possible values
      * @return filtered list of allowed values
@@ -1049,7 +1073,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getAllowedCrowdsourcingCampaigns.</p>
+     * <p>
+     * getAllowedCrowdsourcingCampaigns.
+     * </p>
      *
      * @param allCampaigns a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
@@ -1117,7 +1143,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
      ***************************************/
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -1126,7 +1154,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -1135,7 +1165,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>passwordHash</code>.</p>
+     * <p>
+     * Getter for the field <code>passwordHash</code>.
+     * </p>
      *
      * @return the passwordHash
      */
@@ -1144,7 +1176,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>passwordHash</code>.</p>
+     * <p>
+     * Setter for the field <code>passwordHash</code>.
+     * </p>
      *
      * @param passwordHash the passwordHash to set
      */
@@ -1153,7 +1187,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>activationKey</code>.</p>
+     * <p>
+     * Getter for the field <code>activationKey</code>.
+     * </p>
      *
      * @return the activationKey
      */
@@ -1162,7 +1198,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>activationKey</code>.</p>
+     * <p>
+     * Setter for the field <code>activationKey</code>.
+     * </p>
      *
      * @param activationKey the activationKey to set
      */
@@ -1171,7 +1209,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>lastLogin</code>.</p>
+     * <p>
+     * Getter for the field <code>lastLogin</code>.
+     * </p>
      *
      * @return the lastLogin
      */
@@ -1180,7 +1220,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>lastLogin</code>.</p>
+     * <p>
+     * Setter for the field <code>lastLogin</code>.
+     * </p>
      *
      * @param lastLogin the lastLogin to set
      */
@@ -1189,7 +1231,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isActive.</p>
+     * <p>
+     * isActive.
+     * </p>
      *
      * @return the active
      */
@@ -1198,7 +1242,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>active</code>.</p>
+     * <p>
+     * Setter for the field <code>active</code>.
+     * </p>
      *
      * @param active the active to set
      */
@@ -1207,7 +1253,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isSuspended.</p>
+     * <p>
+     * isSuspended.
+     * </p>
      *
      * @return the suspended
      */
@@ -1216,7 +1264,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>suspended</code>.</p>
+     * <p>
+     * Setter for the field <code>suspended</code>.
+     * </p>
      *
      * @param suspended the suspended to set
      */
@@ -1225,7 +1275,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>nickName</code>.</p>
+     * <p>
+     * Getter for the field <code>nickName</code>.
+     * </p>
      *
      * @return the nickName
      */
@@ -1234,7 +1286,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>nickName</code>.</p>
+     * <p>
+     * Setter for the field <code>nickName</code>.
+     * </p>
      *
      * @param nickName the nickName to set
      */
@@ -1243,7 +1297,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>lastName</code>.</p>
+     * <p>
+     * Getter for the field <code>lastName</code>.
+     * </p>
      *
      * @return the lastName
      */
@@ -1252,7 +1308,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>lastName</code>.</p>
+     * <p>
+     * Setter for the field <code>lastName</code>.
+     * </p>
      *
      * @param lastName the lastName to set
      */
@@ -1261,7 +1319,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>firstName</code>.</p>
+     * <p>
+     * Getter for the field <code>firstName</code>.
+     * </p>
      *
      * @return the firstName
      */
@@ -1270,7 +1330,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>firstName</code>.</p>
+     * <p>
+     * Setter for the field <code>firstName</code>.
+     * </p>
      *
      * @param firstName the firstName to set
      */
@@ -1279,7 +1341,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>openIdAccounts</code>.</p>
+     * <p>
+     * Getter for the field <code>openIdAccounts</code>.
+     * </p>
      *
      * @return the openIdAccounts
      */
@@ -1288,7 +1352,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>openIdAccounts</code>.</p>
+     * <p>
+     * Setter for the field <code>openIdAccounts</code>.
+     * </p>
      *
      * @param openIdAccounts the openIdAccounts to set
      */
@@ -1297,7 +1363,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>email</code>.</p>
+     * <p>
+     * Setter for the field <code>email</code>.
+     * </p>
      *
      * @param email the email to set
      */
@@ -1306,7 +1374,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>email</code>.</p>
+     * <p>
+     * Getter for the field <code>email</code>.
+     * </p>
      *
      * @return the email
      */
@@ -1315,7 +1385,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>comments</code>.</p>
+     * <p>
+     * Getter for the field <code>comments</code>.
+     * </p>
      *
      * @return the comments
      */
@@ -1324,7 +1396,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>comments</code>.</p>
+     * <p>
+     * Setter for the field <code>comments</code>.
+     * </p>
      *
      * @param comments the comments to set
      */
@@ -1333,7 +1407,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>score</code>.</p>
+     * <p>
+     * Getter for the field <code>score</code>.
+     * </p>
      *
      * @return the score
      */
@@ -1342,7 +1418,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>score</code>.</p>
+     * <p>
+     * Setter for the field <code>score</code>.
+     * </p>
      *
      * @param score the score to set
      */
@@ -1351,7 +1429,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isUseGravatar.</p>
+     * <p>
+     * isUseGravatar.
+     * </p>
      *
      * @return the useGravatar
      */
@@ -1360,7 +1440,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>useGravatar</code>.</p>
+     * <p>
+     * Setter for the field <code>useGravatar</code>.
+     * </p>
      *
      * @param useGravatar the useGravatar to set
      */
@@ -1369,7 +1451,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>raiseScore.</p>
+     * <p>
+     * raiseScore.
+     * </p>
      *
      * @param amount a int.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1380,7 +1464,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>getRank.</p>
+     * <p>
+     * getRank.
+     * </p>
      *
      * @return a int.
      */
@@ -1405,7 +1491,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>licenses</code>.</p>
+     * <p>
+     * Setter for the field <code>licenses</code>.
+     * </p>
      *
      * @param licenses the licenses to set
      */
@@ -1414,7 +1502,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isSuperuser.</p>
+     * <p>
+     * isSuperuser.
+     * </p>
      *
      * @return the superuser
      */
@@ -1423,7 +1513,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isCmsAdmin.</p>
+     * <p>
+     * isCmsAdmin.
+     * </p>
      *
      * @return true if user is superuser or has CMS-specific privileges
      */
@@ -1442,7 +1534,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>superuser</code>.</p>
+     * <p>
+     * Setter for the field <code>superuser</code>.
+     * </p>
      *
      * @param superuser the superuser to set
      */
@@ -1451,7 +1545,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>isOpenIdUser.</p>
+     * <p>
+     * isOpenIdUser.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1460,7 +1556,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>copy</code>.</p>
+     * <p>
+     * Getter for the field <code>copy</code>.
+     * </p>
      *
      * @return the copy
      */
@@ -1469,7 +1567,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>copy</code>.</p>
+     * <p>
+     * Setter for the field <code>copy</code>.
+     * </p>
      *
      * @param copy the copy to set
      */
@@ -1478,7 +1578,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Getter for the field <code>transkribusSession</code>.</p>
+     * <p>
+     * Getter for the field <code>transkribusSession</code>.
+     * </p>
      *
      * @return the transkribusSession
      */
@@ -1487,7 +1589,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>Setter for the field <code>transkribusSession</code>.</p>
+     * <p>
+     * Setter for the field <code>transkribusSession</code>.
+     * </p>
      *
      * @param transkribusSession the transkribusSession to set
      */
@@ -1550,7 +1654,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>backupFields.</p>
+     * <p>
+     * backupFields.
+     * </p>
      */
     public void backupFields() {
         copy = clone();
@@ -1563,7 +1669,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>setBCrypt.</p>
+     * <p>
+     * setBCrypt.
+     * </p>
      *
      * @param bcrypt a {@link io.goobi.viewer.controller.BCrypt} object.
      */
@@ -1585,13 +1693,15 @@ public class User implements ILicensee, HttpSessionBindingListener {
         if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
-        } else {
-            return null;
         }
+        
+        return null;
     }
 
     /**
-     * <p>getIdAsURI.</p>
+     * <p>
+     * getIdAsURI.
+     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
@@ -1600,7 +1710,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * <p>main.</p>
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      */

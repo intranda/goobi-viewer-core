@@ -39,8 +39,6 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
@@ -57,7 +55,6 @@ import io.goobi.viewer.model.security.LicenseType;
 @Entity
 @Table(name = "ip_ranges")
 // @DiscriminatorValue("IpRange")
-@XStreamAlias("ipRange")
 public class IpRange implements ILicensee {
 
     /** Logger for this class. */
