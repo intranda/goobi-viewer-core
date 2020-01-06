@@ -3,8 +3,18 @@
    style declarations for widget_convolutes.xhtml
    ==============================================================*/
 #widgetConvolutes {
-    display: none;
-    visibility: hidden;
+	ul {
+		padding: 0; 
+		a{
+		color: @white;
+		padding: 0;
+			&:hover,
+    		&:active,
+    		&:focus {
+				text-decoration: none;
+			}
+		}
+	}
 }
 
 .widget-convolutes {
