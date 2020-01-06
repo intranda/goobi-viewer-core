@@ -113,37 +113,40 @@
 													<f:passThroughAttribute name="data-toggle" value="tooltip" />
 													<f:passThroughAttribute name="data-placement" value="top" />
 												</h:commandLink>
-												
-                                                <h:commandLink title="#{msg.bookmarkList_shareLink}" onclick="PF('shareLinkPopup_#{status.index}').show();">
-                                                    <i class="fa fa-share-alt" aria-hidden="true"></i>
-                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                    <f:passThroughAttribute name="data-placement" value="top" />
-                                                    <f:ajax />
-                                                </h:commandLink>
                                                 
-                                                <p:dialog header="#{msg.bookmarkList_shareLink}" widgetVar="shareLinkPopup_#{status.index}" minHeight="40">
-                                                    <h:outputText disabled="true" value="#{bookmarkBean.getShareLink(bookmarkList)}" />
-                                                    <h:commandButton type="button"  value="#{msg.bookmarkList_shareLink_copy}"
-                                                        onclick="copyLink('#{bookmarkBean.getShareLink(bookmarkList)}', 'shareLinkPopup_#{status.index}')">
-                                                    </h:commandButton>
-                                                </p:dialog>
+                                                <a href="#" title="#{msg.bookmarkList_shareLink}" onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})">
+                                                    <i class="fa fa-share-alt" aria-hidden="true"></i>
+                                                </a>
+                                                <popup>
+                                                	<div
+                                                	data-copy="bookmarklist-shareLink"
+                                                	data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
+                                                	title="#{msg.bookmarkList_shareLink_copy}"
+                                                	onclick="onClickCopy(this)"
+                                                	>#{bookmarkBean.getShareLink(bookmarkList)}</div>
+                                                	<script>
+                                                	function onClickCopy(target) {
+                                                	    $(target).css("cursor", "default");
+                                                	}
+                                                	</script>
+                                                </popup>
                                                 
                                                 <a href="#" title="#{msg.bookmarkList_shareCollection}" onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})">
                                                     <i class="fa fa-share" aria-hidden="true"></i>
                                                 </a>
-                                                    <popup>
-                                                    	<div
-                                                    	data-copy="bookmarklist-collection"
-                                                    	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-                                                    	title="#{msg.bookmarkList_shareLink_copy}"
-                                                    	onclick="onClickCopy(this)"
-                                                    	>#{bookmarkList.getIIIFCollectionURI()}</div>
-                                                    	<script>
-                                                    	function onClickCopy(target) {
-                                                    	    $(target).css("cursor", "default");
-                                                    	}
-                                                    	</script>
-                                                    </popup>
+                                                <popup>
+                                                	<div
+                                                	data-copy="bookmarklist-collection"
+                                                	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
+                                                	title="#{msg.bookmarkList_shareLink_copy}"
+                                                	onclick="onClickCopy(this)"
+                                                	>#{bookmarkList.getIIIFCollectionURI()}</div>
+                                                	<script>
+                                                	function onClickCopy(target) {
+                                                	    $(target).css("cursor", "default");
+                                                	}
+                                                	</script>
+                                                </popup>
           
 											</div>
 										</div>
