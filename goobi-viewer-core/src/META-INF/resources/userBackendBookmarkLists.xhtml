@@ -43,12 +43,17 @@
 				<div class="row">
 					<div class="col-xs-12 col-sm-4 col-sm-offset-8">
 						<div class="user-bookshelves__add-bookshelf">
+						<h:form prependId="false">
 							<div class="col-xs-11 no-padding">
-								<input type="text" id="addBookmarkListInput" placeholder="#{msg.bookmarkList_addNewBookmarkList}" />
+								<h:inputText type="text" id="addBookmarkListInput" value="#{bookmarkBean.newBookmarkListName}" validator="#{bookmarkBean.validateName}">
+									<f:passThroughAttribute name="placeholder" value="#{msg.bookmarkList_addNewBookmarkList}"></f:passThroughAttribute>
+								</h:inputText>
+<!-- 								<input type="text" id="addBookmarkListInput" placeholder="#{msg.bookmarkList_addNewBookmarkList}" /> -->
 							</div>
 							<div class="col-xs-1 no-padding">
-								<button type="button" id="addBookmarkListBtn" class="btn btn--clean" data-bookmarklist-type="add-bookmark-list" data-pi="-"></button>
+								<h:commandLink id="addBookmarkListBtn" styleClass="btn btn--clean" action="#{bookmarkBean.addBookmarkList}"></h:commandLink>
 							</div>						
+						</h:form>
 						</div>
 					</div>
 				</div>
@@ -131,12 +136,13 @@
                                                     	data-copy="bookmarklist-collection"
                                                     	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
                                                     	title="#{msg.bookmarkList_shareLink_copy}"
+                                                    	onclick="onClickCopy(this)"
                                                     	>#{bookmarkList.getIIIFCollectionURI()}</div>
-<!--                                                     	<a  -->
-<!--                                                     	data-copy="bookmarklist-collection" -->
-<!--                                                     	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"> -->
-<!-- 							                            #{msg.bookmarkList_shareLink_copy} -->
-<!-- 							                            </a> -->
+                                                    	<script>
+                                                    	function onClickCopy(target) {
+                                                    	    $(target).css("cursor", "default");
+                                                    	}
+                                                    	</script>
                                                     </popup>
           
 											</div>

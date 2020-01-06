@@ -77,6 +77,8 @@ public class BookmarkBean implements Serializable {
     private Bookmark currentBookmark;
 
     private UserGroup currentUserGroup;
+    
+    private String newBookmarkListName = "";
 
     /**
      * An email-address which a user may enter to receive the session store bookmark list as mail
@@ -750,4 +752,26 @@ public class BookmarkBean implements Serializable {
                 .map(bookmarkList -> bookmarkList.getItems().size())
                 .orElse(0);
     }
+
+    /**
+     * @return the newBookmarkName
+     */
+    public String getNewBookmarkListName() {
+        return newBookmarkListName;
+    }
+    
+    /**
+     * @param newBookmarkName the newBookmarkName to set
+     */
+    public void setNewBookmarkListName(String newBookmarkListName) {
+        this.newBookmarkListName = newBookmarkListName;
+    }
+    
+    public void addBookmarkList( ) {
+        BookmarkList list = new BookmarkList();
+        list.setName(getNewBookmarkListName());
+        saveBookmarkListAction(list);
+        setNewBookmarkListName("");
+    }
+    
 }

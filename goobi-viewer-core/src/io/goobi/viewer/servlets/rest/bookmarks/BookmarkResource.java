@@ -429,6 +429,35 @@ public class BookmarkResource {
             throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
     }
+    
+    /**
+     * @param shareKey
+     * @return
+     * @throws DAOException
+     * @throws RestApiException
+     */
+    public BookmarkList getSharedBookmarkList(String shareKey) throws DAOException, RestApiException {
+        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
+
+        if (bookmarkList.isIsPublic()) {
+            logger.trace("Serving public bookmark list " + bookmarkList.getId());
+            return bookmarkList;
+        }
+        User user = getUser();
+        if (user == null) {
+            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+        }
+
+        if (user.equals(bookmarkList.getOwner())) {
+            logger.trace("Serving bookmark list " + bookmarkList.getId() + " owned by user " + user);
+            return bookmarkList;
+        } else if (isSharedTo(bookmarkList, user)) {
+            logger.trace("Serving bookmark list " + bookmarkList.getId() + " shared to user " + user);
+            return bookmarkList;
+        } else {
+            throw new RestApiException("User has no access to bookmark list " + bookmarkList.getId() + " - request refused", HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
 
     /**
      * Sets the name of the BookmarkList with the given id to the given name - provided the user owns such a bookmark list; otherwise 204 is returned
@@ -887,25 +916,52 @@ public class BookmarkResource {
         }
         Optional<BookmarkList> list = getBookmarkList(user, id);
         if (list.isPresent()) {
-            ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
-            Collection collection = new Collection(getCollectionURI());
-            collection.setLabel(new SimpleMetadataValue(list.get().getName()));
-            collection.setDescription(new SimpleMetadataValue(list.get().getDescription()));
-            list.get().getItems().forEach(item -> {
-                try {
-                    URI manifestURI = builder.getManifestURI(item.getPi());
-                    Manifest manifest = new Manifest(manifestURI);
-                    manifest.setLabel(new SimpleMetadataValue(item.getName()));
-                    manifest.setThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
-                    collection.addManifest(manifest);
-                } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
-                    logger.error("Failed to add item " + item.getId() + " to manifest");
-                }
-            });
-            return collection;
+            return createCollection(list.get());
         }
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
+    }
+    
+    /**
+     * <p>getAsCollection.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.RestApiException if any.
+     */
+    @GET
+    @Path("/key/{sharedKey}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @IIIFPresentationBinding
+    public Collection getAsCollection(@PathParam("sharedKey") String sharedKey) throws DAOException, RestApiException {
+        
+        BookmarkList list = getSharedBookmarkList(sharedKey);
+        Collection collection = createCollection(list);
+        return collection;
+    }
+
+    /**
+     * @param list
+     * @return
+     */
+    public Collection createCollection(BookmarkList list) {
+        ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+        Collection collection = new Collection(getCollectionURI());
+        collection.setLabel(new SimpleMetadataValue(list.getName()));
+        collection.setDescription(new SimpleMetadataValue(list.getDescription()));
+        list.getItems().forEach(item -> {
+            try {
+                URI manifestURI = builder.getManifestURI(item.getPi());
+                Manifest manifest = new Manifest(manifestURI);
+                manifest.setLabel(new SimpleMetadataValue(item.getName()));
+                manifest.setThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
+                collection.addManifest(manifest);
+            } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+                logger.error("Failed to add item " + item.getId() + " to manifest");
+            }
+        });
+        return collection;
     }
 
     /**
