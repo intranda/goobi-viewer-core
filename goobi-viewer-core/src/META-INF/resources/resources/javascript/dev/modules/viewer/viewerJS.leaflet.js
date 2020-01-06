@@ -67,6 +67,8 @@ var viewerJS = ( function( viewer ) {
     viewer.Leaflet.prototype.load = function(url) {
         fetch(url)
         .then( response => response.json() )
+        // catch error in response.json()
+        .then( json => json, error => undefined )
         .then( annoPage => _getItems(annoPage))
         .then( locations => {
             locations = locations.filter( loc => _getBody(loc).type === "Feature");
@@ -91,6 +93,9 @@ var viewerJS = ( function( viewer ) {
                 }
             }
         })
+        .catch(error => {
+            console.log("error getting json response ", error);
+        })
     }
     
     function _getBody(anno) {
@@ -104,7 +109,9 @@ var viewerJS = ( function( viewer ) {
     }
     
     function _getItems(annoPage) {
-        if(annoPage.items) {            
+        if(!annoPage) {
+            return [];
+        } else if(annoPage.items) {            
             return annoPage.items
         } else if(annoPage.resources) {
             return annoPage.resources;
