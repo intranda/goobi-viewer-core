@@ -282,7 +282,7 @@
 	</url-mapping>
 	
 	<url-mapping id="searchbookmarks">
-		<pattern value="/search/bookmarks/#{name:searchBean.bookmarkListName}/" />
+		<pattern value="/bookmarks/search/#{name:searchBean.bookmarkListName}/" />
 		<view-id value="/searchList.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
