@@ -12,32 +12,30 @@
                 <!-- Group (convolutes, etc.) listing -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMember}">
                     <div class="widget-convolutes__series">
+                        <h3>#{msg.recordGroupMemberships}</h3>
 
                         <ul>
                             <ui:repeat var="groupMembership" value="#{activeDocumentBean.viewManager.topDocument.groupMemberships.entrySet().toArray()}">
                                 <li>
-                                   <h3>
                                     <a href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/" target="_blank">
                                         <h:outputText value="#{msg[activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership.value, 'convolute')]}" />
                                     </a>
-                                   </h3>
                                 </li>
                             </ui:repeat>
                         </ul>
                     </div>
                 </h:panelGroup>
-				<br />
+
                 <!-- Extra link to the anchor, if this is a volume -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.anchorChild}">
                     <div class="widget-convolutes__anchor">
+                        <h3>#{msg.recordGroupMemberships}</h3>
 
                         <ul>
                             <li>
-                            	<h3>
                                 <a href="#{navigationHelper.tocUrl}/#{activeDocumentBean.viewManager.anchorPi}/1/" target="_blank">
                                     #{msg.anchor}
                                 </a>
-                                </h3>
                             </li>
                         </ul>
                     </div>
