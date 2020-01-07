@@ -26,6 +26,9 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
+    var idPattern = /.*\/mirador\/id\/(\d+)\/?/i;
+    var keyPattern = /.*\/mirador\/key\/(\w+)\/?/i;
+    
     // variables
     var _debug = true;
     var _sessionBookmarkList = '';
