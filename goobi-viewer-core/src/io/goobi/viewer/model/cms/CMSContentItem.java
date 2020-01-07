@@ -61,6 +61,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.itemfunctionality.BookmarksFunktionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.QueryListFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
@@ -103,7 +104,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         COMPONENT,
         TAGS,
         METADATA,
-        CAMPAIGNOVERVIEW;
+        CAMPAIGNOVERVIEW,
+        BOOKMARKLISTS;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -132,6 +134,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                     return new TocFunctionality(item.getTocPI());
                 case SEARCH:
                     return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
+                case BOOKMARKLISTS:
+                    return new BookmarksFunktionality();
                 default:
                     return new TrivialFunctionality();
             }
