@@ -92,7 +92,7 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response); // continue
             return;
         }
-        
+
         logger.trace("request uri: " + requestURI);
         User user = (User) httpRequest.getSession().getAttribute("user");
         if (user == null) {
@@ -133,6 +133,7 @@ public class LoginFilter implements Filter {
      * @should return true for bookmarks uris
      * @should return false for bookmarks session uris
      * @should return false for bookmarks share key uris
+     * @should return false for bookmarks send list uris
      */
     public static boolean isRestrictedUri(String uri) {
         if (uri != null) {
@@ -146,7 +147,8 @@ public class LoginFilter implements Filter {
                     return true;
                 default:
                     //make an exception for session bookmarks search list or share key
-                    if (uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/")) {
+                    if (uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/") || uri.contains("bookmarks/send/")
+                            || uri.contains("bookmarks/search/session")) {
                         return false;
                     }
                     // Regular URLs

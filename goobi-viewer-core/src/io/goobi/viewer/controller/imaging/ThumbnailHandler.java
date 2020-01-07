@@ -80,7 +80,9 @@ public class ThumbnailHandler {
     private final IIIFUrlHandler iiifUrlHandler;
 
     /**
-     * <p>Constructor for ThumbnailHandler.</p>
+     * <p>
+     * Constructor for ThumbnailHandler.
+     * </p>
      *
      * @param iiifUrlHandler a {@link io.goobi.viewer.controller.imaging.IIIFUrlHandler} object.
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
@@ -95,7 +97,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>getThumbnailPath.</p>
+     * <p>
+     * getThumbnailPath.
+     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
@@ -273,7 +277,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>getPage.</p>
+     * <p>
+     * getPage.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param order a int.
@@ -302,9 +308,11 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         return getThumbnailUrl(page, getScale(width, height));
     }
-    
+
     /**
-     * <p>getThumbnailUrl.</p>
+     * <p>
+     * getThumbnailUrl.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -323,8 +331,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", "default",
-                    "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", "default", "jpg");
         }
     }
 
@@ -460,7 +467,8 @@ public class ThumbnailHandler {
      * Returns a link to an image representating the given document of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      *
-     * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and {@link io.goobi.viewer.controller.SolrConstants.THUMBNAIL}
+     * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and
+     *            {@link io.goobi.viewer.controller.SolrConstants.THUMBNAIL}
      * @param width a int.
      * @param height a int.
      * @return a {@link java.lang.String} object.
@@ -470,7 +478,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>getThumbnailUrl.</p>
+     * <p>
+     * getThumbnailUrl.
+     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
@@ -494,7 +504,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>getFullImageUrl.</p>
+     * <p>
+     * getFullImageUrl.
+     * </p>
      *
      * @return the url of the entire, max-size image in the original format. If no Watermark needs to be included and forwarding images is allowed in
      *         contentServer, then this streams the original image file to the client
@@ -503,10 +515,11 @@ public class ThumbnailHandler {
     public String getFullImageUrl(PhysicalElement page) {
         return getFullImageUrl(page, Scale.MAX);
     }
-        
-        
+
     /**
-     * <p>getFullImageUrl.</p>
+     * <p>
+     * getFullImageUrl.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -519,6 +532,11 @@ public class ThumbnailHandler {
             return "";
         }
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(path);
+        if (format == null) {
+            logger.warn("Format not recognized for: {}", path);
+            return "";
+
+        }
         if (isStaticImageResource(path)) {
             return path;
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
@@ -546,7 +564,8 @@ public class ThumbnailHandler {
      * returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      *
-     * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and {@link io.goobi.viewer.controller.SolrConstants.THUMBNAIL}
+     * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and
+     *            {@link io.goobi.viewer.controller.SolrConstants.THUMBNAIL}
      * @param size a int.
      * @return a {@link java.lang.String} object.
      */
@@ -796,7 +815,7 @@ public class ThumbnailHandler {
             String size = getSize(width, height);
             String format = "jpg";
             ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath);
-            if(formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)") ) { //match any image-mimetype except jpg and png
+            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
             String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
@@ -818,8 +837,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the given size. The image is always square and contains as much of the actual
-     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the given size. The image is always square and
+     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param size a int.
      * @param optional a {@link java.util.Optional} object.
@@ -839,8 +858,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the given size. The image is always square and contains as much of the actual
-     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the given size. The image is always square and
+     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param size a int.
      * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
@@ -851,8 +870,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the default size. The image is always square and contains as much of the
-     * actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the default size. The image is always square and
+     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param item a {@link java.util.Optional} object.
      * @return a {@link java.lang.String} object.
@@ -862,8 +881,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the default size. The image is always square and contains as much of the
-     * actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the default size. The image is always square and
+     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
