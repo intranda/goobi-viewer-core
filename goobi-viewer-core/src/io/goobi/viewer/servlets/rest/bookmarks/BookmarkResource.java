@@ -43,6 +43,7 @@ import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -433,12 +434,16 @@ public class BookmarkResource {
     /**
      * @param shareKey
      * @return
-     * @throws DAOException
-     * @throws RestApiException
+     * @throws DAOException             If an error occured talking to the database
+     * @throws RestApiException         If no user session exists or if the user has no access to the requested list
+     * @throws ContentNotFoundException If no list with the given key was found
      */
-    public BookmarkList getSharedBookmarkList(String shareKey) throws DAOException, RestApiException {
+    public BookmarkList getSharedBookmarkList(String shareKey) throws DAOException, RestApiException, ContentNotFoundException {
         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
-
+        
+        if(bookmarkList == null) {
+            throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);
+        }
         if (bookmarkList.isIsPublic()) {
             logger.trace("Serving public bookmark list " + bookmarkList.getId());
             return bookmarkList;
@@ -934,11 +939,15 @@ public class BookmarkResource {
     @Path("/key/{sharedKey}")
     @Produces({ MediaType.APPLICATION_JSON })
     @IIIFPresentationBinding
-    public Collection getAsCollection(@PathParam("sharedKey") String sharedKey) throws DAOException, RestApiException {
+    public Collection getAsCollection(@PathParam("sharedKey") String sharedKey) throws ContentNotFoundException, DAOException {
         
-        BookmarkList list = getSharedBookmarkList(sharedKey);
-        Collection collection = createCollection(list);
-        return collection;
+        try {
+            BookmarkList list = getSharedBookmarkList(sharedKey);
+            Collection collection = createCollection(list);
+            return collection;
+        } catch ( ContentNotFoundException | RestApiException e) {
+            throw new ContentNotFoundException("No matching bookmark list found");
+        }
     }
 
     /**
