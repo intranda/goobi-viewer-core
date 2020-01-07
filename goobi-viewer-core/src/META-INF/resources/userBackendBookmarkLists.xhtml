@@ -88,8 +88,8 @@
 											<div class="user-bookshelves__panel-action text-right">
 											    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
                                                 <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
-                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookmark-list-id="#{bookmarkList.id}">
+                                                    <a href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
+                                                        data-toggle="tooltip" data-placement="top" target="_blank">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
                                                     </a>
                                                 </ui:fragment>
@@ -180,29 +180,29 @@
                                         <div class="col-xs-4 col-sm-2">
                                             <!-- ACTION -->
                                             <div class="user-bookshelves__panel-action text-right">
-                                                <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
-                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookmark-list-id="#{bookmarkList.id}">
-                                                        <i class="fa fa-th" aria-hidden="true"></i>
-                                                    </a>
-                                                </ui:fragment>
-                                                
-                                                <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
-                                                    <i class="fa fa-search" aria-hidden="true"></i>
-                                                    <f:setPropertyActionListener value="#{bookmarkList.name}"
-                                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                                    <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                                    <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                    <f:passThroughAttribute name="data-placement" value="top" />
-                                                </h:commandLink>                                   
-                                                
-                                                <a href="#{request.contextPath}/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}"
-                                                    data-toggle="tooltip" data-placement="top">
-                                                    <i class="fa fa-eye" aria-hidden="true"></i>
-                                                </a>
-                                            </div>
+			                                    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
+			                                    <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
+			                                        <a href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
+			                                            data-toggle="tooltip" data-placement="top" target="_blank">
+			                                            <i class="fa fa-th" aria-hidden="true"></i>
+			                                        </a>
+			                                    </ui:fragment>
+			                                    
+			                                    <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
+			                                        <i class="fa fa-search" aria-hidden="true"></i>
+			                                        <f:setPropertyActionListener value="#{bookmarkList.name}"
+			                                            target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
+			                                        <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+			                                        <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+			                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+			                                        <f:passThroughAttribute name="data-placement" value="top" />
+			                                    </h:commandLink>                                   
+			                                    
+			                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}" title="#{msg.bookmarkList_showBookmarkList}"
+			                                        data-toggle="tooltip" data-placement="top">
+			                                        <i class="fa fa-eye" aria-hidden="true"></i>
+			                                    </a>
+			                                </div>
                                         </div>
                                     </div>
                                     
@@ -244,29 +244,29 @@
                                         <div class="col-xs-4 col-sm-2">
                                             <!-- ACTION -->
                                             <div class="user-bookshelves__panel-action text-right">
-                                                <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
-                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookmark-list-id="#{bookmarkList.id}">
-                                                        <i class="fa fa-th" aria-hidden="true"></i>
-                                                    </a>
-                                                </ui:fragment>
-                                                
-                                                <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
-                                                    <i class="fa fa-search" aria-hidden="true"></i>
-                                                    <f:setPropertyActionListener value="#{bookmarkList.name}"
-                                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-                                                    <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-                                                    <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                    <f:passThroughAttribute name="data-placement" value="top" />
-                                                </h:commandLink>                                   
-                                                
-                                                <a href="#{request.contextPath}/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}"
-                                                    data-toggle="tooltip" data-placement="top">
-                                                    <i class="fa fa-eye" aria-hidden="true"></i>
-                                                </a>
-                                            </div>
+			                                    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
+			                                    <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
+			                                        <a href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
+			                                            data-toggle="tooltip" data-placement="top" target="_blank">
+			                                            <i class="fa fa-th" aria-hidden="true"></i>
+			                                        </a>
+			                                    </ui:fragment>
+			                                    
+			                                    <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
+			                                        <i class="fa fa-search" aria-hidden="true"></i>
+			                                        <f:setPropertyActionListener value="#{bookmarkList.name}"
+			                                            target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
+			                                        <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+			                                        <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+			                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+			                                        <f:passThroughAttribute name="data-placement" value="top" />
+			                                    </h:commandLink>                                   
+			                                    
+			                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}" title="#{msg.bookmarkList_showBookmarkList}"
+			                                        data-toggle="tooltip" data-placement="top">
+			                                        <i class="fa fa-eye" aria-hidden="true"></i>
+			                                    </a>
+			                                </div>
                                         </div>
                                     </div>
                                     

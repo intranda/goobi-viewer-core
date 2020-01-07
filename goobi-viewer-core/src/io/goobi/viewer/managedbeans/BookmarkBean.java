@@ -564,11 +564,13 @@ public class BookmarkBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setCurrentBookmarkListId(String bookmarkListId) throws PresentationException, DAOException {
+        currentBookmarkListSharedKey = null;
+        
         if (bookmarkListId == null) {
+            setCurrentBookmarkList(null);
             return;
         }
 
-        currentBookmarkListSharedKey = null;
 
         try {
             Long id = Long.parseLong(bookmarkListId);
@@ -664,6 +666,27 @@ public class BookmarkBean implements Serializable {
      */
     public String getSessionBookmarkListEmail() {
         return sessionBookmarkListEmail;
+    }
+    
+    public String getCurrentBookmarkListKey() {
+        return getShareLink(getCurrentBookmarkList());
+    }
+    
+    public void setCurrentBookmarkListKey(String key) throws PresentationException, DAOException {
+        currentBookmarkListSharedKey = null;
+        
+        if (key == null) {
+            setCurrentBookmarkList(null);
+            return;
+        }
+
+
+            BookmarkList bl = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
+            if (bl == null || !bl.isMayView(userBean.getUser())) {
+                throw new PresentationException("No bookmark list found with shared key " + key);
+            }
+        setCurrentBookmarkList(bl);
+        currentBookmarkListSharedKey = bl.shareKey;
     }
 
     /**

@@ -27,12 +27,13 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _sessionBookmarkList = '';
     var _defaults = {
     	root: '',
     	restEndpoint: undefined,
     	userLoggedIn: false,
+    	bookmarkListId: null,
     };
     
     var dataObject = {
@@ -73,62 +74,63 @@ var viewerJS = ( function( viewer ) {
                     messageKeys, _defaults.restEndpoint, 
                     "#{navigationHelper.localeString}");
             
+            let miradorConfigPromise = null;
+            
             if (manifests.length > 0) {
             	// URL identifiers
-                console.log("manifests", manifests);
-                var miradorConfig = _getMiradorConfigForManifestUrls(manifests, _defaults);
-                console.log("miradorConfig", miradorConfig);
-                Mirador( miradorConfig );
-                // Override window title if more than one record
-                translator.init()
-                .then(function() {
-                	if (miradorConfig.data.length > 1) {
-                		document.title = translator.translate('viewMiradorComparison');
-                	}
-                });
-            } else 
-            // check login status
-            // logged in
-            if ( _defaults.userLoggedIn ) {
+                miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, _defaults);
+            } else if ( _getBookmarkListId() != null ) {
             	// User bookmarks
-                _sessionBookmarkList = sessionStorage.getItem( 'bookmarkListId' );
-                _getMiradorObjects( _defaults.root, _sessionBookmarkList ).then( function( elements ) {                    
+                miradorConfigPromise = _getUserMiradorObjects( _defaults.root, _getBookmarkListId() )
+            } else if ( _getBookmarkListKey() != null ) {
+                //public/shared bookmarks
+                miradorConfigPromise = _getSharedMiradorObjects( _defaults.root, _getBookmarkListKey() )
+            } else {
+            	// Session mark list
+                miradorConfigPromise = _getMiradorSessionObjects( _defaults.root );
+            }
+            
+            if(miradorConfigPromise) {  
+                miradorConfigPromise             
+                .then( function( elements ) {                    
                     $( function() {
                         console.log("elements ", elements)
                         Mirador( elements );
                         // Override window title if more than one record
                         translator.init()
                         .then(function() {
-                        	if (elements.data.length > 1) {
-                        		document.title = translator.translate('viewMiradorComparison');
-                        	}
+                            if (elements.data.length > 1) {
+                                document.title = translator.translate('viewMiradorComparison');
+                            }
                         });
                     });
                 }).fail(function(error) {
                     console.error('ERROR - _getMiradorObjects: ', error.responseText);
                 });
-            }
-            // not logged in
-            else {
-            	// Session mark list
-                _getMiradorSessionObjects( _defaults.root ).then( function( elements ) {                    
-                    $( function() {
-                    	 console.log("elements ", elements)
-                        Mirador( elements );
-                    	// Override window title if more than one record
-                        translator.init()
-                        .then(function() {
-                        	if (elements.data.length > 1) {
-                        		document.title = translator.translate('viewMiradorComparison');
-                        	}
-                        });
-                    });
-                }).fail(function(error) {
-                    console.error('ERROR - _getMiradorSessionObjects: ', error.responseText);
-                });
+            } else {
+                console.error("ERROR - no manifests to load");
             }
         }
     };
+    
+    
+    function _getBookmarkListId() {
+        let location = window.location.href;
+        if(location.match(idPattern)) {
+            let id = location.match(idPattern)[1];
+            return id;
+        }
+        return null;
+    }
+    
+    function _getBookmarkListKey() {
+        let location = window.location.href;
+        if(location.match(keyPattern)) {
+            let key = location.match(keyPattern)[1];
+            return key;
+        }
+        return null;
+    }
     
     /* ######## GET (READ) ######## */
     /**
@@ -138,7 +140,7 @@ var viewerJS = ( function( viewer ) {
 	 * @param {String} root The application root path.
 	 * @returns {Object} An JSON-Object which contains all session elements.
 	 */
-	function _getMiradorObjects( root, id ) {
+	function _getUserMiradorObjects( root, id ) {
 		if ( _debug ) { 
 			console.log( '---------- _getSessionElementCount() ----------' );
 			console.log( '_getSessionElementCount: root - ', root );
@@ -146,7 +148,7 @@ var viewerJS = ( function( viewer ) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookmarks/user/mirador/' + id + '/',
+			url : root + '/rest/bookmarks/mirador/user/' + id + '/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -154,6 +156,22 @@ var viewerJS = ( function( viewer ) {
 
 		return promise
 	}
+	   function _getSharedMiradorObjects( root, key ) {
+	        if ( _debug ) { 
+	            console.log( '---------- _getSessionElementCount() ----------' );
+	            console.log( '_getSessionElementCount: root - ', root );
+	            console.log( '_getSessionElementCount: id - ', key );
+	        }
+
+	        var promise = Q($.ajax({
+	            url : root + '/rest/bookmarks/mirador/shared/' + key + '/',
+	            type : "GET",
+	            dataType : "JSON",
+	            async : true
+	        }));
+
+	        return promise
+	    }
 	/**
 	 * Method to get the mirador session objects.
 	 * 
@@ -168,7 +186,7 @@ var viewerJS = ( function( viewer ) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookmarks/session/mirador/',
+			url : root + '/rest/bookmarks/mirador/session/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -216,7 +234,7 @@ var viewerJS = ( function( viewer ) {
                     return winObj;
                 })
         }
-        return miradorConfig;
+        return Q(Promise.resolve(miradorConfig));
     }
     
     return viewer;

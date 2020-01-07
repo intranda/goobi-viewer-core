@@ -131,7 +131,7 @@ public class BookmarkResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
-    @Path("/session/mirador")
+    @Path("/mirador/session")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getSessionBookmarkListForMirador()
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
@@ -728,7 +728,7 @@ public class BookmarkResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
-    @Path("/user/mirador/{id}/")
+    @Path("/mirador/user/{id}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getUserBookmarkListForMirador(@PathParam("id") Long id)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
@@ -742,6 +742,19 @@ public class BookmarkResource {
         }
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
+    }
+    
+    @GET
+    @Path("/mirador/shared/{key}/")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getSharedBookmarkListForMirador(@PathParam("key") String key)
+            throws DAOException, PresentationException, ContentNotFoundException, ViewerConfigurationException, IndexUnreachableException {
+        try {            
+            BookmarkList bookmarkList = getSharedBookmarkList(key);
+            return bookmarkList.getMiradorJsonObject(servletRequest.getContextPath());
+        } catch ( ContentNotFoundException | RestApiException e) {
+            throw new ContentNotFoundException("No matching bookmark list found");
+        }
     }
 
     /**

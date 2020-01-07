@@ -377,19 +377,26 @@
 	
 	<!-- MIRADOR -->
 	<url-mapping id="mirador0">
-		<pattern value="/mirador" />
-		<view-id value="/viewMirador.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-	</url-mapping>
-	<url-mapping id="mirador1">
 		<pattern value="/mirador/" />
 		<view-id value="/viewMirador.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-	</url-mapping>	
-	<url-mapping id="mirador2">
-		<pattern value="/mirador/#{bookmarklist:bookmarkBean.currentBookmarkListId}/" />
+	</url-mapping>
+	<url-mapping id="mirador0session">
+		<pattern value="/mirador/session/" />
+		<view-id value="/viewMirador.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{bookmarkBean.setCurrentBookmarkListId(null)}</action>
+	</url-mapping>
+	<url-mapping id="mirador1id">
+		<pattern value="/mirador/id/#{bookmarklistid}/" />
+		<view-id value="/viewMirador.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+		<url-mapping id="mirador1key">
+		<pattern value="/mirador/key/#{bookmarklistkey}/" />
 		<view-id value="/viewMirador.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
