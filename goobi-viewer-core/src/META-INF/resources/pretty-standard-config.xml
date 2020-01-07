@@ -290,6 +290,24 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	
+	<url-mapping id="searchbookmarks">
+		<pattern value="/bookmarks/search/#{name:searchBean.bookmarkListName}/" />
+		<view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+		<action onPostback="false">#{searchBean.searchAdvanced()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
+	</url-mapping>
+	
+		<url-mapping id="searchbookmarks2">
+		<pattern value="/bookmarks/search/key/#{name:searchBean.bookmarkListSharedKey}/" />
+		<view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+		<action onPostback="false">#{searchBean.searchAdvanced()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
+	</url-mapping>
+	
 	<!-- CALENDAR SEARCH -->
 	<url-mapping id="searchCalendar4">
 		<pattern value="/searchcalendar/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />

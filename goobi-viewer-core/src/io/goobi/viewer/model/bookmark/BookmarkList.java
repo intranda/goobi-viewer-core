@@ -260,7 +260,7 @@ public class BookmarkList implements Serializable {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isMayView(User user) throws DAOException {
+    public boolean isMayView(User user) {
         if (isPublic) {
             return true;
         }
@@ -271,8 +271,13 @@ public class BookmarkList implements Serializable {
             return true;
         }
         // TODO This is expensive - cache shared lists somewhere
-        if (BookmarkTools.getBookmarkListsSharedWithUser(user).contains(this)) {
-            return true;
+        try {
+            if (BookmarkTools.getBookmarkListsSharedWithUser(user).contains(this)) {
+                return true;
+            }
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
+            return false;
         }
 
         return false;

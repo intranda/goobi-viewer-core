@@ -147,7 +147,7 @@ public class LoginFilter implements Filter {
                     return true;
                 default:
                     //make an exception for session bookmarks search list or share key
-                    if (uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/") || uri.contains("bookmarks/send/")
+                    if (uri.contains("bookmarks/search/") || uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/") || uri.contains("bookmarks/send/")
                             || uri.contains("bookmarks/search/session")) {
                         return false;
                     }

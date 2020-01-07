@@ -83,6 +83,7 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -534,7 +535,20 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (StringUtils.isEmpty(queryItem.getValue())) {
                         continue;
                     }
-                    if (userBean.isLoggedIn()) {
+                    
+                    String key = getBookmarkListSharedKey();
+
+                    if(StringUtils.isNotBlank(key)) {
+                        try {
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
+                            if (bookmarkList != null) {
+//                                queryItem.setValue(bookmarkList.getName());
+                                itemQuery = bookmarkList.getFilterQuery();
+                            }
+                        } catch(DAOException e) {
+                            logger.error(e.toString(), e);
+                        }
+                    } else if (userBean.isLoggedIn()) {
                         // User bookmark list
                         try {
                             BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(queryItem.getValue(), userBean.getUser());
@@ -555,6 +569,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         // Skip empty bookmark list
                         continue;
                     }
+                    
                 } else {
                     // Generate item query
                     itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
@@ -2311,9 +2326,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param name a {@link java.lang.String} object.
      */
     public void setBookmarkListName(String name) {
-        this.advancedQueryGroups.get(0).getQueryItems().get(0).setValue(name);
-        this.advancedQueryGroups.get(0).getQueryItems().get(0).setField(SolrConstants.BOOKMARKS);
-        this.advancedQueryGroups.get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);;
+        SearchQueryItem item = this.advancedQueryGroups.get(0).getQueryItems().get(0);
+        item.setValue(name);
+        item.setField(SolrConstants.BOOKMARKS);
+        item.setOperator(SearchItemOperator.IS);
 
     }
     
@@ -2323,7 +2339,36 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListName() {
-        return this.advancedQueryGroups.get(0).getQueryItems().get(0).getValue();
+        String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
+        .filter(item -> item.getField().equals(SolrConstants.BOOKMARKS))
+        .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
+        .findFirst().map(SearchQueryItem::getValue).orElse("");
+        return value;
+    }
+    
+    /**
+     * <p>setBookmarkListName.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
+    public void setBookmarkListSharedKey(String key) {
+        SearchQueryItem item = this.advancedQueryGroups.get(0).getQueryItems().get(0);
+        item.setValue("KEY::" + key);
+        item.setField(SolrConstants.BOOKMARKS);
+        item.setOperator(SearchItemOperator.IS);
+
+    }
+    
+    /**
+     * <p>getBookmarkListName.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getBookmarkListSharedKey() {
+        String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
+        .filter(item -> item.getField().equals(SolrConstants.BOOKMARKS))
+        .filter(item -> item.getValue() != null && item.getValue().startsWith("KEY::")).findFirst().map(SearchQueryItem::getValue).orElse("");
+        return value.replace("KEY::", "");
     }
 
 }

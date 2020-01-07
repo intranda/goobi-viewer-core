@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.BookmarkBean;
 import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CmsBean;
@@ -259,6 +260,10 @@ public class BeanUtils {
      */
     public static SearchBean getSearchBean() {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
+    }
+    
+    public static BookmarkBean getBookmarkBean() {
+        return (BookmarkBean) getBeanByName("bookmarkBean", BookmarkBean.class);
     }
 
     /**
