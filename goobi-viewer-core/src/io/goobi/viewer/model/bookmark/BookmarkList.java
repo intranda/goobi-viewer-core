@@ -16,6 +16,8 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -607,5 +610,17 @@ public class BookmarkList implements Serializable {
      */
     public String getIIIFCollectionURI() {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey();
+    }
+    
+    /**
+     * 
+     * @return the URL encoded name
+     */
+    public String getEscapedName() {
+        if(name != null) {
+                return StringEscapeUtils.escapeHtml4(name);
+        } else {
+            return "";
+        }
     }
 }
