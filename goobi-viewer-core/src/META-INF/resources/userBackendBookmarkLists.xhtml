@@ -108,7 +108,7 @@
 													<f:passThroughAttribute name="data-placement" value="top" />
 												</h:commandLink>
                                                 
-                                                <a title="#{msg.bookmarkList_shareLink}" 
+                                                <a href="#" title="#{msg.bookmarkList_shareLink}" 
 	                                               data-copy="bookmarklist-share-link" 
 						                           data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" 
 						                           data-copy-done="#{msg.copyUrlDone}">
@@ -124,7 +124,7 @@
                                                 	>#{bookmarkBean.getShareLink(bookmarkList)}</div>
                                                 </popup>
                                                 
-                                                <a title="#{msg.bookmarkList_shareCollection}" 
+                                                <a href="#" title="#{msg.bookmarkList_shareCollection}" 
                                                    data-copy="bookmarklist-share-collection" 
 						                           data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" 
 						                           data-copy-done="#{msg.copyUrlDone}">
@@ -175,7 +175,7 @@
                     <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
                     <h:form id="pubicBookmarkListsForm" prependId="false">
                         <div class="row no-margin">
-                           <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
+                           <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml" source="">
 		                   		<ui:param name="source" value="#{bookmarkBean.publicBookmarkLists}" />
 		                   </ui:include>
                         </div>
