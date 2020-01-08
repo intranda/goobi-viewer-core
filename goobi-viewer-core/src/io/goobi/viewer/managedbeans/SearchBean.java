@@ -549,7 +549,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         } catch(DAOException e) {
                             logger.error(e.toString(), e);
                         }
-                    }else if(StringUtils.isNotBlank(name)) {
+                    }else if(StringUtils.isNotBlank(name) && !"session".equals(name)) {
                             try {
                                 BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
                                 if (bookmarkList != null) {
