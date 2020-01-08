@@ -609,7 +609,7 @@ public class BookmarkList implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIIIFCollectionURI() {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey();
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/";
     }
     
     /**

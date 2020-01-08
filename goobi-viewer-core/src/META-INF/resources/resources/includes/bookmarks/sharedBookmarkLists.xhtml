@@ -13,7 +13,7 @@
 	    <ui:repeat value="#{bookmarkLists}" var="bookmarkList" varStatus="status">
 			<div class="user-bookshelves__panel">
 				<div class="user-bookshelves__panel-header">
-					<div class="col-xs-8 col-sm-10">
+					<div class="col-xs-8 col-sm-9">
 						<h4>
 							<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
 								#{bookmarkList.name} </a>
@@ -29,7 +29,7 @@
 							</ui:fragment>
 						</h4>
 					</div>
-					<div class="col-xs-4 col-sm-2">
+					<div class="col-xs-4 col-sm-3">
 						<!-- ACTION -->
 						<div class="user-bookshelves__panel-action text-right">
 							<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
@@ -46,10 +46,26 @@
 								href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}"
 								title="#{msg.search}" data-toggle="tooltip" data-placement="top">
 								<i class="fa fa-search" aria-hidden="true"></i>
-							</a> <a href="#{bookmarkBean.getShareLink(bookmarkList)}"
+							</a> 
+							
+							<a href="#{bookmarkBean.getShareLink(bookmarkList)}"
 								title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip"
 								data-placement="top"> <i class="fa fa-eye" aria-hidden="true"></i>
 							</a>
+							
+							 <a href="#" title="#{msg.bookmarkList_shareLink}" 
+                             	data-copy="bookmarklist-share-link" 
+                           		data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" 
+                           		data-copy-done="#{msg.copyUrlDone}">
+                                <i class="fa fa-share-alt" aria-hidden="true"></i>
+                             </a>
+
+                             <a href="#" title="#{msg.bookmarkList_shareCollection}" 
+                             	data-copy="bookmarklist-share-collection" 
+                           		data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" 
+                           		data-copy-done="#{msg.copyUrlDone}">
+                                <i class="fa fa-share" aria-hidden="true"></i>
+                             </a>
 						</div>
 					</div>
 				</div>
@@ -64,5 +80,10 @@
 				</ui:fragment>
 			</div>
 		</ui:repeat>
+		
+		<script>
+    		viewerJS.clipboard.init();
+		</script>
+		
 	</ui:fragment>
 </ui:composition>

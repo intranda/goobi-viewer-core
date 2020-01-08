@@ -1448,6 +1448,9 @@ public class NavigationHelper implements Serializable {
      * @param url a {@link java.lang.String} object.
      */
     public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+        if(linkWeight < 0) {
+            return;
+        }
         PageType page = PageType.getByName(url);
         if (page != null && !page.equals(PageType.other)) {
             url = getUrl(page);
