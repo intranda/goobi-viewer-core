@@ -269,7 +269,7 @@ public class SearchQueryItem implements Serializable {
                 case SolrConstants.DOCSTRCT:
                 case SolrConstants.DOCSTRCT_TOP:
                 case SolrConstants.DOCSTRCT_SUB:
-                case "BOOKSHELF":
+                case SolrConstants.BOOKMARKS:
                     displaySelectItems = true;
                     break;
                 default:

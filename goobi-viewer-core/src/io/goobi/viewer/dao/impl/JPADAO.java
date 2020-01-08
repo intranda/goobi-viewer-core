@@ -692,9 +692,15 @@ public class JPADAO implements IDAO {
     @Override
     public BookmarkList getBookmarkList(String name, User user) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
-        q.setParameter("name", name);
-        q.setParameter("user", user);
+        Query q;
+        if(user != null) {
+            q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
+            q.setParameter("name", name);
+            q.setParameter("user", user);
+        } else {
+            q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name");
+            q.setParameter("name", name);
+        }
         try {
             BookmarkList o = (BookmarkList) q.getSingleResult();
             if (o != null) {
@@ -704,8 +710,11 @@ public class JPADAO implements IDAO {
         } catch (NoResultException e) {
             return null;
         } catch (NonUniqueResultException e) {
-            logger.error(e.getMessage());
-            return null;
+            BookmarkList o = (BookmarkList) q.getResultList().get(0);
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
         }
     }
 

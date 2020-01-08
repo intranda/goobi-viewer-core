@@ -537,17 +537,29 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     
                     String key = getBookmarkListSharedKey();
+                    String name = getBookmarkListName();
 
                     if(StringUtils.isNotBlank(key)) {
                         try {
                             BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
                             if (bookmarkList != null) {
-//                                queryItem.setValue(bookmarkList.getName());
+                                queryItem.setValue(bookmarkList.getName());
                                 itemQuery = bookmarkList.getFilterQuery();
                             }
                         } catch(DAOException e) {
                             logger.error(e.toString(), e);
                         }
+                    }else if(StringUtils.isNotBlank(name)) {
+                            try {
+                                BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
+                                if (bookmarkList != null) {
+                                    queryItem.setValue(bookmarkList.getName());
+                                    itemQuery = bookmarkList.getFilterQuery();
+                                }
+                            } catch(DAOException e) {
+                                logger.error(e.toString(), e);
+                            }
+                                
                     } else if (userBean.isLoggedIn()) {
                         // User bookmark list
                         try {
@@ -1584,6 +1596,16 @@ public class SearchBean implements SearchInterface, Serializable {
                     Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                     if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
                         ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
+                    }
+                }
+                //public bookmark lists
+                List<BookmarkList> publicBookmarkLists = DataManager.getInstance().getDao().getPublicBookmarkLists();
+                if (!publicBookmarkLists.isEmpty()) {
+                    for (BookmarkList bookmarkList : publicBookmarkLists) {
+                        StringPair pair = new StringPair(bookmarkList.getName(), bookmarkList.getName());
+                        if (!bookmarkList.getItems().isEmpty() && !ret.contains(pair)) {
+                            ret.add(pair);
+                        }
                     }
                 }
             } else if (hierarchical) {
