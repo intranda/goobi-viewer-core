@@ -315,8 +315,8 @@ var viewerJS = ( function( viewer ) {
          */
         initBsFeatures: function() {
         	if ( _debug ) {
-                console.log( 'EXECUTE: viewerJS.helper.initBsFeatures' );
             }
+        	console.log( 'EXECUTE: viewerJS.helper.initBsFeatures' );
         	
         	// enable BS tooltips
             $( '[data-toggle="tooltip"]' ).tooltip( {
