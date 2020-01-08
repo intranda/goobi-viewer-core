@@ -19,7 +19,20 @@
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
     </div>
 
-    <!-- OPEN SEADRAGON -->
+	<popup id="share-image-area-popup">
+
+		<div>
+		<a href="#" data-copy="image-region-page"
+			title="#{msg.bookmarkList_shareLink_copy}" ></a>
+		</div>
+		<div>
+			<a href="#" data-copy="image-region-image"
+			title="#{msg.bookmarkList_shareLink_copy}" ></a>
+		</div>
+
+	</popup>
+
+	<!-- OPEN SEADRAGON -->
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
@@ -30,6 +43,7 @@
         var accessDeniedImagePath = "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/access_denied.png";
         var accessDeniedImageWrapper = $( "<div />" ).addClass( "view-object__access-denied" ).html( '<img src="' + accessDeniedImagePath + '" />' );
         var page = "#{navigationHelper.currentPage}";
+
         var configViewer = {
         	global: {
         		divId: "imageMap",
@@ -108,10 +122,57 @@
         	}
         }
                 
+        var areaSelect;
+   		function openShareAreaPopup(area, triggerElement) {
+   		 	areaSelect.stopSelect();
+   		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
+   		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
+   		 	var imageUrl = viewImage.getConfig().image.tileSource;
+   		 	if(Array.isArray(imageUrl)) {
+   		 	    imageUrl = imageUrl[0];
+   		 	}
+   		 	imageUrl = imageUrl.replace("info.json", areaString + "/max/" + viewImage.getRotation() + "/default.jpg");
+   		    let popup = new viewerJS.Popup($("body"), $("#share-image-area-popup"), {
+   		        center: "center",
+   		        top: "top",
+   		        offset: {
+   		            top: window.screen.height/2,
+   		            left: 0
+   		        }
+   		    })
+   		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl);
+   		    $("[data-copy='image-region-page']").text(pageUrl);
+   		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl);
+   		    $("[data-copy='image-region-image']").text(imageUrl);
+   		    $('body').one("click", function() {
+   		     	if(areaSelect) {
+   		     	    areaSelect.remove(0);
+   		     	}
+   		    })
+   		    $("[data-copy]").one("click", function(event) {
+   		        console.log("popup click")
+   		     	popup.$popup.off();
+   		     	popup.$popup.remove();
+                $('body').off("click.popup");
+   		    })
+   		}
+        
        	// desktop object view
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
-           	viewImage.load().then( function( osViewer ) {} ).catch( function( error ) {
+           	viewImage.load().then( function( image ) {
+           	    
+           		// init area select
+           		var areaSelectConfig = {
+           		     removeOldAreas : true,
+                     drawStyle : {
+                         borderColor: "#0000ff",
+                         borderWidth: 2,
+                         fillColor: "rgba(255,255,255,0.4)",
+                     }
+           		};
+           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
+           	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
            		

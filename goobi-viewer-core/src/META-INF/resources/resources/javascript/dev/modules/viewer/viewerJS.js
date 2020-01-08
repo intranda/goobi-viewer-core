@@ -255,13 +255,15 @@ var viewerJS = (function () {
         if (window.location.hash) {
             $(document).ready(function () {
                 var hash = window.location.hash.substring(1);
-                var $hashedElement = $("#" + hash);
-                if ($hashedElement.length > 0) {
-                    $hashedElement.get(0).scrollIntoView();
-
-                    var $hashedCollapsible = $hashedElement.find(".collapse");
-                    if ($hashedCollapsible.length > 0) {
-                        $hashedCollapsible.collapse("show");
+                if(!hash.startsWith("xywh=")) {                    
+                    var $hashedElement = $("#" + hash);
+                    if ($hashedElement.length > 0) {
+                        $hashedElement.get(0).scrollIntoView();
+                        
+                        var $hashedCollapsible = $hashedElement.find(".collapse");
+                        if ($hashedCollapsible.length > 0) {
+                            $hashedCollapsible.collapse("show");
+                        }
                     }
                 }
             })

@@ -52,19 +52,19 @@ var viewerJS = ( function( viewer ) {
      */
     viewer.Popup = function(anchor, popup, anchoring) {
         
+        
         this.$anchor = $(anchor);
 
         if(!anchoring) {
             anchoring = {};
         }
         this.anchoring = $.extend({}, _anchoring, anchoring);
-        
-        if(popup) {            
+        if(popup) {    
             this.$popup = $(popup).clone();
         } else {
-            this.$popup = $anchor.next("popup").clone();
+            this.$popup = this.$anchor.next("popup").clone();
         }
-        
+
         
         if ( _debug ) {
             console.log( '##############################' );
