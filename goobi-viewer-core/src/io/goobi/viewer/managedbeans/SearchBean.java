@@ -2362,7 +2362,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String getBookmarkListName() {
         String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
-        .filter(item -> item.getField().equals(SolrConstants.BOOKMARKS))
+        .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
         .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
         .findFirst().map(SearchQueryItem::getValue).orElse("");
         return value;
