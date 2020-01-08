@@ -52,7 +52,7 @@
 	                        <div class="user-bookshelves__panel-header">
 	                            <div class="col-xs-8 col-sm-10">
 	                                <h4>
-	                                    <a href="#{request.contextPath}/bookmarks/show/#{bookmarkList.id}/">
+	                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}">
 	                                        #{bookmarkList.name}
 	                                    </a>
 	                                    <ui:fragment rendered="#{bookmarkList.items.size() == 1}">
@@ -74,15 +74,9 @@
 	                                        </a>
 	                                    </ui:fragment>
 	                                    
-	                                    <h:commandLink title="#{msg.search}" action="pretty:searchadvanced">
-	                                        <i class="fa fa-search" aria-hidden="true"></i>
-	                                        <f:setPropertyActionListener value="#{bookmarkList.name}"
-	                                            target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
-	                                        <f:setPropertyActionListener value="BOOKMARKS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
-	                                        <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
-	                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                                        <f:passThroughAttribute name="data-placement" value="top" />
-	                                    </h:commandLink>                                   
+	                                    <a href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}" title="#{msg.search}" data-toggle="tooltip" data-placement="top">
+	                                    	<i class="fa fa-search" aria-hidden="true"></i>
+	                                    </a>                                 
 	                                    
 	                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}" title="#{msg.bookmarkList_showBookmarkList}"
 	                                        data-toggle="tooltip" data-placement="top">
