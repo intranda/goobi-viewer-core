@@ -537,7 +537,7 @@ public class BookmarkList implements Serializable {
     @SuppressWarnings("unchecked")
     public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
-        int cols = 2;
+        int cols = (int) Math.ceil(Math.sqrt(items.size()));
         int rows = (int) Math.ceil(items.size() / (float) cols);
 
         JSONObject root = new JSONObject();

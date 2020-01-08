@@ -189,7 +189,7 @@ searchListUrl(list) {
 }
 
 mayCompareList(list) {
-    return list.items.length > 1;
+    return list.items.length > 0;
 }
 
 miradorUrl(list) {

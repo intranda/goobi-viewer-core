@@ -259,7 +259,7 @@ this.searchListUrl = function(list) {
 }.bind(this)
 
 this.mayCompareList = function(list) {
-    return list.items.length > 1;
+    return list.items.length > 0;
 }.bind(this)
 
 this.miradorUrl = function(list) {

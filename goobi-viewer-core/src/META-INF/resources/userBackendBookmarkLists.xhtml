@@ -87,7 +87,7 @@
 											<!-- ACTION -->
 											<div class="user-bookshelves__panel-action text-right">
 											    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
+                                                <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
                                                     <a href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
                                                         data-toggle="tooltip" data-placement="top" target="_blank">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
