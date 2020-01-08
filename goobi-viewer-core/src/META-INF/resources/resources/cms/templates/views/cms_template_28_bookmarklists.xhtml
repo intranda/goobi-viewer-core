@@ -46,56 +46,10 @@
     					<ui:include src="#{cmsPage.getContent('text')}" />
     				</div>
                 </ui:fragment>
-				    <h:form class="tpl-bookmarklists__lists">    	
-                	<ui:repeat value="#{cmsPage.getContentItem('bookmarklists').functionality.bookmarkLists}" var="bookmarkList" varStatus="status">
-			          	<div class="user-bookshelves__panel">
-	                        <div class="user-bookshelves__panel-header">
-	                            <div class="col-xs-8 col-sm-10">
-	                                <h4>
-	                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}">
-	                                        #{bookmarkList.name}
-	                                    </a>
-	                                    <ui:fragment rendered="#{bookmarkList.items.size() == 1}">
-	                                        <small>(#{bookmarkList.items.size()} #{msg.bookmarkList_object})</small>
-	                                    </ui:fragment>
-	                                    <ui:fragment rendered="#{bookmarkList.items.size() != 1}">
-	                                        <small>(#{bookmarkList.items.size()} #{msg.bookmarkList_objects})</small>
-	                                    </ui:fragment>
-	                                </h4>
-	                            </div>
-	                            <div class="col-xs-4 col-sm-2">
-	                                <!-- ACTION -->
-	                                <div class="user-bookshelves__panel-action text-right">
-	                                    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-	                                    <ui:fragment rendered="#{bookmarkList.items.size() > 1}">
-	                                        <a href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-	                                            data-toggle="tooltip" data-placement="top" target="_blank">
-	                                            <i class="fa fa-th" aria-hidden="true"></i>
-	                                        </a>
-	                                    </ui:fragment>
-	                                    
-	                                    <a href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}" title="#{msg.search}" data-toggle="tooltip" data-placement="top">
-	                                    	<i class="fa fa-search" aria-hidden="true"></i>
-	                                    </a>                                 
-	                                    
-	                                    <a href="#{bookmarkBean.getShareLink(bookmarkList)}" title="#{msg.bookmarkList_showBookmarkList}"
-	                                        data-toggle="tooltip" data-placement="top">
-	                                        <i class="fa fa-eye" aria-hidden="true"></i>
-	                                    </a>
-	                                </div>
-	                            </div>
-	                        </div>
-	                        
-	                        <!-- DESCRIPTION -->
-	                        <ui:fragment rendered="#{bookmarkList.hasDescription()}">
-	                            <div class="col-xs-12">
-	                                <div class="user-bookshelves__panel-body">
-	                                    <p>#{bookmarkList.description}</p>
-	                                </div>
-	                            </div>
-	                        </ui:fragment>
-	                    </div>
-					</ui:repeat>
+			    <h:form class="tpl-bookmarklists__lists">    	
+		          	<ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
+                           <ui:param name="source" value="#{cmsPage.getContentItem('bookmarklists').functionality.bookmarkLists}" />
+                    </ui:include>
 				</h:form>    
 			</div>
 		</f:view>

@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<ui:param name="bookmarkLists" value="#{source}"></ui:param>
+
+	<ui:fragment rendered="#{bookmarkLists != null}">
+	    <ui:repeat value="#{bookmarkLists}" var="bookmarkList" varStatus="status">
+			<div class="user-bookshelves__panel">
+				<div class="user-bookshelves__panel-header">
+					<div class="col-xs-8 col-sm-10">
+						<h4>
+							<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
+								#{bookmarkList.name} </a>
+							<ui:fragment rendered="#{bookmarkList.items.size() == 1}">
+								<small>(#{bookmarkList.items.size()} #{msg.bookmarkList_object},
+									#{navigationHelper.getTranslationWithParams(msg.bookmarks__shared_by,
+									bookmarkList.owner.displayName)})</small>
+							</ui:fragment>
+							<ui:fragment rendered="#{bookmarkList.items.size() != 1}">
+								<small>(#{bookmarkList.items.size()} #{msg.bookmarkList_objects},
+									#{navigationHelper.getTranslationWithParams(msg.bookmarks__shared_by,
+									bookmarkList.owner.displayName)})</small>
+							</ui:fragment>
+						</h4>
+					</div>
+					<div class="col-xs-4 col-sm-2">
+						<!-- ACTION -->
+						<div class="user-bookshelves__panel-action text-right">
+							<ui:fragment rendered="#{bookmarkList.items.size() > 1}">
+								<a
+									href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}"
+									class="view-mirador__link"
+									title="#{msg.bookmarkList_openMirador}" data-toggle="tooltip"
+									data-placement="top" target="_blank"> <i class="fa fa-th"
+									aria-hidden="true"></i>
+								</a>
+							</ui:fragment>
+		
+							<a
+								href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}"
+								title="#{msg.search}" data-toggle="tooltip" data-placement="top">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</a> <a href="#{bookmarkBean.getShareLink(bookmarkList)}"
+								title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip"
+								data-placement="top"> <i class="fa fa-eye" aria-hidden="true"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+		
+				<!-- DESCRIPTION -->
+				<ui:fragment rendered="#{bookmarkList.hasDescription()}">
+					<div class="col-xs-12">
+						<div class="user-bookshelves__panel-body">
+							<p>#{bookmarkList.description}</p>
+						</div>
+					</div>
+				</ui:fragment>
+			</div>
+		</ui:repeat>
+	</ui:fragment>
+</ui:composition>
