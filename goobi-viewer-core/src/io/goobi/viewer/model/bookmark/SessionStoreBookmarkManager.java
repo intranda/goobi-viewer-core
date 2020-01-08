@@ -18,6 +18,7 @@ package io.goobi.viewer.model.bookmark;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -44,7 +45,9 @@ public class SessionStoreBookmarkManager {
     public static final String BOOKMARK_LIST_ATTRIBUTE_NAME = "bookmarkList";
 
     /**
-     * <p>getBookmarkList.</p>
+     * <p>
+     * getBookmarkList.
+     * </p>
      *
      * @return An optional containing the stored bookmark list if one exists
      * @throws java.lang.NullPointerException if the session is NULL
@@ -127,7 +130,9 @@ public class SessionStoreBookmarkManager {
     }
 
     /**
-     * <p>deleteBookmarkList.</p>
+     * <p>
+     * deleteBookmarkList.
+     * </p>
      *
      * @param session a {@link javax.servlet.http.HttpSession} object.
      * @throws java.lang.NullPointerException if the session is NULL
@@ -137,7 +142,9 @@ public class SessionStoreBookmarkManager {
     }
 
     /**
-     * <p>isInBookmarkList.</p>
+     * <p>
+     * isInBookmarkList.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
      * @param session a {@link javax.servlet.http.HttpSession} object.
@@ -163,14 +170,19 @@ public class SessionStoreBookmarkManager {
         if (request == null) {
             return;
         }
-
         Optional<BookmarkList> oBookmarkList = getBookmarkList(request.getSession());
         if (oBookmarkList.isPresent() && !oBookmarkList.get().getItems().isEmpty()) {
-            oBookmarkList.get().setOwner(user);
-            oBookmarkList.get().setIsPublic(false);
-            List<BookmarkList> userBookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
-            oBookmarkList.get().setName(generateNewBookmarkListName(userBookmarkLists));
-            DataManager.getInstance().getDao().addBookmarkList(oBookmarkList.get());
+            try {
+                oBookmarkList.get().setOwner(user);
+                oBookmarkList.get().setIsPublic(false);
+                List<BookmarkList> userBookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
+                oBookmarkList.get().setName(generateNewBookmarkListName(userBookmarkLists));
+                DataManager.getInstance().getDao().addBookmarkList(oBookmarkList.get());
+            } catch (PersistenceException | DAOException e) {
+                logger.error("Error saving session bookmark list", e);
+                DataManager.getInstance().getDao().deleteBookmarkList(oBookmarkList.get());
+            }
+
         }
     }
 

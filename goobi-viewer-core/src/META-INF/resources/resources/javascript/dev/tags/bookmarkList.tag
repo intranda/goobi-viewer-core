@@ -12,12 +12,12 @@
 		</button>
 
 		<div if="{!pi}" class="row no-margin">
-			<div class="col-xs-7 no-padding">
+			<div class="col-xs-9 no-padding">
 				<a
 					href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a>
 			</div>
-			<div class="col-xs-4 no-padding icon-list">
-				<a href="{sendListUrl(bookmarkList)}" title="{opts.msg.sendBookmarkList}"> 
+			<div class="col-xs-2 no-padding icon-list">
+				<a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{opts.msg.sendBookmarkList}"> 
 					<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
 				<a href="{searchListUrl(bookmarkList)}"
@@ -172,7 +172,7 @@ deleteList(event) {
 }
 
 maySendList(list) {
-    return list.items.length > 0;
+    return !opts.bookmarks.config.userLoggedIn && list.items.length > 0; 
 }
 
 sendListUrl(list) {
