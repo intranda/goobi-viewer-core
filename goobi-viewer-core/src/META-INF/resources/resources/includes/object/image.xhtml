@@ -22,12 +22,12 @@
 	<popup id="share-image-area-popup">
 
 		<div>
-		<a href="#" data-copy="image-region-page"
-			title="#{msg.bookmarkList_shareLink_copy}" ></a>
+		<a data-copy="image-region-page"
+			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_page}</a>
 		</div>
 		<div>
-			<a href="#" data-copy="image-region-image"
-			title="#{msg.bookmarkList_shareLink_copy}" ></a>
+			<a data-copy="image-region-image"
+			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_image}</a>
 		</div>
 
 	</popup>
@@ -148,48 +148,56 @@
        		$( "#imageContainerMobileOverlay" ).show();
        	}
        	
-        var areaSelect;
+        var areaSelect, event;
        	if(viewImage) {
             function selectImageArea(button) {
-                if(areaSelect) {
-	                console.log("select image area ", button);
-	                $(button).addClass("active");
-	                areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
+                 if(areaSelect) {
+                    if($(button).hasClass("active")) {
+                        $(button).popover("hide");
+    	      		    $(button).removeClass("active");
+    	       		 	areaSelect.stopSelect();
+                	} else {                	    
+	       		        $(button).popover({
+	       		            trigger: 'manual',
+	       		            title: "#{msg.action__share_image_region}",
+	       		            content: "#{msg.action__share_image_region__description}",
+	       		            placement: 'right'
+	       		        }).popover("show");
+		                $(button).addClass("active");
+		                areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
+		                viewImage.viewer.addOnceHandler( 'canvas-drag-end', (e) => {
+		                    event = e.originalEvent;
+		                });
+                	}
                 }
             }
-       		function openShareAreaPopup(area, triggerElement) {
+       		function openShareAreaPopup(area, button) {
        		    if(areaSelect) {
+       		     	$(button).popover("hide");
+	      		    $(button).removeClass("active");
 	       		 	areaSelect.stopSelect();
-	      		     $(triggerElement).removeClass("active");
+	       		 	console.log("selected area ", area);
 	       		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
 	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
-	       		 	var imageUrl = viewImage.getConfig().image.tileSource;
-	       		 	if(Array.isArray(imageUrl)) {
-	       		 	    imageUrl = imageUrl[0];
-	       		 	}
-	       		 	imageUrl = imageUrl.replace("info.json", areaString + "/max/" + viewImage.getRotation() + "/default.jpg");
-	       		    let popup = new viewerJS.Popup($("body"), $("#share-image-area-popup"), {
-	       		        center: "center",
-	       		        top: "top",
+	       		 	var imageUrl = viewImage.getRegionUrl(area);
+	       		 	let popup = new viewerJS.Popup(event, $("#share-image-area-popup"), {
+	       		        left: "left",
+	       		        bottom: "top",
 	       		        offset: {
-	       		            top: window.screen.height/2,
-	       		            left: 0
+	       		            top:-5,
+	       		            left: 5
 	       		        }
+	       		        
 	       		    })
 	       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl);
-	       		    $("[data-copy='image-region-page']").text(pageUrl);
 	       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl);
-	       		    $("[data-copy='image-region-image']").text(imageUrl);
-	       		    $('body').one("click", function() {
-	       		     	if(areaSelect) {
+	       		 	popup.onClose.subscribe( () => {
+	       		 	    if(areaSelect) {
 	       		     	    areaSelect.remove(0);
 	       		     	}
-	       		    })
+	       		 	})
 	       		    $("[data-copy]").one("click", function(event) {
-	       		        console.log("popup click")
-	       		     	popup.$popup.off();
-	       		     	popup.$popup.remove();
-	                    $('body').off("click.popup");
+	       		        popup.close();
 	       		    })
        		    }
        		}

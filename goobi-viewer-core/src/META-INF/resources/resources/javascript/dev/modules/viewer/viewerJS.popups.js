@@ -28,7 +28,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    const _debug = true;
+    const _debug = false;
 
     const _anchoring = {
             top: "bottom", //top,middle,bottom
@@ -50,10 +50,13 @@ var viewerJS = ( function( viewer ) {
      * @param anchoring Additional options to anchor the popup
      * 
      */
-    viewer.Popup = function(anchor, popup, anchoring) {
+    viewer.Popup = function(anchor, popup, anchoring) { 
         
-        
-        this.$anchor = $(anchor);
+        if(anchor.target) {
+            this.event = anchor;
+        } else if(anchor) {            
+            this.$anchor = $(anchor);
+        }
 
         if(!anchoring) {
             anchoring = {};
@@ -61,9 +64,12 @@ var viewerJS = ( function( viewer ) {
         this.anchoring = $.extend({}, _anchoring, anchoring);
         if(popup) {    
             this.$popup = $(popup).clone();
-        } else {
+        } else if(!anchor){
             this.$popup = this.$anchor.next("popup").clone();
+        } else {
+            this.$popup = $("popup").clone(); 
         }
+        this.onClose = new Rx.Subject();
 
         
         if ( _debug ) {
@@ -71,7 +77,7 @@ var viewerJS = ( function( viewer ) {
             console.log( 'viewer.Popup' );
             console.log( '##############################' );
             console.log( 'viewer.Popup popup',  this.$popup);
-            console.log( 'viewer.Popup anchor',  this.$anchor);
+            console.log( 'viewer.Popup anchor',  this.$anchor ? this.$anchor : this.event);
             console.log( 'viewer.Popup anchoring', this.anchoring);
             console.log( '##############################' );
 
@@ -89,17 +95,26 @@ var viewerJS = ( function( viewer ) {
     }
 
     viewer.Popup.prototype.close = function(event) {
-            if($(event.target).closest("popup").length == 0) {
+            if(!event || $(event.target).closest("popup").length == 0) {
                 this.$popup.off();
                 this.$popup.remove();
                 $('body').off("click.popup");
+                this.onClose.onNext(event);
             }
     }
     
     viewer.Popup.prototype.calcOffset = function() {
         let offset = {};
-        let anchorPos = this.$anchor.offset();
-        let anchorSize = {width: this.$anchor.innerWidth(), height:this.$anchor.innerHeight()}
+        let anchorPos = {top: 0, left: 0};
+        let anchorSize = {width: 0, height: 0};
+        if(this.event) {
+            anchorPos.top = this.event.pageY;
+            anchorPos.left = this.event.pageX;
+        } else if(this.$anchor) {            
+            anchorPos = this.$anchor.offset();
+            anchorSize.width = this.$anchor.innerWidth();
+            anchorSize.height = this.$anchor.innerHeight();
+        }
         let popupSize = {width: this.$popup.outerWidth(), height:this.$popup.outerHeight()}
         
         if(this.anchoring.bottom) {
