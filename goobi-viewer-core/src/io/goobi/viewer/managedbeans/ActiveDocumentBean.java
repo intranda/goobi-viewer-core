@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,6 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
-import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -103,6 +102,8 @@ public class ActiveDocumentBean implements Serializable {
     private BookmarkBean bookmarkBean;
     @Inject
     private ImageDeliveryBean imageDelivery;
+    @Inject
+    private BreadcrumbBean breadcrumbBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -179,6 +180,15 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setBookshelfBean(BookmarkBean bookshelfBean) {
         this.bookmarkBean = bookshelfBean;
+    }
+    
+    /**
+     * Required setter for ManagedProperty injection
+     *
+     * @param breadcrumbBean the breadcrumbBean to set
+     */
+    public void setBreadcrumbBean(BreadcrumbBean breadcrumbBean) {
+        this.breadcrumbBean = breadcrumbBean;
     }
 
     /**
@@ -471,52 +481,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
                 logger.trace("topdocument label: {} ", name.getValue());
                 if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
-
-                    // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
-                    String collectionHierarchyField = DataManager.getInstance().getConfiguration().getCollectionHierarchyField();
-                    if (collectionHierarchyField != null) {
-                        List<String> collections = viewManager.getTopDocument().getMetadataValues(collectionHierarchyField);
-                        if (collections.size() == 1) {
-                            navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), collectionHierarchyField,
-                                    DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionHierarchyField));
-                        }
-                    }
-                    int weight = NavigationHelper.WEIGHT_OPEN_DOCUMENT;
-                    IMetadataValue anchorName = null;
-                    if (isVolume() && viewManager.getAnchorPi() != null) {
-                        logger.trace("anchor breadcrumb");
-                        // Anchor breadcrumb
-                        StructElement anchorDocument = viewManager.getTopDocument().getParent();
-                        anchorName = anchorDocument.getMultiLanguageDisplayLabel();
-                        for (String language : anchorName.getLanguages()) {
-                            String translation = anchorName.getValue(language).orElse("");
-                            if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                                translation = new StringBuilder(
-                                        translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping())).append("...")
-                                                .toString();
-                                anchorName.setValue(translation, language);
-                            }
-                        }
-                        PageType pageType = PageType.determinePageType(anchorDocument.getDocStructType(), null, true, false, false);
-                        String anchorUrl = '/' + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
-                        navigationHelper.updateBreadcrumbs(
-                                new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
-                    }
-                    // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate
-                    if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
-                        StringBuilder sb = new StringBuilder(name.getValue().get());
-                        sb.append(" (");
-                        if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO) != null) {
-                            sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO));
-                        } else if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNOSORT) != null) {
-                            sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNOSORT));
-                        }
-                        sb.append(')');
-                        name.setValue(sb.toString());
-                    }
-                    // Volume/monograph breadcrumb
-                    navigationHelper
-                            .updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
+                    breadcrumbBean.addRecordBreadcrumbs(viewManager, name, url);
                 }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
@@ -528,7 +493,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>openFulltext.</p>
+     * <p>
+     * openFulltext.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
@@ -544,7 +511,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>prevHit</code>.</p>
+     * <p>
+     * Getter for the field <code>prevHit</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.search.BrowseElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -561,7 +530,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>nextHit</code>.</p>
+     * <p>
+     * Getter for the field <code>nextHit</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.search.BrowseElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -591,7 +562,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentElement.</p>
+     * <p>
+     * getCurrentElement.
+     * </p>
      *
      * @return the currentElement
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -605,7 +578,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>imageToShow</code>.</p>
+     * <p>
+     * Setter for the field <code>imageToShow</code>.
+     * </p>
      *
      * @param imageToShow the imageToShow to set
      */
@@ -622,7 +597,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>imageToShow</code>.</p>
+     * <p>
+     * Getter for the field <code>imageToShow</code>.
+     * </p>
      *
      * @return the imageToShow
      */
@@ -631,7 +608,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>titleBarMetadata</code>.</p>
+     * <p>
+     * Getter for the field <code>titleBarMetadata</code>.
+     * </p>
      *
      * @return the titleBarMetadata
      */
@@ -640,7 +619,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>logid</code>.</p>
+     * <p>
+     * Setter for the field <code>logid</code>.
+     * </p>
      *
      * @param logid the logid to set
      */
@@ -655,7 +636,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>logid</code>.</p>
+     * <p>
+     * Getter for the field <code>logid</code>.
+     * </p>
      *
      * @return the logid
      */
@@ -668,7 +651,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>isAnchor.</p>
+     * <p>
+     * isAnchor.
+     * </p>
      *
      * @return the anchor
      */
@@ -677,7 +662,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>anchor</code>.</p>
+     * <p>
+     * Setter for the field <code>anchor</code>.
+     * </p>
      *
      * @param anchor the anchor to set
      */
@@ -686,7 +673,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>isVolume.</p>
+     * <p>
+     * isVolume.
+     * </p>
      *
      * @return a boolean.
      */
@@ -695,7 +684,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>isGroup.</p>
+     * <p>
+     * isGroup.
+     * </p>
      *
      * @return a boolean.
      */
@@ -704,7 +695,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>action</code>.</p>
+     * <p>
+     * Getter for the field <code>action</code>.
+     * </p>
      *
      * @return the action
      */
@@ -713,7 +706,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>action</code>.</p>
+     * <p>
+     * Setter for the field <code>action</code>.
+     * </p>
      *
      * @param action the action to set
      */
@@ -739,7 +734,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>setPersistentIdentifier.</p>
+     * <p>
+     * setPersistentIdentifier.
+     * </p>
      *
      * @param persistentIdentifier a {@link java.lang.String} object.
      * @should determine currentElementIddoc correctly
@@ -790,7 +787,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getThumbPart.</p>
+     * <p>
+     * getThumbPart.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -808,7 +807,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getLogPart.</p>
+     * <p>
+     * getLogPart.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -865,7 +866,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @param page a int.
      * @return a {@link java.lang.String} object.
@@ -876,7 +879,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -893,7 +898,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -912,7 +919,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getFirstPageUrl.</p>
+     * <p>
+     * getFirstPageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -926,7 +935,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getLastPageUrl.</p>
+     * <p>
+     * getLastPageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -940,7 +951,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPreviousPageUrl.</p>
+     * <p>
+     * getPreviousPageUrl.
+     * </p>
      *
      * @param step a int.
      * @return a {@link java.lang.String} object.
@@ -955,7 +968,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getNextPageUrl.</p>
+     * <p>
+     * getNextPageUrl.
+     * </p>
      *
      * @param step a int.
      * @return a {@link java.lang.String} object.
@@ -970,7 +985,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPreviousPageUrl.</p>
+     * <p>
+     * getPreviousPageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -980,7 +997,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getNextPageUrl.</p>
+     * <p>
+     * getNextPageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -990,7 +1009,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getImageUrl.</p>
+     * <p>
+     * getImageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1000,7 +1021,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getFullscreenImageUrl.</p>
+     * <p>
+     * getFullscreenImageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1010,7 +1033,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getReadingModeUrl.</p>
+     * <p>
+     * getReadingModeUrl.
+     * </p>
      *
      * @deprecated renamed to fullscreen
      * @return a {@link java.lang.String} object.
@@ -1021,7 +1046,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getFulltextUrl.</p>
+     * <p>
+     * getFulltextUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1031,7 +1058,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getMetadataUrl.</p>
+     * <p>
+     * getMetadataUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1041,7 +1070,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getTopDocument.</p>
+     * <p>
+     * getTopDocument.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
@@ -1054,7 +1085,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>setChildrenVisible.</p>
+     * <p>
+     * setChildrenVisible.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1073,7 +1106,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>setChildrenInvisible.</p>
+     * <p>
+     * setChildrenInvisible.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.toc.TOCElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1116,7 +1151,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>toc</code>.</p>
+     * <p>
+     * Getter for the field <code>toc</code>.
+     * </p>
      *
      * @return the toc
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1132,7 +1169,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>tocCurrentPage</code>.</p>
+     * <p>
+     * Getter for the field <code>tocCurrentPage</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -1141,7 +1180,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>tocCurrentPage</code>.</p>
+     * <p>
+     * Setter for the field <code>tocCurrentPage</code>.
+     * </p>
      *
      * @param tocCurrentPage a int.
      * @should set toc page to last page if value too high
@@ -1176,7 +1217,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getTitleBarLabel.</p>
+     * <p>
+     * getTitleBarLabel.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.lang.String} object.
@@ -1191,7 +1234,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getTitleBarLabel.</p>
+     * <p>
+     * getTitleBarLabel.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1209,7 +1254,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getTitleBarLabel.</p>
+     * <p>
+     * getTitleBarLabel.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1273,7 +1320,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>imageContainerWidth</code>.</p>
+     * <p>
+     * Getter for the field <code>imageContainerWidth</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -1282,7 +1331,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getNumberOfImages.</p>
+     * <p>
+     * getNumberOfImages.
+     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1296,7 +1347,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>topDocumentIddoc</code>.</p>
+     * <p>
+     * Getter for the field <code>topDocumentIddoc</code>.
+     * </p>
      *
      * @return Not this.topDocumentIddoc but ViewManager.topDocumentIddoc
      */
@@ -1347,7 +1400,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>deleteRecordAction.</p>
+     * <p>
+     * deleteRecordAction.
+     * </p>
      *
      * @param keepTraceDocument If true, a .delete file will be created; otherwise a .purge file
      * @return outcome
@@ -1378,7 +1433,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentThumbnailPage.</p>
+     * <p>
+     * getCurrentThumbnailPage.
+     * </p>
      *
      * @return a int.
      */
@@ -1387,7 +1444,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>setCurrentThumbnailPage.</p>
+     * <p>
+     * setCurrentThumbnailPage.
+     * </p>
      *
      * @param currentThumbnailPage a int.
      */
@@ -1400,7 +1459,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>isHasLanguages.</p>
+     * <p>
+     * isHasLanguages.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1409,7 +1470,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>recordLanguages</code>.</p>
+     * <p>
+     * Getter for the field <code>recordLanguages</code>.
+     * </p>
      *
      * @return the recordLanguages
      */
@@ -1418,7 +1481,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>recordLanguages</code>.</p>
+     * <p>
+     * Setter for the field <code>recordLanguages</code>.
+     * </p>
      *
      * @param recordLanguages the recordLanguages to set
      */
@@ -1427,7 +1492,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>selectedRecordLanguage</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedRecordLanguage</code>.
+     * </p>
      *
      * @return the selectedRecordLanguage
      */
@@ -1436,7 +1503,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>selectedRecordLanguage</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedRecordLanguage</code>.
+     * </p>
      *
      * @param selectedRecordLanguage the selectedRecordLanguage to set
      */
@@ -1462,7 +1531,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>isAccessPermissionEpub.</p>
+     * <p>
+     * isAccessPermissionEpub.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1484,7 +1555,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>isAccessPermissionPdf.</p>
+     * <p>
+     * isAccessPermissionPdf.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1527,7 +1600,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>downloadTOCAction.</p>
+     * <p>
+     * downloadTOCAction.
+     * </p>
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1558,7 +1633,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getRelatedItems.</p>
+     * <p>
+     * getRelatedItems.
+     * </p>
      *
      * @param identifierField Index field containing related item identifiers
      * @return List of related items as SearchHit objects.
@@ -1683,8 +1760,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * resets the access rights for user comments and pdf download stored in {@link io.goobi.viewer.model.viewer.ViewManager}. After reset, the access rights will be evaluated
-     * again on being called
+     * resets the access rights for user comments and pdf download stored in {@link io.goobi.viewer.model.viewer.ViewManager}. After reset, the access
+     * rights will be evaluated again on being called
      */
     public void resetAccess() {
         if (getViewManager() != null) {
@@ -1694,7 +1771,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>deleteRecordKeepTrace</code>.</p>
+     * <p>
+     * Getter for the field <code>deleteRecordKeepTrace</code>.
+     * </p>
      *
      * @return the deleteRecordKeepTrace
      */
@@ -1703,7 +1782,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>deleteRecordKeepTrace</code>.</p>
+     * <p>
+     * Setter for the field <code>deleteRecordKeepTrace</code>.
+     * </p>
      *
      * @param deleteRecordKeepTrace the deleteRecordKeepTrace to set
      */

@@ -47,9 +47,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.BrowseTerm;
+import io.goobi.viewer.model.viewer.BrowseTerm.BrowseTermRawComparator;
 import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.CollectionView;
-import io.goobi.viewer.model.viewer.BrowseTerm.BrowseTermRawComparator;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 
 /**
@@ -64,7 +64,7 @@ public class BrowseBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(BrowseBean.class);
 
     @Inject
-    private NavigationHelper navigationHelper;
+    private BreadcrumbBean breadcrumbBean;
     @Inject
     private SearchBean searchBean;
 
@@ -104,10 +104,10 @@ public class BrowseBean implements Serializable {
     /**
      * Required setter for ManagedProperty injection
      *
-     * @param navigationHelper the navigationHelper to set
+     * @param breadcrumbBean the breadcrumbBean to set
      */
-    public void setNavigationHelper(NavigationHelper navigationHelper) {
-        this.navigationHelper = navigationHelper;
+    public void setBreadcrumbBean(BreadcrumbBean breadcrumbBean) {
+        this.breadcrumbBean = breadcrumbBean;
     }
 
     /**
@@ -138,7 +138,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>resetAllLists.</p>
+     * <p>
+     * resetAllLists.
+     * </p>
      */
     public void resetAllLists() {
         for (String field : collections.keySet()) {
@@ -147,7 +149,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>resetDcList.</p>
+     * <p>
+     * resetDcList.
+     * </p>
      */
     public void resetDcList() {
         logger.trace("resetDcList");
@@ -155,7 +159,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>resetList.</p>
+     * <p>
+     * resetList.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      */
@@ -169,7 +175,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getDcList.</p>
+     * <p>
+     * getDcList.
+     * </p>
      *
      * @return the dcList (Collections)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -179,7 +187,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getList.</p>
+     * <p>
+     * getList.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -190,7 +200,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getList.</p>
+     * <p>
+     * getList.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param depth a int.
@@ -213,7 +225,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>populateCollection.</p>
+     * <p>
+     * populateCollection.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -225,7 +239,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getVisibleDcList.</p>
+     * <p>
+     * getVisibleDcList.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -252,7 +268,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>collectionToExpand</code>.</p>
+     * <p>
+     * Getter for the field <code>collectionToExpand</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -261,7 +279,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>collectionToExpand</code>.</p>
+     * <p>
+     * Setter for the field <code>collectionToExpand</code>.
+     * </p>
      *
      * @param collectionToExpand a {@link java.lang.String} object.
      */
@@ -273,7 +293,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>topVisibleCollection</code>.</p>
+     * <p>
+     * Getter for the field <code>topVisibleCollection</code>.
+     * </p>
      *
      * @return the topVisibleCollecion
      */
@@ -285,7 +307,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>topVisibleCollection</code>.</p>
+     * <p>
+     * Setter for the field <code>topVisibleCollection</code>.
+     * </p>
      *
      * @param topVisibleCollecion the topVisibleCollecion to set
      */
@@ -304,7 +328,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>expandCollection.</p>
+     * <p>
+     * expandCollection.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param facetField a {@link java.lang.String} object.
@@ -322,7 +348,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>searchTerms.</p>
+     * <p>
+     * searchTerms.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -331,8 +359,8 @@ public class BrowseBean implements Serializable {
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {
             logger.trace("searchTerms");
-            if (navigationHelper != null) {
-                navigationHelper.updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
+            if (breadcrumbBean != null) {
+                breadcrumbBean.updateBreadcrumbsWithCurrentUrl("browseTitle", BreadcrumbBean.WEIGHT_SEARCH_TERMS);
             }
             if (searchBean != null) {
                 searchBean.setSearchString("");
@@ -435,7 +463,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>browsingMenuField</code>.</p>
+     * <p>
+     * Getter for the field <code>browsingMenuField</code>.
+     * </p>
      *
      * @return the browsingMenuField
      */
@@ -448,7 +478,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>browsingMenuField</code>.</p>
+     * <p>
+     * Setter for the field <code>browsingMenuField</code>.
+     * </p>
      *
      * @param browsingMenuField the browsingMenuField to set
      */
@@ -466,7 +498,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>browseTermList</code>.</p>
+     * <p>
+     * Getter for the field <code>browseTermList</code>.
+     * </p>
      *
      * @return the browseTermList
      */
@@ -475,7 +509,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>browseTermListEscaped</code>.</p>
+     * <p>
+     * Getter for the field <code>browseTermListEscaped</code>.
+     * </p>
      *
      * @return the browseTermListEscaped
      */
@@ -484,7 +520,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>browseTermHitCountList</code>.</p>
+     * <p>
+     * Getter for the field <code>browseTermHitCountList</code>.
+     * </p>
      *
      * @return the browseTermHitCountList
      */
@@ -493,7 +531,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getPrevTermUrl.</p>
+     * <p>
+     * getPrevTermUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -512,7 +552,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getNextTermUrl.</p>
+     * <p>
+     * getNextTermUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -531,7 +573,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>availableStringFilters</code>.</p>
+     * <p>
+     * Getter for the field <code>availableStringFilters</code>.
+     * </p>
      *
      * @return the availableStringFilters
      */
@@ -540,7 +584,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentStringFilter</code>.</p>
+     * <p>
+     * Getter for the field <code>currentStringFilter</code>.
+     * </p>
      *
      * @return the currentStringFilter
      */
@@ -552,7 +598,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentStringFilter</code>.</p>
+     * <p>
+     * Setter for the field <code>currentStringFilter</code>.
+     * </p>
      *
      * @param currentStringFilter the currentStringFilter to set
      */
@@ -570,7 +618,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>filterQuery</code>.</p>
+     * <p>
+     * Getter for the field <code>filterQuery</code>.
+     * </p>
      *
      * @return the filterQuery
      */
@@ -582,7 +632,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>filterQuery</code>.</p>
+     * <p>
+     * Setter for the field <code>filterQuery</code>.
+     * </p>
      *
      * @param filterQuery the filterQuery to set
      */
@@ -591,7 +643,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentPageResetFilter.</p>
+     * <p>
+     * getCurrentPageResetFilter.
+     * </p>
      *
      * @return a int.
      */
@@ -614,7 +668,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentPage</code>.</p>
+     * <p>
+     * Getter for the field <code>currentPage</code>.
+     * </p>
      *
      * @return the currentPage
      */
@@ -623,7 +679,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentPage</code>.</p>
+     * <p>
+     * Setter for the field <code>currentPage</code>.
+     * </p>
      *
      * @param currentPage the currentPage to set
      */
@@ -634,7 +692,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getLastPage.</p>
+     * <p>
+     * getLastPage.
+     * </p>
      *
      * @return a int.
      */
@@ -650,7 +710,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>isBrowsingMenuEnabled.</p>
+     * <p>
+     * isBrowsingMenuEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -659,7 +721,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getBrowsingMenuItems.</p>
+     * <p>
+     * getBrowsingMenuItems.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return List of browsing menu items
@@ -682,7 +746,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>targetCollection</code>.</p>
+     * <p>
+     * Getter for the field <code>targetCollection</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -691,7 +757,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>targetCollection</code>.</p>
+     * <p>
+     * Setter for the field <code>targetCollection</code>.
+     * </p>
      *
      * @param targetCollection a {@link java.lang.String} object.
      */
@@ -700,7 +768,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>openWorkInTargetCollection.</p>
+     * <p>
+     * openWorkInTargetCollection.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -717,7 +787,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getDcCollection.</p>
+     * <p>
+     * getDcCollection.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      */
@@ -726,7 +798,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>getCollection.</p>
+     * <p>
+     * getCollection.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
@@ -736,7 +810,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>initializeDCCollection.</p>
+     * <p>
+     * initializeDCCollection.
+     * </p>
      */
     public void initializeDCCollection() {
         initializeCollection(SolrConstants.DC, SolrConstants.FACET_DC);
@@ -762,7 +838,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>collectionField</code>.</p>
+     * <p>
+     * Getter for the field <code>collectionField</code>.
+     * </p>
      *
      * @return the collectionField
      */
@@ -771,7 +849,9 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>collectionField</code>.</p>
+     * <p>
+     * Setter for the field <code>collectionField</code>.
+     * </p>
      *
      * @param collectionField the collectionField to set
      */

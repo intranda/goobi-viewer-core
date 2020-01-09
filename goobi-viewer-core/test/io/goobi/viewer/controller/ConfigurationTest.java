@@ -809,6 +809,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isAdaptRepositoryPathsForWindows()
+     * @verifies return correct value
+     */
+    @Test
+    public void isAdaptRepositoryPathsForWindows_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdaptRepositoryPathsForWindows());
+    }
+
+    /**
      * @see Configuration#getSubthemeMainTheme()
      * @verifies return correct value
      */
