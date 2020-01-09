@@ -55,14 +55,17 @@
 						</div>
 						
 						<!-- SHARES -->
-						<div class="form-group">
-						    <label for="editBookmarkListGroupShares" class="col-sm-2 control-label">#{msg.bookmarkList_groupShares}:</label>
-						    <div class="col-sm-10">
-						        <h:selectManyMenu id="editBookmarkListGroupShares" styleClass="form-control" value="#{bookmarkBean.currentBookmarkList.groupShares}">
-						          <f:selectItems value="#{userBean.user.allUserGroups}"></f:selectItems>
-						        </h:selectManyMenu>
+						<ui:fragment rendered="#{!userBean.user.allUserGroups.isEmpty()}">
+						    <div class="form-group">
+						        <label for="editBookmarkListGroupShares" class="col-sm-2 control-label">#{msg.bookmarkList_groupShares}:</label>
+						        <div class="col-sm-10">
+						            <h:selectManyMenu id="editBookmarkListGroupShares" styleClass="form-control"
+						                value="#{bookmarkBean.currentBookmarkList.groupShares}">
+						                <f:selectItems value="#{userBean.user.allUserGroups}"></f:selectItems>
+						            </h:selectManyMenu>
+						        </div>
 						    </div>
-						</div>
+						</ui:fragment>
 						
 											
 						<!-- ACTION -->
