@@ -121,72 +121,12 @@
         	    }
         	}
         }
-                
-        var areaSelect;
-        function selectImageArea(button) {
-            console.log("select image area ", button);
-            $(button).addClass("active");
-            areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
-        }
-   		function openShareAreaPopup(area, triggerElement) {
-   		 	areaSelect.stopSelect();
-  		     $(triggerElement).removeClass("active");
-   		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
-   		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
-   		 	var imageUrl = viewImage.getConfig().image.tileSource;
-   		 	if(Array.isArray(imageUrl)) {
-   		 	    imageUrl = imageUrl[0];
-   		 	}
-   		 	imageUrl = imageUrl.replace("info.json", areaString + "/max/" + viewImage.getRotation() + "/default.jpg");
-   		    let popup = new viewerJS.Popup($("body"), $("#share-image-area-popup"), {
-   		        center: "center",
-   		        top: "top",
-   		        offset: {
-   		            top: window.screen.height/2,
-   		            left: 0
-   		        }
-   		    })
-   		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl);
-   		    $("[data-copy='image-region-page']").text(pageUrl);
-   		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl);
-   		    $("[data-copy='image-region-image']").text(imageUrl);
-   		    $('body').one("click", function() {
-   		     	if(areaSelect) {
-   		     	    areaSelect.remove(0);
-   		     	}
-   		    })
-   		    $("[data-copy]").one("click", function(event) {
-   		        console.log("popup click")
-   		     	popup.$popup.off();
-   		     	popup.$popup.remove();
-                $('body').off("click.popup");
-   		    })
-   		}
-        
+
        	// desktop object view
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
-           	    
-           		// init area select
-           		try {           		    
-	           		let $cssTemplate = $("<div class='image-fragment'></div>");
-	           		console.log("$cssTemplat", $cssTemplate, "color: " + $cssTemplate.css("border-color"))
-	           		var areaSelectConfig = {
-	           		     removeOldAreas : true,
-	                     drawStyle : {
-	                         borderColor: "#FF2523",
-	                         borderWidth: 2,
-	                         fillColor: "rgba(255,255,255,0.3)",
-// 	                         borderColor: $cssTemplate.css("border-color"),
-// 	                         borderWidth: parseInt($cssTemplate.css("border-width")),
-// 	                         fillColor: $cssTemplate.css("background-color"),
-	                     }
-	           		};
-	           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
-           		} catch(error) {
-           		    console.error("Error initializing area select: ", error);
-           		}
+           	 initImageAreaSelect(image);
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
@@ -207,6 +147,73 @@
        	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'fullscreen' ) {
        		$( "#imageContainerMobileOverlay" ).show();
        	}
+       	
+        var areaSelect;
+       	if(viewImage) {
+            function selectImageArea(button) {
+                if(areaSelect) {
+	                console.log("select image area ", button);
+	                $(button).addClass("active");
+	                areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
+                }
+            }
+       		function openShareAreaPopup(area, triggerElement) {
+       		    if(areaSelect) {
+	       		 	areaSelect.stopSelect();
+	      		     $(triggerElement).removeClass("active");
+	       		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
+	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
+	       		 	var imageUrl = viewImage.getConfig().image.tileSource;
+	       		 	if(Array.isArray(imageUrl)) {
+	       		 	    imageUrl = imageUrl[0];
+	       		 	}
+	       		 	imageUrl = imageUrl.replace("info.json", areaString + "/max/" + viewImage.getRotation() + "/default.jpg");
+	       		    let popup = new viewerJS.Popup($("body"), $("#share-image-area-popup"), {
+	       		        center: "center",
+	       		        top: "top",
+	       		        offset: {
+	       		            top: window.screen.height/2,
+	       		            left: 0
+	       		        }
+	       		    })
+	       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl);
+	       		    $("[data-copy='image-region-page']").text(pageUrl);
+	       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl);
+	       		    $("[data-copy='image-region-image']").text(imageUrl);
+	       		    $('body').one("click", function() {
+	       		     	if(areaSelect) {
+	       		     	    areaSelect.remove(0);
+	       		     	}
+	       		    })
+	       		    $("[data-copy]").one("click", function(event) {
+	       		        console.log("popup click")
+	       		     	popup.$popup.off();
+	       		     	popup.$popup.remove();
+	                    $('body').off("click.popup");
+	       		    })
+       		    }
+       		}
+			function initImageAreaSelect(image) {
+			    console.log("initImageAreaSelect", image);
+           		// init area select
+           		try { 
+					let styles = viewerJS.helper.getCss("image-fragment", ['borderTopColor', 'borderTopWidth', 'background-color']);
+					console.log("styles for image-fragment", styles);
+	           		var areaSelectConfig = {
+	           		     removeOldAreas : true,
+	                     drawStyle : {
+	                         borderColor: styles["borderTopColor"],
+	                         borderWidth: parseInt(styles["borderTopWidth"]),
+	                         fillColor: styles["background-color"],
+	                     }
+	           		};
+	           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
+           		} catch(error) {
+           		    console.error("Error initializing area select: ", error);
+           		}
+			}
+       	}
+       	
       	//]]>
     </script>
 </ui:composition>
