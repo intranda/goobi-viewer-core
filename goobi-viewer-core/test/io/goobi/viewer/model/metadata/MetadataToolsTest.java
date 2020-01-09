@@ -50,4 +50,13 @@ public class MetadataToolsTest {
         Assert.assertEquals(MetadataGroupType.CONFERENCE.name(), MetadataTools.findMetadataGroupType("viz"));
         Assert.assertEquals(MetadataGroupType.RECORD.name(), MetadataTools.findMetadataGroupType("wiz"));
     }
+
+    /**
+     * @see MetadataTools#convertLanguageToIso2(String)
+     * @verifies return original value if language not found
+     */
+    @Test
+    public void convertLanguageToIso2_shouldReturnOriginalValueIfLanguageNotFound() throws Exception {
+        Assert.assertEquals("###", MetadataTools.convertLanguageToIso2("###"));
+    }
 }

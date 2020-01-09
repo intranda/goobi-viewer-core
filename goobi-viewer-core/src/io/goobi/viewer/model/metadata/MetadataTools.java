@@ -422,6 +422,7 @@ public class MetadataTools {
      *
      * @param language a {@link java.lang.String} object.
      * @return ISO-2 representation; original string if none found
+     * @should return original value if language not found
      */
     public static String convertLanguageToIso2(String language) {
         if (language == null) {
