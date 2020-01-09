@@ -533,7 +533,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>getLocaleString.</p>
+     * <p>Returns the language code of the current <code>locale</code> in the ISO 639-1 (two-character) format.</p>
      *
      * @return a {@link java.lang.String} object.
      */
