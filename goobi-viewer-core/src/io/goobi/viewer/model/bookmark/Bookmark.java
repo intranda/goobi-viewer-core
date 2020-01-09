@@ -245,9 +245,9 @@ public class Bookmark implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getUrl() throws PresentationException, IndexUnreachableException {
-        if (url != null) {
-            return url;
-        }
+//        if (url != null) {
+//            return url;
+//        }
 
         StringBuilder sb = new StringBuilder();
         sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());

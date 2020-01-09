@@ -123,8 +123,14 @@
         }
                 
         var areaSelect;
+        function selectImageArea(button) {
+            console.log("select image area ", button);
+            $(button).addClass("active");
+            areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
+        }
    		function openShareAreaPopup(area, triggerElement) {
    		 	areaSelect.stopSelect();
+  		     $(triggerElement).removeClass("active");
    		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
    		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
    		 	var imageUrl = viewImage.getConfig().image.tileSource;
@@ -163,15 +169,24 @@
            	viewImage.load().then( function( image ) {
            	    
            		// init area select
-           		var areaSelectConfig = {
-           		     removeOldAreas : true,
-                     drawStyle : {
-                         borderColor: "#0000ff",
-                         borderWidth: 2,
-                         fillColor: "rgba(255,255,255,0.4)",
-                     }
-           		};
-           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
+           		try {           		    
+	           		let $cssTemplate = $("<div class='image-fragment'></div>");
+	           		console.log("$cssTemplat", $cssTemplate, "color: " + $cssTemplate.css("border-color"))
+	           		var areaSelectConfig = {
+	           		     removeOldAreas : true,
+	                     drawStyle : {
+	                         borderColor: "#FF2523",
+	                         borderWidth: 2,
+	                         fillColor: "rgba(255,255,255,0.3)",
+// 	                         borderColor: $cssTemplate.css("border-color"),
+// 	                         borderWidth: parseInt($cssTemplate.css("border-width")),
+// 	                         fillColor: $cssTemplate.css("background-color"),
+	                     }
+	           		};
+	           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
+           		} catch(error) {
+           		    console.error("Error initializing area select: ", error);
+           		}
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );

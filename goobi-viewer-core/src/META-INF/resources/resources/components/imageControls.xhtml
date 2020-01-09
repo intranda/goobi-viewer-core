@@ -339,7 +339,7 @@
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                             <li class="image-controls__option share-image-region">
                                 <a title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="bottom"
-                                onclick="areaSelect.startSelect().then( area => openShareAreaPopup(area, this) )">
+                                onclick="selectImageArea(this)">
 	                                    <i class="fa fa-crop" aria-hidden="true"></i>
                                 </a>
                             </li>
