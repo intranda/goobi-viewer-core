@@ -62,7 +62,9 @@ public class FileTools {
     };
 
     /**
-     * <p>getStringFromFilePath.</p>
+     * <p>
+     * getStringFromFilePath.
+     * </p>
      *
      * @param filePath a {@link java.lang.String} object.
      * @should read text file correctly
@@ -212,7 +214,9 @@ public class FileTools {
     }
 
     /**
-     * <p>decompressGzipFile.</p>
+     * <p>
+     * decompressGzipFile.
+     * </p>
      *
      * @param gzipFile a {@link java.io.File} object.
      * @param newFile a {@link java.io.File} object.
@@ -232,7 +236,9 @@ public class FileTools {
     }
 
     /**
-     * <p>compressGzipFile.</p>
+     * <p>
+     * compressGzipFile.
+     * </p>
      *
      * @param file a {@link java.io.File} object.
      * @param gzipFile a {@link java.io.File} object.
@@ -252,7 +258,9 @@ public class FileTools {
     }
 
     /**
-     * <p>compressZipFile.</p>
+     * <p>
+     * compressZipFile.
+     * </p>
      *
      * @param files Source files
      * @param zipFile Target file
@@ -287,7 +295,9 @@ public class FileTools {
     }
 
     /**
-     * <p>compressZipFile.</p>
+     * <p>
+     * compressZipFile.
+     * </p>
      *
      * @param zipFile a {@link java.io.File} object.
      * @param level a {@link java.lang.Integer} object.
@@ -322,7 +332,9 @@ public class FileTools {
     }
 
     /**
-     * <p>checkPathExistance.</p>
+     * <p>
+     * checkPathExistance.
+     * </p>
      *
      * @param path a {@link java.nio.file.Path} object.
      * @param create a boolean.
@@ -347,7 +359,9 @@ public class FileTools {
     }
 
     /**
-     * <p>copyStream.</p>
+     * <p>
+     * copyStream.
+     * </p>
      *
      * @param output a {@link java.io.OutputStream} object.
      * @param input a {@link java.io.InputStream} object.
@@ -362,7 +376,9 @@ public class FileTools {
     }
 
     /**
-     * <p>isFolderEmpty.</p>
+     * <p>
+     * isFolderEmpty.
+     * </p>
      *
      * @param folder a {@link java.nio.file.Path} object.
      * @return true if folder empty; false otherwise
@@ -375,15 +391,20 @@ public class FileTools {
     }
 
     /**
-     * <p>adaptPathForWindows.</p>
+     * <p>
+     * adaptPathForWindows.
+     * </p>
      *
-     * @param path Absolute ath to adapt
+     * @param path Absolute path to adapt
      * @return Windows-compatible path on Windows; unchanged path elsewhere
      */
     public static String adaptPathForWindows(String path) {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0 && path.startsWith("/opt/")) {
             path = path.replace("/opt", "C:");
+        } else if (os.indexOf("win") >= 0 && path.startsWith("file:///C:/opt/")) {
+            // In case Paths.get() automatically adds "C:" to Unix paths on Windows machines, remove the "C:"
+            path = path.replace("/C:", "");
         }
         return path;
     }

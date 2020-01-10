@@ -55,6 +55,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -698,10 +699,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getImageURI() {
-
+	    // Path.get() adds a "C:" to Unix paths. This must be prevented when using an external API in a Windows dev environment.
 		Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
 				DataManager.getInstance().getConfiguration().getCmsMediaFolder(), getFileName());
-		return path.toUri().toString();
+		return FileTools.adaptPathForWindows(path.toUri().toString());
 
 		// StringBuilder imageUrlBuilder = new StringBuilder("file:/");
 		//
