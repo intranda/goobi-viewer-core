@@ -55,6 +55,8 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -1365,10 +1367,14 @@ public class NavigationHelper implements Serializable {
      *
      * @param cmsPage The CMS page from which to create a breadcrumb
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
      * @deprecated Use <code>BreadcrumbBean</code> directly.
      */
     @Deprecated
-    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
+    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException, RecordNotFoundException, IndexUnreachableException, ViewerConfigurationException, RecordDeletedException {
         breadcrumbBean.updateBreadcrumbs(cmsPage);
     }
 

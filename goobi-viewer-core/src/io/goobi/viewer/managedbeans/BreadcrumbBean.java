@@ -43,7 +43,11 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordDeletedException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.viewer.CompoundLabeledLink;
@@ -158,11 +162,16 @@ public class BreadcrumbBean implements Serializable {
 
     /**
      * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
-     *
+     * 
      * @param cmsPage The CMS page from which to create a breadcrumb
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
      */
-    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
+    public void updateBreadcrumbs(CMSPage cmsPage)
+            throws RecordNotFoundException, RecordDeletedException, DAOException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("updateBreadcrumbs (CMSPage): {}", cmsPage.getTitle());
 
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
@@ -170,9 +179,17 @@ public class BreadcrumbBean implements Serializable {
         try {
             // If the CMS page is part of a record, add a breadcrumb after said record and abort
             if (StringUtils.isNotBlank(cmsPage.getRelatedPI())) {
-                // TODO
-//                ViewManager viewManager = new ViewManager();
-//                addRecordBreadcrumbs(viewManager);
+                // TODO Find a way without having a cyclic dependency
+                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+                if (adb != null) {
+                    try {
+                        adb.setPersistentIdentifier(cmsPage.getRelatedPI());
+                        adb.open();
+                    } catch (PresentationException e) {
+                        logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                        Messages.error(e.getMessage());
+                    }
+                }
                 weight = this.breadcrumbs.get(this.breadcrumbs.size() - 1).getWeight() + 1;
                 tempBreadcrumbs.add(new LabeledLink(StringUtils.isNotBlank(cmsPage.getMenuTitle()) ? cmsPage.getMenuTitle() : cmsPage.getTitle(),
                         cmsPage.getPageUrl(), weight));
@@ -341,11 +358,12 @@ public class BreadcrumbBean implements Serializable {
      * @param viewManager
      * @param name
      * @param url
-     * @throws IndexUnreachableException 
-     * @throws DAOException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    public void addRecordBreadcrumbs(ViewManager viewManager, IMetadataValue name, URL url) throws IndexUnreachableException, PresentationException, DAOException {
+    public void addRecordBreadcrumbs(ViewManager viewManager, IMetadataValue name, URL url)
+            throws IndexUnreachableException, PresentationException, DAOException {
         // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
         String collectionHierarchyField = DataManager.getInstance().getConfiguration().getCollectionHierarchyField();
         if (collectionHierarchyField != null) {
@@ -399,18 +417,18 @@ public class BreadcrumbBean implements Serializable {
      * @param linkWeight a int.
      * @param url a {@link java.lang.String} object.
      */
-//    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
-//        if (linkWeight < 0) {
-//            return;
-//        }
-//        PageType page = PageType.getByName(url);
-//        if (page != null && !page.equals(PageType.other)) {
-//            url = getUrl(page);
-//        } else {
-//        }
-//        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
-//        updateBreadcrumbs(newLink);
-//    }
+    //    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+    //        if (linkWeight < 0) {
+    //            return;
+    //        }
+    //        PageType page = PageType.getByName(url);
+    //        if (page != null && !page.equals(PageType.other)) {
+    //            url = getUrl(page);
+    //        } else {
+    //        }
+    //        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
+    //        updateBreadcrumbs(newLink);
+    //    }
 
     /**
      * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
