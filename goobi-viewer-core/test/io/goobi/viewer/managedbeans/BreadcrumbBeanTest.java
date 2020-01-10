@@ -4,10 +4,10 @@ package io.goobi.viewer.managedbeans;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.model.viewer.LabeledLink;
 
-public class BreadcrumbBeanTest extends AbstractTest {
+public class BreadcrumbBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see BreadcrumbBean#addCollectionHierarchyToBreadcrumb(String,String,String)
