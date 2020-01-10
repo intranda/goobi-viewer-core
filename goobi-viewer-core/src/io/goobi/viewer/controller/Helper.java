@@ -1074,8 +1074,8 @@ public class Helper {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
-        if (!SolrConstants._METS.equals(format) && !SolrConstants._LIDO.equals(format)) {
-            throw new IllegalArgumentException("format must be METS or LIDO");
+        if (!SolrConstants._METS.equals(format) && !SolrConstants._LIDO.equals(format) && !SolrConstants._WORLDVIEWS.equals(format)) {
+            throw new IllegalArgumentException("format must be METS or LIDO or WORLDVIEWS");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
@@ -1085,6 +1085,9 @@ public class Helper {
                 break;
             case SolrConstants._LIDO:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
+                break;
+            case SolrConstants._WORLDVIEWS:
+                sb.append(DataManager.getInstance().getConfiguration().getTeiFolder());
                 break;
         }
         sb.append('/').append(fileName);
