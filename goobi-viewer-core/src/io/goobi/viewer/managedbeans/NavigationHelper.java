@@ -1377,7 +1377,6 @@ public class NavigationHelper implements Serializable {
      *
      * @param newLink The breadcrumb link to add.
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should always remove bookmarks coming after the proposed bookmark
      * 
      */
     @Deprecated
@@ -1437,7 +1436,6 @@ public class NavigationHelper implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should create breadcrumbs correctly
      */
     @Deprecated
     public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)

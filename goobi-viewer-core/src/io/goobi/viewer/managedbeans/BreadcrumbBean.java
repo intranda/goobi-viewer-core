@@ -112,7 +112,7 @@ public class BreadcrumbBean implements Serializable {
      * Attaches a new link to the breadcrumb list at the appropriate position (depending on the link's weight).
      *
      * @param newLink The breadcrumb link to add.
-     * @should always remove bookmarks coming after the proposed bookmark
+     * @should always remove breadcrumbs coming after the proposed breadcrumb
      */
     public void updateBreadcrumbs(LabeledLink newLink) {
         logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());

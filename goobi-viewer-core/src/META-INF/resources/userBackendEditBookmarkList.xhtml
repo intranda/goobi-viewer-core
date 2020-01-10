@@ -6,10 +6,10 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('editbookmarklist', false, true)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,'bookmarks',2)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name, navigationHelper.applicationUrl.concat('bookmarks/edit/').concat(bookmarkBean.currentBookmarkList.id),3)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_edit,4)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,'bookmarks',2)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name, navigationHelper.applicationUrl.concat('bookmarks/edit/').concat(bookmarkBean.currentBookmarkList.id),3)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_edit,4)}" />
 		</f:metadata>
 	</ui:define>
 
