@@ -46,7 +46,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        File webContent = new File("src/META-INF/resources/").getAbsoluteFile();
+        File webContent = new File("src/main/resources/META-INF/resources/").getAbsoluteFile();
         Assert.assertTrue(webContent.isDirectory());
         String webContentPath = webContent.toURI().toString();
         //        if (webContentPath.startsWith("file:/")) {

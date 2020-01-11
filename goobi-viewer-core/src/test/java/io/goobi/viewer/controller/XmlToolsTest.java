@@ -107,7 +107,7 @@ public class XmlToolsTest {
      */
     @Test
     public void readXmlFile_shouldBuildDocumentFromPathCorrectly() throws Exception {
-        Document doc = XmlTools.readXmlFile(Paths.get("resources/test/config_viewer.test.xml"));
+        Document doc = XmlTools.readXmlFile(Paths.get("src/test/resources/config_viewer.test.xml"));
         Assert.assertNotNull(doc);
         Assert.assertNotNull(doc.getRootElement());
     }
@@ -118,7 +118,7 @@ public class XmlToolsTest {
      */
     @Test
     public void readXmlFile_shouldBuildDocumentFromStringCorrectly() throws Exception {
-        Document doc = XmlTools.readXmlFile("resources/test/config_viewer.test.xml");
+        Document doc = XmlTools.readXmlFile("src/test/resources/config_viewer.test.xml");
         Assert.assertNotNull(doc);
         Assert.assertNotNull(doc.getRootElement());
     }
@@ -129,7 +129,7 @@ public class XmlToolsTest {
      */
     @Test
     public void readXmlFile_shouldBuildDocumentFromUrlCorrectly() throws Exception {
-        Document doc = XmlTools.readXmlFile(Paths.get("resources/test/config_viewer.test.xml").toUri().toURL());
+        Document doc = XmlTools.readXmlFile(Paths.get("src/test/resources/config_viewer.test.xml").toUri().toURL());
         Assert.assertNotNull(doc);
         Assert.assertNotNull(doc.getRootElement());
     }

@@ -37,7 +37,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
  */
 public class AltoSearchParserTest {
 
-    Path altoFile = Paths.get("resources/test/data/sample_alto.xml");
+    Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
     AltoDocument doc;
     AltoSearchParser parser = new AltoSearchParser();
     

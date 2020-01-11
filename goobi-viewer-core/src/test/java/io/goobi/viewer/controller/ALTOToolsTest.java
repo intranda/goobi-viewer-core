@@ -81,7 +81,7 @@ public class ALTOToolsTest {
 
     //    @Test
     //    public void testNERTags() throws IOException, JDOMException {
-    //        File testFile = new File("resources/test/data/altoWithTags.xml");
+    //        File testFile = new File("src/test/resources/data/altoWithTags.xml");
     //            String altoString = FileUtils.readFileToString(testFile);
     //            List<NERTag> tags = ALTOTools.getNERTags(altoString, null);
     //            for (NERTag nerTag : tags) {
@@ -91,7 +91,7 @@ public class ALTOToolsTest {
 
     @Test
     public void testGetWordCoords() throws IOException {
-        File testFile = new File("resources/test/data/sample_alto.xml");
+        File testFile = new File("src/test/resources/data/sample_alto.xml");
         String searchTerms = "105";
         int rotation = 0;
         int imageFooterHeight = 0;
@@ -131,7 +131,7 @@ public class ALTOToolsTest {
      */
     @Test
     public void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
-        File file = new File("resources/test/data/LIWZ_1877_01_05_001.xml");
+        File file = new File("src/test/resources/data/LIWZ_1877_01_05_001.xml");
         Assert.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, "utf-8");
         Assert.assertNotNull(alto);
@@ -146,7 +146,7 @@ public class ALTOToolsTest {
      */
     @Test
     public void getFullText_shouldExtractFulltextCorrectly() throws Exception {
-        File file = new File("resources/test/data/viewer/alto/00000010.xml");
+        File file = new File("src/test/resources/data/viewer/alto/00000010.xml");
         Assert.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, "utf-8");
         Assert.assertNotNull(alto);

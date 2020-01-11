@@ -45,7 +45,7 @@ public class FileToolsTest {
      */
     @Test
     public void getStringFromFile_shouldReadTextFileCorrectly() throws Exception {
-        File file = new File("resources/test/stopwords.txt");
+        File file = new File("src/test/resources/stopwords.txt");
         Assert.assertTrue(file.isFile());
         String contents = FileTools.getStringFromFile(file, null);
         Assert.assertTrue(StringUtils.isNotBlank(contents));
@@ -68,7 +68,7 @@ public class FileToolsTest {
      */
     @Test
     public void getStringFromFilePath_shouldReadTextFileCorrectly() throws Exception {
-        String contents = FileTools.getStringFromFilePath("resources/test/stopwords.txt");
+        String contents = FileTools.getStringFromFilePath("src/test/resources/stopwords.txt");
         Assert.assertTrue(StringUtils.isNotBlank(contents));
     }
 
@@ -140,7 +140,7 @@ public class FileToolsTest {
      */
     @Test
     public void getCharset_shouldDetectCharsetCorrectly() throws Exception {
-        File file = new File("resources/test/stopwords.txt");
+        File file = new File("src/test/resources/stopwords.txt");
         try (FileInputStream fis = new FileInputStream(file)) {
             Assert.assertEquals("UTF-8", FileTools.getCharset(fis));
         }

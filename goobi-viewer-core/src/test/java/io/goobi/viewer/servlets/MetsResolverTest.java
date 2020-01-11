@@ -48,7 +48,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         super.setUp();
 
         // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
         sr = new ServletRunner();
         sr.registerServlet(RESOLVER_NAME, MetsResolver.class.getName());

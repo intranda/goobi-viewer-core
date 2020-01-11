@@ -173,7 +173,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             synchronized (lock) {
                 // Bundle could have been initialized by a different thread in the meanwhile
                 if (!defaultBundles.containsKey(locale)) {
-                    defaultBundles.put(locale, ResourceBundle.getBundle("io.goobi.viewer.messages.messages", locale));
+                    defaultBundles.put(locale, ResourceBundle.getBundle("messages", locale));
                 }
             }
         }

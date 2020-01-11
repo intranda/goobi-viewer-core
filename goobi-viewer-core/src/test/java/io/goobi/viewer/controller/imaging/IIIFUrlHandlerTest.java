@@ -38,7 +38,7 @@ public class IIIFUrlHandlerTest {
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         handler = new IIIFUrlHandler();
     }
 

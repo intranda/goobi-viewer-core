@@ -32,7 +32,7 @@ public class CMSPageTemplateTest {
      */
     @Test
     public void loadFromXML_shouldLoadTemplateCorrectly() throws Exception {
-        File file = new File("resources/test/data/cms_template.xml");
+        File file = new File("src/test/resources/data/cms_template.xml");
         Assert.assertTrue(file.isFile());
         CMSPageTemplate template = CMSPageTemplate.loadFromXML(file.toPath());
         Assert.assertNotNull(template);

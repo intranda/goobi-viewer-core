@@ -42,7 +42,7 @@ public class PdfHandlerTest {
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         Configuration configuration = DataManager.getInstance().getConfiguration();
         handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), configuration);
     }

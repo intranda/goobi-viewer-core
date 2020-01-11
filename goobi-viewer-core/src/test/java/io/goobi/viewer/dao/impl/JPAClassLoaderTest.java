@@ -30,11 +30,11 @@ public class JPAClassLoaderTest extends AbstractTest {
     @Test
     public void scanPersistenceXML_shouldMergePersistenceXmlFilesCorrectly() throws Exception {
         // TODO Fails on Jenkins
-        File masterFile = new File("src/META-INF/persistence.xml");
+        File masterFile = new File("src/main/resources/META-INF/persistence.xml");
         Assert.assertTrue(masterFile.isFile());
         URL masterUrl = new URL("file:///" + masterFile.getAbsolutePath());
 
-        File file = new File("resources/test/modules/persistence.xml");
+        File file = new File("src/test/resources/modules/persistence.xml");
         Assert.assertTrue(file.isFile());
         URL moduleUrl = new URL("file:///" + file.getAbsolutePath());
 

@@ -48,7 +48,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     int pageNo = 1;
     String restUrl;
     
-    Path altoFile = Paths.get("resources/test/data/sample_alto.xml");
+    Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
     AltoDocument doc;
     
     /**
@@ -57,7 +57,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
         converter = new SearchResultConverter(URI.create(restUrl + "iiif/search"), URI.create(restUrl), pi, pageNo);
         doc = AltoDocument.getDocumentFromFile(altoFile.toFile());

@@ -40,7 +40,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
     /**
@@ -125,9 +125,9 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
     //    @Test
     //    public void testCreateEpub() throws PresentationException, IndexUnreachableException {
-    //        String tempPath = "resources/test/data/viewer/download_epub";
+    //        String tempPath = "src/test/resources/data/viewer/download_epub";
     //        try {
-    //            String msg = EPUBDownloadJob.triggerCreation("PPN648829383", "testIdentifier", "resources/test/data/viewer/download_epub");
+    //            String msg = EPUBDownloadJob.triggerCreation("PPN648829383", "testIdentifier", "src/test/resources/data/viewer/download_epub");
     //            Assert.assertNull("EPUB not created", msg);
     //        } finally {
     //            File tempFolder = new File(tempPath);

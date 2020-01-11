@@ -33,7 +33,7 @@ public class HelperTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 
     /**
@@ -51,9 +51,9 @@ public class HelperTest {
      */
     @Test
     public void getSourceFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/1/indexed_mets/PPN123.xml",
+        Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
                 Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._METS));
-        Assert.assertEquals("resources/test/data/viewer/indexed_mets/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
+        Assert.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
     }
 
     /**
@@ -62,9 +62,9 @@ public class HelperTest {
      */
     @Test
     public void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/1/indexed_lido/PPN123.xml",
+        Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN123.xml",
                 Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._LIDO));
-        Assert.assertEquals("resources/test/data/viewer/indexed_lido/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
+        Assert.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
     }
 
     /**
@@ -110,7 +110,7 @@ public class HelperTest {
      */
     @Test
     public void deleteRecord_shouldCreateDeleteFileCorrectly() throws Exception {
-        Path hotfolder = Paths.get("resources/build", DataManager.getInstance().getConfiguration().getHotfolder());
+        Path hotfolder = Paths.get("src/test/resources", DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
         }
@@ -134,7 +134,7 @@ public class HelperTest {
      */
     @Test
     public void deleteRecord_shouldCreatePurgeFileCorrectly() throws Exception {
-        Path hotfolder = Paths.get("resources/build", DataManager.getInstance().getConfiguration().getHotfolder());
+        Path hotfolder = Paths.get("src/test/resources", DataManager.getInstance().getConfiguration().getHotfolder());
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
         }
@@ -159,7 +159,7 @@ public class HelperTest {
     @Test
     public void getDataFolder_shouldReturnCorrectFolderIfNoDataRepositoryUsed() throws Exception {
         Path folder = Helper.getDataFolder("PPN123", "media", null);
-        Assert.assertEquals(Paths.get("resources/test/data/viewer/media/PPN123"), folder);
+        Assert.assertEquals(Paths.get("src/test/resources/data/viewer/media/PPN123"), folder);
     }
 
     /**
@@ -171,7 +171,7 @@ public class HelperTest {
         {
             // Just the folder name
             Path folder = Helper.getDataFolder("PPN123", "media", "1");
-            Assert.assertEquals(Paths.get("resources/test/data/viewer/data/1/media/PPN123"), folder);
+            Assert.assertEquals(Paths.get("src/test/resources/data/viewer/data/1/media/PPN123"), folder);
         }
         {
             // Absolute path

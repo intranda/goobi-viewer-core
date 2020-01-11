@@ -9,10 +9,10 @@
 
 	<!-- configFolder: contains local configuration files, i.e. this file with 
 		local modifications that override the global one -->
-	<configFolder>resources/test/localConfig/</configFolder>
-	<viewerHome>resources/test/data/viewer/broken</viewerHome>
+	<configFolder>src/test/resources/localConfig/</configFolder>
+	<viewerHome>src/test/resources/data/viewer/broken</viewerHome>
 	<!-- dataRepositoriesHome: root folder for data repositories -->
-	<dataRepositoriesHome>resources/test/data/viewer/data/broken
+	<dataRepositoriesHome>src/test/resources/data/viewer/data/broken
 	</dataRepositoriesHome>
 	<!-- indexedMetsFolder: contains indexed mets files (used by the METS resolver) -->
 	<indexedMetsFolder>indexed_mets</indexedMetsFolder>
@@ -39,7 +39,7 @@
 	<hotfolder>hotfolder_value</hotfolder>
 	<!-- Folders for generated download files -->
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
-	<stopwordsFile>resources/test/stopwords.txt</stopwordsFile>
+	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
 	<!-- xstreamFolder: contains information about bookshelfes and / or annotations 
 		on the images -->
 	<xstreamFolder>xstreamFolder_value</xstreamFolder>

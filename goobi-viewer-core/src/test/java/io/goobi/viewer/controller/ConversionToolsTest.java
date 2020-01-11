@@ -31,11 +31,11 @@ public class ConversionToolsTest {
      */
     @Test
     public void convertFileToHtml_shouldConvertDocxFileCorrectly() throws Exception {
-        Path rtfFile = Paths.get("resources/test/data/text_example.docx");
+        Path rtfFile = Paths.get("src/test/resources/data/text_example.docx");
         Assert.assertTrue(Files.isRegularFile(rtfFile));
         String html = ConversionTools.convertFileToHtml(rtfFile);
         Assert.assertNotNull(html);
-        // FileTools.getFileFromString(html, "resources/test/data/example (tika docx).htm", Helper.DEFAULT_ENCODING, false);
+        // FileTools.getFileFromString(html, "src/test/resources/data/example (tika docx).htm", Helper.DEFAULT_ENCODING, false);
     }
 
     /**
@@ -44,11 +44,11 @@ public class ConversionToolsTest {
      */
     @Test
     public void convertFileToHtml_shouldConvertRtfFileCorrectly() throws Exception {
-        Path rtfFile = Paths.get("resources/test/data/text_example.rtf");
+        Path rtfFile = Paths.get("src/test/resources/data/text_example.rtf");
         Assert.assertTrue(Files.isRegularFile(rtfFile));
         String html = ConversionTools.convertFileToHtml(rtfFile);
         Assert.assertNotNull(html);
-        // FileTools.getFileFromString(html, "resources/test/data/example (tika rtf).htm", Helper.DEFAULT_ENCODING, false);
+        // FileTools.getFileFromString(html, "src/test/resources/data/example (tika rtf).htm", Helper.DEFAULT_ENCODING, false);
     }
 
     /**
@@ -57,8 +57,8 @@ public class ConversionToolsTest {
      */
     @Test
     public void convertDocxToHtml_shouldConvertDocxCorrectly() throws Exception {
-        String html = ConversionTools.convertDocxToHtml(Paths.get("resources/test/data/text_example.docx"));
+        String html = ConversionTools.convertDocxToHtml(Paths.get("src/test/resources/data/text_example.docx"));
         Assert.assertNotNull(html);
-        // FileTools.getFileFromString(html, "resources/test/data/example (docx4j).htm", Helper.DEFAULT_ENCODING, false);
+        // FileTools.getFileFromString(html, "src/test/resources/data/example (docx4j).htm", Helper.DEFAULT_ENCODING, false);
     }
 }

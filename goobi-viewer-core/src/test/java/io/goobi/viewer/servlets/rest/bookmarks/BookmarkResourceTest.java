@@ -58,7 +58,7 @@ public class BookmarkResourceTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Configuration configuration = new Configuration("resources/test/config_viewer.test.xml");
+        Configuration configuration = new Configuration("src/test/resources/config_viewer.test.xml");
         DataManager.getInstance().injectConfiguration(configuration);
 
         User user = DataManager.getInstance().getDao().getUser(1);

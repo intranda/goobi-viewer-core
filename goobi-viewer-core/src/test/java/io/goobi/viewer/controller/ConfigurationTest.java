@@ -188,7 +188,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     @Deprecated
     public void getDataRepositoriesHome_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
+        Assert.assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
     }
 
     /**
@@ -745,7 +745,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void loadStopwords_shouldLoadAllStopwords() throws Exception {
-        Set<String> stopwords = Configuration.loadStopwords("resources/test/stopwords.txt");
+        Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
         Assert.assertNotNull(stopwords);
         Assert.assertEquals(5, stopwords.size());
     }
@@ -756,7 +756,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void loadStopwords_shouldRemovePartsStartingWithPipe() throws Exception {
-        Set<String> stopwords = Configuration.loadStopwords("resources/test/stopwords.txt");
+        Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
         Assert.assertNotNull(stopwords);
         Assert.assertTrue(stopwords.contains("one"));
     }
@@ -767,7 +767,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void loadStopwords_shouldNotAddEmptyStopwords() throws Exception {
-        Set<String> stopwords = Configuration.loadStopwords("resources/test/stopwords.txt");
+        Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
         Assert.assertNotNull(stopwords);
         Assert.assertFalse(stopwords.contains(""));
     }
@@ -787,7 +787,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test(expected = FileNotFoundException.class)
     public void loadStopwords_shouldThrowFileNotFoundExceptionIfFileDoesNotExist() throws Exception {
-        Configuration.loadStopwords("resources/test/startwords.txt");
+        Configuration.loadStopwords("src/test/resources/startwords.txt");
     }
 
     /**
@@ -805,7 +805,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getStopwordsFilePath_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("resources/test/stopwords.txt", DataManager.getInstance().getConfiguration().getStopwordsFilePath());
+        Assert.assertEquals("src/test/resources/stopwords.txt", DataManager.getInstance().getConfiguration().getStopwordsFilePath());
     }
 
     /**
@@ -954,7 +954,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getViewerHome_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/", DataManager.getInstance().getConfiguration().getViewerHome());
+        Assert.assertEquals("src/test/resources/data/viewer/", DataManager.getInstance().getConfiguration().getViewerHome());
     }
 
     /**
@@ -2206,14 +2206,14 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void testBrokenConfig() {
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer_broken.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer_broken.test.xml"));
         String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
-        Assert.assertEquals(localConfig, "resources/test/localConfig/");
+        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
         String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
-        Assert.assertEquals(viewerHome, "resources/test/data/viewer/");
+        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
         String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-        Assert.assertEquals(dataRepositories, "resources/test/data/viewer/data/");
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
     }
 

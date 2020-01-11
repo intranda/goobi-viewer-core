@@ -71,7 +71,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 //        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
 //        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
 
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();

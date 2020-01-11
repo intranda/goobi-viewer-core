@@ -105,7 +105,7 @@ public class StringToolsTest {
      */
     @Test
     public void renameIncompatibleCSSClasses_shouldRenameClassesCorrectly() throws Exception {
-        Path file = Paths.get("resources/test/data/text_example_bad_classes.htm");
+        Path file = Paths.get("src/test/resources/data/text_example_bad_classes.htm");
         Assert.assertTrue(Files.isRegularFile(file));
 
         String html = FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
