@@ -59,7 +59,7 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, ContentNotFoundException, IOException {
 
-        DataManager.getInstance().injectConfiguration(new Configuration("src/config_viewer.xml"));
+        DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
         ManifestBuilder manifestBuilder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
         SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));

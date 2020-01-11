@@ -4,7 +4,7 @@ module.exports = function(config) {
     var configuration = {
 
       // base path that will be used to resolve all patterns (eg. files, exclude)
-      basePath: 'src/META-INF/resources/resources/javascript/',
+      basePath: 'src/main/resources/META-INF/resources/resources/javascript/',
 
       // plugins starting with karma- are autoloaded
       plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine', 'karma-mocha-reporter', 'karma-htmlfile-reporter'],
