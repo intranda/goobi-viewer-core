@@ -783,21 +783,6 @@
 
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-					<exclude>config_viewer.xml</exclude>
-					<exclude>contentServerConfig.xml</exclude>
-					<exclude>rebel.xml</exclude>
-					<exclude>log4j2.xml</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -836,6 +821,14 @@
 							<Public-Version>${publicVersion}</Public-Version>
 						</manifestEntries>
 					</archive>
+					<excludes>
+						<exclude>**/config_viewer.xml</exclude>
+						<exclude>**/contentServerConfig.xml</exclude>
+						<exclude>**/log4j2.xml</exclude>
+						<exclude>/META-INF/resources/resources/javascript/tests/</exclude>
+						<exclude>/META-INF/resources/resources/javascript/dev/</exclude>
+					</excludes>
+
 				</configuration>
 			</plugin>
 			<!-- get git version number -->
