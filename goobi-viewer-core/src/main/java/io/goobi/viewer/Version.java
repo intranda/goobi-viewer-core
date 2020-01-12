@@ -21,15 +21,15 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Version {
     /** Constant <code>APPLICATION_NAME</code> */
-    public final static String APPLICATION_NAME;
+    public static final String APPLICATION_NAME;
     /** Constant <code>VERSION</code> */
-    public final static String VERSION;
+    public static final String VERSION;
     /** Constant <code>PUBLIC_VERSION</code> */
-    public final static String PUBLIC_VERSION;
+    public static final String PUBLIC_VERSION;
     /** Constant <code>BUILDVERSION</code> */
-    public final static String BUILDVERSION;
+    public static final String BUILDVERSION;
     /** Constant <code>BUILDDATE</code> */
-    public final static String BUILDDATE;
+    public static final String BUILDDATE;
     
     private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd_HH-mm";
 
