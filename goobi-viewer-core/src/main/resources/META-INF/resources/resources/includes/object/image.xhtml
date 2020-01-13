@@ -199,6 +199,8 @@
 	       		    $("[data-copy]").one("click", function(event) {
 	       		        popup.close();
 	       		    })
+	       		    
+	       		 initImageFragmentLinks(areaString);
        		    }
        		}
 			function initImageAreaSelect(image) {
@@ -219,11 +221,14 @@
            		}
 			}
 			
-			function initImageFragmentLinks() {
-			    $wrapper = $(".widget-usage__image-fragment__wrapper");
-			    let fragment = viewerJS.helper.getFragmentHash();
+			function initImageFragmentLinks(fragment) {
+			    if(!fragment) {			        
+				    $wrapper = $(".widget-usage__image-fragment__wrapper");
+				    fragment = viewerJS.helper.getFragmentHash();
+			    }
+			    console.log("fragment ", fragment);
 			    if(fragment) {
-			        console.log("found fragment ", fragment);
+			        console.log("base page url ", window.location.pathname, window.location);
 			        var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + fragment;
 	       		 	var imageUrl = viewImage.getRegionUrl(fragment);
 	       		 	$wrapper.find(".widget-usage__image-fragment-page").attr("data-clipboard-text", pageUrl)

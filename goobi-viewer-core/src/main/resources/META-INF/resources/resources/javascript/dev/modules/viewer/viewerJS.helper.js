@@ -366,7 +366,8 @@ var viewerJS = ( function( viewer ) {
             let fragments = [];
             if(hash) {
                 let match;// = fragment.match(coordsRegex);
-                while (match = coordsRegex.exec(hash)) {  
+                let count = 0;
+                while (match = coordsRegex.exec(hash) && count++ < 100) {  
                     console.log("hash = ", hash);
                     let coords = match[1];
                     fragments.push(coords);
