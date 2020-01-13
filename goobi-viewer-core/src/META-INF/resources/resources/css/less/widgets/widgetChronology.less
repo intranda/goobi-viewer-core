@@ -3,20 +3,26 @@
    style declarations for widget_chronology.xhtml
    ==============================================================*/
 /* WIDGET CHRONOLOGY */
-/* BLOCK */
+/* BLOCK */ 
 .widget-chronology-slider {
-	display: grid;
-    grid-template-columns: 1fr 1fr;
+	display: flex;
+	flex-wrap: wrap;
     margin-bottom: 1.3125rem;
     padding: 0 10px;
     font-size: @fontLarge;
 	color: @black;
+	&__topbar {
+		flex: 0 0 100%;
+		display: flex;
+		background: @gray;
+	}
 	/* ELEMENT */
 	&__item {
 		&.chronology-slider-label,
 		&.chronology-slider-actions {
     		align-self: center;
     		padding-bottom: 10px;
+    		flex: 0 0 50%;
 		}
 		&.chronology-slider-actions {
 			ul {
@@ -38,15 +44,16 @@
 		}
 		&.chronology-slider-action-loader,
 		&.chronology-slider-action-reset {
-			display: none;
+			visibility: hidden;
 			&.active {
-				display: list-item;
+				visibility: visible;
 			}
 		}
 		&.chronology-slider-action-loader {}
 		&.chronology-slider-action-reset {}
 		&.chronology-slider-start,
 		&.chronology-slider-end {
+			flex: 0 0 50%;
 			font-size: @fontMedium; 
 		}
 		&.chronology-slider-start {}
@@ -54,8 +61,8 @@
 			text-align: right;
 		}
 		&.chronology-slider {
-			grid-column: span 2;
 			padding: 10px 0;
+			flex: 0 0 100%;
 		}
 	}
 }
