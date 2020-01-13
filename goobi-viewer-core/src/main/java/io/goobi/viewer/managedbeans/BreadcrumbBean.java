@@ -322,6 +322,37 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
+     * Adds a link to the breadcrumbs using the current PrettyURL. Can be called from XHTML.
+     *
+     * @param linkName a {@link java.lang.String} object.
+     * @param linkWeight a int.
+     */
+    public void addStaticLinkToBreadcrumb(String linkName, int linkWeight) {
+        NavigationHelper nh = BeanUtils.getNavigationHelper(); // TODO
+        addStaticLinkToBreadcrumb(linkName, nh.getCurrentPrettyUrl(), linkWeight);
+    }
+
+    /**
+     * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
+     *
+     * @param linkName a {@link java.lang.String} object.
+     * @param linkWeight a int.
+     * @param url a {@link java.lang.String} object.
+     */
+    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+        if (linkWeight < 0) {
+            return;
+        }
+        PageType page = PageType.getByName(url);
+        if (page != null && !page.equals(PageType.other)) {
+            url = getUrl(page);
+        } else {
+        }
+        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
+        updateBreadcrumbs(newLink);
+    }
+
+    /**
      * <p>
      * addCollectionHierarchyToBreadcrumb.
      * </p>
@@ -411,26 +442,6 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
-     *
-     * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
-     * @param url a {@link java.lang.String} object.
-     */
-    //    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
-    //        if (linkWeight < 0) {
-    //            return;
-    //        }
-    //        PageType page = PageType.getByName(url);
-    //        if (page != null && !page.equals(PageType.other)) {
-    //            url = getUrl(page);
-    //        } else {
-    //        }
-    //        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
-    //        updateBreadcrumbs(newLink);
-    //    }
-
-    /**
      * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
      * not the main link.
      *
@@ -475,5 +486,24 @@ public class BreadcrumbBean implements Serializable {
      */
     private static String getBrowseUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
+    }
+
+    /**
+     * @param page
+     * @return
+     */
+    private String getUrl(PageType page) {
+        return getApplicationUrl() + page.getName();
+    }
+
+    /**
+     * <p>
+     * getApplicationUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    private String getApplicationUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
     }
 }
