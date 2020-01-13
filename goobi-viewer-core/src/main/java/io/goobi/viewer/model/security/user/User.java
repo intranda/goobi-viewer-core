@@ -101,7 +101,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     private static final String URI_ID_REGEX = ".*/users/(\\d+)/?$";
 
     @Transient
-    private BCrypt bcrypt = new BCrypt();
+    private transient BCrypt bcrypt = new BCrypt();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
