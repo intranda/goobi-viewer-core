@@ -9,7 +9,7 @@ function getTomcatDir() {
 	let os = process.platform
 	let xml_string = undefined;
 	if(os.toLowerCase().startsWith("win")) {	    
-	    xml_string = fs.readFileSync("C:/digiverso/viewer/config/config_viewer.xml", "utf-8");
+	    xml_string = fs.readFileSync("c:/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	} else {
 	    xml_string = fs.readFileSync("/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	}
