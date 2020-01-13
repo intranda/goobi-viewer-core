@@ -93,7 +93,7 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        logger.trace("request uri: " + requestURI);
+        logger.trace("request uri: {}", requestURI);
         User user = (User) httpRequest.getSession().getAttribute("user");
         if (user == null) {
             logger.debug("No user found, redirecting to login...");
@@ -130,7 +130,7 @@ public class LoginFilter implements Filter {
      * @should return false for crowdsourcing about page
      * @should return true for admin uris
      * @should return true for user backend uris
-     * @should return true for bookmarks uris
+     * @should return true for user bookmarks uris
      * @should return false for bookmarks session uris
      * @should return false for bookmarks share key uris
      * @should return false for bookmarks send list uris
@@ -143,17 +143,19 @@ public class LoginFilter implements Filter {
             switch (uri) {
                 case "/myactivity/":
                 case "/mysearches/":
-                case "/user/":
                     return true;
                 default:
+                    // any URIs starting with /user/ are supposed to be only accessible to logged in users
+                    if (uri.startsWith("/user/")) {
+                        return true;
+                    }
                     //make an exception for session bookmarks search list or share key
-                    if (uri.contains("bookmarks/search/") || uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/") || uri.contains("bookmarks/send/")
-                            || uri.contains("bookmarks/search/session")) {
+                    if (uri.contains("bookmarks/search/") || uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/")
+                            || uri.contains("bookmarks/send/") || uri.contains("bookmarks/search/session")) {
                         return false;
                     }
                     // Regular URLs
-                    if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend")
-                            || uri.contains("/bookmark"))) {
+                    if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend"))) {
                         return true;
                     }
             }

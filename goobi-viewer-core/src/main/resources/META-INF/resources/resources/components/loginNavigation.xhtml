@@ -66,7 +66,7 @@
                         <div class="login-navigation__user-dropdown">
                             <h:form id="userDropdownForm" prependId="false">
                                 <ul>
-                                    <!-- BOKKSHELVES -->
+                                    <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                                         <li>
                                             <div class="login-navigation__user-dropdown-item">
@@ -74,7 +74,7 @@
                                                     <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
                                                 </div>
                                                 <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}bookmarks/">#{msg.bookmarkList_myBookmarkLists}</a>
+                                                    <a href="#{navigationHelper.applicationUrl}user/bookmarks/">#{msg.bookmarkList_myBookmarkLists}</a>
                                                 </div>
                                             </div>
                                         </li>
