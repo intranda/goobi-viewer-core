@@ -1,7 +1,7 @@
 {
 	"title": "Goobi viewer Style Guide",
-	"source": "./src/META-INF/resources/resources/css/less/",
-	"destination": "./doc/cssdoc/",
+	"source": "./src/main/resources/META-INF/resources/resources/css/less/",
+	"destination": "./target/cssdoc/",
 	"builder": "./node_modules/michelangelo/kss_styleguide/custom-template/",
 	"css": [
 		"../libs/bs/bootstrap.min.css",

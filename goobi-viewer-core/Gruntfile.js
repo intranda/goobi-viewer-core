@@ -9,7 +9,7 @@ function getTomcatDir() {
 	let os = process.platform
 	let xml_string = undefined;
 	if(os.toLowerCase().startsWith("win")) {	    
-	    xml_string = fs.readFileSync("c:/digiverso/viewer/config/config_viewer.xml", "utf-8");
+	    xml_string = fs.readFileSync("C:/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	} else {
 	    xml_string = fs.readFileSync("/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	}
@@ -43,12 +43,12 @@ module.exports = function (grunt) {
 		},
 		pkg: grunt.file.readJSON('package.json'),
 		src: {
-			jsDevFolder: 'src/META-INF/resources/resources/javascript/dev/',
-			jsDevFolderModules: 'src/META-INF/resources/resources/javascript/dev/modules/',
-			jsDistFolder: 'src/META-INF/resources/resources/javascript/dist/',
-			cssFolder: 'src/META-INF/resources/resources/css/',
-			cssDistFolder: 'src/META-INF/resources/resources/css/dist/',
-			lessDevFolder: 'src/META-INF/resources/resources/css/less/',
+			jsDevFolder: 'src/main/resources/META-INF/resources/resources/javascript/dev/',
+			jsDevFolderModules: 'src/main/resources/META-INF/resources/resources/javascript/dev/modules/',
+			jsDistFolder: 'src/main/resources/META-INF/resources/resources/javascript/dist/',
+			cssFolder: 'src/main/resources/META-INF/resources/resources/css/',
+			cssDistFolder: 'src/main/resources/META-INF/resources/resources/css/dist/',
+			lessDevFolder: 'src/main/resources/META-INF/resources/resources/css/less/',
 		},
 		less: {
 			dist: {
@@ -83,8 +83,8 @@ module.exports = function (grunt) {
 				]
 			},
 			dist: {
-				src: "./src/META-INF/resources/resources/css/less/",
-				dest: "./src/META-INF/resources/resources/css/styleguide/",
+				src: "./src/main/resources/META-INF/resources/resources/css/less/",
+				dest: "./src/main/resources/META-INF/resources/resources/css/styleguide/",
 			}
 		},
 		concat: {
@@ -117,7 +117,7 @@ module.exports = function (grunt) {
 		sync: {
 			main: {
         		files: [{
-					cwd: 'src/META-INF/resources',
+					cwd: 'src/main/resources/META-INF/resources',
 					src: ['**'],
 					dest: getTomcatDir()
 				}],
@@ -150,18 +150,18 @@ module.exports = function (grunt) {
 			},
 			static: {
 				files: [
-					'src/META-INF/resources/*.xhtml',
-					'src/META-INF/resources/*.xml',
-					'src/META-INF/resources/*.xls',
-					'src/META-INF/resources/resources/**/*.xhtml',
-					'src/META-INF/resources/resources/**/*.html',
-					'src/META-INF/resources/resources/**/*.jpg',
-					'src/META-INF/resources/resources/**/*.png',
-					'src/META-INF/resources/resources/**/*.svg',
-					'src/META-INF/resources/resources/**/*.gif',
-					'src/META-INF/resources/resources/**/*.ico',
-					'src/META-INF/resources/resources/**/*.css',
-					'src/META-INF/resources/resources/**/*min.js',
+					'src/main/resources/META-INF/resources/*.xhtml',
+					'src/main/resources/META-INF/resources/*.xml',
+					'src/main/resources/META-INF/resources/*.xls',
+					'src/main/resources/META-INF/resources/resources/**/*.xhtml',
+					'src/main/resources/META-INF/resources/resources/**/*.html',
+					'src/main/resources/META-INF/resources/resources/**/*.jpg',
+					'src/main/resources/META-INF/resources/resources/**/*.png',
+					'src/main/resources/META-INF/resources/resources/**/*.svg',
+					'src/main/resources/META-INF/resources/resources/**/*.gif',
+					'src/main/resources/META-INF/resources/resources/**/*.ico',
+					'src/main/resources/META-INF/resources/resources/**/*.css',
+					'src/main/resources/META-INF/resources/resources/**/*min.js',
 				],
 				tasks: ['sync'],
 				options: {

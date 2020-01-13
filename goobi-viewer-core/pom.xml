@@ -93,7 +93,7 @@
 		<docx4j.version>8.1.4</docx4j.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.10</httpclient.version>
-		<httpcore.version>4.4.12</httpcore.version>
+		<httpcore.version>4.4.13</httpcore.version>
 		<httpmime.version>4.5.10</httpmime.version>
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>65.1</icu.version>
@@ -109,7 +109,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jersey.version>2.30</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
-		<jgravatar.version>1.1</jgravatar.version>
+		<jgravatar.version>1.2</jgravatar.version>
 		<joda-time.version>2.10.5</joda-time.version>
 		<junit.version>4.13</junit.version>
 		<json.version>20190722</json.version>
@@ -130,7 +130,7 @@
 		<saxon.version>9.0</saxon.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<solr.version>4.10.4</solr.version>
-		<stax-api.version>1.0.1</stax-api.version>
+		<stax-api.version>1.0-2</stax-api.version>
 		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
 		<tika.version>[1.20,)</tika.version>
 		<tomcat.version>9.0.30</tomcat.version>
@@ -728,7 +728,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>stax</groupId>
+			<groupId>javax.xml.stream</groupId>
 			<artifactId>stax-api</artifactId>
 			<version>${stax-api.version}</version>
 		</dependency>
@@ -783,21 +783,6 @@
 
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-					<exclude>config_viewer.xml</exclude>
-					<exclude>contentServerConfig.xml</exclude>
-					<exclude>rebel.xml</exclude>
-					<exclude>log4j2.xml</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -836,6 +821,14 @@
 							<Public-Version>${publicVersion}</Public-Version>
 						</manifestEntries>
 					</archive>
+					<excludes>
+						<exclude>**/config_viewer.xml</exclude>
+						<exclude>**/contentServerConfig.xml</exclude>
+						<exclude>**/log4j2.xml</exclude>
+						<exclude>/META-INF/resources/resources/javascript/tests/</exclude>
+						<exclude>/META-INF/resources/resources/javascript/dev/</exclude>
+					</excludes>
+
 				</configuration>
 			</plugin>
 			<!-- get git version number -->
@@ -907,7 +900,25 @@
 					</tags>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

@@ -1,6 +1,6 @@
 {
   "name": "goobi-viewer",
-  "version": "3.4.0",
+  "version": "4.3.0",
   "description": "The Goobi viewer is a web application that allows digitised material to be displayed on the computer screen.",
   "author": "intranda GmbH",
   "repository": {
