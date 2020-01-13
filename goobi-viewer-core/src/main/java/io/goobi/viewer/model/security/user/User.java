@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +84,9 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
  */
 @Entity
 @Table(name = "users")
-public class User implements ILicensee, HttpSessionBindingListener {
+public class User implements ILicensee, HttpSessionBindingListener, Serializable {
+
+    private static final long serialVersionUID = 549769987121664488L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(User.class);
@@ -110,7 +113,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     private String email;
 
     @Column(name = "password_hash")
-    private String passwordHash;
+    private transient String passwordHash;
 
     /**
      * Activation key for the user account. Value must be reset to null when the account is activated.
@@ -1694,7 +1697,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
         }
-        
+
         return null;
     }
 

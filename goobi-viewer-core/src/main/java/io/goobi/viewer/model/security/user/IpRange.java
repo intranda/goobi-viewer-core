@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,12 +51,16 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 
 /**
- * <p>IpRange class.</p>
+ * <p>
+ * IpRange class.
+ * </p>
  */
 @Entity
 @Table(name = "ip_ranges")
 // @DiscriminatorValue("IpRange")
-public class IpRange implements ILicensee {
+public class IpRange implements ILicensee, Serializable {
+
+    private static final long serialVersionUID = 2221051822633497315L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(IpRange.class);
@@ -121,7 +126,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>matchIp.</p>
+     * <p>
+     * matchIp.
+     * </p>
      *
      * @param inIp a {@link java.lang.String} object.
      * @return a boolean.
@@ -178,10 +185,12 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>canSatisfyAllAccessConditions.</p>
+     * <p>
+     * canSatisfyAllAccessConditions.
+     * </p>
      *
      * @param conditionList a {@link java.util.Set} object.
-     * @param licenseTypes  a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
+     * @param licenseTypes a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @should return true if condition is open access
@@ -193,10 +202,10 @@ public class IpRange implements ILicensee {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, List<LicenseType> licenseTypes,  String privilegeName, String pi) throws PresentationException,
-            IndexUnreachableException, DAOException {
+    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, List<LicenseType> licenseTypes, String privilegeName, String pi)
+            throws PresentationException, IndexUnreachableException, DAOException {
 
-        if(AccessConditionUtils.isFreeOpenAccess(conditionList, licenseTypes)) {
+        if (AccessConditionUtils.isFreeOpenAccess(conditionList, licenseTypes)) {
             return true;
         }
 
@@ -211,7 +220,7 @@ public class IpRange implements ILicensee {
         }
 
         return permissionMap.isEmpty() || permissionMap.containsValue(true);
-//        return !permissionMap.containsValue(false);
+        //        return !permissionMap.containsValue(false);
     }
 
     /** {@inheritDoc} */
@@ -241,7 +250,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -250,7 +261,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -265,7 +278,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -274,7 +289,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Getter for the field <code>subnetMask</code>.</p>
+     * <p>
+     * Getter for the field <code>subnetMask</code>.
+     * </p>
      *
      * @return the subnetMask
      */
@@ -283,7 +300,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>subnetMask</code>.</p>
+     * <p>
+     * Setter for the field <code>subnetMask</code>.
+     * </p>
      *
      * @param subnetMask the subnetMask to set
      */
@@ -292,7 +311,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -301,7 +322,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -316,7 +339,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>licenses</code>.</p>
+     * <p>
+     * Setter for the field <code>licenses</code>.
+     * </p>
      *
      * @param licenses the licenses to set
      */
@@ -325,7 +350,9 @@ public class IpRange implements ILicensee {
     }
 
     /**
-     * <p>main.</p>
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      */

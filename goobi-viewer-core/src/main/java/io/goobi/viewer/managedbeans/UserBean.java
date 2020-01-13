@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.weld.security.GetProtectionDomainAction;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +71,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>UserBean class.</p>
+ * <p>
+ * UserBean class.
+ * </p>
  */
 @Named
 @SessionScoped
@@ -88,7 +89,7 @@ public class UserBean implements Serializable {
     private User user;
     private String nickName;
     private String email;
-    private String password;
+    private transient String password;
     private String activationKey;
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
@@ -96,8 +97,8 @@ public class UserBean implements Serializable {
     private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
-    private String passwordOne = "";
-    private String passwordTwo = "";
+    private transient String passwordOne = "";
+    private transient String passwordTwo = "";
     private String redirectUrl = null;
     private Feedback feedback;
     private String transkribusUserName;
@@ -163,7 +164,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>activateUserAccountAction.</p>
+     * <p>
+     * activateUserAccountAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -209,7 +212,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>login.</p>
+     * <p>
+     * login.
+     * </p>
      *
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      * @return a {@link java.lang.String} object.
@@ -218,7 +223,8 @@ public class UserBean implements Serializable {
      * @throws java.lang.InterruptedException if any.
      * @throws java.util.concurrent.ExecutionException if any.
      */
-    public String login(IAuthenticationProvider provider) throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
+    public String login(IAuthenticationProvider provider)
+            throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if (getUser() != null) {
             throw new IllegalStateException("errAlreadyLoggedIn");
         }
@@ -324,7 +330,7 @@ public class UserBean implements Serializable {
         HttpServletRequest request = BeanUtils.getRequest();
         HttpServletResponse response = BeanUtils.getResponse();
         String redirectUrl = redirect(request, response);
-        
+
         user.setTranskribusSession(null);
         setUser(null);
         password = null;
@@ -354,34 +360,33 @@ public class UserBean implements Serializable {
      */
     private String redirect(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProviderException {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
-            if (StringUtils.isNotEmpty(redirectUrl)) {
-                if ("#".equals(redirectUrl)) {
-                    logger.trace("Stay on current page");
-                }
-                logger.trace("Redirecting to {}", redirectUrl);
-                String redirectUrl = this.redirectUrl;
-                this.redirectUrl = "";
-                //            Messages.info("logoutSuccessful");
-
-                // Do not redirect to user backend pages because LoginFilter won't work here for some reason
-                String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-                if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
-                    return redirectUrl;
-                }
-            } else if (oCurrentPath.isPresent()) {
-                ViewerPath currentPath = oCurrentPath.get();
-                PageType pageType = currentPath.getPageType();
-                if (pageType != null && pageType.isRestricted()) {
-                    logger.trace("Redirecting to start page");
-                    String redirect = "pretty:index";
-                    return redirect;
-                } else {
-                    logger.trace("Redirecting to current url " + currentPath.getCombinedPrettyfiedUrl());
-                    String redirect = currentPath.getCombinedPrettyfiedUrl();
-                    return redirect;
-                }
+        if (StringUtils.isNotEmpty(redirectUrl)) {
+            if ("#".equals(redirectUrl)) {
+                logger.trace("Stay on current page");
             }
-            return "";
+            logger.trace("Redirecting to {}", redirectUrl);
+            String redirectUrl = this.redirectUrl;
+            this.redirectUrl = "";
+            //            Messages.info("logoutSuccessful");
+
+            // Do not redirect to user backend pages because LoginFilter won't work here for some reason
+            String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+            if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
+                return redirectUrl;
+            }
+        } else if (oCurrentPath.isPresent()) {
+            ViewerPath currentPath = oCurrentPath.get();
+            PageType pageType = currentPath.getPageType();
+            if (pageType != null && pageType.isRestricted()) {
+                logger.trace("Redirecting to start page");
+                String redirect = "pretty:index";
+                return redirect;
+            }
+            logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
+            String redirect = currentPath.getCombinedPrettyfiedUrl();
+            return redirect;
+        }
+        return "";
     }
 
     /**
@@ -430,7 +435,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>saveUserAction.</p>
+     * <p>
+     * saveUserAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -683,7 +690,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>transkribusLoginAction.</p>
+     * <p>
+     * transkribusLoginAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -714,7 +723,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>createFeedback.</p>
+     * <p>
+     * createFeedback.
+     * </p>
      */
     public void createFeedback() {
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
@@ -729,7 +740,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>submitFeedbackAction.</p>
+     * <p>
+     * submitFeedbackAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -756,7 +769,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>user</code>.</p>
+     * <p>
+     * Getter for the field <code>user</code>.
+     * </p>
      *
      * @return the user
      */
@@ -765,7 +780,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>user</code>.</p>
+     * <p>
+     * Setter for the field <code>user</code>.
+     * </p>
      *
      * @param user the user to set
      */
@@ -774,7 +791,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>nickName</code>.</p>
+     * <p>
+     * Getter for the field <code>nickName</code>.
+     * </p>
      *
      * @return the nickName
      */
@@ -783,7 +802,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>nickName</code>.</p>
+     * <p>
+     * Setter for the field <code>nickName</code>.
+     * </p>
      *
      * @param nickName the nickName to set
      */
@@ -792,7 +813,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>email</code>.</p>
+     * <p>
+     * Getter for the field <code>email</code>.
+     * </p>
      *
      * @return the email
      */
@@ -801,7 +824,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>email</code>.</p>
+     * <p>
+     * Setter for the field <code>email</code>.
+     * </p>
      *
      * @param email the email to set
      */
@@ -810,7 +835,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>password</code>.</p>
+     * <p>
+     * Getter for the field <code>password</code>.
+     * </p>
      *
      * @return the password
      */
@@ -819,7 +846,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>password</code>.</p>
+     * <p>
+     * Setter for the field <code>password</code>.
+     * </p>
      *
      * @param password the password to set
      */
@@ -828,7 +857,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isLoggedIn.</p>
+     * <p>
+     * isLoggedIn.
+     * </p>
      *
      * @return a boolean.
      */
@@ -837,7 +868,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isAdmin.</p>
+     * <p>
+     * isAdmin.
+     * </p>
      *
      * @return a boolean.
      */
@@ -846,7 +879,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isUserRegistrationEnabled.</p>
+     * <p>
+     * isUserRegistrationEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -855,7 +890,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isShowOpenId.</p>
+     * <p>
+     * isShowOpenId.
+     * </p>
      *
      * @return a boolean.
      */
@@ -864,7 +901,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>authenticationProviders</code>.</p>
+     * <p>
+     * Getter for the field <code>authenticationProviders</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -876,7 +915,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>getLocalAuthenticationProvider.</p>
+     * <p>
+     * getLocalAuthenticationProvider.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -885,7 +926,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>getXserviceAuthenticationProvider.</p>
+     * <p>
+     * getXserviceAuthenticationProvider.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -894,7 +937,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>authenticationProvider</code>.</p>
+     * <p>
+     * Setter for the field <code>authenticationProvider</code>.
+     * </p>
      *
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -903,7 +948,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>authenticationProvider</code>.</p>
+     * <p>
+     * Getter for the field <code>authenticationProvider</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -912,29 +959,38 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>setAuthenticationProviderName.</p>
+     * <p>
+     * setAuthenticationProviderName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
     public void setAuthenticationProviderName(String name) {
-        this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(getLocalAuthenticationProvider());
+        this.authenticationProvider = getAuthenticationProviders().stream()
+                .filter(p -> p.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(getLocalAuthenticationProvider());
     }
 
     /**
-     * <p>getAuthenticationProviderName.</p>
+     * <p>
+     * getAuthenticationProviderName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getAuthenticationProviderName() {
         if (this.authenticationProvider != null) {
             return this.authenticationProvider.getName();
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     /**
-     * <p>loginTest.</p>
+     * <p>
+     * loginTest.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -944,7 +1000,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>passwordOne</code>.</p>
+     * <p>
+     * Getter for the field <code>passwordOne</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -953,7 +1011,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>passwordOne</code>.</p>
+     * <p>
+     * Setter for the field <code>passwordOne</code>.
+     * </p>
      *
      * @param passwordOne a {@link java.lang.String} object.
      */
@@ -962,7 +1022,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>passwordTwo</code>.</p>
+     * <p>
+     * Getter for the field <code>passwordTwo</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -971,7 +1033,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>passwordTwo</code>.</p>
+     * <p>
+     * Setter for the field <code>passwordTwo</code>.
+     * </p>
      *
      * @param passwordTwo a {@link java.lang.String} object.
      */
@@ -980,7 +1044,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>resetPasswordFields.</p>
+     * <p>
+     * resetPasswordFields.
+     * </p>
      */
     public void resetPasswordFields() {
         passwordOne = "";
@@ -988,7 +1054,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>redirectUrl</code>.</p>
+     * <p>
+     * Getter for the field <code>redirectUrl</code>.
+     * </p>
      *
      * @return the redirectUrl
      */
@@ -997,7 +1065,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>redirectUrl</code>.</p>
+     * <p>
+     * Setter for the field <code>redirectUrl</code>.
+     * </p>
      *
      * @param redirectUrl the redirectUrl to set
      */
@@ -1009,7 +1079,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>activationKey</code>.</p>
+     * <p>
+     * Getter for the field <code>activationKey</code>.
+     * </p>
      *
      * @return the activationKey
      */
@@ -1018,7 +1090,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>activationKey</code>.</p>
+     * <p>
+     * Setter for the field <code>activationKey</code>.
+     * </p>
      *
      * @param activationKey the activationKey to set
      */
@@ -1027,7 +1101,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>feedback</code>.</p>
+     * <p>
+     * Getter for the field <code>feedback</code>.
+     * </p>
      *
      * @return the feedback
      */
@@ -1036,7 +1112,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>feedback</code>.</p>
+     * <p>
+     * Setter for the field <code>feedback</code>.
+     * </p>
      *
      * @param feedback the feedback to set
      */
@@ -1045,7 +1123,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>transkribusUserName</code>.</p>
+     * <p>
+     * Getter for the field <code>transkribusUserName</code>.
+     * </p>
      *
      * @return the transkribusUserName
      */
@@ -1054,7 +1134,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>transkribusUserName</code>.</p>
+     * <p>
+     * Setter for the field <code>transkribusUserName</code>.
+     * </p>
      *
      * @param transkribusUserName the transkribusUserName to set
      */
@@ -1063,7 +1145,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>transkribusPassword</code>.</p>
+     * <p>
+     * Getter for the field <code>transkribusPassword</code>.
+     * </p>
      *
      * @return the transkribusPassword
      */
@@ -1072,7 +1156,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>transkribusPassword</code>.</p>
+     * <p>
+     * Setter for the field <code>transkribusPassword</code>.
+     * </p>
      *
      * @param transkribusPassword the transkribusPassword to set
      */
@@ -1081,7 +1167,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>userEquals.</p>
+     * <p>
+     * userEquals.
+     * </p>
      *
      * @param id a long.
      * @return a boolean.
@@ -1091,7 +1179,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>hasProvidersOfType.</p>
+     * <p>
+     * hasProvidersOfType.
+     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @return a boolean.
@@ -1104,7 +1194,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>getProvidersOfType.</p>
+     * <p>
+     * getProvidersOfType.
+     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -1117,7 +1209,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>getNumberOfProviderTypes.</p>
+     * <p>
+     * getNumberOfProviderTypes.
+     * </p>
      *
      * @return a int.
      */
@@ -1126,7 +1220,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isAllowPasswordChange.</p>
+     * <p>
+     * isAllowPasswordChange.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1135,7 +1231,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isAllowNickNameChange.</p>
+     * <p>
+     * isAllowNickNameChange.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1145,7 +1243,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isAllowEmailChange.</p>
+     * <p>
+     * isAllowEmailChange.
+     * </p>
      *
      * @return a boolean.
      */
