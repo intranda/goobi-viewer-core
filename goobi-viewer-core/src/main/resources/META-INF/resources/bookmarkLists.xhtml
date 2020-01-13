@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:p="http://primefaces.org/ui"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<composite:interface>
+	</composite:interface>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userBookmarkLists', false, true)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,'bookmarks',1)}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+    <ui:define name="content">    
+        <div id="userBookmarkLists" class="user-bookshelves">
+            <h2>#{msg.bookmarkList_bookmarkLists}</h2>
+
+			<!-- MESSAGE -->
+			<h:panelGroup rendered="#{!configurationBean.bookmarksEnabled}">
+				<div class="alert alert-warning" role="alert">
+					<h:outputText value="#{msg.errFunctionalityDisabled}" />
+				</div>
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{configurationBean.bookmarksEnabled}">
+
+                <!-- PUBLIC BOOKMARK LISTS -->
+                <h:panelGroup rendered="#{!bookmarkBean.publicBookmarkLists.isEmpty()}">
+                    <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
+                    <h:form id="pubicBookmarkListsForm" prependId="false">
+                        <div class="row no-margin">
+                           <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml" source="">
+		                   		<ui:param name="source" value="#{bookmarkBean.publicBookmarkLists}" />
+		                   </ui:include>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+                
+            </h:panelGroup>
+        </div>
+        
+        <script type="text/javascript">
+        	viewerJS.clipboard.init();
+            function onClickCopy(target) {
+        	    $(target).css("cursor", "default");
+        	}
+        </script>
+        
+	</ui:define>
+
+    <ui:define name="sidebar">
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+	</ui:define>
+	
+</ui:composition>
