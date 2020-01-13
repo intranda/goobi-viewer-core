@@ -93,7 +93,7 @@
 		<docx4j.version>8.1.4</docx4j.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.10</httpclient.version>
-		<httpcore.version>4.4.12</httpcore.version>
+		<httpcore.version>4.4.13</httpcore.version>
 		<httpmime.version>4.5.10</httpmime.version>
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>65.1</icu.version>
@@ -109,7 +109,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jersey.version>2.30</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
-		<jgravatar.version>1.1</jgravatar.version>
+		<jgravatar.version>1.2</jgravatar.version>
 		<joda-time.version>2.10.5</joda-time.version>
 		<junit.version>4.13</junit.version>
 		<json.version>20190722</json.version>
