@@ -103,8 +103,8 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<view-id value="/user.xhtml" />
 	</url-mapping>
-	<url-mapping id="user1">
-		<pattern value="/user/#{redirectUrl:userBean.redirectUrl}/" />
+	<url-mapping id="userRedirect">
+		<pattern value="/user/redirect/#{redirectUrl:userBean.redirectUrl}/" />
 		<view-id value="/user.xhtml" />
 	</url-mapping>
 	<url-mapping id="userActivate">
@@ -621,27 +621,27 @@
 	<!-- TODO Use uniform URL patterns for pages that only logged in users may visit so that LoginFilter still works! -->
 	<!-- BOOKMARKS -->
 	<url-mapping id="userMenuBookmarkLists">
-		<pattern value="/bookmarks/" />
+		<pattern value="/user/bookmarks/" />
 		<view-id value="/userBackendBookmarkLists.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="userMenuViewBookmarkList">
-		<pattern value="/bookmarks/show/" />
+		<pattern value="/user/bookmarks/show/" />
 		<view-id value="/userBackendBookmarkLists.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userMenuViewBookmarkList1">
-        <pattern value="/bookmarks/show/#{identifier:bookmarkBean.currentBookmarkListId}/" />
+        <pattern value="/user/bookmarks/show/#{identifier:bookmarkBean.currentBookmarkListId}/" />
         <view-id value="/userBackendViewBookmarkList.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="userMenuEditBookmarkList">
-		<pattern value="/bookmarks/edit/" />
+		<pattern value="/user/bookmarks/edit/" />
 		<view-id value="/userBackendBookmarkLists.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="userMenuEditBookmarkList1">
-		<pattern value="/bookmarks/edit/#{identifier:bookmarkBean.currentBookmarkListId}/" />
+		<pattern value="/user/bookmarks/edit/#{identifier:bookmarkBean.currentBookmarkListId}/" />
 		<view-id value="/userBackendEditBookmarkList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>

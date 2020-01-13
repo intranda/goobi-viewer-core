@@ -18,8 +18,6 @@ package io.goobi.viewer.filters;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.filters.LoginFilter;
-
 public class LoginFilterTest {
 
     /**
@@ -30,7 +28,7 @@ public class LoginFilterTest {
     public void isRestrictedUri_shouldReturnTrueForCertainPrettyUris() throws Exception {
         Assert.assertTrue(LoginFilter.isRestrictedUri("/myactivity/"));
         Assert.assertTrue(LoginFilter.isRestrictedUri("/mysearches/"));
-        Assert.assertTrue(LoginFilter.isRestrictedUri("/bookmarks/show"));
+        Assert.assertTrue(LoginFilter.isRestrictedUri("/user/bookmarks/show"));
     }
 
     /**
@@ -71,20 +69,11 @@ public class LoginFilterTest {
 
     /**
      * @see LoginFilter#isRestrictedUri(String)
-     * @verifies return true for bookshelf uris
+     * @verifies return true for user bookmarks uris
      */
     @Test
-    public void isRestrictedUri_shouldReturnTrueForBookshelfUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("boo.hoo/bookmarksEmpty"));
-    }
-
-    /**
-     * @see LoginFilter#isRestrictedUri(String)
-     * @verifies return true for bookmarks uris
-     */
-    @Test
-    public void isRestrictedUri_shouldReturnTrueForBookmarksUris() throws Exception {
-        Assert.assertTrue(LoginFilter.isRestrictedUri("boo.hoo/bookmarksEmpty"));
+    public void isRestrictedUri_shouldReturnTrueForUserBookmarksUris() throws Exception {
+        Assert.assertTrue(LoginFilter.isRestrictedUri("viewer/user/bookmarks/etc"));
     }
 
     /**
