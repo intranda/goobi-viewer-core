@@ -335,6 +335,21 @@
 						</div>
 					</ui:fragment>
 
+					<!-- IMAGE FRAGMENT -->
+					<ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+						<div class="widget-usage__image-fragment__wrapper">
+							<h4 id="titlePage" class="widget-usage__subtitle">#{msg.image_fragment}</h4>
+	
+							<div class="widget-usage__image-fragment">
+							
+								<a class="label label-default widget-usage__image-fragment-page"  id="imageFragmentPage" data-copy="image-region-page"
+									title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_page}</a>
+								<a class="label label-default widget-usage__image-fragment-image"  id="imageFragmentImage" data-copy="image-region-image"
+									title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_image}</a>
+							</div>
+						</div>
+					</ui:fragment>
+
 					<!-- CITE -->
                     <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
