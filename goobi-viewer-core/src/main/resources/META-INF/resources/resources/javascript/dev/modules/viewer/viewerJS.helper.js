@@ -358,7 +358,30 @@ var viewerJS = ( function( viewer ) {
             let values = $template.css(styles);
             $template.remove();
             return values;
+        },
+        
+        getFragmentHash: function( ) {
+            let coordsRegex = /xywh=((?:percent:)?[\d\.\-\+]+,[\d\.\-\+]+,[\d\.\-\+]+,[\d\.\-\+]+)/;
+            let hash = window.location.hash;
+            let fragments = [];
+            if(hash) {
+                let match;// = fragment.match(coordsRegex);
+                while (match = coordsRegex.exec(hash)) {  
+                    console.log("hash = ", hash);
+                    let coords = match[1];
+                    fragments.push(coords);
+                    hash = hash.replace(match[0], "");
+                }
+            }
+            if(fragments.length == 1) {
+                return fragments[0];
+            } else if(fragments.length > 1) {
+                return fragments;
+            } else {
+                return undefined;
+            }
         }
+
     };
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();

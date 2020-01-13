@@ -126,6 +126,7 @@
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
+    	     initImageFragmentLinks();
            	 initImageAreaSelect(image);
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
@@ -176,7 +177,6 @@
        		     	$(button).popover("hide");
 	      		    $(button).removeClass("active");
 	       		 	areaSelect.stopSelect();
-	       		 	console.log("selected area ", area);
 	       		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
 	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
 	       		 	var imageUrl = viewImage.getRegionUrl(area);
@@ -202,11 +202,9 @@
        		    }
        		}
 			function initImageAreaSelect(image) {
-			    console.log("initImageAreaSelect", image);
            		// init area select
            		try { 
 					let styles = viewerJS.helper.getCss("image-fragment", ['borderTopColor', 'borderTopWidth', 'background-color']);
-					console.log("styles for image-fragment", styles);
 	           		var areaSelectConfig = {
 	           		     removeOldAreas : true,
 	                     drawStyle : {
@@ -220,6 +218,20 @@
            		    console.error("Error initializing area select: ", error);
            		}
 			}
+			
+			function initImageFragmentLinks() {
+			    $wrapper = $(".widget-usage__image-fragment__wrapper");
+			    let fragment = viewerJS.helper.getFragmentHash();
+			    if(fragment) {
+			        console.log("found fragment ", fragment);
+			        var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + fragment;
+	       		 	var imageUrl = viewImage.getRegionUrl(fragment);
+	       		 	$wrapper.find(".widget-usage__image-fragment-page").attr("data-clipboard-text", pageUrl)
+	       		 	$wrapper.find(".widget-usage__image-fragment-image").attr("data-clipboard-text", imageUrl)
+	       		 	$wrapper.show();
+			    }
+			}
+			
        	}
        	
       	//]]>
