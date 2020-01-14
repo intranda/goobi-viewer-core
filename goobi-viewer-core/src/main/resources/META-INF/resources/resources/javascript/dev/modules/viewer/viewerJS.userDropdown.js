@@ -37,8 +37,8 @@ var viewerJS = ( function( viewer ) {
                 console.log( '##############################' );
             }
             
-            // check if bookshelfdropdown exist
-            if ( $( '.bookshelf-navigation__dropdown:visible' ) ) {
+            // check if bookmarkdropdown exist
+            if ( $( '.bookmark-navigation__dropdown:visible' ) ) {
                 _bookshelfDropdown = true;
             }
             
@@ -46,10 +46,10 @@ var viewerJS = ( function( viewer ) {
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();
                 
-                // hide bookshelfdropdow if exist
+                // hide bookmarkdropdow if exist
                 if ( _bookshelfDropdown ) {
-                    $( '.bookshelf-navigation__dropdown' ).hide();
-                    $( '.bookshelf-popup' ).remove();
+                    $( '.bookmark-navigation__dropdown' ).hide();
+                    $( '.bookmark-popup' ).remove();
                 }
                 // hide collection panel if exist
                 if ( $( '.navigation__collection-panel' ).length > 0 ) {

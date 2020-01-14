@@ -59,9 +59,9 @@ var viewerJS = ( function( viewer ) {
                 
                 // hide other dropdowns
                 $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown, .navigation__collection-panel' ).hide();
-                $( '.bookshelf-popup' ).remove();
+                $( '.bookmark-popup' ).remove();
                 
-                $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
+                $( '.bookmark-navigation__dropdown' ).slideToggle( 'fast' );
             } );
             
             // check if element is in any bookmark list
@@ -72,7 +72,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
-                $( '.bookshelf-navigation__dropdown, .login-navigation__user-dropdown' ).hide();
+                $( '.bookmark-navigation__dropdown, .login-navigation__user-dropdown' ).hide();
                 
                 var currBtn = $( this );
                 var currPi = currBtn.attr( 'data-pi' );
@@ -91,15 +91,15 @@ var viewerJS = ( function( viewer ) {
             
             // hide menus/popups by clicking on body
             $( 'body' ).on( 'click', function( event ) {
-                $( '.bookshelf-navigation__dropdown' ).hide();
+                $( '.bookmark-navigation__dropdown' ).hide();
                 
-                if ( $( '.bookshelf-popup' ).length > 0 ) {
+                if ( $( '.bookmark-popup' ).length > 0 ) {
                     var target = $( event.target );
-                    var popup = $( '.bookshelf-popup' );
+                    var popup = $( '.bookmark-popup' );
                     var popupChild = popup.find( '*' );
                     
                     if ( !target.is( popup ) && !target.is( popupChild ) ) {
-                        $( '.bookshelf-popup' ).remove();
+                        $( '.bookmark-popup' ).remove();
                     }
                 }
             } );
@@ -515,18 +515,18 @@ var viewerJS = ( function( viewer ) {
         var posLeft = pos.left;
         
         // remove all popups
-        $( '.bookshelf-popup' ).remove();
+        $( '.bookmark-popup' ).remove();
         
         // DOM-Elements
-        var bookmarkListPopup = $( '<div />' ).addClass( 'bookshelf-popup bottom' ).css( {
+        var bookmarkListPopup = $( '<div />' ).addClass( 'bookmark-popup bottom' ).css( {
             'top': ( posTop + size.height ) + 10 + 'px',
             'left': ( posLeft - 142 ) + ( size.width / 2 ) + 'px'
         } );
-        var bookmarkListPopupLoader = $( '<div />' ).addClass( 'bookshelf-popup__body-loader' );
+        var bookmarkListPopupLoader = $( '<div />' ).addClass( 'bookmark-popup__body-loader' );
         bookmarkListPopup.append( bookmarkListPopupLoader );
         
         // build popup header
-        var bookmarkListPopupHeader = $( '<div />' ).addClass( 'bookshelf-popup__header' ).text( _defaults.msg.selectBookmarkList );
+        var bookmarkListPopupHeader = $( '<div />' ).addClass( 'bookmark-popup__header' ).text( _defaults.msg.selectBookmarkList );
         
         // type radio buttons
         var bookmarkListPopupRadioButtons = $( '<div />' ).addClass( 'bookmarkList-popup__radio-buttons' );
@@ -540,10 +540,10 @@ var viewerJS = ( function( viewer ) {
         bookmarkListPopupRadioButtons.append(bookmarkListPopupRadioLabel).append(bookmarkListPopupRadioDivLeft).append(bookmarkListPopupRadioDivRight);
         
         // build popup body
-        var bookmarkListPopupBody = $( '<div />' ).addClass( 'bookshelf-popup__body' );
+        var bookmarkListPopupBody = $( '<div />' ).addClass( 'bookmark-popup__body' );
 
         // build popup footer
-        var bookmarkListPopupFooter = $( '<div />' ).addClass( 'bookshelf-popup__footer' );
+        var bookmarkListPopupFooter = $( '<div />' ).addClass( 'bookmark-popup__footer' );
         var bookmarkListPopupFooterRow = $( '<div />' ).addClass( 'row no-margin' );
         var bookmarkListPopupFooterColLeft = $( '<div />' ).addClass( 'col-xs-11 no-padding' );
         var bookmarkListPopupFooterInput = $( '<input />' ).attr( 'type', 'text' ).attr( 'placeholder', _defaults.msg.addNewBookmarkList );
@@ -566,15 +566,15 @@ var viewerJS = ( function( viewer ) {
         _renderBookmarkListPopoverList( pi, logid, page, selectedType );
         
         // add new bookmark list in popover
-        $( '.bookshelf-popup__footer [data-bookmark-list-type="add"]' ).on( 'click', function() {
-            var bsName = $( '.bookshelf-popup__footer input' ).val();
+        $( '.bookmark-popup__footer [data-bookmark-list-type="add"]' ).on( 'click', function() {
+            var bsName = $( '.bookmark-popup__footer input' ).val();
             var currPi = $( this ).attr( 'data-pi' );
             var currLogid = $( this ).attr( 'data-logid' );
             var currPage = $( this ).attr( 'data-page' );
             
             if ( bsName != '' ) {
                 _addNamedBookmarkList( _defaults.root, bsName ).then( function() {
-                    $( '.bookshelf-popup__footer input' ).val( '' );
+                    $( '.bookmark-popup__footer input' ).val( '' );
                     _renderBookmarksPopoverList( currPi, logid, currPage, selectedType );
                     _renderBookmarksNavigationList();
                 } ).fail( function( error ) {
@@ -583,7 +583,7 @@ var viewerJS = ( function( viewer ) {
             }
             else {
                 _addAutomaticNamedBookmarkList( _defaults.root ).then( function() {
-                    $( '.bookshelf-popup__footer input' ).val( '' );
+                    $( '.bookmark-popup__footer input' ).val( '' );
                     _renderBookmarksPopoverList( currPi, logid, currPage, selectedType );
                     _renderBookmarksNavigationList();
                 } ).fail( function( error ) {
@@ -599,9 +599,9 @@ var viewerJS = ( function( viewer ) {
         } );
         
         // add new bookmark list on enter in popover
-        $( '.bookshelf-popup__footer input' ).on( 'keyup', function( event ) {
+        $( '.bookmark-popup__footer input' ).on( 'keyup', function( event ) {
             if ( event.which == 13 ) {
-                $( '.bookshelf-popup__footer [data-bookmark-list-type="add"]' ).click();
+                $( '.bookmark-popup__footer [data-bookmark-list-type="add"]' ).click();
             }
         } );
     }
@@ -619,7 +619,7 @@ var viewerJS = ( function( viewer ) {
         
         _getAllBookmarkLists( _defaults.root ).then( function( elements ) {
             // DOM-Elements
-            var dropdownList = $( '<ul />' ).addClass( 'bookshelf-popup__body-list list' );
+            var dropdownList = $( '<ul />' ).addClass( 'bookmark-popup__body-list list' );
             var dropdownListItem = null;
             var dropdownListItemText = null;
             var dropdownListItemAdd = null;
@@ -657,13 +657,13 @@ var viewerJS = ( function( viewer ) {
             }
             
             // render complete list
-            $( '.bookshelf-popup__body' ).empty().append( dropdownList );
+            $( '.bookmark-popup__body' ).empty().append( dropdownList );
             
             // remove loader
             $( '.bookmark list-popup__body-loader' ).remove();
             
             // add item to bookmark list
-            $( '.bookshelf-popup__body-list [data-bookmark-list-type="add"]' ).on( 'click', function() {
+            $( '.bookmark-popup__body-list [data-bookmark-list-type="add"]' ).on( 'click', function() {
                 var currBtn = $( this );
                 var currId = currBtn.attr( 'data-id' );
                 var currPi = currBtn.attr( 'data-pi' );
@@ -711,7 +711,7 @@ var viewerJS = ( function( viewer ) {
         
         _getAllBookmarkLists( _defaults.root ).then( function( elements ) {
             // DOM-Elements
-            var dropdownList = $( '<ul />' ).addClass( 'bookshelf-navigation__dropdown-list list' );
+            var dropdownList = $( '<ul />' ).addClass( 'bookmark-navigation__dropdown-list list' );
             var dropdownListItem = null;
             var dropdownListItemRow = null;
             var dropdownListItemLeft = null;
@@ -727,7 +727,7 @@ var viewerJS = ( function( viewer ) {
                     dropdownListItemLeft = $( '<div />' ).addClass( 'col-xs-10 no-padding' );
                     dropdownListItemRight = $( '<div />' ).addClass( 'col-xs-2 no-padding' );
                     dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/bookmarks/' + item.id + '/' ).text( item.name );
-                    dropdownListItemAddCounter = $( '<span />' ).addClass( 'bookshelf-navigation__dropdown-list-counter' ).text( item.items.length );
+                    dropdownListItemAddCounter = $( '<span />' ).addClass( 'bookmark-navigation__dropdown-list-counter' ).text( item.items.length );
                     
                     // build bookmark
                     dropdownListItemLeft.append( dropdownListItemLink );
@@ -756,7 +756,7 @@ var viewerJS = ( function( viewer ) {
             }
             
             // render complete list
-            $( '.bookshelf-navigation__dropdown-list' ).empty().append( dropdownList );
+            $( '.bookmark-navigation__dropdown-list' ).empty().append( dropdownList );
             
         } ).fail( function( error ) {
             console.error( 'ERROR - _getAllBookmarkLists: ', error.responseText );

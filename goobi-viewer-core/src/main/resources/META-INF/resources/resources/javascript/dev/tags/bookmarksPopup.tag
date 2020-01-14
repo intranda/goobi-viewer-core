@@ -1,8 +1,8 @@
-<bookmarksPopup class="bookshelf-popup bottom">
+<bookmarksPopup class="bookmark-popup bottom">
 
-	<div class="bookshelf-popup__body-loader"></div>
+	<div class="bookmark-popup__body-loader"></div>
 
-	<div if="{opts.data.page !== undefined}" class="bookshelf-popup__radio-buttons">
+	<div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons">
 		<div>
 			<label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}"/>{opts.msg.typeRecord}</label>
 		</div>
@@ -11,15 +11,15 @@
 		</div>
 	</div>
 	
-   <div class="bookshelf-popup__header">
+   <div class="bookmark-popup__header">
 		{this.opts.msg.selectBookmarkList}
 	</div>
 
-	<div class="bookshelf-popup__body">
+	<div class="bookmark-popup__body">
 		<bookmarkList data="{this.opts.data}" loader="{this.opts.loader}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList>
 	</div>
 	
-	<div class="bookshelf-popup__footer">
+	<div class="bookmark-popup__footer">
 		<div class="row no-margin">
 			<div class="col-xs-11 no-padding">
 				<input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"/>
@@ -34,7 +34,7 @@
 
 const popupOffset = 6;
 
-this.opts.loader = ".bookshelf-popup__body-loader";
+this.opts.loader = ".bookmark-popup__body-loader";
 
 this.on( 'mount', function() {    	
 	

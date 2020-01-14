@@ -26,8 +26,8 @@
     
     <ui:define name="content">
         <div
-            id="viewBookshelf"
-            class="view-bookshelf">
+            id="viewBookmark"
+            class="view-bookmark">
             <h:panelGroup rendered="#{userBean.loggedIn}">
                 <div class="row">
                     <div class="col-xs-10">
@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-xs-2">
                         <!-- ACTION -->
-                        <div class="view-bookshelf__action text-right">
+                        <div class="view-bookmark__action text-right">
                             <h:form
                                 id="viewBookshelfActionForm"
                                 prependId="false">
@@ -89,7 +89,7 @@
                                 class="alert alert-warning"
                                 role="alert">#{msg.bookshelves_noEntryWarning}</div>
                         </h:panelGroup>
-                        <!-- bookshelf entries -->
+                        <!-- bookmark entries -->
                         <h:panelGroup rendered="#{!bookshelfBean.currentBookshelf.items.isEmpty()}">
                             <div class="row">
                                 <ui:repeat
@@ -100,19 +100,19 @@
                                         <h:form
                                             id="viewBookshelfItemForm"
                                             prependId="false">
-                                            <div class="view-bookshelf__item">
+                                            <div class="view-bookmark__item">
                                                 <!--  IMAGE -->
                                                 <div
-                                                    class="view-bookshelf__item-image"
+                                                    class="view-bookmark__item-image"
                                                     style="background-image: url('#{item.getRepresentativeImageUrl(400,400)}');">
                                                     <a href="#{item.url}"></a>
                                                 </div>
-                                                <div class="view-bookshelf__item-info">
+                                                <div class="view-bookmark__item-info">
                                                     <!--  NAME -->
                                                     <h4>#{item.name}</h4>
                                                 </div>
                                                 <!--  ACTION -->
-                                                <div class="view-bookshelf__item-action">
+                                                <div class="view-bookmark__item-action">
                                                     <h:commandLink actionListener="#{bookshelfBean.deleteCurrentItemAction(item)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete"
 					                                	onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelfItem}&quot; ) ) { return false };">
 									                	<f:ajax render="@all"></f:ajax>
