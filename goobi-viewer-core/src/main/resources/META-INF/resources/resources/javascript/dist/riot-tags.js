@@ -254,7 +254,7 @@ this.maySearchList = function(list) {
 }.bind(this)
 
 this.searchListUrl = function(list) {
-    let url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
+    let url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
     return url;
 }.bind(this)
 

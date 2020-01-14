@@ -184,8 +184,8 @@ maySearchList(list) {
 }
 
 searchListUrl(list) {
-    let url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
-    return url;
+    let url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
+    return url; 
 }
 
 mayCompareList(list) {
