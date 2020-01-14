@@ -18,11 +18,11 @@
 	</ui:define>
 
 	<ui:define name="content">
-		<div id="userBookmarkListEdit" class="user-bookshelf-edit">
+		<div id="userBookmarkListEdit" class="user-bookmark-edit">
 			<h:panelGroup rendered="#{userBean.loggedIn and bookmarkBean.currentBookmarkList != null and bookmarkBean.currentBookmarkListMine}">
 				<h2>#{msg.bookmarkList_edit}</h2>
 
-				<div class="user-bookshelf-edit__form">
+				<div class="user-bookmark-edit__form">
 					<h:form id="userBookmarkListEditForm" styleClass="form-horizontal" prependId="false">
 						<!-- NAME -->
 						<div class="form-group">
@@ -69,7 +69,7 @@
 						
 											
 						<!-- ACTION -->
-						<div class="user-bookshelf-edit__action">
+						<div class="user-bookmark-edit__action">
                             <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.bookmarkList_cancel}" action="userBackendBookmarkLists" immediate="true">
                                 <f:setPropertyActionListener target="#{bookmarkBean.currentBookmarkList}" value="#{null}" />
                             </h:commandLink>

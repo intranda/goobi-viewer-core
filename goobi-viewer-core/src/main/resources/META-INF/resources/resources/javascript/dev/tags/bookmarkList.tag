@@ -109,7 +109,7 @@ this.logid = this.opts.data.logid;
 this.page = this.opts.data.page;
 this.loader = this.opts.loader; 
 this.button = this.opts.button;
-this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookshelf-popup__body-list";
+this.mainClass = (this.opts.style && this.opts.style.mainClass) ? this.opts.style.mainClass : "bookmark-popup__body-list";
 
 
 this.on( 'mount', function() {    	
