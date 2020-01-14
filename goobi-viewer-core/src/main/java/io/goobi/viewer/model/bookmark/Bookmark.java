@@ -54,7 +54,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>Bookmark class.</p>
+ * <p>
+ * Bookmark class.
+ * </p>
  */
 @Entity
 @Table(name = "bookshelf_items")
@@ -114,7 +116,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Constructor for Bookmark.</p>
+     * <p>
+     * Constructor for Bookmark.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param mainTitle a {@link java.lang.String} object.
@@ -207,7 +211,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>bothEqualOrNull.</p>
+     * <p>
+     * bothEqualOrNull.
+     * </p>
      *
      * @param o1 a {@link java.lang.Object} object.
      * @param o2 a {@link java.lang.Object} object.
@@ -221,7 +227,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>bothEqualOrBlank.</p>
+     * <p>
+     * bothEqualOrBlank.
+     * </p>
      *
      * @param o1 a {@link java.lang.String} object.
      * @param o2 a {@link java.lang.String} object.
@@ -245,12 +253,12 @@ public class Bookmark implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getUrl() throws PresentationException, IndexUnreachableException {
-//        if (url != null) {
-//            return url;
-//        }
+        if (url != null) {
+            return url;
+        }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        //        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
 
         if (StringUtils.isNotEmpty(urn)) {
             sb.append("/resolver?identifier=").append(urn);
@@ -382,7 +390,9 @@ public class Bookmark implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -391,7 +401,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -400,7 +412,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>bookmarkList</code>.</p>
+     * <p>
+     * Getter for the field <code>bookmarkList</code>.
+     * </p>
      *
      * @return the bookmarkList
      */
@@ -409,7 +423,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>bookmarkList</code>.</p>
+     * <p>
+     * Setter for the field <code>bookmarkList</code>.
+     * </p>
      *
      * @param bookmarkList the bookmarkList to set
      */
@@ -418,7 +434,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -427,7 +445,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -436,7 +456,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>logId</code>.</p>
+     * <p>
+     * Getter for the field <code>logId</code>.
+     * </p>
      *
      * @return the logId
      */
@@ -445,7 +467,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>logId</code>.</p>
+     * <p>
+     * Setter for the field <code>logId</code>.
+     * </p>
      *
      * @param logId the logId to set
      */
@@ -454,7 +478,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>urn</code>.</p>
+     * <p>
+     * Getter for the field <code>urn</code>.
+     * </p>
      *
      * @return the urn
      */
@@ -463,7 +489,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>urn</code>.</p>
+     * <p>
+     * Setter for the field <code>urn</code>.
+     * </p>
      *
      * @param urn the urn to set
      */
@@ -472,7 +500,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>getMainTitleUnescaped.</p>
+     * <p>
+     * getMainTitleUnescaped.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -482,7 +512,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -491,7 +523,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -500,7 +534,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -509,7 +545,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -518,7 +556,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>dateAdded</code>.</p>
+     * <p>
+     * Getter for the field <code>dateAdded</code>.
+     * </p>
      *
      * @return the dateAdded
      */
@@ -527,7 +567,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>dateAdded</code>.</p>
+     * <p>
+     * Setter for the field <code>dateAdded</code>.
+     * </p>
      *
      * @param dateAdded the dateAdded to set
      */
@@ -536,7 +578,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>order</code>.</p>
+     * <p>
+     * Getter for the field <code>order</code>.
+     * </p>
      *
      * @return the order
      */
@@ -545,7 +589,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>order</code>.</p>
+     * <p>
+     * Setter for the field <code>order</code>.
+     * </p>
      *
      * @param order the order to set
      */
@@ -554,7 +600,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>mainTitle</code>.</p>
+     * <p>
+     * Getter for the field <code>mainTitle</code>.
+     * </p>
      *
      * @return the mainTitle
      */
@@ -564,7 +612,9 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>mainTitle</code>.</p>
+     * <p>
+     * Setter for the field <code>mainTitle</code>.
+     * </p>
      *
      * @param mainTitle the mainTitle to set
      */
