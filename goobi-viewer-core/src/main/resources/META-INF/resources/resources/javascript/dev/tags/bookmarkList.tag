@@ -14,7 +14,7 @@
 		<div if="{!pi}" class="row no-margin">
 			<div class="col-xs-9 no-padding">
 				<a
-					href="{opts.bookmarks.config.root}/bookmarks/show/{bookmarkList.id}">{bookmarkList.name}</a>
+					href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a>
 			</div>
 			<div class="col-xs-2 no-padding icon-list">
 				<a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{opts.msg.sendBookmarkList}"> 
