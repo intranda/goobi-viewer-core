@@ -281,33 +281,6 @@
 		<action onPostback="false">#{searchBean.resetHitsPerPage}</action>
 	</url-mapping>
 	
-	<url-mapping id="searchbookmarks">
-		<pattern value="/bookmarks/search/#{name:searchBean.bookmarkListName}/" />
-		<view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-		<action onPostback="false">#{searchBean.searchAdvanced()}</action>
-		<action onPostback="false">#{searchBean.search}</action>
-	</url-mapping>
-	
-	<url-mapping id="searchbookmarks">
-		<pattern value="/bookmarks/search/#{name:searchBean.bookmarkListName}/" />
-		<view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-		<action onPostback="false">#{searchBean.searchAdvanced()}</action>
-		<action onPostback="false">#{searchBean.search}</action>
-	</url-mapping>
-	
-		<url-mapping id="searchbookmarks2">
-		<pattern value="/bookmarks/search/key/#{name:searchBean.bookmarkListSharedKey}/" />
-		<view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-		<action onPostback="false">#{searchBean.searchAdvanced()}</action>
-		<action onPostback="false">#{searchBean.search}</action>
-	</url-mapping>
-	
 	<!-- CALENDAR SEARCH -->
 	<url-mapping id="searchCalendar4">
 		<pattern value="/searchcalendar/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
@@ -617,9 +590,49 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
 	</url-mapping>
-
-	<!-- TODO Use uniform URL patterns for pages that only logged in users may visit so that LoginFilter still works! -->
+	
 	<!-- BOOKMARKS -->
+    <url-mapping id="bookmarkLists">
+        <pattern value="/bookmarks/" />
+        <view-id value="/bookmarkLists.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="sharedBookmarkList">
+        <pattern value="/bookmarks/key/#{shareKey:bookmarkBean.shareKey}/" />
+        <view-id value="/userBackendViewBookmarkList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="bookmarksSendList">
+        <pattern value="/bookmarks/send/" />
+        <view-id value="/userBookmarksSendList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+	<url-mapping id="searchbookmarks">
+        <pattern value="/bookmarks/search/#{name:searchBean.bookmarkListName}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.searchAdvanced()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
+    <url-mapping id="searchbookmarks">
+        <pattern value="/bookmarks/search/#{name:searchBean.bookmarkListName}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.searchAdvanced()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
+    <url-mapping id="searchbookmarks2">
+        <pattern value="/bookmarks/search/key/#{name:searchBean.bookmarkListSharedKey}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.searchAdvanced()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
+
+	<!-- BOOKMARKS (USER) -->
 	<url-mapping id="userMenuBookmarkLists">
 		<pattern value="/user/bookmarks/" />
 		<view-id value="/userBackendBookmarkLists.xhtml" />
@@ -643,16 +656,6 @@
 	<url-mapping id="userMenuEditBookmarkList1">
 		<pattern value="/user/bookmarks/edit/#{identifier:bookmarkBean.currentBookmarkListId}/" />
 		<view-id value="/userBackendEditBookmarkList.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-    <url-mapping id="userMenuViewSharedBookmarkList">
-        <pattern value="/bookmarks/key/#{shareKey:bookmarkBean.shareKey}/" />
-        <view-id value="/userBackendViewBookmarkList.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-	<url-mapping id="userBookshelfSendList">
-		<pattern value="/bookmarks/send/" />
-		<view-id value="/userBookmarksSendList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 

@@ -726,7 +726,7 @@ var viewerJS = ( function( viewer ) {
                     dropdownListItemRow = $( '<div />' ).addClass( 'row no-margin' );
                     dropdownListItemLeft = $( '<div />' ).addClass( 'col-xs-10 no-padding' );
                     dropdownListItemRight = $( '<div />' ).addClass( 'col-xs-2 no-padding' );
-                    dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/bookmarks/' + item.id + '/' ).text( item.name );
+                    dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/user/bookmarks/' + item.id + '/' ).text( item.name );
                     dropdownListItemAddCounter = $( '<span />' ).addClass( 'bookshelf-navigation__dropdown-list-counter' ).text( item.items.length );
                     
                     // build bookmark

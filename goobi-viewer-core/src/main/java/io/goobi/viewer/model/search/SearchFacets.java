@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -43,7 +44,9 @@ import io.goobi.viewer.model.cms.CMSCollection;
 /**
  * Current faceting settings for a search.
  */
-public class SearchFacets {
+public class SearchFacets implements Serializable {
+
+    private static final long serialVersionUID = -7170821006287251119L;
 
     private static final Logger logger = LoggerFactory.getLogger(SearchFacets.class);
 
@@ -63,7 +66,9 @@ public class SearchFacets {
     private String tempValue;
 
     /**
-     * <p>resetAvailableFacets.</p>
+     * <p>
+     * resetAvailableFacets.
+     * </p>
      */
     public void resetAvailableFacets() {
         logger.trace("resetAvailableFacets");
@@ -72,14 +77,18 @@ public class SearchFacets {
     }
 
     /**
-     * <p>resetCurrentFacets.</p>
+     * <p>
+     * resetCurrentFacets.
+     * </p>
      */
     public void resetCurrentFacets() {
         resetCurrentFacetString();
     }
 
     /**
-     * <p>resetSliderRange.</p>
+     * <p>
+     * resetSliderRange.
+     * </p>
      */
     public void resetSliderRange() {
         logger.trace("resetSliderRange");
@@ -265,7 +274,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>isFacetListSizeSufficient.</p>
+     * <p>
+     * isFacetListSizeSufficient.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
@@ -296,7 +307,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getCurrentFacetsSizeForField.</p>
+     * <p>
+     * getCurrentFacetsSizeForField.
+     * </p>
      *
      * @return Size of <code>currentFacets</code>.
      * @param field a {@link java.lang.String} object.
@@ -395,7 +408,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>isDisplayDrillDownCollapseLink.</p>
+     * <p>
+     * isDisplayDrillDownCollapseLink.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
@@ -424,7 +439,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getCurrentFacetString.</p>
+     * <p>
+     * getCurrentFacetString.
+     * </p>
      *
      * @param urlEncode a boolean.
      * @return a {@link java.lang.String} object.
@@ -442,7 +459,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getCurrentHierarchicalFacetString.</p>
+     * <p>
+     * getCurrentHierarchicalFacetString.
+     * </p>
      *
      * @return the currentCollection
      */
@@ -452,7 +471,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getCurrentCollection.</p>
+     * <p>
+     * getCurrentCollection.
+     * </p>
      *
      * @return the currentCollection
      */
@@ -486,7 +507,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>setCurrentCollection.</p>
+     * <p>
+     * setCurrentCollection.
+     * </p>
      *
      * @param currentCollection the currentCollection to set
      */
@@ -591,7 +614,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getHierarchicalFacets.</p>
+     * <p>
+     * getHierarchicalFacets.
+     * </p>
      *
      * @param facetString a {@link java.lang.String} object.
      * @param facetFields a {@link java.util.List} object.
@@ -618,7 +643,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>splitHierarchicalFacet.</p>
+     * <p>
+     * splitHierarchicalFacet.
+     * </p>
      *
      * @param facet a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -637,7 +664,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getCurrentMinRangeValue.</p>
+     * <p>
+     * getCurrentMinRangeValue.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return Current min value, if facet in use; otherwise absolute min value for that field
@@ -656,7 +685,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getCurrentMaxRangeValue.</p>
+     * <p>
+     * getCurrentMaxRangeValue.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return Current max value, if facet in use; otherwise absolute max value for that field
@@ -768,7 +799,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>resetCurrentFacetString.</p>
+     * <p>
+     * resetCurrentFacetString.
+     * </p>
      */
     public void resetCurrentFacetString() {
         logger.trace("resetCurrentFacetString");
@@ -824,7 +857,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>removeFacetAction.</p>
+     * <p>
+     * removeFacetAction.
+     * </p>
      *
      * @param facetQuery a {@link java.lang.String} object.
      * @should remove facet correctly
@@ -856,7 +891,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>isDrillDownCollapsed.</p>
+     * <p>
+     * isDrillDownCollapsed.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
@@ -866,7 +903,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getAllAvailableFacets.</p>
+     * <p>
+     * getAllAvailableFacets.
+     * </p>
      *
      * @should return all facet items in correct order
      * @return a {@link java.util.Map} object.
@@ -885,7 +924,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getConfiguredSubelementFacetFields.</p>
+     * <p>
+     * getConfiguredSubelementFacetFields.
+     * </p>
      *
      * @return Configured subelement fields names only
      */
@@ -902,7 +943,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>Getter for the field <code>availableFacets</code>.</p>
+     * <p>
+     * Getter for the field <code>availableFacets</code>.
+     * </p>
      *
      * @return the availableFacets
      */
@@ -911,7 +954,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>Getter for the field <code>currentFacets</code>.</p>
+     * <p>
+     * Getter for the field <code>currentFacets</code>.
+     * </p>
      *
      * @return the currentFacets
      */
@@ -920,7 +965,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>Getter for the field <code>tempValue</code>.</p>
+     * <p>
+     * Getter for the field <code>tempValue</code>.
+     * </p>
      *
      * @return the tempValue
      */
@@ -929,7 +976,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>Setter for the field <code>tempValue</code>.</p>
+     * <p>
+     * Setter for the field <code>tempValue</code>.
+     * </p>
      *
      * @param tempValue the tempValue to set
      */
@@ -962,7 +1011,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getFacetValue.</p>
+     * <p>
+     * getFacetValue.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -972,7 +1023,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getFacetDescription.</p>
+     * <p>
+     * getFacetDescription.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -986,7 +1039,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getFirstHierarchicalFacetValue.</p>
+     * <p>
+     * getFirstHierarchicalFacetValue.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -995,7 +1050,9 @@ public class SearchFacets {
     }
 
     /**
-     * <p>getFirstHierarchicalFacetDescription.</p>
+     * <p>
+     * getFirstHierarchicalFacetDescription.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

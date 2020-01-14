@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,12 +48,16 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.Role;
 
 /**
- * <p>UserGroup class.</p>
+ * <p>
+ * UserGroup class.
+ * </p>
  */
 @Entity
 @Table(name = "user_groups")
 // @DiscriminatorValue("UserGroup")
-public class UserGroup implements ILicensee {
+public class UserGroup implements ILicensee, Serializable {
+
+    private static final long serialVersionUID = -3038659744043035929L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(UserGroup.class);
@@ -145,7 +150,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>changeMemberRole.</p>
+     * <p>
+     * changeMemberRole.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
@@ -211,7 +218,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>hasUserPrivilege.</p>
+     * <p>
+     * hasUserPrivilege.
+     * </p>
      *
      * @param privilegeName a {@link java.lang.String} object.
      * @return a boolean.
@@ -256,7 +265,9 @@ public class UserGroup implements ILicensee {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -265,7 +276,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -280,7 +293,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -289,7 +304,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -298,7 +315,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -307,7 +326,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -316,7 +337,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */
@@ -325,7 +348,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>isActive.</p>
+     * <p>
+     * isActive.
+     * </p>
      *
      * @return the active
      */
@@ -334,7 +359,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>active</code>.</p>
+     * <p>
+     * Setter for the field <code>active</code>.
+     * </p>
      *
      * @param active the active to set
      */
@@ -349,7 +376,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Setter for the field <code>licenses</code>.</p>
+     * <p>
+     * Setter for the field <code>licenses</code>.
+     * </p>
      *
      * @param licenses the licenses to set
      */
@@ -358,7 +387,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>Getter for the field <code>licenses</code>.</p>
+     * <p>
+     * Getter for the field <code>licenses</code>.
+     * </p>
      *
      * @param core a boolean.
      * @return List of filtered licenses whose type's core attribute matches the given value
@@ -379,7 +410,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>getMemberships.</p>
+     * <p>
+     * getMemberships.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -389,7 +422,9 @@ public class UserGroup implements ILicensee {
     }
 
     /**
-     * <p>getMembers.</p>
+     * <p>
+     * getMembers.
+     * </p>
      *
      * @return a {@link java.util.Set} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
