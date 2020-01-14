@@ -4,6 +4,9 @@
     <description>cms__template_28__description</description>
     <icon>cms_template_28_bookmarklists.png</icon>
     <html>cms_template_28_bookmarklists.xhtml</html>
+    <options>    
+        <appliesToExpandedUrl>false</appliesToExpandedUrl>
+    </options>
     <content>
         <item id="text" order="1" type="HTML" />
         <item id="bookmarklists" order="2" type="BOOKMARKLISTS" />
