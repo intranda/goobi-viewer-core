@@ -11,8 +11,8 @@
 
 	<ui:fragment rendered="#{bookmarkLists != null}">
 	    <ui:repeat value="#{bookmarkLists}" var="bookmarkList" varStatus="status">
-			<div class="user-bookshelves__panel">
-				<div class="user-bookshelves__panel-header">
+			<div class="user-bookmark__panel">
+				<div class="user-bookmark__panel-header">
 					<div class="col-xs-8 col-sm-9">
 						<h4>
 							<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
@@ -31,7 +31,7 @@
 					</div>
 					<div class="col-xs-4 col-sm-3">
 						<!-- ACTION -->
-						<div class="user-bookshelves__panel-action text-right">
+						<div class="user-bookmark__panel-action text-right">
 							<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
 								<a
 									href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}"
@@ -73,7 +73,7 @@
 				<!-- DESCRIPTION -->
 				<ui:fragment rendered="#{bookmarkList.hasDescription()}">
 					<div class="col-xs-12">
-						<div class="user-bookshelves__panel-body">
+						<div class="user-bookmark__panel-body">
 							<p>#{bookmarkList.description}</p>
 						</div>
 					</div>

@@ -22,14 +22,14 @@
  * @module viewerJS.bookmarks
  * @requires jQuery
  */
-var viewerJS = ( function( viewer ) {
+var viewerJS = ( function( viewer ) { 
     'use strict';
     
     var _debug = false;
     var _riotTags = [];
     var _defaults = {
         root: '',
-        counter: ".bookshelf-navigation__counter",
+        counter: ".bookmark-navigation__counter",
         typePage: false,
         userLoggedIn: false,
         msg: {
@@ -136,7 +136,7 @@ var viewerJS = ( function( viewer ) {
                 }
   
                 var $dropdown = $("<bookmarkList></bookmarkList>");
-                $dropdown.addClass("bookshelf-navigation__dropdown");
+                $dropdown.addClass("bookmark-navigation__dropdown");
                 
                 $button.after($dropdown);
                 riot.mount('bookmarkList', {
@@ -146,7 +146,7 @@ var viewerJS = ( function( viewer ) {
                         page: ''
                     },
                     style: {
-                        mainClass : "bookshelf-navigation__dropdown-list"
+                        mainClass : "bookmark-navigation__dropdown-list"
                     },
                     button: '[data-bookmark-list-type="dropdown"]',
                     msg: this.config.msg,
