@@ -36,14 +36,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.CharStreams;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest;
-import io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse;
 
 /**
  * <p>Abstract HttpAuthenticationProvider class.</p>
