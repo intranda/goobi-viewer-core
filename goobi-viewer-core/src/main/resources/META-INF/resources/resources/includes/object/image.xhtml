@@ -38,6 +38,7 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
+  		      		    
     	var imageMap = $( "#imageMap" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
         var accessDeniedImagePath = "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/access_denied.png";
@@ -71,7 +72,7 @@
                 {
                     name: "annotations",
                     styleClass: "image-fragment",
-                    interactive: false
+                    interactive: true
                 
                 }],
         	},
@@ -153,17 +154,21 @@
        	if(viewImage) {
             function selectImageArea(button) {
                  if(areaSelect) {
-                    if($(button).hasClass("active")) {
-                        $(button).popover("hide");
-    	      		    $(button).removeClass("active");
-    	       		 	areaSelect.stopSelect();
-                	} else {                	    
+                    if(!$(button).hasClass("active")) {
+                	    $(button).tooltip("hide");
 	       		        $(button).popover({
 	       		            trigger: 'manual',
 	       		            title: "#{msg.action__share_image_region}",
 	       		            content: "#{msg.action__share_image_region__description}",
-	       		            placement: 'right'
+	       		            placement: 'bottom'
 	       		        }).popover("show");
+	       		        setTimeout( () => {
+		       		            $("body").one("click.dismiss-popover", function() {
+		       		         	$(button).popover("hide");
+		    	      		    $(button).removeClass("active");
+		    	       		 	areaSelect.stopSelect();
+	       		        	})
+	       		        }, 0);
 		                $(button).addClass("active");
 		                areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
 		                viewImage.viewer.addOnceHandler( 'canvas-drag-end', (e) => {
@@ -200,7 +205,8 @@
 	       		        popup.close();
 	       		    })
 	       		    
-	       		 initImageFragmentLinks(areaString);
+		       		$("body").off("click.dismiss-popover");
+		       		initImageFragmentLinks(areaString);
        		    }
        		}
 			function initImageAreaSelect(image) {
