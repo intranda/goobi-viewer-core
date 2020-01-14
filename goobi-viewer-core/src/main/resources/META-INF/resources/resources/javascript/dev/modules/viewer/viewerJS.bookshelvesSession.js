@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module to manage bookshelves in the current session.
+ * Module to manage bookmarks in the current session.
  * 
  * @version 3.2.0
  * @module viewerJS.bookshelvesSession
@@ -52,11 +52,11 @@ var viewerJS = (function(viewer) {
 				sessionStorage.setItem('confirmCounter', 0);
 			}
 
-			// render bookshelf dropdown list
+			// render bookmark dropdown list
 			_renderDropdownList();
 			_renderMiradorLink();
 
-			// toggle bookshelf dropdown
+			// toggle bookmark dropdown
 			$('[data-bookmark-list-type="dropdown"]').off().on('click', function(event) {
 				event.stopPropagation();
 
@@ -127,7 +127,7 @@ var viewerJS = (function(viewer) {
 
 	/* ######## GET (READ) ######## */
 	/**
-	 * Method to get all elements in watchlist from current session (user not logged in).
+	 * Method to get all elements in bookmarks from current session (user not logged in).
 	 * 
 	 * @method _getAllSessionElements
 	 * @param {String} root The application root path.
@@ -197,7 +197,7 @@ var viewerJS = (function(viewer) {
 
 	/* ######## SET (UPDATE) ######## */
 	/**
-	 * Method to add an elements to watchlist in current session (user not logged in).
+	 * Method to add an elements to bookmarks in current session (user not logged in).
 	 * 
 	 * @method _setSessionElement
 	 * @param {String} root The application root path.
@@ -226,7 +226,7 @@ var viewerJS = (function(viewer) {
 
 	/* ######## DELETE ######## */
 	/**
-	 * Method to delete an element from watchlist in current session (user not logged in).
+	 * Method to delete an element from bookmarks in current session (user not logged in).
 	 * 
 	 * @method _deleteSessionElement
 	 * @param {String} root The application root path.
@@ -249,7 +249,7 @@ var viewerJS = (function(viewer) {
 		return promise
 	}
 	/**
-	 * Method to delete all elements from watchlist in current session (user not logged
+	 * Method to delete all elements from bookmarks in current session (user not logged
 	 * in).
 	 * 
 	 * @method _deleteAllSessionElements
@@ -273,7 +273,7 @@ var viewerJS = (function(viewer) {
 
 	/* ######## BUILD ######## */
 	/**
-	 * Method to set the count of elements in watchlist from current session (user not
+	 * Method to set the count of elements in bookmarks from current session (user not
 	 * logged in).
 	 * 
 	 * @method _setSessionElementCount
@@ -291,7 +291,7 @@ var viewerJS = (function(viewer) {
 		});
 	}
 	/**
-	 * Method to render the element list in bookshelf dropdown (user not logged in).
+	 * Method to render the element list in bookmark dropdown (user not logged in).
 	 * 
 	 * @method _renderDropdownList
 	 */
@@ -333,7 +333,7 @@ var viewerJS = (function(viewer) {
 					dropdownListItemDelete = $('<button />').addClass('btn btn--clean').attr('type', 'button').attr('data-bookmark-list-type', 'delete')
 						.attr('data-pi', item.pi).html('<i class="fa fa-ban" aria-hidden="true"></i>');
 
-					// build bookshelf item
+					// build bookmark item
 					dropdownListItemName.append(dropdownListItemNameLink);
 					dropdownListItemColLeft.append(dropdownListItemImage);
 					dropdownListItemColCenter.append(dropdownListItemName);
@@ -389,7 +389,7 @@ var viewerJS = (function(viewer) {
 		});
 	}
 	/**
-	 * Method to render the element list in bookshelf dropdown (user not logged in).
+	 * Method to render the element list in bookmark dropdown (user not logged in).
 	 * 
 	 * @method _renderMiradorLink
 	 */
