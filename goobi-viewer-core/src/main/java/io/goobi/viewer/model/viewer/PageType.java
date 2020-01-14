@@ -89,7 +89,7 @@ public enum PageType {
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
     index("index", PageTypeHandling.cms),
-    bookmarks("bookmarks"),
+    bookmarks("bookmarks", PageTypeHandling.cms),
     user("user"),
     privacy("privacy", PageTypeHandling.cms),
     feedback("feedback", PageTypeHandling.cms),

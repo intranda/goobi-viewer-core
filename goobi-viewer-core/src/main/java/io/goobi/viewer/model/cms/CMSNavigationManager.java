@@ -87,6 +87,8 @@ public class CMSNavigationManager {
         addAvailableItem(statistics);
         SelectableNavigationItem tags = new SelectableNavigationItem("tags", "tagclouds");
         addAvailableItem(tags);
+        SelectableNavigationItem bookmarks = new SelectableNavigationItem("bookmarks", "bookmarkList_bookmarkLists");
+        addAvailableItem(bookmarks);
         SelectableNavigationItem user = new SelectableNavigationItem("user", "user");
         user.setDisplayForUsersOnly(true);
         addAvailableItem(user);

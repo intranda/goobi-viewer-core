@@ -50,7 +50,7 @@
 			</div>
 			<div class="col-xs-7 no-padding">
 				<h4>
-					<a href="{opts.bookmarks.root}{bookmark.url}">{bookmark.name}</a>
+					<a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
 				</h4>
 			</div>
 			<div class="col-xs-1 no-padding {mainClass}-remove">

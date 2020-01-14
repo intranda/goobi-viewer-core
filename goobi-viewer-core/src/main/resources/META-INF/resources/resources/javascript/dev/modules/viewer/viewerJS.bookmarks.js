@@ -123,7 +123,9 @@ var viewerJS = ( function( viewer ) {
             },
             renderBookmarksNavigationList: function() {
                 var $button = $('[data-bookmark-list-type="dropdown"]');
-                
+                if($button.length == 0) {
+                    return;
+                }
                 var dropdownWidth = 275;
                 var buttonPosition = $button.offset();
                 var buttonSize = {
