@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<users user_id="1" email="1@users.org" password_hash="abcdef1"
+		active="true" suspended="false" superuser="true" last_name="last 1"
+		first_name="first 1" nickname="admin" comments="no comments 1" score="0"
+		use_gravatar="1" last_login="2012-03-03 11:22:33.000000000" />
+	<users user_id="2" email="2@users.org" password_hash="abcdef2"
+		active="true" suspended="false" superuser="false" last_name="last 2"
+		first_name="first 2" nickname="nick 2" comments="no comments 2" score="120"
+		use_gravatar="0" />
+    <users user_id="3" email="3@users.org" password_hash="abcdef3"
+        active="true" suspended="true" superuser="false" last_name="last 3"
+        first_name="first 3" nickname="nick 3" comments="no comments 3" score="-1"
+        use_gravatar="0" />
+
+	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_1" />
+	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_2" />
+
+	<user_groups user_group_id="1" name="user group 1 name"
+		owner_id="1" description="user group 1 desc" active="true" />
+	<user_groups user_group_id="2" name="user group 2 name"
+		owner_id="1" description="user group 2 (no members)" active="false" />
+
+	<roles role_id="1" name="role 1 name" description="role 1 desc" />
+	<roles role_id="2" name="role 2 name" description="role 2 (unused)" />
+	
+	<role_privileges role_id="1" privilege_name="role 1 priv 1" />
+
+	<user_role user_role_id="1" user_id="2" user_group_id="1"
+		role_id="1" />
+
+	<ip_ranges ip_range_id="1" name="localhost" subnet_mask="127.0.0.1/24"
+		description="ip range 1 desc" />
+	<ip_ranges ip_range_id="2" name="localhost2" subnet_mask="127.0.0.1/8"
+		description="ip range 2 desc" />
+
+	<license_types license_type_id="1" name="license type 1 name"
+		description="license type 1 desc" conditions="YEAR:[* TO 3000]"
+		open_access="false" core="false" />
+	<license_type_privileges license_type_id="1"
+		privilege_name="license type 1 priv 1" />
+
+	<license_types license_type_id="2" name="license type 2 name"
+		description="license type 2 (unused)"
+		open_access="true" core="false" />
+	<license_type_privileges license_type_id="2"
+		privilege_name="LIST" />
+
+	<license_types license_type_id="3" name="license type 3 name"
+		description="no listing"
+		open_access="false" core="false" />
+		
+    <license_types license_type_id="4" name="license type 4 name"
+        description="no listing, overridden by license type 1"
+        open_access="false" core="false" />
+        
+    <license_types license_type_id="5" name="CMS"
+        description="CMS role"
+        open_access="false" core="true" />
+		
+	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
+	<license_types_overriding license_type_id="1" overriding_license_type_id="4" />
+
+	<licenses license_id="1" license_type_id="1" user_id="2"
+		description="license 1 desc" />
+	<license_privileges license_id="1" privilege_name="LIST" />
+
+	<licenses license_id="2" license_type_id="1" user_group_id="1"
+		description="desc license 2 desc" />
+	<license_privileges license_id="2" privilege_name="license 2 priv 1" />
+
+	<licenses license_id="3" license_type_id="3" ip_range_id="1"
+		description="desc license 3 desc" />
+	<license_privileges license_id="3" privilege_name="LIST" />
+
+	<bookshelves bookshelf_id="1" owner_id="1" name="bookmark list 1 name"
+		description="bookmark list 1 desc" public="false"
+        share_key="c548e2ea6915acbfa17c3dc6f453f5b1" />
+	<bookshelves bookshelf_id="2" owner_id="2" name="bookmark list 2 name"
+		description="bookmark list 2 desc" public="true" />
+		
+    <bookshelf_items bookshelf_item_id="1" bookshelf_id="1"
+        name="bookmark 1 name" description="bookmark 1 desc"
+        pi="PPN123456789" logid="LOG_0000" urn="urn:nbn:bookmark1"
+        main_title="bookmark 1 main title" />
+    <bookshelf_items bookshelf_item_id="2" bookshelf_id="1"
+        name="bookmark 2 name" description="bookmark 2 desc"
+        pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookmark2"
+        main_title="bookmark 2 main title"/>
+
+	<!-- <annotations annotation_id="1" pi="PI 1" page="1" owner_id="1" -->
+	<!-- date_created="2013-07-15 00:00:00.000000000" status="PUBLIC" -->
+	<!-- text="annotation 1 text" /> -->
+	<!-- <annotations annotation_id="2" pi="PI 1" page="1" owner_id="2" -->
+	<!-- date_created="2013-07-15 00:01:00.000000000" status="PUBLIC" -->
+	<!-- text="annotation 2 text" /> -->
+	<!-- <annotations annotation_id="3" pi="PI 1" page="2" owner_id="1" -->
+	<!-- date_created="2013-07-15 12:00:00.000000000" status="PUBLIC" -->
+	<!-- text="annotation 3 text" /> -->
+
+	<comments comment_id="1" pi="PI 1" page="1" owner_id="1"
+		date_created="2013-07-15 00:00:00.000000000" text="comment 1 text" />
+	<comments comment_id="2" pi="PI 1" page="1" owner_id="2"
+		date_created="2013-07-15 00:01:00.000000000" text="comment 2 text"
+		parent_id="1" />
+	<comments comment_id="3" pi="PI 1" page="1" owner_id="1"
+		date_created="2013-07-15 12:00:00.000000000" text="comment 3 text"
+		parent_id="2" />
+	<comments comment_id="4" pi="PI 1" page="2" owner_id="1"
+		date_created="2013-07-15 12:00:00.000000000" text="comment 4 text" />
+
+	<searches search_id="1" owner_id="1" name="search 1" query="query 1"
+		page="1" date_updated="2013-07-15 00:00:00.000000000"
+		sort_field="sort 1" filter="filter 1" new_hits_notification="1" />
+	<searches search_id="2" owner_id="2" name="search 2" query="query 2"
+		page="2" date_updated="2013-07-15 00:01:00.000000000"
+		sort_field="sort 2" new_hits_notification="1" />
+	<searches search_id="3" owner_id="1" name="search 3" query="query 3"
+		page="1" date_updated="2013-07-15 12:00:00.000000000"
+	    new_hits_notification="0" />
+	    
+	        
+    <cms_categories category_id="1" name="tag1" description="description1" />
+    <cms_categories category_id="2" name="tag2" description="description2" />
+    <cms_categories category_id="3" name="tag3" description="description3" />
+    <cms_categories category_id="4" name="news" description="description_news"/>
+    <cms_categories category_id="5" name="other" description="description_other"/>
+    <cms_categories category_id="6" name="overviewpage" description="description_overviewpage"/>
+    <cms_categories category_id="7" name="class" description="description_class"/>
+		
+	<cms_media_items cms_media_item_id="1" file_name="image1.jpg" />
+    <cms_media_items cms_media_item_id="2" file_name="image2.jpg" />
+    <cms_media_items cms_media_item_id="3" file_name="image3.jpg" />
+    <cms_media_items cms_media_item_id="4" file_name="image4.jpg" />
+    
+    <cms_media_item_cms_categories media_item_id="1" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="2" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="3" /> 
+    <cms_media_item_cms_categories media_item_id="2" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="4" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="2" category_id="2" /> 
+    
+    <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
+    <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
+		
+	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
+	    published="true" use_default_sidebar="false"/>
+	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
+        published="false" use_default_sidebar="true"/>
+    <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
+        published="true" use_default_sidebar="true" related_pi="PI 1"/>
+        
+    <cms_properties id="1" property_key="DISPLAY_CHILD_TAGS_AS_HEADERS" property_value="false" owner_page_id="3"/>  
+        
+    <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
+    <cms_static_pages static_page_id="2" static_page_name="search"/>
+    
+        
+    <cms_page_language_versions cms_page_language_version_id="1" owner_page_id="1" language="de" status="FINISHED"
+        title="Titel 1" menu_title="Menütitel 1" />
+    <cms_page_language_versions cms_page_language_version_id="2" owner_page_id="1" language="en" status="FINISHED"
+        title="Title 1" menu_title="Menu title 1" />
+        
+    <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML" mandatory="true" owner_page_language_version_id="1"
+        html_fragment="&lt;b&gt;Hello CMS&lt;/b&gt;" />
+    <cms_content_items cms_content_item_id="2" item_id="C2" type="MEDIA" mandatory="false" owner_page_language_version_id="1"
+        media_item_id="1" />
+    <cms_content_items cms_content_item_id="3" item_id="C3" type="SOLRQUERY" mandatory="false" owner_page_language_version_id="1"
+        solr_query="PI:*" solr_sort_fields="SORT_TITLE,DATECREATED" elements_per_page="20" />
+    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" mandatory="false" owner_page_language_version_id="1" 
+    	elements_per_page="5" />
+    
+    <cms_page_cms_categories page_id="1" category_id="4" />
+    <cms_page_cms_categories page_id="1" category_id="5" />
+    <cms_page_cms_categories page_id="2" category_id="4" />
+    <cms_page_cms_categories page_id="3" category_id="6" />
+    
+    <cms_content_item_cms_categories content_item_id="4" category_id="4" />
+    
+    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD"
+        inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
+    
+    <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
+    <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"
+        parent_item_id="1" cms_page_id="2" />
+    <cms_navigation_items cms_navigation_item_id="3" item_label="item 3" page_url="url 3" item_order="2"
+        parent_item_id="1" cms_page_id="2" />
+    <cms_navigation_items cms_navigation_item_id="4" item_label="item 4" page_url="url 4" item_order="2" />
+    
+    <download_jobs download_job_id="1" type="pdf" identifier="70eef211dc8a5889578f58d88eb50b8e" pi="PI 1"
+        status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
+    <download_jobs download_job_id="2" type="epub" identifier="f0ea4764cef8658faa6deb78cd994091" pi="PI 1" logid="LOG_0001"
+        status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
+    
+    <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
+    
+    <cs_campaigns campaign_id="1" visibility="PUBLIC" date_created="2019-08-29 00:00:00.000000000"
+        date_start="2019-08-29 00:00:00.000000000" date_end="2020-08-29 00:00:00.000000000"
+        solr_query="+DC:varia" />
+        
+    <cs_campaigns campaign_id="2" visibility="PRIVATE" date_created="2019-08-30 00:00:00.000000000"
+        date_start="2019-09-01 00:00:00.000000000" date_end="2020-09-02 00:00:00.000000000"
+        solr_query="+(DOCSTRCT:manuscript DOCSTRCT:Manuscript)" />
+        
+    <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
+    
+    <cs_questions question_id="1" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
+    <cs_questions question_id="2" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
+    <cs_questions question_id="3" owner_id="2" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
+    
+    <cs_question_translations translation_id="1" owner_id="1" language="en" tag="text" value="English text" />
+
+    <cs_campaign_record_statistics campaign_record_statistic_id="1" owner_id="1" pi="PI 1" status="FINISHED" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="2" owner_id="1" pi="PI 2" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+    <cs_campaign_record_statistics campaign_record_statistic_id="3" owner_id="2" pi="PI 3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
+    
+    <cs_campaign_record_statistic_annotators campaign_record_statistic_id="1" user_id="1"/>
+    <cs_campaign_record_statistic_reviewers campaign_record_statistic_id="1" user_id="2"/>
+    
+    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;aa&quot;" target_pi="PI 1" target_page="1" />
+    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;bb&quot;" target_pi="PI 2" target_page="6" />
+    <annotations annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI 1" />
+    <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI 1" />
+    <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI 2" />
+    
+</dataset>
+

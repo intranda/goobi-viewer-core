@@ -1,0 +1,111 @@
+/* ==============================================================
+   General styling
+   ==============================================================*/
+html {
+	width: 100vw;
+    font-size: 62.5%;
+    overflow-x: hidden;
+    &.no-overflow {
+    	overflow: hidden;
+    }
+}
+
+body {
+    font-family: @fontFamily;
+    font-size: @fontNormal;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {}
+
+h1, .h1 { 
+    font-size: 2.8rem;     
+}
+
+h2, .h2 { 
+    font-size: 2.1rem;
+}
+
+h3, .h3 { 
+    font-size: 1.8rem;
+}
+
+h4, .h4 { 
+    font-size: 1.8rem;
+}
+
+h5, h6,
+.h5, .h6 { 
+    font-size: @fontNormal;
+}
+
+p {}
+
+pre {
+    padding: 1rem;
+    font-family: monospace;
+    border-radius: 0.4rem;
+    border: 1px solid @gray;
+    background-color: @lightgray;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul {}
+
+ol {}
+
+ul, ol {}
+
+a {
+    &:hover {}
+    &:active {}
+    &:focus {}
+}
+
+table,
+.table {
+    width: 100%;
+}
+
+#ajaxloader_image {
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	display: none;
+}
+
+#ajaxloader_image img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding-top:-50px;
+	padding-left:-50px;
+	width: 100px;
+	height: 100px;
+}
+
+popup {
+	position: absolute;
+	border: 1px solid black;
+	background-color: @statBackgroundColor;
+	padding: 5px;
+	display: none;
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

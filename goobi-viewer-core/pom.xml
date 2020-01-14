@@ -13,109 +13,21 @@
 
 
 	<name>Goobi viewer - Core</name>
+	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
 	<url>https://github.com/intranda/goobi-viewer-core</url>
 
+	<organization>
+		<name>Goobi</name>
+		<url>https://goobi.io</url>
+	</organization>
 
-	<properties>
-		<publicVersion>19.11</publicVersion>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.version>1.8</jdk.version>
-		<skipTests>true</skipTests>
-
-		<!-- Manifest information -->
-		<maven.build.timestamp.format>yyyy-MM-dd_HH-mm</maven.build.timestamp.format>
-		<buildDate>${maven.build.timestamp}</buildDate>
-
-		<!-- intranda libraries -->
-		<alto.version>1.3.5</alto.version>
-		<contentserver.version>1.9.7</contentserver.version>
-		<normdataimporter.version>1.2.7-SNAPSHOT</normdataimporter.version>
-		<iiif-api-model.version>1.5.1</iiif-api-model.version>
-		<tei-conversion.version>1.0.0</tei-conversion.version>
-
-		<!-- other libraries -->
-		<asm-debug-all.version>5.0.4</asm-debug-all.version>
-		<avalon.version>4.2.0</avalon.version>
-		<batik-all.version>1.10</batik-all.version>
-		<cdi.version>2.0</cdi.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<commons-cli.version>1.4</commons-cli.version>
-		<commons-codec.version>1.9</commons-codec.version>
-		<commons-collections.version>3.2.2</commons-collections.version>
-		<commons-collections4.version>4.2</commons-collections4.version>
-		<commons-configuration.version>1.10</commons-configuration.version>
-		<commons-digester.version>2.1</commons-digester.version>
-		<commons-fileupload.version>1.3.3</commons-fileupload.version>
-		<commons-io.version>2.6</commons-io.version>
-		<commons-jxpath.version>1.3</commons-jxpath.version>
-		<commons-lang.version>2.6</commons-lang.version>
-		<commons-lang3.version>3.8.1</commons-lang3.version>
-		<commons-logging.version>1.2</commons-logging.version>
-		<commons-math3.version>3.6.1</commons-math3.version>
-		<commons-net.version>3.6</commons-net.version>
-		<commons-pool.version>1.6</commons-pool.version>
-		<cxf-rt-rs-extension-providers.version>3.3.2</cxf-rt-rs-extension-providers.version>
-		<dbunit.version>2.6.0</dbunit.version>
-		<docx4j.version>8.1.0</docx4j.version>
-		<fop.version>2.0</fop.version>
-		<h2.version>1.4.197</h2.version>
-		<httpclient.version>4.5.1</httpclient.version>
-		<httpcore.version>4.4.3</httpcore.version>
-		<httpmime.version>4.5.1</httpmime.version>
-		<httpunit.version>1.7.3</httpunit.version>
-		<icu.version>63.1</icu.version>
-		<itext.version>2.1.7</itext.version>
-		<jackson.version>2.9.8</jackson.version>
-		<jackson-annotations.version>2.9.2</jackson-annotations.version>
-		<jaxb-api.version>2.3.1</jaxb-api.version>
-		<jpa.version>2.7.3</jpa.version>
-		<javassist.version>3.18.1-GA</javassist.version>
-		<javax.faces.version>2.3.3</javax.faces.version>
-		<javax.json-api.version>1.1.4</javax.json-api.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
-		<javax.persistence.version>2.2.1</javax.persistence.version>
-		<jdom2.version>2.0.6</jdom2.version>
-		<jersey.version>2.27</jersey.version>
-		<jersey-guava.version>2.25.1</jersey-guava.version>
-		<jersey-entity-filtering.version>2.27</jersey-entity-filtering.version>
-		<jersey-media-json-jackson.version>2.27</jersey-media-json-jackson.version>
-		<jersey-media-multipart.version>2.27</jersey-media-multipart.version>
-		<jersey-hk2.version>2.27</jersey-hk2.version>
-		<jgravatar.version>1.1</jgravatar.version>
-		<joda-time.version>2.10.1</joda-time.version>
-		<junit.version>4.12</junit.version>
-		<json.version>20180813</json.version>
-		<json-simple.version>1.1.1</json-simple.version>
-		<jsoup.version>1.11.3</jsoup.version>
-		<jstl.version>1.2</jstl.version>
-		<log4j.version>2.11.2</log4j.version>
-		<lucene.version>4.10.4</lucene.version>
-		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
-		<metadata-extractor.version>2.8.1</metadata-extractor.version>
-		<mockito-all.version>1.10.19</mockito-all.version>
-		<mockserver.version>5.5.4</mockserver.version>
-		<nekohtml.version>1.9.22</nekohtml.version>
-		<oauth.version>1.0.2</oauth.version>
-		<poi.version>4.0.1</poi.version>
-		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
-		<primefaces.version>6.2</primefaces.version>
-		<rome.version>1.0</rome.version>
-		<rs-api.version>2.0.1</rs-api.version>
-		<saxon.version>9.0</saxon.version>
-		<slf4j.version>1.7.26</slf4j.version>
-		<solr.version>4.10.4</solr.version>
-		<stax-api.version>1.0.1</stax-api.version>
-		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
-		<tika.version>[1.20,)</tika.version>
-		<tomcat.version>8.5.40</tomcat.version>
-		<validation-api.version>1.1.0.Final</validation-api.version>
-		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
-		<!-- This needs to be added explicitly because otherwise Solr will use 
-			an older version that's incompatible -->
-		<xerces.version>2.12.0</xerces.version>
-		<xstream.version>1.4.11.1</xstream.version>
-	</properties>
-
+	<licenses>
+		<license>
+			<name>GPL v2 or later</name>
+			<url>https://raw.githubusercontent.com/intranda/goobi-viewer-core/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<scm>
 		<url>scm:git:https://github.com/intranda/goobi-viewer-core/</url>
@@ -140,7 +52,95 @@
 			<id>intranda-snapshots</id>
 			<url>https://nexus.intranda.com/repository/maven-snapshots</url>
 		</snapshotRepository>
+		<site>
+			<id>intranda-snapshots</id>
+			<url>dav:https://nexus.intranda.com/repository/maven-raw/goobi-viewer/</url>
+		</site>
 	</distributionManagement>
+
+
+	<properties>
+		<publicVersion>19.11</publicVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>1.8</jdk.version>
+		<skipTests>true</skipTests>
+
+		<!-- Manifest information -->
+		<maven.build.timestamp.format>yyyy-MM-dd_HH-mm</maven.build.timestamp.format>
+		<buildDate>${maven.build.timestamp}</buildDate>
+
+		<!-- intranda libraries -->
+		<alto.version>1.3.5</alto.version>
+		<contentserver.version>1.9.7</contentserver.version>
+		<normdataimporter.version>1.2.7-SNAPSHOT</normdataimporter.version>
+		<iiif-api-model.version>1.5.1</iiif-api-model.version>
+		<tei-conversion.version>1.0.0</tei-conversion.version>
+
+		<!-- other libraries -->
+		<cdi.version>2.0.SP1</cdi.version>
+		<commons-beanutils.version>1.9.4</commons-beanutils.version>
+		<commons-codec.version>1.14</commons-codec.version>
+		<commons-collections4.version>4.4</commons-collections4.version>
+		<commons-configuration.version>1.10</commons-configuration.version>
+		<commons-fileupload.version>1.4</commons-fileupload.version>
+		<commons-io.version>2.6</commons-io.version>
+		<commons-jxpath.version>1.3</commons-jxpath.version>
+		<commons-lang3.version>3.9</commons-lang3.version>
+		<commons-math3.version>3.6.1</commons-math3.version>
+		<commons-net.version>3.6</commons-net.version>
+		<commons-text.version>1.8</commons-text.version>
+		<dbunit.version>2.6.0</dbunit.version>
+		<docx4j.version>8.1.4</docx4j.version>
+		<h2.version>1.4.200</h2.version>
+		<httpclient.version>4.5.10</httpclient.version>
+		<httpcore.version>4.4.13</httpcore.version>
+		<httpmime.version>4.5.10</httpmime.version>
+		<httpunit.version>1.7.3</httpunit.version>
+		<icu.version>65.1</icu.version>
+		<!-- Later versions of itext are licensed under AGPL and can not be used here -->
+		<itext.version>2.1.7</itext.version>
+		<jackson.version>2.10.2</jackson.version>
+		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
+		<jpa.version>2.7.5</jpa.version>
+		<javax.faces.version>2.4.0</javax.faces.version>
+		<javax.json-api.version>1.1.4</javax.json-api.version>
+		<javax.mail.version>1.6.2</javax.mail.version>
+		<javax.persistence.version>2.2.1</javax.persistence.version>
+		<jdom2.version>2.0.6</jdom2.version>
+		<jersey.version>2.30</jersey.version>
+		<jersey-guava.version>2.26-b03</jersey-guava.version>
+		<jgravatar.version>1.2</jgravatar.version>
+		<joda-time.version>2.10.5</joda-time.version>
+		<junit.version>4.13</junit.version>
+		<json.version>20190722</json.version>
+		<jsoup.version>1.12.1</jsoup.version>
+		<jstl.version>1.2</jstl.version>
+		<log4j.version>2.13.0</log4j.version>
+		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
+		<metadata-extractor.version>2.12.0</metadata-extractor.version>
+		<mockito-all.version>1.10.19</mockito-all.version>
+		<mockserver.version>5.8.1</mockserver.version>
+		<oauth.version>1.0.2</oauth.version>
+		<poi.version>4.1.1</poi.version>
+		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
+		<primefaces.version>7.0</primefaces.version>
+		<rome.version>1.12.2</rome.version>
+		<rs-api.version>2.1.1</rs-api.version>
+		<saxon.version>9.0</saxon.version>
+		<slf4j.version>1.7.30</slf4j.version>
+		<solr.version>4.10.4</solr.version>
+		<stax-api.version>1.0-2</stax-api.version>
+		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
+		<tika.version>[1.20,)</tika.version>
+		<tomcat.version>9.0.30</tomcat.version>
+		<validation-api.version>2.0.1.Final</validation-api.version>
+		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
+		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
+		<!-- This needs to be added explicitly because otherwise Solr will use 
+		an older version that's incompatible -->
+		<xerces.version>2.12.0</xerces.version>
+
+	</properties>
 
 
 	<dependencies>
@@ -164,12 +164,30 @@
 					<groupId>net.sf.saxon</groupId>
 					<artifactId>saxon</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.dataformat</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.intranda.api.iiif</groupId>
 			<artifactId>iiif-api-model</artifactId>
 			<version>${iiif-api-model.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.dataformat</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
@@ -178,27 +196,6 @@
 		</dependency>
 
 		<!-- other libraries -->
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-debug-all</artifactId>
-			<version>${asm-debug-all.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>avalon-framework</groupId>
-			<artifactId>avalon-framework-api</artifactId>
-			<version>${avalon.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>avalon-framework</groupId>
-			<artifactId>avalon-framework-impl</artifactId>
-			<version>${avalon.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-all</artifactId>
-			<version>${batik-all.version}</version>
-			<type>pom</type>
-		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
@@ -211,19 +208,9 @@
 			<version>${commons-beanutils.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-cli</groupId>
-			<artifactId>commons-cli</artifactId>
-			<version>${commons-cli.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>${commons-codec.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>${commons-collections.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -231,20 +218,14 @@
 			<version>${commons-collections4.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>${commons-text.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>${commons-configuration.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-			<version>${commons-digester.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -262,17 +243,6 @@
 			<version>${commons-jxpath.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>${commons-lang.version}</version>
-		</dependency>
-		<dependency>
-			<artifactId>commons-logging</artifactId>
-			<groupId>commons-logging</groupId>
-			<version>${commons-logging.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
@@ -288,11 +258,6 @@
 			<version>${commons-net.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-			<version>${commons-pool.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
 			<version>${dbunit.version}</version>
@@ -302,30 +267,25 @@
 			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 			<version>${docx4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-compress</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
 			<version>${jpa.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>fop</artifactId>
-			<version>${fop.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -377,7 +337,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson-annotations.version}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -405,9 +365,9 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>${javassist.version}</version>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-json-org</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
@@ -472,7 +432,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-entity-filtering</artifactId>
-			<version>${jersey-entity-filtering.version}</version>
+			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
@@ -487,12 +447,12 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${jersey-media-json-jackson.version}</version>
+			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
-			<version>${jersey-media-multipart.version}</version>
+			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -502,12 +462,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.inject</groupId>
 			<artifactId>jersey-hk2</artifactId>
-			<version>${jersey-hk2.version}</version>
-		</dependency>
-	    <dependency>
-		  <groupId>com.fasterxml.jackson.datatype</groupId>
-		  <artifactId>jackson-datatype-json-org</artifactId>
-		  <version>2.9.0</version>
+			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.timgroup</groupId>
@@ -528,11 +483,6 @@
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
 			<version>${javax.json-api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>${json-simple.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -566,92 +516,9 @@
 			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-kuromoji</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-phonetic</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-codecs</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-grouping</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-highlighter</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-join</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-misc</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queries</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-spatial</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-suggest</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-test-framework</artifactId>
-			<version>${lucene.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>${mariadb-java-client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.drewnoakes</groupId>
-			<artifactId>metadata-extractor</artifactId>
-			<version>${metadata-extractor.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -696,11 +563,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>net.sourceforge.nekohtml</groupId>
-			<artifactId>nekohtml</artifactId>
-			<version>${nekohtml.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.oltu.oauth2</groupId>
 			<artifactId>org.apache.oltu.oauth2.client</artifactId>
 			<version>${oauth.version}</version>
@@ -741,7 +603,7 @@
 			<version>${primefaces.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>rome</groupId>
+			<groupId>com.rometools</groupId>
 			<artifactId>rome</artifactId>
 			<version>${rome.version}</version>
 		</dependency>
@@ -788,7 +650,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>stax</groupId>
+			<groupId>javax.xml.stream</groupId>
 			<artifactId>stax-api</artifactId>
 			<version>${stax-api.version}</version>
 		</dependency>
@@ -833,55 +695,32 @@
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
+		<!-- Do not remove until migrating to current Solr version -->
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
 			<version>${xerces.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>${xstream.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-extension-providers</artifactId>
-			<version>${cxf-rt-rs-extension-providers.version}</version>
-		</dependency>
 	</dependencies>
 
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-					<exclude>config_viewer.xml</exclude>
-					<exclude>contentServerConfig.xml</exclude>
-					<exclude>rebel.xml</exclude>
-					<exclude>log4j2.xml</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<plugins>
-			<!-- Maven Compiler Plugin -->
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
+					<!--compilerArgument>-Xlint:unchecked</compilerArgument-->
 				</configuration>
 			</plugin>
-			<!-- Maven Surefire Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M3</version>
+				<version>3.0.0-M4</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -889,8 +728,8 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- Maven JAR Plugin -->
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.1.1</version>
 				<configuration>
@@ -904,21 +743,27 @@
 							<Public-Version>${publicVersion}</Public-Version>
 						</manifestEntries>
 					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+					<excludes>
+						<exclude>**/config_viewer.xml</exclude>
+						<exclude>**/contentServerConfig.xml</exclude>
+						<exclude>**/log4j2.xml</exclude>
+						<exclude>/META-INF/resources/resources/javascript/tests/</exclude>
+						<exclude>/META-INF/resources/resources/javascript/dev/</exclude>
+					</excludes>
 
+				</configuration>
+			</plugin>
 			<!-- get git version number -->
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
 				<version>2.2.1</version>
+				<configuration>
+					<commitIdGenerationMode>flat</commitIdGenerationMode>
+					<gitDescribe>
+						<skip>true</skip>
+					</gitDescribe>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -926,18 +771,15 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<commitIdGenerationMode>flat</commitIdGenerationMode>
-					<gitDescribe>
-						<skip>true</skip>
-					</gitDescribe>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<version>1.4</version>
-
+				<configuration>
+					<shortRevisionLength>7</shortRevisionLength>
+					<doCheck>false</doCheck>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -946,13 +788,105 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.8.2</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-webdav-jackrabbit</artifactId>
+						<!-- Updating to 3.3.4 results in errors during mvn site:deploy-->
+						<version>2.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
 				<configuration>
-					<shortRevisionLength>7</shortRevisionLength>
-					<doCheck>false</doCheck>
+					<doclint>none</doclint>
+					<fixTags>link,throws,return,param</fixTags>
+					<tags>
+						<tag>
+							<name>should</name>
+							<placement>X</placement>
+						</tag>
+					</tags>
 				</configuration>
 			</plugin>
-			
-
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-project-info-reports-plugin</artifactId>
+			<version>3.0.0</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>team</report>
+							<report>mailing-lists</report>
+							<report>ci-management</report>
+							<report>issue-management</report>
+							<report>licenses</report>
+							<report>scm</report>
+							<report>distribution-management</report>
+							<report>index</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<doclint>none</doclint>
+					<fixTags>link,throws,return,param</fixTags>
+					<tags>
+						<tag>
+							<name>should</name>
+							<placement>X</placement>
+						</tag>
+					</tags>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

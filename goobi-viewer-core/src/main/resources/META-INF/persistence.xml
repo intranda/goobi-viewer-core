@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence">
+	<persistence-unit name="intranda_viewer_tomcat"
+		transaction-type="JTA">
+		<jta-data-source>java:comp/env/viewer</jta-data-source>
+		<class>io.goobi.viewer.model.annotation.Comment</class>
+        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
+		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
+        <class>io.goobi.viewer.model.cms.CMSCategory</class>
+        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
+        <class>io.goobi.viewer.model.cms.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
+        <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
+        <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
+		<class>io.goobi.viewer.model.download.DownloadJob</class>
+		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
+		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+		<class>io.goobi.viewer.model.overviewpage.OverviewPage</class>
+		<class>io.goobi.viewer.model.overviewpage.OverviewPageUpdate</class>
+		<class>io.goobi.viewer.model.search.Search</class>
+		<class>io.goobi.viewer.model.security.License</class>
+		<class>io.goobi.viewer.model.security.LicenseType</class>
+		<class>io.goobi.viewer.model.security.Role</class>
+		<class>io.goobi.viewer.model.security.user.IpRange</class>
+		<class>io.goobi.viewer.model.security.user.User</class>
+		<class>io.goobi.viewer.model.security.user.UserGroup</class>
+		<class>io.goobi.viewer.model.security.user.UserRole</class>
+		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+
+		<properties>
+			<!-- EclipseLink should create the database schema automatically -->
+			<property name="eclipselink.ddl-generation"
+				value="create-or-extend-tables" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+
+			<!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
+
+			<property name="logging.level" value="SEVERE" />
+			<property name="eclipselink.logging.level" value="SEVERE" />
+			<!-- disable logging to separate log file for now as the path can not 
+				be influenced in Goobi to go -->
+			<!-- <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" 
+				/> -->
+			<property name="eclipselink.id-validation" value="NONE" />
+			<!-- <property name="eclipselink.logging.logger" value="ServerLogger" 
+				/> -->
+			<!-- <property name="eclipselink.logging.level.sql" value="ALL" /> -->
+			<!-- <property name="eclipselink.logging.parameters" value="true" /> -->
+			<!-- <property name="eclipselink.logging.thread" value="true"/> -->
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="intranda_viewer_test"
+		transaction-type="RESOURCE_LOCAL">
+
+		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
+		<class>io.goobi.viewer.model.annotation.Comment</class>
+        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
+        <class>io.goobi.viewer.model.bookmark.Bookmark</class>
+        <class>io.goobi.viewer.model.cms.CMSCategory</class>
+		<class>io.goobi.viewer.model.cms.CMSContentItem</class>
+		<class>io.goobi.viewer.model.cms.CMSCollection</class>
+		<class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
+        <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
+        <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
+		<class>io.goobi.viewer.model.download.DownloadJob</class>
+		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
+		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+		<class>io.goobi.viewer.model.overviewpage.OverviewPage</class>
+		<class>io.goobi.viewer.model.overviewpage.OverviewPageUpdate</class>
+		<class>io.goobi.viewer.model.search.Search</class>
+		<class>io.goobi.viewer.model.security.License</class>
+		<class>io.goobi.viewer.model.security.LicenseType</class>
+		<class>io.goobi.viewer.model.security.Role</class>
+		<class>io.goobi.viewer.model.security.user.IpRange</class>
+		<class>io.goobi.viewer.model.security.user.User</class>
+		<class>io.goobi.viewer.model.security.user.UserGroup</class>
+		<class>io.goobi.viewer.model.security.user.UserRole</class>
+		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+		<properties>
+			<property name="javax.persistence.jdbc.driver"
+				value="org.h2.Driver" />
+			<property name="javax.persistence.jdbc.url"
+				value="jdbc:h2:mem:test" />
+			<property name="javax.persistence.jdbc.user" value="user" />
+			<property name="javax.persistence.jdbc.password"
+				value="password" />
+			<!-- EclipseLink should create the database schema automatically -->
+			<property name="eclipselink.ddl-generation"
+				value="create-or-extend-tables" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<!-- Shared cache must be disabled so each unit tests starts with an unaltered 
+				DB -->
+			<property name="eclipselink.cache.shared.default"
+				value="false" />
+			<property name="eclipselink.id-validation" value="NONE" />
+			<property name="logging.level" value="SEVERE" />
+			<property name="eclipselink.logging.level" value="SEVERE" />
+		</properties>
+	</persistence-unit>
+</persistence>

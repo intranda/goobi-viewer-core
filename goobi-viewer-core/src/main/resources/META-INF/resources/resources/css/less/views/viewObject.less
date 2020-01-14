@@ -1,0 +1,97 @@
+/* ==============================================================
+   View Object
+   style declarations for viewObject.xhtml 
+   ==============================================================*/
+/* VIEW OBJECT */
+/* BLOCK */
+.view-object {
+	/* ELEMENT */
+	/* IMAGE */
+	&__image {
+		position: relative;
+	    border: 1px solid @lightgray;
+	    overflow: hidden;
+	}
+	&__image-loader {}
+	&__image-map {
+		position: relative;
+	    width: 100%;
+	    height: 600px;
+	    span {
+	        display: inline-block;
+	        vertical-align: middle;
+	        line-height: normal;
+	        font-size: @fontNormal;
+	    }
+	    img {
+	        max-width: none;
+	    }
+	    .ugcBox {
+	        &.focus {
+	            border: 2px solid red;
+	        }
+	        &.drawing {
+	            border: 2px solid blue;   
+	        }
+	    }
+	}
+	&__access-denied {
+		text-align: center;
+		overflow: hidden;
+		img {
+			max-width: 100%;
+		}
+	}
+	/* IMAGE MOBILE OVERLAY */
+	&__image-mobile-overlay {
+		display: none;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 10;
+	}
+	/* VIDEO, AUDIO, TEXT */
+	&__video,
+	&__audio,
+	&__text {
+		text-align: center;
+	}
+	/* VIDEO */
+	&__video {}
+	/* AUDIO */
+	&__audio {}
+	/* TEXT */
+	&__text {}
+}
+
+.image-fragment {
+	background-color: rgba(255,255,255,0.3);
+    border-color: #FF2523;
+    border-style: solid;
+    border-width: 2px;  
+    &.focus {
+    	background-color: transparent;
+    }      	
+}
+popup [data-copy] {
+	cursor: pointer;
+}
+
+.tooltipp {
+	position: absolute;
+	background: rgba(255,255,255,1.0);
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
