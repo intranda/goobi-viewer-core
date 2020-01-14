@@ -177,7 +177,7 @@
        		     	$(button).popover("hide");
 	      		    $(button).removeClass("active");
 	       		 	areaSelect.stopSelect();
-	       		 	var areaString = area.x.toFixed(0) + "," + area.y.toFixed(0) + "," + area.width.toFixed(0) + "," + area.height.toFixed(0);
+	       		 	var areaString = viewImage.getAreaString(area);
 	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
 	       		 	var imageUrl = viewImage.getRegionUrl(area);
 	       		 	let popup = new viewerJS.Popup(event, $("#share-image-area-popup"), {
@@ -226,9 +226,7 @@
 				    $wrapper = $(".widget-usage__image-fragment__wrapper");
 				    fragment = viewerJS.helper.getFragmentHash();
 			    }
-			    console.log("fragment ", fragment);
 			    if(fragment) {
-			        console.log("base page url ", window.location.pathname, window.location);
 			        var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + fragment;
 	       		 	var imageUrl = viewImage.getRegionUrl(fragment);
 	       		 	$wrapper.find(".widget-usage__image-fragment-page").attr("data-clipboard-text", pageUrl)
