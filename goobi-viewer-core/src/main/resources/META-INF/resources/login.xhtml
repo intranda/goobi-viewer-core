@@ -46,6 +46,21 @@
 	        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css" />
 	    </h:panelGroup>
 	    
+    <!-- JAVASCRIPT -->   
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/bs/bootstrap.min.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/tinymce/tinymce.min.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/datatables.min.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqueryUi/1.12.1/jquery-ui.min.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqueryUi/1.11.0/jquery.ui.touch-punch.min.js"></script> -->
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rx.lite.min.js"></script>
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/q-promises/q.min.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/clipboard/clipboard.min.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/pdfjs/pdf.js"></script> -->
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/riot/riot.min.js"></script> -->
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/browsersupport.min.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewer.min.js"></script>
+<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/riot-tags.js"></script> -->
+	    
 	    <!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
 	    <h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
 	    <h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
@@ -54,7 +69,15 @@
       
     <h:body id="login-body">
     
-    	<ui:include src="/resources/includes/user/userLogin.xhtml" />
+   		<!-- MESSAGES -->
+		<div class="messages">
+			<h:messages infoClass="alert alert-success" errorClass="alert alert-danger" />
+		</div>
     
+    	<ui:include src="/resources/includes/user/userLogin.xhtml" />
+    	
+    	<script>
+    		viewerJS.userLogin.init();
+		</script>    	
     </h:body>
 </html>
