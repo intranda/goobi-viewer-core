@@ -85,7 +85,7 @@
                         </ui:fragment>
                         
                         <!-- IIIF MANIFEST -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.isHasPages() and !activeDocumentBean.viewManager.isFilesOnly()}">
+                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
 	                        <a 
 	                            id="iiifManifest" 
 	                            class="label label-default widget-usage__work-download-iiif" 
