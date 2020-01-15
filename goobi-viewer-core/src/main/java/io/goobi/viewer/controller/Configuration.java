@@ -3879,4 +3879,11 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("webapi.cors", "*");
     }
 
+    /**
+     * @return
+     */
+    public boolean isDiscloseImageContentLocation() {
+        return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
+    }
+
 }

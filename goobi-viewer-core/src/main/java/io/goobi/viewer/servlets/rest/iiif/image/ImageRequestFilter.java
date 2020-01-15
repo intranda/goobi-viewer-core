@@ -160,6 +160,11 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         
         Integer maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
         request.setProperty("param:maxHeight", maxHeight.toString());
+        
+        if(!DataManager.getInstance().getConfiguration().isDiscloseImageContentLocation()) {
+            request.setProperty("param:disclose-content-location", "false");
+
+        }
 
     }
 

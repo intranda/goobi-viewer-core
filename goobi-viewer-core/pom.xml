@@ -71,7 +71,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.3.5</alto.version>
-		<contentserver.version>1.9.7</contentserver.version>
+		<contentserver.version>1.9.10</contentserver.version>
 		<normdataimporter.version>1.2.7-SNAPSHOT</normdataimporter.version>
 		<iiif-api-model.version>1.5.1</iiif-api-model.version>
 		<tei-conversion.version>1.0.0</tei-conversion.version>

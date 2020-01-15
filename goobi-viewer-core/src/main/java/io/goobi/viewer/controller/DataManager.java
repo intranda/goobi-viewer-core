@@ -361,4 +361,5 @@ public final class DataManager {
     public void setRecordCampaignMap(Map<String, List<Campaign>> recordCampaignMap) {
         this.recordCampaignMap = recordCampaignMap;
     }
+
 }

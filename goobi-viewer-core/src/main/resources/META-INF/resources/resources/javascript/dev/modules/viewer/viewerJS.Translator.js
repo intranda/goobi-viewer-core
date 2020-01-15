@@ -52,6 +52,10 @@ var viewerJS = ( function( viewer ) {
         .then( function(json) {
             this.translations = json;
         }.bind(this))
+        .catch(error => {
+            console.error("Error fetching " + url + ": " + error);
+            this.translations = {};
+        });
     }
     
     /**
