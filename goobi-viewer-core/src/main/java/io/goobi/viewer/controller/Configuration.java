@@ -56,6 +56,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LitteraProvider;
 import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider;
@@ -68,7 +69,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
- * <p>Configuration class.</p>
+ * <p>
+ * Configuration class.
+ * </p>
  */
 public final class Configuration extends AbstractConfiguration {
 
@@ -77,7 +80,9 @@ public final class Configuration extends AbstractConfiguration {
     private Set<String> stopwords;
 
     /**
-     * <p>Constructor for Configuration.</p>
+     * <p>
+     * Constructor for Configuration.
+     * </p>
      *
      * @param configFilePath a {@link java.lang.String} object.
      */
@@ -126,7 +131,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>loadStopwords.</p>
+     * <p>
+     * loadStopwords.
+     * </p>
      *
      * @param stopwordsFilePath a {@link java.lang.String} object.
      * @should load all stopwords
@@ -180,7 +187,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>reloadingRequired.</p>
+     * <p>
+     * reloadingRequired.
+     * </p>
      *
      * @return a boolean.
      */
@@ -196,7 +205,9 @@ public final class Configuration extends AbstractConfiguration {
     /*********************************** direct config results ***************************************/
 
     /**
-     * <p>getConfigLocalPath.</p>
+     * <p>
+     * getConfigLocalPath.
+     * </p>
      *
      * @return the path to the local config_viewer.xml file.
      */
@@ -210,7 +221,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalRessourceBundleFile.</p>
+     * <p>
+     * getLocalRessourceBundleFile.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -219,7 +232,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getViewerThumbnailsPerPage.</p>
+     * <p>
+     * getViewerThumbnailsPerPage.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -229,7 +244,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getViewerMaxImageWidth.</p>
+     * <p>
+     * getViewerMaxImageWidth.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -239,7 +256,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getViewerMaxImageHeight.</p>
+     * <p>
+     * getViewerMaxImageHeight.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -249,7 +268,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getViewerMaxImageScale.</p>
+     * <p>
+     * getViewerMaxImageScale.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -259,7 +280,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isRememberImageZoom.</p>
+     * <p>
+     * isRememberImageZoom.
+     * </p>
      *
      * @return a boolean.
      */
@@ -268,7 +291,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isRememberImageRotation.</p>
+     * <p>
+     * isRememberImageRotation.
+     * </p>
      *
      * @return a boolean.
      */
@@ -277,7 +302,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDfgViewerUrl.</p>
+     * <p>
+     * getDfgViewerUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -538,7 +565,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getNormdataFieldsForTemplate.</p>
+     * <p>
+     * getNormdataFieldsForTemplate.
+     * </p>
      *
      * @param template Template name
      * @return List of normdata fields configured for the given template name
@@ -567,7 +596,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTocLabelConfiguration.</p>
+     * <p>
+     * getTocLabelConfiguration.
+     * </p>
      *
      * @should return correct template configuration
      * @should return default template configuration if template not found
@@ -595,7 +626,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayWidgetUsage.</p>
+     * <p>
+     * isDisplayWidgetUsage.
+     * </p>
      *
      * @return a boolean.
      */
@@ -623,7 +656,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplaySidebarUsageWidgetLinkToJpegImage.</p>
+     * <p>
+     * isDisplaySidebarUsageWidgetLinkToJpegImage.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -633,7 +668,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplaySidebarUsageWidgetLinkToMasterImage.</p>
+     * <p>
+     * isDisplaySidebarUsageWidgetLinkToMasterImage.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -643,7 +680,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWidgetUsageMaxJpegSize.</p>
+     * <p>
+     * getWidgetUsageMaxJpegSize.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -652,7 +691,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWidgetUsageMaxMasterImageSize.</p>
+     * <p>
+     * getWidgetUsageMaxMasterImageSize.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -661,7 +702,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getMetadataForTemplateFromJDOM.</p>
+     * <p>
+     * getMetadataForTemplateFromJDOM.
+     * </p>
      *
      * @param eleTemplate a {@link org.jdom2.Element} object.
      * @return a {@link java.util.List} object.
@@ -730,7 +773,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isBrowsingMenuEnabled.</p>
+     * <p>
+     * isBrowsingMenuEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -740,7 +785,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getBrowsingMenuHitsPerPage.</p>
+     * <p>
+     * getBrowsingMenuHitsPerPage.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -777,7 +824,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDocstrctWhitelistFilterQuery.</p>
+     * <p>
+     * getDocstrctWhitelistFilterQuery.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -787,7 +836,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCollectionSplittingChar.</p>
+     * <p>
+     * getCollectionSplittingChar.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -826,7 +877,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCollectionSorting.</p>
+     * <p>
+     * getCollectionSorting.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return all configured elements
@@ -850,7 +903,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCollectionBlacklistMode.</p>
+     * <p>
+     * getCollectionBlacklistMode.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -924,7 +979,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCollectionDisplayNumberOfVolumesLevel.</p>
+     * <p>
+     * getCollectionDisplayNumberOfVolumesLevel.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -939,7 +996,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCollectionDisplayDepthForSearch.</p>
+     * <p>
+     * getCollectionDisplayDepthForSearch.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -955,7 +1014,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCollectionHierarchyField.</p>
+     * <p>
+     * getCollectionHierarchyField.
+     * </p>
      *
      * @should return first field where hierarchy enabled
      * @return a {@link java.lang.String} object.
@@ -971,7 +1032,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAddCollectionHierarchyToBreadcrumbs.</p>
+     * <p>
+     * isAddCollectionHierarchyToBreadcrumbs.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -987,7 +1050,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSolrUrl.</p>
+     * <p>
+     * getSolrUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1001,7 +1066,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getContentServerWrapperUrl.</p>
+     * <p>
+     * getContentServerWrapperUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1011,7 +1078,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDownloadUrl.</p>
+     * <p>
+     * getDownloadUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1028,7 +1097,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getContentRestApiUrl.</p>
+     * <p>
+     * getContentRestApiUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1039,7 +1110,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRestApiUrl.</p>
+     * <p>
+     * getRestApiUrl.
+     * </p>
      *
      * @return The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
      */
@@ -1057,7 +1130,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getContentServerRealUrl.</p>
+     * <p>
+     * getContentServerRealUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1067,7 +1142,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getMetsUrl.</p>
+     * <p>
+     * getMetsUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1077,7 +1154,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getMarcUrl.</p>
+     * <p>
+     * getMarcUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1087,7 +1166,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDcUrl.</p>
+     * <p>
+     * getDcUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1097,7 +1178,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getEseUrl.</p>
+     * <p>
+     * getEseUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1107,7 +1190,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSearchHitsPerPage.</p>
+     * <p>
+     * getSearchHitsPerPage.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1117,7 +1202,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFulltextFragmentLength.</p>
+     * <p>
+     * getFulltextFragmentLength.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1127,7 +1214,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAdvancedSearchEnabled.</p>
+     * <p>
+     * isAdvancedSearchEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1137,7 +1226,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAdvancedSearchDefaultItemNumber.</p>
+     * <p>
+     * getAdvancedSearchDefaultItemNumber.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1147,7 +1238,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAdvancedSearchFields.</p>
+     * <p>
+     * getAdvancedSearchFields.
+     * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
@@ -1157,7 +1250,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAggregateHits.</p>
+     * <p>
+     * isAggregateHits.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1167,7 +1262,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayAdditionalMetadataEnabled.</p>
+     * <p>
+     * isDisplayAdditionalMetadataEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1177,7 +1274,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDisplayAdditionalMetadataIgnoreFields.</p>
+     * <p>
+     * getDisplayAdditionalMetadataIgnoreFields.
+     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -1187,7 +1286,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDisplayAdditionalMetadataTranslateFields.</p>
+     * <p>
+     * getDisplayAdditionalMetadataTranslateFields.
+     * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
@@ -1197,7 +1298,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAdvancedSearchFieldHierarchical.</p>
+     * <p>
+     * isAdvancedSearchFieldHierarchical.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -1220,7 +1323,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAdvancedSearchFieldUntokenizeForPhraseSearch.</p>
+     * <p>
+     * isAdvancedSearchFieldUntokenizeForPhraseSearch.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should return correct value
@@ -1243,7 +1348,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTimelineSearchEnabled.</p>
+     * <p>
+     * isTimelineSearchEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1253,7 +1360,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isCalendarSearchEnabled.</p>
+     * <p>
+     * isCalendarSearchEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1263,7 +1372,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getStaticQuerySuffix.</p>
+     * <p>
+     * getStaticQuerySuffix.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1273,7 +1384,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPreviousVersionIdentifierField.</p>
+     * <p>
+     * getPreviousVersionIdentifierField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1283,7 +1396,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getNextVersionIdentifierField.</p>
+     * <p>
+     * getNextVersionIdentifierField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1293,7 +1408,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getVersionLabelField.</p>
+     * <p>
+     * getVersionLabelField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1303,7 +1420,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIndexedMetsFolder.</p>
+     * <p>
+     * getIndexedMetsFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1313,7 +1432,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIndexedLidoFolder.</p>
+     * <p>
+     * getIndexedLidoFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1323,7 +1444,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPageSelectionFormat.</p>
+     * <p>
+     * getPageSelectionFormat.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1333,7 +1456,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getMediaFolder.</p>
+     * <p>
+     * getMediaFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1343,7 +1468,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPdfFolder.</p>
+     * <p>
+     * getPdfFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1353,7 +1480,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getVocabulariesFolder.</p>
+     * <p>
+     * getVocabulariesFolder.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1362,7 +1491,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getOrigContentFolder.</p>
+     * <p>
+     * getOrigContentFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1372,7 +1503,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmsTextFolder.</p>
+     * <p>
+     * getCmsTextFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1382,7 +1515,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAltoFolder.</p>
+     * <p>
+     * getAltoFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1392,7 +1527,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAbbyyFolder.</p>
+     * <p>
+     * getAbbyyFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1402,7 +1539,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFulltextFolder.</p>
+     * <p>
+     * getFulltextFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1412,7 +1551,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTeiFolder.</p>
+     * <p>
+     * getTeiFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1422,7 +1563,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmdiFolder.</p>
+     * <p>
+     * getCmdiFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1432,7 +1575,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWcFolder.</p>
+     * <p>
+     * getWcFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1442,7 +1587,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAnnotationFolder.</p>
+     * <p>
+     * getAnnotationFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1452,7 +1599,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getHotfolder.</p>
+     * <p>
+     * getHotfolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1462,7 +1611,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTempFolder.</p>
+     * <p>
+     * getTempFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1473,7 +1624,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isUrnDoRedirect.</p>
+     * <p>
+     * isUrnDoRedirect.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1483,7 +1636,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isUserRegistrationEnabled.</p>
+     * <p>
+     * isUserRegistrationEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1493,7 +1648,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isShowOpenIdConnect.</p>
+     * <p>
+     * isShowOpenIdConnect.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1503,7 +1660,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAuthenticationProviders.</p>
+     * <p>
+     * getAuthenticationProviders.
+     * </p>
      *
      * @should return all properly configured elements
      * @should load user group names correctly
@@ -1547,6 +1706,9 @@ public final class Configuration extends AbstractConfiguration {
                             case "littera":
                                 provider = new LitteraProvider(name, label, endpoint, image, timeoutMillis);
                                 break;
+                            case "bibliotheca":
+                                provider = new BibliothecaProvider(name, label, endpoint, image, timeoutMillis);
+                                break;
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
@@ -1573,7 +1735,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSmtpServer.</p>
+     * <p>
+     * getSmtpServer.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1583,7 +1747,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSmtpUser.</p>
+     * <p>
+     * getSmtpUser.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1593,7 +1759,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSmtpPassword.</p>
+     * <p>
+     * getSmtpPassword.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1603,7 +1771,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSmtpSenderAddress.</p>
+     * <p>
+     * getSmtpSenderAddress.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1613,7 +1783,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSmtpSenderName.</p>
+     * <p>
+     * getSmtpSenderName.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1623,7 +1795,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSmtpSecurity.</p>
+     * <p>
+     * getSmtpSecurity.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1633,7 +1807,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayCollectionBrowsing.</p>
+     * <p>
+     * isDisplayCollectionBrowsing.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1643,7 +1819,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayUserNavigation.</p>
+     * <p>
+     * isDisplayUserNavigation.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1653,7 +1831,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayTagCloudNavigation.</p>
+     * <p>
+     * isDisplayTagCloudNavigation.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1663,7 +1843,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayStatistics.</p>
+     * <p>
+     * isDisplayStatistics.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1673,7 +1855,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayTimeMatrix.</p>
+     * <p>
+     * isDisplayTimeMatrix.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1683,7 +1867,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayCrowdsourcingModuleLinks.</p>
+     * <p>
+     * isDisplayCrowdsourcingModuleLinks.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1693,7 +1879,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTheme.</p>
+     * <p>
+     * getTheme.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1703,7 +1891,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getThemeRootPath.</p>
+     * <p>
+     * getThemeRootPath.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1713,7 +1903,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getName.</p>
+     * <p>
+     * getName.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1723,7 +1915,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDescription.</p>
+     * <p>
+     * getDescription.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -1743,7 +1937,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplaySearchResultNavigation.</p>
+     * <p>
+     * isDisplaySearchResultNavigation.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1753,7 +1949,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isFoldout.</p>
+     * <p>
+     * isFoldout.
+     * </p>
      *
      * @param sidebarElement a {@link java.lang.String} object.
      * @return a boolean.
@@ -1763,7 +1961,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarPageLinkVisible.</p>
+     * <p>
+     * isSidebarPageLinkVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1773,7 +1973,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarCalendarLinkVisible.</p>
+     * <p>
+     * isSidebarCalendarLinkVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1783,7 +1985,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarTocLinkVisible.</p>
+     * <p>
+     * isSidebarTocLinkVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1793,7 +1997,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarThumbsLinkVisible.</p>
+     * <p>
+     * isSidebarThumbsLinkVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1803,7 +2009,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarMetadataLinkVisible.</p>
+     * <p>
+     * isSidebarMetadataLinkVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1813,7 +2021,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isShowSidebarEventMetadata.</p>
+     * <p>
+     * isShowSidebarEventMetadata.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1823,7 +2033,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarFulltextLinkVisible.</p>
+     * <p>
+     * isSidebarFulltextLinkVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1833,7 +2045,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarTocVisible.</p>
+     * <p>
+     * isSidebarTocVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1843,7 +2057,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSidebarTocPageNumbersVisible.</p>
+     * <p>
+     * getSidebarTocPageNumbersVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1853,7 +2069,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSidebarTocLengthBeforeCut.</p>
+     * <p>
+     * getSidebarTocLengthBeforeCut.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1863,7 +2081,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSidebarTocInitialCollapseLevel.</p>
+     * <p>
+     * getSidebarTocInitialCollapseLevel.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1873,7 +2093,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSidebarTocCollapseLengthThreshold.</p>
+     * <p>
+     * getSidebarTocCollapseLengthThreshold.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1883,7 +2105,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSidebarTocLowestLevelToCollapseForLength.</p>
+     * <p>
+     * getSidebarTocLowestLevelToCollapseForLength.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -1893,7 +2117,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSidebarTocTreeView.</p>
+     * <p>
+     * isSidebarTocTreeView.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -1903,7 +2129,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTocTreeView.</p>
+     * <p>
+     * isTocTreeView.
+     * </p>
      *
      * @should return true for allowed docstructs
      * @should return false for other docstructs
@@ -1961,7 +2189,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDrillDownFields.</p>
+     * <p>
+     * getDrillDownFields.
+     * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
@@ -1971,7 +2201,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getHierarchicalDrillDownFields.</p>
+     * <p>
+     * getHierarchicalDrillDownFields.
+     * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
@@ -1981,7 +2213,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getInitialDrillDownElementNumber.</p>
+     * <p>
+     * getInitialDrillDownElementNumber.
+     * </p>
      *
      * @should return correct value
      * @should return default value if field not found
@@ -2028,7 +2262,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSortOrder.</p>
+     * <p>
+     * getSortOrder.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -2135,7 +2371,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRangeFacetFields.</p>
+     * <p>
+     * getRangeFacetFields.
+     * </p>
      *
      * @return List of facet fields to be used as range values
      */
@@ -2145,7 +2383,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSortingEnabled.</p>
+     * <p>
+     * isSortingEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2155,7 +2395,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDefaultSortField.</p>
+     * <p>
+     * getDefaultSortField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2165,7 +2407,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSortFields.</p>
+     * <p>
+     * getSortFields.
+     * </p>
      *
      * @should return return all configured elements
      * @return a {@link java.util.List} object.
@@ -2175,7 +2419,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getStaticSortFields.</p>
+     * <p>
+     * getStaticSortFields.
+     * </p>
      *
      * @should return return all configured elements
      * @return a {@link java.util.List} object.
@@ -2185,7 +2431,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getUrnResolverUrl.</p>
+     * <p>
+     * getUrnResolverUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2196,7 +2444,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getUnconditionalImageAccessMaxWidth.</p>
+     * <p>
+     * getUnconditionalImageAccessMaxWidth.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2206,7 +2456,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isFullAccessForLocalhost.</p>
+     * <p>
+     * isFullAccessForLocalhost.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2216,7 +2468,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isGeneratePdfInTaskManager.</p>
+     * <p>
+     * isGeneratePdfInTaskManager.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2226,7 +2480,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isPdfApiDisabled.</p>
+     * <p>
+     * isPdfApiDisabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2236,7 +2492,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTitlePdfEnabled.</p>
+     * <p>
+     * isTitlePdfEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2247,7 +2505,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTocPdfEnabled.</p>
+     * <p>
+     * isTocPdfEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2257,7 +2517,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isMetadataPdfEnabled.</p>
+     * <p>
+     * isMetadataPdfEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2267,7 +2529,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isPagePdfEnabled.</p>
+     * <p>
+     * isPagePdfEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2277,7 +2541,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDocHierarchyPdfEnabled.</p>
+     * <p>
+     * isDocHierarchyPdfEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2287,7 +2553,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTitleEpubEnabled.</p>
+     * <p>
+     * isTitleEpubEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2297,7 +2565,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTocEpubEnabled.</p>
+     * <p>
+     * isTocEpubEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2307,7 +2577,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isMetadataEpubEnabled.</p>
+     * <p>
+     * isMetadataEpubEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2317,7 +2589,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDownloadFolder.</p>
+     * <p>
+     * getDownloadFolder.
+     * </p>
      *
      * @should return correct value for pdf
      * @should return correct value for epub
@@ -2338,7 +2612,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRssFeedItems.</p>
+     * <p>
+     * getRssFeedItems.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2348,7 +2624,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRssTitle.</p>
+     * <p>
+     * getRssTitle.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2358,7 +2636,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRssDescription.</p>
+     * <p>
+     * getRssDescription.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2368,7 +2648,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRssCopyrightText.</p>
+     * <p>
+     * getRssCopyrightText.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2378,7 +2660,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRulesetFilePath.</p>
+     * <p>
+     * getRulesetFilePath.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2388,7 +2672,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDefaultCollection.</p>
+     * <p>
+     * getDefaultCollection.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2398,7 +2684,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getThumbnailsWidth.</p>
+     * <p>
+     * getThumbnailsWidth.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2408,7 +2696,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getThumbnailsHeight.</p>
+     * <p>
+     * getThumbnailsHeight.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2418,7 +2708,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getThumbnailsCompression.</p>
+     * <p>
+     * getThumbnailsCompression.
+     * </p>
      *
      * @return a int.
      */
@@ -2427,7 +2719,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAnchorThumbnailMode.</p>
+     * <p>
+     * getAnchorThumbnailMode.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2437,7 +2731,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getMultivolumeThumbnailWidth.</p>
+     * <p>
+     * getMultivolumeThumbnailWidth.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2447,7 +2743,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getMultivolumeThumbnailHeight.</p>
+     * <p>
+     * getMultivolumeThumbnailHeight.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2457,7 +2755,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDisplayBreadcrumbs.</p>
+     * <p>
+     * getDisplayBreadcrumbs.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2467,7 +2767,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDisplayMetadataPageLinkBlock.</p>
+     * <p>
+     * getDisplayMetadataPageLinkBlock.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2477,7 +2779,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAddDublinCoreMetaTags.</p>
+     * <p>
+     * isAddDublinCoreMetaTags.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2487,7 +2791,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAddHighwirePressMetaTags.</p>
+     * <p>
+     * isAddHighwirePressMetaTags.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2497,7 +2803,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>useTiles.</p>
+     * <p>
+     * useTiles.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2508,7 +2816,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>useTilesFullscreen.</p>
+     * <p>
+     * useTilesFullscreen.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2519,7 +2829,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>useTiles.</p>
+     * <p>
+     * useTiles.
+     * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
@@ -2531,7 +2843,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFooterHeight.</p>
+     * <p>
+     * getFooterHeight.
+     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2541,7 +2855,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFullscreenFooterHeight.</p>
+     * <p>
+     * getFullscreenFooterHeight.
+     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2551,7 +2867,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFooterHeight.</p>
+     * <p>
+     * getFooterHeight.
+     * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
@@ -2563,7 +2881,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getImageViewType.</p>
+     * <p>
+     * getImageViewType.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2573,7 +2893,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getZoomFullscreenViewType.</p>
+     * <p>
+     * getZoomFullscreenViewType.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2583,7 +2905,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getZoomImageViewType.</p>
+     * <p>
+     * getZoomImageViewType.
+     * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
@@ -2595,7 +2919,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>useOpenSeadragon.</p>
+     * <p>
+     * useOpenSeadragon.
+     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2605,7 +2931,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getImageViewZoomScales.</p>
+     * <p>
+     * getImageViewZoomScales.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2615,7 +2943,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getImageViewZoomScales.</p>
+     * <p>
+     * getImageViewZoomScales.
+     * </p>
      *
      * @param view a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -2626,7 +2956,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getImageViewZoomScales.</p>
+     * <p>
+     * getImageViewZoomScales.
+     * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
@@ -2650,7 +2982,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTileSizes.</p>
+     * <p>
+     * getTileSizes.
+     * </p>
      *
      * @return the configured tile sizes for imageView as a hashmap linking each tile size to the list of resolutions to use with that size
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2660,7 +2994,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTileSizes.</p>
+     * <p>
+     * getTileSizes.
+     * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
@@ -2693,7 +3029,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getZoomImageViewConfig.</p>
+     * <p>
+     * getZoomImageViewConfig.
+     * </p>
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
@@ -2729,7 +3067,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getBreadcrumbsClipping.</p>
+     * <p>
+     * getBreadcrumbsClipping.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2739,7 +3079,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayTopstructLabel.</p>
+     * <p>
+     * isDisplayTopstructLabel.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2749,7 +3091,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDisplayStructType.</p>
+     * <p>
+     * getDisplayStructType.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2759,7 +3103,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSearchHitMetadataValueNumber.</p>
+     * <p>
+     * getSearchHitMetadataValueNumber.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2769,7 +3115,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSearchHitMetadataValueLength.</p>
+     * <p>
+     * getSearchHitMetadataValueLength.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2790,7 +3138,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWatermarkFormat.</p>
+     * <p>
+     * getWatermarkFormat.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -2799,7 +3149,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isOriginalContentDownload.</p>
+     * <p>
+     * isOriginalContentDownload.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2809,7 +3161,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getStopwordsFilePath.</p>
+     * <p>
+     * getStopwordsFilePath.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2831,7 +3185,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDocstructTargetPageType.</p>
+     * <p>
+     * getDocstructTargetPageType.
+     * </p>
      *
      * @param docstruct a {@link java.lang.String} object.
      * @should return correct value
@@ -2847,7 +3203,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFulltextPercentageWarningThreshold.</p>
+     * <p>
+     * getFulltextPercentageWarningThreshold.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2857,7 +3215,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isUseViewerLocaleAsRecordLanguage.</p>
+     * <p>
+     * isUseViewerLocaleAsRecordLanguage.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2867,7 +3227,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTocAlwaysDisplayDocstruct.</p>
+     * <p>
+     * isTocAlwaysDisplayDocstruct.
+     * </p>
      *
      * @return a boolean.
      */
@@ -2877,7 +3239,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getFeedbackEmailAddress.</p>
+     * <p>
+     * getFeedbackEmailAddress.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2887,7 +3251,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isBookmarksEnabled.</p>
+     * <p>
+     * isBookmarksEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2897,7 +3263,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isForceJpegConversion.</p>
+     * <p>
+     * isForceJpegConversion.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2907,7 +3275,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPageLoaderThreshold.</p>
+     * <p>
+     * getPageLoaderThreshold.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -2917,7 +3287,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isPreventProxyCaching.</p>
+     * <p>
+     * isPreventProxyCaching.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2927,7 +3299,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isUserCommentsEnabled.</p>
+     * <p>
+     * isUserCommentsEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2937,7 +3311,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getUserCommentsConditionalQuery.</p>
+     * <p>
+     * getUserCommentsConditionalQuery.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2947,7 +3323,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getUserCommentsNotificationEmailAddresses.</p>
+     * <p>
+     * getUserCommentsNotificationEmailAddresses.
+     * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
@@ -2957,7 +3335,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getViewerHome.</p>
+     * <p>
+     * getViewerHome.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -2976,7 +3356,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWatermarkIdField.</p>
+     * <p>
+     * getWatermarkIdField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.util.List} object.
@@ -2987,7 +3369,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSubthemesEnabled.</p>
+     * <p>
+     * isSubthemesEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -2997,7 +3381,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSubthemeMainTheme.</p>
+     * <p>
+     * getSubthemeMainTheme.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3011,7 +3397,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSubthemeDiscriminatorField.</p>
+     * <p>
+     * getSubthemeDiscriminatorField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3021,7 +3409,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSubthemeAutoSwitch.</p>
+     * <p>
+     * isSubthemeAutoSwitch.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3031,7 +3421,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSubthemeAddFilterQuery.</p>
+     * <p>
+     * isSubthemeAddFilterQuery.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3041,7 +3433,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSubthemeFilterQueryVisible.</p>
+     * <p>
+     * isSubthemeFilterQueryVisible.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3051,7 +3445,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTagCloudSampleSize.</p>
+     * <p>
+     * getTagCloudSampleSize.
+     * </p>
      *
      * @should return correct value for existing fields
      * @should return INT_MAX for other fields
@@ -3063,7 +3459,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTocVolumeSortFieldsForTemplate.</p>
+     * <p>
+     * getTocVolumeSortFieldsForTemplate.
+     * </p>
      *
      * @should return correct template configuration
      * @should return default template configuration if template not found
@@ -3159,7 +3557,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDisplayTitleBreadcrumbs.</p>
+     * <p>
+     * getDisplayTitleBreadcrumbs.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3169,7 +3569,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayTitlePURL.</p>
+     * <p>
+     * isDisplayTitlePURL.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3179,7 +3581,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTitleBreadcrumbsMaxTitleLength.</p>
+     * <p>
+     * getTitleBreadcrumbsMaxTitleLength.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -3189,7 +3593,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIncludeAnchorInTitleBreadcrumbs.</p>
+     * <p>
+     * getIncludeAnchorInTitleBreadcrumbs.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3199,7 +3605,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplaySearchRssLinks.</p>
+     * <p>
+     * isDisplaySearchRssLinks.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3209,7 +3617,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>showThumbnailsInToc.</p>
+     * <p>
+     * showThumbnailsInToc.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3219,7 +3629,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getStartYearForTimeline.</p>
+     * <p>
+     * getStartYearForTimeline.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3229,7 +3641,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getEndYearForTimeline.</p>
+     * <p>
+     * getEndYearForTimeline.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3239,7 +3653,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTimelineHits.</p>
+     * <p>
+     * getTimelineHits.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3249,7 +3665,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isPiwikTrackingEnabled.</p>
+     * <p>
+     * isPiwikTrackingEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3259,7 +3677,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPiwikBaseURL.</p>
+     * <p>
+     * getPiwikBaseURL.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3269,7 +3689,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPiwikSiteID.</p>
+     * <p>
+     * getPiwikSiteID.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3280,7 +3702,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSearchSavingEnabled.</p>
+     * <p>
+     * isSearchSavingEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3290,7 +3714,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isBoostTopLevelDocstructs.</p>
+     * <p>
+     * isBoostTopLevelDocstructs.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3300,7 +3726,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isGroupDuplicateHits.</p>
+     * <p>
+     * isGroupDuplicateHits.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3310,7 +3738,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRecordGroupIdentifierFields.</p>
+     * <p>
+     * getRecordGroupIdentifierFields.
+     * </p>
      *
      * @should return all configured values
      * @return a {@link java.util.List} object.
@@ -3320,7 +3750,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getAncestorIdentifierFields.</p>
+     * <p>
+     * getAncestorIdentifierFields.
+     * </p>
      *
      * @should return all configured values
      * @return a {@link java.util.List} object.
@@ -3330,7 +3762,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTocListSiblingRecords.</p>
+     * <p>
+     * isTocListSiblingRecords.
+     * </p>
      *
      * @should return correctValue
      * @return a boolean.
@@ -3340,7 +3774,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSearchFilters.</p>
+     * <p>
+     * getSearchFilters.
+     * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
@@ -3360,7 +3796,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWebApiFields.</p>
+     * <p>
+     * getWebApiFields.
+     * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
@@ -3385,7 +3823,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDbPersistenceUnit.</p>
+     * <p>
+     * getDbPersistenceUnit.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3395,7 +3835,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isCmsEnabled.</p>
+     * <p>
+     * isCmsEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3405,7 +3847,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>useCustomNavBar.</p>
+     * <p>
+     * useCustomNavBar.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3415,7 +3859,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmsTemplateFolder.</p>
+     * <p>
+     * getCmsTemplateFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3425,7 +3871,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmsMediaFolder.</p>
+     * <p>
+     * getCmsMediaFolder.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3435,7 +3883,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmsClassifications.</p>
+     * <p>
+     * getCmsClassifications.
+     * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
@@ -3445,7 +3895,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmsMediaDisplayWidth.</p>
+     * <p>
+     * getCmsMediaDisplayWidth.
+     * </p>
      *
      * @return a int.
      */
@@ -3454,7 +3906,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCmsMediaDisplayHeight.</p>
+     * <p>
+     * getCmsMediaDisplayHeight.
+     * </p>
      *
      * @return a int.
      */
@@ -3463,7 +3917,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isTranskribusEnabled.</p>
+     * <p>
+     * isTranskribusEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3473,7 +3929,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTranskribusUserName.</p>
+     * <p>
+     * getTranskribusUserName.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3483,7 +3941,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTranskribusPassword.</p>
+     * <p>
+     * getTranskribusPassword.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3493,7 +3953,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTranskribusDefaultCollection.</p>
+     * <p>
+     * getTranskribusDefaultCollection.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3503,7 +3965,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTranskribusRestApiUrl.</p>
+     * <p>
+     * getTranskribusRestApiUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3513,7 +3977,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTranskribusAllowedDocumentTypes.</p>
+     * <p>
+     * getTranskribusAllowedDocumentTypes.
+     * </p>
      *
      * @should return all configured elements
      * @return a {@link java.util.List} object.
@@ -3523,7 +3989,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTocIndentation.</p>
+     * <p>
+     * getTocIndentation.
+     * </p>
      *
      * @should return correct value
      * @return a int.
@@ -3533,7 +4001,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isPageBrowseEnabled.</p>
+     * <p>
+     * isPageBrowseEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -3542,7 +4012,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getPageBrowseSteps.</p>
+     * <p>
+     * getPageBrowseSteps.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -3561,7 +4033,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTaskManagerServiceUrl.</p>
+     * <p>
+     * getTaskManagerServiceUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3571,7 +4045,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTaskManagerRestUrl.</p>
+     * <p>
+     * getTaskManagerRestUrl.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3581,7 +4057,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getReCaptchaSiteKey.</p>
+     * <p>
+     * getReCaptchaSiteKey.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3591,7 +4069,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isUseReCaptcha.</p>
+     * <p>
+     * isUseReCaptcha.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3601,7 +4081,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSearchInItemEnabled.</p>
+     * <p>
+     * isSearchInItemEnabled.
+     * </p>
      *
      * @should return true if the search field to search the current item/work is configured to be visible
      * @return a boolean.
@@ -3611,7 +4093,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getDefaultBrowseIcon.</p>
+     * <p>
+     * getDefaultBrowseIcon.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -3626,7 +4110,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isSearchExcelExportEnabled.</p>
+     * <p>
+     * isSearchExcelExportEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3636,7 +4122,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSearchExcelExportFields.</p>
+     * <p>
+     * getSearchExcelExportFields.
+     * </p>
      *
      * @should return all values
      * @return a {@link java.util.List} object.
@@ -3646,7 +4134,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getExcelDownloadTimeout.</p>
+     * <p>
+     * getExcelDownloadTimeout.
+     * </p>
      *
      * @return a int.
      */
@@ -3655,7 +4145,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDisplayEmptyTocInSidebar.</p>
+     * <p>
+     * isDisplayEmptyTocInSidebar.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3665,7 +4157,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isDoublePageModeEnabled.</p>
+     * <p>
+     * isDoublePageModeEnabled.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3675,7 +4169,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getRestrictedImageUrls.</p>
+     * <p>
+     * getRestrictedImageUrls.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -3684,7 +4180,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFMetadataFields.</p>
+     * <p>
+     * getIIIFMetadataFields.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -3693,7 +4191,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFEventFields.</p>
+     * <p>
+     * getIIIFEventFields.
+     * </p>
      *
      * @return the list of all configured event fields for IIIF manifests All fields must contain a "/" to separate the event type and the actual
      *         field name If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from
@@ -3706,7 +4206,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFMetadataLabel.</p>
+     * <p>
+     * getIIIFMetadataLabel.
+     * </p>
      *
      * @param field the value of the field
      * @return The attribute "label" of any children of webapi.iiif.metadataFields
@@ -3734,7 +4236,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFLogo.</p>
+     * <p>
+     * getIIIFLogo.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -3743,7 +4247,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFNavDateField.</p>
+     * <p>
+     * getIIIFNavDateField.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -3752,7 +4258,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFAttribution.</p>
+     * <p>
+     * getIIIFAttribution.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -3761,7 +4269,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getIIIFDescriptionFields.</p>
+     * <p>
+     * getIIIFDescriptionFields.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -3771,7 +4281,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSitelinksField.</p>
+     * <p>
+     * getSitelinksField.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3781,7 +4293,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getSitelinksFilterQuery.</p>
+     * <p>
+     * getSitelinksFilterQuery.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3791,7 +4305,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getConfiguredCollections.</p>
+     * <p>
+     * getConfiguredCollections.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -3801,7 +4317,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getWebApiToken.</p>
+     * <p>
+     * getWebApiToken.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
@@ -3812,7 +4330,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAllowRedirectCollectionToWork.</p>
+     * <p>
+     * isAllowRedirectCollectionToWork.
+     * </p>
      *
      * @return true if opening a collection containing only a single work should redirect to that work
      * @should return correct value
@@ -3823,7 +4343,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getTwitterUserName.</p>
+     * <p>
+     * getTwitterUserName.
+     * </p>
      *
      * @return Configured value; null if none configured
      * @should return correct value
@@ -3834,7 +4356,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getLimitImageHeightUpperRatioThreshold.</p>
+     * <p>
+     * getLimitImageHeightUpperRatioThreshold.
+     * </p>
      *
      * @should return correct value
      * @return a float.
@@ -3844,7 +4368,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getLimitImageHeightLowerRatioThreshold.</p>
+     * <p>
+     * getLimitImageHeightLowerRatioThreshold.
+     * </p>
      *
      * @should return correct value
      * @return a float.
@@ -3854,7 +4380,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isLimitImageHeight.</p>
+     * <p>
+     * isLimitImageHeight.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3864,7 +4392,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>isAddCORSHeader.</p>
+     * <p>
+     * isAddCORSHeader.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -3874,7 +4404,9 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>getCORSHeaderValue.</p>
+     * <p>
+     * getCORSHeaderValue.
+     * </p>
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.

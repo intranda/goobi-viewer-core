@@ -17,13 +17,6 @@ package io.goobi.viewer.model.security.authentication.model;
 
 import java.util.Collections;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -49,7 +42,7 @@ public class VuAuthenticationResource {
      * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public VuAuthenticationResponse handleAuthorizationResponse(VuAuthenticationRequest request) throws DAOException {
+    public VuAuthenticationResponse handleAuthorizationResponse(UserPasswordAuthenticationRequest request) throws DAOException {
         
         VuAuthenticationResponse.User vuUser = new VuAuthenticationResponse.User();
         vuUser.setExists(true);
@@ -106,9 +99,9 @@ public class VuAuthenticationResource {
     /**
      * <p>getRequest.</p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.UserPasswordAuthenticationRequest} object.
      */
-    public VuAuthenticationRequest getRequest() {
-        return new VuAuthenticationRequest("test", "testtesttest");
+    public UserPasswordAuthenticationRequest getRequest() {
+        return new UserPasswordAuthenticationRequest("test", "testtesttest");
     }
 }

@@ -105,6 +105,7 @@
                 <addUserToGroup>vuFindUsers</addUserToGroup>
                 <addUserToGroup>vuFindUsers2</addUserToGroup>
             </provider>
+            <provider type="userPassword" name="Bibliotheca" endpoint="https://example.com/006719/auth.asp?client=goobiviewer" image="bib.png" />
             <provider type="local" name="Goobi viewer"/>
         </authenticationProviders>
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress') 

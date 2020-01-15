@@ -21,22 +21,9 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +33,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse;
-import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest;
-import io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * External authentication provider for the LITTERA reader authentication api (www.littera.eu).
@@ -139,7 +121,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
      * @throws JsonMappingException 
      * @throws JsonParseException 
      */
-    private LitteraAuthenticationResponse deserialize(String xml) throws IOException {
+    private static LitteraAuthenticationResponse deserialize(String xml) throws IOException {
         XmlMapper mapper = new XmlMapper();
         LitteraAuthenticationResponse response = mapper.readValue(xml, LitteraAuthenticationResponse.class);
         return response;
@@ -151,7 +133,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
      * @return
      * @throws AuthenticationProviderException
      */
-    private Optional<User> getUser(String loginName, LitteraAuthenticationResponse response) throws AuthenticationProviderException {
+    private static Optional<User> getUser(String loginName, LitteraAuthenticationResponse response) throws AuthenticationProviderException {
 
         if (StringUtils.isBlank(loginName) || !response.isAuthenticationSuccessful()) {
             return Optional.empty();
