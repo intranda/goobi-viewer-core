@@ -33,7 +33,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
  */
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
-    private static final String CORE_NAME = "test-viewer";
+    private static final String CORE_NAME = "test-viewer-2020";
 
     private static String solrPath = "/opt/digiverso/viewer/apache-solr/";
     private static CoreContainer coreContainer;
