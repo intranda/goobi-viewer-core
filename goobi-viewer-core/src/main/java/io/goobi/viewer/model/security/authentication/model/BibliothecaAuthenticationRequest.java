@@ -16,68 +16,48 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>VuAuthenticationRequest class.</p>
+ * <p>
+ * XServiceAuthenticationRequest class.
+ * </p>
  *
- * @author Florian Alpers
  */
-public class VuAuthenticationRequest {
+public class BibliothecaAuthenticationRequest extends UserPasswordAuthenticationRequest {
 
-    private String username;
-    private String password;
-    
     /**
-     * <p>Constructor for VuAuthenticationRequest.</p>
-     */
-    public VuAuthenticationRequest() {
-        
-    }
-    
-    /**
-     * <p>Constructor for VuAuthenticationRequest.</p>
+     * <p>
+     * Constructor for BibliothecaAuthenticationRequest.
+     * </p>
      *
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      */
-    public VuAuthenticationRequest(String username, String password) {
-        super();
-        this.username = username;
-        this.password = password;
+    public BibliothecaAuthenticationRequest(String username, String password) {
+        super(normalizeUsername(username), password);
     }
+
     /**
-     * <p>Getter for the field <code>username</code>.</p>
-     *
-     * @return the username
+     * 
+     * @param username
+     * @return 11-digit representation of the given user name.
+     * @should normalize value correctly
      */
-    public String getUsername() {
+    static String normalizeUsername(String username) {
+        if (username == null || username.length() == 11) {
+            return username;
+        }
+
+        if (username.length() < 11) {
+            StringBuilder sb = new StringBuilder(11);
+            for (int i = username.length(); i < 11; ++i) {
+                sb.append('0');
+            }
+            sb.append(username);
+            return sb.toString();
+        }
+
         return username;
     }
-    /**
-     * <p>Getter for the field <code>password</code>.</p>
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-    
-    /**
-     * <p>Setter for the field <code>username</code>.</p>
-     *
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
-    /**
-     * <p>Setter for the field <code>password</code>.</p>
-     *
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -86,5 +66,5 @@ public class VuAuthenticationRequest {
     public String toString() {
         return "username: " + username + ", password: " + password;
     }
-    
+
 }

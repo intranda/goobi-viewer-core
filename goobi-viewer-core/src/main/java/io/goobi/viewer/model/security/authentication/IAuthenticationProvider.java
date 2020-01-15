@@ -18,12 +18,6 @@ package io.goobi.viewer.model.security.authentication;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import io.goobi.viewer.exceptions.AuthenticationException;
-import io.goobi.viewer.model.security.user.User;
-
 /**
  * Interface of all user authentication related actions, particularly logging in and out of a viewer user account
  *
