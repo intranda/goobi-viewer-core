@@ -31,7 +31,7 @@ public class Version {
     /** Constant <code>BUILDDATE</code> */
     public static final String BUILDDATE;
     
-    private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd_HH-mm";
+    private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
     static {
         String manifest = getManifestStringFromJar();
@@ -40,7 +40,7 @@ public class Version {
             VERSION = getInfo("version", manifest);
             BUILDDATE = getInfo("Implementation-Build-Date", manifest);
             BUILDVERSION = getInfo("Implementation-Version", manifest);
-            PUBLIC_VERSION = getInfo("PublicVersion", manifest);
+            PUBLIC_VERSION = getInfo("Public-Version", manifest);
         } else {
             APPLICATION_NAME = "goobi-viewer-core";
             VERSION = "unknown";
@@ -79,9 +79,9 @@ public class Version {
         Matcher matcher = Pattern.compile(regex).matcher(infoText);
         if (matcher.find()) {
             return matcher.group(1);
-        } else {
-            return "?";
         }
+        
+        return "?";
     }
     
     /**
