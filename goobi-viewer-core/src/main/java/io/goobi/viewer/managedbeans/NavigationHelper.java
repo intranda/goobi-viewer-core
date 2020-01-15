@@ -46,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
+import com.ocpsoft.pretty.faces.config.mapping.QueryParameter;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.Version;
@@ -1748,6 +1750,37 @@ public class NavigationHelper implements Serializable {
             previousUrl = "/";//getApplicationUrl();
         }
         return previousUrl;
+    }
+    
+    public String getExitUrl() {
+        return getExitUrl(getCurrentPagerType());
+    }
+    
+    public String getExitUrl(PageType pageType) {
+        String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);
+        if(StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
+            return resolvePrettyUrl(exitView);
+        } else if(StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
+            return getPreviousViewUrl();
+        } else {
+            return exitView;
+        }
+    }
+    
+    public String resolvePrettyUrl(String prettyId, Object... parameters) {
+        
+        if(parameters == null || parameters.length == 0) {            
+            List<PathParameter> pathParams = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
+            parameters = new Object[pathParams.size()];
+            int index = 0;
+            for (PathParameter param : pathParams) {
+                Object value = BeanUtils.getManagedBeanValue(param.getExpression().getELExpression());
+                parameters[index++] = (value != null && StringUtils.isNotBlank(value.toString())) ? value : "-";
+            }
+        }
+
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(parameters);
+        return mappedUrl.toString();
     }
 
     /**

@@ -48,7 +48,7 @@ public class ViewHistory {
     private static final String PREVIOUS_URL = "previousURL";
     private static final String CURRENT_URL = "currentURL";
 
-    private static final PageType[] IGNORED_VIEWS = new PageType[] { PageType.viewFullscreen};
+    private static final PageType[] IGNORED_VIEWS = new PageType[] {};
 
     /**
      * Saves the current view information to the session map.

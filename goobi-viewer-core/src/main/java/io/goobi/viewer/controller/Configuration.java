@@ -2841,6 +2841,10 @@ public final class Configuration extends AbstractConfiguration {
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
     }
+    
+    public String getPageTypeExitView(PageType type) {
+        return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
+    }
 
     /**
      * <p>getFulltextPercentageWarningThreshold.</p>
