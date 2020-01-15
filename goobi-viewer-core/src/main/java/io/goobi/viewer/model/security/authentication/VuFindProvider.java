@@ -34,28 +34,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest;
+import io.goobi.viewer.model.security.authentication.model.UserPasswordAuthenticationRequest;
 import io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>VuFindProvider class.</p>
+ * <p>
+ * VuFindProvider class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public class VuFindProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(VuFindProvider.class);
-    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
-    protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
-    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */
-    protected static final String TYPE_USER_PASSWORD = "userPassword";
     private static final String USER_GROUP_ROLE_MEMBER = "member";
 
     private VuAuthenticationResponse authenticationResponse;
 
     /**
-     * <p>Constructor for VuFindProvider.</p>
+     * <p>
+     * Constructor for VuFindProvider.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -83,7 +83,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
         try {
-            VuAuthenticationRequest request = new VuAuthenticationRequest(loginName, password);
+            UserPasswordAuthenticationRequest request = new UserPasswordAuthenticationRequest(loginName, password);
             String response = post(new URI(getUrl()), serialize(request));
             this.authenticationResponse = deserialize(response);
             Optional<User> user = getUser(request);
@@ -101,7 +101,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         }
     }
 
-    private static String serialize(VuAuthenticationRequest object) throws JsonProcessingException {
+    private static String serialize(UserPasswordAuthenticationRequest object) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(object);
         return json;
@@ -114,8 +114,6 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         VuAuthenticationResponse response = mapper.readValue(json, VuAuthenticationResponse.class);
         return response;
     }
-    
-
 
     /**
      * @param request
@@ -123,7 +121,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      * @return
      * @throws AuthenticationProviderException
      */
-    private Optional<User> getUser(VuAuthenticationRequest request) throws AuthenticationProviderException {
+    private Optional<User> getUser(UserPasswordAuthenticationRequest request) throws AuthenticationProviderException {
 
         if (request == null || StringUtils.isBlank(request.getUsername()) || StringUtils.isBlank(request.getPassword())
                 || !Boolean.TRUE.equals(authenticationResponse.getUser().getExists())) {

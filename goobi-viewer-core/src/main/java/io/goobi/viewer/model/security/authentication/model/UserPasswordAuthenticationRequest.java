@@ -16,20 +16,19 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>XServiceAuthenticationRequest class.</p>
+ * <p>UserPasswordAuthenticationRequest class.</p>
  *
  * @author Florian Alpers
  */
-public class XServiceAuthenticationRequest {
+public class UserPasswordAuthenticationRequest {
 
-    private String username;
-    private String password;
+    protected String username;
+    protected String password;
     
     /**
      * <p>Constructor for XServiceAuthenticationRequest.</p>
      */
-    public XServiceAuthenticationRequest() {
-        
+    public UserPasswordAuthenticationRequest() {
     }
     
     /**
@@ -38,7 +37,7 @@ public class XServiceAuthenticationRequest {
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      */
-    public XServiceAuthenticationRequest(String username, String password) {
+    public UserPasswordAuthenticationRequest(String username, String password) {
         super();
         this.username = username;
         this.password = password;

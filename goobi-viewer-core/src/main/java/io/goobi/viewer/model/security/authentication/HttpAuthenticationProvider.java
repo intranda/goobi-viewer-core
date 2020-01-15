@@ -41,11 +41,18 @@ import com.google.common.io.CharStreams;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>Abstract HttpAuthenticationProvider class.</p>
+ * <p>
+ * Abstract HttpAuthenticationProvider class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
+
+    /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
+    protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
+    /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */
+    protected static final String TYPE_USER_PASSWORD = "userPassword";
 
     /** Constant <code>connectionManager</code> */
     protected static PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
@@ -59,7 +66,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected List<String> addUserToGroups;
 
     /**
-     * <p>Constructor for HttpAuthenticationProvider.</p>
+     * <p>
+     * Constructor for HttpAuthenticationProvider.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -79,7 +88,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>Getter for the field <code>timeoutMillis</code>.</p>
+     * <p>
+     * Getter for the field <code>timeoutMillis</code>.
+     * </p>
      *
      * @return the timeoutMillis
      */
@@ -97,7 +108,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -105,9 +118,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         return (this.label == null || this.label.isEmpty()) ? this.name : this.label;
     }
 
-    
     /**
-     * <p>Getter for the field <code>url</code>.</p>
+     * <p>
+     * Getter for the field <code>url</code>.
+     * </p>
      *
      * @return the url
      */
@@ -116,7 +130,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>Getter for the field <code>image</code>.</p>
+     * <p>
+     * Getter for the field <code>image</code>.
+     * </p>
      *
      * @return the image
      */
@@ -125,7 +141,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>getImageUrl.</p>
+     * <p>
+     * getImageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -167,9 +185,11 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;
     }
-    
+
     /**
-     * <p>post.</p>
+     * <p>
+     * post.
+     * </p>
      *
      * @param url a {@link java.net.URI} object.
      * @param requestEntity a {@link java.lang.String} object.
@@ -187,19 +207,21 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
             post.addHeader("Content-Type", "application/json");
             HttpEntity e = new StringEntity(requestEntity);
             post.setEntity(e);
-            try(CloseableHttpResponse httpResponse = client.execute(post)) {
-               try(InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
-                       String jsonResponse = CharStreams.toString(reader);
-                       return jsonResponse;
-                   }
-               }
+            try (CloseableHttpResponse httpResponse = client.execute(post)) {
+                try (InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
+                    String jsonResponse = CharStreams.toString(reader);
+                    return jsonResponse;
+                }
+            }
         } catch (IOException e) {
             throw new WebApplicationException("Error posting " + requestEntity + " to " + url, e);
         }
     }
-    
+
     /**
-     * <p>get.</p>
+     * <p>
+     * get.
+     * </p>
      *
      * @param url a {@link java.net.URI} object.
      * @return a {@link java.lang.String} object.
@@ -213,16 +235,15 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
             HttpGet get = new HttpGet(url);
             RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setSocketTimeout(1000).setConnectTimeout(1000).build();
             get.setConfig(config);
-            try(CloseableHttpResponse httpResponse = client.execute(get)) {
-               try(InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
-                       String jsonResponse = CharStreams.toString(reader);
-                       return jsonResponse;
-                   }
-               }
+            try (CloseableHttpResponse httpResponse = client.execute(get)) {
+                try (InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
+                    String jsonResponse = CharStreams.toString(reader);
+                    return jsonResponse;
+                }
+            }
         } catch (IOException e) {
             throw new WebApplicationException("Error getting url " + url, e);
         }
     }
-    
 
 }

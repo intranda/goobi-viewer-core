@@ -28,19 +28,23 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.authentication.model.UserPasswordAuthenticationRequest;
-import io.goobi.viewer.model.security.authentication.model.XServiceAuthenticationResponse;
+import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthenticationRequest;
+import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthenticationResponse;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>XServiceProvider class.</p>
+ * <p>
+ * BibliothecaProvider class.
+ * </p>
  */
-public class XServiceProvider extends VuFindProvider {
+public class BibliothecaProvider extends HttpAuthenticationProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(XServiceProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(BibliothecaProvider.class);
 
     /**
-     * <p>Constructor for XServiceProvider.</p>
+     * <p>
+     * Constructor for XServiceProvider.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -48,8 +52,8 @@ public class XServiceProvider extends VuFindProvider {
      * @param image a {@link java.lang.String} object.
      * @param timeoutMillis a long.
      */
-    public XServiceProvider(String name, String label, String url, String image, long timeoutMillis) {
-        super(name, label, url, image, timeoutMillis);
+    public BibliothecaProvider(String name, String label, String url, String image, long timeoutMillis) {
+        super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
     }
 
     /* (non-Javadoc)
@@ -57,17 +61,17 @@ public class XServiceProvider extends VuFindProvider {
      */
     /** {@inheritDoc} */
     @Override
-    public CompletableFuture<LoginResult> login(String borID, String password) throws AuthenticationProviderException {
+    public CompletableFuture<LoginResult> login(String readerId, String password) throws AuthenticationProviderException {
         StringBuilder sbUrl = new StringBuilder();
-        sbUrl.append(url).append("&bor_id=").append(borID).append("&verification=").append(password);
+        sbUrl.append(url).append("&sno=").append(readerId).append("&pwd=").append(password);
 
-        UserPasswordAuthenticationRequest request = new UserPasswordAuthenticationRequest(borID, password);
+        BibliothecaAuthenticationRequest request = new BibliothecaAuthenticationRequest(readerId, password);
         String[] resp = Helper.callUrlGET(sbUrl.toString());
 
         LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), null, true);
         if ("200".equals(resp[0])) {
             try {
-                XServiceAuthenticationResponse response = new XServiceAuthenticationResponse(resp[1], Helper.DEFAULT_ENCODING);
+                BibliothecaAuthenticationResponse response = new BibliothecaAuthenticationResponse(resp[1], Helper.DEFAULT_ENCODING);
                 Optional<User> user = getUser(request, response);
                 result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !response.isValid());
             } catch (JDOMException e) {
@@ -98,6 +102,22 @@ public class XServiceProvider extends VuFindProvider {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
+     */
+    @Override
+    public boolean allowsNicknameChange() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
+     */
+    @Override
+    public boolean allowsEmailChange() {
+        return false;
+    }
+
     /**
      * Retrieves or creates User object for the given credentials.
      * 
@@ -106,24 +126,25 @@ public class XServiceProvider extends VuFindProvider {
      * @return User object
      * @throws AuthenticationProviderException
      */
-    private static Optional<User> getUser(UserPasswordAuthenticationRequest request, XServiceAuthenticationResponse response)
+    private static Optional<User> getUser(BibliothecaAuthenticationRequest request, BibliothecaAuthenticationResponse response)
             throws AuthenticationProviderException {
         if (request == null || StringUtils.isBlank(request.getUsername()) || StringUtils.isBlank(request.getPassword()) || response == null
-                || StringUtils.isEmpty(response.getId())) {
+                || StringUtils.isEmpty(response.getUserid())) {
             return Optional.empty();
         }
 
         User user = null;
         try {
-            user = DataManager.getInstance().getDao().getUserByNickname(request.getUsername());
+            user = DataManager.getInstance().getDao().getUserByNickname(response.getUserid());
             if (user != null) {
-                logger.debug("Found user {} via X-Service user name '{}'.", user.getId(), request.getUsername());
+                logger.debug("Found user {} via Bibliotheca user name '{}'.", user.getId(), request.getUsername());
             }
             // If not found, try email
             if (user == null) {
-                user = DataManager.getInstance().getDao().getUserByEmail(request.getUsername());
+                String email = DEFAULT_EMAIL.replace("{username}", request.getUsername());
+                user = DataManager.getInstance().getDao().getUserByEmail(email);
                 if (user != null) {
-                    logger.debug("Found user {} via X-Service user name '{}'.", user.getId(), request.getUsername());
+                    logger.debug("Found user {} via Bibliotheca email '{}'.", user.getId(), email);
                 }
             }
 

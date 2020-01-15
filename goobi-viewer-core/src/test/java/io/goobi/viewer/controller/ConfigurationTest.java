@@ -449,7 +449,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAuthenticationProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        Assert.assertEquals(4, providers.size());
+        Assert.assertEquals(5, providers.size());
 
         //google openid
         Assert.assertEquals("Google", providers.get(0).getName());
@@ -465,10 +465,14 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
         Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
         Assert.assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
+        
+        // bibliotheca
+        Assert.assertEquals("Bibliotheca", providers.get(3).getName());
+        Assert.assertEquals("userpassword", providers.get(3).getType().toLowerCase());
 
         //local
-        Assert.assertEquals("Goobi viewer", providers.get(3).getName());
-        Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
+        Assert.assertEquals("Goobi viewer", providers.get(4).getName());
+        Assert.assertEquals("local", providers.get(4).getType().toLowerCase());
     }
 
     /**
