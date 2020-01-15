@@ -31,6 +31,7 @@ public class Version {
     /** Constant <code>BUILDDATE</code> */
     public static final String BUILDDATE;
     
+    @Deprecated
     private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
     static {
@@ -90,6 +91,7 @@ public class Version {
      * @param pattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Deprecated
     public static String getBuildDate(String pattern) {
         return convertDate(BUILDDATE, MANIFEST_DATE_PATTERN, pattern);
     }
@@ -102,6 +104,7 @@ public class Version {
      * @param outputPattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Deprecated
     public static String convertDate(String inputString, String inputPattern, String outputPattern) {
         DateTimeFormatter in = DateTimeFormatter.ofPattern(inputPattern);
         DateTimeFormatter out = DateTimeFormatter.ofPattern(outputPattern);

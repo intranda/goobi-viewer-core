@@ -66,7 +66,7 @@
 		<skipTests>true</skipTests>
 
 		<!-- Manifest information -->
-		<maven.build.timestamp.format>yyyy-MM-dd_HH-mm</maven.build.timestamp.format>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<buildDate>${maven.build.timestamp}</buildDate>
 
 		<!-- intranda libraries -->
