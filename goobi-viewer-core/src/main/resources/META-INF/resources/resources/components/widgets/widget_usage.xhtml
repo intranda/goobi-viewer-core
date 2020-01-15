@@ -85,15 +85,17 @@
                         </ui:fragment>
                         
                         <!-- IIIF MANIFEST -->
-                        <a 
-                            id="iiifManifest" 
-                            class="label label-default widget-usage__work-download-iiif" 
-                            data-copy="iiif-manifest" 
-                            data-clipboard-text="#{imageDelivery.iiifManifest}" 
-                            data-copy-done="#{msg.copyUrlDone}"
-                            title="#{msg.iiif_copyUrl}"> 
-                            #{msg.iiif}
-                        </a>                        
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.isHasPages() and !activeDocumentBean.viewManager.isFilesOnly()}">
+	                        <a 
+	                            id="iiifManifest" 
+	                            class="label label-default widget-usage__work-download-iiif" 
+	                            data-copy="iiif-manifest" 
+	                            data-clipboard-text="#{imageDelivery.iiifManifest}" 
+	                            data-copy-done="#{msg.copyUrlDone}"
+	                            title="#{msg.iiif_copyUrl}"> 
+	                            #{msg.iiif}
+	                        </a> 
+	                    </ui:fragment>                       
     
                         <!-- ALTO (WORK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
