@@ -60,7 +60,7 @@
 
 
 	<properties>
-		<publicVersion>19.11</publicVersion>
+		<public.version>20.01</public.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<skipTests>true</skipTests>
@@ -736,11 +736,11 @@
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
 						<manifestEntries>
-							<ApplicationName>Goobi-viewer-core</ApplicationName>
+							<ApplicationName>goobi-viewer-core</ApplicationName>
 							<version>${project.version}</version>
 							<Implementation-Version>${buildNumber}</Implementation-Version>
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
-							<Public-Version>${publicVersion}</Public-Version>
+							<Public-Version>${public.version}</Public-Version>
 						</manifestEntries>
 					</archive>
 					<excludes>
