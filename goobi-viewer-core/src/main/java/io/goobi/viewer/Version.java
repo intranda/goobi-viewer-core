@@ -75,8 +75,15 @@ public class Version {
         return value;
     }
 
-    private static String getInfo(String label, String infoText) {
-        String regex = label + ": *(\\S*)";
+    /**
+     * 
+     * @param label
+     * @param infoText
+     * @return
+     * @should extract fields correctly
+     */
+    static String getInfo(String label, String infoText) {
+        String regex = label + ": *(.*)";
         Matcher matcher = Pattern.compile(regex).matcher(infoText);
         if (matcher.find()) {
             return matcher.group(1);
