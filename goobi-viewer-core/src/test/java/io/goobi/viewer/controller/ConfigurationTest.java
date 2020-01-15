@@ -482,7 +482,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAuthenticationProviders_shouldLoadUserGroupNamesCorrectly() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        Assert.assertEquals(4, providers.size());
+        Assert.assertEquals(5, providers.size());
         List<String> groups = providers.get(2).getAddUserToGroups();
         Assert.assertEquals(2, groups.size());
     }
