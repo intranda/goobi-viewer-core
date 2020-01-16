@@ -206,7 +206,6 @@ var viewerJS = ( function( viewer ) {
             },
 
             action: function(verb, id) {
-                console.log("create url ", this.config.rest, this.config.userLoggedIn);
                 let url = this.config.rest + (this.config.userLoggedIn ? "bookmarks/user" : "bookmarks/session");
                 if(id !== undefined) {
                     url += "/get/" + id;
