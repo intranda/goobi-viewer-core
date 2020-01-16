@@ -31,8 +31,14 @@
                     <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
                 
+               <!-- SEARCH IN CURRENT ITEM -->
+               <div class="fullscreen__view-sidebar-search-in-current-item">
+               		<widgetComponent:widget_searchInCurrentItem />
+               </div>
+                
                 <!-- SIDEBAR ACCORDEON -->
                 <div class="fullscreen__view-sidebar-accordeon">
+                   
                     <!-- METADATA -->
                     <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
@@ -83,7 +89,7 @@
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-                        <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
+                        <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
