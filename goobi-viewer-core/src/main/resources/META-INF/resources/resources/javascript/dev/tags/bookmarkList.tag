@@ -17,15 +17,15 @@
 					href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a>
 			</div>
 			<div class="col-xs-2 no-padding icon-list">
-				<a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{opts.msg.sendBookmarkList}"> 
+				<a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg('bookmarkList_session_mail_sendList')}"> 
 					<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
 				<a href="{searchListUrl(bookmarkList)}"
 					data-toggle="tooltip" data-placement="top" data-original-title=""
-					title="{opts.msg.searchInBookmarkList}"> 
+					title="{msg('action__search_in_bookmarks')}"> 
 					<i class="fa fa-search" aria-hidden="true"></i>
 				</a>
-				<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{opts.msg.openInMirador}"> 
+				<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('bookmarkList_openMirador')}"> 
 					<i class="fa fa-th" aria-hidden="true"></i>
 				</a>
 			</div>
@@ -69,7 +69,7 @@
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">
 		<button class="btn btn--clean" type="button"
 			data-bookshelf-type="reset" onclick="{deleteList}">
-			<span>{opts.msg.resetBookmarkLists}</span>
+			<span>{msg('bookmarkList_reset')}</span>
 			<i class="fa fa-trash-o" aria-hidden="true"></i>
 		</button>
 	</div>
@@ -77,7 +77,7 @@
 
 	<div if="{maySendList(bookmarkList)}" class="{mainClass}-send">
 		<a href="{sendListUrl(bookmarkList)}"> 
-			<span>{opts.msg.sendBookmarkList}</span> 
+			<span>{msg('bookmarkList_session_mail_sendList')}</span> 
 			<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
 		</a>
 	</div>
@@ -87,14 +87,14 @@
 		<a href="{searchListUrl(bookmarkList)}"
 			data-toggle="tooltip" data-placement="top" data-original-title=""
 			title=""> 
-			<span>{opts.msg.searchInBookmarkList}</span> 
+			<span>{msg('action__search_in_bookmarks')}</span> 
 			<i class="fa fa-search" aria-hidden="true"></i>
 		</a>
 	</div>
 
 	<div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador">
 		<a href="{miradorUrl(bookmarkList)}" target="_blank"> 
-			<span>{opts.msg.openInMirador}</span> 
+			<span>{msg('bookmarkList_openMirador')}</span> 
 			<i class="fa fa-th" aria-hidden="true"></i>
 		</a>
 	</div>
@@ -184,7 +184,12 @@ maySearchList(list) {
 }
 
 searchListUrl(list) {
-    let url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
+    let url;
+    if(this.opts.bookmarks.config.userLoggedIn) {
+	    url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
+    } else {
+	    url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
+    }
     return url; 
 }
 
@@ -198,6 +203,10 @@ miradorUrl(list) {
     } else {        
     	return this.opts.bookmarks.config.root + "/mirador/";
     }
+}
+
+msg(key) {
+    return this.opts.bookmarks.translator.translate(key);
 }
 
 </script> 

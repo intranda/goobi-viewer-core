@@ -26,26 +26,17 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
-    var _riotTags = [];
+    var _messageKeys = ['bookmarkList_reset', 'bookmarkList_delete', 'bookmarkList_session_mail_sendList', 
+        'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
+        'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'bookmarkList_openMirador',
+        'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage'];
     var _defaults = {
         root: '',
+        rest: '',
         counter: ".bookmark-navigation__counter",
         typePage: false,
         userLoggedIn: false,
-        msg: {
-            deleteBookmarkList: "",
-            resetBookmarkLists: "",
-            resetBookmarkListsConfirm: "",
-            noItemsAvailable: "",
-            selectBookmarkList: "",
-            addNewBookmarkList: "",
-            sendBookmarkList: "",
-            searchInBookmarkList: "",
-            openInMirador: "",
-            type_label: "",
-            typeRecord: "",
-            typePage: ""
-        }
+        language: 'en'
     };
     var _bookmarks = {
             
@@ -61,6 +52,9 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 this.config = $.extend( true, {}, _defaults, config );
+                if(!this.config.rest) {
+                    this.config.rest = this.config.root + "/rest/";
+                }
                 this.typePage = this.config.typePage;
                 this.listsNeedUpdate.subscribe( () => this.updateLists());
                 this.listsUpdated.subscribe( (list) => {
@@ -69,7 +63,8 @@ var viewerJS = ( function( viewer ) {
                 this.renderBookmarksNavigationList();
                 this.renderCounter();
                 this.prepareBookmarksPopup();
-
+                this.translator = new viewerJS.Translator(_messageKeys, this.config.rest, this.config.language);
+                this.translator.init();
             },
             
             updateAddedStatus: function() {
@@ -151,7 +146,6 @@ var viewerJS = ( function( viewer ) {
                         mainClass : "bookmark-navigation__dropdown-list"
                     },
                     button: '[data-bookmark-list-type="dropdown"]',
-                    msg: this.config.msg,
                     bookmarks: this,
                 });
                 
@@ -207,18 +201,17 @@ var viewerJS = ( function( viewer ) {
                         page: page
                     },
                     button: button,
-                    msg: this.config.msg,
                     bookmarks: this,
                 });
             },
 
             action: function(verb, id) {
-                let url = this.config.root + (this.config.userLoggedIn ? "/rest/bookmarks/user" : "/rest/bookmarks/session");
+                console.log("create url ", this.config.rest, this.config.userLoggedIn);
+                let url = this.config.rest + (this.config.userLoggedIn ? "bookmarks/user" : "bookmarks/session");
                 if(id !== undefined) {
                     url += "/get/" + id;
                 };
                 url += "/" + verb + "/";
-                url = url.replace(/\/+/g, "/");
 
                 return url;
             },
