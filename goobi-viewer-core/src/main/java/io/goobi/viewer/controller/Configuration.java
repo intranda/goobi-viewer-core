@@ -4422,4 +4422,20 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
     }
 
+    public String getAccessConditionDisplayField() {
+        return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
+    }
+    
+    public String getCopyrightDisplayField() {
+        return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
+    }
+    
+    public boolean isDisplayCopyrightInfo() {
+        return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
+    }
+    
+    public boolean isDisplaySocialMediaShareLinks() {
+        return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
+    }
+
 }
