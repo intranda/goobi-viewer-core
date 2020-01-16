@@ -60,6 +60,35 @@
 			padding: 0 5px;
 		}
 	}
+	&__items-image-preview {
+	display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-right: -5px;
+	}
+	&__single-image-container {
+	flex: 0 0 16.66%;
+	padding: 5px;
+	height: 200px;
+	}
+	&__single-image{
+	margin-bottom: 30px;
+	border: none;
+	transition: all .3s ease-in;
+	background-size: cover;
+	background-position: 50% 50%;
+	height: 100%;
+		a {
+			width: 100%;
+			height: 100%;
+			display: inline-block;
+		}
+	}
+	
+	
+	
+	
+	
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -69,7 +98,22 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
 
+.user-bookmark {
+		&__single-image-container {
+			flex: 0 0 25%;
+		}
+}
+
+}
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	
+.user-bookmark {
+		&__single-image-container {
+		flex: 0 0 50%;
+		}
+}
+
+}

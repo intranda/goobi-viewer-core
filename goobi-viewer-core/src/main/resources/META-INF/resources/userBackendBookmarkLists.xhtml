@@ -83,19 +83,70 @@
 												</ui:fragment>
 											</h4>
 										</div>
-										<div class="col-xs-4 col-sm-3">
+									</div>
+									
+									<!-- DESCRIPTION -->
+									<ui:fragment rendered="#{bookmarkList.hasDescription()}">
+										<div class="col-xs-12">
+											<div class="user-bookmark__panel-body">
+												<p>#{bookmarkList.description}</p>
+											</div>
+										</div>
+									</ui:fragment>
+									
+									
+									
+									
+									
+									
+								<div class="col-xs-12 col-sm-12">
+                                    <div class="user-bookmark__items-image-preview">
+                                    
+                                    
+                                    
+                                <ui:repeat
+                                    value="#{bookmarkList.items}"
+                                    var="item"
+                                    varStatus="status">
+                                    
+
+                                            
+                                            <div class="user-bookmark__single-image-container">
+                                            <div class="user-bookmark__single-image" style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
+                                                <!--  IMAGE -->
+                                                    <a href="#{request.contextPath}#{item.url}"></a>
+                                            </div>
+ 											</div>
+ 
+ 
+                                </ui:repeat>
+                                
+                                
+                                
+                                
+                                    </div>
+                            </div>
+                            
+                            
+                            
+                            
+                            <!-- ACTIONS - share, search, compare -->
+                            
+                            
+                            
+                            <div class="col-xs-12 col-sm-12">
 											<!-- ACTION -->
-											<div class="user-bookmark__panel-action text-right">
+											<div class="user-bookmark__panel-action text-center">
 											    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
                                                 <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
                                                     <a href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
                                                         data-toggle="tooltip" data-placement="top" target="_blank">
-                                                        <i class="fa fa-th" aria-hidden="true"></i>
+                                                        <i class="fa fa-th" aria-hidden="true"></i><span>Vergleichsansicht</span>
                                                     </a>
                                                 </ui:fragment>
                                                 
                                                 <a href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/" title="#{msg.search}" data-toggle="tooltip" data-placement="top">
-			                                    	<i class="fa fa-search" aria-hidden="true"></i>
+			                                    	<i class="fa fa-search" aria-hidden="true"></i><span>Suchen</span>
 			                                    </a>                                 
                                                 
                                                 <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
@@ -108,50 +159,25 @@
 													<f:passThroughAttribute name="data-placement" value="top" />
 												</h:commandLink>
                                                 
-                                                <a href="#" title="#{msg.bookmarkList_shareLink}" 
+                                                <a title="#{msg.bookmarkList_shareLink}" 
 	                                               data-copy="bookmarklist-share-link" 
 						                           data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" 
 						                           data-copy-done="#{msg.copyUrlDone}">
 <!--                                               onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})" -->
                                                     <i class="fa fa-share-alt" aria-hidden="true"></i>
                                                 </a>
-                                                <popup>
-                                                	<div
-                                                	data-copy="bookmarklist-shareLink"
-                                                	data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
-                                                	title="#{msg.bookmarkList_shareLink_copy}"
-                                                	onclick="onClickCopy(this)"
-                                                	>#{bookmarkBean.getShareLink(bookmarkList)}</div>
-                                                </popup>
-                                                
-                                                <a href="#" title="#{msg.bookmarkList_shareCollection}" 
+                                                       
+                                                <a title="#{msg.bookmarkList_shareCollection}" 
                                                    data-copy="bookmarklist-share-collection" 
 						                           data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" 
 						                           data-copy-done="#{msg.copyUrlDone}">
 <!--                                                 onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})"> -->
                                                     <i class="fa fa-share" aria-hidden="true"></i>
                                                 </a>
-                                                <popup>
-                                                	<div
-                                                	data-copy="bookmarklist-collection"
-                                                	data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-                                                	title="#{msg.bookmarkList_shareLink_copy}"
-                                                	onclick="onClickCopy(this)"
-                                                	>#{bookmarkList.getIIIFCollectionURI()}</div>
-                                                </popup>
+   
           
 											</div>
 										</div>
-									</div>
-									
-									<!-- DESCRIPTION -->
-									<ui:fragment rendered="#{bookmarkList.hasDescription()}">
-										<div class="col-xs-12">
-											<div class="user-bookmark__panel-body">
-												<p>#{bookmarkList.description}</p>
-											</div>
-										</div>
-									</ui:fragment>
 								</div>
 							</ui:repeat>
 						</div>
