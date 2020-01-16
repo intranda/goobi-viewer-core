@@ -1924,6 +1924,7 @@ public class NavigationHelper implements Serializable {
      * @param pattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Deprecated
     public String getBuildDate(String pattern) {
         return Version.getBuildDate(pattern);
     }
