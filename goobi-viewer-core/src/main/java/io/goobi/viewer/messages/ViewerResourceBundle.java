@@ -539,7 +539,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                             .collect(Collectors.toList()));
                     allLocales = allLocales.stream().distinct().collect(Collectors.toList());
                 } catch (IOException e) {
-                    logger.error("Error reading config directory " + configPath);
+                    logger.error("Error reading config directory; {}", configPath);
                 }
             }
         }

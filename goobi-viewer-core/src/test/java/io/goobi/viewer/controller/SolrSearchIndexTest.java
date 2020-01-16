@@ -119,7 +119,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":PPN517154005", null);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assert.assertNotNull(doc);
         List<String> values = SolrSearchIndex.getMetadataValues(doc, SolrConstants.DATEUPDATED);
         Assert.assertEquals(5, values.size());
@@ -131,7 +131,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getFieldValueMap_shouldReturnAllFieldsInTheGivenDocExceptPageUrns() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":PPN517154005", null);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assert.assertNotNull(doc);
         Map<String, List<String>> fieldValueMap = SolrSearchIndex.getFieldValueMap(doc);
         Assert.assertEquals(41, fieldValueMap.keySet().size());
@@ -184,7 +184,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getImageOwnerIddoc_shouldRetrieveCorrectIDDOC() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc("PPN517154005", 1);
+        long iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(PI_KLEIUNIV, 1);
         Assert.assertEquals(1578198745608L, iddoc);
     }
 
@@ -253,7 +253,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     public void getFirstDoc_shouldReturnCorrectDoc() throws Exception {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":PPN517154005 AND ")
+                .getFirstDoc(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
+                        .append(PI_KLEIUNIV)
+                        .append(" AND ")
                         .append(SolrConstants.DOCTYPE)
                         .append(":PAGE")
                         .toString(), Collections.singletonList(SolrConstants.ORDER));
@@ -267,7 +269,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getDocumentByIddoc_shouldReturnCorrectDoc() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc("1578198745589");
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(String.valueOf(IDDOC_KLEIUNIV));
         Assert.assertNotNull(doc);
         Assert.assertEquals("1578198745589", doc.getFieldValue(SolrConstants.IDDOC));
     }
@@ -278,7 +280,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getIddocFromIdentifier_shouldRetrieveCorrectIDDOC() throws Exception {
-        Assert.assertEquals(1578198745589L, DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("PPN517154005"));
+        Assert.assertEquals(IDDOC_KLEIUNIV, DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV));
     }
 
     /**
@@ -287,7 +289,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getIdentifierFromIddoc_shouldRetrieveCorrectIdentifier() throws Exception {
-        Assert.assertEquals("PPN517154005", DataManager.getInstance().getSearchIndex().getIdentifierFromIddoc(1578198745589L));
+        Assert.assertEquals(PI_KLEIUNIV, DataManager.getInstance().getSearchIndex().getIdentifierFromIddoc(IDDOC_KLEIUNIV));
     }
 
     /**
@@ -296,7 +298,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getIddocByLogid_shouldRetrieveCorrectIDDOC() throws Exception {
-        Assert.assertEquals(1578198745608L, DataManager.getInstance().getSearchIndex().getIddocByLogid("PPN517154005", "LOG_0001"));
+        Assert.assertEquals(1578198745608L, DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0001"));
     }
 
     @Test

@@ -122,8 +122,8 @@ public class TocMaker {
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
      * @param hitsPerPage Hits per page of a paginated TOC.
-     * @should generate volume TOC correctly with siblings correctly
-     * @should generate volume TOC correctly without siblings correctly
+     * @should generate volume TOC with siblings correctly
+     * @should generate volume TOC without siblings correctly
      * @should generate anchor TOC correctly
      * @should paginate anchor TOC correctly
      * @should throw IllegalArgumentException if structElement is null

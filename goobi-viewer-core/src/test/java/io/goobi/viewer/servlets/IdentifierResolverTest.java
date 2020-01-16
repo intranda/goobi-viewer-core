@@ -113,7 +113,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void constructUrl_shouldConstructUrlCorrectly() throws Exception {
-        String pi = "PPN517154005";
+        String pi = PI_KLEIUNIV;
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/object/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
@@ -125,7 +125,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
-        String pi = "10089470";
+        String pi = "306653648";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
@@ -150,8 +150,8 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
-        String urn = "urn\\:nbn\\:de\\:0111-bbf-spo-14109476";
-        String pi = "134997743"; // This record has an overview page that should not override the page URL
+        String urn = "urn\\:nbn\\:at\\:at-akw\\:g-86493";
+        String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/object/" + pi + "/2/-/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));

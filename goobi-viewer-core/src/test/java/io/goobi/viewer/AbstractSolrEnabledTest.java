@@ -34,6 +34,9 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     private static final String CORE_NAME = "test-viewer-2020";
+    
+    protected static final String PI_KLEIUNIV = "PPN517154005";
+    protected static final long IDDOC_KLEIUNIV = 1578198745589L;
 
     private static String solrPath = "/opt/digiverso/viewer/apache-solr/";
     private static CoreContainer coreContainer;

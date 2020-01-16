@@ -52,7 +52,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    public static final String PI = "PPN517154005";
+    public static final String PI = PI_KLEIUNIV;
     public static final int ORDER = 1;
 
     @Test

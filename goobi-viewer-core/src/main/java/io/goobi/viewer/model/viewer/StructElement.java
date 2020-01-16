@@ -77,7 +77,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Constructor for StructElement.</p>
+     * <p>
+     * Constructor for StructElement.
+     * </p>
      *
      * @param luceneId {@link java.lang.Long}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -88,7 +90,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Constructor for StructElement.</p>
+     * <p>
+     * Constructor for StructElement.
+     * </p>
      *
      * @param luceneId a long.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -100,7 +104,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Constructor for StructElement.</p>
+     * <p>
+     * Constructor for StructElement.
+     * </p>
      *
      * @param luceneId a long.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -240,7 +246,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isHasParentOrChildren.</p>
+     * <p>
+     * isHasParentOrChildren.
+     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -251,7 +259,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isHasParent.</p>
+     * <p>
+     * isHasParent.
+     * </p>
      *
      * @return a boolean.
      */
@@ -327,7 +337,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isGroupMember.</p>
+     * <p>
+     * isGroupMember.
+     * </p>
      *
      * @return a boolean.
      */
@@ -336,7 +348,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isGroup.</p>
+     * <p>
+     * isGroup.
+     * </p>
      *
      * @return a boolean.
      */
@@ -382,7 +396,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isExists.</p>
+     * <p>
+     * isExists.
+     * </p>
      *
      * @return the exists
      */
@@ -391,7 +407,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isDeleted.</p>
+     * <p>
+     * isDeleted.
+     * </p>
      *
      * @return a boolean.
      */
@@ -427,7 +445,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getImageUrl.</p>
+     * <p>
+     * getImageUrl.
+     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -445,7 +465,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>generateEventElements.</p>
+     * <p>
+     * generateEventElements.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.util.List} object.
@@ -479,7 +501,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isAnchorChild.</p>
+     * <p>
+     * isAnchorChild.
+     * </p>
      *
      * @should return true if current record is volume
      * @should return false if current record is not volume
@@ -495,7 +519,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getCollection.</p>
+     * <p>
+     * getCollection.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -504,7 +530,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getCollections.</p>
+     * <p>
+     * getCollections.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -513,7 +541,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isFulltextAvailable.</p>
+     * <p>
+     * isFulltextAvailable.
+     * </p>
      *
      * @return the fulltextAvailable
      */
@@ -523,7 +553,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Setter for the field <code>fulltextAvailable</code>.</p>
+     * <p>
+     * Setter for the field <code>fulltextAvailable</code>.
+     * </p>
      *
      * @param fulltextAvailable the fulltextAvailable to set
      */
@@ -567,7 +599,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getTitle.</p>
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -603,7 +637,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Getter for the field <code>ancestors</code>.</p>
+     * <p>
+     * Getter for the field <code>ancestors</code>.
+     * </p>
      *
      * @return the ancestors
      */
@@ -612,7 +648,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Getter for the field <code>groupMemberships</code>.</p>
+     * <p>
+     * Getter for the field <code>groupMemberships</code>.
+     * </p>
      *
      * @return the groupMemberships
      */
@@ -621,7 +659,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getDisplayLabel.</p>
+     * <p>
+     * getDisplayLabel.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -638,7 +678,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getMultiLanguageDisplayLabel.</p>
+     * <p>
+     * getMultiLanguageDisplayLabel.
+     * </p>
      *
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
@@ -664,7 +706,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getFirstVolumeFieldValue.</p>
+     * <p>
+     * getFirstVolumeFieldValue.
+     * </p>
      *
      * @should return correct value
      * @should return null if StructElement not anchor
@@ -682,7 +726,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             SolrDocument docParent = DataManager.getInstance()
                     .getSearchIndex()
                     .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(),
-                            Collections.singletonList(field));
+                            Collections.singletonList(field), Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")));
             if (docParent == null) {
                 logger.warn("Anchor (PI: {}) has no child element: Cannot determine appropriate value", pi);
             } else {
@@ -694,7 +738,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getFirstVolume.</p>
+     * <p>
+     * getFirstVolume.
+     * </p>
      *
      * @should return correct value
      * @should return null if StructElement not anchor
@@ -727,7 +773,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getFirstPageFieldValue.</p>
+     * <p>
+     * getFirstPageFieldValue.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

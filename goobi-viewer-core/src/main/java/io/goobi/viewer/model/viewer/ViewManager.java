@@ -17,7 +17,6 @@ package io.goobi.viewer.model.viewer;
 
 import java.awt.Dimension;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;

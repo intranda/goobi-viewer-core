@@ -62,7 +62,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void doGet_shouldReturnMETSFileCorrectlyViaPi() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("id", "PPN517154005");
+        request.setParameter("id", PI_KLEIUNIV);
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
@@ -75,7 +75,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("urn", "ooe:landesbibliothek-610285");
+        request.setParameter("urn", "urn:nbn:de:kobv:109-1-7725240");
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
