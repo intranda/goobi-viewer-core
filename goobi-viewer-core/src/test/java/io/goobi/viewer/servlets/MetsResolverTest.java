@@ -75,7 +75,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("urn", "urn:nbn:de:kobv:109-1-7725240");
+        request.setParameter("urn", "urn:nbn:de:gbv:9-g-4882158");
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
