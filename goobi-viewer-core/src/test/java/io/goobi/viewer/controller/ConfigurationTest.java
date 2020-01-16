@@ -720,7 +720,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSolrUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("solr_value", DataManager.getInstance().getConfiguration().getSolrUrl());
+        Assert.assertEquals("https://viewer.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**
