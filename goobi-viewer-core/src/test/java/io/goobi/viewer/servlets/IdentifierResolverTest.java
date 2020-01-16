@@ -20,13 +20,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpException;
+import com.meterware.httpunit.HttpInternalErrorException;
 import com.meterware.httpunit.HttpNotFoundException;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
@@ -38,7 +38,6 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.servlets.IdentifierResolver;
 
 public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -85,7 +84,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 500 if record field name bad
      */
-    @Test(expected = SolrException.class)
+    @Test(expected = HttpInternalErrorException.class)
     public void doGet_shouldReturn500IfRecordFieldNameBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
