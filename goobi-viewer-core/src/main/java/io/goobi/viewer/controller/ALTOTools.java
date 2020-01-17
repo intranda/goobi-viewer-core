@@ -36,7 +36,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -52,8 +51,8 @@ import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.servlets.rest.ner.ElementReference;
 import io.goobi.viewer.servlets.rest.ner.NERTag;
-import io.goobi.viewer.servlets.rest.ner.TagCount;
 import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
+import io.goobi.viewer.servlets.rest.ner.TagCount;
 
 /**
  * <p>
