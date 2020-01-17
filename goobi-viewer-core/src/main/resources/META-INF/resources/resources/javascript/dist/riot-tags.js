@@ -914,7 +914,12 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
                 	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
             	}
 
-            	$( this.image ).toggle();
+            	let visibility = $( this.image ).css('visibility');
+            	if(visibility == 'hidden') {
+            		$( this.image ).css('visibility','visible');
+            	} else {
+            		$( this.image ).css('visibility','hidden');
+            	}
 
         		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
 
