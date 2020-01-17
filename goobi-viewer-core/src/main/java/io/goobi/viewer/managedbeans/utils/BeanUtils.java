@@ -22,7 +22,9 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -441,6 +443,27 @@ public class BeanUtils {
             return response;
         } else {
             return null;
+        }
+    }
+    
+    public static Object getManagedBeanValue(String expr) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context == null) {
+            return null;
+        } else {
+            Object value = null;
+            Application application = context.getApplication();
+            if (application != null) {
+                ValueBinding vb = application.createValueBinding(expr);
+                if (vb != null) {
+                    try {
+                        value = vb.getValue(context);
+                    } catch (Exception e) {
+                        logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
+                    }
+                }
+            }
+            return value;
         }
     }
 }

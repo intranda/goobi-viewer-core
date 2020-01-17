@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/zlb/components">
+
+    <!-- interface options -->
+    <composite:interface />
+
+    <!-- component content -->
+    <composite:implementation>
+        <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
+	        <div id="widgetSocialMedia" class="widget widget--white">
+	            <div class="widget__social-media">
+	                <div class="widget__social-media-body">
+	                    <ul>
+	                        <!-- SHARE LINKS -->
+	                            <li>
+	                                <a href="http://facebook.com/sharer.php?u=#{navigationHelper.encodedUrl}&amp;t=#{request.contextPath}" data-toggle="tooltip" data-placement="top" title="Auf Facebook teilen" target="_blank"> 
+	                                    <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/icon_fb.gif" alt="Facebook Icon" />
+	                                </a>
+	                            </li>
+	                            <li>
+	                                <a href="http://twitter.com/home?status=#{navigationHelper.encodedUrl}" data-toggle="tooltip" data-placement="top" title="Auf Twitter teilen" target="_blank"> 
+	                                    <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/icon_twitter.gif" alt="Twitter Icon" />
+	                                </a>
+	                            </li>
+	                    </ul>
+	                </div>
+	                
+	                <div class="clearfix"></div>
+	            </div>
+	        </div>
+    	</ui:fragment>
+    </composite:implementation>
+</ui:composition>

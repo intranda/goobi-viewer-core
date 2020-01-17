@@ -3197,6 +3197,10 @@ public final class Configuration extends AbstractConfiguration {
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
     }
+    
+    public String getPageTypeExitView(PageType type) {
+        return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
+    }
 
     /**
      * <p>
@@ -4416,6 +4420,22 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isDiscloseImageContentLocation() {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
+    }
+
+    public String getAccessConditionDisplayField() {
+        return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
+    }
+    
+    public String getCopyrightDisplayField() {
+        return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
+    }
+    
+    public boolean isDisplayCopyrightInfo() {
+        return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
+    }
+    
+    public boolean isDisplaySocialMediaShareLinks() {
+        return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
     }
 
 }

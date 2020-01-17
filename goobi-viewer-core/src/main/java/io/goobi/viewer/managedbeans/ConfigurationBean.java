@@ -1223,5 +1223,21 @@ public class ConfigurationBean implements Serializable {
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
+    
+    public String getAccessConditionDisplayField() {
+        return DataManager.getInstance().getConfiguration().getAccessConditionDisplayField();
+    }
+    
+    public String getCopyrightDisplayField() {
+        return DataManager.getInstance().getConfiguration().getCopyrightDisplayField();
+    }
+    
+    public boolean isDisplayCopyrightInfo() {
+        return DataManager.getInstance().getConfiguration().isDisplayCopyrightInfo();
+    }
+    
+    public boolean isDisplaySocialMediaShareLinks() {
+        return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
+    }
 
 }

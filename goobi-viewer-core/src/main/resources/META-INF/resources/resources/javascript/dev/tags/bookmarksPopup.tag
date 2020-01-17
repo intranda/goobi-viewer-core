@@ -4,25 +4,25 @@
 
 	<div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons">
 		<div>
-			<label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}"/>{opts.msg.typeRecord}</label>
+			<label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" value="{msg('bookmarkList_typeRecord')}" onclick="{setBookmarkTypeRecord}"/>{msg('bookmarkList_typeRecord')}</label>
 		</div>
 		<div>
-			<label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}"/>{opts.msg.typePage}</label>
+			<label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" value="{msg('bookmarkList_typePage')}" onclick="{setBookmarkTypePage}"/>{msg('bookmarkList_typePage')}</label>
 		</div>
 	</div>
 	
    <div class="bookmark-popup__header">
-		{this.opts.msg.selectBookmarkList}
+		{msg('bookmarkList_selectBookmarkList')}
 	</div>
 
 	<div class="bookmark-popup__body">
-		<bookmarkList data="{this.opts.data}" loader="{this.opts.loader}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList>
+		<bookmarkList data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList>
 	</div>
 	
 	<div class="bookmark-popup__footer">
 		<div class="row no-margin">
 			<div class="col-xs-11 no-padding">
-				<input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"/>
+				<input ref="inputValue" type="text" placeholder="{msg('bookmarkList_addNewBookmarkList')}"/>
 			</div>
 			<div class="col-xs-1 no-padding">
 				<button class="btn btn-clean" type="button" onclick="{add}"></button>
@@ -95,6 +95,10 @@ hideLoader() {
 
 showLoader() {
     $(this.opts.data.loader).show();
+}
+
+msg(key) {
+    return this.opts.bookmarks.translator.translate(key);
 }
 
 </script>

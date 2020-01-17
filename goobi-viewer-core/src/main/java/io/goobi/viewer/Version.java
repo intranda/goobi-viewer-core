@@ -31,7 +31,8 @@ public class Version {
     /** Constant <code>BUILDDATE</code> */
     public static final String BUILDDATE;
     
-    private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd_HH-mm";
+    @Deprecated
+    private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
     static {
         String manifest = getManifestStringFromJar();
@@ -40,7 +41,7 @@ public class Version {
             VERSION = getInfo("version", manifest);
             BUILDDATE = getInfo("Implementation-Build-Date", manifest);
             BUILDVERSION = getInfo("Implementation-Version", manifest);
-            PUBLIC_VERSION = getInfo("PublicVersion", manifest);
+            PUBLIC_VERSION = getInfo("Public-Version", manifest);
         } else {
             APPLICATION_NAME = "goobi-viewer-core";
             VERSION = "unknown";
@@ -74,14 +75,21 @@ public class Version {
         return value;
     }
 
-    private static String getInfo(String label, String infoText) {
-        String regex = label + ": *(\\S*)";
+    /**
+     * 
+     * @param label
+     * @param infoText
+     * @return
+     * @should extract fields correctly
+     */
+    static String getInfo(String label, String infoText) {
+        String regex = label + ": *(.*)";
         Matcher matcher = Pattern.compile(regex).matcher(infoText);
         if (matcher.find()) {
             return matcher.group(1);
-        } else {
-            return "?";
         }
+        
+        return "?";
     }
     
     /**
@@ -90,6 +98,7 @@ public class Version {
      * @param pattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Deprecated
     public static String getBuildDate(String pattern) {
         return convertDate(BUILDDATE, MANIFEST_DATE_PATTERN, pattern);
     }
@@ -102,6 +111,7 @@ public class Version {
      * @param outputPattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Deprecated
     public static String convertDate(String inputString, String inputPattern, String outputPattern) {
         DateTimeFormatter in = DateTimeFormatter.ofPattern(inputPattern);
         DateTimeFormatter out = DateTimeFormatter.ofPattern(outputPattern);
