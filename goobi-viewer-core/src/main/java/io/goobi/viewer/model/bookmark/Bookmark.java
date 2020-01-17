@@ -345,7 +345,6 @@ public class Bookmark implements Serializable {
 
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 1, null, Arrays.asList(FIELDS));
         if (!docs.isEmpty()) {
-            String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
             if (order != null) {
                 return thumbs.getThumbnailUrl(order, pi, width, height);
