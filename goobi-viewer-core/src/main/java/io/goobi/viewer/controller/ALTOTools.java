@@ -36,6 +36,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -55,7 +56,9 @@ import io.goobi.viewer.servlets.rest.ner.TagCount;
 import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
 
 /**
- * <p>ALTOTools class.</p>
+ * <p>
+ * ALTOTools class.
+ * </p>
  */
 public class ALTOTools {
 
@@ -76,7 +79,9 @@ public class ALTOTools {
     public static final String TAG_LABEL_IGNORE_REGEX = "^\\W+|\\W+$";
 
     /**
-     * <p>getFullText.</p>
+     * <p>
+     * getFullText.
+     * </p>
      *
      * @param alto a {@link java.lang.String} object.
      * @param mergeLineBreakWords a boolean.
@@ -97,7 +102,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>getNERTags.</p>
+     * <p>
+     * getNERTags.
+     * </p>
      *
      * @param alto a {@link java.lang.String} object.
      * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
@@ -161,7 +168,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>alto2Txt.</p>
+     * <p>
+     * alto2Txt.
+     * </p>
      *
      * @param alto a {@link java.lang.String} object.
      * @param mergeLineBreakWords a boolean.
@@ -276,6 +285,7 @@ public class ALTOTools {
                             } else {
                                 // No NE tag
                                 if (subsContent != null) {
+                                    subsContent = StringTools.escapeHtmlLtGt(subsContent);
                                     // Add concatenated SUBS_CONTENT word, if found, but only once
                                     if (!subsContent.equals(prevSubsContent)) {
                                         strings.append(subsContent);
@@ -283,6 +293,7 @@ public class ALTOTools {
                                     }
                                     subsContent = null;
                                 } else {
+                                    content = StringTools.escapeHtmlLtGt(content);
                                     strings.append(content);
                                 }
                                 strings.append(' ');
@@ -333,7 +344,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>getWordCoords.</p>
+     * <p>
+     * getWordCoords.
+     * </p>
      *
      * @param altoString a {@link java.lang.String} object.
      * @param searchTerms a {@link java.util.Set} object.
@@ -344,7 +357,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>getRotatedCoordinates.</p>
+     * <p>
+     * getRotatedCoordinates.
+     * </p>
      *
      * @param coords a {@link java.lang.String} object.
      * @param rotation a int.
@@ -478,7 +493,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>rotate.</p>
+     * <p>
+     * rotate.
+     * </p>
      *
      * @param rect a {@link java.awt.Rectangle} object.
      * @param rotation a int.
@@ -603,7 +620,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>getMatchALTOWord.</p>
+     * <p>
+     * getMatchALTOWord.
+     * </p>
      *
      * @param eleWord a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param words an array of {@link java.lang.String} objects.
@@ -665,7 +684,9 @@ public class ALTOTools {
     }
 
     /**
-     * <p>getALTOCoords.</p>
+     * <p>
+     * getALTOCoords.
+     * </p>
      *
      * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
      * @return a {@link java.lang.String} object.
