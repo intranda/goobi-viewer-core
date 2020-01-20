@@ -1442,6 +1442,18 @@ public final class Configuration extends AbstractConfiguration {
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder");
     }
+    
+    /**
+     * <p>
+     * getIndexedDenkxwebFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedDenkxwebFolder() {
+        return getLocalString("indexedDenkxwebFolder");
+    }
 
     /**
      * <p>

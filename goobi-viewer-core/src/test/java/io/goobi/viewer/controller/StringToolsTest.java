@@ -39,6 +39,16 @@ public class StringToolsTest {
     }
 
     /**
+     * @see StringTools#replaceCharacters(String,String[],String[])
+     * @verifies replace characters correctly
+     */
+    @Test
+    public void replaceCharacters_shouldReplaceCharactersCorrectly() throws Exception {
+        Assert.assertEquals("|-|3110",
+                StringTools.replaceCharacters("Hello", new String[] { "H", "e", "l", "o" }, new String[] { "|-|", "3", "1", "0" }));
+    }
+
+    /**
      * @see StringTools#removeDiacriticalMarks(String)
      * @verifies remove diacritical marks correctly
      */
@@ -151,7 +161,8 @@ public class StringToolsTest {
      */
     @Test
     public void normalizeWebAnnotationCoordinates_shouldNormalizeCoordinatesCorrectly() throws Exception {
-        Assert.assertEquals("1, 2, 4, 6", StringTools.normalizeWebAnnotationCoordinates("xywh=1, 2, 3, 4"));    }
+        Assert.assertEquals("1, 2, 4, 6", StringTools.normalizeWebAnnotationCoordinates("xywh=1, 2, 3, 4"));
+    }
 
     /**
      * @see StringTools#normalizeWebAnnotationCoordinates(String)

@@ -251,6 +251,7 @@ public final class SolrSearchIndex {
                 throw new PresentationException("Bad query.");
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
+            logger.error(e.toString(), e);
             throw new IndexUnreachableException(e.getMessage());
         }
 
