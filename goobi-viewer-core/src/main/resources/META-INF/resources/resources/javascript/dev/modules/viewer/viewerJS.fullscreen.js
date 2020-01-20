@@ -208,7 +208,6 @@ var viewerJS = ( function( viewer ) {
             $( '.fullscreen__view-sidebar-accordeon-panel-title' ).on( 'click', function() {
                 var parentPanelId = $( this ).parent().attr( 'id' );
                 var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'fsPanelStatus' ) );
-                
                 // scroll sidebar to top
                 $( '#fullscreenViewSidebar' ).scrollTop( 0 );
                 
@@ -390,9 +389,15 @@ var viewerJS = ( function( viewer ) {
     	
     	var panelStatus;
     	var fsPanelStatus = sessionStorage.getItem( 'fsPanelStatus' );
-    	
+        console.log("fsPanelStatus", fsPanelStatus);
+        //reset panel status if PI has changed
+        if(_defaults.persistentIdentifier && _defaults.persistentIdentifier !== fsPanelStatus.persistentIdentifier) {
+            fsPanelStatus = null;
+        }
+        
     	if ( fsPanelStatus == undefined || fsPanelStatus === null ) {
     		panelStatus = {};
+    		panelStatus.persistentIdentifier = _defaults.persistentIdentifier;
     		
     		// build panel status object
     		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
