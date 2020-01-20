@@ -1066,6 +1066,7 @@ public class Helper {
      * @param format a {@link java.lang.String} object.
      * @should construct METS file path correctly
      * @should construct LIDO file path correctly
+     * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
      * @return a {@link java.lang.String} object.
@@ -1074,8 +1075,17 @@ public class Helper {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
-        if (!SolrConstants._METS.equals(format) && !SolrConstants._LIDO.equals(format) && !SolrConstants._WORLDVIEWS.equals(format)) {
-            throw new IllegalArgumentException("format must be METS or LIDO or WORLDVIEWS");
+        if (StringUtils.isEmpty(format)) {
+            throw new IllegalArgumentException("format may not be null or empty");
+        }
+        switch (format) {
+            case SolrConstants._METS:
+            case SolrConstants._LIDO:
+            case SolrConstants._DENKXWEB:
+            case SolrConstants._WORLDVIEWS:
+                break;
+            default:
+                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | WORLDVIEWS");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
@@ -1086,8 +1096,11 @@ public class Helper {
             case SolrConstants._LIDO:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
                 break;
+            case SolrConstants._DENKXWEB:
+                sb.append(DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());
+                break;
             case SolrConstants._WORLDVIEWS:
-                sb.append(DataManager.getInstance().getConfiguration().getTeiFolder());
+                sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
         }
         sb.append('/').append(fileName);

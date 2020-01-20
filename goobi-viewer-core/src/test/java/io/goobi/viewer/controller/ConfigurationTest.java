@@ -300,6 +300,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getIndexedDenkxwebFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getIndexedDenkxwebFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("indexed_denkxweb", DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());
+    }
+
+    /**
      * @see Configuration#getMainMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
@@ -465,7 +474,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
         Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
         Assert.assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
-        
+
         // bibliotheca
         Assert.assertEquals("Bibliotheca", providers.get(3).getName());
         Assert.assertEquals("userpassword", providers.get(3).getType().toLowerCase());
