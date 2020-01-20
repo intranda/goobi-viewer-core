@@ -88,6 +88,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.user.User;
@@ -1447,15 +1448,26 @@ public class CmsBean implements Serializable {
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
             ((SearchFunctionality) item.getFunctionality()).search();
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
-            searchBean.resetSearchResults();
-            searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-            searchBean.setHitsPerPage(item.getElementsPerPage());
-            searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-            //            searchBean.setCurrentPage(item.getListPage());
+            
+            Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
+            search.setQuery( "+(" + item.getSolrQuery() + ") +(ISWORK:* ISANCHOR:*)");
             if (StringUtils.isNotBlank(item.getSolrSortFields())) {
-                searchBean.setSortString(item.getSolrSortFields());
-            }
-            return searchBean.search();
+                search.setSortString(item.getSolrSortFields());
+            }            
+            SearchFacets facets = new SearchFacets();
+            search.setPage(item.getListPage());
+            search.execute(facets, null, item.getElementsPerPage(), 0, null);
+            searchBean.setCurrentSearch(search);
+            return null;
+//            searchBean.resetSearchResults();
+//            searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+//            searchBean.setHitsPerPage(item.getElementsPerPage());
+//            searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+            //            searchBean.setCurrentPage(item.getListPage());
+//            if (StringUtils.isNotBlank(item.getSolrSortFields())) {
+//                searchBean.setSortString(item.getSolrSortFields());
+//            }
+//            return searchBean.search();
         } else if (item == null) {
             logger.error("Cannot search: item is null");
             searchBean.resetSearchResults();
