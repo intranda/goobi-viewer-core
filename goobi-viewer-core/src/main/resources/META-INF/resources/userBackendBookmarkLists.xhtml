@@ -114,7 +114,14 @@
                                             <div class="user-bookmark__single-image-container">
                                             <div class="user-bookmark__single-image" style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
                                                 <!--  IMAGE -->
-                                                    <a href="#{request.contextPath}#{item.url}"></a>
+                                                    <a href="#{request.contextPath}#{item.url}"
+                                                        title="#{item.name}" 
+														data-toggle="tooltip" 
+														data-placement="bottom">
+													</a>
+
+														
+                                                  <!-- TO DELETE:  <h4>#{item.name}</h4> -->
                                             </div>
  											</div>
  
@@ -130,10 +137,7 @@
                             
                             
                             
-                            <!-- ACTIONS - share, search, compare -->
-                            
-                            
-                            
+							<!-- ACTIONS - share, search, compare -->
                             <div class="col-xs-12 col-sm-12">
 											<!-- ACTION -->
 											<div class="user-bookmark__panel-action text-center">
@@ -149,31 +153,72 @@
 			                                    	<i class="fa fa-search" aria-hidden="true"></i><span>Suchen</span>
 			                                    </a>                                 
                                                 
-                                                <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
+                                          <!--  <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
+                                                -->
                                                 
 												<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
-													<i class="fa fa-pencil" aria-hidden="true"></i>
+													<i class="fa fa-pencil" aria-hidden="true"></i><span>Bearbeiten</span>
 													<f:passThroughAttribute name="data-toggle" value="tooltip" />
 													<f:passThroughAttribute name="data-placement" value="top" />
 												</h:commandLink>
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                 <!-- 
                                                 
                                                 <a title="#{msg.bookmarkList_shareLink}" 
 	                                               data-copy="bookmarklist-share-link" 
 						                           data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" 
 						                           data-copy-done="#{msg.copyUrlDone}">
-<!--                                               onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})" -->
                                                     <i class="fa fa-share-alt" aria-hidden="true"></i>
                                                 </a>
-                                                       
-                                                <a title="#{msg.bookmarkList_shareCollection}" 
-                                                   data-copy="bookmarklist-share-collection" 
-						                           data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" 
-						                           data-copy-done="#{msg.copyUrlDone}">
-<!--                                                 onclick="new viewerJS.Popup(this, $(this).next('popup') ,{middle:'middle', left:'right', offset: {top:0,left:0}})"> -->
-                                                    <i class="fa fa-share" aria-hidden="true"></i>
-                                                </a>
+                                                 -->
+                                                      
+                                                     
+                                                      
+                                                      
+                                                      <a href="#"
+														title="#{msg.bookmarkList_shareLink}" 
+														data-toggle="tooltip" 
+														data-placement="top"
+
+                                                      
+                                                       class="share-bookmarkList"><i class="fa fa-share-alt" aria-hidden="true"></i><span>Teilen</span></a>
+
+											    <script type="text/javascript">
+											  		//<![CDATA[
+											  		$(".share-bookmarkList").click(function(event) { 
+									                event.preventDefault(); 
+									           		});
+											  		
+											  		$(".share-bookmarkList").popover({
+											  		html: true,
+											        title: 'abc',
+											      	content: '<div class="1">1</div>' +
+											      	'<div class="2"><a title="#{msg.bookmarkList_shareCollection}" data-copy="bookmarklist-share-collection" data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share" aria-hidden="true"></i></a></div>' +
+											      	'<div class="3"><a title="#{msg.bookmarkList_shareLink}" data-copy="bookmarklist-share-link" data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share-alt" aria-hidden="true"></i></a></div>' +
+											      	'<div class="4">4</div>',
+											      	placement: 'bottom',
+											      	trigger: 'click'
+												    });
+											  		
+											  		viewerJS.helper.truncateString( $( '.tooltip' ).text(), 75 );
+											      	//]]>
+											    </script>      
+
+
+
+								
+                                                      
+                                                      
+                                                
+                               
+                                                
    
           
 											</div>
