@@ -51,6 +51,11 @@ public class IIIFUrlHandler {
     private static final String UTF_8 = "UTF-8";
     private static final Logger logger = LoggerFactory.getLogger(IIIFUrlHandler.class);
 
+    
+    public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format) {
+        return getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIIIFApiUrl(), fileUrl, docStructIdentifier, region, size, rotation, quality, format);
+    }
+    
     /**
      * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters
      *
@@ -63,7 +68,7 @@ public class IIIFUrlHandler {
      * @param format a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
+    public String getIIIFImageUrl(String apiUrl, String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {
 
         try {
@@ -77,14 +82,14 @@ public class IIIFUrlHandler {
                 } catch (URISyntaxException e) {
                     logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
                 }
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+                StringBuilder sb = new StringBuilder(apiUrl);
                 sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, false));
                 return IIIFUrlResolver.getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
             } else if (ImageHandler.isExternalUrl(fileUrl)) {
                 if (IIIFUrlResolver.isIIIFImageUrl(fileUrl)) {
                     return IIIFUrlResolver.getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
-                    StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+                    StringBuilder sb = new StringBuilder(apiUrl);
                     sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
                     sb.append(region).append("/");
                     sb.append(size).append("/");
@@ -113,7 +118,7 @@ public class IIIFUrlHandler {
                     fileUrl = fileUrl.substring(separatorIndex+1);
                 }
                 
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+                StringBuilder sb = new StringBuilder(apiUrl);
                 sb.append("image/").append(URLEncoder.encode(docStructIdentifier, UTF_8)).append("/").append(URLEncoder.encode(fileUrl, UTF_8)).append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");

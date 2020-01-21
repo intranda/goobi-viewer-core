@@ -47,10 +47,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.questions = item.campaign.questions.map(question => new Crowdsourcing.Question(question, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
-        this.imageOpenEvents = new Rx.Subject();
-        this.imageRotationEvents = new Rx.Subject();
-        this.annotationRelaodEvents = new Rx.Subject();
-        this.itemInitializedSubject = new Rx.Subject();
+        this.imageOpenEvents = new rxjs.Subject();
+        this.imageRotationEvents = new rxjs.Subject();
+        this.annotationRelaodEvents = new rxjs.Subject();
+        this.itemInitializedSubject = new rxjs.Subject();
 
         let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
         if(firstAreaQuestion) {
@@ -66,7 +66,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Item.prototype.notifyImageRotated = function(byDegrees) {
-        this.imageRotationEvents.onNext(byDegrees);
+        this.imageRotationEvents.next(byDegrees);
     }
     
     crowdsourcing.Item.prototype.onImageRotated = function(eventHandler, errorHandler, completedHandler) {
@@ -78,7 +78,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Item.prototype.notifyAnnotationsReload = function() {
-        this.annotationRelaodEvents.onNext();
+        this.annotationRelaodEvents.next();
     }
     
     crowdsourcing.Item.prototype.onAnnotationsReload = function(eventHandler, errorHandler, completedHandler) {
@@ -86,17 +86,15 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Item.prototype.notifyItemInitialized = function() {
-        console.log("notifyItemInitialized");
-        this.itemInitializedSubject.onNext();
+        this.itemInitializedSubject.next();
         this.itemInitializedSubject.notified = true;
     }
     
     crowdsourcing.Item.prototype.onItemInitialized = function(eventHandler, errorHandler, completedHandler) {
-        console.log("onItemInitialized");
         this.itemInitializedSubject.subscribe(eventHandler, errorHandler, completedHandler);
         //If a notification happened before we subscribe, notify us now
         if(this.itemInitializedSubject.notified) {
-            this.itemInitializedSubject.onNext();
+            this.itemInitializedSubject.next();
             this.itemInitializedSubject.notified = false;
         }
     }
@@ -119,9 +117,13 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return this.canvases[this.currentCanvasIndex];
     }
     
-    crowdsourcing.Item.prototype.getImageService = (canvas) =>  canvas.images[0].resource.service["@id"] + "/info.json";
+    crowdsourcing.Item.prototype.getImageService = (canvas) =>  {
+        return canvas.images[0].resource.service["@id"] + "/info.json";
+    }
     
-    crowdsourcing.Item.prototype.getImageId = (canvas) =>  canvas.images[0].resource.service["@id"];
+    crowdsourcing.Item.prototype.getImageId = (canvas) =>  {
+        return canvas.images[0].resource.service["@id"];
+    }
 
     crowdsourcing.Item.prototype.getCreator = function() {
         return {

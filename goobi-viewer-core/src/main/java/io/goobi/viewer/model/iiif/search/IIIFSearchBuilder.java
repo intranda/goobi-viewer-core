@@ -91,7 +91,7 @@ public class IIIFSearchBuilder {
         this.query = query;
         this.pi = pi;
         this.converter = new SearchResultConverter(URI.create(this.requestURI),
-                URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), pi, 0);
+                URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl()), pi, 0);
     }
 
     /**

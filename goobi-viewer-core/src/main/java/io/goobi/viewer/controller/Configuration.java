@@ -1128,6 +1128,14 @@ public final class Configuration extends AbstractConfiguration {
 
         return urlString;
     }
+    
+    public String getIIIFApiUrl() {
+        String urlString = getLocalString("urls.iiif", getRestApiUrl());
+        if (!urlString.endsWith("/")) {
+            urlString += "/";
+        }
+        return urlString;
+    }
 
     /**
      * <p>

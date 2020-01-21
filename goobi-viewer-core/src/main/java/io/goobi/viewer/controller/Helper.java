@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -802,8 +803,7 @@ public class Helper {
                     // IOUtils.copy(response.getEntity().getContent(), writer);
                     // return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
-                        IOUtils.toString(response.getEntity().getContent(), DEFAULT_ENCODING));
+                logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }

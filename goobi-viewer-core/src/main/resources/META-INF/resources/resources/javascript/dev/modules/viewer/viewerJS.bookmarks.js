@@ -40,8 +40,8 @@ var viewerJS = ( function( viewer ) {
     };
     var _bookmarks = {
             
-            listsNeedUpdate: new Rx.Subject(),
-            listsUpdated: new Rx.Subject(),
+            listsNeedUpdate: new rxjs.Subject(),
+            listsUpdated: new rxjs.Subject(),
             bookmarkLists: [],
             init: function( config ) {
                 if ( _debug ) {
@@ -184,10 +184,10 @@ var viewerJS = ( function( viewer ) {
                         setTimeout(() => this.renderBookmarksPopup( currPi, currLogid, currPage, currBtn ), 0);
                     } else if(this.contained(currPi, currPage, currLogid)){
                         this.removeFromBookmarkList(undefined, currPi, undefined, undefined, false )
-                        .then( () => this.listsNeedUpdate.onNext());
+                        .then( () => this.listsNeedUpdate.next());
                     } else {
                         this.addToBookmarkList(undefined, currPi, undefined, undefined, false )
-                        .then( () => this.listsNeedUpdate.onNext());
+                        .then( () => this.listsNeedUpdate.next());
                     }
                 }.bind(this) );  
             },
@@ -238,7 +238,7 @@ var viewerJS = ( function( viewer ) {
             updateLists: function() {
                 this.loadBookmarkLists()
                 .then(lists => this.bookmarkLists = lists)
-                .then(() => this.listsUpdated.onNext(this.bookmarkLists));
+                .then(() => this.listsUpdated.next(this.bookmarkLists));
             },
 
 

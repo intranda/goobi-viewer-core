@@ -111,8 +111,8 @@ var viewerJS = (function (viewer) {
 
     // set event for input
     viewer.listFilter.prototype.initListener = function () {
-        this.observer = Rx.Observable.fromEvent( $( this.config.input ), 'input' )
-            .debounce( 100 )
+        this.observer = rxjs.fromEvent( $( this.config.input ), 'input' )
+            .pipe(rxjs.operators.debounce( 100 ))
             .subscribe( event => this.filter( event ) );
     }
 

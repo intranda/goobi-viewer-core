@@ -551,7 +551,7 @@ public class BookmarkList implements Serializable {
         //        int row = 1;
         //        int col = 1;
         for (Bookmark bi : items) {
-            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("iiif/manifests/")
+            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
                     .append(bi.getPi())
                     .append("/manifest")
                     .toString();

@@ -34,7 +34,7 @@ public class Object3DHandler {
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      */
     public Object3DHandler(Configuration config) {
-        this.restApiUrl = config.getRestApiUrl();
+        this.restApiUrl = config.getIIIFApiUrl();
     }
 
     /**

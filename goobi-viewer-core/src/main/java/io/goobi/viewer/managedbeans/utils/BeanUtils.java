@@ -332,7 +332,7 @@ public class BeanUtils {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
         if (bean == null) {
             bean = new ImageDeliveryBean();
-            bean.init(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
+            bean.init(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("rest/", ""));
         } else {
             try {
                 bean.getThumbs();

@@ -39,11 +39,11 @@
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 					//image load notifications
-				    var now = Rx.Observable.of(image);
+				    var now = rxjs.of(image);
 					this.opts.item.setImageSource = function(source) {
 					    this.image.setTileSource(this.getImageInfo(source));
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.map(image).merge(now));
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
 				}
 				return image;
 			})

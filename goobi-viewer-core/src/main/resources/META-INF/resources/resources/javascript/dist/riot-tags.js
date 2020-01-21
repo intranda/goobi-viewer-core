@@ -90,7 +90,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                      	this.fileUploaded(value);
                      }
                      else {
-                         console.log("result ", result);
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -110,7 +109,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
-            console.log("file uploaded")
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
 
@@ -146,7 +144,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             })
             .then(r => r.json())
             .then( json => {
-                console.log("json response ", json);
                 return json.image != undefined
             })
             .then(exists => {
@@ -193,7 +190,7 @@ this.getBookmarkLists = function() {
 }.bind(this)
 
 this.updateLists = function() {
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }.bind(this)
 
 this.onListUpdate = function() {
@@ -326,19 +323,19 @@ this.add = function() {
     this.refs.inputValue.value = "";
     this.opts.bookmarks.addBookmarkList(name)
     .then( () => {
-        this.opts.bookmarks.listsNeedUpdate.onNext();
+        this.opts.bookmarks.listsNeedUpdate.next();
         this.update();
     })
 }.bind(this)
 
 this.setBookmarkTypeRecord = function() {
     this.opts.bookmarks.setTypeRecord();
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }.bind(this)
 
 this.setBookmarkTypePage = function() {
     this.opts.bookmarks.setTypePage();
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }.bind(this)
 
 this.hideLoader = function() {
@@ -359,11 +356,8 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
 	this.annotationSource = this.itemSource + "annotations/";
 	this.loading = true;
-	console.log("item url ", this.itemSource);
-	console.log("annotations url ", this.annotationSource);
 
 	this.on("mount", function() {
-	    console.log("mount campaignItem");
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
@@ -409,7 +403,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	}.bind(this)
 
 	this.initAnnotations = function(annotations) {
-	    console.log("init campaign annotations");
 	    let save = this.item.createAnnotationMap(annotations);
 	    this.item.saveToLocalStorage(save);
 	}.bind(this)
@@ -484,7 +477,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	}.bind(this)
 
 	this.skipItem = function() {
-	    console.log("skip to ", this.opts.nextitemurl);
 	    window.location.href = this.opts.nextitemurl;
 	}.bind(this)
 
@@ -641,10 +633,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
         this.visible = false;
         this.mouseover = false;
 
-        console.log("tag created")
-
         this.on( 'mount', function() {
-            console.log("tag mounted")
         	this.loadManifest( this.pis[0] );
         }.bind( this ));
 
@@ -719,7 +708,6 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
         				this.manifest = manifest;
         				this.manifests.set( url, manifest );
         				this.update();
-        				console.log("manifest loaded");
             			this.checkPosition();
 
         				$( window ).on( 'resize scroll', function() {
@@ -1222,11 +1210,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 
-				    var now = Rx.Observable.of(image);
+				    var now = rxjs.of(image);
 					this.opts.item.setImageSource = function(source) {
 					    this.image.setTileSource(this.getImageInfo(source));
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.map(image).merge(now));
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
 				}
 				return image;
 			})
@@ -1304,7 +1292,6 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
 });
 riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="pdf-canvas" id="pdf-canvas_{opts.pageno}"></canvas><div class="text-layer" id="pdf-text_{opts.pageno}"></div><div class="annotation-layer" id="pdf-annotations_{opts.pageno}"></div></div>', '', '', function(opts) {
 	this.on('mount', function () {
-		console.log("load page ", this.opts.pageno, this.opts.page);
 
            this.container = document.getElementById( "page_" + this.opts.pageno );
            this.canvas = document.getElementById( "pdf-canvas_" + this.opts.pageno );
@@ -1326,8 +1313,6 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
         var context = this.canvas.getContext( "2d" );
         this.canvas.height = this.viewport.height;
         this.canvas.width = this.viewport.width;
-
-        console.log( "render ", this.opts.page, context, this.viewport );
 
         this.opts.page.render( {
             canvasContext: context,
@@ -1449,7 +1434,6 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 riot.tag2('popup', '<yield></yield>', '', '', function(opts) {
 
 this.on( 'mount', function() {
-	console.log("mount popup", this.opts);
 	this.addCloseHandler();
 	$(this.root).offset(this.opts.offset);
     $("body").append($(this.root));
@@ -1458,18 +1442,14 @@ this.on( 'mount', function() {
 });
 
 this.addCloseHandler = function() {
-    console.log("add popup close handler");
     $(this.root).on("click", function(event){
-        console.log("click root");
         event.stopPropagation();
     });
 
     $('body').one("click", function(event) {
-        console.log("click body ", this);
         this.unmount(true);
         $(this.root).off();
         if(this.opts.myparent) {
-            console.log("reattach to parent ")
              $(this.root).hide();
             $(this.opts.myparent).append($(this.root));
             $(this.root).offset({left:0, top:0});
@@ -1486,7 +1466,6 @@ this.addCloseHandler = function() {
 riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar {styleClasses[index]}" riot-style="width: {getRelativeWidth(value)};"></div></div></div>', '', '', function(opts) {
 	this.values = JSON.parse(this.opts.values);
 	this.styleClasses = JSON.parse(this.opts.styleclasses);
-	console.log("init progressbar ", this.values, this.styleClasses);
 
 	this.on("mount", function() {
 	    let bar = this.root.querySelector(".goobi-progress-bar");

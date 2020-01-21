@@ -69,7 +69,7 @@ var viewerJS = ( function( viewer ) {
         } else {
             this.$popup = $("popup").clone(); 
         }
-        this.onClose = new Rx.Subject();
+        this.onClose = new rxjs.Subject();
 
         
         if ( _debug ) {
@@ -99,7 +99,7 @@ var viewerJS = ( function( viewer ) {
                 this.$popup.off();
                 this.$popup.remove();
                 $('body').off("click.popup");
-                this.onClose.onNext(event);
+                this.onClose.next(event);
             }
     }
     
