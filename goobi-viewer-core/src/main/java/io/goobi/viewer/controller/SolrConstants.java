@@ -274,6 +274,8 @@ public class SolrConstants {
     public static final String _METS = "METS";
     /** Constant <code>_LIDO="LIDO"</code> */
     public static final String _LIDO = "LIDO";
+    /** Constant <code>_DENKXWEB="DENKXWEB"</code> */
+    public static final String _DENKXWEB = "DENKXWEB";
     /** Constant <code>_WORLDVIEWS="WORLDVIEWS"</code> */
     public static final String _WORLDVIEWS = "WORLDVIEWS";
 
