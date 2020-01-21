@@ -1454,7 +1454,7 @@ public class CmsBean implements Serializable {
             if (StringUtils.isNotBlank(item.getSolrSortFields())) {
                 search.setSortString(item.getSolrSortFields());
             }            
-            SearchFacets facets = new SearchFacets();
+            SearchFacets facets = searchBean.getFacets();
             search.setPage(item.getListPage());
             search.execute(facets, null, item.getElementsPerPage(), 0, null);
             searchBean.setCurrentSearch(search);
