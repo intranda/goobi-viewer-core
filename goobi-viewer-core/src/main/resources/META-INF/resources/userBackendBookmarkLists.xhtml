@@ -83,6 +83,16 @@
 												</ui:fragment>
 											</h4>
 										</div>
+										<div class="col-xs-4 col-sm-3 user-bookmark__panel-action text-right">
+										
+											<a href="#" 
+											title="Öffentlich" 
+											data-toggle="tooltip" 
+											data-placement="bottom">
+												<i class="fa fa-lock" aria-hidden="true"></i>
+											</a>
+											
+										</div>
 									</div>
 									
 									<!-- DESCRIPTION -->
@@ -93,12 +103,7 @@
 											</div>
 										</div>
 									</ui:fragment>
-									
-									
-									
-									
-									
-									
+
 								<div class="col-xs-12 col-sm-12">
                                     <div class="user-bookmark__items-image-preview">
                                     
@@ -140,89 +145,56 @@
 							<!-- ACTIONS - share, search, compare -->
                             <div class="col-xs-12 col-sm-12">
 											<!-- ACTION -->
-											<div class="user-bookmark__panel-action text-center">
-											    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
-                                                    <a href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                        data-toggle="tooltip" data-placement="top" target="_blank">
-                                                        <i class="fa fa-th" aria-hidden="true"></i><span>Vergleichsansicht</span>
-                                                    </a>
-                                                </ui:fragment>
-                                                
-                                                <a href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/" title="#{msg.search}" data-toggle="tooltip" data-placement="top">
-			                                    	<i class="fa fa-search" aria-hidden="true"></i><span>Suchen</span>
-			                                    </a>                                 
-                                                
-                                          <!--  <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
-                                                    <i class="fa fa-eye" aria-hidden="true"></i>
-                                                </a>
-                                                -->
-                                                
-												<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
-													<i class="fa fa-pencil" aria-hidden="true"></i><span>Bearbeiten</span>
-													<f:passThroughAttribute name="data-toggle" value="tooltip" />
-													<f:passThroughAttribute name="data-placement" value="top" />
-												</h:commandLink>
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                 <!-- 
-                                                
-                                                <a title="#{msg.bookmarkList_shareLink}" 
-	                                               data-copy="bookmarklist-share-link" 
-						                           data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" 
-						                           data-copy-done="#{msg.copyUrlDone}">
-                                                    <i class="fa fa-share-alt" aria-hidden="true"></i>
-                                                </a>
-                                                 -->
-                                                      
-                                                     
-                                                      
-                                                      
-                                                      <a href="#"
-														title="#{msg.bookmarkList_shareLink}" 
-														data-toggle="tooltip" 
-														data-placement="top"
+										<div class="user-bookmark__panel-action text-center">
+										    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
+                                               <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
+                                                   <a href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
+                                                       data-toggle="tooltip" data-placement="top" target="_blank">
+                                                       <i class="fa fa-th" aria-hidden="true"></i><span>Vergleichsansicht</span>
+                                                   </a>
+                                               </ui:fragment>
+                                               
+                                               <a href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/" title="#{msg.search}" data-toggle="tooltip" data-placement="top">
+		                                    	<i class="fa fa-search" aria-hidden="true"></i><span>Suchen</span>
+		                                    </a>     
+ 
+											<a href="#"
+											title="#{msg.bookmarkList_shareLink}" 
+											data-toggle="tooltip" 
+											data-placement="top"
+											class="share-bookmarkList">
+												<i class="fa fa-share-alt" aria-hidden="true"></i><span>Teilen</span>
+											</a>
+                                                       
+                                            <!-- Script for share popover -->
+										    <script type="text/javascript">
+										  		//<![CDATA[
+										  		$(".share-bookmarkList").click(function(event) { 
+								                event.preventDefault(); 
+								           		});
+										  		
+										  		$(".share-bookmarkList").popover({
+										  		html: true,
+										        title: '', 
+										      	placement: 'bottom',
+										      	template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body">' +
+										      	'<div class="2"><a title="#{msg.bookmarkList_shareCollection}" data-copy="bookmarklist-share-collection" data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share" aria-hidden="true"></i> IIIF-Collection Link kopieren</a></div>' +
+										      	'<div class="3"><a title="#{msg.bookmarkList_shareLink}" data-copy="bookmarklist-share-link" data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share-alt" aria-hidden="true"></i> Freigabe-Link kopieren</a></div>' +
+										      	'<div class="4"><a><i class="fa fa-trash" aria-hidden="true"></i> Freigabe-Link löschen</a></div></div></div>',
+										      	trigger: 'click'
+											    });
+										  		
+										  		viewerJS.helper.truncateString( $( '.tooltip' ).text(), 75 );
+										      	//]]>
+										    </script>      
 
-                                                      
-                                                       class="share-bookmarkList"><i class="fa fa-share-alt" aria-hidden="true"></i><span>Teilen</span></a>
-
-											    <script type="text/javascript">
-											  		//<![CDATA[
-											  		$(".share-bookmarkList").click(function(event) { 
-									                event.preventDefault(); 
-									           		});
-											  		
-											  		$(".share-bookmarkList").popover({
-											  		html: true,
-											        title: 'abc',
-											      	content: '<div class="1">1</div>' +
-											      	'<div class="2"><a title="#{msg.bookmarkList_shareCollection}" data-copy="bookmarklist-share-collection" data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share" aria-hidden="true"></i></a></div>' +
-											      	'<div class="3"><a title="#{msg.bookmarkList_shareLink}" data-copy="bookmarklist-share-link" data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share-alt" aria-hidden="true"></i></a></div>' +
-											      	'<div class="4">4</div>',
-											      	placement: 'bottom',
-											      	trigger: 'click'
-												    });
-											  		
-											  		viewerJS.helper.truncateString( $( '.tooltip' ).text(), 75 );
-											      	//]]>
-											    </script>      
-
-
-
-								
-                                                      
-                                                      
-                                                
-                               
-                                                
-   
-          
-											</div>
+											<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
+												<i class="fa fa-pencil" aria-hidden="true"></i><span>Bearbeiten</span>
+												<f:passThroughAttribute name="data-toggle" value="tooltip" />
+												<f:passThroughAttribute name="data-placement" value="top" />
+											</h:commandLink>
 										</div>
+									</div>
 								</div>
 							</ui:repeat>
 						</div>
