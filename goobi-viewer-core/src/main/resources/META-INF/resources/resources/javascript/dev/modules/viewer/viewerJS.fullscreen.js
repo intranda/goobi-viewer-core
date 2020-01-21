@@ -391,7 +391,7 @@ var viewerJS = ( function( viewer ) {
     	var fsPanelStatus = sessionStorage.getItem( 'fsPanelStatus' );
         console.log("fsPanelStatus", fsPanelStatus);
         //reset panel status if PI has changed
-        if(_defaults.persistentIdentifier && _defaults.persistentIdentifier !== fsPanelStatus.persistentIdentifier) {
+        if(fsPanelStatus !=  null && _defaults.persistentIdentifier && _defaults.persistentIdentifier !== fsPanelStatus.persistentIdentifier) {
             fsPanelStatus = null;
         }
         
