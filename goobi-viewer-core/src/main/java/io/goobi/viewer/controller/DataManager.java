@@ -32,14 +32,16 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.security.authentication.IOAuthResponseListener;
-import io.goobi.viewer.model.security.authentication.OAuthResponseListener;
+import io.goobi.viewer.model.security.authentication.AuthResponseListener;
+import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 /**
- * <p>DataManager class.</p>
+ * <p>
+ * DataManager class.
+ * </p>
  */
 public final class DataManager {
 
@@ -63,14 +65,16 @@ public final class DataManager {
 
     private SessionStoreBookmarkManager bookmarkManager;
 
-    private IOAuthResponseListener oAuthResponseListener;
+    private AuthResponseListener<OpenIdProvider> oAuthResponseListener;
 
     private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
 
     private Map<String, List<Campaign>> recordCampaignMap = null;
 
     /**
-     * <p>Getter for the field <code>instance</code>.</p>
+     * <p>
+     * Getter for the field <code>instance</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.controller.DataManager} object.
      */
@@ -94,7 +98,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>modules</code>.</p>
+     * <p>
+     * Getter for the field <code>modules</code>.
+     * </p>
      *
      * @return the modules
      */
@@ -103,7 +109,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>getUrlBuilder.</p>
+     * <p>
+     * getUrlBuilder.
+     * </p>
      *
      * @return the urlBuilder
      */
@@ -117,7 +125,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>getModule.</p>
+     * <p>
+     * getModule.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.modules.IModule} object.
@@ -138,7 +148,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>isModuleLoaded.</p>
+     * <p>
+     * isModuleLoaded.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a boolean.
@@ -158,7 +170,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>registerModule.</p>
+     * <p>
+     * registerModule.
+     * </p>
      *
      * @param module a {@link io.goobi.viewer.modules.IModule} object.
      * @should not add module if it's already registered
@@ -184,7 +198,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>getSessionCount.</p>
+     * <p>
+     * getSessionCount.
+     * </p>
      *
      * @return a int.
      */
@@ -193,7 +209,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>sessionMap</code>.</p>
+     * <p>
+     * Getter for the field <code>sessionMap</code>.
+     * </p>
      *
      * @return the sessionMap
      */
@@ -202,7 +220,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>configuration</code>.</p>
+     * <p>
+     * Getter for the field <code>configuration</code>.
+     * </p>
      *
      * @return the configuration
      */
@@ -217,7 +237,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>languageHelper</code>.</p>
+     * <p>
+     * Getter for the field <code>languageHelper</code>.
+     * </p>
      *
      * @return the languageHelper
      */
@@ -232,7 +254,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>searchIndex</code>.</p>
+     * <p>
+     * Getter for the field <code>searchIndex</code>.
+     * </p>
      *
      * @return the searchIndex
      */
@@ -248,7 +272,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>dao</code>.</p>
+     * <p>
+     * Getter for the field <code>dao</code>.
+     * </p>
      *
      * @return the dao
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -296,7 +322,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>bookmarkManager</code>.</p>
+     * <p>
+     * Getter for the field <code>bookmarkManager</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
      */
@@ -310,7 +338,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>injectBookmarkManager.</p>
+     * <p>
+     * injectBookmarkManager.
+     * </p>
      *
      * @param bookmarkManager a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
      */
@@ -319,25 +349,29 @@ public final class DataManager {
     }
 
     /**
-     * <p>injectOAuthResponseListener.</p>
+     * <p>
+     * injectOAuthResponseListener.
+     * </p>
      *
-     * @param listener a {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} object.
+     * @param listener a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
      */
-    public void injectOAuthResponseListener(IOAuthResponseListener listener) {
+    public void injectOAuthResponseListener(AuthResponseListener<OpenIdProvider> listener) {
         if (listener != null) {
             this.oAuthResponseListener = listener;
         }
     }
 
     /**
-     * <p>Getter for the field <code>oAuthResponseListener</code>.</p>
+     * <p>
+     * Getter for the field <code>oAuthResponseListener</code>.
+     * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
      */
-    public IOAuthResponseListener getOAuthResponseListener() {
+    public AuthResponseListener<OpenIdProvider> getOAuthResponseListener() {
         if (oAuthResponseListener == null) {
             synchronized (lock) {
-                oAuthResponseListener = new OAuthResponseListener();
+                oAuthResponseListener = new AuthResponseListener<>();
             }
         }
 
@@ -345,7 +379,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Getter for the field <code>recordCampaignMap</code>.</p>
+     * <p>
+     * Getter for the field <code>recordCampaignMap</code>.
+     * </p>
      *
      * @return the recordCampaignMap
      */
@@ -354,7 +390,9 @@ public final class DataManager {
     }
 
     /**
-     * <p>Setter for the field <code>recordCampaignMap</code>.</p>
+     * <p>
+     * Setter for the field <code>recordCampaignMap</code>.
+     * </p>
      *
      * @param recordCampaignMap the recordCampaignMap to set
      */

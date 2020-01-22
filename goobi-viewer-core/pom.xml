@@ -133,10 +133,11 @@
 		<tika.version>[1.20,)</tika.version>
 		<tomcat.version>9.0.30</tomcat.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
-		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
+		<!-- Using a weld.version >3.0.5.Final will result in problems with the 
+			hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
 		<!-- This needs to be added explicitly because otherwise Solr will use 
-		an older version that's incompatible -->
+			an older version that's incompatible -->
 		<xerces.version>2.12.0</xerces.version>
 
 	</properties>
@@ -700,6 +701,11 @@
 			<artifactId>xercesImpl</artifactId>
 			<version>${xerces.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.coveo</groupId>
+			<artifactId>saml-client</artifactId>
+			<version>3.0.2</version>
+		</dependency>
 	</dependencies>
 
 
@@ -713,7 +719,7 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
-					<!--compilerArgument>-Xlint:unchecked</compilerArgument-->
+					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -796,7 +802,7 @@
 					<dependency>
 						<groupId>org.apache.maven.wagon</groupId>
 						<artifactId>wagon-webdav-jackrabbit</artifactId>
-						<!-- Updating to 3.3.4 results in errors during mvn site:deploy-->
+						<!-- Updating to 3.3.4 results in errors during mvn site:deploy -->
 						<version>2.6</version>
 					</dependency>
 				</dependencies>
@@ -846,9 +852,9 @@
 	<reporting>
 		<plugins>
 			<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-project-info-reports-plugin</artifactId>
-			<version>3.0.0</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
 				<reportSets>
 					<reportSet>
 						<reports>
