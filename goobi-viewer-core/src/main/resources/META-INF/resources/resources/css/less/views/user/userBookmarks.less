@@ -58,16 +58,20 @@
 	&__panel-action {
 		a {
 			display: inline-block;
-			padding: 0 5px;
+			padding: .5rem 2rem;
 			span {
 				padding-left: 5px;
 			}
 		}
 		.popover {
+			padding: 1rem;
 			a {
-				padding: 5px 15px;
+				padding: 0.6rem 1.2rem;
 				cursor: pointer;
-			}	
+			}
+			.fa {
+				width: 2rem;
+			}
 		}
 		
 	}
@@ -81,7 +85,7 @@
 	&__single-image-container {
 	flex: 0 0 16.66%;
 	padding: 5px;
-	height: 200px;
+	height: 180px;
 	}
 	&__single-image{
 	margin-bottom: 30px;
@@ -102,24 +106,29 @@
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	
+.user-bookmark {
+	&__panel-action {
+		a {
+			display: inline-block;
+			padding: .5rem .5rem;
+		}
+	}
+	&__single-image-container {
+		flex: 0 0 25%;
+	}	
+}
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-
-.user-bookmark {
-		&__single-image-container {
-			flex: 0 0 25%;
-		}
-}
-
-}
+@media screen and (max-width: @smallBreakpoint) {}
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	
 .user-bookmark {
 		&__single-image-container {
-		flex: 0 0 50%;
+			flex: 0 0 50%;
 		}
 }
 
