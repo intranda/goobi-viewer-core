@@ -159,6 +159,15 @@
         <url-pattern>/oauth/</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>SAMLAssertionServlet</servlet-name>
+        <servlet-class>io.goobi.viewer.servlets.openid.SAMLAssertionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SAMLAssertionServlet</servlet-name>
+        <url-pattern>/saml</url-pattern>
+        <url-pattern>/saml/</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <display-name>DFGViewerImage</display-name>
         <servlet-name>DFGViewerImage</servlet-name>
         <servlet-class> io.goobi.viewer.servlets.DFGViewerImage</servlet-class>

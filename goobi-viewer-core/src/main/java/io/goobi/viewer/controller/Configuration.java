@@ -61,6 +61,7 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LitteraProvider;
 import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.authentication.SAMLProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
@@ -1442,7 +1443,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder");
     }
-    
+
     /**
      * <p>
      * getIndexedDenkxwebFolder.
@@ -1698,11 +1699,17 @@ public final class Configuration extends AbstractConfiguration {
             boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@show]", true);
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
+            String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
+            String relyingPartyIdentifier =
+                    myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
+                    case "saml":
+                        providers.add(new SAMLProvider(name, idpMetadataUrl, relyingPartyIdentifier, timeoutMillis));
+                        break;
                     case "openid":
                         providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
                         break;
@@ -3209,7 +3216,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
     }
-    
+
     public String getPageTypeExitView(PageType type) {
         return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
     }
@@ -4437,15 +4444,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getAccessConditionDisplayField() {
         return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
     }
-    
+
     public String getCopyrightDisplayField() {
         return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
     }
-    
+
     public boolean isDisplayCopyrightInfo() {
         return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
     }
-    
+
     public boolean isDisplaySocialMediaShareLinks() {
         return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
     }

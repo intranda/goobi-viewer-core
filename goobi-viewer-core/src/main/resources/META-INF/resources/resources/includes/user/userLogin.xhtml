@@ -245,6 +245,14 @@
                                     </h:commandLink>
                                 </li>
                             </ui:repeat>
+                            <ui:repeat var="provider" value="#{userBean.getProvidersOfType('saml')}">
+                                <li class="user-login__body-login-open-id-provider #{provider.name}">
+                                    <h:commandLink action="#{userBean.login(provider)}">
+                                        #{provider.name}
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.login__login_with} #{provider.name}" />
+                                    </h:commandLink>
+                                </li>
+                            </ui:repeat>
                         </ul>
                     </h:form>
                 </div>
