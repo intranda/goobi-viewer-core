@@ -1693,10 +1693,19 @@ public class NavigationHelper implements Serializable {
      * <p>
      * getCurrentPagerType.
      * </p>
-     *
+     * @deprecated  replaced by {@link #getCurrentPageType()}
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public PageType getCurrentPagerType() {
+        return PageType.getByName(getCurrentPage());
+    }
+    
+    /**
+     * Get the {@link PageType} for the page name from {@link NavigationHelper#getCurrentPage()}
+     *
+     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
+     */
+    public PageType getCurrentPageType() {
         return PageType.getByName(getCurrentPage());
     }
 
