@@ -85,12 +85,14 @@
 										</div>
 										<div class="col-xs-4 col-sm-3 user-bookmark__panel-action text-right">
 										
-											<a href="#" 
+										
+										<!-- TODO: Nachfoolgender <span> erscheint nur, wenn Merkliste freigegeben. Ansonsten ausgeblendet. -->
+											<span
 											title="Öffentlich" 
 											data-toggle="tooltip" 
 											data-placement="bottom">
-												<i class="fa fa-lock" aria-hidden="true"></i>
-											</a>
+												<i class="fa fa-unlock" aria-hidden="true"></i>
+											</span>
 											
 										</div>
 									</div>
@@ -104,90 +106,79 @@
 										</div>
 									</ui:fragment>
 
-								<div class="col-xs-12 col-sm-12">
-                                    <div class="user-bookmark__items-image-preview">
-                                    
-                                    
-                                    
-                                <ui:repeat
-                                    value="#{bookmarkList.items}"
-                                    var="item"
-                                    varStatus="status">
-                                    
+									<div class="col-xs-12 col-sm-12">
+										<div class="user-bookmark__items-image-preview">
+											<ui:repeat value="#{bookmarkList.items}" var="item"
+												varStatus="status">
+												<div class="user-bookmark__single-image-container">
+													<div class="user-bookmark__single-image"
+														style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
+														<!--  IMAGE -->
+														<a href="#{request.contextPath}#{item.url}"
+															title="#{item.name}" data-toggle="tooltip"
+															data-placement="bottom"> </a>
+													</div>
+												</div>
+											</ui:repeat>
+										</div>
+									</div>
 
-                                            
-                                            <div class="user-bookmark__single-image-container">
-                                            <div class="user-bookmark__single-image" style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
-                                                <!--  IMAGE -->
-                                                    <a href="#{request.contextPath}#{item.url}"
-                                                        title="#{item.name}" 
-														data-toggle="tooltip" 
-														data-placement="bottom">
-													</a>
-
-														
-                                                  <!-- TO DELETE:  <h4>#{item.name}</h4> -->
-                                            </div>
- 											</div>
- 
- 
-                                </ui:repeat>
-                                
-                                
-                                
-                                
-                                    </div>
-                            </div>
-                            
-                            
-                            
-                            
 							<!-- ACTIONS - share, search, compare -->
-                            <div class="col-xs-12 col-sm-12">
-											<!-- ACTION -->
+                          			<div class="col-xs-12 col-sm-12">
+										<!-- ACTION -->
 										<div class="user-bookmark__panel-action text-center">
 										    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                               <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
-                                                   <a href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-                                                       data-toggle="tooltip" data-placement="top" target="_blank">
-                                                       <i class="fa fa-th" aria-hidden="true"></i><span>Vergleichsansicht</span>
-                                                   </a>
-                                               </ui:fragment>
-                                               
-                                               <a href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/" title="#{msg.search}" data-toggle="tooltip" data-placement="top">
-		                                    	<i class="fa fa-search" aria-hidden="true"></i><span>Suchen</span>
-		                                    </a>     
- 
-											<a href="#"
-											title="#{msg.bookmarkList_shareLink}" 
-											data-toggle="tooltip" 
-											data-placement="top"
-											class="share-bookmarkList">
-												<i class="fa fa-share-alt" aria-hidden="true"></i><span>Teilen</span>
-											</a>
-                                                       
-                                            <!-- Script for share popover -->
-										    <script type="text/javascript">
-										  		//<![CDATA[
-										  		$(".share-bookmarkList").click(function(event) { 
-								                event.preventDefault(); 
-								           		});
-										  		
-										  		$(".share-bookmarkList").popover({
-										  		html: true,
-										        title: '', 
-										      	placement: 'bottom',
-										      	template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body">' +
-										      	'<div class="2"><a title="#{msg.bookmarkList_shareCollection}" data-copy="bookmarklist-share-collection" data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share" aria-hidden="true"></i> IIIF-Collection Link kopieren</a></div>' +
-										      	'<div class="3"><a title="#{msg.bookmarkList_shareLink}" data-copy="bookmarklist-share-link" data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share-alt" aria-hidden="true"></i> Freigabe-Link kopieren</a></div>' +
-										      	'<div class="4"><a><i class="fa fa-trash" aria-hidden="true"></i> Freigabe-Link löschen</a></div></div></div>',
-										      	trigger: 'click'
-											    });
-										  		
-										  		viewerJS.helper.truncateString( $( '.tooltip' ).text(), 75 );
-										      	//]]>
-										    </script>      
-
+		                                  <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
+		                                    <a 
+		                                    	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
+		                                        data-toggle="tooltip" data-placement="top" target="_blank">
+		                                        <i class="fa fa-th" aria-hidden="true"></i>
+		                                        <span>Vergleichsansicht</span>
+		                                    </a>
+		                                  </ui:fragment>
+											<a
+												href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/"
+												title="#{msg.search}" data-toggle="tooltip"
+												data-placement="top">
+												<i class="fa fa-search" aria-hidden="true"></i>
+												<span>Suchen</span>
+											</a> 
+											<a 
+												href="#"
+												title="#{msg.bookmarkList_shareLink}" 
+												data-toggle="tooltip" 
+												data-placement="top"
+												class="share-bookmarkList">
+												<i class="fa fa-share-alt" aria-hidden="true"></i>
+												<span>Teilen</span>
+											</a>       
+	                                        <!-- Script for share popover -->
+											<script type="text/javascript">
+											  		//<![CDATA[
+											  		$(".share-bookmarkList").click(function(event) { 
+									                event.preventDefault(); 
+									           		});
+											  		
+											  		$(".share-bookmarkList").popover({
+											  		html: true,
+											        title: '', 
+											      	placement: 'bottom',
+												    // TODO: Hier nachfolgend soll bei "Merkliste freigeben" ein Toggle eingebaut werden. (erstes <a> Element)
+												    // Das Icon sollte sich dabei von fa-square-o zu fa-check-square-o ändern und je nach Zustand verbleiben.
+												    // Auch der Text sollte sich entsprechend des aktuellen Zustandes (öffentlich/nicht öffentlich) ändern.
+												    
+												    // Im letzten <a> Element soll die Möglichkeit bestehen, den eindeutigen Link zur Weitergabe der Merkliste zu löschen.
+											      	template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body">' +
+											      	'<a><i class="fa fa-square-o" aria-hidden="true"></i>Merkliste freigeben</a>' +
+											      	'<a title="#{msg.bookmarkList_shareCollection}" data-copy="bookmarklist-share-collection" data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share" aria-hidden="true"></i>IIIF-Collection Link kopieren</a>' +
+											      	'<a title="#{msg.bookmarkList_shareLink}" data-copy="bookmarklist-share-link" data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share-alt" aria-hidden="true"></i>Freigabe-Link kopieren</a>' +
+											      	'<a><i class="fa fa-trash" aria-hidden="true"></i>Freigabe-Link löschen</a></div></div></div>',
+											      	trigger: 'click'
+												    });
+											  		
+											  		viewerJS.helper.truncateString( $( '.tooltip' ).text(), 75 );
+											      	//]]>
+											</script>    
 											<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
 												<i class="fa fa-pencil" aria-hidden="true"></i><span>Bearbeiten</span>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
