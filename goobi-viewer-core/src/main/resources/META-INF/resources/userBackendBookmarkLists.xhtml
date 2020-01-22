@@ -68,6 +68,31 @@
 					<h:form id="userBookmarkListsForm" prependId="false">
 						<div  class="row no-margin">
 							<ui:repeat value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}" var="bookmarkList" varStatus="status">
+								
+<!-- 								<span title="Bla" data-toggle="tooltip" data-popover-title="Blub" data-popover-element="#testPopover_#{status.index}">Open Popover</span> -->
+								
+<!-- 								<popover id="testPopover_#{status.index}"> -->
+								
+<!-- 									<div class="form-group"> -->
+<!-- 										<label for="editBookmarkListPublic" class="control-label">#{msg.bookmarkList_public}:</label> -->
+<!-- 												<label> -->
+<!-- 													<h:selectBooleanCheckbox id="editBookmarkListPublic" -->
+<!-- 													value="#{bookmarkList.isPublic}"> -->
+<!-- 													<f:ajax execute="@this" render="isPublicDisplay"/> -->
+<!-- 													</h:selectBooleanCheckbox> -->
+<!-- 													<div> -->
+<!-- 														<h:panelGroup id="isPublicDisplay"> -->
+<!-- 															<h:panelGroup id="isPublic" rendered="#{bookmarkList.isPublic}"> -->
+<!-- 															Liste ist öffentlich</h:panelGroup> -->
+<!-- 															<h:panelGroup id="isNotPublic" rendered="#{!bookmarkList.isPublic}"> -->
+<!-- 															Liste ist privat</h:panelGroup> -->
+<!-- 														</h:panelGroup> -->
+<!-- 													</div> -->
+<!-- 									     		</label> -->
+<!-- 									</div> -->
+								
+<!-- 								</popover> -->
+								
 								<div class="user-bookmark__panel">
 									<div class="user-bookmark__panel-header">
 										<div class="col-xs-8 col-sm-9">
