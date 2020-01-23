@@ -38,7 +38,7 @@ import io.goobi.viewer.model.security.authentication.SAMLProvider;
 public class SAMLAssertionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2145328520265969738L;
-    public static final String URL = "saml";
+    public static final String URL = "saml/";
 
     private static final Logger logger = LoggerFactory.getLogger(SAMLAssertionServlet.class);
 
