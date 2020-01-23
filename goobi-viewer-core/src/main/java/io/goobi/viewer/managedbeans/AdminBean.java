@@ -1517,4 +1517,10 @@ public class AdminBean implements Serializable {
         Collections.sort(accessConditions);
         return accessConditions;
     }
+    
+    public void triggerMessage(String message) {
+        logger.debug("Show message " + message);
+        Messages.info(Helper.getTranslation(message, null));
+
+    }
 }

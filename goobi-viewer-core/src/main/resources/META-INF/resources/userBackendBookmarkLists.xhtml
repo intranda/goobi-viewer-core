@@ -69,30 +69,6 @@
 						<div  class="row no-margin">
 							<ui:repeat value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}" var="bookmarkList" varStatus="status">
 								
-<!-- 								<span title="Bla" data-toggle="tooltip" data-popover-title="Blub" data-popover-element="#testPopover_#{status.index}">Open Popover</span> -->
-								
-<!-- 								<popover id="testPopover_#{status.index}"> -->
-								
-<!-- 									<div class="form-group"> -->
-<!-- 										<label for="editBookmarkListPublic" class="control-label">#{msg.bookmarkList_public}:</label> -->
-<!-- 												<label> -->
-<!-- 													<h:selectBooleanCheckbox id="editBookmarkListPublic" -->
-<!-- 													value="#{bookmarkList.isPublic}"> -->
-<!-- 													<f:ajax execute="@this" render="isPublicDisplay"/> -->
-<!-- 													</h:selectBooleanCheckbox> -->
-<!-- 													<div> -->
-<!-- 														<h:panelGroup id="isPublicDisplay"> -->
-<!-- 															<h:panelGroup id="isPublic" rendered="#{bookmarkList.isPublic}"> -->
-<!-- 															Liste ist öffentlich</h:panelGroup> -->
-<!-- 															<h:panelGroup id="isNotPublic" rendered="#{!bookmarkList.isPublic}"> -->
-<!-- 															Liste ist privat</h:panelGroup> -->
-<!-- 														</h:panelGroup> -->
-<!-- 													</div> -->
-<!-- 									     		</label> -->
-<!-- 									</div> -->
-								
-<!-- 								</popover> -->
-								
 								<div class="user-bookmark__panel">
 									<div class="user-bookmark__panel-header">
 										<div class="col-xs-8 col-sm-9">
@@ -112,12 +88,16 @@
 										
 										
 										<!-- TODO: Nachfoolgender <span> erscheint nur, wenn Merkliste freigegeben. Ansonsten ausgeblendet. -->
-											<span
-											title="Öffentlich" 
-											data-toggle="tooltip" 
-											data-placement="bottom">
-												<i class="fa fa-unlock" aria-hidden="true"></i>
-											</span>
+											<h:panelGroup id="isPublicMarker">
+												<ui:fragment  rendered="#{bookmarkList.isPublic}">
+													<span
+													title="Öffentlich" 
+													data-toggle="tooltip" 
+													data-placement="bottom">
+														<i class="fa fa-unlock" aria-hidden="true"></i>
+													</span>
+												</ui:fragment>
+											</h:panelGroup>
 											
 										</div>
 									</div>
@@ -169,43 +149,74 @@
 												<span>Suchen</span>
 											</a> 
 											<a 
-												href="#"
 												title="#{msg.bookmarkList_shareLink}" 
 												data-toggle="tooltip" 
 												data-placement="top"
+												data-popover-element="#sharePopover_#{status.index}"
+												data-popover-placement="bottom"
+												data-popover-title=""
+												data-popover-dismiss="click-outside"
 												class="share-bookmarkList">
 												<i class="fa fa-share-alt" aria-hidden="true"></i>
 												<span>Teilen</span>
-											</a>       
-	                                        <!-- Script for share popover -->
-											<script type="text/javascript">
-											  		//<![CDATA[
-											  		$(".share-bookmarkList").click(function(event) { 
-									                event.preventDefault(); 
-									           		});
-											  		
-											  		$(".share-bookmarkList").popover({
-											  		html: true,
-											        title: '', 
-											      	placement: 'bottom',
-												    // TODO: Hier nachfolgend soll bei "Merkliste freigeben" ein Toggle eingebaut werden. (erstes <a> Element)
-												    // Das Icon sollte sich dabei von fa-square-o zu fa-check-square-o ändern und je nach Zustand verbleiben.
-												    // Auch der Text sollte sich entsprechend des aktuellen Zustandes (öffentlich/nicht öffentlich) ändern.
-												    
-												    // Im letzten <a> Element soll die Möglichkeit bestehen, den eindeutigen Link zur Weitergabe der Merkliste zu löschen.
-											      	template: '<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body">' +
-											      	'<a><i class="fa fa-square-o" aria-hidden="true"></i>Merkliste freigeben</a>' +
-											      	'<a title="#{msg.bookmarkList_shareCollection}" data-copy="bookmarklist-share-collection" data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share" aria-hidden="true"></i>IIIF-Collection Link kopieren</a>' +
-											      	'<a title="#{msg.bookmarkList_shareLink}" data-copy="bookmarklist-share-link" data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}" data-copy-done="#{msg.copyUrlDone}"><i class="fa fa-share-alt" aria-hidden="true"></i>Freigabe-Link kopieren</a>' +
-											      	'<a><i class="fa fa-trash" aria-hidden="true"></i>Freigabe-Link löschen</a></div></div></div>',
-											      	trigger: 'click'
-												    });
-											  		
-											  		viewerJS.helper.truncateString( $( '.tooltip' ).text(), 75 );
-											      	//]]>
-											</script>    
+											</a> 
+								
+											<popover id="sharePopover_#{status.index}"> 
+												<h:panelGroup id="editBookmarkListPublicWrapper">
+														<ui:fragment rendered="#{!bookmarkList.isPublic}">
+															<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, true)}">
+																<i class="fa fa-square-o" aria-hidden="true"></i>
+																<span>Merkliste freigeben</span>
+																<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+															</h:commandLink>
+														</ui:fragment>
+														<ui:fragment rendered="#{bookmarkList.isPublic}">
+															<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, false)}">
+																<i class="fa fa-check-square-o" aria-hidden="true"></i>
+																<span>Merkliste freigeben</span>
+																<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+															</h:commandLink>
+														</ui:fragment>
+<!-- 													<h:selectBooleanCheckbox id="editBookmarkListPublic" -->
+<!-- 														<h:outputLabel for="editBookmarkListPublic">Merkliste freigeben</h:outputLabel> -->
+<!-- 														<f:ajax render="editBookmarkListPublicWrapper"></f:ajax> -->
+<!-- 													</h:selectBooleanCheckbox> -->
+												</h:panelGroup>
+												
+												<ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
+													<h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
+														<i class="fa fa-share-alt" aria-hidden="true"></i><span>Freigabe-Link erzeugen</span>
+													</h:commandLink>
+												</ui:fragment>
+												
+												
+												<ui:fragment rendered="#{bookmarkList.hasShareKey()}">
+													<a
+														title="#{msg.bookmarkList_shareCollection}"
+														data-copy="bookmarklist-share-collection"
+														data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
+														data-copy-done="#{msg.copyUrlDone}">
+														<i class="fa fa-share" aria-hidden="true"></i>
+														<span>IIIF-Collection Link kopieren</span>
+													</a> 
+													<a title="#{msg.bookmarkList_shareLink}"
+														data-copy="bookmarklist-share-link"
+														data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
+														data-copy-done="#{msg.copyUrlDone}">
+														<i class="fa fa-share-alt" aria-hidden="true"></i>
+														<span>Freigabe-Link kopieren</span>
+													</a>
+													<h:commandLink action="#{bookmarkBean.resetShareLink(bookmarkList)}">
+														<i class="fa fa-trash" aria-hidden="true"></i>
+														<span>Freigabe-Link löschen</span>
+													</h:commandLink>
+												</ui:fragment>
+											
+											</popover>
+  
 											<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
-												<i class="fa fa-pencil" aria-hidden="true"></i><span>Bearbeiten</span>
+												<i class="fa fa-pencil" aria-hidden="true"></i>
+												<span>Bearbeiten</span>
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 											</h:commandLink>

@@ -59,8 +59,18 @@
 		a {
 			display: inline-block;
 			padding: .5rem 2rem;
+			cursor: pointer; 
+			&:focus,
+			&:hover {				
+				text-decoration: none;
+				span {
+					text-decoration: underline;
+				}
+			}
+			i {
+				padding-right: 5px;
+			}
 			span {
-				padding-left: 5px;
 			}
 		}
 		.popover {
@@ -71,6 +81,9 @@
 			}
 			.fa {
 				width: 2rem;
+			}
+			input[type='checkbox'] {
+				display: none;
 			}
 		}
 		

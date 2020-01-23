@@ -449,6 +449,10 @@ public class BookmarkList implements Serializable {
     public void setShareKey(String shareKey) {
         this.shareKey = shareKey;
     }
+    
+    public boolean hasShareKey() {
+        return this.shareKey != null;
+    }
 
     /**
      * Generates a persistent share key for public sharing via link.

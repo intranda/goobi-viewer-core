@@ -707,6 +707,20 @@ public class BookmarkBean implements Serializable {
 
         return navigationHelper.getApplicationUrl() + "bookmarks/key/" + bookmarkList.getShareKey() + "/";
     }
+    
+    public void resetShareLink(BookmarkList bookmarkList) {
+        if (bookmarkList != null) {
+            bookmarkList.setShareKey(null);
+            saveBookmarkListAction(bookmarkList);
+        }
+    }
+    
+    public void setPublic(BookmarkList bookmarkList, boolean isPublic) {
+        if (bookmarkList != null) {
+            bookmarkList.setIsPublic(isPublic);
+            saveBookmarkListAction(bookmarkList);
+        }
+    }
 
     /**
      * <p>getShareKey.</p>
