@@ -231,7 +231,7 @@
                 </div>
     
                 <!-- USER LOGIN BODY LOGIN OPEN ID -->
-                <ui:fragment rendered="#{userBean.hasProvidersOfType('openId')}">
+                <ui:fragment rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
                 <div id="userLoginOpenId" class="user-login__body-login-open-id">                    
                     <h4><span>#{msg.login__login_with_other_provider}</span></h4>
                     
