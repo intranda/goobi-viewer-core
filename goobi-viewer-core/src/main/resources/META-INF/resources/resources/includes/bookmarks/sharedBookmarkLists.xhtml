@@ -7,8 +7,9 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-	<ui:param name="bookmarkLists" value="#{source}"></ui:param>
 	<ui:param name="hideOwned" value="#{hideOwned != null ? hideOwned : false}"></ui:param>
+	<ui:param name="userList" value="#{userList != null ? userList : false}"></ui:param>
+	<ui:param name="bookmarkLists" value="#{userList ? bookmarkBean.getBookmarkListsForUser(userBean.user) : source }"></ui:param>
 
 	<ui:fragment rendered="#{bookmarkLists != null}">
 	    <ui:repeat value="#{bookmarkLists}" var="bookmarkList" varStatus="status">
@@ -20,12 +21,12 @@
 					<div class="user-bookmark__panel-header">
 						<div class="col-xs-8 col-sm-9">
 							<h4>
-								<ui:fragment rendered="#{owned}">
+								<ui:fragment rendered="#{userList}">
 									<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
 										#{bookmarkList.name}
 									</a>
 								</ui:fragment>
-								<ui:fragment rendered="#{!owned}">
+								<ui:fragment rendered="#{!userList}">
 									<a href="#{bookmarkBean.getShareLink(bookmarkList)}">
 										#{bookmarkList.name}
 									</a>
@@ -40,7 +41,7 @@
 						</div>
 						<div class="col-xs-4 col-sm-3 user-bookmark__panel-action text-right">
 							
-							<h:panelGroup rendered="#{owned}" id="isPublicMarker">
+							<h:panelGroup rendered="#{userList}" id="isPublicMarker">
 								<ui:fragment rendered="#{bookmarkList.isPublic}">
 									<span
 									title="Öffentlich" 
@@ -92,114 +93,122 @@
 	                    <div class="col-xs-12 col-sm-12">
 							<!-- ACTION -->
 							<div class="user-bookmark__panel-action text-center">
-	                            <ui:fragment rendered="#{bookmarkList.items.size() > 0 and owned}">
-	                              <a 
-	                              	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" target="_blank">
-	                                  <i class="fa fa-th" aria-hidden="true"></i>
-	                                  <span>#{msg.bookmarkList_openMirador}</span>
-	                              </a>
-	                            </ui:fragment>
-	                            <ui:fragment rendered="#{bookmarkList.items.size() > 0 and !owned}">
-	                              <a 
-	                              	href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" target="_blank">
-	                                  <i class="fa fa-th" aria-hidden="true"></i>
-	                                  <span>#{msg.bookmarkList_openMirador}</span>
-	                              </a>
-	                            </ui:fragment>
-	                        <ui:fragment rendered="#{owned}">
-								<a
-									href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/"
-									title="#{msg.search}" data-toggle="tooltip"
-									data-placement="top">
-									<i class="fa fa-search" aria-hidden="true"></i>
-									<span>Suchen</span>
-								</a> 
-	                        </ui:fragment>
-	                        <ui:fragment rendered="#{!owned}">
-		                        <a
-									href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}"
-									title="#{msg.search}" data-toggle="tooltip"
-									data-placement="top">
-									<i class="fa fa-search" aria-hidden="true"></i>
-									<span>Suchen</span>
-								</a> 
-	                        </ui:fragment>
-	                        <ui:fragment rendered="#{owned}">
-								<a 
-									title="#{msg.bookmarkList_shareLink}" 
-									data-toggle="tooltip" 
-									data-placement="top"
-									data-popover-element="#sharePopover_#{status.index}"
-									data-popover-placement="bottom"
-									data-popover-title=""
-									data-popover-dismiss="click-outside"
-									class="share-bookmarkList">
-									<i class="fa fa-share-alt" aria-hidden="true"></i>
-									<span>Teilen</span>
-								</a> 
-				
-								<popover id="sharePopover_#{status.index}"> 
-									<h:panelGroup id="editBookmarkListPublicWrapper">
-										<ui:fragment rendered="#{!bookmarkList.isPublic}">
-											<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, true)}">
-												<i class="fa fa-square-o" aria-hidden="true"></i>
-												<span>Merkliste freigeben</span>
-												<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
-											</h:commandLink>
-										</ui:fragment>
-										<ui:fragment rendered="#{bookmarkList.isPublic}">
-											<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, false)}">
-												<i class="fa fa-check-square-o" aria-hidden="true"></i>
-												<span>Merkliste freigeben</span>
-												<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
-											</h:commandLink>
-										</ui:fragment>
-		<!-- 													<h:selectBooleanCheckbox id="editBookmarkListPublic" -->
-		<!-- 														<h:outputLabel for="editBookmarkListPublic">Merkliste freigeben</h:outputLabel> -->
-		<!-- 														<f:ajax render="editBookmarkListPublicWrapper"></f:ajax> -->
-		<!-- 													</h:selectBooleanCheckbox> -->
+								<ui:fragment rendered="#{userList}">
 									
-										<ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
-											<h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
-												<i class="fa fa-share-alt" aria-hidden="true"></i><span>Freigabe-Link erzeugen</span>
-												<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
-											</h:commandLink>
-										</ui:fragment>
+									<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
+		                              <a 
+		                              	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" target="_blank">
+		                                  <i class="fa fa-th" aria-hidden="true"></i>
+		                                  <span>#{msg.bookmarkList_openMirador}</span>
+		                              </a>
+		                            </ui:fragment>
+			                        
+			                        <a
+										href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/">
+										<i class="fa fa-search" aria-hidden="true"></i>
+										<span>Suchen</span>
+									</a>
 									
+									<a 
+										data-popover-element="#sharePopover_#{status.index}"
+										data-popover-placement="bottom"
+										data-popover-title=""
+										data-popover-dismiss="click-outside"
+										class="share-bookmarkList">
+										<i class="fa fa-share-alt" aria-hidden="true"></i>
+										<span>Teilen</span>
+									</a>
+					
+									<popover id="sharePopover_#{status.index}"> 
+										<h:panelGroup id="editBookmarkListPublicWrapper">
+											<ui:fragment rendered="#{!bookmarkList.isPublic}">
+												<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, true)}">
+													<i class="fa fa-square-o" aria-hidden="true"></i>
+													<span>Merkliste freigeben</span>
+													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+												</h:commandLink>
+											</ui:fragment>
+											<ui:fragment rendered="#{bookmarkList.isPublic}">
+												<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, false)}">
+													<i class="fa fa-check-square-o" aria-hidden="true"></i>
+													<span>Merkliste freigeben</span>
+													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+												</h:commandLink>
+											</ui:fragment>
+										
+											<ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
+												<h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
+													<i class="fa fa-share-alt" aria-hidden="true"></i><span>Freigabe-Link erzeugen</span>
+													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+												</h:commandLink>
+											</ui:fragment>
+										
+										
+											<ui:fragment rendered="#{bookmarkList.hasShareKey()}">
+												<a
+													title="#{msg.bookmarkList_shareCollection}"
+													data-copy="bookmarklist-share-collection"
+													data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
+													data-copy-done="#{msg.copyUrlDone}">
+													<i class="fa fa-share" aria-hidden="true"></i>
+													<span>IIIF-Collection Link kopieren</span>
+												</a> 
+												<a title="#{msg.bookmarkList_shareLink}"
+													data-copy="bookmarklist-share-link"
+													data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
+													data-copy-done="#{msg.copyUrlDone}">
+													<i class="fa fa-share-alt" aria-hidden="true"></i>
+													<span>Freigabe-Link kopieren</span>
+												</a>
+												<h:commandLink rendered="#{!bookmarkList.isPublic}" action="#{bookmarkBean.resetShareLink(bookmarkList)}">
+													<i class="fa fa-trash" aria-hidden="true"></i>
+													<span>Freigabe-Link löschen</span>
+													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+												</h:commandLink>
+											</ui:fragment>
+										</h:panelGroup>
 									
-										<ui:fragment rendered="#{bookmarkList.hasShareKey()}">
-											<a
-												title="#{msg.bookmarkList_shareCollection}"
-												data-copy="bookmarklist-share-collection"
-												data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-												data-copy-done="#{msg.copyUrlDone}">
-												<i class="fa fa-share" aria-hidden="true"></i>
-												<span>IIIF-Collection Link kopieren</span>
-											</a> 
-											<a title="#{msg.bookmarkList_shareLink}"
-												data-copy="bookmarklist-share-link"
-												data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
-												data-copy-done="#{msg.copyUrlDone}">
-												<i class="fa fa-share-alt" aria-hidden="true"></i>
-												<span>Freigabe-Link kopieren</span>
-											</a>
-											<h:commandLink rendered="#{!bookmarkList.isPublic}" action="#{bookmarkBean.resetShareLink(bookmarkList)}">
-												<i class="fa fa-trash" aria-hidden="true"></i>
-												<span>Freigabe-Link löschen</span>
-												<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
-											</h:commandLink>
-										</ui:fragment>
-									</h:panelGroup>
+									</popover>
+		
+									<h:commandLink action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
+										<i class="fa fa-pencil" aria-hidden="true"></i>
+										<span>Bearbeiten</span>
+									</h:commandLink>
+									
+								</ui:fragment>
+							
+								<ui:fragment rendered="#{!userList}">
+									<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
+		                              <a 
+		                              	href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" target="_blank">
+		                                  <i class="fa fa-th" aria-hidden="true"></i>
+		                                  <span>#{msg.bookmarkList_openMirador}</span>
+		                              </a>
+		                            </ui:fragment>
+									<a
+										href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}">
+										<i class="fa fa-search" aria-hidden="true"></i>
+										<span>Suchen</span>
+									</a>
+									
+									<a
+										title="#{msg.bookmarkList_shareCollection}"
+										data-copy="bookmarklist-share-collection"
+										data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
+										data-copy-done="#{msg.copyUrlDone}">
+										<i class="fa fa-share" aria-hidden="true"></i>
+										<span>IIIF-Collection Link kopieren</span>
+									</a> 
+									<a title="#{msg.bookmarkList_shareLink}"
+										data-copy="bookmarklist-share-link"
+										data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
+										data-copy-done="#{msg.copyUrlDone}">
+										<i class="fa fa-share-alt" aria-hidden="true"></i>
+										<span>Freigabe-Link kopieren</span>
+									</a>
 								
-								</popover>
-	
-								<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
-									<i class="fa fa-pencil" aria-hidden="true"></i>
-									<span>Bearbeiten</span>
-									<f:passThroughAttribute name="data-toggle" value="tooltip" />
-									<f:passThroughAttribute name="data-placement" value="top" />
-								</h:commandLink>
-							</ui:fragment>
+								</ui:fragment>
+
 						</div>
 					</div>
 				</div>

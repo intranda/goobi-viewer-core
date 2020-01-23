@@ -64,10 +64,10 @@
 				
 				<!-- USER BOOKMARK LISTS -->
 				<h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
-					<h:form id="userBookmarkListsForm" prependId="false">
+					<h:form id="userBookmarkListsForm" styleClass="bookmarklist_form" prependId="false">
 						<div  class="row no-margin">
 							<ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
-		                           <ui:param name="source" value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}" />
+		                           <ui:param name="userList" value="true"/>
 		                    </ui:include>
 						</div>
 					</h:form>
@@ -76,7 +76,7 @@
 				<!-- BOOKMARK LISTS SHARED WITH THIS USER -->
                 <h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsSharedWithUser(userBean.user).isEmpty()}">
                     <h3>#{msg.bookmarkList_otherBookmarkLists}</h3>
-                    <h:form id="otherBookmarkListsForm" prependId="false">
+                    <h:form id="otherBookmarkListsForm" styleClass="bookmarklist_form" prependId="false">
                         <div class="row no-margin">
                             <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
 		                           <ui:param name="source" value="#{bookmarkBean.getBookmarkListsSharedWithUser(userBean.user)}" />
@@ -89,7 +89,7 @@
                 <!-- PUBLIC BOOKMARK LISTS -->
                 <h:panelGroup rendered="#{!bookmarkBean.publicBookmarkLists.isEmpty()}">
                     <h3>#{msg.bookmarkList_publicBookmarkLists}</h3>
-                    <h:form id="pubicBookmarkListsForm" prependId="false">
+                    <h:form id="pubicBookmarkListsForm" styleClass="bookmarklist_form" prependId="false">
                         <div class="row no-margin">
                            <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml" source="">
 		                   		<ui:param name="source" value="#{bookmarkBean.publicBookmarkLists}" />
