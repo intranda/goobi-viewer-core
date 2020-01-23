@@ -231,15 +231,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
             // Load shape metadata
             // TODO use indicator field in doc to avoid this extra search for non-shape elements
-            SolrDocumentList shapeDocs = MetadataTools.getGroupedMetadata((String) doc.getFieldValue(SolrConstants.IDDOC),
-                    " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name());
-            if (!shapeDocs.isEmpty()) {
-                this.shapeMetadata = new ArrayList<>(shapeDocs.size());
-                for (SolrDocument shapeDoc : shapeDocs) {
-                    String label = (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
-                    String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
-                    String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                    this.shapeMetadata.add(new ShapeMetadata(label, shape, coords));
+            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            if (iddoc != null) {
+                SolrDocumentList shapeDocs =
+                        MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name());
+                if (!shapeDocs.isEmpty()) {
+                    this.shapeMetadata = new ArrayList<>(shapeDocs.size());
+                    for (SolrDocument shapeDoc : shapeDocs) {
+                        String label = (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
+                        String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
+                        String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords));
+                    }
                 }
             }
         } catch (PresentationException e) {
