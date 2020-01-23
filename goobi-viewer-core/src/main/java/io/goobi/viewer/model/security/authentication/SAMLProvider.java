@@ -126,7 +126,9 @@ public class SAMLProvider implements IAuthenticationProvider {
                 if (user == null) {
                     user = new User();
                     user.setActive(true);
-                    //user.setEmail(email);
+                    // use fake email, because the field may not be empty
+                    String email = id + "@nomail.com";
+                    user.setEmail(email);
                     if (id != null) {
                         user.getOpenIdAccounts().add(id);
                     }
