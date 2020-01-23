@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -47,6 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.ALTOTools;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -144,7 +147,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private String previousCommentText;
 
     /**
-     * <p>Constructor for PhysicalElement.</p>
+     * <p>
+     * Constructor for PhysicalElement.
+     * </p>
      *
      * @param physId Physical element ID
      * @param filePath Path to the file
@@ -183,7 +188,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>determineFileName.</p>
+     * <p>
+     * determineFileName.
+     * </p>
      *
      * @param filePath a {@link java.lang.String} object.
      * @should cut off everything but the file name for normal file paths
@@ -268,7 +275,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getUrl.</p>
+     * <p>
+     * getUrl.
+     * </p>
      *
      * @return the url to the media content of the page, for example the
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -306,7 +315,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getSandboxedUrl.</p>
+     * <p>
+     * getSandboxedUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -319,60 +330,64 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getWatermarkText.</p>
+     * <p>
+     * getWatermarkText.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getWatermarkText() {
-        if (watermarkTextConfiguration != null && !watermarkTextConfiguration.isEmpty()) {
-            StringBuilder urlBuilder = new StringBuilder();
-            for (String text : watermarkTextConfiguration) {
-                if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
-                    String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
-                    try {
-                        SolrDocumentList res = DataManager.getInstance()
-                                .getSearchIndex()
-                                .search(new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(), SolrSearchIndex.MAX_HITS, null,
-                                        Collections.singletonList(field));
-                        if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
-                            // logger.debug(field + ":" + res.get(0).getFirstValue(field));
-                            urlBuilder.append((String) res.get(0).getFirstValue(field));
-                            break;
-                        }
-                    } catch (PresentationException e) {
-                        logger.debug("PresentationException thrown here: " + e.getMessage());
-                    } catch (IndexUnreachableException e) {
-                        logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
-
-                    }
-                } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
-                    if (StringUtils.isNotEmpty(urn)) {
-                        urlBuilder.append(urn);
+        if (watermarkTextConfiguration == null || watermarkTextConfiguration.isEmpty()) {
+            return "";
+        }
+        
+        StringBuilder urlBuilder = new StringBuilder();
+        for (String text : watermarkTextConfiguration) {
+            if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
+                String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
+                try {
+                    SolrDocumentList res = DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(), SolrSearchIndex.MAX_HITS, null,
+                                    Collections.singletonList(field));
+                    if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
+                        // logger.debug(field + ":" + res.get(0).getFirstValue(field));
+                        urlBuilder.append((String) res.get(0).getFirstValue(field));
                         break;
                     }
-                } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
-                    urlBuilder.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                            .append("/")
-                            .append(PageType.viewImage.getName())
-                            .append("/")
-                            .append(pi)
-                            .append("/")
-                            .append(order)
-                            .append("/");
-                    break;
-                } else {
-                    urlBuilder.append(text);
+                } catch (PresentationException e) {
+                    logger.debug("PresentationException thrown here: " + e.getMessage());
+                } catch (IndexUnreachableException e) {
+                    logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
+
+                }
+            } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
+                if (StringUtils.isNotEmpty(urn)) {
+                    urlBuilder.append(urn);
                     break;
                 }
+            } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
+                urlBuilder.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                        .append("/")
+                        .append(PageType.viewImage.getName())
+                        .append("/")
+                        .append(pi)
+                        .append("/")
+                        .append(order)
+                        .append("/");
+                break;
+            } else {
+                urlBuilder.append(text);
+                break;
             }
-            return urlBuilder.toString();
         }
-
-        return "";
+        return urlBuilder.toString();
     }
 
     /**
-     * <p>getThumbnailUrl.</p>
+     * <p>
+     * getThumbnailUrl.
+     * </p>
      *
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -385,7 +400,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getThumbnailUrl.</p>
+     * <p>
+     * getThumbnailUrl.
+     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -397,7 +414,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getId.</p>
+     * <p>
+     * getId.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -407,7 +426,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFilepath.</p>
+     * <p>
+     * getFilepath.
+     * </p>
      *
      * @return {@link java.lang.String} Path zu Image Datei.
      */
@@ -416,7 +437,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>order</code>.</p>
+     * <p>
+     * Getter for the field <code>order</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -425,7 +448,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>orderLabel</code>.</p>
+     * <p>
+     * Getter for the field <code>orderLabel</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -434,7 +459,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>urn</code>.</p>
+     * <p>
+     * Getter for the field <code>urn</code>.
+     * </p>
      *
      * @return the urn
      */
@@ -443,7 +470,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>purlPart</code>.</p>
+     * <p>
+     * Setter for the field <code>purlPart</code>.
+     * </p>
      *
      * @param purlPart the purlPart to set
      */
@@ -452,7 +481,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>purlPart</code>.</p>
+     * <p>
+     * Getter for the field <code>purlPart</code>.
+     * </p>
      *
      * @return the purlPart
      */
@@ -471,7 +502,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFullMimeType.</p>
+     * <p>
+     * getFullMimeType.
+     * </p>
      *
      * @param baseType a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -491,7 +524,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFullMimeType.</p>
+     * <p>
+     * getFullMimeType.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -501,7 +536,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>mimeType</code>.</p>
+     * <p>
+     * Getter for the field <code>mimeType</code>.
+     * </p>
      *
      * @return the mimeType
      */
@@ -510,7 +547,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>mimeType</code>.</p>
+     * <p>
+     * Setter for the field <code>mimeType</code>.
+     * </p>
      *
      * @param mimeType the mimeType to set
      */
@@ -519,7 +558,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>width</code>.</p>
+     * <p>
+     * Setter for the field <code>width</code>.
+     * </p>
      *
      * @param width the width to set
      */
@@ -528,7 +569,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>height</code>.</p>
+     * <p>
+     * Setter for the field <code>height</code>.
+     * </p>
      *
      * @param height the height to set
      */
@@ -537,7 +580,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Returns the filename alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filepath otherwise
+     * Returns the filename alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filepath
+     * otherwise
      *
      * @return a {@link java.lang.String} object.
      */
@@ -549,7 +593,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFileNameBase.</p>
+     * <p>
+     * getFileNameBase.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -558,7 +604,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFileNameExtension.</p>
+     * <p>
+     * getFileNameExtension.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -567,7 +615,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>fileIdRoot</code>.</p>
+     * <p>
+     * Getter for the field <code>fileIdRoot</code>.
+     * </p>
      *
      * @return the fileIdRoot
      */
@@ -576,7 +626,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>fileIdRoot</code>.</p>
+     * <p>
+     * Setter for the field <code>fileIdRoot</code>.
+     * </p>
      *
      * @param fileIdRoot the fileIdRoot to set
      */
@@ -585,7 +637,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>isFulltextAvailable.</p>
+     * <p>
+     * isFulltextAvailable.
+     * </p>
      *
      * @return the fulltextAvailable
      */
@@ -594,7 +648,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>fulltextAvailable</code>.</p>
+     * <p>
+     * Setter for the field <code>fulltextAvailable</code>.
+     * </p>
      *
      * @param fulltextAvailable the fulltextAvailable to set
      */
@@ -603,7 +659,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>fulltextFileName</code>.</p>
+     * <p>
+     * Getter for the field <code>fulltextFileName</code>.
+     * </p>
      *
      * @return the fulltextFileName
      */
@@ -612,7 +670,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>fulltextFileName</code>.</p>
+     * <p>
+     * Setter for the field <code>fulltextFileName</code>.
+     * </p>
      *
      * @param fulltextFileName the fulltextFileName to set
      */
@@ -621,7 +681,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>altoFileName</code>.</p>
+     * <p>
+     * Getter for the field <code>altoFileName</code>.
+     * </p>
      *
      * @return the altoFileName
      */
@@ -630,7 +692,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>altoFileName</code>.</p>
+     * <p>
+     * Setter for the field <code>altoFileName</code>.
+     * </p>
      *
      * @param altoFileName the altoFileName to set
      */
@@ -639,7 +703,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>fullText</code>.</p>
+     * <p>
+     * Getter for the field <code>fullText</code>.
+     * </p>
      *
      * @return the fullText
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -677,7 +743,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>fullText</code>.</p>
+     * <p>
+     * Setter for the field <code>fullText</code>.
+     * </p>
      *
      * @param fullText the fullText to set
      */
@@ -720,7 +788,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getWordCoords.</p>
+     * <p>
+     * getWordCoords.
+     * </p>
      *
      * @param searchTerms a {@link java.util.Set} object.
      * @return a {@link java.util.List} object.
@@ -805,7 +875,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>fileNames</code>.</p>
+     * <p>
+     * Getter for the field <code>fileNames</code>.
+     * </p>
      *
      * @return the fileNames
      */
@@ -814,7 +886,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>fileNames</code>.</p>
+     * <p>
+     * Setter for the field <code>fileNames</code>.
+     * </p>
      *
      * @param fileNames the fileNames to set
      */
@@ -823,7 +897,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFileNameForFormat.</p>
+     * <p>
+     * getFileNameForFormat.
+     * </p>
      *
      * @param format a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -847,7 +923,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getImageToPdfUrl.</p>
+     * <p>
+     * getImageToPdfUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -872,7 +950,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getVideoWidth.</p>
+     * <p>
+     * getVideoWidth.
+     * </p>
      *
      * @return a int.
      */
@@ -885,7 +965,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getVideoHeight.</p>
+     * <p>
+     * getVideoHeight.
+     * </p>
      *
      * @return a int.
      */
@@ -916,7 +998,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getPhysicalImageHeight.</p>
+     * <p>
+     * getPhysicalImageHeight.
+     * </p>
      *
      * @return a int.
      */
@@ -934,7 +1018,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getImageUrl.</p>
+     * <p>
+     * getImageUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -949,7 +1035,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getImageUrl.</p>
+     * <p>
+     * getImageUrl.
+     * </p>
      *
      * @param size a int.
      * @return a {@link java.lang.String} object.
@@ -974,7 +1062,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getPhysicalImageWidth.</p>
+     * <p>
+     * getPhysicalImageWidth.
+     * </p>
      *
      * @return a int.
      */
@@ -983,7 +1073,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -992,7 +1084,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>accessConditions</code>.</p>
+     * <p>
+     * Getter for the field <code>accessConditions</code>.
+     * </p>
      *
      * @return the accessConditions
      */
@@ -1001,7 +1095,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>accessConditions</code>.</p>
+     * <p>
+     * Setter for the field <code>accessConditions</code>.
+     * </p>
      *
      * @param accessConditions the accessConditions to set
      */
@@ -1010,7 +1106,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getPageLinkLabel.</p>
+     * <p>
+     * getPageLinkLabel.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1117,7 +1215,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>isAccessPermissionPdf.</p>
+     * <p>
+     * isAccessPermissionPdf.
+     * </p>
      *
      * @return true if PDF download is allowed for this page; false otherwise
      */
@@ -1145,7 +1245,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>isAccessPermissionBornDigital.</p>
+     * <p>
+     * isAccessPermissionBornDigital.
+     * </p>
      *
      * @return true if access is allowed for born digital files; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1157,7 +1259,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFooterHeight.</p>
+     * <p>
+     * getFooterHeight.
+     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1167,7 +1271,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFooterHeight.</p>
+     * <p>
+     * getFooterHeight.
+     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @return a int.
@@ -1178,7 +1284,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>imageFooterHeight</code>.</p>
+     * <p>
+     * Getter for the field <code>imageFooterHeight</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -1187,7 +1295,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>imageFooterHeight</code>.</p>
+     * <p>
+     * Getter for the field <code>imageFooterHeight</code>.
+     * </p>
      *
      * @param rotation a int.
      * @return a int.
@@ -1227,7 +1337,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>currentComment</code>.</p>
+     * <p>
+     * Getter for the field <code>currentComment</code>.
+     * </p>
      *
      * @return the currentComment
      */
@@ -1236,7 +1348,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>currentComment</code>.</p>
+     * <p>
+     * Setter for the field <code>currentComment</code>.
+     * </p>
      *
      * @param currentComment the currentComment to set
      */
@@ -1246,14 +1360,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>resetCurrentComment.</p>
+     * <p>
+     * resetCurrentComment.
+     * </p>
      */
     public void resetCurrentComment() {
         currentComment = new Comment(this.pi, this.order, null, "", null);
     }
 
     /**
-     * <p>getComments.</p>
+     * <p>
+     * getComments.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1266,7 +1384,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>createNewCommentAction.</p>
+     * <p>
+     * createNewCommentAction.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1285,7 +1405,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>updateCommentAction.</p>
+     * <p>
+     * updateCommentAction.
+     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1330,7 +1452,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>deleteCommentAction.</p>
+     * <p>
+     * deleteCommentAction.
+     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1354,7 +1478,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>altoText</code>.</p>
+     * <p>
+     * Getter for the field <code>altoText</code>.
+     * </p>
      *
      * @return the altoText
      */
@@ -1363,7 +1489,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>wordCoordsFormat</code>.</p>
+     * <p>
+     * Getter for the field <code>wordCoordsFormat</code>.
+     * </p>
      *
      * @return the wordCoordsFormat
      */
@@ -1372,7 +1500,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>dataRepository</code>.</p>
+     * <p>
+     * Getter for the field <code>dataRepository</code>.
+     * </p>
      *
      * @return the dataRepository
      */
@@ -1381,7 +1511,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>fileSize</code>.</p>
+     * <p>
+     * Getter for the field <code>fileSize</code>.
+     * </p>
      *
      * @return the fileSize
      */
@@ -1390,7 +1522,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>fileSize</code>.</p>
+     * <p>
+     * Setter for the field <code>fileSize</code>.
+     * </p>
      *
      * @param fileSize the fileSize to set
      */
@@ -1399,7 +1533,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getFileSizeAsString.</p>
+     * <p>
+     * getFileSizeAsString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1416,7 +1552,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>getImageType.</p>
+     * <p>
+     * getImageType.
+     * </p>
      *
      * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
      */
@@ -1443,7 +1581,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>isDisplayPagePdfLink.</p>
+     * <p>
+     * isDisplayPagePdfLink.
+     * </p>
      *
      * @return true if page pdf link is allowed in configuration and no access conditions prevent PDF download; false otherwise
      */
@@ -1453,7 +1593,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * <p>isAdaptImageViewHeight.</p>
+     * <p>
+     * isAdaptImageViewHeight.
+     * </p>
      *
      * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the
      *         upper threshold Otherwise return true
@@ -1472,5 +1614,27 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         return true;
+    }
+
+    /**
+     * TODO Persist list
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<StructElement> getContainedStructElements() throws PresentationException, IndexUnreachableException {
+        String query = '+' + SolrConstants.PI_TOPSTRUCT + ':' + pi + " +" + SolrConstants.THUMBPAGENO + ':' + order;
+        SolrDocumentList docstructDocs = DataManager.getInstance().getSearchIndex().search(query);
+        if (docstructDocs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<StructElement> ret = new ArrayList<>(docstructDocs.size());
+        for (SolrDocument doc : docstructDocs) {
+            ret.add(new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
+        }
+        
+        return ret;
     }
 }

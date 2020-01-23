@@ -91,6 +91,8 @@
                     </ui:insert>
                 </h:panelGroup>
                 
+                <h:outputText>COORDS: #{activeDocumentBean.viewManager.currentDocument.shapeMetadata[0].coords}</h:outputText>
+                
                 <!--  PAGINATOR -->
                 <viewerComponent:simplePaginator
                     itemCount="#{activeDocumentBean.viewManager.imagesCount}"

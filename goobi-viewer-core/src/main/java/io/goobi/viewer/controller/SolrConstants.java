@@ -69,6 +69,7 @@ public class SolrConstants {
         SUBJECT,
         ORIGININFO,
         RECORD,
+        SHAPE,
         OTHER;
 
         public static MetadataGroupType getByName(String name) {

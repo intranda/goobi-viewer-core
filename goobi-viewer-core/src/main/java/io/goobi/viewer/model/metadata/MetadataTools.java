@@ -20,13 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -36,7 +38,9 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>MetadataTools class.</p>
+ * <p>
+ * MetadataTools class.
+ * </p>
  */
 public class MetadataTools {
 
@@ -44,7 +48,9 @@ public class MetadataTools {
     private static final Logger logger = LoggerFactory.getLogger(MetadataTools.class);
 
     /**
-     * <p>generateDublinCoreMetaTags.</p>
+     * <p>
+     * generateDublinCoreMetaTags.
+     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return String containing meta tags
@@ -178,7 +184,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>generateHighwirePressMetaTags.</p>
+     * <p>
+     * generateHighwirePressMetaTags.
+     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pages a {@link java.util.List} object.
@@ -271,7 +279,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>generateRIS.</p>
+     * <p>
+     * generateRIS.
+     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
@@ -460,7 +470,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>applyReplaceRules.</p>
+     * <p>
+     * applyReplaceRules.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @param replaceRules a {@link java.util.Map} object.
@@ -497,7 +509,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>findMetadataGroupType.</p>
+     * <p>
+     * findMetadataGroupType.
+     * </p>
      *
      * @param gndspec a {@link java.lang.String} object.
      * @return MetadataGroupType value corresponding to the given gndspec type
@@ -537,5 +551,35 @@ public class MetadataTools {
 
         logger.trace("Authority data type could not be determined for '{}'.", gndspec);
         return null;
+    }
+
+    /**
+     * 
+     * @param iddoc owner IDDOC
+     * @param subQuery Optional additional subQuery for filtering
+     * @return SolrDocumentList
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @should return grouped metadata docs correctly
+     */
+    public static SolrDocumentList getGroupedMetadata(String iddoc, String subQuery) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isEmpty(iddoc)) {
+            throw new IllegalArgumentException("iddoc may not be null or empty");
+        }
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append('+')
+                .append(SolrConstants.IDDOC_OWNER)
+                .append(':')
+                .append(iddoc)
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.METADATA.name());
+        if (StringUtils.isNotEmpty(subQuery)) {
+            sbQuery.append(subQuery);
+        }
+        logger.trace("GROUP QUERY: {}", sbQuery.toString());
+        return DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
     }
 }
