@@ -48,7 +48,6 @@
 								<h:inputText type="text" id="addBookmarkListInput" value="#{bookmarkBean.newBookmarkListName}" validator="#{bookmarkBean.validateName}">
 									<f:passThroughAttribute name="placeholder" value="#{msg.bookmarkList_addNewBookmarkList}"></f:passThroughAttribute>
 								</h:inputText>
-<!-- 								<input type="text" id="addBookmarkListInput" placeholder="#{msg.bookmarkList_addNewBookmarkList}" /> -->
 							</div>
 							<div class="col-xs-1 no-padding">
 								<h:commandLink id="addBookmarkListBtn" styleClass="btn btn--clean" action="#{bookmarkBean.addBookmarkList}"></h:commandLink>
@@ -67,163 +66,9 @@
 				<h:panelGroup rendered="#{!bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
 					<h:form id="userBookmarkListsForm" prependId="false">
 						<div  class="row no-margin">
-							<ui:repeat value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}" var="bookmarkList" varStatus="status">
-								
-								<div class="user-bookmark__panel">
-									<div class="user-bookmark__panel-header">
-										<div class="col-xs-8 col-sm-9">
-											<h4>
-												<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
-													#{bookmarkList.name}
-												</a>
-												<ui:fragment rendered="#{bookmarkList.items.size() == 1}">
-													<small>(#{bookmarkList.items.size()} #{msg.bookmarkList_object})</small>
-												</ui:fragment>
-												<ui:fragment rendered="#{bookmarkList.items.size() != 1}">
-													<small>(#{bookmarkList.items.size()} #{msg.bookmarkList_objects})</small>
-												</ui:fragment>
-											</h4>
-										</div>
-										<div class="col-xs-4 col-sm-3 user-bookmark__panel-action text-right">
-										
-										
-										<!-- TODO: Nachfoolgender <span> erscheint nur, wenn Merkliste freigegeben. Ansonsten ausgeblendet. -->
-											<h:panelGroup id="isPublicMarker">
-												<ui:fragment  rendered="#{bookmarkList.isPublic}">
-													<span
-													title="Öffentlich" 
-													data-toggle="tooltip" 
-													data-placement="bottom">
-														<i class="fa fa-unlock" aria-hidden="true"></i>
-													</span>
-												</ui:fragment>
-											</h:panelGroup>
-											
-										</div>
-									</div>
-									
-									<!-- DESCRIPTION -->
-									<ui:fragment rendered="#{bookmarkList.hasDescription()}">
-										<div class="col-xs-12">
-											<div class="user-bookmark__panel-body">
-												<p>#{bookmarkList.description}</p>
-											</div>
-										</div>
-									</ui:fragment>
-
-									<div class="col-xs-12 col-sm-12">
-										<div class="user-bookmark__items-image-preview">
-											<ui:repeat value="#{bookmarkList.items}" var="item"
-												varStatus="status">
-												<div class="user-bookmark__single-image-container">
-													<div class="user-bookmark__single-image"
-														style="background-image: url('#{item.getRepresentativeImageUrl(240,400)}');">
-														<!--  IMAGE -->
-														<a href="#{request.contextPath}#{item.url}"
-															title="#{item.name}" data-toggle="tooltip"
-															data-placement="bottom"> </a>
-													</div>
-												</div>
-											</ui:repeat>
-										</div>
-									</div>
-
-							<!-- ACTIONS - share, search, compare -->
-                          			<div class="col-xs-12 col-sm-12">
-										<!-- ACTION -->
-										<div class="user-bookmark__panel-action text-center">
-										    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-		                                  <ui:fragment rendered="#{bookmarkList.items.size() > 0}">
-		                                    <a 
-		                                    	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
-		                                        data-toggle="tooltip" data-placement="top" target="_blank">
-		                                        <i class="fa fa-th" aria-hidden="true"></i>
-		                                        <span>Vergleichsansicht</span>
-		                                    </a>
-		                                  </ui:fragment>
-											<a
-												href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/"
-												title="#{msg.search}" data-toggle="tooltip"
-												data-placement="top">
-												<i class="fa fa-search" aria-hidden="true"></i>
-												<span>Suchen</span>
-											</a> 
-											<a 
-												title="#{msg.bookmarkList_shareLink}" 
-												data-toggle="tooltip" 
-												data-placement="top"
-												data-popover-element="#sharePopover_#{status.index}"
-												data-popover-placement="bottom"
-												data-popover-title=""
-												data-popover-dismiss="click-outside"
-												class="share-bookmarkList">
-												<i class="fa fa-share-alt" aria-hidden="true"></i>
-												<span>Teilen</span>
-											</a> 
-								
-											<popover id="sharePopover_#{status.index}"> 
-												<h:panelGroup id="editBookmarkListPublicWrapper">
-														<ui:fragment rendered="#{!bookmarkList.isPublic}">
-															<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, true)}">
-																<i class="fa fa-square-o" aria-hidden="true"></i>
-																<span>Merkliste freigeben</span>
-																<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
-															</h:commandLink>
-														</ui:fragment>
-														<ui:fragment rendered="#{bookmarkList.isPublic}">
-															<h:commandLink action="#{bookmarkBean.setPublic(bookmarkList, false)}">
-																<i class="fa fa-check-square-o" aria-hidden="true"></i>
-																<span>Merkliste freigeben</span>
-																<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
-															</h:commandLink>
-														</ui:fragment>
-<!-- 													<h:selectBooleanCheckbox id="editBookmarkListPublic" -->
-<!-- 														<h:outputLabel for="editBookmarkListPublic">Merkliste freigeben</h:outputLabel> -->
-<!-- 														<f:ajax render="editBookmarkListPublicWrapper"></f:ajax> -->
-<!-- 													</h:selectBooleanCheckbox> -->
-												</h:panelGroup>
-												
-												<ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
-													<h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
-														<i class="fa fa-share-alt" aria-hidden="true"></i><span>Freigabe-Link erzeugen</span>
-													</h:commandLink>
-												</ui:fragment>
-												
-												
-												<ui:fragment rendered="#{bookmarkList.hasShareKey()}">
-													<a
-														title="#{msg.bookmarkList_shareCollection}"
-														data-copy="bookmarklist-share-collection"
-														data-clipboard-text="#{bookmarkList.getIIIFCollectionURI()}"
-														data-copy-done="#{msg.copyUrlDone}">
-														<i class="fa fa-share" aria-hidden="true"></i>
-														<span>IIIF-Collection Link kopieren</span>
-													</a> 
-													<a title="#{msg.bookmarkList_shareLink}"
-														data-copy="bookmarklist-share-link"
-														data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
-														data-copy-done="#{msg.copyUrlDone}">
-														<i class="fa fa-share-alt" aria-hidden="true"></i>
-														<span>Freigabe-Link kopieren</span>
-													</a>
-													<h:commandLink action="#{bookmarkBean.resetShareLink(bookmarkList)}">
-														<i class="fa fa-trash" aria-hidden="true"></i>
-														<span>Freigabe-Link löschen</span>
-													</h:commandLink>
-												</ui:fragment>
-											
-											</popover>
-  
-											<h:commandLink title="#{msg.edit}" action="#{bookmarkBean.editBookmarkListAction(bookmarkList)}">
-												<i class="fa fa-pencil" aria-hidden="true"></i>
-												<span>Bearbeiten</span>
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="top" />
-											</h:commandLink>
-										</div>
-									</div>
-								</div>
-							</ui:repeat>
+							<ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
+		                           <ui:param name="source" value="#{bookmarkBean.getBookmarkListsForUser(userBean.user)}" />
+		                    </ui:include>
 						</div>
 					</h:form>
 				</h:panelGroup>
@@ -235,6 +80,7 @@
                         <div class="row no-margin">
                             <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
 		                           <ui:param name="source" value="#{bookmarkBean.getBookmarkListsSharedWithUser(userBean.user)}" />
+		                           <ui:param name="hideOwned" value="true"/>
 		                    </ui:include>
                         </div>
                     </h:form>
@@ -247,6 +93,7 @@
                         <div class="row no-margin">
                            <ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml" source="">
 		                   		<ui:param name="source" value="#{bookmarkBean.publicBookmarkLists}" />
+		                   		<ui:param name="hideOwned" value="true"/>
 		                   </ui:include>
                         </div>
                     </h:form>
@@ -257,9 +104,6 @@
         
         <script type="text/javascript">
         	viewerJS.clipboard.init();
-            function onClickCopy(target) {
-        	    $(target).css("cursor", "default");
-        	}
         </script>
         
 	</ui:define>

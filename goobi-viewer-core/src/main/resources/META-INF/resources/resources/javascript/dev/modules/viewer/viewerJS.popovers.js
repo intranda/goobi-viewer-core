@@ -60,7 +60,6 @@ var viewerJS = ( function( viewer ) {
             },
             
             initPopover: function($trigger, $popover) {
-                console.log("create popover with content ", $popover.get(0));
                 
                 //add manual show shandler
                 $trigger.on("click", (event) => {
@@ -77,7 +76,6 @@ var viewerJS = ( function( viewer ) {
                 
                 let config = _createPopoverConfig($trigger, $popover);
                 
-                console.log("init popover with ", config);
                 $trigger.popover(config);
             },
             
