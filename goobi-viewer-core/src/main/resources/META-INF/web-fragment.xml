@@ -160,7 +160,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>SAMLAssertionServlet</servlet-name>
-        <servlet-class>io.goobi.viewer.servlets.openid.SAMLAssertionServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.saml.SAMLAssertionServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>SAMLAssertionServlet</servlet-name>

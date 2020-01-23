@@ -39,9 +39,12 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.openid.SAMLAssertionServlet;
+import io.goobi.viewer.servlets.saml.SAMLAssertionServlet;
 
 /**
+ * SAMLProvider initiates the SAML authentication flow and is later called by the {@link io.goobi.viewer.servlets.openid.SAMLAssertionServlet} to
+ * conclude the flow. If a user is not found in the database, the user will be created.
+ * 
  * @author Oliver Paetzel
  *
  */

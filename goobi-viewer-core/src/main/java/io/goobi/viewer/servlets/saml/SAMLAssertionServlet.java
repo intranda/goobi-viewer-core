@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.openid;
+package io.goobi.viewer.servlets.saml;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +32,9 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.model.security.authentication.SAMLProvider;
 
 /**
+ * This servlet receives the POST requests from the SAML IdP and extracts the SAMLresponse from the request, which is then passed on to the
+ * {@link io.goobi.viewer.model.security.authentication.SAMLProvider} to conclude the authentication flow.
+ * 
  * @author Oliver Paetzel
  *
  */
