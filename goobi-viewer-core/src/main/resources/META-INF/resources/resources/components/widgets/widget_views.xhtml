@@ -1,0 +1,151 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{metadataBean.loadMetadata}" />
+		</f:metadata>
+	</ui:define>
+
+	<composite:interface>
+		<composite:attribute name="pageType" required="false" default=""/>
+		<composite:attribute name="widget"
+			type="io.goobi.viewer.model.cms.CMSSidebarElement"
+			required="true" />
+	</composite:interface>
+
+	<composite:implementation>
+	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and configurationBean.sidebarMetadataLinkVisible}">
+		<div id="widgetViews" class="widget">
+			<h:form id="widgetViewsForm">
+				<h3>#{msg.view}</h3>
+				<ul>
+					<!-- Object -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarPageLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.imageActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText
+									value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- Calendar -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+						<li
+							class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText value="#{msg.calendar}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- TOC -->
+					<h:panelGroup rendered="#{configurationBean.sidebarTocLinkVisible and navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.topDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
+						<li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
+							<h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" escape="false" />
+								<h:outputText value="#{msg.toc}" rendered="#{!activeDocumentBean.anchor}" escape="false" />
+							</h:outputLink></li>
+					</h:panelGroup>
+
+					<!-- Thumbnails -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarThumbsLinkVisible and activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.thumbsActiveUrl}#{activeDocumentBean.thumbPart}">
+								<h:outputText value="#{msg.thumbGal}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- Metadata -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarMetadataLinkVisible and !activeDocumentBean.group}">
+						<li
+							class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText
+									rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}"
+									value="#{msg.bibData}" />
+								<h:outputText
+									rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
+									value="#{msg.metadata}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- Full-text -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarFulltextLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.topDocument.fulltextAvailable and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
+								<h:outputText value="#{msg.fulltext}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- External full-text URL -->
+					<h:panelGroup
+						rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT') != null}">
+						<li class=""><h:outputLink
+								value="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
+								target="_blank">
+								<h:outputText value="#{msg.fulltextExternal}" />
+							</h:outputLink></li>
+					</h:panelGroup>
+
+					<!-- NER -->
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.nerAvailable}">
+						<li class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
+							<h:outputLink
+								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
+								<h:outputText value="#{msg.widgetNerFacetting}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- EXTERNAL URL -->
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
+						<li> 
+                            <a 
+                                href="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
+                                target="_blank"
+                                rel="noopner">
+                                #{msg.externalRepository}
+                            </a>
+						</li>
+					</h:panelGroup>
+					
+                    <!-- RELATED CMS PAGES -->
+                    <h:panelGroup rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
+                        <ui:repeat var="relatedPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
+	                        <ui:fragment rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
+		                        <li class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
+		                            <h:outputLink value="#{relatedPage.pageUrl}">
+		                                <h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
+		                            </h:outputLink>
+		                        </li>
+	                        </ui:fragment>
+                       </ui:repeat>
+                    </h:panelGroup>
+				</ul>
+			</h:form>
+		</div>
+		</ui:fragment>
+	</composite:implementation>
+</ui:composition>

@@ -1,0 +1,112 @@
+/* ==============================================================
+   Widget Chronology
+   style declarations for widget_chronology.xhtml
+   ==============================================================*/
+/* WIDGET CHRONOLOGY */
+/* BLOCK */ 
+.widget-chronology-slider {
+	display: flex;
+	flex-wrap: wrap;
+    font-size: @fontLarge;
+	color: @black;
+	&__topbar {
+		flex: 0 0 100%;
+		display: flex;
+	}
+	/* ELEMENT */
+	&__item {
+		&.chronology-slider-label,
+		&.chronology-slider-actions {
+			display: flex;
+		}
+		&.chronology-slider-label {
+			margin-right: auto;
+		}
+		&.chronology-slider-actions {}
+
+		&.chronology-slider-actions {
+			ul {
+				.mx-list-reset;
+				display: flex;
+				justify-content: flex-end;
+			}
+			li {
+				text-align: right;
+			}
+			img {
+				width: 14px;
+				height: 14px;
+			}
+			[data-reset="chrono-slider"] {} 
+		}
+		&.chronology-slider-action-loader,
+		&.chronology-slider-action-reset {
+			display: flex;
+			flex-wrap: nowrap;
+			z-index: 10000000;
+			justify-content: center;
+			align-items: center;
+			padding: 0 9px;
+			visibility: hidden;
+			&.active {
+				visibility: visible;
+			}
+		}
+		&.chronology-slider-action-loader {}
+		&.chronology-slider-action-reset {}
+		&.chronology-slider-start,
+		&.chronology-slider-end {
+			flex: 0 0 50%;
+			font-size: @fontMedium; 
+		}
+		&.chronology-slider-start {}
+		&.chronology-slider-end {
+			text-align: right;
+		}
+		&.chronology-slider {
+			padding: 10px 0;
+			flex: 0 0 100%;
+		}
+	}
+}
+
+#chronoSlider {
+	height: 10px;
+	border-radius: 5px;
+	border-color: @lightgray;
+	background-image: none;
+	background-color: @lightgray;
+	.ui-slider-range,
+	.ui-slider-handle {
+	    border-radius: 4px;
+		background-image: none;
+        &:focus {
+        	outline: none;
+        }
+	}
+	.ui-slider-range {
+	    border-color: @blue;
+		background-color: @blue;		
+	}
+	.ui-slider-handle {
+		width: 10px;
+	    height: 8px;
+	    top: 0;
+	    margin: 0;
+	    border-color: @gray;
+	    background-color: @middlegray;
+	    cursor: pointer;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

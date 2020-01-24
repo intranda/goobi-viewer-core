@@ -1,0 +1,153 @@
+/* ==============================================================
+   User Bookmarks
+   style declarations for userBackendBookmarkList.xhtml
+   ==============================================================*/
+/* USER BOOKMARKS */
+/* BLOCK */
+.user-bookmark {
+	/* ELEMENT */
+	h2 {}
+	
+	.bookmarklist_form {
+		margin-bottom: 25px;
+		
+	}
+	
+	/* ADD */
+	&__add-bookmark {
+		.mx-clearfloats;
+		height: 32px;
+		margin-bottom: 15px;
+		border-bottom: 1px solid @middlegray; 
+		input {
+			width: 100%;
+			height: 32px;
+			border: none;
+			background-color: transparent;
+		}
+		button,
+		a {
+			width: 16px;
+			height: 16px;
+			background-image: url("@{images}/icons/icon-bs-add.svg");
+			background-size: 100%;
+			background-repeat: no-repeat;
+		}
+	}
+	/* PANEL */
+	&__panel {
+		.mx-clearfloats;
+		margin-bottom: 10px;
+		padding: 10px;
+		border: 1px solid @middlegray;
+	}
+	&__panel-header {
+		padding-bottom: 15px; 
+		.mx-clearfloats;
+		h4 {
+			margin: 0;
+		}
+		a {}
+		small {
+			color: @middlegray;
+		}
+	}
+	&__panel-body {
+		padding-bottom: 15px; 
+		.mx-clearfloats;
+		p {
+			margin: 0;
+			font-size: @fontSmall;
+			font-style: italic;
+		}
+	}
+	&__panel-action {
+		a {
+			display: inline-block;
+			padding: .5rem 2rem;
+			cursor: pointer; 
+			&:focus,
+			&:hover {				
+				text-decoration: none;
+				span {
+					text-decoration: underline;
+				}
+			}
+			i {
+				padding-right: 5px;
+			}
+			span {
+			}
+		}
+		.popover {
+			a {
+				padding: 0.6rem 1.2rem;
+				cursor: pointer;
+			}
+			.fa {
+				width: 2rem;
+			}
+			input[type='checkbox'] {
+				display: none;
+			}
+		}
+		
+	}
+	&__items-image-preview {
+	display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-right: -5px;
+    margin-bottom: 10px;
+	}
+	&__single-image-container {
+	flex: 0 0 16.66%;
+	padding: 5px;
+	height: 180px;
+	}
+	&__single-image{
+	margin-bottom: 30px;
+	border: none;
+	transition: all .3s ease-in;
+	background-size: cover;
+	background-position: 50% 50%;
+	height: 100%;
+		a {
+			width: 100%;
+			height: 100%;
+			display: inline-block;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+	
+.user-bookmark {
+	&__panel-action {
+		a {
+			display: inline-block;
+			padding: .5rem .5rem;
+		}
+	}
+	&__single-image-container {
+		flex: 0 0 25%;
+	}	
+}
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	
+.user-bookmark {
+		&__single-image-container {
+			flex: 0 0 50%;
+		}
+}
+
+}

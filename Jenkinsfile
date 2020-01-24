@@ -25,7 +25,7 @@ pipeline {
               recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }
-    stage('deployment to maven repository') {
+    stage('deployment of artifacts to maven repository') {
       when {
         anyOf {
         branch 'master'
@@ -36,10 +36,37 @@ pipeline {
         sh 'mvn -f goobi-viewer-core/pom.xml deploy'
       }
     }
+    stage('maven site generation') {
+      when {
+        anyOf {
+        branch 'master'
+        }
+      }
+      steps {
+        sh 'mvn -f goobi-viewer-core/pom.xml site'
+      }
+    }
+    stage('deployment of site to maven repository') {
+      when {
+        anyOf {
+        branch 'master'
+        }
+      }
+      steps {
+        sh 'mvn -f goobi-viewer-core/pom.xml site:deploy'
+      }
+    }
   }
   post {
     always {
       junit "**/target/surefire-reports/*.xml"
+      step([
+        $class           : 'JacocoPublisher',
+        execPattern      : 'goobi-viewer-core/target/jacoco.exec',
+        classPattern     : 'goobi-viewer-core/target/classes/',
+        sourcePattern    : 'goobi-viewer-core/src/main/java',
+        exclusionPattern : '**/*Test.class'
+      ])
     }
     success {
       archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true

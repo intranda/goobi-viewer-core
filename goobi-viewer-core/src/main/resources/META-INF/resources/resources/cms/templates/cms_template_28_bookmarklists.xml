@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_bookmarklists" version="2015-01-14">
+    <name>cms__template_28__title</name>
+    <description>cms__template_28__description</description>
+    <icon>cms_template_28_bookmarklists.png</icon>
+    <html>cms_template_28_bookmarklists.xhtml</html>
+    <options>    
+        <appliesToExpandedUrl>false</appliesToExpandedUrl>
+    </options>
+    <content>
+        <item id="text" order="1" type="HTML" />
+        <item id="bookmarklists" order="2" type="BOOKMARKLISTS" />
+    </content>
+</cms_page_template>

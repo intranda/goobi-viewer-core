@@ -1,0 +1,166 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <!-- VIEW -->
+    <div id="fullscreenView" class="fullscreen__view">
+        <!-- SIDEBAR PANEL CONTROLS -->
+        <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
+            <button class="btn btn--clean" data-close="all-tabs"></button>
+            <button class="btn btn--clean" data-open="all-tabs"></button>
+        </div>
+        
+        <!-- SIDEBAR -->
+        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">        
+            <div class="fullscreen__view-sidebar-inner">            
+                <!-- SIDEBAR CONTROLS -->
+                <div class="fullscreen__view-sidebar-controls">
+                    <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right"></button>
+                </div>
+                
+                <div class="fullscreen__view-sidebar-share">
+                    <widgetComponent:widget_copyright />
+               		<widgetComponent:widget_socialMedia_share />
+                </div>
+                
+                <!-- SIDEBAR WORK TITLE -->
+                <div class="fullscreen__view-sidebar-work-title">
+                    <h2>#{activeDocumentBean.titleBarLabel}</h2>
+                </div>
+                
+               <!-- SEARCH IN CURRENT ITEM -->
+               <div class="fullscreen__view-sidebar-search-in-current-item">
+               		<widgetComponent:widget_searchInCurrentItem />
+               </div>
+                
+                <!-- SIDEBAR ACCORDEON -->
+                <div class="fullscreen__view-sidebar-accordeon">
+                   
+                    <!-- METADATA -->
+                    <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <span>#{msg.sidebarBibData}</span>
+                        </h3>
+                        
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                            <ui:include src="/resources/includes/metadata/metadata.xhtml" />
+                        </div>
+                    </div>
+
+                    <!-- TOC -->
+                    <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren()}">
+                        <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.sidebarTocAnchor}</span>
+                            </h3>
+                            
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <widgetComponent:widget_toc />
+                            </div>
+                        </div>
+                    </ui:fragment>
+                    
+                    <!-- FULLTEXT -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.fulltextAvailable}">
+                        <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.fulltext}</span>
+                            </h3>
+    
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                            </div>
+                        </div>
+                    </ui:fragment>
+
+                    <!-- DOWNLOADS -->
+                    <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                            <span>#{msg.widgetUsage}</span>
+                        </h3>
+
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                            <widgetComponent:widget_usage />
+                        </div>
+                    </div>
+
+                    <!-- SEARCH HIT NAVIGATION -->
+                    <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
+                        <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.searchHitNavigation}</span>
+                            </h3>
+                            
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <widgetComponent:widget_searchResultNavigation />
+                            </div>
+                        </div>                    
+                    </ui:fragment>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- FULLSCREEN HEADER -->
+        <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />
+
+        <!-- IMAGE -->
+        <section id="fullscreenViewImage" class="fullscreen__view-image">
+            <div class="fullscreen__view-image-inner">
+                <!-- VIEW IMAGE -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                    <ui:include src="/resources/includes/object/image.xhtml" />                   
+                </ui:fragment>
+                
+                <!-- VIEW VIDEO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
+                    <ui:insert name="viewVideo">
+                        <ui:include src="/resources/includes/object/video.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+
+                <!-- VIEW AUDIO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
+                    <ui:insert name="viewAudio">
+                        <ui:include src="/resources/includes/object/audio.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+                
+                <!-- VIEW 3D OBJECT -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
+                    <ui:insert name="viewObject3d">
+                        <ui:include src="/resources/includes/object/object3d.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+                
+                <!-- THUMBNAILS -->
+                <div class="fullscreen__view-image-thumbs-wrapper">
+                    <fsThumbnails></fsThumbnails>
+                </div>
+                
+                <!-- OPEN SIDEBAR -->
+                <div id="viewSidebarOpen" class="fullscreen__view-sidebar-open">
+                    <button class="btn btn--clean" data-open="fs-sidebar">
+                        <span>#{msg.fullscreen_openSidebar}</span>
+                    </button>                    
+                </div>
+                
+            </div>
+        </section>
+    </div>
+    
+	<script type="text/javascript">                
+       $(function () {
+               $('[data-toggle="popover"]').popover()
+             })
+    </script>
+    
+</ui:composition>
+

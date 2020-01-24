@@ -1,0 +1,208 @@
+/***************************************************************
+ * viewer Stylesheet v3.4.0
+ * 
+ * Write {LESS}, do more!
+ *
+ * This file generates the basic style declarations for the
+ * Goobi viewer (viewer.css)
+ **************************************************************/
+/* CORE VARIABLES AND MIXINS */
+@import "variables.less";
+@import "mixins.less";
+@import "general.less";
+@import "print.less";
+@import "fonts.less";
+@import "resets.less";
+@import "helper.less";
+@import "IE.less";
+@import "browserHackTemplates.less";
+@import "popover.less";
+
+
+/* BASIC COMPONENTS */
+@import "components/forms/basics.less";
+@import "components/forms/form-controls.less";
+@import "components/buttons.less";
+@import "components/icons.less";
+@import "components/modals.less"; 
+
+/* LAYOUT */
+@import "layout.less";
+
+/* VIEWER COMPONENTS */
+@import "components/alphabeticPaginator.less";
+@import "components/bookmarks.less";
+@import "components/breadcrumbs.less";
+@import "components/changeLocal.less";
+@import "components/dataTablePaginator.less";
+@import "components/downloadModal.less";
+@import "components/ePub.less";
+@import "components/imageControls.less";
+@import "components/loginNavigation.less";
+@import "components/metaMuseal.less";
+@import "components/mobileNavigation.less";
+@import "components/mobileToggleWrapper.less";
+@import "components/navigation.less";
+@import "components/nerPopovers.less";
+@import "components/normdata.less";
+@import "components/responsiveColumnGallery.less";
+@import "components/searchHelpText.less";
+@import "components/simpleLightbox.less";
+@import "components/simplePaginator.less";
+@import "components/tagCloud.less";
+@import "components/title.less";
+@import "components/userComments.less";
+@import "components/userGeneratedContent.less";
+@import "components/viewerControls.less";
+
+/* COMMON VIEWS */
+@import "views/common/browse.less";
+@import "views/common/error.less";
+@import "views/common/feedback.less";
+@import "views/common/statistics.less";
+@import "views/common/styles.less";
+@import "views/common/privacy.less";
+@import "views/common/sitelinks.less";
+
+/* FULLSCREEN VIEWS / COMPONENTS */
+@import "views/fullscreen/fsImageControls.less";
+@import "views/fullscreen/fsMetadata.less";
+@import "views/fullscreen/fsToc.less";
+@import "views/fullscreen/fsUsage.less";
+@import "views/fullscreen/fsShare.less";
+
+/* SEARCH VIEWS */
+@import "views/search/searchStandard.less";
+@import "views/search/searchAdvanced.less";
+@import "views/search/searchList.less";
+@import "views/search/searchListGrid.less";
+@import "views/search/searchListList.less";
+@import "views/search/searchCalendar.less";
+@import "views/search/searchTermList.less";
+
+/* USER VIEWS */
+@import "views/user/user.less";
+@import "views/user/userActivity.less";
+@import "views/user/userBackendTable.less";
+@import "views/user/userBookmarkEdit.less";
+@import "views/user/userBookmarkSendList.less";
+@import "views/user/userBookmarkSingle.less";
+@import "views/user/userBookmarks.less";
+@import "views/user/userLogin.less";
+@import "views/user/userSavedSearches.less";
+
+/* VIEWS */
+@import "views/viewFulltext.less";
+@import "views/viewMetadata.less";
+@import "views/viewMirador.less";
+@import "views/viewNerFacetting.less";
+@import "views/viewObject.less";
+@import "views/viewObjectFullscreen.less";
+@import "views/viewThumbs.less";
+@import "views/viewTimematrix.less";
+@import "views/viewToc.less";
+@import "views/viewDownload.less";
+
+/* WIDGETS */
+@import "widgets/widgets.less";
+@import "widgets/widgetBrowsing.less";
+@import "widgets/widgetChronology.less";
+@import "widgets/widgetCmsPageLinks.less";
+@import "widgets/widgetConvolutes.less";
+@import "widgets/widgetCrowdsourcing.less";
+@import "widgets/widgetCustom.less";
+@import "widgets/widgetCustomDrillDown.less";
+@import "widgets/widgetMetadata.less";
+@import "widgets/widgetMySearches.less";
+@import "widgets/widgetRSS.less";
+@import "widgets/widgetSearchDrillDown.less";
+@import "widgets/widgetSearchField.less";
+@import "widgets/widgetSearchInCurrentItem.less";
+@import "widgets/widgetSearchResultNavigation.less";
+@import "widgets/widgetSearchSorting.less";
+@import "widgets/widgetToc.less";
+@import "widgets/widgetUsage.less";
+@import "widgets/widgetUserInteractions.less";
+@import "widgets/widgetViews.less";
+@import "widgets/widgetNerFacetting.less";
+@import "widgets/widgetWorkCount.less";
+@import "widgets/widgetGeoLocations.less";
+@import "widgets/widgetLeaflet.less";
+
+
+/* ADMIN BACKEND */
+@import "admin/admin.less";
+@import "admin/adminBackendTables.less";
+@import "admin/views/adminIpRange.less";
+@import "admin/views/adminLicenseType.less";
+@import "admin/views/adminRights.less";
+@import "admin/views/adminUser.less";
+@import "admin/views/adminUserGroup.less";
+@import "admin/views/tabUserLicenses.less";
+@import "admin/widgets/widgets.less";
+@import "admin/widgets/widgetAdmin.less";
+@import "admin/widgets/widgetCms.less";
+
+/* CMS COMPONENTS */
+@import "cms/components/collectionTiled.less";
+@import "cms/components/solrQueryCollection.less";
+
+/* CMS INCLUDES */
+@import "cms/includes/mediaSelect.less";
+
+/* CMS MODULES */
+@import "cms/modules/actions.less";
+@import "cms/modules/options.less";
+@import "cms/modules/tables.less";
+
+/* CMS TAGS */
+@import "cms/tags/cmsSlideshow.less";
+@import "cms/tags/pdfDocument.less";
+
+/* CMS TEMPLATES */
+@import "cms/templates/cmsPage.less";
+@import "cms/templates/01_templateGeneric.less";
+@import "cms/templates/02_templateNewsOverview.less";
+@import "cms/templates/03_templateNewsDetail.less";
+@import "cms/templates/04_templateNews.less";
+@import "cms/templates/05_templateSimple.less";
+@import "cms/templates/06_templateSolrQuery.less";
+@import "cms/templates/07_templateCollection.less";
+@import "cms/templates/08_templateCollectionTiled.less";
+@import "cms/templates/09_templateSinglePage.less";
+@import "cms/templates/10_templateSearchListCustom.less";
+@import "cms/templates/11_templateMasonry.less";
+@import "cms/templates/12_templateSingleCollection.less";
+@import "cms/templates/13_templateStaticGrid.less";
+@import "cms/templates/14_templateRSSFeed.less";
+@import "cms/templates/15_templateStackedCollection.less"; 
+@import "cms/templates/16_templateSearchList.less";
+@import "cms/templates/17_templateSearchListAdvanced.less";
+@import "cms/templates/18_templatePrivacy.less";
+@import "cms/templates/19_templateFeedback.less";
+@import "cms/templates/20_templateGlossary.less";
+@import "cms/templates/21_templateFaq.less";
+@import "cms/templates/22_templateFaqSingle.less";
+@import "cms/templates/23_templateSearch.less";
+@import "cms/templates/24_templateTags.less";
+@import "cms/templates/25_templateOverviewPage.less";
+@import "cms/templates/26_templateOverviewPageLegacy.less";
+@import "cms/templates/28_templateBookmarkLists.less";
+
+/* CMS VIEWS */
+@import "cms/views/adminCmsCategories.less";
+@import "cms/views/adminCmsMedia.less";
+@import "cms/views/cmsCreatePage.less";
+@import "cms/views/cmsMenuItems.less";
+@import "cms/views/cmsOverview.less";
+@import "cms/views/cmsSelectTemplate.less"; 
+@import "cms/views/cmsStaticPages.less";
+@import "cms/views/cmsCollections.less";
+@import "cms/views/cmsEditCollection.less";
+
+/* Crowdsourcing */
+@import "crowdsourcing/crowdsourcing.less";
+@import "crowdsourcing/campaignsOverview.less";
+@import "crowdsourcing/crowdsourcingStatistics.less";
+@import "crowdsourcing/admin/adminCrowdCampaigns.less";
+@import "crowdsourcing/admin/adminCrowdAddCampaign.less";
