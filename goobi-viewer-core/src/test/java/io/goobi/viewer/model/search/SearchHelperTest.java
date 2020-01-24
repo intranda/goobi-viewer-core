@@ -110,7 +110,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
-        Assert.assertEquals(40, collections.size());
+        Assert.assertEquals(41, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         for (String key : keys) {
@@ -833,15 +833,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:19*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
                 null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
-        String[] cellValues0 = new String[] { "Persistent identifier", "PPN563984821", "b18029048", "PPN563885807", "557335825", "AC02949962" };
+        String[] cellValues0 =
+                new String[] { "Persistent identifier", "PPN563984821", "b18029048", "339304251", "PPN563885807", "557335825", "AC02949962" };
         String[] cellValues1 = new String[] { "Label", "Abriss der Geschichte des Grossherzogtums Hessen für höhere Lehranstalten",
                 "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
-                "Geographisches Quellenlesebuch der außereuropäischen Erdteile", "[Hexenküche : Faust-Szene] / [Otto Schubert]",
-                "Johannes von Gmunden, der Begründer der Himmelskunde auf deutschem Boden" };
+                "König Löwes Hochzeitsschmaus", "Geographisches Quellenlesebuch der außereuropäischen Erdteile",
+                "[Hexenküche : Faust-Szene] / [Otto Schubert]", "Johannes von Gmunden, der Begründer der Himmelskunde auf deutschem Boden" };
         Assert.assertNotNull(wb);
         Assert.assertEquals(1, wb.getNumberOfSheets());
         SXSSFSheet sheet = wb.getSheetAt(0);
-        Assert.assertEquals(7, sheet.getPhysicalNumberOfRows());
+        Assert.assertEquals(8, sheet.getPhysicalNumberOfRows());
         {
             SXSSFRow row = sheet.getRow(0);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());
