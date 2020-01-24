@@ -47,10 +47,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.questions = item.campaign.questions.map(question => new Crowdsourcing.Question(question, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
-        this.imageOpenEvents = new rxjs.Subject();
-        this.imageRotationEvents = new rxjs.Subject();
-        this.annotationRelaodEvents = new rxjs.Subject();
-        this.itemInitializedSubject = new rxjs.Subject();
+        this.imageOpenEvents = new Rx.Subject();
+        this.imageRotationEvents = new Rx.Subject();
+        this.annotationRelaodEvents = new Rx.Subject();
+        this.itemInitializedSubject = new Rx.Subject();
 
         let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
         if(firstAreaQuestion) {
