@@ -44,7 +44,9 @@ import net.sf.ehcache.config.ConfigurationHelper;
 public class ConfigurationTest extends AbstractTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);;
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
+    
+    public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
     @Before
     public void setUp() throws Exception {

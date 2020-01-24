@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
@@ -34,7 +35,7 @@ import io.goobi.viewer.controller.imaging.WatermarkHandler;
  *
  */
 public class PdfHandlerTest {
-    
+
     PdfHandler handler;
 
     /**
@@ -56,13 +57,14 @@ public class PdfHandlerTest {
 
     @Test
     public void test() {
-       String pi = "1234";
-    Optional<String> divId = Optional.ofNullable("LOG_0003");
-    Optional<String> watermarkId = Optional.ofNullable("footerId");
-    Optional<String> watermarkText = Optional.ofNullable("watermark text");
-    Optional<String> label = Optional.ofNullable("output-filename.pdf");
-    
-    String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
-    Assert.assertEquals("http://localhost:8080/viewer/rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark+text&watermarkId=footerId", url);
+        String pi = "1234";
+        Optional<String> divId = Optional.ofNullable("LOG_0003");
+        Optional<String> watermarkId = Optional.ofNullable("footerId");
+        Optional<String> watermarkText = Optional.ofNullable("watermark text");
+        Optional<String> label = Optional.ofNullable("output-filename.pdf");
+
+        String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
+                + "rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark+text&watermarkId=footerId", url);
     }
 }
