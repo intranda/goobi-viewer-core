@@ -39,7 +39,7 @@ import io.goobi.viewer.servlets.MetsResolver;
 
 public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final String RESOLVER_NAME = "metsResolver";
+    private static final String RESOLVER_NAME = "mets";
 
     private ServletRunner sr;
 
@@ -89,7 +89,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void doGet_shouldReturnLIDOFileCorrectly() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
-        request.setParameter("id", "aa000274");
+        request.setParameter("id", "455820");
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }

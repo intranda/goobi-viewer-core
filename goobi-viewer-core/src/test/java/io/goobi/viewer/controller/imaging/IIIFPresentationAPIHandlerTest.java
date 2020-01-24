@@ -59,20 +59,21 @@ public class IIIFPresentationAPIHandlerTest {
 
     @Test
     public void testGetAnnotationsUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/list/12/PDF/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/list/12/PDF/",
                 handler.getAnnotationsUrl("PI-SAMPLE", 12, "pdf"));
 
     }
 
     @Test
     public void testGetCanvasUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/canvas/12/", handler.getCanvasUrl("PI-SAMPLE", 12));
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/canvas/12/",
+                handler.getCanvasUrl("PI-SAMPLE", 12));
 
     }
 
     @Test
     public void testGetRangeUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/range/LOG_0007/",
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/iiif/manifests/PI-SAMPLE/range/LOG_0007/",
                 handler.getRangeUrl("PI-SAMPLE", "LOG_0007"));
 
     }
