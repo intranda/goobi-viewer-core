@@ -169,7 +169,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getDownloadUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
+        Assert.assertEquals("https://viewer.goobi.io/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
     }
 
     /**
@@ -178,7 +178,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
+        Assert.assertEquals("https://viewer.goobi.io/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
     }
 
     /**

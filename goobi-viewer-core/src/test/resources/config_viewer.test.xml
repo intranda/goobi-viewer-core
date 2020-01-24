@@ -86,9 +86,9 @@
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
 
-		<rest>http://localhost:8080/viewer/rest/</rest>
+		<rest>https://viewer.goobi.io/rest/</rest>
 
-		<download>http://localhost:8080/viewer/download/</download>
+		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
 	<user>
