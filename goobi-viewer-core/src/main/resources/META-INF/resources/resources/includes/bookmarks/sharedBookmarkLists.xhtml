@@ -31,11 +31,13 @@
 										#{bookmarkList.name}
 									</a>
 								</ui:fragment>
-								<ui:fragment rendered="#{bookmarkList.items.size() == 1}">
-									<small>(#{bookmarkList.items.size()} #{msg.bookmarkList_object})</small>
+								<ui:fragment rendered="#{!owned}">
+									<small>(#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects},
+										#{navigationHelper.getTranslationWithParams(msg.bookmarks__shared_by,
+										bookmarkList.owner.displayName)})</small>
 								</ui:fragment>
-								<ui:fragment rendered="#{bookmarkList.items.size() != 1}">
-									<small>(#{bookmarkList.items.size()} #{msg.bookmarkList_objects})</small>
+								<ui:fragment rendered="#{owned}">
+									<small>(#{bookmarkList.items.size()} #{bookmarkList.items.size() == 1 ? msg.bookmarkList_object : msg.bookmarkList_objects})</small>
 								</ui:fragment>
 							</h4>
 						</div>
@@ -52,7 +54,7 @@
 								</ui:fragment>
 								<ui:fragment rendered="#{!bookmarkList.isPublic and bookmarkList.hasShareKey()}">
 									<span
-									title="Geteilt" 
+									title="#{msg.bookmarkList_shared}" 
 									data-toggle="tooltip" 
 									data-placement="bottom">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
@@ -97,13 +99,17 @@
 									
 									<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
 		                              <a 
+		                                data-toggle="tooltip"
+		                                title="#{msg.bookmarkList_openMirador}"
 		                              	href="#{request.contextPath}/mirador/id/#{bookmarkList.id}" class="view-mirador__link" target="_blank">
 		                                  <i class="fa fa-th" aria-hidden="true"></i>
-		                                  <span>#{msg.bookmarkList_openMirador}</span>
+		                                  <span>#{msg.viewMiradorComparison}</span>
 		                              </a>
 		                            </ui:fragment>
 			                        
 			                        <a
+			                            data-toggle="tooltip"
+		                                title="#{msg.action__search_in_bookmarks__description}"
 										href="#{request.contextPath}/user/bookmarks/search/#{bookmarkList.escapedName}/">
 										<i class="fa fa-search" aria-hidden="true"></i>
 										<span>#{msg.search}</span>
@@ -180,12 +186,16 @@
 								<ui:fragment rendered="#{!userList}">
 									<ui:fragment rendered="#{bookmarkList.items.size() > 0}">
 		                              <a 
+		                                data-toggle="tooltip"
+		                                title="#{msg.bookmarkList_openMirador}"
 		                              	href="#{request.contextPath}/mirador/key/#{bookmarkList.shareKey}" class="view-mirador__link" target="_blank">
 		                                  <i class="fa fa-th" aria-hidden="true"></i>
-		                                  <span>#{msg.bookmarkList_openMirador}</span>
+		                                  <span>#{msg.viewMiradorComparison}</span>
 		                              </a>
 		                            </ui:fragment>
 									<a
+									    data-toggle="tooltip"
+		                                title="#{msg.action__search_in_bookmarks__description}"
 										href="#{request.contextPath}/bookmarks/search/key/#{bookmarkList.shareKey}">
 										<i class="fa fa-search" aria-hidden="true"></i>
 										<span>#{msg.search}</span>
