@@ -56,7 +56,12 @@
             	}
             	
             	// toggle image
-            	$( this.image ).toggle();
+            	let visibility = $( this.image ).css('visibility');
+            	if(visibility == 'hidden') {
+            		$( this.image ).css('visibility','visible');
+            	} else {            	    
+            		$( this.image ).css('visibility','hidden');
+            	}
             	
             	// show thumb wrapper
         		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );

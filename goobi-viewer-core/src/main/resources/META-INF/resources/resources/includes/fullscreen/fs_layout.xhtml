@@ -26,13 +26,24 @@
                     <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right"></button>
                 </div>
                 
+                <div class="fullscreen__view-sidebar-share">
+                    <widgetComponent:widget_copyright />
+               		<widgetComponent:widget_socialMedia_share />
+                </div>
+                
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
                 
+               <!-- SEARCH IN CURRENT ITEM -->
+               <div class="fullscreen__view-sidebar-search-in-current-item">
+               		<widgetComponent:widget_searchInCurrentItem />
+               </div>
+                
                 <!-- SIDEBAR ACCORDEON -->
                 <div class="fullscreen__view-sidebar-accordeon">
+                   
                     <!-- METADATA -->
                     <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
@@ -83,7 +94,7 @@
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-                        <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
+                        <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
@@ -144,4 +155,12 @@
             </div>
         </section>
     </div>
+    
+	<script type="text/javascript">                
+       $(function () {
+               $('[data-toggle="popover"]').popover()
+             })
+    </script>
+    
 </ui:composition>
+

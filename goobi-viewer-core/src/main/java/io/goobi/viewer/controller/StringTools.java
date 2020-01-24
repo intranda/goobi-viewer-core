@@ -44,14 +44,18 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>StringTools class.</p>
+ * <p>
+ * StringTools class.
+ * </p>
  */
 public class StringTools {
 
     private static final Logger logger = LoggerFactory.getLogger(StringTools.class);
 
     /**
-     * <p>encodeUrl.</p>
+     * <p>
+     * encodeUrl.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -67,7 +71,9 @@ public class StringTools {
     }
 
     /**
-     * <p>decodeUrl.</p>
+     * <p>
+     * decodeUrl.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -107,11 +113,44 @@ public class StringTools {
      * Escapes special HTML characters in the given string.
      *
      * @param str a {@link java.lang.String} object.
-     * @should escape all characters correctly
      * @return a {@link java.lang.String} object.
+     * @should escape all characters correctly
      */
     public static String escapeHtmlChars(String str) {
-        return StringUtils.replaceEach(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
+        return replaceCharacters(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
+    }
+
+    /**
+     * Escapes <> in the given string.
+     *
+     * @param str a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String escapeHtmlLtGt(String str) {
+        return replaceCharacters(str, new String[] { "<", ">" }, new String[] { "&lt;", "&gt;" });
+    }
+
+    /**
+     * Replaces characters in included in <code>replace</code> with characters in <code>replaceWith</code> in the given string.
+     * 
+     * @param str
+     * @param replace
+     * @param replaceWith
+     * @return String with replaced characters.
+     * @should replace characters correctly
+     */
+    static String replaceCharacters(String str, String[] replace, String[] replaceWith) {
+        if (str == null) {
+            return null;
+        }
+        if (replace == null) {
+            throw new IllegalArgumentException("replace may not be null");
+        }
+        if (replaceWith == null) {
+            throw new IllegalArgumentException("replaceWith may not be null");
+        }
+
+        return StringUtils.replaceEach(str, replace, replaceWith);
     }
 
     /**
@@ -133,10 +172,10 @@ public class StringTools {
      * Removes regular and HTML line breaks from the given String.
      *
      * @param s a {@link java.lang.String} object.
+     * @param replaceWith a {@link java.lang.String} object.
      * @return String without line breaks
      * @should remove line breaks correctly
      * @should remove html line breaks correctly
-     * @param replaceWith a {@link java.lang.String} object.
      */
     public static String removeLineBreaks(String s, String replaceWith) {
         if (s == null) {
@@ -155,7 +194,9 @@ public class StringTools {
     }
 
     /**
-     * <p>stripJS.</p>
+     * <p>
+     * stripJS.
+     * </p>
      *
      * @param s String to clean
      * @return String sans any script-tag blocks
@@ -183,8 +224,8 @@ public class StringTools {
     }
 
     /**
-     * Escapes the given string using {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks (\r\n, \r, \n) to html
-     * line breaks ({@code <br/>
+     * Escapes the given string using {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks
+     * (\r\n, \r, \n) to html line breaks ({@code <br/>
      * })
      *
      * @param text the text to escape
@@ -200,7 +241,9 @@ public class StringTools {
     }
 
     /**
-     * <p>escapeQuotes.</p>
+     * <p>
+     * escapeQuotes.
+     * </p>
      *
      * @param s a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -241,7 +284,9 @@ public class StringTools {
     }
 
     /**
-     * <p>isImageUrl.</p>
+     * <p>
+     * isImageUrl.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @return true if this is an image URL; false otherwise
@@ -313,7 +358,9 @@ public class StringTools {
     }
 
     /**
-     * <p>getHierarchyForCollection.</p>
+     * <p>
+     * getHierarchyForCollection.
+     * </p>
      *
      * @param collection a {@link java.lang.String} object.
      * @param split a {@link java.lang.String} object.

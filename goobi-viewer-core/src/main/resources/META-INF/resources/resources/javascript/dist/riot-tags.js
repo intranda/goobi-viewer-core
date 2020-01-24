@@ -172,7 +172,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 
 
-riot.tag2('bookmarklist', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{opts.msg.sendBookmarkList}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{opts.msg.searchInBookmarkList}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{opts.msg.openInMirador}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-xs-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul><ul if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin"><div class="col-xs-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-xs-7 no-padding"><h4><a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a></h4></div><div class="col-xs-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookshelf-type="delete" onclick="{remove}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions test"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookshelf-type="reset" onclick="{deleteList}"><span>{opts.msg.resetBookmarkLists}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{opts.msg.sendBookmarkList}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{opts.msg.searchInBookmarkList}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{opts.msg.openInMirador}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
+riot.tag2('bookmarklist', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'bookmarkList_openMirador\')}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-xs-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul><ul if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin"><div class="col-xs-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-xs-7 no-padding"><h4><a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a></h4></div><div class="col-xs-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookshelf-type="delete" onclick="{remove}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions test"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookshelf-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'bookmarkList_openMirador\')}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
 
 
 this.pi = this.opts.data.pi;
@@ -254,7 +254,12 @@ this.maySearchList = function(list) {
 }.bind(this)
 
 this.searchListUrl = function(list) {
-    let url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
+    let url;
+    if(this.opts.bookmarks.config.userLoggedIn) {
+	    url = this.opts.bookmarks.config.root + "/user/bookmarks/search/" + list.name + "/";
+    } else {
+	    url = this.opts.bookmarks.config.root + "/bookmarks/search/" + list.name + "/";
+    }
     return url;
 }.bind(this)
 
@@ -270,10 +275,14 @@ this.miradorUrl = function(list) {
     }
 }.bind(this)
 
+this.msg = function(key) {
+    return this.opts.bookmarks.translator.translate(key);
+}.bind(this)
+
 });
 
 
-riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{opts.msg.typeRecord}" onclick="{setBookmarkTypeRecord}">{opts.msg.typeRecord}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{opts.msg.typePage}" onclick="{setBookmarkTypePage}">{opts.msg.typePage}</label></div></div><div class="bookmark-popup__header"> {this.opts.msg.selectBookmarkList} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" msg="{this.opts.msg}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{this.opts.msg.addNewBookmarkList}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookmark-popup bottom"', function(opts) {
+riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typeRecord\')}" onclick="{setBookmarkTypeRecord}">{msg(\'bookmarkList_typeRecord\')}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typePage\')}" onclick="{setBookmarkTypePage}">{msg(\'bookmarkList_typePage\')}</label></div></div><div class="bookmark-popup__header"> {msg(\'bookmarkList_selectBookmarkList\')} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-xs-11 no-padding"><input ref="inputValue" type="text" placeholder="{msg(\'bookmarkList_addNewBookmarkList\')}"></div><div class="col-xs-1 no-padding"><button class="btn btn-clean" type="button" onclick="{add}"></button></div></div></div>', '', 'class="bookmark-popup bottom"', function(opts) {
 
 const popupOffset = 6;
 
@@ -338,6 +347,10 @@ this.hideLoader = function() {
 
 this.showLoader = function() {
     $(this.opts.data.loader).show();
+}.bind(this)
+
+this.msg = function(key) {
+    return this.opts.bookmarks.translator.translate(key);
 }.bind(this)
 
 });
@@ -901,7 +914,12 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
                 	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
             	}
 
-            	$( this.image ).toggle();
+            	let visibility = $( this.image ).css('visibility');
+            	if(visibility == 'hidden') {
+            		$( this.image ).css('visibility','visible');
+            	} else {
+            		$( this.image ).css('visibility','hidden');
+            	}
 
         		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
 

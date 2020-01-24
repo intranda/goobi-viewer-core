@@ -53,7 +53,8 @@ public class HelperTest {
     public void getSourceFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
                 Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._METS));
-        Assert.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
+        Assert.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
+                Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
     }
 
     /**
@@ -64,7 +65,20 @@ public class HelperTest {
     public void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN123.xml",
                 Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._LIDO));
-        Assert.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
+        Assert.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml",
+                Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
+    }
+
+    /**
+     * @see Helper#getSourceFilePath(String,String,String)
+     * @verifies construct DenkXweb file path correctly
+     */
+    @Test
+    public void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() throws Exception {
+        Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_denkxweb/PPN123.xml",
+                Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._DENKXWEB));
+        Assert.assertEquals("src/test/resources/data/viewer/indexed_denkxweb/PPN123.xml",
+                Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._DENKXWEB));
     }
 
     /**

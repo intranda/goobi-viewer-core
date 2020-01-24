@@ -131,7 +131,7 @@ public class ALTOToolsTest {
      */
     @Test
     public void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
-        File file = new File("src/test/resources/data/LIWZ_1877_01_05_001.xml");
+        File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
         Assert.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, "utf-8");
         Assert.assertNotNull(alto);

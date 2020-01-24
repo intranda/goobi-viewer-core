@@ -74,6 +74,20 @@ var viewerJS = (function () {
 
         // init user login
         viewerJS.userLogin.init();
+        
+        viewerJS.popovers.init();
+        
+        
+        // init bookmarks if enabled
+        if ( bookmarksEnabled ) {
+            viewerJS.bookmarks.init( {
+                root: rootURL,
+                rest: restURL,
+                userLoggedIn: userLoggedIn,
+                language: currentLang
+                
+            });
+        } 
 
         // init scroll page animated
         this.pageScroll.init(_defaults.pageScrollSelector, _defaults.pageScrollAnchor);

@@ -95,14 +95,18 @@ public class AdminBean implements Serializable {
     private String passwordTwo = "";
 
     /**
-     * <p>Constructor for AdminBean.</p>
+     * <p>
+     * Constructor for AdminBean.
+     * </p>
      */
     public AdminBean() {
         // the emptiness inside
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      *
      * @should sort lazyModelComments by dateUpdated desc by default
      */
@@ -323,7 +327,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getAllUsersExcept.</p>
+     * <p>
+     * getAllUsersExcept.
+     * </p>
      *
      * @param usersToExclude a {@link java.util.Set} object.
      * @should return all users except given
@@ -340,7 +346,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>saveUserAction.</p>
+     * <p>
+     * saveUserAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -405,7 +413,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteUserAction.</p>
+     * <p>
+     * deleteUserAction.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -420,7 +430,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentUserAction.</p>
+     * <p>
+     * resetCurrentUserAction.
+     * </p>
      */
     public void resetCurrentUserAction() {
         currentUser = new User();
@@ -451,7 +463,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteUserGroupAction.</p>
+     * <p>
+     * deleteUserGroupAction.
+     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -465,7 +479,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentUserGroupAction.</p>
+     * <p>
+     * resetCurrentUserGroupAction.
+     * </p>
      */
     public void resetCurrentUserGroupAction() {
         currentUserGroup = new UserGroup();
@@ -484,7 +500,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>saveRoleAction.</p>
+     * <p>
+     * saveRoleAction.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -507,7 +525,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteRoleAction.</p>
+     * <p>
+     * deleteRoleAction.
+     * </p>
      *
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -521,7 +541,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentRoleAction.</p>
+     * <p>
+     * resetCurrentRoleAction.
+     * </p>
      */
     public void resetCurrentRoleAction() {
         currentRole = new Role();
@@ -530,14 +552,18 @@ public class AdminBean implements Serializable {
     // UserRole
 
     /**
-     * <p>resetCurrentUserRoleAction.</p>
+     * <p>
+     * resetCurrentUserRoleAction.
+     * </p>
      */
     public void resetCurrentUserRoleAction() {
         currentUserRole = new UserRole(getCurrentUserGroup(), null, null);
     }
 
     /**
-     * <p>saveUserRoleAction.</p>
+     * <p>
+     * saveUserRoleAction.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -567,7 +593,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteUserRoleAction.</p>
+     * <p>
+     * deleteUserRoleAction.
+     * </p>
      *
      * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -616,7 +644,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getAllRoleLicenseTypes.</p>
+     * <p>
+     * getAllRoleLicenseTypes.
+     * </p>
      *
      * @return all license types in the database where core=true
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -626,7 +656,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getAllRecordLicenseTypes.</p>
+     * <p>
+     * getAllRecordLicenseTypes.
+     * </p>
      *
      * @return all license types in the database where core=false
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -659,7 +691,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>saveLicenseTypeAction.</p>
+     * <p>
+     * saveLicenseTypeAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -685,7 +719,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteLicenseTypeAction.</p>
+     * <p>
+     * deleteLicenseTypeAction.
+     * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -699,7 +735,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentLicenseTypeAction.</p>
+     * <p>
+     * resetCurrentLicenseTypeAction.
+     * </p>
      */
     public void resetCurrentLicenseTypeAction() {
         logger.trace("resetCurrentLicenseTypeAction");
@@ -707,7 +745,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentRoleLicenseAction.</p>
+     * <p>
+     * resetCurrentRoleLicenseAction.
+     * </p>
      */
     public void resetCurrentRoleLicenseAction() {
         currentLicenseType = new LicenseType();
@@ -717,7 +757,9 @@ public class AdminBean implements Serializable {
     // IpRange
 
     /**
-     * <p>saveIpRangeAction.</p>
+     * <p>
+     * saveIpRangeAction.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -740,7 +782,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteIpRangeAction.</p>
+     * <p>
+     * deleteIpRangeAction.
+     * </p>
      *
      * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -754,14 +798,18 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentIpRangeAction.</p>
+     * <p>
+     * resetCurrentIpRangeAction.
+     * </p>
      */
     public void resetCurrentIpRangeAction() {
         currentIpRange = new IpRange();
     }
 
     /**
-     * <p>resetCurrentLicenseAction.</p>
+     * <p>
+     * resetCurrentLicenseAction.
+     * </p>
      */
     public void resetCurrentLicenseAction() {
         logger.trace("resetCurrentLicenseAction");
@@ -769,7 +817,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentLicenseForUserAction.</p>
+     * <p>
+     * resetCurrentLicenseForUserAction.
+     * </p>
      */
     public void resetCurrentLicenseForUserAction() {
         logger.trace("resetCurrentLicenseForUserAction");
@@ -778,7 +828,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentLicenseForUserGroupAction.</p>
+     * <p>
+     * resetCurrentLicenseForUserGroupAction.
+     * </p>
      */
     public void resetCurrentLicenseForUserGroupAction() {
         logger.trace("resetCurrentLicenseForUserGroupAction");
@@ -787,7 +839,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentLicenseForIpRangeAction.</p>
+     * <p>
+     * resetCurrentLicenseForIpRangeAction.
+     * </p>
      */
     public void resetCurrentLicenseForIpRangeAction() {
         logger.trace("resetCurrentLicenseForIpRangeAction");
@@ -796,7 +850,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>saveCurrentLicenseAction.</p>
+     * <p>
+     * saveCurrentLicenseAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -855,7 +911,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteLicenseAction.</p>
+     * <p>
+     * deleteLicenseAction.
+     * </p>
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a {@link java.lang.String} object.
@@ -894,7 +952,9 @@ public class AdminBean implements Serializable {
     // Comments
 
     /**
-     * <p>saveCommentAction.</p>
+     * <p>
+     * saveCommentAction.
+     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -921,7 +981,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteCommentAction.</p>
+     * <p>
+     * deleteCommentAction.
+     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.Comment} object.
      * @return a {@link java.lang.String} object.
@@ -938,7 +1000,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentCommentAction.</p>
+     * <p>
+     * resetCurrentCommentAction.
+     * </p>
      */
     public void resetCurrentCommentAction() {
         currentComment = null;
@@ -947,7 +1011,9 @@ public class AdminBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>currentUser</code>.</p>
+     * <p>
+     * Getter for the field <code>currentUser</code>.
+     * </p>
      *
      * @return the currentUser
      */
@@ -956,7 +1022,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentUser</code>.</p>
+     * <p>
+     * Setter for the field <code>currentUser</code>.
+     * </p>
      *
      * @param currentUser the currentUser to set
      */
@@ -965,7 +1033,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentUserGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>currentUserGroup</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      */
@@ -974,7 +1044,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentUserGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>currentUserGroup</code>.
+     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      */
@@ -983,7 +1055,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentRole</code>.</p>
+     * <p>
+     * Getter for the field <code>currentRole</code>.
+     * </p>
      *
      * @return the currentRole
      */
@@ -992,7 +1066,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentRole</code>.</p>
+     * <p>
+     * Setter for the field <code>currentRole</code>.
+     * </p>
      *
      * @param currentRole the currentRole to set
      */
@@ -1001,7 +1077,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentUserRole</code>.</p>
+     * <p>
+     * Getter for the field <code>currentUserRole</code>.
+     * </p>
      *
      * @return the currentUserRole
      */
@@ -1010,7 +1088,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentUserRole</code>.</p>
+     * <p>
+     * Setter for the field <code>currentUserRole</code>.
+     * </p>
      *
      * @param currentUserRole the currentUserRole to set
      */
@@ -1019,7 +1099,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentLicenseType</code>.</p>
+     * <p>
+     * Getter for the field <code>currentLicenseType</code>.
+     * </p>
      *
      * @return the currentLicenseType
      */
@@ -1028,7 +1110,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentLicenseType</code>.</p>
+     * <p>
+     * Setter for the field <code>currentLicenseType</code>.
+     * </p>
      *
      * @param currentLicenseType the currentLicenseType to set
      */
@@ -1040,7 +1124,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentLicense</code>.</p>
+     * <p>
+     * Getter for the field <code>currentLicense</code>.
+     * </p>
      *
      * @return the currentLicense
      */
@@ -1049,7 +1135,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentLicense</code>.</p>
+     * <p>
+     * Setter for the field <code>currentLicense</code>.
+     * </p>
      *
      * @param currentLicense the currentLicense to set
      */
@@ -1059,7 +1147,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentIpRange</code>.</p>
+     * <p>
+     * Getter for the field <code>currentIpRange</code>.
+     * </p>
      *
      * @return the currentIpRange
      */
@@ -1068,7 +1158,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentIpRange</code>.</p>
+     * <p>
+     * Setter for the field <code>currentIpRange</code>.
+     * </p>
      *
      * @param currentIpRange the currentIpRange to set
      */
@@ -1077,7 +1169,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentComment</code>.</p>
+     * <p>
+     * Getter for the field <code>currentComment</code>.
+     * </p>
      *
      * @return the currentComment
      */
@@ -1086,7 +1180,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentComment</code>.</p>
+     * <p>
+     * Setter for the field <code>currentComment</code>.
+     * </p>
      *
      * @param currentComment the currentComment to set
      */
@@ -1097,7 +1193,9 @@ public class AdminBean implements Serializable {
     // Lazy models
 
     /**
-     * <p>Getter for the field <code>lazyModelUsers</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelUsers</code>.
+     * </p>
      *
      * @return the lazyModelUsers
      */
@@ -1106,7 +1204,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getPageUsers.</p>
+     * <p>
+     * getPageUsers.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1115,7 +1215,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelUserGroups</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelUserGroups</code>.
+     * </p>
      *
      * @return the lazyModelUserGroups
      */
@@ -1124,7 +1226,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getPageUserGroups.</p>
+     * <p>
+     * getPageUserGroups.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1133,7 +1237,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelLicenseTypes</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelLicenseTypes</code>.
+     * </p>
      *
      * @return the lazyModelLicenseTypes
      */
@@ -1142,7 +1248,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelCoreLicenseTypes</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelCoreLicenseTypes</code>.
+     * </p>
      *
      * @return the lazyModelCoreLicenseTypes
      */
@@ -1151,7 +1259,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getPageLicenseTypes.</p>
+     * <p>
+     * getPageLicenseTypes.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1160,7 +1270,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getPageCoreLicenseTypes.</p>
+     * <p>
+     * getPageCoreLicenseTypes.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1169,7 +1281,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelIpRanges</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelIpRanges</code>.
+     * </p>
      *
      * @return the lazyModelIpRanges
      */
@@ -1178,7 +1292,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getPageIpRanges.</p>
+     * <p>
+     * getPageIpRanges.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1187,7 +1303,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelComments</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelComments</code>.
+     * </p>
      *
      * @return the lazyModelComments
      */
@@ -1196,7 +1314,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getPageComments.</p>
+     * <p>
+     * getPageComments.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1205,7 +1325,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>passwordOne</code>.</p>
+     * <p>
+     * Getter for the field <code>passwordOne</code>.
+     * </p>
      *
      * @return the passwordOne
      */
@@ -1214,7 +1336,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>passwordOne</code>.</p>
+     * <p>
+     * Setter for the field <code>passwordOne</code>.
+     * </p>
      *
      * @param passwordOne the passwordOne to set
      */
@@ -1223,7 +1347,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>passwordTwo</code>.</p>
+     * <p>
+     * Getter for the field <code>passwordTwo</code>.
+     * </p>
      *
      * @return the passwordTwo
      */
@@ -1232,7 +1358,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>passwordTwo</code>.</p>
+     * <p>
+     * Setter for the field <code>passwordTwo</code>.
+     * </p>
      *
      * @param passwordTwo the passwordTwo to set
      */
@@ -1241,7 +1369,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteFromCache.</p>
+     * <p>
+     * deleteFromCache.
+     * </p>
      *
      * @param identifiers a {@link java.util.List} object.
      * @param fromContentCache a boolean.
@@ -1253,7 +1383,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>deleteFromCache.</p>
+     * <p>
+     * deleteFromCache.
+     * </p>
      *
      * @param identifiers a {@link java.util.List} object.
      * @param fromContentCache a boolean.
@@ -1266,7 +1398,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>setRepresantativeImageAction.</p>
+     * <p>
+     * setRepresantativeImageAction.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param dataRepository a {@link java.lang.String} object.
@@ -1289,66 +1423,70 @@ public class AdminBean implements Serializable {
      */
     public static void setRepresantativeImageStatic(String pi, String dataRepository, String fileIdRoot) {
         logger.debug("setRepresantativeImageStatic");
-        if (StringUtils.isNotEmpty(pi)) {
-            Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
-            try {
-                String metsFilePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
-                Document doc = XmlTools.readXmlFile(metsFilePath);
-                if (doc == null || doc.getRootElement() == null) {
-                    logger.error("Invalid METS file: {}", metsFilePath);
-                    return;
-                }
+        if (StringUtils.isEmpty(pi)) {
+            return;
+        }
+        
+        Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
+        try {
+            String metsFilePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
+            Document doc = XmlTools.readXmlFile(metsFilePath);
+            if (doc == null || doc.getRootElement() == null) {
+                logger.error("Invalid METS file: {}", metsFilePath);
+                return;
+            }
 
-                List<Element> eleFileList =
-                        XmlTools.evaluateToElements("mets:fileSec/mets:fileGrp/mets:file", doc.getRootElement(), Collections.singletonList(nsMets));
-                if (eleFileList != null) {
-                    for (Element eleFile : eleFileList) {
-                        String id = eleFile.getAttributeValue("ID");
-                        if (StringUtils.isNotEmpty(id)) {
-                            if (!id.startsWith(fileIdRoot)) {
-                                // If an mets:file element that belongs to a different image already has the USE='banner' attribute, remove it
-                                Attribute attrUse = eleFile.getAttribute("USE");
-                                if (attrUse != null) {
-                                    eleFile.removeAttribute(attrUse);
-                                    logger.debug("Atribute 'USE' removed from '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
-                                }
-                            } else {
-                                Attribute attrUse = eleFile.getAttribute("USE");
-                                if (attrUse == null) {
-                                    // Add the USE='banner' attribute
-                                    eleFile.setAttribute("USE", "banner");
-                                    eleFile.removeAttribute(attrUse);
-                                    logger.debug("Atribute 'USE=\"banner\"' set in '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
-                                } else {
-                                    // If the correct image already has a USE attribute, make sure its value is 'banner'
-                                    attrUse.setValue("banner");
-                                    logger.debug("Atribute 'USE' already exists in '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
-                                }
+            List<Element> eleFileList =
+                    XmlTools.evaluateToElements("mets:fileSec/mets:fileGrp/mets:file", doc.getRootElement(), Collections.singletonList(nsMets));
+            if (eleFileList != null) {
+                for (Element eleFile : eleFileList) {
+                    String id = eleFile.getAttributeValue("ID");
+                    if (StringUtils.isNotEmpty(id)) {
+                        if (!id.startsWith(fileIdRoot)) {
+                            // If an mets:file element that belongs to a different image already has the USE='banner' attribute, remove it
+                            Attribute attrUse = eleFile.getAttribute("USE");
+                            if (attrUse != null) {
+                                eleFile.removeAttribute(attrUse);
+                                logger.debug("Atribute 'USE' removed from '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
                             }
                         } else {
-                            logger.warn("METS document for '" + pi + "' contains no file ID in some file group.");
+                            Attribute attrUse = eleFile.getAttribute("USE");
+                            if (attrUse == null) {
+                                // Add the USE='banner' attribute
+                                eleFile.setAttribute("USE", "banner");
+                                eleFile.removeAttribute(attrUse);
+                                logger.debug("Atribute 'USE=\"banner\"' set in '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
+                            } else {
+                                // If the correct image already has a USE attribute, make sure its value is 'banner'
+                                attrUse.setValue("banner");
+                                logger.debug("Atribute 'USE' already exists in '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
+                            }
                         }
+                    } else {
+                        logger.warn("METS document for '" + pi + "' contains no file ID in some file group.");
                     }
-                    // Write altered file into hotfolder
-
-                    XmlTools.writeXmlFile(doc, DataManager.getInstance().getConfiguration().getHotfolder() + File.separator + pi + ".xml");
-
-                    Messages.info("admin_recordReExported");
-                } else {
-                    logger.warn("METS document for '" + pi + "' contains no mets:file elements for file ID root: " + fileIdRoot);
                 }
-            } catch (FileNotFoundException e) {
-                logger.error(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } catch (JDOMException e) {
-                logger.error(e.getMessage(), e);
+                // Write altered file into hotfolder
+
+                XmlTools.writeXmlFile(doc, DataManager.getInstance().getConfiguration().getHotfolder() + File.separator + pi + ".xml");
+
+                Messages.info("admin_recordReExported");
+            } else {
+                logger.warn("METS document for '" + pi + "' contains no mets:file elements for file ID root: " + fileIdRoot);
             }
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (JDOMException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
     /**
-     * <p>toggleSuspendUserAction.</p>
+     * <p>
+     * toggleSuspendUserAction.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a {@link java.lang.String} object.
@@ -1378,5 +1516,11 @@ public class AdminBean implements Serializable {
         List<String> accessConditions = SearchHelper.getFacetValues(SolrConstants.ACCESSCONDITION + ":[* TO *]", SolrConstants.ACCESSCONDITION, 0);
         Collections.sort(accessConditions);
         return accessConditions;
+    }
+    
+    public void triggerMessage(String message) {
+        logger.debug("Show message " + message);
+        Messages.info(Helper.getTranslation(message, null));
+
     }
 }

@@ -19,6 +19,8 @@
 	<indexedMetsFolder>indexed_mets</indexedMetsFolder>
 	<!-- indexedLidoFolder: contains indexed lido files (used by the LIDO resolver) -->
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
+    <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
+    <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>media</mediaFolder>
