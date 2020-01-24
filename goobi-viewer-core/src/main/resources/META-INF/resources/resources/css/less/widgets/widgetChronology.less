@@ -7,7 +7,6 @@
 .widget-chronology-slider {
 	display: flex;
 	flex-wrap: wrap;
-    margin-bottom: 1.3125rem;
     font-size: @fontLarge;
 	color: @black;
 	&__topbar {
@@ -18,11 +17,13 @@
 	&__item {
 		&.chronology-slider-label,
 		&.chronology-slider-actions {
-    		align-self: center;
-    		padding-bottom: 10px;
-    		flex: 0 0 50%;
-    		max-width: 50%;
+			display: flex;
 		}
+		&.chronology-slider-label {
+			margin-right: auto;
+		}
+		&.chronology-slider-actions {}
+
 		&.chronology-slider-actions {
 			ul {
 				.mx-list-reset;
@@ -35,14 +36,17 @@
 			img {
 				width: 14px;
 				height: 14px;
-				margin-top: -2px;
 			}
-			[data-reset="chrono-slider"] {
-				padding-left: 5px;
-			}
+			[data-reset="chrono-slider"] {} 
 		}
 		&.chronology-slider-action-loader,
 		&.chronology-slider-action-reset {
+			display: flex;
+			flex-wrap: nowrap;
+			z-index: 10000000;
+			justify-content: center;
+			align-items: center;
+			padding: 0 9px;
 			visibility: hidden;
 			&.active {
 				visibility: visible;
