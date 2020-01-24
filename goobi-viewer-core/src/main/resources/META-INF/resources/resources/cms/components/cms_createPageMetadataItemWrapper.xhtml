@@ -155,7 +155,7 @@
                         <div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage)}">
+                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span aria-hidden="true">
@@ -175,7 +175,7 @@
                                         </div>
                                     </h:panelGroup>
 
-                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsBean.selectedPage)}">
+                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) or cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span aria-hidden="true">

@@ -1080,6 +1080,16 @@
 
 		<!-- display as interactive tree view (for _ALL or specific docstruct types) -->
 		<useTreeView showDocStructs="_ALL">false</useTreeView>
+		
+		<!-- Config for the Main object title derived from the toc labels -->
+	   <titleBarLabel>
+	   		<template name="PeriodicalVolume">
+	   			<displayAnchorTitle prefix="" suffix="_SPACE_">false</displayAnchorTitle>
+	   		</template>
+	   		<template name="_DEFAULT">
+	   			<displayAnchorTitle>false</displayAnchorTitle>
+	   		</template>
+	   </titleBarLabel>
 	</toc>
 
 	<tagclouds>

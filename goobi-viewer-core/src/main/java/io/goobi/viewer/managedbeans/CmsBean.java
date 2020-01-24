@@ -1043,7 +1043,6 @@ public class CmsBean implements Serializable {
         }
 
         selectedPage = null;
-
     }
 
     /**
@@ -1880,6 +1879,15 @@ public class CmsBean implements Serializable {
         }
         this.staticPages = null;
         Messages.info("cms_staticPagesSaved");
+    }
+    
+    public boolean isLinkedToStaticPage(CMSPage page) throws DAOException {
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if(staticPage.getCmsPageId().map(id -> id.equals(page.getId())).orElse(false)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

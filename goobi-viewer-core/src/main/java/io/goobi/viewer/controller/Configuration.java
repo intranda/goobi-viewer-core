@@ -4449,5 +4449,57 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySocialMediaShareLinks() {
         return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
     }
+    
+    public boolean isDisplayAnchorLabelInTitleBar(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if(subConf != null) {
+            return subConf.getBoolean("displayAnchorTitle", false);
+        } else {
+            return false;
+        }
+    }
 
+    public String getAnchorLabelInTitleBarPrefix(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if(subConf != null) {
+            return subConf.getString("displayAnchorTitle[@prefix]", "");
+        } else {
+            return "";
+        }
+    }
+    
+    public String getAnchorLabelInTitleBarSuffix(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if(subConf != null) {
+            return subConf.getString("displayAnchorTitle[@suffix]", " ");
+        } else {
+            return " ";
+        }
+    }
+
+    /**
+     * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that, return null;
+     * 
+     * @param templateList
+     * @param template
+     * @return
+     */
+    private HierarchicalConfiguration getMatchingConfig(List<HierarchicalConfiguration> templateList, String name) {
+        HierarchicalConfiguration conf = null;
+        HierarchicalConfiguration defaultConf = null;
+        for (HierarchicalConfiguration subConf : templateList) {
+            if(name.equalsIgnoreCase(subConf.getString("[@name]"))) {
+                conf = subConf;
+                break;
+            } else if("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
+                defaultConf = subConf;
+            }
+        }
+        if(conf != null) {
+            return conf;
+        } else return defaultConf;
+    }
 }

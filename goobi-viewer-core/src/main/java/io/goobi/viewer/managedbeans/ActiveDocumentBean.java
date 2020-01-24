@@ -57,6 +57,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -1269,17 +1270,24 @@ public class ActiveDocumentBean implements Serializable {
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
         TOC toc = getToc();
-        //        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
-        //            String label = viewManager.getTopDocument()
-        //                    .getLabel(selectedRecordLanguage);
-        //            if (StringUtils.isNotEmpty(label)) {
-        //                return label;
-        //            }
-        //        }
+
         if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
-                String label = toc.getLabel(viewManager.getPi(), language);
+                String label = null;               
+                String labelTemplate = "_DEFAULT";
+                if(getViewManager() != null) {
+                    labelTemplate = getViewManager().getTopDocument().getDocStructType();
+                }
+                if(DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate) && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
+                    String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
+                    String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
+                    prefix = Helper.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
+                    suffix = Helper.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
+                    label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
+                } else {                    
+                    label = toc.getLabel(viewManager.getPi(), language);
+                }
                 if (label != null) {
                     return label;
                 }

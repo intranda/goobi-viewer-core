@@ -627,4 +627,8 @@ public class BookmarkList implements Serializable {
             return "";
         }
     }
+    
+    public boolean isOwnedBy(User user) {
+        return user != null && user.equals(this.owner);
+    }
 }

@@ -171,7 +171,14 @@ public class SearchHit implements Comparable<SearchHit> {
         if (browseElement != null) {
             if (searchTerms != null) {
                 addLabelHighlighting();
-                //                browseElement.setLabelShort(browseElement.getLabel());
+            } else {
+                String label = browseElement.getLabel(locale);
+                // Escape HTML tags
+                label = StringEscapeUtils.escapeHtml4(label);
+                
+                IMetadataValue labelShort = new MultiLanguageMetadataValue();
+                labelShort.setValue(label, locale);
+                browseElement.setLabelShort(labelShort);                
             }
             this.url = browseElement.getUrl();
         } else {

@@ -454,7 +454,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             } else {
                 applicationUri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/");
             }
-            URI uri = applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", ""));
+            URI uri = applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
             return uri;
         } else {
             return null;

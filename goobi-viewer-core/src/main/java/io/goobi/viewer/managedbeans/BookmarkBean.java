@@ -718,6 +718,11 @@ public class BookmarkBean implements Serializable {
     public void setPublic(BookmarkList bookmarkList, boolean isPublic) {
         if (bookmarkList != null) {
             bookmarkList.setIsPublic(isPublic);
+            if(isPublic && !bookmarkList.hasShareKey()) {                
+                bookmarkList.generateShareKey();
+            } else {
+                //reset sharekey?
+            }
             saveBookmarkListAction(bookmarkList);
         }
     }
