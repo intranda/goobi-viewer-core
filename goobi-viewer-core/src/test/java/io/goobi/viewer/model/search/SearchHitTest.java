@@ -28,15 +28,16 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.model.search.SearchHit;
 
-public class SearchHitTest {
+public class SearchHitTest extends AbstractSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
