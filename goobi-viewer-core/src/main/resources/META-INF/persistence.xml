@@ -32,8 +32,6 @@
 		<class>io.goobi.viewer.model.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
-		<class>io.goobi.viewer.model.overviewpage.OverviewPage</class>
-		<class>io.goobi.viewer.model.overviewpage.OverviewPageUpdate</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
@@ -98,8 +96,6 @@
 		<class>io.goobi.viewer.model.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
-		<class>io.goobi.viewer.model.overviewpage.OverviewPage</class>
-		<class>io.goobi.viewer.model.overviewpage.OverviewPageUpdate</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
