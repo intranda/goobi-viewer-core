@@ -22,7 +22,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -35,14 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
 
 /**
  * Servlet for deleting cache elements. Should not be accessible to unauthorized persons. This is a temporary solutions which will probably be
@@ -124,54 +118,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     response.setContentType("text/html"); {
                     ServletOutputStream output = response.getOutputStream();
                     output.write(Helper.getVersion().getBytes(Charset.forName("utf-8")));
-                }
-                    break;
-                case "migrateOverviewPages": {
-                    response.setContentType("text/html");
-                    ServletOutputStream output = response.getOutputStream();
-
-                    int migratedToCMS = 0;
-                    try {
-                        long total = DataManager.getInstance().getDao().getOverviewPageCount(null, null);
-                        if (total == 0) {
-                            output.write(("No overview pages found").getBytes(Charset.forName("utf-8")));
-                            return;
-                        }
-                        output.write(("Found " + total + " legacy overview pages<br />").getBytes(Charset.forName("utf-8")));
-                        int first = 0;
-                        int pageSize = 10;
-                        while (first < total) {
-                            List<OverviewPage> pages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, null, null);
-                            for (OverviewPage op : pages) {
-                                List<CMSPage> existingPages = DataManager.getInstance()
-                                        .getDao()
-                                        .getCMSPagesForRecord(op.getPi(),
-                                                DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE));
-                                if (!existingPages.isEmpty()) {
-                                    output.write(
-                                            ("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
-                                    continue;
-                                }
-                                if (op.migrateToCMS()) {
-                                    output.write(("Migrated overview page for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
-                                    migratedToCMS++;
-                                    try {
-                                        Helper.reIndexRecord(op.getPi());
-                                    } catch (RecordNotFoundException e) {
-                                        output.write((op.getPi() + " not found in index, cannot re-index<br />").getBytes(Charset.forName("utf-8")));
-                                    }
-
-                                }
-                            }
-
-                            first += pageSize;
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-
-                    String msg = "Migrated " + migratedToCMS + " overview pages to CMS.";
-                    output.write((msg + "<br />").getBytes(Charset.forName("utf-8")));
                 }
                     break;
                 default:

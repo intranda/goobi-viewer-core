@@ -68,8 +68,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
-import io.goobi.viewer.model.overviewpage.OverviewPageUpdate;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -82,7 +80,9 @@ import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
- * <p>JPADAO class.</p>
+ * <p>
+ * JPADAO class.
+ * </p>
  */
 public class JPADAO implements IDAO {
 
@@ -95,10 +95,11 @@ public class JPADAO implements IDAO {
     private EntityManager em;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
-    private Object overviewPageRequestLock = new Object();
 
     /**
-     * <p>Constructor for JPADAO.</p>
+     * <p>
+     * Constructor for JPADAO.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -107,7 +108,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>Getter for the field <code>factory</code>.</p>
+     * <p>
+     * Getter for the field <code>factory</code>.
+     * </p>
      *
      * @return a {@link javax.persistence.EntityManagerFactory} object.
      */
@@ -116,7 +119,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>getEntityManager.</p>
+     * <p>
+     * getEntityManager.
+     * </p>
      *
      * @return a {@link javax.persistence.EntityManager} object.
      */
@@ -125,7 +130,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>Constructor for JPADAO.</p>
+     * <p>
+     * Constructor for JPADAO.
+     * </p>
      *
      * @param inPersistenceUnitName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -573,6 +580,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * (non-Javadoc)
+     * 
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
      * @should set id on new license
      */
@@ -693,7 +701,7 @@ public class JPADAO implements IDAO {
     public BookmarkList getBookmarkList(String name, User user) throws DAOException {
         preQuery();
         Query q;
-        if(user != null) {
+        if (user != null) {
             q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.name = :name AND o.owner = :user");
             q.setParameter("name", name);
             q.setParameter("user", user);
@@ -1852,247 +1860,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    // Overview page
-
-    /** {@inheritDoc} */
-    @Override
-    public OverviewPage getOverviewPage(long id) throws DAOException {
-        preQuery();
-        try {
-            OverviewPage o = em.find(OverviewPage.class, id);
-            if (o != null) {
-                em.refresh(o);
-            }
-            return o;
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OverviewPage getOverviewPageForRecord(String pi, Date fromDate, Date toDate) throws DAOException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM OverviewPage o WHERE o.pi = :pi");
-        if (fromDate != null || toDate != null) {
-            // To filter by date, look up OverviewPageUpdate rows that have a datestamp in the requested time frame
-            sbQuery.append(" AND o.pi = (SELECT DISTINCT u.pi FROM OverviewPageUpdate u WHERE u.pi = :pi");
-            if (fromDate != null) {
-                sbQuery.append(" AND u.dateUpdated >= :fromDate");
-            }
-            if (toDate != null) {
-                sbQuery.append(" AND u.dateUpdated <= :toDate");
-            }
-            sbQuery.append(')');
-        }
-        //        logger.trace(sbQuery.toString());
-        synchronized (overviewPageRequestLock) {
-            Query q = em.createQuery(sbQuery.toString());
-            q.setParameter("pi", pi);
-            if (fromDate != null) {
-                q.setParameter("fromDate", fromDate);
-            }
-            if (toDate != null) {
-                q.setParameter("toDate", toDate);
-            }
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            try {
-                OverviewPage o = (OverviewPage) q.getSingleResult();
-                if (o != null) {
-                    em.refresh(o);
-                }
-                return o;
-            } catch (NoResultException e) {
-                return null;
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-                return null;
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addOverviewPage(OverviewPage overviewPage) throws DAOException {
-        logger.trace("addOverviewPage");
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(overviewPage);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateOverviewPage(OverviewPage overviewPage) throws DAOException {
-        logger.trace("updateOverviewPage: {}", overviewPage.getId());
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(overviewPage);
-            em.getTransaction().commit();
-            logger.debug("New ID: {}", overviewPage.getId());
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteOverviewPage(OverviewPage overviewPage) throws DAOException {
-        logger.trace("deleteOverviewPage: {}", overviewPage.getId());
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            OverviewPage o = em.getReference(OverviewPage.class, overviewPage.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getOverviewPageCount(java.util.Date, java.util.Date)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public long getOverviewPageCount(Date fromDate, Date toDate) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM OverviewPage o");
-        if (fromDate != null) {
-            sbQuery.append(" WHERE o.dateUpdated >= :fromDate");
-        }
-        if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
-        }
-        Query q = em.createQuery(sbQuery.toString());
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-
-        Object o = q.getResultList().get(0);
-        // MySQL
-        if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
-        }
-        // H2
-        return (long) q.getResultList().get(0);
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<OverviewPage> getOverviewPages(int first, int pageSize, Date fromDate, Date toDate) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM OverviewPage o");
-        if (fromDate != null) {
-            sbQuery.append(" WHERE o.dateUpdated >= :fromDate");
-        }
-        if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
-        }
-        sbQuery.append(" ORDER BY o.dateUpdated DESC");
-        Query q = em.createQuery(sbQuery.toString());
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        return q.getResultList();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getOverviewPageUpdatesForRecord(java.lang.String)
-     * @should return all updates for record
-     * @should sort updates by date descending
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<OverviewPageUpdate> getOverviewPageUpdatesForRecord(String pi) throws DAOException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        preQuery();
-
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM OverviewPageUpdate o WHERE o.pi = :pi");
-        sbQuery.append(" ORDER BY o.dateUpdated desc");
-        Query q = em.createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return q.getResultList();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OverviewPageUpdate getOverviewPageUpdate(long id) throws DAOException {
-        preQuery();
-        try {
-            OverviewPageUpdate o = em.find(OverviewPageUpdate.class, id);
-            if (o != null) {
-                em.refresh(o);
-            }
-            return o;
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addOverviewPageUpdate(OverviewPageUpdate update) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(update);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteOverviewPageUpdate(OverviewPageUpdate update) throws DAOException {
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            OverviewPageUpdate o = em.getReference(OverviewPageUpdate.class, update.getId());
-            em.remove(o);
-            em.getTransaction().commit();
-            return true;
-        } finally {
-            em.close();
-        }
-    }
-
     // Downloads
 
     /** {@inheritDoc} */
@@ -3231,7 +2998,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>preQuery.</p>
+     * <p>
+     * preQuery.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -3595,7 +3364,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>createCMSPageFilter.</p>
+     * <p>
+     * createCMSPageFilter.
+     * </p>
      *
      * @param params a {@link java.util.Map} object.
      * @param pageParameter a {@link java.lang.String} object.
@@ -3840,6 +3611,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * Get all annotations associated with the work of the given pi
+     * 
      * @should return correct rows
      */
     @SuppressWarnings("unchecked")
