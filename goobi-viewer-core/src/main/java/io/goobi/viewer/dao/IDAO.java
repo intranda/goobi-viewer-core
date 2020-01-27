@@ -39,8 +39,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
-import io.goobi.viewer.model.overviewpage.OverviewPageUpdate;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -846,126 +844,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteSearch(Search search) throws DAOException;
-
-    // Overview page
-
-    /**
-     * <p>getOverviewPageCount.</p>
-     *
-     * @param fromDate a {@link java.util.Date} object.
-     * @param toDate a {@link java.util.Date} object.
-     * @return a long.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public long getOverviewPageCount(Date fromDate, Date toDate) throws DAOException;
-
-    /**
-     * <p>getOverviewPages.</p>
-     *
-     * @param first a int.
-     * @param pageSize a int.
-     * @param fromDate a {@link java.util.Date} object.
-     * @param toDate a {@link java.util.Date} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public List<OverviewPage> getOverviewPages(int first, int pageSize, Date fromDate, Date toDate) throws DAOException;
-
-    /**
-     * <p>getOverviewPage.</p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public OverviewPage getOverviewPage(long id) throws DAOException;
-
-    /**
-     * <p>getOverviewPageForRecord.</p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param fromDate a {@link java.util.Date} object.
-     * @param toDate a {@link java.util.Date} object.
-     * @return a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public OverviewPage getOverviewPageForRecord(String pi, Date fromDate, Date toDate) throws DAOException;
-
-    /**
-     * <p>addOverviewPage.</p>
-     *
-     * @param overviewPage a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean addOverviewPage(OverviewPage overviewPage) throws DAOException;
-
-    /**
-     * <p>updateOverviewPage.</p>
-     *
-     * @param overviewPage a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean updateOverviewPage(OverviewPage overviewPage) throws DAOException;
-
-    /**
-     * <p>deleteOverviewPage.</p>
-     *
-     * @param overviewPage a {@link io.goobi.viewer.model.overviewpage.OverviewPage} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean deleteOverviewPage(OverviewPage overviewPage) throws DAOException;
-
-    // Overview page updates
-
-    /**
-     * <p>getOverviewPageUpdatesForRecord.</p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public List<OverviewPageUpdate> getOverviewPageUpdatesForRecord(String pi) throws DAOException;
-
-    /**
-     * <p>getOverviewPageUpdate.</p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.overviewpage.OverviewPageUpdate} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public OverviewPageUpdate getOverviewPageUpdate(long id) throws DAOException;
-
-    /**
-     * <p>addOverviewPageUpdate.</p>
-     *
-     * @param update a {@link io.goobi.viewer.model.overviewpage.OverviewPageUpdate} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean addOverviewPageUpdate(OverviewPageUpdate update) throws DAOException;
-
-    /**
-     * <p>deleteOverviewPageUpdate.</p>
-     *
-     * @param update a {@link io.goobi.viewer.model.overviewpage.OverviewPageUpdate} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean deleteOverviewPageUpdate(OverviewPageUpdate update) throws DAOException;
 
     // Download jobs
 
