@@ -6,6 +6,7 @@
 	<h3>#{msg.role_managePrivileges}</h3>
 
     <div class="col-sm-offset-4 col-sm-8 select-privileges">
+        <!-- LIST -->
         <label> 
             <h:selectBooleanCheckbox 
                 id="privListDisabled" 
@@ -21,6 +22,7 @@
                 label="privList" /> #{msg.license_privList}
         </label> 
         <br />
+        <!-- VIEW_IMAGES -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privViewImagesDisabled"
@@ -36,6 +38,7 @@
                 label="privViewImages" /> #{msg.license_privViewImages}
         </label>
         <br />
+        <!-- VIEW_THUMBNAILS -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privViewThumbnailsDisabled"
@@ -51,6 +54,7 @@
                 label="privViewThumbnails" /> #{msg.license_privViewThumbnails}
         </label>
         <br />
+        <!-- VIEW_FULLTEXT -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privViewFulltextDisabled"
@@ -66,6 +70,7 @@
                 label="privViewFulltext" /> #{msg.license_privViewFulltext}
         </label>
         <br />
+        <!-- VIEW_VIDEO -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privViewVideoDisabled" 
@@ -81,6 +86,7 @@
                 label="privViewVideo" /> #{msg.license_privViewVideo}
         </label>
         <br />
+        <!-- VIEW_AUDIO -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privViewAudioDisabled" 
@@ -96,6 +102,7 @@
                 label="privViewAudio" /> #{msg.license_privViewAudio}
         </label>
         <br />
+        <!-- DOWNLOAD_PDF -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privDownloadPdfDisabled"
@@ -111,6 +118,7 @@
                 label="privDownloadPdf" /> #{msg.license_privDownloadPdf}
         </label>
         <br />
+        <!-- DOWNLOAD_PAGE_PDF -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privDownloadPagePdfDisabled"
@@ -126,6 +134,7 @@
                 label="privDownloadPagePdf" /> #{msg.license_privDownloadPagePdf}
         </label>
         <br />
+        <!-- DOWNLOAD_ORIGINAL_CONTENT -->
         <label>
             <h:selectBooleanCheckbox 
                 id="privDownloadOriginalContentDisabled"
@@ -139,6 +148,38 @@
                 rendered="#{!adminBean.currentLicense.licenseType.privDownloadOriginalContent}"
                 value="#{adminBean.currentLicense.privDownloadOriginalContent}" 
                 label="privDownloadOriginalContent" /> #{msg.license_privDownloadOriginalContent}
+        </label>
+        <br />
+        <!-- DOWNLOAD_METADATA -->
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privDownloadMetadataDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privDownloadMetadata}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privDownloadMetadata" />
+            <h:selectBooleanCheckbox
+                id="privDownloadMetadata" 
+                rendered="#{!adminBean.currentLicense.licenseType.privDownloadMetadata}"
+                value="#{adminBean.currentLicense.privDownloadMetadata}" 
+                label="privDownloadMetadata" /> #{msg.license_privDownloadMetadata}
+        </label>
+        <br />
+        <!-- GENERATE_IIIF_MANIFEST -->
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privGenerateIiifManifestDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privGenerateIiifManifest}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privGenerateIiifManifest" />
+            <h:selectBooleanCheckbox
+                id="privGenerateIiifManifest" 
+                rendered="#{!adminBean.currentLicense.licenseType.privGenerateIiifManifest}"
+                value="#{adminBean.currentLicense.privGenerateIiifManifest}" 
+                label="privGenerateIiifManifest" /> #{msg.license_privGenerateIiifManifest}
         </label>
     </div>
 </ui:composition>
