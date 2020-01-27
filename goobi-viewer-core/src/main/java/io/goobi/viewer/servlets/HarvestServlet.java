@@ -51,7 +51,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.misc.Harvestable;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
 
 /**
  * Servlet for harvesting crowdsourcing data and overview pages.
