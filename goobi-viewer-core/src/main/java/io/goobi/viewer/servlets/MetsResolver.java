@@ -56,7 +56,9 @@ public class MetsResolver extends HttpServlet {
     private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
 
     /**
-     * <p>main.</p>
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      */
@@ -100,7 +102,8 @@ public class MetsResolver extends HttpServlet {
 
             SolrDocument doc = hits.get(0);
             id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
+            boolean access =
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
 
             // If the user has no listing privilege for this record, act as if it does not exist
             if (!access) {
