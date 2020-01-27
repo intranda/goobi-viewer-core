@@ -145,6 +145,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private Comment currentComment;
     /** Textual content of the previously created page comment. Workaround for duplicate posts via browser refresh. */
     private String previousCommentText;
+    /** List of <code>StructElement</code>s contained on this page. */
+    private List<StructElement> containedStructElements;
 
     /**
      * <p>
@@ -340,7 +342,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (watermarkTextConfiguration == null || watermarkTextConfiguration.isEmpty()) {
             return "";
         }
-        
+
         StringBuilder urlBuilder = new StringBuilder();
         for (String text : watermarkTextConfiguration) {
             if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
@@ -1617,24 +1619,27 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * TODO Persist list
+     * List of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
+     * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
      * 
-     * @return
+     * @return List of <code>/StructElement<code>s
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public List<StructElement> getContainedStructElements() throws PresentationException, IndexUnreachableException {
-        String query = '+' + SolrConstants.PI_TOPSTRUCT + ':' + pi + " +" + SolrConstants.THUMBPAGENO + ':' + order;
-        SolrDocumentList docstructDocs = DataManager.getInstance().getSearchIndex().search(query);
-        if (docstructDocs.isEmpty()) {
-            return Collections.emptyList();
+        if (containedStructElements == null) {
+            String query = '+' + SolrConstants.PI_TOPSTRUCT + ':' + pi + " +" + SolrConstants.THUMBPAGENO + ':' + order;
+            SolrDocumentList docstructDocs = DataManager.getInstance().getSearchIndex().search(query);
+            if (docstructDocs.isEmpty()) {
+                containedStructElements = Collections.emptyList();
+            } else {
+                containedStructElements = new ArrayList<>(docstructDocs.size());
+                for (SolrDocument doc : docstructDocs) {
+                    containedStructElements.add(new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
+                }
+            }
         }
 
-        List<StructElement> ret = new ArrayList<>(docstructDocs.size());
-        for (SolrDocument doc : docstructDocs) {
-            ret.add(new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
-        }
-        
-        return ret;
+        return containedStructElements;
     }
 }

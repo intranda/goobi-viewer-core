@@ -91,7 +91,12 @@
                     </ui:insert>
                 </h:panelGroup>
                 
-                <h:outputText>COORDS: #{activeDocumentBean.viewManager.currentDocument.shapeMetadata[0].coords}</h:outputText>
+                <!-- TODO -->
+                <h:outputText>SELECTED DOCSTRUCT COORDS: #{activeDocumentBean.viewManager.currentDocument.shapeMetadata[0].coords}</h:outputText>
+                <ui:repeat var="docstruct" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
+                    <br />
+                    <h:outputText>CURRENT PAGE DOCSTRUCT: #{docstruct.logid}</h:outputText>
+                </ui:repeat>
                 
                 <!--  PAGINATOR -->
                 <viewerComponent:simplePaginator
