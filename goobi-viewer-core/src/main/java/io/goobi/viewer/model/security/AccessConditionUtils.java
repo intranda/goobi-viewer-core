@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.security;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,7 +32,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,13 +40,11 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.management.UnixOperatingSystemMXBean;
-
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -883,9 +878,9 @@ public class AccessConditionUtils {
                     allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
                             : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
             return containsOpenAccess && !openAccessIsConfiguredLicenceType;
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
@@ -974,17 +969,17 @@ public class AccessConditionUtils {
         return ret;
     }
 
-    /**
-     * Testing
-     * 
-     * @return
-     */
-    private static long getNumberOfOpenFiles() {
-        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-        if (os instanceof UnixOperatingSystemMXBean) {
-            return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
-        }
-
-        return -1;
-    }
+//    /**
+//     * Testing
+//     * 
+//     * @return
+//     */
+//    private static long getNumberOfOpenFiles() {
+//        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+//        if (os instanceof UnixOperatingSystemMXBean) {
+//            return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
+//        }
+//
+//        return -1;
+//    }
 }

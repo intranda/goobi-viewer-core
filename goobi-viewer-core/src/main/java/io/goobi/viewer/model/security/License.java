@@ -48,7 +48,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>License class.</p>
+ * <p>
+ * License class.
+ * </p>
  */
 @Entity
 @Table(name = "licenses")
@@ -336,6 +338,46 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadMetadata()
+     */
+    @Override
+    public boolean isPrivDownloadMetadata() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadMetadata(boolean)
+     */
+    @Override
+    public void setPrivDownloadMetadata(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivGenerateIiifManifest()
+     */
+    @Override
+    public boolean isPrivGenerateIiifManifest() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivIiifManifest(boolean)
+     */
+    @Override
+    public void setPrivGenerateIiifManifest(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
      */
     /** {@inheritDoc} */
@@ -616,7 +658,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -625,7 +669,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -634,7 +680,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>licenseType</code>.</p>
+     * <p>
+     * Getter for the field <code>licenseType</code>.
+     * </p>
      *
      * @return the licenseType
      */
@@ -643,7 +691,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>licenseType</code>.</p>
+     * <p>
+     * Setter for the field <code>licenseType</code>.
+     * </p>
      *
      * @param licenseType the licenseType to set
      */
@@ -653,7 +703,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>user</code>.</p>
+     * <p>
+     * Getter for the field <code>user</code>.
+     * </p>
      *
      * @return the user
      */
@@ -662,7 +714,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>user</code>.</p>
+     * <p>
+     * Setter for the field <code>user</code>.
+     * </p>
      *
      * @param user the user to set
      */
@@ -671,7 +725,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>userGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>userGroup</code>.
+     * </p>
      *
      * @return the userGroup
      */
@@ -680,7 +736,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>userGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>userGroup</code>.
+     * </p>
      *
      * @param userGroup the userGroup to set
      */
@@ -689,7 +747,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>ipRange</code>.</p>
+     * <p>
+     * Getter for the field <code>ipRange</code>.
+     * </p>
      *
      * @return the ipRange
      */
@@ -698,7 +758,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>ipRange</code>.</p>
+     * <p>
+     * Setter for the field <code>ipRange</code>.
+     * </p>
      *
      * @param ipRange the ipRange to set
      */
@@ -707,7 +769,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>start</code>.</p>
+     * <p>
+     * Getter for the field <code>start</code>.
+     * </p>
      *
      * @return the start
      */
@@ -716,7 +780,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>start</code>.</p>
+     * <p>
+     * Setter for the field <code>start</code>.
+     * </p>
      *
      * @param start the start to set
      */
@@ -725,7 +791,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>end</code>.</p>
+     * <p>
+     * Getter for the field <code>end</code>.
+     * </p>
      *
      * @return the end
      */
@@ -734,7 +802,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>end</code>.</p>
+     * <p>
+     * Setter for the field <code>end</code>.
+     * </p>
      *
      * @param end the end to set
      */
@@ -743,7 +813,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>privileges</code>.</p>
+     * <p>
+     * Getter for the field <code>privileges</code>.
+     * </p>
      *
      * @return the privileges
      */
@@ -752,7 +824,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>privileges</code>.</p>
+     * <p>
+     * Setter for the field <code>privileges</code>.
+     * </p>
      *
      * @param privileges the privileges to set
      */
@@ -761,7 +835,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>conditions</code>.</p>
+     * <p>
+     * Getter for the field <code>conditions</code>.
+     * </p>
      *
      * @return the conditions
      */
@@ -770,7 +846,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>conditions</code>.</p>
+     * <p>
+     * Setter for the field <code>conditions</code>.
+     * </p>
      *
      * @param conditions the conditions to set
      */
@@ -779,7 +857,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -788,7 +868,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -797,7 +879,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>subthemeDiscriminatorValues</code>.</p>
+     * <p>
+     * Getter for the field <code>subthemeDiscriminatorValues</code>.
+     * </p>
      *
      * @return the subthemeDiscriminatorValues
      */
@@ -806,7 +890,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>subthemeDiscriminatorValues</code>.</p>
+     * <p>
+     * Setter for the field <code>subthemeDiscriminatorValues</code>.
+     * </p>
      *
      * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
      */
@@ -815,7 +901,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>allowedCategories</code>.</p>
+     * <p>
+     * Getter for the field <code>allowedCategories</code>.
+     * </p>
      *
      * @return the allowedCategories
      */
@@ -824,7 +912,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>allowedCategories</code>.</p>
+     * <p>
+     * Setter for the field <code>allowedCategories</code>.
+     * </p>
      *
      * @param allowedCategories the allowedCategories to set
      */
@@ -833,7 +923,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>allowedCmsTemplates</code>.</p>
+     * <p>
+     * Getter for the field <code>allowedCmsTemplates</code>.
+     * </p>
      *
      * @return the allowedCmsTemplates
      */
@@ -842,7 +934,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>allowedCmsTemplates</code>.</p>
+     * <p>
+     * Setter for the field <code>allowedCmsTemplates</code>.
+     * </p>
      *
      * @param allowedCmsTemplates the allowedCmsTemplates to set
      */
@@ -851,7 +945,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>allowedCrowdsourcingCampaigns</code>.</p>
+     * <p>
+     * Getter for the field <code>allowedCrowdsourcingCampaigns</code>.
+     * </p>
      *
      * @return the allowedCrowdsourcingCampaigns
      */
@@ -860,7 +956,9 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>allowedCrowdsourcingCampaigns</code>.</p>
+     * <p>
+     * Setter for the field <code>allowedCrowdsourcingCampaigns</code>.
+     * </p>
      *
      * @param allowedCrowdsourcingCampaigns the allowedCrowdsourcingCampaigns to set
      */
