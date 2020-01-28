@@ -67,6 +67,18 @@
                                     #{msg.downloadLidoButtonLabel}
                                 </a>
                             </ui:fragment>
+                            
+                            <!-- DENKXWEB -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DENKXWEB'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
+                                    id="lidomets" 
+                                    class="label label-default widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_denkxweb}" 
+                                    target="_blank" rel="nofollow"> 
+                                    #{msg.downloadDenkxwebButtonLabel}
+                                </a>
+                            </ui:fragment>
     
                             <!-- MARCXML -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null}">

@@ -1460,6 +1460,23 @@ public class ViewManager implements Serializable {
         }
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + 0;
     }
+    
+    /**
+     * <p>
+     * getDenkxwebResolverUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDenkxwebResolverUrl() {
+        try {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + getPi();
+        } catch (Exception e) {
+            logger.error("Could not get DenkXweb resolver URL for {}.", topDocumentIddoc);
+            Messages.error("errGetCurrUrl");
+        }
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + 0;
+    }
 
     /**
      * <p>

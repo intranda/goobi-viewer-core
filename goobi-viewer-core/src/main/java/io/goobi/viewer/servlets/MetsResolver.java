@@ -107,7 +107,7 @@ public class MetsResolver extends HttpServlet {
 
             // If the user has no listing privilege for this record, act as if it does not exist
             if (!access) {
-                logger.debug("User may not list {}", id);
+                logger.debug("User may not download metadata for {}", id);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
             }
