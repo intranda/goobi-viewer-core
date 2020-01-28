@@ -6,6 +6,8 @@
         <wb-resource deploy-path="/" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/java"/>
         <wb-resource deploy-path="/" source-path="/src/main/resources/META-INF/resources"/>
+        <wb-resource deploy-path="/" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/" source-path="/src/test/resources"/>
 <!--         <dependent-module archiveName="viewer-module-skeleton.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-skeleton/goobi-viewer-module-skeleton"> -->
 <!--             <dependency-type>uses</dependency-type> -->
 <!--         </dependent-module>  -->
