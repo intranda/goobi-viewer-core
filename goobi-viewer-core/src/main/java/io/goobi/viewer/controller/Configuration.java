@@ -4489,16 +4489,18 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      */
     private static HierarchicalConfiguration getMatchingConfig(List<HierarchicalConfiguration> templateList, String name) {
+        if (name == null || templateList == null) {
+            return null;
+        }
+
         HierarchicalConfiguration conf = null;
         HierarchicalConfiguration defaultConf = null;
-        if (templateList != null) {
-            for (HierarchicalConfiguration subConf : templateList) {
-                if (name.equalsIgnoreCase(subConf.getString("[@name]"))) {
-                    conf = subConf;
-                    break;
-                } else if ("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
-                    defaultConf = subConf;
-                }
+        for (HierarchicalConfiguration subConf : templateList) {
+            if (name.equalsIgnoreCase(subConf.getString("[@name]"))) {
+                conf = subConf;
+                break;
+            } else if ("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
+                defaultConf = subConf;
             }
         }
         if (conf != null) {
