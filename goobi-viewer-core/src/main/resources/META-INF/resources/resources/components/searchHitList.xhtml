@@ -12,7 +12,8 @@
         <!-- THIS COMPONENT MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
         <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
-
+        <ui:param name="rootUrl" value="#{rootUrl != null ? rootUrl : search.currentSearchUrlRoot.concat('/')}"></ui:param>
+        
         <!-- SEARCH LIST HITS -->
         <div class="search-list__hits">
             <!-- SEARCH LIST SORTING -->
@@ -28,12 +29,12 @@
                                     <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
                                     <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                         <option
-                                            value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
+                                            value="#{rootUrl}-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
                                             data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
                                             <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
                                         </option>
                                         <option
-                                            value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
+                                            value="#{rootUrl}-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
                                             data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
                                             <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
                                         </option>

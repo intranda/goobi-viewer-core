@@ -14,8 +14,8 @@
         <!-- WIDGET GEO LOCATIONS -->
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
             <!-- MAPBOX RESOURCES -->
-            <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
-            <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
+            <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+            <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
 
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
@@ -57,15 +57,20 @@
                 </div>
             </h:panelGroup>
 
-            <script type="text/javascript">	        
-	        	widgetGeoLocationsConfig = {
-        			locations: '#{cc.attrs.widget.geoLocationsString}',
-        			msg: {
-        			    propertiesLink: "#{msg.widgetGeoLoacations_popupLinkText}"
-        			}
-				};
-	        	
-	        	cmsJS.geoLocations.init( widgetGeoLocationsConfig );
+            <script type="text/javascript">	  
+            $(document).ready( () => {	
+                if(mapBoxToken) {                    
+		        	widgetGeoLocationsConfig = {
+	        			locations: '#{cc.attrs.widget.geoLocationsString}',
+	        			mapboxAccessToken: mapBoxToken,
+	        			msg: {
+	        			    propertiesLink: "#{msg.widgetGeoLoacations_popupLinkText}"
+	        			}
+					};
+		        	
+		        	cmsJS.geoLocations.init( widgetGeoLocationsConfig );
+                }
+            })
 	        </script>
         </h:panelGroup>
     </composite:implementation>

@@ -48,11 +48,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
     private static final Logger logger = LoggerFactory.getLogger(StructElementStub.class);
 
-    /** Constant <code>SOURCE_DOC_FORMAT_METS="METS"</code> */
-    public static final String SOURCE_DOC_FORMAT_METS = "METS";
-    /** Constant <code>SOURCE_DOC_FORMAT_LIDO="LIDO"</code> */
-    public static final String SOURCE_DOC_FORMAT_LIDO = "LIDO";
-
     /** IDDOC of the Solr document representing this structure element. */
     protected long luceneId;
     /** Identifier of top level structure element of the tree to which this structure element belongs. */
@@ -78,7 +73,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /** Identifier of the partner institution to which this record belongs (top-level structure elements only). */
     protected String partnerId = null;
     /** Format of document format from which this record was indexed. */
-    protected String sourceDocFormat = SOURCE_DOC_FORMAT_METS;
+    protected String sourceDocFormat = SolrConstants._METS;
     /** Content of the LABEL or MD_TITLE fields. Used to display the record label in the browser's title bar. */
     protected String label = null;
     /** Name of the data repository for this record. */
