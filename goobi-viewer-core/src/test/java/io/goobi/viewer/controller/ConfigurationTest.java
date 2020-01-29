@@ -34,6 +34,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -2488,7 +2489,9 @@ public class ConfigurationTest extends AbstractTest {
         Metadata mdTitle = metadataList.get(2);
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
         Assert.assertEquals(1, mdTitle.getParams().size());
-        Assert.assertEquals("bar", mdTitle.getParams().get(0).getReplaceRules().get("foo"));
+        Assert.assertEquals("foo", mdTitle.getParams().get(0).getReplaceRules().get(0).getKey());
+        Assert.assertEquals("bar", mdTitle.getParams().get(0).getReplaceRules().get(0).getReplacement());
+        Assert.assertEquals(MetadataReplaceRuleType.STRING, mdTitle.getParams().get(0).getReplaceRules().get(0).getType());
     }
 
     /**
