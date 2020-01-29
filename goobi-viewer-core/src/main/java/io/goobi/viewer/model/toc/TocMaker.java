@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -44,8 +44,8 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -60,10 +60,11 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.StructElementStub;
 
 /**
- * <p>TocMaker class.</p>
+ * <p>
+ * TocMaker class.
+ * </p>
  */
 public class TocMaker {
 
@@ -109,7 +110,7 @@ public class TocMaker {
         if (ancestorFields != null) {
             ret.addAll(ancestorFields);
         }
-        
+
         return new ArrayList<>(ret);
     }
 
@@ -149,7 +150,7 @@ public class TocMaker {
         ret.put(TOC.DEFAULT_GROUP, new ArrayList<TOCElement>());
 
         // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
-        boolean sourceFormatPdfAllowed = StructElementStub.SOURCE_DOC_FORMAT_METS.equals(structElement.getSourceDocFormat());
+        boolean sourceFormatPdfAllowed = SolrConstants._METS.equals(structElement.getSourceDocFormat());
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
@@ -673,7 +674,9 @@ public class TocMaker {
     }
 
     /**
-     * <p>getFirstFieldValue.</p>
+     * <p>
+     * getFirstFieldValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param footerIdField a {@link java.lang.String} object.
@@ -795,7 +798,9 @@ public class TocMaker {
     }
 
     /**
-     * <p>createMultiLanguageValue.</p>
+     * <p>
+     * createMultiLanguageValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.

@@ -142,7 +142,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -151,7 +153,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -160,7 +164,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -169,7 +175,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -178,7 +186,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -187,7 +197,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -196,7 +208,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>getProcessedConditions.</p>
+     * <p>
+     * getProcessedConditions.
+     * </p>
      *
      * @should replace NOW/YEAR with the current year if not using a date field
      * @return a {@link java.lang.String} object.
@@ -215,7 +229,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>getFilenameConditions.</p>
+     * <p>
+     * getFilenameConditions.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -240,7 +256,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>getMatch.</p>
+     * <p>
+     * getMatch.
+     * </p>
      *
      * @param conditions a {@link java.lang.String} object.
      * @param pattern a {@link java.lang.String} object.
@@ -270,7 +288,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>isCmsType.</p>
+     * <p>
+     * isCmsType.
+     * </p>
      *
      * @return true if this license type has one of the static CMS type names; false otherwise
      */
@@ -288,7 +308,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>isCrowdsourcingType.</p>
+     * <p>
+     * isCrowdsourcingType.
+     * </p>
      *
      * @return true if this license type has one of the static crowdsourcing type names; false otherwise
      */
@@ -306,7 +328,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Getter for the field <code>conditions</code>.</p>
+     * <p>
+     * Getter for the field <code>conditions</code>.
+     * </p>
      *
      * @return the conditions
      */
@@ -315,7 +339,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>conditions</code>.</p>
+     * <p>
+     * Setter for the field <code>conditions</code>.
+     * </p>
      *
      * @param conditions the conditions to set
      */
@@ -324,7 +350,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>isOpenAccess.</p>
+     * <p>
+     * isOpenAccess.
+     * </p>
      *
      * @return the openAccess
      */
@@ -333,7 +361,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>openAccess</code>.</p>
+     * <p>
+     * Setter for the field <code>openAccess</code>.
+     * </p>
      *
      * @param openAccess the openAccess to set
      */
@@ -342,7 +372,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>isCore.</p>
+     * <p>
+     * isCore.
+     * </p>
      *
      * @return the core
      */
@@ -351,7 +383,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>core</code>.</p>
+     * <p>
+     * Setter for the field <code>core</code>.
+     * </p>
      *
      * @param core the core to set
      */
@@ -360,7 +394,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Getter for the field <code>privileges</code>.</p>
+     * <p>
+     * Getter for the field <code>privileges</code>.
+     * </p>
      *
      * @return the privileges
      */
@@ -369,7 +405,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>privileges</code>.</p>
+     * <p>
+     * Setter for the field <code>privileges</code>.
+     * </p>
      *
      * @param privileges the privileges to set
      */
@@ -538,6 +576,46 @@ public class LicenseType implements IPrivilegeHolder {
             privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
         }
 
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadMetadata()
+     */
+    @Override
+    public boolean isPrivDownloadMetadata() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadMetadata(boolean)
+     */
+    @Override
+    public void setPrivDownloadMetadata(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivGenerateIiifManifest()
+     */
+    @Override
+    public boolean isPrivGenerateIiifManifest() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivIiifManifest(boolean)
+     */
+    @Override
+    public void setPrivGenerateIiifManifest(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+        }
     }
 
     /* (non-Javadoc)
@@ -821,7 +899,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Getter for the field <code>overridingLicenseTypes</code>.</p>
+     * <p>
+     * Getter for the field <code>overridingLicenseTypes</code>.
+     * </p>
      *
      * @return the overridingLicenseTypes
      */
@@ -830,7 +910,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>Setter for the field <code>overridingLicenseTypes</code>.</p>
+     * <p>
+     * Setter for the field <code>overridingLicenseTypes</code>.
+     * </p>
      *
      * @param overridingLicenseTypes the overridingLicenseTypes to set
      */
@@ -839,7 +921,9 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * <p>addCoreLicenseTypesToDB.</p>
+     * <p>
+     * addCoreLicenseTypesToDB.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

@@ -80,6 +80,8 @@ var viewerJS = (function () {
         // init user login
         viewerJS.userLogin.init();
         
+        viewerJS.popovers.init();
+        
         
         // init bookmarks if enabled
         if ( bookmarksEnabled ) {

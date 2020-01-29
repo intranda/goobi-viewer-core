@@ -230,7 +230,9 @@ var viewerJS = ( function( viewer ) {
                     $( this ).next().slideToggle( 'fast' );
                     
                     for ( var status in panelSessionStatus ) {
-                    	panelSessionStatus[ status ] = false;
+                        if(status.startsWith("panel-")) {                       
+                            panelSessionStatus[ status ] = false;
+                        }
                     }
 
                     panelSessionStatus[ parentPanelId ] = true;
@@ -248,7 +250,9 @@ var viewerJS = ( function( viewer ) {
             	} );
             	
             	for ( var status in panelSessionStatus ) {
-                	panelSessionStatus[ status ] = false;
+            	    if(status.startsWith("panel-")) {            	        
+            	        panelSessionStatus[ status ] = false;
+            	    }
                 }
             	
             	sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
@@ -264,7 +268,9 @@ var viewerJS = ( function( viewer ) {
             	} );
             	
             	for ( var status in panelSessionStatus ) {
-                	panelSessionStatus[ status ] = true;
+                    if(status.startsWith("panel-")) {                       
+                        panelSessionStatus[ status ] = true;
+                    }
                 }
             	
             	sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
@@ -389,13 +395,17 @@ var viewerJS = ( function( viewer ) {
     	
     	var panelStatus;
     	var fsPanelStatus = sessionStorage.getItem( 'fsPanelStatus' );
-        console.log("fsPanelStatus", fsPanelStatus);
-        //reset panel status if PI has changed
-        if(fsPanelStatus !=  null && _defaults.persistentIdentifier && _defaults.persistentIdentifier !== fsPanelStatus.persistentIdentifier) {
-            fsPanelStatus = null;
-        }
+    	if(fsPanelStatus) {
+    	    panelStatus = JSON.parse(fsPanelStatus);
+    	    if(panelStatus.persistentIdentifier !== _defaults.persistentIdentifier) {
+    	        panelStatus = undefined;
+    	    }
+    	} else {
+    	    panelStatus = undefined;
+    	}
+        console.log("panelStatus", panelStatus);
         
-    	if ( fsPanelStatus == undefined || fsPanelStatus === null ) {
+    	if ( !panelStatus ) {
     		panelStatus = {};
     		panelStatus.persistentIdentifier = _defaults.persistentIdentifier;
     		
@@ -429,7 +439,6 @@ var viewerJS = ( function( viewer ) {
     		sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelStatus ) );    		
     	}
     	else {
-    		panelStatus = JSON.parse( fsPanelStatus );
     		
     		if( _debug ) {
     			console.log( '--> panelStatus: ', panelStatus );

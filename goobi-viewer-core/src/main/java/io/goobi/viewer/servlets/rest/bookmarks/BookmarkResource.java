@@ -444,8 +444,8 @@ public class BookmarkResource {
         if(bookmarkList == null) {
             throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);
         }
-        if (bookmarkList.isIsPublic()) {
-            logger.trace("Serving public bookmark list " + bookmarkList.getId());
+        if (bookmarkList.hasShareKey()) {
+            logger.trace("Serving shared bookmark list " + bookmarkList.getId());
             return bookmarkList;
         }
         User user = getUser();

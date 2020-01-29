@@ -420,11 +420,6 @@ public class BrowseElement implements Serializable {
         hasMedia = !hasImages && !isAnchor()
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
 
-        // Only topstructs should be openened with their overview page view (if they have one)
-        //        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
-        //            useOverviewPage = true;
-        //        }
-
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
 

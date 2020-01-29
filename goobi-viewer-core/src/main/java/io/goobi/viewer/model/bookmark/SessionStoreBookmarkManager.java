@@ -29,6 +29,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -233,7 +234,9 @@ public class SessionStoreBookmarkManager {
         StringBuilder itemList = new StringBuilder();
         for (Bookmark item : bookmarkList.getItems()) {
             try {
-                String currentItemText = itemText.replace("{0}", item.getUrl()).replace("{1}", item.getName());
+                String path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+                String url = path + item.getUrl();
+                String currentItemText = itemText.replace("{0}", url).replace("{1}", item.getName());
                 itemList.append(currentItemText);
             } catch (PresentationException e) {
                 logger.error(e.getMessage());

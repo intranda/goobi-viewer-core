@@ -34,7 +34,7 @@ var cmsJS = ( function( cms ) {
     var _defaults = {
         appUrl: '',
         locations: '',
-        mapboxAccessToken: 'pk.eyJ1IjoibGlydW1nYnYiLCJhIjoiY2lobjRzamkyMDBnM3U5bTR4cHp0NDdyeCJ9.AjNCRBlBb57j-dziFxf58A',
+        mapboxAccessToken: '',
         mapBoxContainerSelector: 'widgetGeoLocationsMap',
         mapBoxContainerEnlargedSelector: 'widgetGeoLocationsMapEnlarged',
         mapBoxStyle: 'mapbox://styles/lirumgbv/cii024wxn009aiolzgy2zlycj',

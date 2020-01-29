@@ -1406,7 +1406,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public boolean hasSearchFunctionality() {
         Optional<CMSContentItem> searchItem =
-                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
+                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType()) || CMSContentItemType.SOLRQUERY.equals(item.getType())).findFirst();
         return searchItem.isPresent();
 
     }

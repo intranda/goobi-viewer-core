@@ -1043,7 +1043,6 @@ public class CmsBean implements Serializable {
         }
 
         selectedPage = null;
-
     }
 
     /**
@@ -1451,23 +1450,18 @@ public class CmsBean implements Serializable {
             
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             search.setQuery( "+(" + item.getSolrQuery() + ") +(ISWORK:* ISANCHOR:*)");
-            if (StringUtils.isNotBlank(item.getSolrSortFields())) {
+            if(StringUtils.isNotBlank(searchBean.getSortString().replace("-", ""))) {
+                search.setSortString(searchBean.getSortString());
+            } else if (StringUtils.isNotBlank(item.getSolrSortFields())) {
                 search.setSortString(item.getSolrSortFields());
             }            
             SearchFacets facets = searchBean.getFacets();
-            search.setPage(item.getListPage());
+            String sortString = searchBean.getSortString();
+            search.setPage(searchBean.getCurrentPage());
             search.execute(facets, null, item.getElementsPerPage(), 0, null);
             searchBean.setCurrentSearch(search);
+            String newSortString = searchBean.getSortString();
             return null;
-//            searchBean.resetSearchResults();
-//            searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-//            searchBean.setHitsPerPage(item.getElementsPerPage());
-//            searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-            //            searchBean.setCurrentPage(item.getListPage());
-//            if (StringUtils.isNotBlank(item.getSolrSortFields())) {
-//                searchBean.setSortString(item.getSolrSortFields());
-//            }
-//            return searchBean.search();
         } else if (item == null) {
             logger.error("Cannot search: item is null");
             searchBean.resetSearchResults();
@@ -1880,6 +1874,15 @@ public class CmsBean implements Serializable {
         }
         this.staticPages = null;
         Messages.info("cms_staticPagesSaved");
+    }
+    
+    public boolean isLinkedToStaticPage(CMSPage page) throws DAOException {
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if(staticPage.getCmsPageId().map(id -> id.equals(page.getId())).orElse(false)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

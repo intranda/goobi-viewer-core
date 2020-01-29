@@ -10,37 +10,34 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('YEAR')) >= 1) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
-        <div class="widget-chronology-slider">
         
-		<div class="widget-chronology-slider__topbar">
-            <!-- LABEL -->
-            <div class="widget-chronology-slider__item chronology-slider-label">
-                #{msg.widgetChronology_label}
-            </div>
-            
-            <div class="widget-chronology-slider__item chronology-slider-actions">
-                <ul>
-                    <li class="widget-chronology-slider__item chronology-slider-action-loader">
-                        <img src="#{request.contextPath}/resources/images/image_preloader.gif" alt="Chrono Slider Loader" />
-                    </li>
-                    <li class="widget-chronology-slider__item chronology-slider-action-reset">
-                        <button 
-                            type="button" 
-                            class="btn btn--icon" 
-                            title="#{msg.removeFacet}" 
-                            data-toggle="tooltip" 
-                            data-placement="top" 
-                            data-reset="chrono-slider">
-                            <i class="fa fa-times" aria-hidden="true"></i>
-                        </button>
-                    </li>
-                </ul>
-            </div>
-		</div>
-            
-            
-            <!-- START/END YEAR -->
+        <!--  WIDGET CHRONOLOGY -->
+        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('YEAR')) >= 1) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <div class="widget widget-chronology-slider">
+			<div class="widget-chronology-slider__topbar">
+				<div class="widget-chronology-slider__item chronology-slider-label">
+					<h3>#{msg.widgetChronology_label}</h3>
+				</div>
+				<div
+					class="widget-chronology-slider__item chronology-slider-actions">
+					<div
+						class="widget-chronology-slider__item chronology-slider-action-loader">
+						<img
+							src="#{request.contextPath}/resources/images/image_preloader.gif"
+							alt="Chrono Slider Loader" />
+					</div>
+					<div
+						class="widget-chronology-slider__item chronology-slider-action-reset">
+						<button type="button" class="btn btn--icon"
+							title="#{msg.removeFacet}" data-toggle="tooltip"
+							data-placement="top" data-reset="chrono-slider">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+
+				<!-- START/END YEAR -->
             <div class="widget-chronology-slider__item chronology-slider-start">#{searchBean.facets.getCurrentMinRangeValue("YEAR")}</div>
             <div class="widget-chronology-slider__item chronology-slider-end">#{searchBean.facets.getCurrentMaxRangeValue("YEAR")}</div>
             

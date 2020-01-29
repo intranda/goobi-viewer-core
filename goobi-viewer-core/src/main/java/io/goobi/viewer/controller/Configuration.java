@@ -1450,7 +1450,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder");
     }
-    
+
     /**
      * <p>
      * getIndexedDenkxwebFolder.
@@ -3217,7 +3217,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
     }
-    
+
     public String getPageTypeExitView(PageType type) {
         return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
     }
@@ -4445,17 +4445,76 @@ public final class Configuration extends AbstractConfiguration {
     public String getAccessConditionDisplayField() {
         return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
     }
-    
+
     public String getCopyrightDisplayField() {
         return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
     }
-    
+
     public boolean isDisplayCopyrightInfo() {
         return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
     }
-    
+
     public boolean isDisplaySocialMediaShareLinks() {
         return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
     }
 
+    public boolean isDisplayAnchorLabelInTitleBar(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if (subConf != null) {
+            return subConf.getBoolean("displayAnchorTitle", false);
+        }
+
+        return false;
+    }
+
+    public String getAnchorLabelInTitleBarPrefix(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if (subConf != null) {
+            return subConf.getString("displayAnchorTitle[@prefix]", "");
+        }
+
+        return "";
+    }
+
+    public String getAnchorLabelInTitleBarSuffix(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if (subConf != null) {
+            return subConf.getString("displayAnchorTitle[@suffix]", " ");
+        }
+
+        return " ";
+    }
+
+    /**
+     * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
+     * return null;
+     * 
+     * @param templateList
+     * @param template
+     * @return
+     */
+    private static HierarchicalConfiguration getMatchingConfig(List<HierarchicalConfiguration> templateList, String name) {
+        if (name == null || templateList == null) {
+            return null;
+        }
+
+        HierarchicalConfiguration conf = null;
+        HierarchicalConfiguration defaultConf = null;
+        for (HierarchicalConfiguration subConf : templateList) {
+            if (name.equalsIgnoreCase(subConf.getString("[@name]"))) {
+                conf = subConf;
+                break;
+            } else if ("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
+                defaultConf = subConf;
+            }
+        }
+        if (conf != null) {
+            return conf;
+        }
+
+        return defaultConf;
+    }
 }
