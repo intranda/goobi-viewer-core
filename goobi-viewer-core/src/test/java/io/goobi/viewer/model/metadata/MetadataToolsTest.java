@@ -15,15 +15,20 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 
-public class MetadataToolsTest {
+public class MetadataToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see MetadataTools#applyReplaceRules(String,Map)
@@ -31,11 +36,25 @@ public class MetadataToolsTest {
      */
     @Test
     public void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
-        Map<Object, String> replaceRules = new HashMap<>();
-        replaceRules.put('<', "");
-        replaceRules.put(">", "s");
-        replaceRules.put("REGEX:[ ]*100[ ]*", "");
-        Assert.assertEquals("vase", MetadataTools.applyReplaceRules(" 100 v<a>e", replaceRules));
+        List<MetadataReplaceRule> replaceRules = new ArrayList<>(3);
+        replaceRules.add(new MetadataReplaceRule('<', "", MetadataReplaceRuleType.CHAR));
+        replaceRules.add(new MetadataReplaceRule(">", "s", MetadataReplaceRuleType.STRING));
+        replaceRules.add(new MetadataReplaceRule("[ ]*100[ ]*", "", MetadataReplaceRuleType.REGEX));
+        Assert.assertEquals("vase", MetadataTools.applyReplaceRules(" 100 v<a>e", replaceRules, null));
+    }
+
+    /**
+     * @see MetadataTools#applyReplaceRules(String,List,String)
+     * @verifies apply conditional rules correctly
+     */
+    @Test
+    public void applyReplaceRules_shouldApplyConditionalRulesCorrectly() throws Exception {
+        List<MetadataReplaceRule> replaceRules = Collections.singletonList(
+                new MetadataReplaceRule("remove me", "", SolrConstants.PI_TOPSTRUCT + ":PPN517154005", MetadataReplaceRuleType.STRING));
+        Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN517154005", replaceRules.get(0).getConditions());
+        Assert.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN517154005"));
+        Assert.assertEquals("remove me please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN123"));
+        Assert.assertEquals("remove me please", MetadataTools.applyReplaceRules("remove me please", replaceRules, null));
     }
 
     /**

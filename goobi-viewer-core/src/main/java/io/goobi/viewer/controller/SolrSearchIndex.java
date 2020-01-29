@@ -18,6 +18,7 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,7 +69,9 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
 
 /**
- * <p>SolrSearchIndex class.</p>
+ * <p>
+ * SolrSearchIndex class.
+ * </p>
  */
 public final class SolrSearchIndex {
 
@@ -92,7 +95,9 @@ public final class SolrSearchIndex {
     private SolrServer server;
 
     /**
-     * <p>Constructor for SolrSearchIndex.</p>
+     * <p>
+     * Constructor for SolrSearchIndex.
+     * </p>
      *
      * @param server a {@link org.apache.solr.client.solrj.SolrServer} object.
      */
@@ -119,7 +124,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getNewHttpSolrServer.</p>
+     * <p>
+     * getNewHttpSolrServer.
+     * </p>
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
@@ -139,7 +146,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>testQuery.</p>
+     * <p>
+     * testQuery.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
@@ -267,7 +276,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
@@ -288,7 +299,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
@@ -307,7 +320,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param rows a int.
@@ -351,7 +366,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>count.</p>
+     * <p>
+     * count.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a long.
@@ -420,7 +437,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getDocumentByIddoc.</p>
+     * <p>
+     * getDocumentByIddoc.
+     * </p>
      *
      * @param iddoc a {@link java.lang.String} object.
      * @should return correct doc
@@ -441,7 +460,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getDocumentByPI.</p>
+     * <p>
+     * getDocumentByPI.
+     * </p>
      *
      * @should return correct doc
      * @param pi a {@link java.lang.String} object.
@@ -572,7 +593,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getIdentifierFromIddoc.</p>
+     * <p>
+     * getIdentifierFromIddoc.
+     * </p>
      *
      * @should retrieve correct identifier
      * @param iddoc a long.
@@ -679,7 +702,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldValue.</p>
+     * <p>
+     * getSingleFieldValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -698,7 +723,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldStringValue.</p>
+     * <p>
+     * getSingleFieldStringValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -712,7 +739,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldIntegerValue.</p>
+     * <p>
+     * getSingleFieldIntegerValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -724,7 +753,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldBooleanValue.</p>
+     * <p>
+     * getSingleFieldBooleanValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -832,7 +863,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getMultiLanguageMetadata.</p>
+     * <p>
+     * getMultiLanguageMetadata.
+     * </p>
      *
      * @param mdValues a {@link java.util.Map} object.
      * @return a {@link java.util.List} object.
@@ -986,7 +1019,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>checkSolrSchemaName.</p>
+     * <p>
+     * checkSolrSchemaName.
+     * </p>
      *
      * @return an array of {@link java.lang.String} objects.
      */
@@ -1196,7 +1231,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getAsInt.</p>
+     * <p>
+     * getAsInt.
+     * </p>
      *
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.Integer} object.
@@ -1216,7 +1253,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>isQuerySyntaxError.</p>
+     * <p>
+     * isQuerySyntaxError.
+     * </p>
      *
      * @param e a {@link java.lang.Exception} object.
      * @return a boolean.
@@ -1227,7 +1266,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getAllFieldNames.</p>
+     * <p>
+     * getAllFieldNames.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
@@ -1252,7 +1293,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getAllSortFieldNames.</p>
+     * <p>
+     * getAllSortFieldNames.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
@@ -1276,7 +1319,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getMetadataValuesForLanguage.</p>
+     * <p>
+     * getMetadataValuesForLanguage.
+     * </p>
      *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
@@ -1306,7 +1351,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getMetadataValuesForLanguage.</p>
+     * <p>
+     * getMetadataValuesForLanguage.
+     * </p>
      *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
@@ -1339,7 +1386,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getDisplayUserGeneratedContentsForPage.</p>
+     * <p>
+     * getDisplayUserGeneratedContentsForPage.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -1412,7 +1461,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -1430,7 +1481,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -1449,7 +1502,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -1469,7 +1524,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>isHasImages.</p>
+     * <p>
+     * isHasImages.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @should return correct value for page docs
@@ -1490,5 +1547,23 @@ public final class SolrSearchIndex {
         }
 
         return fileExtension != null && fileExtension.toLowerCase().matches("(tiff?|jpe?g|png|jp2|gif)");
+    }
+
+    /**
+     * 
+     * @param conditions
+     * @return
+     */
+    public static String getProcessedConditions(String conditions) {
+        if (conditions == null) {
+            return null;
+        }
+        
+        if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
+            // Hack for getting the current year as a number for non-date Solr fields
+            conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+        }
+
+        return conditions.trim();
     }
 }
