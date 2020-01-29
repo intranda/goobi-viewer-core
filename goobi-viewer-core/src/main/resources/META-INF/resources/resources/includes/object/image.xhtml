@@ -32,6 +32,7 @@
 
 	</popup>
 
+
 	<!-- OPEN SEADRAGON -->
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
@@ -245,4 +246,47 @@
        	
       	//]]>
     </script>
+    
+    <popover id="imageFilterPopover">
+		<imageFilters/>
+		<script>
+		if(viewImage) {		    
+			riot.mount("imageFilters", {
+			    image: viewImage,
+			    config: {
+			        filters : {
+			            brightness: {
+			                label: "Helligkeit"
+			            },
+			            contrast: {
+			                label: "Kontrast"
+			            },
+			            saturate: {
+			                label: "Farbsättigung"
+			            },
+			            grayscale: {
+			                label: "Graustufen"
+			            },
+			            threshold: {
+			                label: "schwarz/weiß"
+			            },
+			            blur: {
+			                label: "Verwischen"
+			            },
+			            sharpen: {
+			                label: "Schärfen"
+			            }
+			        },
+			        messages: {
+			            clearAll: "Alles zurücksetzen"
+			        }
+			    }
+			})
+		} else {
+		    console.error("viewImage is not defined");
+		}
+		</script>
+	</popover>
+    
+    
 </ui:composition>

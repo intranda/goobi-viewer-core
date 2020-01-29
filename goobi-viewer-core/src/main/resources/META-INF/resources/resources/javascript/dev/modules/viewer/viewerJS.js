@@ -23,8 +23,8 @@
  */
 
 //Shorter definitions for RxJs modules
-const Rx = rxjs;
-const RxOp = rxjs.operators;
+var Rx = rxjs;
+var RxOp = rxjs.operators;
 
 var viewerJS = (function () {
     'use strict';

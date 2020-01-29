@@ -1182,6 +1182,139 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
         }
     }.bind(this)
 });
+riot.tag2('imagefilters', '<div class="image-filters__filter-list"><div class="image-filters__options"><button type="button" onclick="{resetAll}">{this.config.messages.clearAll}</button></div><div class="image-filters__filter" each="{filter in filters}"><span class="image-filters__label">{filter.config.label}</span><input if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}"><input if="{filter.config.slider}" type="range" onchange="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"></div></div>', '', '', function(opts) {
+
+		if(!this.opts.image) {
+		    throw "ImageView object must be defined for imageFilters";
+		}
+
+		var defaultConfig = {
+			filters: {
+		        brightness : {
+				    label: "Brightness",
+				    type: ImageView.Tools.Filter.Brightness,
+				    min: -255,
+				    max: 255,
+				    step: 1,
+				    base: 0,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+		        contrast : {
+				    label: "Contrast",
+				    type: ImageView.Tools.Filter.Contrast,
+				    min: 0,
+				    max: 2,
+				    step: 0.05,
+				    base: 1,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+		        saturate : {
+				    label: "Color Saturation",
+				    type: ImageView.Tools.Filter.ColorSaturation,
+				    min: 0,
+				    max: 5,
+				    step: 0.1,
+				    base: 1,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+		        grayscale : {
+				    label: "Grayscale",
+				    type: ImageView.Tools.Filter.Grayscale,
+				    slider: false,
+				    checkbox: true,
+				    visible: true
+				},
+				threshold : {
+				    label: "Bitonal",
+				    type: ImageView.Tools.Filter.Threshold,
+				    min: 0,
+				    max: 255,
+				    step: 1,
+				    base: 128,
+				    slider: true,
+				    checkbox: true,
+				    visible: true
+				},
+		        blur : {
+				    label: "Blur",
+				    type: ImageView.Tools.Filter.Blur,
+				    min: 1,
+				    max: 10,
+				    step: 1,
+				    base: 1,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+		        sharpen : {
+				    label: "Sharpen",
+				    type: ImageView.Tools.Filter.Sharpen,
+				    base: 1,
+				    slider: false,
+				    checkbox: true,
+				    visible: true
+				},
+			},
+			messages : {
+			    clearAll: "Clear all",
+			    apply: "Apply"
+			}
+		}
+		console.log("config ", this.opts.config);
+		this.config = $.extend(true, {}, defaultConfig, this.opts.config);
+
+		this.on("mount", function() {
+		    this.filters = this.initFilters(this.config, this.opts.image);
+			console.log("initialized filters ", this.filters);
+			this.update();
+		});
+
+		this.initFilters = function(filterConfig, image) {
+		    let filters = [];
+		    for(var key in filterConfig.filters) {
+		        let conf = filterConfig.filters[key];
+		        if(conf.visible) {
+		            let filter = new conf.type(image, conf.base);
+		            filter.config = conf;
+		            filters.push(filter);
+		        }
+		    }
+		    return filters;
+		}.bind(this)
+
+		this.apply = function(event) {
+		    let filter = event.item.filter;
+		    let value = event.target.value;
+		    if(filter) {
+			    if(!filter.isActive()) {
+			        filter.start();
+			    } else if(isNaN(value) ) {
+			        filter.close();
+			    }
+			    if(!isNaN(value) ) {
+			    	filter.setValue(parseFloat(value));
+			    }
+		    }
+
+		}.bind(this)
+
+		this.resetAll = function() {
+		   this.filters.forEach( filter => {
+		       filter.close();
+		       if(filter.config.slider) {
+		       	filter.setValue(filter.config.base);
+		       }
+		   })
+		   this.update();
+		}.bind(this)
+
+});
 /**
  * Takes a IIIF canvas object in opts.source. 
  * If opts.item exists, it creates the method opts.item.setImageSource(canvas) 
@@ -1210,11 +1343,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 
-				    var now = rxjs.of(image);
+				    var now = Rx.of(image);
 					this.opts.item.setImageSource = function(source) {
 					    this.image.setTileSource(this.getImageInfo(source));
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(RxOp.map( () => image),RxOp.merge(now)));
 				}
 				return image;
 			})
