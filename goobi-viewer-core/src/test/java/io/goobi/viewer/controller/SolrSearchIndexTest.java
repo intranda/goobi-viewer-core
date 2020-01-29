@@ -47,8 +47,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldReturnCorrectResults() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, Integer.MAX_VALUE, null, null, null);
-        Assert.assertEquals(227, response.getResults().size());
+        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":PPN517154005 " + SolrConstants.PI + ":34115495_1940", 0, Integer.MAX_VALUE, null, null, null);
+        Assert.assertEquals(2, response.getResults().size());
     }
 
     /**
