@@ -52,9 +52,12 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
         List<MetadataReplaceRule> replaceRules = Collections.singletonList(
                 new MetadataReplaceRule("remove me", "", SolrConstants.PI_TOPSTRUCT + ":PPN517154005", MetadataReplaceRuleType.STRING));
         Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN517154005", replaceRules.get(0).getConditions());
+        // Condition match
         Assert.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN517154005"));
+        // No condition match
         Assert.assertEquals("remove me please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN123"));
-        Assert.assertEquals("remove me please", MetadataTools.applyReplaceRules("remove me please", replaceRules, null));
+        // Ignore conditions if no PI was given
+        Assert.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, null));
     }
 
     /**
