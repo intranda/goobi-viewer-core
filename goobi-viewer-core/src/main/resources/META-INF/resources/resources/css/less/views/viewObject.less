@@ -84,6 +84,39 @@ popup [data-copy] {
 	background: rgba(255,255,255,1.0);
 }
 
+/*IMAGE FILTERS */
+
+.image-filters__filter-list {
+	display: inline-grid;
+}
+
+.image-filters__filter {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	padding: 10px 5px;
+	border-bottom: 1px solid lightgray;
+	min-width: 150px;
+}
+
+.image-filters__options {
+	padding: 10px 5px;
+}
+
+.image-filters__options button {
+	width: 100%
+}
+
+.image-filters__label {
+	flex-basis: 50%;
+	padding-right: 5px;
+}
+
+.image-filters__slider {
+	flex-basis: 100%;
+}
+/* END IMAGE FILTERS */
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 

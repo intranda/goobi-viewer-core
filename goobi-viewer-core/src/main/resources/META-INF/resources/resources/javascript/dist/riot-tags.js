@@ -1182,7 +1182,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
         }
     }.bind(this)
 });
-riot.tag2('imagefilters', '<div class="image-filters__filter-list"><div class="image-filters__options"><button type="button" onclick="{resetAll}">{this.config.messages.clearAll}</button></div><div class="image-filters__filter" each="{filter in filters}"><span class="image-filters__label">{filter.config.label}</span><input if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}"><input if="{filter.config.slider}" type="range" onchange="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"></div></div>', '', '', function(opts) {
+riot.tag2('imagefilters', '<div class="image-filters__filter-list"><div class="image-filters__filter" each="{filter in filters}"><span class="image-filters__label">{filter.config.label}</span><input class="image-filters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}"><input class="image-filters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"></div><div class="image-filters__options"><button type="button" onclick="{resetAll}">{this.config.messages.clearAll}</button></div></div>', '', '', function(opts) {
 
 		if(!this.opts.image) {
 		    throw "ImageView object must be defined for imageFilters";
@@ -1223,11 +1223,15 @@ riot.tag2('imagefilters', '<div class="image-filters__filter-list"><div class="i
 				    checkbox: false,
 				    visible: true
 				},
-		        grayscale : {
-				    label: "Grayscale",
-				    type: ImageView.Tools.Filter.Grayscale,
-				    slider: false,
-				    checkbox: true,
+				rotate : {
+				    label: "Color rotation",
+				    type: ImageView.Tools.Filter.ColorRotate,
+				    min: -180,
+				    max: 180,
+				    step: 1,
+				    base: 0,
+				    slider: true,
+				    checkbox: false,
 				    visible: true
 				},
 				threshold : {
@@ -1238,6 +1242,20 @@ riot.tag2('imagefilters', '<div class="image-filters__filter-list"><div class="i
 				    step: 1,
 				    base: 128,
 				    slider: true,
+				    checkbox: true,
+				    visible: true
+				},
+		        grayscale : {
+				    label: "Grayscale",
+				    type: ImageView.Tools.Filter.Grayscale,
+				    slider: false,
+				    checkbox: true,
+				    visible: true
+				},
+				invert : {
+				    label: "Invert",
+				    type: ImageView.Tools.Filter.Invert,
+				    slider: false,
 				    checkbox: true,
 				    visible: true
 				},
@@ -1299,6 +1317,7 @@ riot.tag2('imagefilters', '<div class="image-filters__filter-list"><div class="i
 			    }
 			    if(!isNaN(value) ) {
 			    	filter.setValue(parseFloat(value));
+			    	event.target.title = value;
 			    }
 		    }
 

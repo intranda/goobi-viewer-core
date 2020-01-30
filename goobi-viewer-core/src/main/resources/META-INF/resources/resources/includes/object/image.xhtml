@@ -256,29 +256,36 @@
 			    config: {
 			        filters : {
 			            brightness: {
-			                label: "Helligkeit"
+			                label: "#{msg.label__image_filter_brightness}"
 			            },
 			            contrast: {
-			                label: "Kontrast"
+			                label: "#{msg.label__image_filter_contrast}"
 			            },
 			            saturate: {
-			                label: "Farbsättigung"
+			                label: "#{msg.label__image_filter_saturate}"
 			            },
 			            grayscale: {
-			                label: "Graustufen"
+			                label: "#{msg.label__image_filter_grayscale}"
 			            },
 			            threshold: {
-			                label: "schwarz/weiß"
+			                label: "#{msg.label__image_filter_bitonal}"
 			            },
 			            blur: {
-			                label: "Verwischen"
+			                label: "#{msg.label__image_filter_blur}",
+			                visible: false
 			            },
 			            sharpen: {
-			                label: "Schärfen"
+			                label: "#{msg.label__image_filter_sharpen}"
+			            },
+			            invert: {
+			                label: "#{msg.label__image_filter_invert}"
+			            },
+			            rotate: {
+			                label: "#{msg.label__image_filter_rotate}"
 			            }
 			        },
 			        messages: {
-			            clearAll: "Alles zurücksetzen"
+			            clearAll: "#{msg.action__reset_all_image_filters}"
 			        }
 			    }
 			})
