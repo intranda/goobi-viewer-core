@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     var _debug = false;
     var _messageKeys = ['bookmarkList_reset', 'bookmarkList_delete', 'bookmarkList_session_mail_sendList', 
         'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
-        'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'bookmarkList_openMirador',
+        'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'viewMiradorComparison',
         'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage'];
     var _defaults = {
         root: '',
