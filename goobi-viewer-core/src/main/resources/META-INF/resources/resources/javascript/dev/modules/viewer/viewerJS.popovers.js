@@ -63,7 +63,8 @@ var viewerJS = ( function( viewer ) {
                 
                 //add manual show shandler
                 $trigger.on("click", (event) => {
-                     $trigger.popover("toggle");
+                    $trigger.blur();
+                    $trigger.popover("toggle");
                 })
                 
                 //add dismiss handler if configured
