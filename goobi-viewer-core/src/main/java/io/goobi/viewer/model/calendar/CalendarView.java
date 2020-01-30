@@ -95,24 +95,28 @@ public class CalendarView {
     }
 
     /**
-     * <p>getVolumeYears.</p>
+     * <p>
+     * getVolumeYears.
+     * </p>
      *
-     * @should only return volume years that have YEARMONTHDAY field
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should only return volume years that have YEARMONTHDAY field
      */
     public List<String> getVolumeYears() throws PresentationException, IndexUnreachableException {
-        if (anchorPi != null) {
-            return SearchHelper.getFacetValues("+" + SolrConstants.PI_PARENT + ":" + anchorPi + " +" + SolrConstants._CALENDAR_YEAR + ":*",
-                    SolrConstants._CALENDAR_YEAR, 1);
+        if (anchorPi == null) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList();
+        return SearchHelper.getFacetValues("+" + SolrConstants.PI_ANCHOR + ":" + anchorPi + " +" + SolrConstants._CALENDAR_DAY + ":*",
+                SolrConstants._CALENDAR_YEAR, 1);
     }
 
     /**
-     * <p>Getter for the field <code>year</code>.</p>
+     * <p>
+     * Getter for the field <code>year</code>.
+     * </p>
      *
      * @return the year
      */
@@ -121,7 +125,9 @@ public class CalendarView {
     }
 
     /**
-     * <p>Setter for the field <code>year</code>.</p>
+     * <p>
+     * Setter for the field <code>year</code>.
+     * </p>
      *
      * @param year the year to set
      */
@@ -135,7 +141,9 @@ public class CalendarView {
     }
 
     /**
-     * <p>Getter for the field <code>calendarItems</code>.</p>
+     * <p>
+     * Getter for the field <code>calendarItems</code>.
+     * </p>
      *
      * @return the calendarItems
      */
