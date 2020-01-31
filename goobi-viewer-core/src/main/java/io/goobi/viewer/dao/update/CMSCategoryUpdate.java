@@ -241,8 +241,8 @@ public class CMSCategoryUpdate implements IModelUpdate {
 										.orElseThrow(() -> new DAOException("No page found by Id " + pageId));
 								page.addCategory(category);
 							} catch (DAOException e) {
-								logger.error("Error getting pages for category {}. Failed to load page for id {}",
-										categoryName, pageId);
+								logger.warn("Error getting pages for category {}. Failed to load page for id {}",
+										categoryName, pageId, e);
 							}
 						}
 					}
