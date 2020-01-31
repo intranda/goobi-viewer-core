@@ -63,9 +63,9 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
     @Override
     public CompletableFuture<LoginResult> login(String readerId, String password) throws AuthenticationProviderException {
         StringBuilder sbUrl = new StringBuilder();
-        sbUrl.append(url).append("&sno=").append(readerId).append("&pwd=").append(password);
 
         BibliothecaAuthenticationRequest request = new BibliothecaAuthenticationRequest(readerId, password);
+        sbUrl.append(url).append("&sno=").append(request.getUsername()).append("&pwd=").append(request.getPassword());
         String[] resp = Helper.callUrlGET(sbUrl.toString());
 
         LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), null, true);
