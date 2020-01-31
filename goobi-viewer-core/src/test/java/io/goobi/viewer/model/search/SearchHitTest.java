@@ -62,6 +62,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", "FROM FOO TO BAR");
         doc.addField("MD_SUBTITLE", "FROM BAR TO FOO");
         doc.addField("MD_2", "bla blup");
@@ -94,6 +95,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_SUBTITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
@@ -122,6 +124,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
 
@@ -147,6 +150,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
         doc.addField("T-1000", "Call to John now.");
@@ -176,6 +180,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
@@ -205,6 +210,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, "title for label");
         doc.addField(SolrConstants.DC, "admin");
         doc.addField(SolrConstants.DOCSTRCT, "monograph");
@@ -235,6 +241,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", SearchHelperTest.LOREM_IPSUM);
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null, null, null);
