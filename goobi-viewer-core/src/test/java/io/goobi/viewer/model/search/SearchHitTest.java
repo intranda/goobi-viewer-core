@@ -28,13 +28,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.model.search.SearchHit;
 
-public class SearchHitTest {
+public class SearchHitTest extends AbstractTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

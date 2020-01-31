@@ -7,12 +7,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler;
 
-public class IIIFPresentationAPIHandlerTest {
+public class IIIFPresentationAPIHandlerTest extends AbstractTest {
 
     private IIIFPresentationAPIHandler handler;
 
