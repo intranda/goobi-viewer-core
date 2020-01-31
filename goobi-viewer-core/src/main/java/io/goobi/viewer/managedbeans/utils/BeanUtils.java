@@ -204,7 +204,7 @@ public class BeanUtils {
             InitialContext initialContext = new InitialContext();
             return (BeanManager) initialContext.lookup("java:comp/BeanManager");
         } catch (NamingException e) {
-            logger.warn("Couldn't get BeanManager through JNDI: {}", e.getMessage());
+            // logger.warn("Couldn't get BeanManager through JNDI: {}", e.getMessage());
             return null;
         }
     }
@@ -441,29 +441,29 @@ public class BeanUtils {
         if (context != null && context.getExternalContext() != null) {            
             HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
             return response;
-        } else {
-            return null;
         }
+        
+        return null;
     }
     
     public static Object getManagedBeanValue(String expr) {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context == null) {
             return null;
-        } else {
-            Object value = null;
-            Application application = context.getApplication();
-            if (application != null) {
-                ValueBinding vb = application.createValueBinding(expr);
-                if (vb != null) {
-                    try {
-                        value = vb.getValue(context);
-                    } catch (Exception e) {
-                        logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
-                    }
+        }
+        
+        Object value = null;
+        Application application = context.getApplication();
+        if (application != null) {
+            ValueBinding vb = application.createValueBinding(expr);
+            if (vb != null) {
+                try {
+                    value = vb.getValue(context);
+                } catch (Exception e) {
+                    logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
                 }
             }
-            return value;
         }
+        return value;
     }
 }

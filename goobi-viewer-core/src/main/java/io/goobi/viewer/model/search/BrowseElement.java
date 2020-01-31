@@ -342,7 +342,7 @@ public class BrowseElement implements Serializable {
 
         pi = structElement.getTopStruct().getPi();
         if (pi == null) {
-            logger.error("Index document {}  has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
+            logger.error("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;
         }
         pi = Helper.intern(pi);
@@ -438,7 +438,6 @@ public class BrowseElement implements Serializable {
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
-
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
             StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
@@ -512,7 +511,7 @@ public class BrowseElement implements Serializable {
                         List<String> fieldValues = structElement.getMetadataFields().get(docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
-                            if (fieldValue.equals(label.getValue().get())) {
+                            if (label.getValue().isPresent() && fieldValue.equals(label.getValue().get())) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));

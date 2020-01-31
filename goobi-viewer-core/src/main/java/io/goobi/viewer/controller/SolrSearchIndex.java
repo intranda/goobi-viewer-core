@@ -256,7 +256,7 @@ public final class SolrSearchIndex {
             throw new PresentationException(e.getMessage());
         } catch (RemoteSolrException e) {
             if (isQuerySyntaxError(e)) {
-                logger.error("{}; Query: {}", e.getMessage(), solrQuery.getQuery());
+                logger.error("{}; Query: {}", e.getMessage(), solrQuery.getQuery(), e);
                 throw new PresentationException("Bad query.");
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
