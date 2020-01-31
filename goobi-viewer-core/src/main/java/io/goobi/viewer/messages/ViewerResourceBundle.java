@@ -502,7 +502,6 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
-
             checkAndLoadResourceBundles();
             Set<Locale> locales = new HashSet<>();
             locales.addAll(defaultBundles.keySet());
@@ -539,7 +538,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                             .collect(Collectors.toList()));
                     allLocales = allLocales.stream().distinct().collect(Collectors.toList());
                 } catch (IOException e) {
-                    logger.error("Error reading config directory; {}", configPath);
+                    logger.warn("Error reading config directory; {}", configPath);
                 }
             }
         }
