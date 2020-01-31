@@ -250,7 +250,18 @@
     <popover id="imageFilterPopover">
 		<imageFilters/>
 		<script>
-		if(viewImage) {		    
+		if(viewImage) {	
+		    
+       	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
+       	 	    let originClean = viewImage.isOriginClean();
+       	 	    if(originClean) {
+       	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
+       	 	        $(".image-controls__option.image-filter button")
+       	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
+       	 	        .tooltip('fixTitle');
+       	 	    }
+       	 	});
+
 			riot.mount("imageFilters", {
 			    image: viewImage,
 			    config: {
@@ -280,7 +291,7 @@
 			            invert: {
 			                label: "#{msg.label__image_filter_invert}"
 			            },
-			            rotate: {
+			            hue: {
 			                label: "#{msg.label__image_filter_rotate}"
 			            }
 			        },

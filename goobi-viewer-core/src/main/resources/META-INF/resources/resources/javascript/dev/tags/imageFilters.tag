@@ -1,14 +1,14 @@
 <imageFilters>
 
-	<div class="image-filters__filter-list">
-		<div class="image-filters__filter" each="{filter in filters}">
-				<span class="image-filters__label">{filter.config.label}</span>
-				<input class="image-filters__checkbox"  if="{filter.config.checkbox}" type="checkbox" onChange="{apply}" checked="{filter.isActive() ? 'checked' : '' }"/>
-				<input class="image-filters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" onInput="{apply}" value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"/>
+	<div class="imagefilters__filter-list">
+		<div class="imagefilters__filter" each="{filter in filters}">
+				<span class="imagefilters__label {filter.config.slider ? '' : 'imagefilters__label-long'}">{filter.config.label}</span>
+				<input disabled="{filter.disabled ? 'disabled=' : ''}"  class="imagefilters__checkbox"  if="{filter.config.checkbox}" type="checkbox" onChange="{apply}" checked="{filter.isActive() ? 'checked' : '' }"/>
+				<input disabled="{filter.disabled ? 'disabled=' : ''}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" onInput="{apply}" value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal"/>
 		</div>
-		<div class="image-filters__options">
-			<button type="button" onClick={resetAll}>{this.config.messages.clearAll}</button>
-		</div>
+	</div>
+	<div class="imagefilters__options">
+		<button type="button" class="btn btn--full" onClick={resetAll}>{this.config.messages.clearAll}</button>
 	</div>
 	
 	<script>
@@ -28,7 +28,7 @@
 				    base: 0,
 				    slider: true,
 				    checkbox: false,
-				    visible: true
+				    visible: true,
 				},
 		        contrast : {
 				    label: "Contrast",
@@ -52,7 +52,7 @@
 				    checkbox: false,
 				    visible: true
 				},
-				rotate : {
+				hue : {
 				    label: "Color rotation",
 				    type: ImageView.Tools.Filter.ColorRotate,
 				    min: -180,
@@ -72,14 +72,16 @@
 				    base: 128,
 				    slider: true,
 				    checkbox: true,
-				    visible: true
+				    visible: true,
+				    preclude: ["grayscale", "sharpen"]
 				},
 		        grayscale : {
 				    label: "Grayscale",
 				    type: ImageView.Tools.Filter.Grayscale,
 				    slider: false,
 				    checkbox: true,
-				    visible: true
+				    visible: true,
+				    preclude: ["threshold"]
 				},
 				invert : {
 				    label: "Invert",
@@ -118,7 +120,6 @@
 		
 		this.on("mount", function() {
 		    this.filters = this.initFilters(this.config, this.opts.image);
-			console.log("initialized filters ", this.filters);
 			this.update();
 		});
 		
@@ -129,6 +130,7 @@
 		        if(conf.visible) {
 		            let filter = new conf.type(image, conf.base);
 		            filter.config = conf;
+		            filter.name = key;
 		            filters.push(filter);
 		        }
 		    }
@@ -141,8 +143,10 @@
 		    if(filter) {		        
 			    if(!filter.isActive()) {
 			        filter.start();
+			        this.disable(filter.config.preclude);
 			    } else if(isNaN(value) ) {
 			        filter.close();
+			        this.enable(filter.config.preclude);
 			    }
 			    if(!isNaN(value) ) {			        
 			    	filter.setValue(parseFloat(value));
@@ -152,9 +156,32 @@
 		    
 		}
 		
+		disable(filterNames) {
+		    if(filterNames) {		        
+			    this.filters
+			    .filter( filter => filterNames.includes(filter.name) )
+			    .forEach( filter => {	
+			        filter.disabled = true;
+			    })
+			    this.update();
+		    }
+		}
+		
+		enable(filterNames) {
+		    if(filterNames) {		        
+			    this.filters
+			    .filter( filter => filterNames.includes(filter.name) )
+			    .forEach( filter => {		        
+			   		filter.disabled = false;
+			    })
+			    this.update();
+		    }
+		}
+		
 		resetAll() {
 		   this.filters.forEach( filter => {
 		       filter.close();
+		       filter.disabled = false;
 		       if(filter.config.slider) {		           
 		       	filter.setValue(filter.config.base);
 		       }
