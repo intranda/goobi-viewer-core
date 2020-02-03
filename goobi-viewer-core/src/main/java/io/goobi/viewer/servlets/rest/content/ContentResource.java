@@ -189,6 +189,9 @@ public class ContentResource {
         try {
             List<File> altoFilePaths =
                     getFiles(altoPathCrowd, altoPath, "(?i).*\\.(alto|xml)").stream().map(java.nio.file.Path::toFile).collect(Collectors.toList());
+            if (altoFilePaths.isEmpty()) {
+                throw new ContentNotFoundException("Resource not found or not accessible");
+            }
 
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
                 throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
@@ -198,7 +201,6 @@ public class ContentResource {
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
-                    //                  IOUtils.copyLarge(in, out);   
                 } finally {
                     out.flush();
                     out.close();
@@ -208,11 +210,11 @@ public class ContentResource {
                 }
             };
         } catch (IOException e) {
-            throw new ContentNotFoundException("Resource not found or not accessible", e);
-        } finally {
             if (tempFile.exists()) {
                 FileUtils.deleteQuietly(tempFile);
             }
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
+
         }
     }
 
@@ -287,6 +289,9 @@ public class ContentResource {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         Map<java.nio.file.Path, String> fileMap = getFulltext(pi);
+        if (fileMap.isEmpty()) {
+            throw new ContentNotFoundException("Resource not found or not accessible");
+        }
 
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
         try {
@@ -298,7 +303,6 @@ public class ContentResource {
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
-                    //                  IOUtils.copyLarge(in, out);   
                 } finally {
                     out.flush();
                     out.close();
@@ -308,11 +312,10 @@ public class ContentResource {
                 }
             };
         } catch (IOException e) {
-            throw new ContentNotFoundException("Resource not found or not accessible", e);
-        } finally {
             if (tempFile.exists()) {
                 FileUtils.deleteQuietly(tempFile);
             }
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
         }
     }
 
