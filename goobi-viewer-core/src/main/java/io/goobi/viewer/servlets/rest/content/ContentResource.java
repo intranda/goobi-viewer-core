@@ -201,9 +201,11 @@ public class ContentResource {
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
-                } finally {
                     out.flush();
                     out.close();
+                } catch (IOException e) {
+                    logger.trace(e.getMessage(), e);
+                } finally {
                     if (tempFile.exists()) {
                         FileUtils.deleteQuietly(tempFile);
                     }
@@ -303,9 +305,11 @@ public class ContentResource {
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
-                } finally {
                     out.flush();
                     out.close();
+                } catch (IOException e) {
+                    logger.trace(e.getMessage(), e);
+                } finally {
                     if (tempFile.exists()) {
                         FileUtils.deleteQuietly(tempFile);
                     }
