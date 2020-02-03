@@ -369,9 +369,11 @@ public class RecordsResource {
         return (out) -> {
             try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
                 FileTools.copyStream(out, in);
-            } finally {
                 out.flush();
                 out.close();
+            } catch (IOException e) {
+                logger.trace(e.getMessage(), e);
+            } finally {
                 if (Files.exists(tempFile)) {
                     FileUtils.deleteQuietly(tempFile.toFile());
                 }
