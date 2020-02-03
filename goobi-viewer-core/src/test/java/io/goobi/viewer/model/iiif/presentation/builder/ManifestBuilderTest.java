@@ -72,7 +72,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
     
     
-    public static final String PI = "PPN517154005";
+    public static final String PI = PI_KLEIUNIV;
     
     @Test
     public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException, ContentNotFoundException, IOException {

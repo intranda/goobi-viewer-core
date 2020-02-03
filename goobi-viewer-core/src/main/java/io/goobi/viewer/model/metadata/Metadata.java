@@ -685,7 +685,7 @@ public class Metadata implements Serializable {
                     found = true;
                     // Apply replace rules
                     if (!param.getReplaceRules().isEmpty()) {
-                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
+                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
                     }
                     // Format dates
                     if (param.getKey().equals(SolrConstants.DATECREATED)) {

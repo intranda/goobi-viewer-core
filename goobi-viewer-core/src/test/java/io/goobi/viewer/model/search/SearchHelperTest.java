@@ -110,58 +110,62 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
-        Assert.assertEquals(32, collections.size());
+        Assert.assertEquals(42, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         for (String key : keys) {
             switch (key) {
-                case ("a"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dc3d"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
                     break;
-                case ("a.b"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
-                    break;
-                case ("a.b.c"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
-                    break;
-                case ("a.b.c.d"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
-                    break;
-                case ("alle"):
-                    Assert.assertEquals(Long.valueOf(32), collections.get(key));
-                    break;
-                case ("mehrbaendigeswerk"):
+                case ("dcaccesscondition"):
                     Assert.assertEquals(Long.valueOf(4), collections.get(key));
                     break;
-                case ("monographie"):
+                case ("dcaccesscondition.fulltextlocked"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("dcaccesscondition.movingwall"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("dcaccesscondition.pdflocked"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("dcannotations"):
+                    Assert.assertEquals(Long.valueOf(15), collections.get(key));
+                    break;
+                case ("dcannotations.generated"):
+                    Assert.assertEquals(Long.valueOf(15), collections.get(key));
+                    break;
+                case ("dcannotations.geocoordinates"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("dcauthoritydata"):
+                    Assert.assertEquals(Long.valueOf(10), collections.get(key));
+                    break;
+                case ("dcauthoritydata.gnd"):
                     Assert.assertEquals(Long.valueOf(5), collections.get(key));
                     break;
-                case ("multimedia"):
-                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                case ("dcauthoritydata.provenance"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
                     break;
-                case ("ocr"):
-                    Assert.assertEquals(Long.valueOf(7), collections.get(key));
-                    break;
-                case ("ocr.antiqua"):
-                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
-                    break;
-                case ("ocr.fraktur"):
+                case ("dcauthoritydata.viaf"):
                     Assert.assertEquals(Long.valueOf(4), collections.get(key));
                     break;
-                case ("paedagogik"):
-                    Assert.assertEquals(Long.valueOf(13), collections.get(key));
-                    break;
-                case ("sonstiges"):
-                    Assert.assertEquals(Long.valueOf(11), collections.get(key));
-                    break;
-                case ("sonstiges.langestoc"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
-                    break;
-                case ("sonstiges.querformat"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
-                    break;
-                case ("zeitschrift"):
+                case ("dcboarndigital"):
                     Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("dcconvolute"):
+                    Assert.assertEquals(Long.valueOf(6), collections.get(key));
+                    break;
+                case ("dcdownload"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                // TODO others
+                case ("dcnewspaper"):
+                    Assert.assertEquals(Long.valueOf(20), collections.get(key));
+                    break;
+                case ("dcrelations"):
+                    Assert.assertEquals(Long.valueOf(120), collections.get(key));
                     break;
                 default:
                     //                    Assert.fail("Unknown collection name: " + key);
@@ -826,18 +830,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
-        String query = "DOCSTRCT:Monograph AND MD_YEARPUBLISH:19*";
-        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query + " AND NOT(DC:forbidden)", query,
-                Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null, null, new HashMap<String, Set<String>>(), Locale.ENGLISH,
-                false, null);
-        String[] cellValues0 = new String[] { "Persistent identifier", "PPN728566745", "b18029048", "AC01054587", "1592397" };
-        String[] cellValues1 = new String[] { "Label", "Vaterländische Handels- und Verkehrsgeographie",
+        String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:19*";
+        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
+                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
+        String[] cellValues0 =
+                new String[] { "Persistent identifier", "PPN563984821", "b18029048", "339304251", "PPN563885807", "557335825", "AC02949962" };
+        String[] cellValues1 = new String[] { "Label", "Abriss der Geschichte des Grossherzogtums Hessen für höhere Lehranstalten",
                 "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
-                "Oberösterreich im Weltkrieg", "Fama y obras póstumas" };
+                "König Löwes Hochzeitsschmaus", "Geographisches Quellenlesebuch der außereuropäischen Erdteile",
+                "[Hexenküche : Faust-Szene] / [Otto Schubert]", "Johannes von Gmunden, der Begründer der Himmelskunde auf deutschem Boden" };
         Assert.assertNotNull(wb);
         Assert.assertEquals(1, wb.getNumberOfSheets());
         SXSSFSheet sheet = wb.getSheetAt(0);
-        Assert.assertEquals(6, sheet.getPhysicalNumberOfRows());
+        Assert.assertEquals(8, sheet.getPhysicalNumberOfRows());
         {
             SXSSFRow row = sheet.getRow(0);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());

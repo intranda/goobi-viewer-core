@@ -20,13 +20,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpException;
+import com.meterware.httpunit.HttpInternalErrorException;
 import com.meterware.httpunit.HttpNotFoundException;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
@@ -35,10 +35,10 @@ import com.meterware.servletunit.ServletUnitClient;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
-import io.goobi.viewer.servlets.IdentifierResolver;
 
 public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -65,7 +65,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = HttpException.class)
     public void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         WebResponse response = sc.getResponse(request);
     }
 
@@ -76,7 +76,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = HttpNotFoundException.class)
     public void doGet_shouldReturn404IfRecordNotFound() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("urn", "NOTFOUND");
         WebResponse response = sc.getResponse(request);
     }
@@ -85,10 +85,10 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 500 if record field name bad
      */
-    @Test(expected = SolrException.class)
+    @Test(expected = HttpInternalErrorException.class)
     public void doGet_shouldReturn500IfRecordFieldNameBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("field", "NOSUCHFIELD");
         request.setParameter("identifier", "PPN123");
         WebResponse response = sc.getResponse(request);
@@ -101,7 +101,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = HttpException.class)
     public void doGet_shouldReturn500IfRecordFieldValueBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("field", SolrConstants.PI);
         request.setParameter("identifier", "a:b");
         WebResponse response = sc.getResponse(request);
@@ -113,7 +113,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void constructUrl_shouldConstructUrlCorrectly() throws Exception {
-        String pi = "PPN517154005";
+        String pi = PI_KLEIUNIV;
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/object/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
@@ -125,7 +125,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
-        String pi = "10089470";
+        String pi = "306653648";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
@@ -150,8 +150,8 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
-        String urn = "urn\\:nbn\\:de\\:0111-bbf-spo-14109476";
-        String pi = "134997743"; // This record has an overview page that should not override the page URL
+        String urn = "urn\\:nbn\\:at\\:at-akw\\:g-86493";
+        String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/object/" + pi + "/2/-/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));

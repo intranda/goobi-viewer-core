@@ -1197,7 +1197,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
-        logger.trace("isAccessForJs");
         // Prevent access if mime type incompatible
         if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
@@ -1257,7 +1256,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
         return isAccessPermissionObject();
+    }
 
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionFulltext() throws IndexUnreachableException, DAOException {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        }
+        logger.trace("FacesContext not found");
+
+        return false;
     }
 
     /**

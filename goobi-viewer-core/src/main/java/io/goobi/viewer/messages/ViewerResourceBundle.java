@@ -56,7 +56,9 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 
 /**
- * <p>ViewerResourceBundle class.</p>
+ * <p>
+ * ViewerResourceBundle class.
+ * </p>
  */
 public class ViewerResourceBundle extends ResourceBundle {
 
@@ -76,7 +78,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     public static Thread backgroundThread;
 
     /**
-     * <p>Constructor for ViewerResourceBundle.</p>
+     * <p>
+     * Constructor for ViewerResourceBundle.
+     * </p>
      */
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
@@ -145,7 +149,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>Getter for the field <code>defaultLocale</code>.</p>
+     * <p>
+     * Getter for the field <code>defaultLocale</code>.
+     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -249,7 +255,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>getTranslation.</p>
+     * <p>
+     * getTranslation.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
@@ -260,7 +268,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>getTranslationWithParameters.</p>
+     * <p>
+     * getTranslationWithParameters.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
@@ -296,7 +306,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>getTranslation.</p>
+     * <p>
+     * getTranslation.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @param useFallback If true, get default locale translation if there is none for the given locale
@@ -468,7 +480,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>getMessagesValues.</p>
+     * <p>
+     * getMessagesValues.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @param keyPrefix a {@link java.lang.String} object.
@@ -496,13 +510,15 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>Getter for the field <code>allLocales</code>.</p>
+     * <p>
+     * Getter for the field <code>allLocales</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
+     * @should return English if no other locales found
      */
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
-
             checkAndLoadResourceBundles();
             Set<Locale> locales = new HashSet<>();
             locales.addAll(defaultBundles.keySet());
@@ -539,7 +555,11 @@ public class ViewerResourceBundle extends ResourceBundle {
                             .collect(Collectors.toList()));
                     allLocales = allLocales.stream().distinct().collect(Collectors.toList());
                 } catch (IOException e) {
-                    logger.error("Error reading config directory " + configPath);
+                    logger.warn("Error reading config directory; {}", configPath);
+                }
+                // Add English if nothing found
+                if (allLocales.isEmpty()) {
+                    allLocales.add(Locale.ENGLISH);
                 }
             }
         }
@@ -568,7 +588,5 @@ public class ViewerResourceBundle extends ResourceBundle {
 
         return new MultiLanguageMetadataValue(translations);
     }
-    
-    
 
 }

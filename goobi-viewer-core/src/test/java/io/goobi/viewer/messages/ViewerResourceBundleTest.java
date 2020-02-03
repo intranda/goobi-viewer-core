@@ -15,11 +15,13 @@
  */
 package io.goobi.viewer.messages;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 
 public class ViewerResourceBundleTest extends AbstractTest {
 
@@ -39,5 +41,16 @@ public class ViewerResourceBundleTest extends AbstractTest {
     @Test
     public void replaceParameters_shouldReplaceParametersCorrectly() throws Exception {
         Assert.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2}", "one", "two", "three"));
+    }
+
+    /**
+     * @see ViewerResourceBundle#getAllLocales()
+     * @verifies return English if no other locales found
+     */
+    @Test
+    public void getAllLocales_shouldReturnEnglishIfNoOtherLocalesFound() throws Exception {
+        List<Locale> locales = ViewerResourceBundle.getAllLocales();
+        Assert.assertEquals(1, locales.size());
+        Assert.assertEquals(Locale.ENGLISH, locales.get(0));
     }
 }

@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -54,6 +53,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
@@ -349,7 +350,7 @@ public final class Configuration extends AbstractConfiguration {
                     boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
                     boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                     paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyMap()));
+                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyList()));
                 }
             }
             ret.add(new Metadata(label, masterValue, type, paramList, group));
@@ -491,7 +492,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return the resulting {@link Metadata} instance
      * @should load replace rules correctly
      */
-    // TODO
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
         if (sub == null) {
             throw new IllegalArgumentException("sub may not be null");
@@ -516,16 +516,17 @@ public final class Configuration extends AbstractConfiguration {
                 String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                 String search = sub2.getString("[@search]", "").replace("_SPACE_", " ");
-                String replace = sub2.getString("[@replace]", "").replace("_SPACE_", " ");
                 boolean addUrl = sub2.getBoolean("[@url]", false);
                 boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
                 boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                Map<Object, String> replaceRules = new LinkedHashMap<>();
+                List<MetadataReplaceRule> replaceRules = Collections.emptyList();
                 List<HierarchicalConfiguration> replaceRuleElements = sub2.configurationsAt("replace");
                 if (replaceRuleElements != null) {
                     // Replacement rules can be applied to a character, a string or a regex
+                    replaceRules = new ArrayList<>(replaceRuleElements.size());
                     for (Iterator<HierarchicalConfiguration> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
                         HierarchicalConfiguration sub3 = it3.next();
+                        String condition = sub3.getString("[@conditions]");
                         Character character = null;
                         try {
                             int charIndex = sub3.getInt("[@char]");
@@ -547,11 +548,11 @@ public final class Configuration extends AbstractConfiguration {
                             replaceWith = "";
                         }
                         if (character != null) {
-                            replaceRules.put(character, replaceWith);
+                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, condition, MetadataReplaceRuleType.CHAR));
                         } else if (string != null) {
-                            replaceRules.put(string, replaceWith);
+                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, condition, MetadataReplaceRuleType.STRING));
                         } else if (regex != null) {
-                            replaceRules.put("REGEX:" + regex, replaceWith);
+                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, condition, MetadataReplaceRuleType.REGEX));
                         }
                     }
                 }
@@ -748,7 +749,7 @@ public final class Configuration extends AbstractConfiguration {
                                         ? eleParam.getAttribute("topstructOnly").getBooleanValue() : false;
 
                                 paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyMap()));
+                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyList()));
                             }
                         }
                         ret.add(new Metadata(label, masterValue, type, paramList, group, number));
@@ -1442,7 +1443,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder");
     }
-    
+
     /**
      * <p>
      * getIndexedDenkxwebFolder.
@@ -3209,7 +3210,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
     }
-    
+
     public String getPageTypeExitView(PageType type) {
         return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
     }
@@ -4437,69 +4438,76 @@ public final class Configuration extends AbstractConfiguration {
     public String getAccessConditionDisplayField() {
         return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
     }
-    
+
     public String getCopyrightDisplayField() {
         return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
     }
-    
+
     public boolean isDisplayCopyrightInfo() {
         return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
     }
-    
+
     public boolean isDisplaySocialMediaShareLinks() {
         return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
     }
-    
+
     public boolean isDisplayAnchorLabelInTitleBar(String template) {
         List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
         HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
-        if(subConf != null) {
+        if (subConf != null) {
             return subConf.getBoolean("displayAnchorTitle", false);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public String getAnchorLabelInTitleBarPrefix(String template) {
         List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
         HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
-        if(subConf != null) {
+        if (subConf != null) {
             return subConf.getString("displayAnchorTitle[@prefix]", "");
-        } else {
-            return "";
         }
+
+        return "";
     }
-    
+
     public String getAnchorLabelInTitleBarSuffix(String template) {
         List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
         HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
-        if(subConf != null) {
+        if (subConf != null) {
             return subConf.getString("displayAnchorTitle[@suffix]", " ");
-        } else {
-            return " ";
         }
+
+        return " ";
     }
 
     /**
-     * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that, return null;
+     * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
+     * return null;
      * 
      * @param templateList
      * @param template
      * @return
      */
-    private HierarchicalConfiguration getMatchingConfig(List<HierarchicalConfiguration> templateList, String name) {
+    private static HierarchicalConfiguration getMatchingConfig(List<HierarchicalConfiguration> templateList, String name) {
+        if (name == null || templateList == null) {
+            return null;
+        }
+
         HierarchicalConfiguration conf = null;
         HierarchicalConfiguration defaultConf = null;
         for (HierarchicalConfiguration subConf : templateList) {
-            if(name.equalsIgnoreCase(subConf.getString("[@name]"))) {
+            if (name.equalsIgnoreCase(subConf.getString("[@name]"))) {
                 conf = subConf;
                 break;
-            } else if("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
+            } else if ("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
                 defaultConf = subConf;
             }
         }
-        if(conf != null) {
+        if (conf != null) {
             return conf;
-        } else return defaultConf;
+        }
+
+        return defaultConf;
     }
 }

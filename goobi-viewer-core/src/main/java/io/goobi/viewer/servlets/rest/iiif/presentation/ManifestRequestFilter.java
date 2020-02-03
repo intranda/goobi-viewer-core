@@ -36,18 +36,16 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
 /**
- * <p>ManifestRequestFilter class.</p>
+ * <p>
+ * ManifestRequestFilter class.
+ * </p>
  */
 @Provider
 @IIIFPresentationBinding
@@ -61,7 +59,6 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     private HttpServletResponse servletResponse;
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
@@ -72,10 +69,10 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
             String logId = null;
-            if(pathSegments.size() > 2 && pathSegments.get(1).equalsIgnoreCase("range")) {
+            if (pathSegments.size() > 2 && pathSegments.get(1).equalsIgnoreCase("range")) {
                 logId = pathSegments.get(2);
             }
-            
+
             filterForAccessConditions(request, pi, logId);
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
@@ -88,7 +85,9 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>forwardToCanonicalUrl.</p>
+     * <p>
+     * forwardToCanonicalUrl.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param imageName a {@link java.lang.String} object.
@@ -121,13 +120,13 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(ContainerRequestContext request, String pi, String logId)
-            throws ServiceNotAllowedException {
+    private void filterForAccessConditions(ContainerRequestContext request, String pi, String logId) throws ServiceNotAllowedException {
         logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
 
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logId, IPrivilegeHolder.PRIV_LIST, servletRequest);
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logId, IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST,
+                    servletRequest);
         } catch (IndexUnreachableException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (DAOException e) {
@@ -138,6 +137,5 @@ public class ManifestRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
         }
     }
-
 
 }
