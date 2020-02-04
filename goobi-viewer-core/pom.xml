@@ -99,6 +99,7 @@
 		<icu.version>65.1</icu.version>
 		<openpdf.version>1.3.13</openpdf.version>
 		<jackson.version>2.10.2</jackson.version>
+		<jackson-jaxrs.version>2.10.2.1</jackson-jaxrs.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jpa.version>2.7.6</jpa.version>
 		<javax.faces.version>2.4.0</javax.faces.version>
@@ -117,8 +118,8 @@
 		<log4j.version>2.13.0</log4j.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<metadata-extractor.version>2.12.0</metadata-extractor.version>
-		<mockito-all.version>1.10.19</mockito-all.version>
-		<mockserver.version>5.8.1</mockserver.version>
+		<mockito.version>3.2.4</mockito.version>
+		<mockserver.version>5.9.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<poi.version>4.1.1</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
@@ -341,12 +342,12 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-base</artifactId>
-			<version>${jackson.version}</version>
+			<version>${jackson-jaxrs.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${jackson.version}</version>
+			<version>${jackson-jaxrs.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
@@ -521,8 +522,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>${mockito-all.version}</version>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
