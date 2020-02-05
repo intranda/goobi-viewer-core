@@ -42,7 +42,7 @@
                                 </ui:fragment>
                                 <!-- LAST PAGE (RTL) -->
                                 <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                    <li class="image-controls__action end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+                                    <li class="image-controls__action start #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
                                         <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
                                             <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
                                                 <i class="image-start"></i>
@@ -177,7 +177,7 @@
                                 </ui:fragment>
                                 <!-- NEXT PAGE (RTL) -->
                                 <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                <li class="image-controls__action forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+                                <li class="image-controls__action back #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
                                         <h:outputLink value="#{activeDocumentBean.getNextPageUrl(1)}" title="#{msg.nextImage}">
                                             <i class="image-back"></i>
@@ -240,7 +240,7 @@
                                 </ui:fragment>
                                 <!-- PREVIOUS PAGE (RTL) -->
                                 <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                <li class="image-controls__action back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+                                <li class="image-controls__action forward #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow gt 1}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1 )}" title="#{msg.prevImage}">
                                             <i class="image-forward"></i>
@@ -372,7 +372,7 @@
 	                            </ui:fragment>
                                 <!-- FIRST PAGE (RTL) -->
                                 <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                                    <li class="image-controls__action start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+                                    <li class="image-controls__action end #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
                                         <ui:fragment rendered="#{activeDocumentBean.imageToShow gt 1}">
                                             <h:outputLink value="#{activeDocumentBean.firstPageUrl}" title="#{msg.firstImage}">
                                                 <i class="image-end"></i>
