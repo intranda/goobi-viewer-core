@@ -62,6 +62,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -232,7 +233,7 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
         if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
-            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
+            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPageType());
         }
 
         return "{}";
@@ -465,7 +466,7 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
 
-        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
+        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPageType();
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
@@ -1460,7 +1461,7 @@ public class ViewManager implements Serializable {
         }
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + 0;
     }
-    
+
     /**
      * <p>
      * getDenkxwebResolverUrl.
@@ -2813,7 +2814,8 @@ public class ViewManager implements Serializable {
             return "";
         }
         try {
-            String resolverUrlRoot = "http://viewer-demo01.intranda.com/viewer/metsresolver?id="; // TODO
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            String resolverUrlRoot = nh != null ? nh.getApplicationUrl() : "http://viewer.goobi.io/" + "metsresolver?id=";
             TranskribusJob job = TranskribusUtils.ingestRecord(DataManager.getInstance().getConfiguration().getTranskribusRestApiUrl(), session, pi,
                     resolverUrlRoot);
             if (job == null) {
@@ -3280,5 +3282,4 @@ public class ViewManager implements Serializable {
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
         return getCurrentPage() != null;
     }
-
 }

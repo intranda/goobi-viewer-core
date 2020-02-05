@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
-import com.ocpsoft.pretty.faces.config.mapping.QueryParameter;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.Version;
@@ -147,7 +146,7 @@ public class NavigationHelper implements Serializable {
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
     }
-    
+
     /**
      * Required setter for ManagedProperty injection
      *
@@ -908,7 +907,7 @@ public class NavigationHelper implements Serializable {
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
             if (activeDocumentBean != null) {
                 String subThemeDiscriminatorValue = "";
-                if (activeDocumentBean.getViewManager() != null && getCurrentPagerType().isDocumentPage()) {
+                if (activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
                     // If a record is loaded, get the value from the record's value
                     // in discriminatorField
 
@@ -1376,7 +1375,8 @@ public class NavigationHelper implements Serializable {
      * @deprecated Use <code>BreadcrumbBean</code> directly.
      */
     @Deprecated
-    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException, RecordNotFoundException, IndexUnreachableException, ViewerConfigurationException, RecordDeletedException {
+    public void updateBreadcrumbs(CMSPage cmsPage)
+            throws DAOException, RecordNotFoundException, IndexUnreachableException, ViewerConfigurationException, RecordDeletedException {
         breadcrumbBean.updateBreadcrumbs(cmsPage);
     }
 
@@ -1448,7 +1448,7 @@ public class NavigationHelper implements Serializable {
     @Deprecated
     public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
             throws PresentationException, DAOException {
-         breadcrumbBean.addCollectionHierarchyToBreadcrumb(collection, field, splittingChar);
+        breadcrumbBean.addCollectionHierarchyToBreadcrumb(collection, field, splittingChar);
     }
 
     /**
@@ -1690,17 +1690,6 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentPagerType.
-     * </p>
-     * @deprecated  replaced by {@link #getCurrentPageType()}
-     * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
-     */
-    public PageType getCurrentPagerType() {
-        return PageType.getByName(getCurrentPage());
-    }
-    
-    /**
      * Get the {@link PageType} for the page name from {@link NavigationHelper#getCurrentPage()}
      *
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
@@ -1760,26 +1749,27 @@ public class NavigationHelper implements Serializable {
         }
         return previousUrl;
     }
-    
+
     public String getExitUrl() {
-        return getExitUrl(getCurrentPagerType());
+        return getExitUrl(getCurrentPageType());
     }
-    
+
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);
-        if(StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
+        if (StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
             return resolvePrettyUrl(exitView);
-        } else if(StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
+        } else if (StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
             return getPreviousViewUrl();
         } else {
             return exitView;
         }
     }
-    
+
     public String resolvePrettyUrl(String prettyId, Object... parameters) {
-        
-        if(parameters == null || parameters.length == 0) {            
-            List<PathParameter> pathParams = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
+
+        if (parameters == null || parameters.length == 0) {
+            List<PathParameter> pathParams =
+                    PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
             parameters = new Object[pathParams.size()];
             int index = 0;
             for (PathParameter param : pathParams) {
