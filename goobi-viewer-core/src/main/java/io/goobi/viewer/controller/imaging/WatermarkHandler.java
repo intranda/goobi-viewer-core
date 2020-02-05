@@ -124,7 +124,7 @@ public class WatermarkHandler implements Serializable {
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
-            StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
 
             urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format);
 

@@ -71,10 +71,8 @@
         this.visible = false;
         this.mouseover = false;
         
-        console.log("tag created")
         
         this.on( 'mount', function() {
-            console.log("tag mounted")
         	this.loadManifest( this.pis[0] );
         }.bind( this ));
         
@@ -149,7 +147,6 @@
         				this.manifest = manifest;
         				this.manifests.set( url, manifest );
         				this.update();
-        				console.log("manifest loaded");
             			this.checkPosition();
             			
         				$( window ).on( 'resize scroll', function() {

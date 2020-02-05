@@ -21,6 +21,11 @@
  * @module viewerJS
  * @requires jQuery
  */
+
+//Shorter definitions for RxJs modules
+var Rx = rxjs;
+var RxOp = rxjs.operators;
+
 var viewerJS = (function () {
     'use strict';
 

@@ -10,6 +10,7 @@ popover {
 }
 
 .popover {
+	z-index: 2020;
 	.popover-title-custom {
 		padding: 8px 14px;
 		margin: 0;
@@ -22,10 +23,44 @@ popover {
 	}
 }
 
-popup {
-	position: absolute;
-	border: 1px solid black;
-	background-color: @statBackgroundColor;
-	padding: 5px;
-	display: none;
+imageFilters {
+	.imagefilters{
+		&__filter {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			min-width: 220px;
+			margin-bottom: 15px;
+			&:last-child {
+				margin-bottom: 5px;
+			}
+		}
+		&__options {
+			padding: 10px 5px;
+			button {
+				width: 100%;
+				color: #fff;
+				&:hover {
+					color: #fff;
+				}
+			}
+		} 
+		&__label {
+			flex-basis: 40%;
+			&-long {
+				flex-basis: 80%;
+			}
+		}
+		&__checkbox {
+			margin: 0;
+			
+		}
+		&__slider {
+			flex-basis: 60%;
+			flex-grow: 1;
+			&[disabled] {
+				color: lightgray;
+			}
+		}
+	}
 }

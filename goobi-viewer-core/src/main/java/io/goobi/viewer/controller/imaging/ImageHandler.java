@@ -80,13 +80,13 @@ public class ImageHandler {
 
         }
         if (isRestrictedUrl(page.getFilepath())) {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
             sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
             return sb.toString();
         } else if (isExternalUrl(page.getFilepath())) {
             return page.getFilepath();
         } else {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
             sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
             return sb.toString();
         }
