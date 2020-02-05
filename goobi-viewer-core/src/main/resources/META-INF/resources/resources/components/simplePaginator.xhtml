@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	            xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
+                xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -28,13 +28,24 @@
 	</composite:interface>
 
     <h:panelGroup rendered="#{cc.attrs.itemCount > 1}">
-        <nav id="numericPaginator" class="numeric-paginator" role="navigation">
+        <nav id="numericPaginator" role="navigation">
+            <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                <f:attribute name="styleClass" value="numeric-paginator"/>
+            </c:if>
+            <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                <f:attribute name="styleClass" value="numeric-paginator -rtl"/>
+            </c:if>
             <ul>
-                <!-- PREV -->
+                <!-- PREV / NEXT (RTL) -->
                 <h:panelGroup rendered="#{cc.attrs.itemActive != 1}">
                     <li class="numeric-paginator__navigate navigate_prev">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}">
-                            <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
+                            </ui:fragment>
                         </a>
                     </li>
                 </h:panelGroup>
@@ -77,7 +88,7 @@
                 	<span>#{cc.attrs.itemActive}</span>
                 </li>
 
-                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
+                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCounts}">
                     <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount)}">
                         <li>
                             <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive + 1}</a>
@@ -111,11 +122,16 @@
                     </h:panelGroup>
                 </h:panelGroup>
                 
-                <!-- NEXT -->
+                <!-- NEXT / PREV (RTL) -->
                 <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
                     <li class="numeric-paginator__navigate navigate_next">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}">
-                            <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
+                            </ui:fragment>
                         </a>
                     </li>
                 </h:panelGroup>
