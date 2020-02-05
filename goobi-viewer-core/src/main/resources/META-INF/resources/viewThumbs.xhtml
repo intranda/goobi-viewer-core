@@ -43,7 +43,13 @@
                 <ui:param name="purl" value="true" />
             </ui:include>
 
-            <div class="view-thumbs__thumbnails">
+            <h:panelGroup layout="block">
+                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                    <f:attribute name="styleClass" value="view-thumbs__thumbnails"/>
+                </c:if>
+                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                    <f:attribute name="styleClass" value="view-thumbs__thumbnails -rtl"/>
+                </c:if>
                 <ui:repeat var="image" value="#{activeDocumentBean.viewManager.imagesSection}">
                     <!-- THUMBNAIL -->
                     <div class="view-thumbs__thumbnail">
@@ -68,7 +74,7 @@
                         </figure>
                     </div>
                 </ui:repeat>
-            </div>
+            </h:panelGroup>
             
             <!-- PAGINATOR -->
             <viewerComponent:simplePaginator 
