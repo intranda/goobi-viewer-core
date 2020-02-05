@@ -19,18 +19,18 @@
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
     </div>
 
-	<popup id="share-image-area-popup">
+	<popover id="share-image-area-popup">
 
 		<div>
-		<a data-copy="image-region-page"
+		<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}" data-clipboard-text="image-region-page"
 			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_page}</a>
 		</div>
 		<div>
-			<a data-copy="image-region-image"
+			<a data-copy="image-region-image" data-copy-done="#{msg.copyUrlDone}" data-clipboard-text="image-region-image"
 			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_image}</a>
 		</div>
 
-	</popup>
+	</popover> 
 
 
 	<!-- OPEN SEADRAGON -->
@@ -186,26 +186,18 @@
 	       		 	var areaString = viewImage.getAreaString(area);
 	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
 	       		 	var imageUrl = viewImage.getRegionUrl(area);
-	       		 	let popup = new viewerJS.Popup(event, $("#share-image-area-popup"), {
-	       		        left: "left",
-	       		        bottom: "top",
-	       		        offset: {
-	       		            top:-5,
-	       		            left: 5
+	       		 	let popover =  viewerJS.popovers.fromEvent("canvas", event, "#share-image-area-popup", {
+	       		        onClose: () => {
+		       		 	    if(areaSelect) {
+		       		     	    areaSelect.remove(0);
+		       		     	}
+	       		        },
+	       		        onShow: () => {
+			       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl).tooltip();
+			       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl).tooltip();
 	       		        }
-	       		        
-	       		    })
-	       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl);
-	       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl);
-	       		 	popup.onClose.subscribe( () => {
-	       		 	    if(areaSelect) {
-	       		     	    areaSelect.remove(0);
-	       		     	}
-	       		 	})
-	       		    $("[data-copy]").one("click", function(event) {
-	       		        popup.close();
-	       		    })
-	       		    
+	       		    });
+
 		       		$("body").off("click.dismiss-popover");
 		       		initImageFragmentLinks(areaString);
        		    }
