@@ -28,12 +28,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 
-public class SearchHitTest {
+public class SearchHitTest extends AbstractTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -62,6 +63,8 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", "FROM FOO TO BAR");
         doc.addField("MD_SUBTITLE", "FROM BAR TO FOO");
         doc.addField("MD_2", "bla blup");
@@ -71,8 +74,8 @@ public class SearchHitTest {
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>", hit
-                .getFoundMetadata().get(0).getTwo());
+        Assert.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>",
+                hit.getFoundMetadata().get(0).getTwo());
         Assert.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
         Assert.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
     }
@@ -94,6 +97,9 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField("MD_TITLE", "Any title");
         doc.addField("MD_SUBTITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
@@ -101,8 +107,8 @@ public class SearchHitTest {
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>", hit
-                .getFoundMetadata().get(0).getTwo());
+        Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
+                hit.getFoundMetadata().get(0).getTwo());
         Assert.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
         Assert.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
     }
@@ -122,6 +128,9 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField("MD_TITLE", "Any title");
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
 
@@ -147,12 +156,15 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField("MD_TITLE", "Any title");
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
         doc.addField("T-1000", "Call to John now.");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, new HashSet<>(Collections.singletonList(
-                "T-1000")), null, null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false,
+                new HashSet<>(Collections.singletonList("T-1000")), null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -176,6 +188,8 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
@@ -205,13 +219,15 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField(SolrConstants.TITLE, "title for label");
         doc.addField(SolrConstants.DC, "admin");
         doc.addField(SolrConstants.DOCSTRCT, "monograph");
 
         String[] translateFields = { SolrConstants.DC, SolrConstants.DOCSTRCT };
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null, new HashSet<>(Arrays.asList(
-                translateFields)), null);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null,
+                new HashSet<>(Arrays.asList(translateFields)), null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
@@ -235,12 +251,16 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", SearchHelperTest.LOREM_IPSUM);
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null, null, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
-        Assert.assertTrue(hit.getBrowseElement().getLabelShort().startsWith(
-                "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+        Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
+                .getLabelShort()
+                .startsWith(
+                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
     }
 }

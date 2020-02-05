@@ -78,7 +78,9 @@ public class Metadata implements Serializable {
     private final boolean group;
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      */
     public Metadata() {
         this.label = "";
@@ -89,7 +91,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -109,7 +113,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -131,7 +137,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -149,7 +157,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -218,7 +228,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>isHasLabel.</p>
+     * <p>
+     * isHasLabel.
+     * </p>
      *
      * @return a boolean.
      */
@@ -227,7 +239,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -236,7 +250,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>masterValue</code>.</p>
+     * <p>
+     * Getter for the field <code>masterValue</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -249,7 +265,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -258,7 +276,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>values</code>.</p>
+     * <p>
+     * Getter for the field <code>values</code>.
+     * </p>
      *
      * @return the values
      */
@@ -267,7 +287,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>setParamValue.</p>
+     * <p>
+     * setParamValue.
+     * </p>
      *
      * @param valueIndex a int.
      * @param paramIndex a int.
@@ -391,8 +413,7 @@ public class Metadata implements Serializable {
                         }
                         // Popup button
                         String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
-                        html = html
-                                .replace("{0}", nh.getApplicationUrl())
+                        html = html.replace("{0}", nh.getApplicationUrl())
                                 .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
                                 .replace("{2}", normDataType == null ? MetadataGroupType.OTHER.name() : normDataType)
                                 .replace("{3}", nh.getLocaleString())
@@ -482,7 +503,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>params</code>.</p>
+     * <p>
+     * Getter for the field <code>params</code>.
+     * </p>
      *
      * @return the params
      */
@@ -491,7 +514,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>hasParam.</p>
+     * <p>
+     * hasParam.
+     * </p>
      *
      * @param paramName a {@link java.lang.String} object.
      * @return a boolean.
@@ -675,7 +700,7 @@ public class Metadata implements Serializable {
                     found = true;
                     // Apply replace rules
                     if (!param.getReplaceRules().isEmpty()) {
-                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
+                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
                     }
                     // Format dates
                     if (param.getKey().equals(SolrConstants.DATECREATED)) {
@@ -763,7 +788,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>number</code>.</p>
+     * <p>
+     * Getter for the field <code>number</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -772,7 +799,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>isGroup.</p>
+     * <p>
+     * isGroup.
+     * </p>
      *
      * @return the group
      */

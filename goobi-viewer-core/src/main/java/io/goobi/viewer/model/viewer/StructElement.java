@@ -605,7 +605,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -613,7 +613,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
         return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
     }
-    
+
     /**
      * 
      * @return
@@ -764,7 +764,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             SolrDocument docParent = DataManager.getInstance()
                     .getSearchIndex()
                     .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(),
-                            Collections.singletonList(field));
+                            Collections.singletonList(field), Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")));
             if (docParent == null) {
                 logger.warn("Anchor (PI: {}) has no child element: Cannot determine appropriate value", pi);
             } else {

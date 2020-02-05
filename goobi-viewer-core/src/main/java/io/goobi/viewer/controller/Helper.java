@@ -982,6 +982,7 @@ public class Helper {
      */
     public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
+        // TODO Find a way to use absolute repo paths in unit tests
         if (StringUtils.isBlank(dataRepositoryFolder)) {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder)).isAbsolute()) {

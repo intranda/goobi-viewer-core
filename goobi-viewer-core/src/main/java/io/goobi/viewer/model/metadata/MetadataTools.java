@@ -17,17 +17,17 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -36,7 +36,9 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>MetadataTools class.</p>
+ * <p>
+ * MetadataTools class.
+ * </p>
  */
 public class MetadataTools {
 
@@ -44,7 +46,9 @@ public class MetadataTools {
     private static final Logger logger = LoggerFactory.getLogger(MetadataTools.class);
 
     /**
-     * <p>generateDublinCoreMetaTags.</p>
+     * <p>
+     * generateDublinCoreMetaTags.
+     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return String containing meta tags
@@ -178,7 +182,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>generateHighwirePressMetaTags.</p>
+     * <p>
+     * generateHighwirePressMetaTags.
+     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pages a {@link java.util.List} object.
@@ -271,7 +277,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>generateRIS.</p>
+     * <p>
+     * generateRIS.
+     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
@@ -460,14 +468,21 @@ public class MetadataTools {
     }
 
     /**
-     * <p>applyReplaceRules.</p>
+     * <p>
+     * applyReplaceRules.
+     * </p>
      *
-     * @param value a {@link java.lang.String} object.
-     * @param replaceRules a {@link java.util.Map} object.
-     * @should apply rules correctly
+     * @param value Metadata value to modify
+     * @param replaceRules List of <code>MetadataReplaceRule</code> objects
+     * @param pi Record identifier to whose context the value belongs; used for checking conditions
      * @return a {@link java.lang.String} object.
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should apply rules correctly
+     * @should apply conditional rules correctly
      */
-    public static String applyReplaceRules(String value, Map<Object, String> replaceRules) {
+    public static String applyReplaceRules(String value, List<MetadataReplaceRule> replaceRules, String pi)
+            throws IndexUnreachableException, PresentationException {
         if (value == null) {
             return null;
         }
@@ -476,20 +491,32 @@ public class MetadataTools {
         }
 
         String ret = value;
-        for (Object key : replaceRules.keySet()) {
-            if (key instanceof Character) {
-                StringBuffer sb = new StringBuffer();
-                sb.append(key);
-                ret = ret.replace(sb.toString(), replaceRules.get(key));
-            } else if (key instanceof String) {
-                logger.debug("replace rule: {} -> {}", key, replaceRules.get(key));
-                if (((String) key).startsWith("REGEX:")) {
-                    ret = ret.replaceAll(((String) key).substring(6), replaceRules.get(key));
-                } else {
-                    ret = ret.replace((String) key, replaceRules.get(key));
+        for (MetadataReplaceRule replaceRule : replaceRules) {
+            // Skip rules that have non-matching conditions
+            if (StringUtils.isNotEmpty(replaceRule.getConditions()) && StringUtils.isNotEmpty(pi)) {
+                String conditions = SolrSearchIndex.getProcessedConditions(replaceRule.getConditions());
+                String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +(" + conditions + ")";
+                long count = DataManager.getInstance().getSearchIndex().getHitCount(query);
+                if (count == 0) {
+                    continue;
                 }
-            } else {
-                logger.error("Unknown replacement key type of '{}: {}", key.toString(), key.getClass().getName());
+            }
+            
+            switch (replaceRule.getType()) {
+                case CHAR:
+                    StringBuffer sb = new StringBuffer();
+                    sb.append(replaceRule.getKey());
+                    ret = ret.replace(sb.toString(), replaceRule.getReplacement());
+                    break;
+                case STRING:
+                    ret = ret.replace((String) replaceRule.getKey(), replaceRule.getReplacement());
+                    break;
+                case REGEX:
+                    ret = ret.replaceAll(((String) replaceRule.getKey()), replaceRule.getReplacement());
+                    break;
+                default:
+                    logger.error("Unknown replacement key type of '{}: {}", replaceRule.getKey(), replaceRule.getKey().getClass().getName());
+                    break;
             }
         }
 
@@ -497,7 +524,9 @@ public class MetadataTools {
     }
 
     /**
-     * <p>findMetadataGroupType.</p>
+     * <p>
+     * findMetadataGroupType.
+     * </p>
      *
      * @param gndspec a {@link java.lang.String} object.
      * @return MetadataGroupType value corresponding to the given gndspec type

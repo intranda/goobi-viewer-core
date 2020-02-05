@@ -50,12 +50,12 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAltoDocument_shouldReturnDocumentCorrectly() throws Exception {
-        Assert.assertNotNull(resource.getAltoDocument("PPN517154005", "00000001.xml"));
+        Assert.assertNotNull(resource.getAltoDocument(PI_KLEIUNIV, "00000001.xml"));
     }
 
     @Test
     public void getAltoDocumentZip() throws Exception {
-        StreamingOutput response = resource.getAltoDocument("PPN517154005");
+        StreamingOutput response = resource.getAltoDocument(PI_KLEIUNIV);
         Path tempFile = Paths.get("test.zip");
         if (Files.exists(tempFile)) {
             Files.delete(tempFile);
@@ -85,7 +85,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getContentDocument_shouldReturnDocumentCorrectly() throws Exception {
-        Assert.assertNotNull(resource.getContentDocument(null, "fulltext", "PPN517154005", "00000001.txt"));
+        Assert.assertNotNull(resource.getContentDocument(null, "fulltext", PI_KLEIUNIV, "00000001.txt"));
     }
 
     /**
@@ -103,7 +103,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getFulltextDocument_shouldReturnDocumentCorrectly() throws Exception {
-        Assert.assertNotNull(resource.getFulltextDocument("PPN517154005", "00000001.txt"));
+        Assert.assertNotNull(resource.getFulltextDocument(PI_KLEIUNIV, "00000001.txt"));
     }
 
     /**

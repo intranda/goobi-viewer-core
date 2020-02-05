@@ -649,23 +649,23 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
         // Format
         if (topStruct.getDocStructType() != null) {
-            switch (topStruct.getDocStructType()) {
-                case "Monograph":
+            switch (topStruct.getDocStructType().toLowerCase()) {
+                case "monograph":
                     format = "book";
                     break;
-                case "Manuscript":
+                case "manuscript":
                     format = "book";
                     break;
-                case "Chapter":
+                case "chapter":
                     format = "bookitem";
                     break;
-                case "PeriodicalVolume":
+                case "periodicalVolume":
                     format = "journal";
                     break;
-                case "PeriodicalIssue":
+                case "periodicalIssue":
                     format = "issue";
                     break;
-                case "Article":
+                case "article":
                     format = "article";
                     break;
                 default:

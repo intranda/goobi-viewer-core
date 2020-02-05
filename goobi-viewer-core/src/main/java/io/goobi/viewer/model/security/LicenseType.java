@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.security;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -39,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
@@ -217,13 +217,10 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public String getProcessedConditions() {
         String conditions = this.conditions;
-
+        // Remove file name conditions
         conditions = getQueryConditions(conditions);
-
-        if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
-            // Hack for getting the current year as a number for non-date Solr fields
-            conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
-        }
+        // Convert "NOW/YEAR"
+        conditions = SolrSearchIndex.getProcessedConditions(conditions);
 
         return conditions.trim();
     }

@@ -15,23 +15,21 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.imaging.MediaHandler;
 
 /**
  * @author Florian Alpers
  *
  */
 public class MediaHandlerTest {
-    
+
     MediaHandler handler;
 
     /**
@@ -53,7 +51,7 @@ public class MediaHandlerTest {
     @Test
     public void testGetMediaUrl() {
         String mediaUrl = handler.getMediaUrl("audio/ogg", "1234", "audio.ogg");
-        Assert.assertEquals("http://localhost:8080/viewer/rest/media/audio/ogg/1234/audio.ogg", mediaUrl);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/media/audio/ogg/1234/audio.ogg", mediaUrl);
     }
 
 }
