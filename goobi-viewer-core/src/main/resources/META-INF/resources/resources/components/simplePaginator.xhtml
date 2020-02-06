@@ -27,14 +27,9 @@
 		<composite:attribute name="urlSuffix" required="false" />
 	</composite:interface>
 
-    <h:panelGroup rendered="#{cc.attrs.itemCount > 1}">
+    <h:panelGroup rendered="#{cc.attrs.itemCount > 1}"
+        styleClass="#{activeDocumentBean.viewManager.topDocument.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'}">
         <nav id="numericPaginator" role="navigation">
-            <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                <f:attribute name="styleClass" value="numeric-paginator -ltr"/>
-            </c:if>
-            <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
-                <f:attribute name="styleClass" value="numeric-paginator -rtl"/>
-            </c:if>
             <ul>
                 <!-- PREV / NEXT (RTL) -->
                 <h:panelGroup rendered="#{cc.attrs.itemActive != 1}">
