@@ -52,7 +52,7 @@ public class PdfHandler {
      */
     public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
-        this.iiifUrl = configuration.getRestApiUrl();
+        this.iiifUrl = configuration.getIIIFApiUrl();
     }
 
     /**

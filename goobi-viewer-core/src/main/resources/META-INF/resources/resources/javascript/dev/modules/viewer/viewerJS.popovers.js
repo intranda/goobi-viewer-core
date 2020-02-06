@@ -63,7 +63,8 @@ var viewerJS = ( function( viewer ) {
                 
                 //add manual show shandler
                 $trigger.on("click", (event) => {
-                     $trigger.popover("toggle");
+                    $trigger.blur();
+                    $trigger.popover("toggle");
                 })
                 
                 //add dismiss handler if configured
@@ -77,6 +78,51 @@ var viewerJS = ( function( viewer ) {
                 let config = _createPopoverConfig($trigger, $popover);
                 
                 $trigger.popover(config);
+            },
+            
+            fromEvent(anchor, event, popoverSelector, config) {
+                if(_debug) {                    
+                    console.log("Popovers.fromEvent ", event);
+                    console.log("Popovers.fromEvent ", popoverSelector);
+                    console.log("Popovers.fromEvent ", config);
+                }
+                
+                if(config == undefined) {
+                    config = {};
+                }
+
+                config.html = true;
+                config.content = $(popoverSelector).get(0);
+                config.trigger = "manual";
+                if(config.title != undefined && config.title.length == 0) {
+                    config.template = _popoverTemplateNoTitle;
+                }
+                
+                
+                let popover = $(anchor).popover(config)
+                .one("shown.bs.popover", function() {
+                    viewer.popovers.addCloseHandler($(anchor))
+                    let $wrapper = $(popoverSelector).closest(".popover");
+                    let $arrow = $wrapper.find(".arrow");
+                    $wrapper.offset({top:0,left:0});
+
+                    $wrapper.offset({
+                        top: event.pageY - Math.ceil($wrapper.height()/2) + ( (config.offset && config.offset.top) ? config.offset.top : 0),
+                        left: event.pageX + $arrow.outerWidth() + ( (config.offset && config.offset.left) ? config.offset.left : 0)
+                    })
+                    $arrow.css("top", "50%");
+                    if(config.onShow) {
+                        config.onShow();
+                    }
+                })
+                .one("hide.bs.popover", function() {
+                    if(config.onClose) {
+                        config.onClose();
+                    }
+                })
+                .popover("show");
+                
+                return popover;
             },
             
             addCloseHandler : function($trigger) {
@@ -96,7 +142,6 @@ var viewerJS = ( function( viewer ) {
                 html: true,
                 content: $popover.get(0),
                 trigger: "manual"
-                
         }
         
         let placement = $trigger.attr(_popoverPlacementAttribute);
@@ -110,7 +155,6 @@ var viewerJS = ( function( viewer ) {
                 config.template = _popoverTemplate.replace("#{title}", title);
             } else {
                 config.template = _popoverTemplateNoTitle;
-
             }
         }
         return config;

@@ -114,7 +114,6 @@
                      	this.fileUploaded(value);
                      } 
                      else {
-                         console.log("result ", result);
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -134,7 +133,6 @@
         }
     
         fileUploaded(fileInfo) {
-            console.log("file uploaded")
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
         	
@@ -170,7 +168,6 @@
             })
             .then(r => r.json())
             .then( json => { 
-                console.log("json response ", json);
                 return json.image != undefined
             })
             .then(exists => {

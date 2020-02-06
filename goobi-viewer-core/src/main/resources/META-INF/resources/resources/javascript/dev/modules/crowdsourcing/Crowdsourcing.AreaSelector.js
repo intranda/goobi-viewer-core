@@ -71,8 +71,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
             }
     		this.rect = rect;
     		this.rects.push(this.rect);
-    	}.bind(this))
-    	this.drawer.finishedDrawing().map((rect) => _getResultObject(rect, imageView)).subscribe(this.finishedDrawing);
+    	}.bind(this)) 
+    	this.drawer.finishedDrawing().pipe(RxOp.map((rect) => _getResultObject(rect, imageView))).subscribe(this.finishedDrawing);
     }
     
     crowdsourcing.AreaSelector.prototype.allowDrawing = function() {
@@ -90,7 +90,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     crowdsourcing.AreaSelector.prototype.createTransformer = function(imageView) {
         this.transformer = new ImageView.Transform(imageView.viewer, this.drawStyle, (e) => !e.shiftKey); 
-        this.transformer.finishedTransforming().map((rect) => _getResultObject(rect, imageView)).subscribe(this.finishedTransforming);
+        this.transformer.finishedTransforming().pipe(RxOp.map((rect) => _getResultObject(rect, imageView))).subscribe(this.finishedTransforming);
 
     }
 

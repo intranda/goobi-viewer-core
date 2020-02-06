@@ -82,7 +82,7 @@ public class CampaignItemResource {
      * <p>Constructor for CampaignItemResource.</p>
      */
     public CampaignItemResource() {
-        this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
     }
 
     /**
