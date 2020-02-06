@@ -1054,4 +1054,31 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
         Assert.assertEquals("-a", SearchHelper.cleanUpSearchTerm("-a"));
     }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve digits
+     */
+    @Test
+    public void normalizeString_shouldPreserveDigits() throws Exception {
+        Assert.assertEquals("1 2 3", SearchHelper.normalizeString("1*2*3"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve latin chars
+     */
+    @Test
+    public void normalizeString_shouldPreserveLatinChars() throws Exception {
+        Assert.assertEquals("F O O b a r", SearchHelper.normalizeString("F*O*Obar"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve hebrew chars
+     */
+    @Test
+    public void normalizeString_shouldPreserveHebrewChars() throws Exception {
+        Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
+    }
 }
