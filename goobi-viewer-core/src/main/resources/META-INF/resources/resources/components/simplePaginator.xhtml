@@ -30,7 +30,7 @@
     <h:panelGroup rendered="#{cc.attrs.itemCount > 1}">
         <nav id="numericPaginator" role="navigation">
             <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
-                <f:attribute name="styleClass" value="numeric-paginator"/>
+                <f:attribute name="styleClass" value="numeric-paginator -ltr"/>
             </c:if>
             <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
                 <f:attribute name="styleClass" value="numeric-paginator -rtl"/>
