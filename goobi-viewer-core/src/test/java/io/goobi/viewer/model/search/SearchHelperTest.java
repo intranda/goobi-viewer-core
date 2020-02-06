@@ -1070,7 +1070,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void normalizeString_shouldPreserveLatinChars() throws Exception {
-        Assert.assertEquals("F O O b a r", SearchHelper.normalizeString("F*O*Obar"));
+        Assert.assertEquals("f o obar", SearchHelper.normalizeString("F*O*Obar"));
     }
 
     /**
