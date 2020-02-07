@@ -1239,5 +1239,9 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplaySocialMediaShareLinks() {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
+    
+    public boolean isAggregateSearchHits() {
+        return DataManager.getInstance().getConfiguration().isAggregateHits();
+    }
 
 }
