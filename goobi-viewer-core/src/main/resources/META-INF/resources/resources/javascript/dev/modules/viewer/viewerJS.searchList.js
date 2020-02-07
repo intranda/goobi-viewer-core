@@ -29,6 +29,7 @@ var viewerJS = ( function( viewer ) {
     var _promise = null;
     var _childHits = null;
     var _searchListStyle = '';
+    var _searchListShowThumbs = false;
     var _defaults = {
         contextPath: '',
         restApiPath: '/rest/search/hit/',
@@ -124,11 +125,10 @@ var viewerJS = ( function( viewer ) {
             } );
                         
             // get/set list style from local storage
-            if ( localStorage.getItem( 'searchListStyle' ) == undefined ) {
-                localStorage.setItem( 'searchListStyle', 'default' );
+            if ( sessionStorage.getItem( 'searchListStyle' ) == undefined ) {
+                sessionStorage.setItem( 'searchListStyle', 'default' );
             }
-            
-            _searchListStyle = localStorage.getItem( 'searchListStyle' );
+            _searchListStyle = sessionStorage.getItem( 'searchListStyle' );
             
             // load thumbnails before appying search list style
             switch ( _searchListStyle ) {
@@ -179,7 +179,7 @@ var viewerJS = ( function( viewer ) {
             	$( '.search-list__hits' ).hide().removeClass( 'grid' ).removeClass( 'list' );
             	
             	// set list style in local storage
-            	localStorage.setItem( 'searchListStyle', 'default' );
+            	sessionStorage.setItem( 'searchListStyle', 'default' );
             	
             	// remove header background
             	$( '.search-list__hit-thumbnail' ).css( 'background-image', 'none' );
@@ -194,7 +194,7 @@ var viewerJS = ( function( viewer ) {
                 $( '.search-list__hits' ).hide().removeClass( 'list' ).addClass( 'grid' );
                 
                 // set list style in local storage
-                localStorage.setItem( 'searchListStyle', 'grid' );
+                sessionStorage.setItem( 'searchListStyle', 'grid' );
                 
                 // hide thumbnail and set src to header background
                 $( '.search-list__hit-thumbnail img' ).each( function() {
@@ -212,7 +212,7 @@ var viewerJS = ( function( viewer ) {
                 $( '.search-list__hits' ).hide().removeClass( 'grid' ).addClass( 'list' );
                 
                 // set list style in local storage
-                localStorage.setItem( 'searchListStyle', 'list' );
+                sessionStorage.setItem( 'searchListStyle', 'list' );
                 
                 $( '.search-list__hits' ).fadeIn( 'fast' );
             } );
@@ -261,6 +261,51 @@ var viewerJS = ( function( viewer ) {
                     console.error( 'ERROR: viewer.searchList.init - ', error );
                 } );
             } );
+            
+            //init thumbnail toggle            
+            let $thumbToggle = $('[data-action="toggle-thumbs"]');
+            if($thumbToggle.length > 0) {
+                if ( sessionStorage.getItem( 'searchListShowThumbs' ) == undefined ) {
+                    sessionStorage.setItem( 'searchListShowThumbs', false );
+                }
+                _searchListShowThumbs = sessionStorage.getItem( 'searchListShowThumbs' ).toLowerCase() === "true" ? true : false;
+                console.log("_searchListShowThumbs", _searchListShowThumbs);
+                
+                let activeTitle = $thumbToggle.attr("data-title-active");
+                let inactiveTitle = $thumbToggle.attr("data-title-inactive");
+                if(_searchListShowThumbs) {                    
+                    $thumbToggle
+                        .addClass("-active")
+                        .attr("title", activeTitle)
+                        .tooltip('fixTitle');
+                } else {
+                    $thumbToggle
+                    .removeClass("-active")
+                    .attr("title", inactiveTitle)
+                    .tooltip('fixTitle');
+                }
+                
+                $thumbToggle.on("click", (event) => {
+                    $thumbToggle.blur();
+                    _searchListShowThumbs = !_searchListShowThumbs;
+                    if(_searchListShowThumbs && !$thumbToggle.hasClass("-active")) {
+                        $thumbToggle
+                            .addClass("-active")
+                            .attr("title", activeTitle)
+                            .tooltip('fixTitle')
+                            .tooltip('show');
+                        $(".search-list__subhit-thumbnail").show();
+                    } else {
+                        $thumbToggle
+                            .removeClass("-active")
+                            .attr("title", inactiveTitle)
+                            .tooltip('fixTitle')
+                            .tooltip('show');
+                        $(".search-list__subhit-thumbnail").hide();
+                    }
+                    sessionStorage.setItem( 'searchListShowThumbs', _searchListShowThumbs );
+                });
+            }
         },
     };
     
@@ -304,16 +349,22 @@ var viewerJS = ( function( viewer ) {
         $.each( data.children, function( children, child ) {
             hitSet = $( '<div class="search-list__hit-content-set" />' );
             
+            let hitSetText = $("<div class='search-list__hit-text-area'></div>");
+            hitSet.append(hitSetText);
+            
             // build title
-            hitSet.append( _renderHitSetTitle( child.browseElement ) );
+            hitSetText.append( _renderHitSetTitle( child.browseElement ) );
             
             // append metadata if exist
-            hitSet.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
+            hitSetText.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
+            
+            // append thumbnail image
+            hitSet.append( _renderThumbnail( child.browseElement, child.url ) );
             
             // build child hits
             if ( child.hasChildren ) {
                 $.each( child.children, function( subChildren, subChild ) {
-                    hitSet.append( _renderSubChildHits( subChild.browseElement, subChild.type, subChild.translatedType ) );
+                    hitSetText.append( _renderSubChildHits( subChild.browseElement, subChild.type, subChild.translatedType ) );
                 } );
             }
             
@@ -321,6 +372,15 @@ var viewerJS = ( function( viewer ) {
             $this.next().append( hitSet );
         } );
         
+    }
+    
+    function _renderThumbnail( browseElement, url ) {
+        let $thumb = $("<img class='search-list__subhit-thumbnail'/>");
+        $thumb.attr("src", browseElement.thumbnailUrl);
+        if(!_searchListShowThumbs) {
+            $thumb.css("display", "none");
+        }
+        return $thumb;
     }
     
     /**
