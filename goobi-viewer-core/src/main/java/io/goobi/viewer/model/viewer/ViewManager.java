@@ -280,6 +280,9 @@ public class ViewManager implements Serializable {
     private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        if(topDocument != null && topDocument.isRtl()) {
+            actualPageOrientation = actualPageOrientation.opposite();
+        }
         if (actualPageOrientation.equals(PageOrientation.left)) {
             return getPage(this.currentImageOrder);
         }
