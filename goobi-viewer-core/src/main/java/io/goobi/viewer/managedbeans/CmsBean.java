@@ -752,7 +752,6 @@ public class CmsBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @SuppressWarnings("unused")
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
         if (userBean == null || userBean == null || !userBean.getUser().isCmsAdmin()) {

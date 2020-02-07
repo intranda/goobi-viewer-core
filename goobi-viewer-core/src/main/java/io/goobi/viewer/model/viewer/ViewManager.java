@@ -76,6 +76,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -1460,7 +1461,7 @@ public class ViewManager implements Serializable {
         }
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + 0;
     }
-    
+
     /**
      * <p>
      * getDenkxwebResolverUrl.
@@ -3281,4 +3282,27 @@ public class ViewManager implements Serializable {
         return getCurrentPage() != null;
     }
 
+    /**
+     * Creates an instance of ViewManager loaded with the record with the given identifier.
+     * @param pi Record identifier
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static ViewManager createViewManager(String pi) throws PresentationException, IndexUnreachableException {
+        if(pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
+        if (doc == null) {
+            return null;
+        }
+
+        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        StructElement topDocument = new StructElement(iddoc, doc);
+        ViewManager ret = new ViewManager(topDocument, new LeanPageLoader(topDocument, topDocument.getNumPages()), iddoc, null, null, null);
+        
+        return ret;
+    }
 }
