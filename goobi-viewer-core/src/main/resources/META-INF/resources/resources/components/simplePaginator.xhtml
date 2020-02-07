@@ -138,7 +138,8 @@
         	        previous: () => doClick(".numeric-paginator__navigate.navigate_prev a"),
         	        next: () => doClick(".numeric-paginator__navigate.navigate_next a"),
         	        first: () => doClick(".numeric-paginator .navigate_first a"),
-        	        last: () => doClick(".numeric-paginator .navigate_last a")
+        	        last: () => doClick(".numeric-paginator .navigate_last a"),
+        	        rightToLeft: "#{activeDocumentBean.viewManager.topDocument.rtl}"
         	}
         	function doClick(selector) {
         	    let query = $(selector);
