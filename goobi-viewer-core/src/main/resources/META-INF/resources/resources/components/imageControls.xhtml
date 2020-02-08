@@ -13,8 +13,7 @@
     
     <!-- IMPLEMENTATION -->
     <composite:implementation>
-        <h:panelGroup styleClass="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
-        <nav id="imageControls" role="navigation">
+        <nav id="imageControls" role="navigation" class="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
             <!-- FORM -->
             <h:form id="imageControlsForm" prependId="false">
                 <!-- ACTIONS -->
@@ -422,6 +421,5 @@
                 </div>
             </h:form>
         </nav>
-        </h:panelGroup>
     </composite:implementation>
 </ui:composition>
