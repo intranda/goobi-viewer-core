@@ -112,7 +112,7 @@
 		<joda-time.version>2.10.5</joda-time.version>
 		<junit.version>4.13</junit.version>
 		<json.version>20190722</json.version>
-		<jsoup.version>1.12.1</jsoup.version>
+		<jsoup.version>1.12.2</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<log4j.version>2.13.0</log4j.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
