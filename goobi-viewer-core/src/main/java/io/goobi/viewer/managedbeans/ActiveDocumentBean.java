@@ -1552,7 +1552,7 @@ public class ActiveDocumentBean implements Serializable {
                     return false;
                 }
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Error checking PDF resources: {}", e.getMessage());
+                logger.error("Error checking EPUB resources: {}", e.getMessage());
                 return false;
             }
 
@@ -1630,7 +1630,7 @@ public class ActiveDocumentBean implements Serializable {
             ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
-            writer.createDocument(os, getToc().getTocElements());
+            writer.createPdfDocument(os, getToc().getTocElements());
             fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
         } catch (IndexOutOfBoundsException e) {
             logger.error("No toc to generate");
