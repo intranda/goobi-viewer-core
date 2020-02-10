@@ -66,8 +66,12 @@ import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.toc.TOC;
+import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -406,6 +410,37 @@ public class RecordsResource {
         }
 
         return MetadataTools.generateRIS(se);
+    }
+
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    @GET
+    @Path("/toc/{pi}")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String getTOCAsText(@PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
+        setResponseHeader("");
+
+        // TODO Check PRIV_VIEW_METADATA once merged
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+            throw new ContentNotFoundException("Resource not found");
+        }
+
+        ViewManager viewManager = ViewManager.createViewManager(pi);
+        TOC toc = new TOC();
+        toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
+        TocWriter writer = new TocWriter("", viewManager.getTopDocument().getLabel().toUpperCase());
+        writer.setLevelIndent(5);
+
+        return writer.getAsText(toc.getTocElements());
     }
 
     /**

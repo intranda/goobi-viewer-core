@@ -66,7 +66,7 @@ public class TocWriterTest {
 
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             TocWriter writer = new TocWriter("Its a me", "Inhaltsverzeichnis");
-            writer.createDocument(fos, list);
+            writer.createPdfDocument(fos, list);
         }
     }
 

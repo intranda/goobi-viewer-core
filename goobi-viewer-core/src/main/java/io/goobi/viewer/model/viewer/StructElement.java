@@ -79,6 +79,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupLabels = new HashMap<>();
     /** Metadata describing the polygon that contains this docstruct within a page. */
     private List<ShapeMetadata> shapeMetadata;
+    /** True if this record has a right-to-left reading direction. */
+    private boolean rtl = false;
 
     /**
      * Empty constructor for unit tests.
@@ -160,6 +162,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docToMerge.getFieldValue(SolrConstants.ISWORK) != null) {
                 doc.addField(SolrConstants.ISWORK, docToMerge.getFieldValue(SolrConstants.ISWORK));
             }
+            if (docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL) != null) {
+                doc.addField(SolrConstants.BOOL_DIRECTION_RTL, docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL));
+            }
         }
         init(doc);
     }
@@ -234,7 +239,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
                 }
             }
-
+            rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
             // Load shape metadata
             // TODO use indicator field in doc to avoid this extra search for non-shape elements
             String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
@@ -907,6 +912,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public void setShapeMetadata(List<ShapeMetadata> shapeMetadata) {
         this.shapeMetadata = shapeMetadata;
+    }
+
+    /**
+     * @return the rtl
+     */
+    public boolean isRtl() {
+        return rtl;
+    }
+
+    /**
+     * @param rtl the rtl to set
+     */
+    public void setRtl(boolean rtl) {
+        this.rtl = rtl;
     }
 
     /**

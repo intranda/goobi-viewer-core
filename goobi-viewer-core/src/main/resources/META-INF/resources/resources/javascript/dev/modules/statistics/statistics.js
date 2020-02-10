@@ -43,7 +43,7 @@ var Statistics = ( function() {
     Statistics.initMouseover = function( document, window ) {
         $( document ).mousemove( function( ev ) {
             
-            if ( Statistics.chartLabel != null ) {
+            if ( Statistics.chartLabel != null ) { 
                 
                 var top = window.pageYOffset || document.documentElement.scrollTop;
                 var left = window.pageXOffset || document.documentElement.scrollLeft;

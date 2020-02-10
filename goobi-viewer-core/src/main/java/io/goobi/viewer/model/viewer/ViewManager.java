@@ -62,6 +62,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -76,6 +77,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -166,6 +168,7 @@ public class ViewManager implements Serializable {
         if (topDocument.isAnchorChild()) {
             anchorDocument = topDocument.getParent();
         }
+
         currentThumbnailPage = 1;
         //        annotationManager = new AnnotationManager(topDocument);
         pi = topDocument.getPi();
@@ -232,7 +235,7 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
         if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
-            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
+            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPageType());
         }
 
         return "{}";
@@ -279,11 +282,18 @@ public class ViewManager implements Serializable {
     private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        if(topDocument != null && topDocument.isRtl()) {
+            actualPageOrientation = actualPageOrientation.opposite();
+        }
         if (actualPageOrientation.equals(PageOrientation.left)) {
             return getPage(this.currentImageOrder);
+        } else if(topDocument != null && topDocument.isRtl()) {
+            return getPage(this.currentImageOrder + 1);
+        } else {
+            return getPage(this.currentImageOrder - 1);
         }
 
-        return getPage(this.currentImageOrder - 1);
+        
     }
 
     /**
@@ -295,11 +305,17 @@ public class ViewManager implements Serializable {
     private Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
+        if(topDocument != null && topDocument.isRtl()) {
+            actualPageOrientation = actualPageOrientation.opposite();
+        }
         if (actualPageOrientation.equals(PageOrientation.right)) {
             return getPage(this.currentImageOrder);
+        } else if(topDocument != null && topDocument.isRtl()) {
+            return getPage(this.currentImageOrder - 1);
+        } else {
+            return getPage(this.currentImageOrder + 1);
         }
 
-        return getPage(this.currentImageOrder + 1);
     }
 
     private String getImageInfo(PhysicalElement page, PageType pageType) {
@@ -465,7 +481,7 @@ public class ViewManager implements Serializable {
      */
     public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
 
-        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
+        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPageType();
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
@@ -1460,7 +1476,7 @@ public class ViewManager implements Serializable {
         }
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + 0;
     }
-    
+
     /**
      * <p>
      * getDenkxwebResolverUrl.
@@ -2813,7 +2829,8 @@ public class ViewManager implements Serializable {
             return "";
         }
         try {
-            String resolverUrlRoot = "http://viewer-demo01.intranda.com/viewer/metsresolver?id="; // TODO
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            String resolverUrlRoot = nh != null ? nh.getApplicationUrl() : "http://viewer.goobi.io/" + "metsresolver?id=";
             TranskribusJob job = TranskribusUtils.ingestRecord(DataManager.getInstance().getConfiguration().getTranskribusRestApiUrl(), session, pi,
                     resolverUrlRoot);
             if (job == null) {
@@ -3281,4 +3298,27 @@ public class ViewManager implements Serializable {
         return getCurrentPage() != null;
     }
 
+    /**
+     * Creates an instance of ViewManager loaded with the record with the given identifier.
+     * @param pi Record identifier
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static ViewManager createViewManager(String pi) throws PresentationException, IndexUnreachableException {
+        if(pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
+        if (doc == null) {
+            return null;
+        }
+
+        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        StructElement topDocument = new StructElement(iddoc, doc);
+        ViewManager ret = new ViewManager(topDocument, new LeanPageLoader(topDocument, topDocument.getNumPages()), iddoc, null, null, null);
+        
+        return ret;
+    }
 }
