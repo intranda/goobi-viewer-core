@@ -103,10 +103,16 @@ module.exports = function (grunt) {
 					'<%=src.jsDevFolderModules %>admin/adminJS.js',
 					'<%=src.jsDevFolderModules %>admin/adminJS.*.js',
 	                '<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.js',
-					'<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.*.js'
-				],
+					'<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.*.js',
+				], 
 				dest: '<%=src.jsDistFolder%>viewer.min.js'
 			},
+			statistics: {
+                src: [
+                    '<%=src.jsDevFolderModules %>statistics/statistics.js',
+                ],
+                dest: '<%=src.jsDistFolder%>statistics.min.js'
+            },
 			browser: {
                 src: [
                     '<%=src.jsDevFolderModules %>browsersupport/browsersupport.js',
