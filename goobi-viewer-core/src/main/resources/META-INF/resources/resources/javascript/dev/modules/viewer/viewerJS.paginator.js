@@ -25,6 +25,10 @@
 var viewerJS = (function(viewer) {
 	'use strict';
 
+	var _rightKey = 39;
+	var _leftKey = 37;
+	var _forwardKey;
+    var _backwardKey;
 	var _debug = false;
 	var _defaults = {
 		maxDoubleClickDelay : 250 // ms
@@ -48,6 +52,13 @@ var viewerJS = (function(viewer) {
 				console.log("Init paginator with config ", viewer.paginator.config);
 			}
 
+			if(this.config.rightToLeft) {
+			    _forwardKey = _leftKey;
+			    _backwardKey = _rightKey;
+			} else {
+			    _forwardKey = _rightKey;
+                _backwardKey = _leftKey;
+			}
 			$(document.body).on("keyup", viewer.paginator.keypressHandler);
 
 		},
@@ -85,9 +96,8 @@ var viewerJS = (function(viewer) {
 			            console.log("double key press");
 			        }
 			    }
-			    
 			    switch (keyCode) {
-			        case 37:
+			        case _backwardKey:
 			            if (doubleKeypress && viewer.paginator.config.first) {
 			                console.log("first");
 			                viewer.paginator.config.first();
@@ -96,7 +106,7 @@ var viewerJS = (function(viewer) {
 			                viewer.paginator.config.previous();
 			            }
 			            break;
-			        case 39:
+			        case _forwardKey:
 			            if (doubleKeypress && viewer.paginator.config.last) {
 			                viewer.paginator.config.last();
 			            } 

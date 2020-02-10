@@ -291,10 +291,12 @@ public class SolrConstants {
 
     /** Constant <code>FACET_DC="FACET_DC"</code> */
     public static final String FACET_DC = "FACET_DC";
-    
+
     /** Constant <code>MD_TEXT="MD_TEXT"</code> */
     public static final String MD_TEXT = "MD_TEXT"; //content of UGC docs
     /** Constant <code>MD_BODY="MD_BODY"</code> */
     public static final String MD_BODY = "MD_BODY"; //body of UGC docs from json annotations
+    /** Field containing true if a record has a right-to-left reading direction. */
+    public static final String BOOL_DIRECTION_RTL = "BOOL_DIRECTION_RTL";
 
 }

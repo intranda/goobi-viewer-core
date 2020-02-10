@@ -1124,13 +1124,17 @@ public final class SearchHelper {
      * 
      * @param string
      * @return
+     * @should preserve digits
+     * @should preserve latin chars
+     * @should preserve hebrew chars
      */
     static String normalizeString(String string) {
         if (string == null) {
             return null;
         }
 
-        return string.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+        return string.toLowerCase().replaceAll("[^\\p{L}0-9#]", " ");
+//        return string;
     }
 
     /**

@@ -75,6 +75,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupMemberships = new HashMap<>();
     /** Labels of the groups to which this record belongs. */
     private final Map<String, String> groupLabels = new HashMap<>();
+    /** True if this record has a right-to-left reading direction. */
+    private boolean rtl = false;
 
     /**
      * Empty constructor for unit tests.
@@ -156,6 +158,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docToMerge.getFieldValue(SolrConstants.ISWORK) != null) {
                 doc.addField(SolrConstants.ISWORK, docToMerge.getFieldValue(SolrConstants.ISWORK));
             }
+            if (docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL) != null) {
+                doc.addField(SolrConstants.BOOL_DIRECTION_RTL, docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL));
+            }
         }
         init(doc);
     }
@@ -224,7 +229,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
                 }
             }
-
+            rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
         } catch (PresentationException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -861,4 +866,17 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return true;
     }
 
+    /**
+     * @return the rtl
+     */
+    public boolean isRtl() {
+        return rtl;
+    }
+
+    /**
+     * @param rtl the rtl to set
+     */
+    public void setRtl(boolean rtl) {
+        this.rtl = rtl;
+    }
 }

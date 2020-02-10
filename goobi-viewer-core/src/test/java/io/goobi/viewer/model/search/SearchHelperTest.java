@@ -110,7 +110,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
-        Assert.assertEquals(43, collections.size());
+        Assert.assertEquals(47, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         for (String key : keys) {
@@ -119,7 +119,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     Assert.assertEquals(Long.valueOf(2), collections.get(key));
                     break;
                 case ("dcaccesscondition"):
-                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(5), collections.get(key));
                     break;
                 case ("dcaccesscondition.fulltextlocked"):
                     Assert.assertEquals(Long.valueOf(2), collections.get(key));
@@ -1054,4 +1054,32 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
         Assert.assertEquals("-a", SearchHelper.cleanUpSearchTerm("-a"));
     }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve digits
+     */
+    @Test
+    public void normalizeString_shouldPreserveDigits() throws Exception {
+        Assert.assertEquals("1 2 3", SearchHelper.normalizeString("1*2*3"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve latin chars
+     */
+    @Test
+    public void normalizeString_shouldPreserveLatinChars() throws Exception {
+        Assert.assertEquals("f o obar", SearchHelper.normalizeString("F*O*Obar"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve hebrew chars
+     */
+    @Test
+    public void normalizeString_shouldPreserveHebrewChars() throws Exception {
+        Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
+    }
 }
+
