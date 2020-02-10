@@ -128,7 +128,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     Assert.assertEquals(Long.valueOf(1), collections.get(key));
                     break;
                 case ("dcaccesscondition.pdflocked"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
                     break;
                 case ("dcannotations"):
                     Assert.assertEquals(Long.valueOf(15), collections.get(key));
@@ -140,7 +140,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     Assert.assertEquals(Long.valueOf(3), collections.get(key));
                     break;
                 case ("dcauthoritydata"):
-                    Assert.assertEquals(Long.valueOf(10), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(12), collections.get(key));
                     break;
                 case ("dcauthoritydata.gnd"):
                     Assert.assertEquals(Long.valueOf(5), collections.get(key));
