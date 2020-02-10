@@ -181,7 +181,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setBookshelfBean(BookmarkBean bookshelfBean) {
         this.bookmarkBean = bookshelfBean;
     }
-    
+
     /**
      * Required setter for ManagedProperty injection
      *
@@ -1267,24 +1267,24 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        TOC toc = getToc();
-
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+        if (navigationHelper != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
+            TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
-                String label = null;               
+                String label = null;
                 String labelTemplate = "_DEFAULT";
-                if(getViewManager() != null) {
+                if (getViewManager() != null) {
                     labelTemplate = getViewManager().getTopDocument().getDocStructType();
                 }
-                if(DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate) && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
+                if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
+                        && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
                     String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
                     prefix = Helper.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     suffix = Helper.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
-                } else {                    
+                } else {
                     label = toc.getLabel(viewManager.getPi(), language);
                 }
                 if (label != null) {

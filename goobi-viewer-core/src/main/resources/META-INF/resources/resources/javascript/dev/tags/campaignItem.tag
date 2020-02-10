@@ -49,11 +49,8 @@
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
 	this.annotationSource = this.itemSource + "annotations/";
 	this.loading = true;
-	console.log("item url ", this.itemSource);
-	console.log("annotations url ", this.annotationSource);
 		
 	this.on("mount", function() {
-	    console.log("mount campaignItem");
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
@@ -100,7 +97,6 @@
 	}
 	
 	initAnnotations(annotations) {
-	    console.log("init campaign annotations");
 	    let save = this.item.createAnnotationMap(annotations);
 	    this.item.saveToLocalStorage(save);
 	}
@@ -175,7 +171,6 @@
 	}
 	
 	skipItem() {
-	    console.log("skip to ", this.opts.nextitemurl);
 	    window.location.href = this.opts.nextitemurl;
 	}
 	

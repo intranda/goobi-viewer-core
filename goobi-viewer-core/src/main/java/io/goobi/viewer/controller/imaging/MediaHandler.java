@@ -35,7 +35,7 @@ public class MediaHandler {
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      */
     public MediaHandler(Configuration config) {
-        this.mediaRestApiUrl = config.getRestApiUrl();
+        this.mediaRestApiUrl = config.getIIIFApiUrl();
     }
     
     /**

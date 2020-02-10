@@ -42,7 +42,7 @@ public class IIIFPresentationAPIHandler {
      * @throws java.net.URISyntaxException if any.
      */
     public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
-        this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
+        this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getIIIFApiUrl())) {
         };
     }
 

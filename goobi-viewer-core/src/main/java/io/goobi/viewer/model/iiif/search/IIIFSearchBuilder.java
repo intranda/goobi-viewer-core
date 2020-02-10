@@ -91,7 +91,7 @@ public class IIIFSearchBuilder {
         this.query = query;
         this.pi = pi;
         this.converter = new SearchResultConverter(URI.create(this.requestURI),
-                URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), pi, 0);
+                URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl()), pi, 0);
     }
 
     /**
@@ -417,17 +417,18 @@ public class IIIFSearchBuilder {
                     .getSearchIndex()
                     .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(),
                             converter.getPresentationBuilder().getSolrFieldList());
+            long hitIndex = 0;
             for (SolrDocument doc : docList) {
                 Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
                     if (fieldNameMatches(fieldName, displayFields)) {
+                        hitIndex++;
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
                         String containesWordRegex = AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getQueryRegex(query));
                         if (fieldValue.matches(containesWordRegex)) {
-                            if (firstHitIndex < results.numHits && firstHitIndex + hitsPerPage >= results.numHits) {
+                            if (hitIndex >= firstHitIndex && hitIndex < firstHitIndex + hitsPerPage) {
                                 SearchHit hit = converter.convertMetadataToHit(AbstractSearchParser.getQueryRegex(query), fieldName, doc);
                                 results.add(hit);
-                                results.annotations.addAll(hit.getAnnotations());
                             }
                         }
                     }
@@ -577,7 +578,7 @@ public class IIIFSearchBuilder {
      */
     private boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
         for (String configuredField : configuredFields) {
-            if (configuredField.contains("*")) {
+            if (configuredField.contains("*") && !fieldName.endsWith("_UNTOKENIZED")) {
                 String fieldRegex = AbstractSearchParser.getQueryRegex(configuredField);
                 if (fieldName.matches(fieldRegex)) {
                     return true;

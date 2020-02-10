@@ -818,7 +818,8 @@ public class ThumbnailHandler {
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
+            String imageApiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
             url += "?updated=" + item.getLastModifiedTime();
             return url;
         }).orElse("");

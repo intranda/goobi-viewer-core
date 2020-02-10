@@ -23,7 +23,7 @@
         display: flex;
     	align-items: center;
         font-size: @fontMedium;
-        a, button {
+        a, button{
             display: inline-block;
             padding: 3px;
             font-size: @fontNormal;
@@ -65,6 +65,13 @@
                 margin-top: -4px;
             }
         }
+    }
+    &__toggle-thumbs {
+    	padding: 0 5px;
+    	border-left: 1px solid @middlegray;
+    	.-active {
+    		color: @blue;
+    	}
     }
     &__views {
     	padding-left: 5px;
@@ -305,7 +312,20 @@
         }
     }
     &__hit-content-set {
-        padding: 0 0 5px 0;
+    	display: flex;
+    	justify-content: space-between;
+        margin: 0 0 5px 0;
+        &:hover {
+        	background-color: @lightgray;
+        	a {
+        		text-decoration: none;
+        		color: @labelGray;
+        	}
+        }
+    }
+    &__subhit-thumbnail {
+    	height: 60px;
+    	padding: 5px 5px 0 0;
     }
     &__hit-content-more {
         padding: 5px;

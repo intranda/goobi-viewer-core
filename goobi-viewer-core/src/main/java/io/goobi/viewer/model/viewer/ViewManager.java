@@ -216,7 +216,7 @@ public class ViewManager implements Serializable {
             return "";
         }
 
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
         urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
         return urlBuilder.toString();
     }

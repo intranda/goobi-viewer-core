@@ -517,7 +517,7 @@ public class SearchResultConverter {
      * create a text annotation with the given text in the given canvas
      */
     private IAnnotation createAnnotation(String text, IResource canvas, URI uri) {
-        AbstractAnnotation anno = new OpenAnnotation();
+        AbstractAnnotation anno = new OpenAnnotation(uri);
         anno.setMotivation(Motivation.PAINTING);
         anno.setTarget(canvas);
         TextualResource body = new TextualResource(text);

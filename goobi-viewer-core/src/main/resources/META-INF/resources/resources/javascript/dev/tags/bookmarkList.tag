@@ -123,7 +123,7 @@ getBookmarkLists() {
 }
 
 updateLists() {
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }
 
 onListUpdate() {
