@@ -497,7 +497,11 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg");
+            String region = Region.FULL_IMAGE;
+            if(doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
+                region = doc.getShapeMetadata().get(0).getCoords();
+            }
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", "default", "jpg");
         } else {
             return null;
         }
