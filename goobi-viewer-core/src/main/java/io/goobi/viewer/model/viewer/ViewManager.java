@@ -167,11 +167,7 @@ public class ViewManager implements Serializable {
         if (topDocument.isAnchorChild()) {
             anchorDocument = topDocument.getParent();
         }
-        if(topDocument.isRtl()) {
-            this.firstPageOrientation = PageOrientation.left;
-        } else {
-            this.firstPageOrientation = PageOrientation.right;
-        }
+
         currentThumbnailPage = 1;
         //        annotationManager = new AnnotationManager(topDocument);
         pi = topDocument.getPi();
