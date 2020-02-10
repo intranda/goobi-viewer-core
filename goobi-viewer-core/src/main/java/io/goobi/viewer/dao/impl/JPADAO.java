@@ -2542,7 +2542,6 @@ public class JPADAO implements IDAO {
                 em.getTransaction().commit();
                 return true;
             } catch (RollbackException e) {
-                logger.error(e.getMessage());
                 return false;
             } finally {
                 em.close();
