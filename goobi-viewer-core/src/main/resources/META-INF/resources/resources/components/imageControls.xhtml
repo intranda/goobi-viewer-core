@@ -317,10 +317,11 @@
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                                 <li class="image-controls__action zoom-slider-wrapper">
-                                    <div class="zoom-slider">
-                                        <span class="zoom-slider-handle"></span>
-                                    </div>
+                                	<input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider"/>
                                 </li>
+<!--                                 <li> -->
+<!--                                 	<input type="number" class="zoom-slider-label"/>% -->
+<!--                                 </li> -->
                             </ui:fragment>
                         </ui:fragment>
                         
