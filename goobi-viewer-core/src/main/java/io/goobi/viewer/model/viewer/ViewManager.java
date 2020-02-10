@@ -167,6 +167,11 @@ public class ViewManager implements Serializable {
         if (topDocument.isAnchorChild()) {
             anchorDocument = topDocument.getParent();
         }
+        if(topDocument.isRtl()) {
+            this.firstPageOrientation = PageOrientation.left;
+        } else {
+            this.firstPageOrientation = PageOrientation.right;
+        }
         currentThumbnailPage = 1;
         //        annotationManager = new AnnotationManager(topDocument);
         pi = topDocument.getPi();
@@ -285,9 +290,13 @@ public class ViewManager implements Serializable {
         }
         if (actualPageOrientation.equals(PageOrientation.left)) {
             return getPage(this.currentImageOrder);
+        } else if(topDocument != null && topDocument.isRtl()) {
+            return getPage(this.currentImageOrder + 1);
+        } else {
+            return getPage(this.currentImageOrder - 1);
         }
 
-        return getPage(this.currentImageOrder - 1);
+        
     }
 
     /**
@@ -304,9 +313,12 @@ public class ViewManager implements Serializable {
         }
         if (actualPageOrientation.equals(PageOrientation.right)) {
             return getPage(this.currentImageOrder);
+        } else if(topDocument != null && topDocument.isRtl()) {
+            return getPage(this.currentImageOrder - 1);
+        } else {
+            return getPage(this.currentImageOrder + 1);
         }
 
-        return getPage(this.currentImageOrder + 1);
     }
 
     private String getImageInfo(PhysicalElement page, PageType pageType) {
