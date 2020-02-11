@@ -310,20 +310,20 @@
 				}
 				let activeStyles = viewerJS.helper.getCss("page-area focus", ['borderTopColor', 'borderTopWidth', 'background-color']);
 				let activeStyle = {
-				        borderWidth: parseInt(focusStyles["borderTopWidth"]),
-				        borderColor: focusStyles["borderTopColor"],
-				        fillColor: focusStyles["background-color"]
+				        borderWidth: parseInt(activeStyles["borderTopWidth"]),
+				        borderColor: activeStyles["borderTopColor"],
+				        fillColor: activeStyles["background-color"]
 				}
 				
 				
 				
-				let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100);
-// 				shadow.start();
+				let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, config.areas.filter(a => config.currentLogId === a.logId)[0], false);
+				shadow.start();
 		        config.areas.forEach( (area, index) => {
 		            console.log("init area ", area, index);
 		            let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
 		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-		            let overlay = new ImageView.Overlay(rect, imageView.viewer, config.currentLogId === area.logId ? focusStyle : style, true);
+		            let overlay = new ImageView.Overlay(rect, imageView.viewer, config.currentLogId === area.logId ? activeStyle : style, true);
 		        	overlay.draw();
 		        })
 		    }
