@@ -383,8 +383,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        StructElement topStruct = this;
-        if (!work) {
+        if(work) {
+            return this;
+        } else if(anchor) {
+            return this;
+        } else {
+            if(this.topStruct == null) {
                 String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
                 try {
                     if (topstructIddoc != null) {
@@ -394,9 +398,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
                 }
             }
-
-        return topStruct;
+            return this.topStruct;
         }
+    }
 
     /**
      * <p>
