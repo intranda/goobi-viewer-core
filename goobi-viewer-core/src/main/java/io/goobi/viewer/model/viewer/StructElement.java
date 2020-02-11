@@ -69,6 +69,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupMemberships = new HashMap<>();
     /** Labels of the groups to which this record belongs. */
     private final Map<String, String> groupLabels = new HashMap<>();
+    private StructElement topStruct = null;
+
 
     /**
      * Empty constructor for unit tests.
@@ -311,19 +313,21 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        StructElement topStruct = this;
-        if (!work) {
-            String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
-            try {
-                if (topstructIddoc != null) {
-                    topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+        if(work) {
+            return this;
+        } else {
+            if(this.topStruct == null) {
+                String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
+                try {
+                    if (topstructIddoc != null) {
+                        this.topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
                 }
-            } catch (NumberFormatException e) {
-                logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
             }
+        return this.topStruct;
         }
-
-        return topStruct;
     }
 
     /**
