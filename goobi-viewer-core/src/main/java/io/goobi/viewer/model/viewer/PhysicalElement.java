@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,9 @@ import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -71,6 +75,7 @@ import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 
 /**
  * Physical element (page) containing an image, video or audio.
@@ -1656,5 +1661,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         return containedStructElements;
+    }
+    
+    public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException {
+        List<StructElement> elements = getContainedStructElements();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        List<ShapeMetadata> shapes = elements.stream()
+                .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
+                .flatMap(ele -> ele.getShapeMetadata().stream()).collect(Collectors.toList());
+        String json = mapper.writeValueAsString(shapes);
+        return json;
     }
 }

@@ -34,7 +34,15 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.config.PrettyConfig;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.TimeAnalysis;
+import de.intranda.monitoring.timer.TimeAnalysisItem;
+import de.intranda.monitoring.timer.TimingStatistics;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -59,7 +67,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private static final long serialVersionUID = 9048792944197887061L;
 
     private static final Logger logger = LoggerFactory.getLogger(StructElement.class);
-
+    
     /** If false; the Solr document with the given IDDOC does not exist in the index. */
     private boolean exists = false;
     private DocType docType = null;;
@@ -79,6 +87,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupLabels = new HashMap<>();
     /** Metadata describing the polygon that contains this docstruct within a page. */
     private List<ShapeMetadata> shapeMetadata;
+    private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
 
@@ -249,16 +258,32 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 if (!shapeDocs.isEmpty()) {
                     this.shapeMetadata = new ArrayList<>(shapeDocs.size());
                     for (SolrDocument shapeDoc : shapeDocs) {
-                        String label = (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
+                        String label = getLabel();// (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
                         String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
                         String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords));
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPrettyUrl(getTopStruct().getPi(), this.logid, getImageNumber())));
                     }
                 }
             }
         } catch (PresentationException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug("PresentationException thrown here: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * @param pi
+     * @param logid
+     * @param imageNumber
+     * @return
+     */
+    private String getPrettyUrl(String pi, String logid, int imageNumber) {
+        try {            
+            URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("image3").getPatternParser().getMappedURL(pi, imageNumber, logid);
+            return mappedUrl.toString();
+        } catch(NullPointerException e) {
+            logger.error("Error getting pretty url", e);
+            return null;
         }
     }
 
@@ -360,18 +385,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
         StructElement topStruct = this;
         if (!work) {
-            String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
-            try {
-                if (topstructIddoc != null) {
-                    topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
+                try {
+                    if (topstructIddoc != null) {
+                        topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
                 }
-            } catch (NumberFormatException e) {
-                logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
             }
-        }
 
         return topStruct;
-    }
+        }
 
     /**
      * <p>
@@ -935,6 +960,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         private static final long serialVersionUID = -4043298882984117424L;
 
+        /** The URL to a view of this structElement */
+        private final String url;
         /** Display label */
         private final String label;
         /** Type of shape (currently only RECT) */
@@ -949,10 +976,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @param shape
          * @param coords
          */
-        public ShapeMetadata(String label, String shape, String coords) {
+        public ShapeMetadata(String label, String shape, String coords, String url) {
             this.label = label;
             this.shape = shape;
             this.coords = coords;
+            this.url = url;
         }
 
         /**
@@ -975,5 +1003,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         public String getCoords() {
             return coords;
         }
+        
+        /**
+         * @return the url
+         */
+        public String getUrl() {
+            return url;
+        }
+
     }
 }

@@ -31,6 +31,10 @@
 		</div>
 
 	</popover> 
+	
+	<popover id="imageFilterPopover">
+		<imageFilters/>
+	</popover>
 
 
 	<!-- OPEN SEADRAGON -->
@@ -103,6 +107,47 @@
         	}
         };
         
+        var imageFilterConfig = {
+	        filters : {
+	            brightness: {
+	                label: "#{msg.label__image_filter_brightness}"
+	            },
+	            contrast: {
+	                label: "#{msg.label__image_filter_contrast}"
+	            },
+	            saturate: {
+	                label: "#{msg.label__image_filter_saturate}"
+	            },
+	            grayscale: {
+	                label: "#{msg.label__image_filter_grayscale}"
+	            },
+	            threshold: {
+	                label: "#{msg.label__image_filter_bitonal}"
+	            },
+	            blur: {
+	                label: "#{msg.label__image_filter_blur}",
+	                visible: false
+	            },
+	            sharpen: {
+	                label: "#{msg.label__image_filter_sharpen}"
+	            },
+	            invert: {
+	                label: "#{msg.label__image_filter_invert}"
+	            },
+	            hue: {
+	                label: "#{msg.label__image_filter_rotate}"
+	            }
+	        },
+	        messages: {
+	            clearAll: "#{msg.action__reset_all_image_filters}"
+	        }
+        };
+        
+        var pageAreaConfig = {
+                structElements : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}
+        }
+        console.log("pageAreaConfig", pageAreaConfig);
+        
         // check for fullscreen and change container height 
         if ( $( '#fullscreen' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
@@ -129,7 +174,7 @@
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
     	     initImageFragmentLinks();
-           	 initImageAreaSelect(image);
+           	 initImageFragmentSelect(image);
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
@@ -151,10 +196,10 @@
        		$( "#imageContainerMobileOverlay" ).show();
        	}
        	
-        var areaSelect, event;
+        var fragmentSelect, event;
        	if(viewImage) {
-            function selectImageArea(button) {
-                 if(areaSelect) {
+            function selectImageFragment(button) {
+                 if(fragmentSelect) {
                     if(!$(button).hasClass("active")) {
                 	    $(button).tooltip("hide");
 	       		        $(button).popover({
@@ -167,29 +212,29 @@
 		       		            $("body").one("click.dismiss-popover", function() {
 		       		         	$(button).popover("hide");
 		    	      		    $(button).removeClass("active");
-		    	       		 	areaSelect.stopSelect();
+		    	       		 	fragmentSelect.stopSelect();
 	       		        	})
 	       		        }, 0);
 		                $(button).addClass("active");
-		                areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
+		                fragmentSelect.startSelect().then( area => openShareFragmentPopup(area, button) )   
 		                viewImage.viewer.addOnceHandler( 'canvas-drag-end', (e) => {
 		                    event = e.originalEvent;
 		                });
                 	}
                 }
             }
-       		function openShareAreaPopup(area, button) {
-       		    if(areaSelect) {
+       		function openShareFragmentPopup(area, button) {
+       		    if(fragmentSelect) {
        		     	$(button).popover("hide");
 	      		    $(button).removeClass("active");
-	       		 	areaSelect.stopSelect();
+	       		 	fragmentSelect.stopSelect();
 	       		 	var areaString = viewImage.getAreaString(area);
 	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
 	       		 	var imageUrl = viewImage.getRegionUrl(area);
 	       		 	let popover =  viewerJS.popovers.fromEvent("canvas", event, "#share-image-area-popup", {
 	       		        onClose: () => {
-		       		 	    if(areaSelect) {
-		       		     	    areaSelect.remove(0);
+		       		 	    if(fragmentSelect) {
+		       		     	    fragmentSelect.remove(0);
 		       		     	}
 	       		        },
 	       		        onShow: () => {
@@ -202,11 +247,11 @@
 		       		initImageFragmentLinks(areaString);
        		    }
        		}
-			function initImageAreaSelect(image) {
+			function initImageFragmentSelect(image) {
            		// init area select
            		try { 
 					let styles = viewerJS.helper.getCss("image-fragment", ['borderTopColor', 'borderTopWidth', 'background-color']);
-	           		var areaSelectConfig = {
+	           		var fragmentSelectConfig = {
 	           		     removeOldAreas : true,
 	                     drawStyle : {
 	                         borderColor: styles["borderTopColor"],
@@ -214,7 +259,7 @@
 	                         fillColor: styles["background-color"],
 	                     }
 	           		};
-	           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
+	           		fragmentSelect = new ImageView.Tools.AreaSelect(image, fragmentSelectConfig);
            		} catch(error) {
            		    console.error("Error initializing area select: ", error);
            		}
@@ -233,17 +278,11 @@
 	       		 	$wrapper.show();
 			    }
 			}
-			
        	}
        	
-      	//]]>
-    </script>
-    
-    <popover id="imageFilterPopover">
-		<imageFilters/>
-		<script>
 		if(viewImage) {	
 		    
+		    //init image filter tools
        	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
        	 	    let originClean = viewImage.isOriginClean();
        	 	    if(originClean) {
@@ -252,52 +291,23 @@
        	 	        $(".image-controls__option.image-filter button")
        	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
        	 	        .tooltip('fixTitle');
+       	 	        
+					riot.mount("imageFilters", {
+					    image: viewImage,
+					    config: imageFilterConfig
+				    });
        	 	    }
        	 	});
-
-			riot.mount("imageFilters", {
-			    image: viewImage,
-			    config: {
-			        filters : {
-			            brightness: {
-			                label: "#{msg.label__image_filter_brightness}"
-			            },
-			            contrast: {
-			                label: "#{msg.label__image_filter_contrast}"
-			            },
-			            saturate: {
-			                label: "#{msg.label__image_filter_saturate}"
-			            },
-			            grayscale: {
-			                label: "#{msg.label__image_filter_grayscale}"
-			            },
-			            threshold: {
-			                label: "#{msg.label__image_filter_bitonal}"
-			            },
-			            blur: {
-			                label: "#{msg.label__image_filter_blur}",
-			                visible: false
-			            },
-			            sharpen: {
-			                label: "#{msg.label__image_filter_sharpen}"
-			            },
-			            invert: {
-			                label: "#{msg.label__image_filter_invert}"
-			            },
-			            hue: {
-			                label: "#{msg.label__image_filter_rotate}"
-			            }
-			        },
-			        messages: {
-			            clearAll: "#{msg.action__reset_all_image_filters}"
-			        }
-			    }
-			})
+       	 	
+		    //init page areas
+       	 	
+		    
+		    
 		} else {
 		    console.error("viewImage is not defined");
 		}
-		</script>
-	</popover>
-    
-    
+		       	
+      	//]]>
+    </script>
+
 </ui:composition>
