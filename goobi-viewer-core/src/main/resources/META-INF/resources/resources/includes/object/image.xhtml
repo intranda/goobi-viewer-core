@@ -308,12 +308,17 @@
 				        borderColor: styles["borderTopColor"],
 				        fillColor: styles["background-color"]
 				}
-				let focusStyles = viewerJS.helper.getCss("page-area focus", ['borderTopColor', 'borderTopWidth', 'background-color']);
-				let focusStyle = {
+				let activeStyles = viewerJS.helper.getCss("page-area focus", ['borderTopColor', 'borderTopWidth', 'background-color']);
+				let activeStyle = {
 				        borderWidth: parseInt(focusStyles["borderTopWidth"]),
 				        borderColor: focusStyles["borderTopColor"],
 				        fillColor: focusStyles["background-color"]
 				}
+				
+				
+				
+				let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100);
+// 				shadow.start();
 		        config.areas.forEach( (area, index) => {
 		            console.log("init area ", area, index);
 		            let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
