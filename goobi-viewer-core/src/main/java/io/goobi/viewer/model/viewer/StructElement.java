@@ -261,7 +261,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         String label = getLabel();// (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
                         String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
                         String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPrettyUrl(getTopStruct().getPi(), this.logid, getImageNumber())));
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, this.logid, getPrettyUrl(getTopStruct().getPi(), this.logid, getImageNumber())));
                     }
                 }
             }
@@ -972,7 +972,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         private final String shape;
         /** Shape coordinates */
         private final String coords;
-
+        private final String logId;
         /**
          * Constructor.
          * 
@@ -980,10 +980,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @param shape
          * @param coords
          */
-        public ShapeMetadata(String label, String shape, String coords, String url) {
+        public ShapeMetadata(String label, String shape, String coords, String logId, String url) {
             this.label = label;
             this.shape = shape;
             this.coords = coords;
+            this.logId = logId;
             this.url = url;
         }
 
@@ -1013,6 +1014,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          */
         public String getUrl() {
             return url;
+        }
+        
+        /**
+         * @return the logId
+         */
+        public String getLogId() {
+            return logId;
         }
 
     }

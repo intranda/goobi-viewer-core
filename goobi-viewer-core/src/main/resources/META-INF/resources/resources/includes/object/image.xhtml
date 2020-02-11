@@ -144,7 +144,8 @@
         };
         
         var pageAreaConfig = {
-                structElements : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}
+                areas : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson},
+                currentLogId : "#{activeDocumentBean.logid}"
         }
         console.log("pageAreaConfig", pageAreaConfig);
         
@@ -300,8 +301,30 @@
        	 	});
        	 	
 		    //init page areas
-       	 	
-		    
+       	 	function drawPageAreas(config, imageView) {
+				let styles = viewerJS.helper.getCss("page-area", ['borderTopColor', 'borderTopWidth', 'background-color']);
+				let style = {
+				        borderWidth: styles["borderTopWidth"],
+				        borderColor: styles["borderTopColor"],
+				        fillColor: styles["background-color"]
+				}
+				let focusStyles = viewerJS.helper.getCss("page-area focus", ['borderTopColor', 'borderTopWidth', 'background-color']);
+				let focusStyle = {
+				        borderWidth: parseInt(focusStyles["borderTopWidth"]),
+				        borderColor: focusStyles["borderTopColor"],
+				        fillColor: focusStyles["background-color"]
+				}
+		        config.areas.forEach( (area, index) => {
+		            console.log("init area ", area, index);
+		            let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+		            let overlay = new ImageView.Overlay(rect, imageView.viewer, config.currentLogId === area.logId ? focusStyle : style, true);
+		        	overlay.draw();
+		        })
+		    }
+		    viewImage.observables.viewerOpen.subscribe( () => {		        
+       	    	drawPageAreas(pageAreaConfig, viewImage);
+		    })
 		    
 		} else {
 		    console.error("viewImage is not defined");
