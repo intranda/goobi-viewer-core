@@ -942,10 +942,20 @@ public final class SolrSearchIndex {
     String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
         if (!dataRepositoryNames.containsKey(pi)) {
             String dataRepositoryName = findDataRepository(pi);
-            dataRepositoryNames.put(pi, dataRepositoryName);
+            updateDataRepositoryNames(pi, dataRepositoryName);
         }
 
         return dataRepositoryNames.get(pi);
+    }
+    
+    /**
+     * 
+     * @param pi
+     * @param dataRepositoryName
+     * @should update value correctly
+     */
+    public void updateDataRepositoryNames(String pi, String dataRepositoryName) {
+        dataRepositoryNames.put(pi, dataRepositoryName);
     }
 
     /**

@@ -47,7 +47,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldReturnCorrectResults() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":PPN517154005 " + SolrConstants.PI + ":34115495_1940", 0, Integer.MAX_VALUE, null, null, null);
+        QueryResponse response = DataManager.getInstance()
+                .getSearchIndex()
+                .search(SolrConstants.PI + ":PPN517154005 " + SolrConstants.PI + ":34115495_1940", 0, Integer.MAX_VALUE, null, null, null);
         Assert.assertEquals(2, response.getResults().size());
     }
 
@@ -398,5 +400,16 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.THUMBNAIL, "foo.jpg");
         Assert.assertTrue(SolrSearchIndex.isHasImages(doc));
+    }
+
+    /**
+     * @see SolrSearchIndex#updateDataRepositoryNames(String,String)
+     * @verifies update value correctly
+     */
+    @Test
+    public void updateDataRepositoryNames_shouldUpdateValueCorrectly() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
+        DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "repo/a");
+        Assert.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
     }
 }
