@@ -131,7 +131,7 @@
 		<stax-api.version>1.0-2</stax-api.version>
 		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
 		<tika.version>[1.20,)</tika.version>
-		<tomcat.version>9.0.30</tomcat.version>
+		<tomcat.version>9.0.31</tomcat.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
