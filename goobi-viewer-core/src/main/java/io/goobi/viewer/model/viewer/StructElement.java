@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -326,7 +327,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
                 }
             }
-        return this.topStruct;
+        return this.topStruct == null ? this : this.topStruct;
         }
     }
 
@@ -412,9 +413,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getPi() {
         if (pi != null && !pi.equals("null")) {
             return pi;
+        } else if(getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
+            return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+        } else if(!work && !anchor) {
+            try {
+                return Optional.ofNullable(this.getTopStruct()).map(StructElement::getPi).orElse(null);
+            } catch (PresentationException | IndexUnreachableException e) {
+                return null;
+            }
+        } else {
+            return null;
         }
 
-        return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
     }
 
     /** {@inheritDoc} */

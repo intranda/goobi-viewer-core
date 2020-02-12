@@ -342,7 +342,7 @@ public class BrowseElement implements Serializable {
             label = createMultiLanguageLabel(structElement);
         }
 
-        pi = Optional.ofNullable(structElement.getTopStruct()).map(StructElement::getPi).orElse(null);
+        pi = structElement.getPi();
         if (pi == null) {
             logger.error("Index document {}  has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;
