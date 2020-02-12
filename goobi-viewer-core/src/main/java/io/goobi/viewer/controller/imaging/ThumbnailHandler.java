@@ -594,7 +594,7 @@ public class ThumbnailHandler {
             if (StringUtils.isBlank(imagePath) && !se.isWork()) {
                 if (se.isAnchor()) {
                     imagePath = se.getFirstVolumeFieldValue(field);
-                } else {
+                } else if(se.getTopStruct() != null){
                     imagePath = se.getTopStruct().getMetadataValue(field);
                 }
             }

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +79,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
-    
+
 
     /**
      * Empty constructor for unit tests.
@@ -334,9 +335,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        if(work) {
-            return this;
-        } else if(anchor) {
+        if(work || anchor) {
             return this;
         } else {
             if(this.topStruct == null) {
@@ -443,9 +442,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getPi() {
         if (pi != null && !pi.equals("null")) {
             return pi;
+        } else if(getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
+            return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+        } else if(!work && !anchor) {
+            try {
+                return Optional.ofNullable(this.getTopStruct()).map(StructElement::getPi).orElse(null);
+            } catch (PresentationException | IndexUnreachableException e) {
+                return null;
+            }
+        } else {
+            return null;
         }
 
-        return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
     }
 
     /** {@inheritDoc} */

@@ -141,7 +141,7 @@ public class PdfHandler {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
-        String pi = doc.getTopStruct().getPi();
+        String pi = doc.getPi();
         return getPdfUrl(doc, pi, label);
     }
 
