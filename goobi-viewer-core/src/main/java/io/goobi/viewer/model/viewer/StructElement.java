@@ -313,7 +313,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        if(work) {
+        if(work || anchor) {
             return this;
         } else {
             if(this.topStruct == null) {
