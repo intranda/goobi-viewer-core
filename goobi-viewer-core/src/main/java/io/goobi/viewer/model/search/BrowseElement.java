@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -341,7 +342,7 @@ public class BrowseElement implements Serializable {
             label = createMultiLanguageLabel(structElement);
         }
 
-        pi = structElement.getTopStruct().getPi();
+        pi = Optional.ofNullable(structElement.getTopStruct()).map(StructElement::getPi).orElse(null);
         if (pi == null) {
             logger.error("Index document {}  has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;

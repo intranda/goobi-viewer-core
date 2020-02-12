@@ -582,7 +582,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         String format = null;
 
         // Format
-        if (topStruct.getDocStructType() != null) {
+        if (topStruct != null && topStruct.getDocStructType() != null) {
             switch (topStruct.getDocStructType()) {
                 case "Monograph":
                     format = "book";
