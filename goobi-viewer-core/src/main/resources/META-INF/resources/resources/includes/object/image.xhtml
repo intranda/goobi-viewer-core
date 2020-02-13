@@ -317,13 +317,20 @@
 				
 				
 				
-				let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, config.areas.filter(a => config.currentLogId === a.logId)[0], false);
-				shadow.start();
+// 				let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, config.areas.filter(a => config.currentLogId === a.logId)[0], false);
+// 				shadow.start();
 		        config.areas.forEach( (area, index) => {
 		            console.log("init area ", area, index);
 		            let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
 		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-		            let overlay = new ImageView.Overlay(rect, imageView.viewer, config.currentLogId === area.logId ? activeStyle : style, true);
+		            console.log("element ", $("#pageAreaFrame_" + area.logId).get(0));
+		            let overlay = new ImageView.Overlay({
+		                rect: rect,
+		                viewer: imageView.viewer,
+		                style: (config.currentLogId === area.logId ? activeStyle : style),
+		                rotateWithImage: true,
+		                element: $("#pageAreaFrame_" + area.logId).get(0)
+		            });
 		        	overlay.draw();
 		        })
 		    }
@@ -337,5 +344,17 @@
 		       	
       	//]]>
     </script>
+    
+    <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
+    	<div id="pageAreaFrame_#{se.logid}" class="page-area-frame">
+		    <svg viewBox="0 0 100 100">
+				  <foreignObject width="100%" height="100%">
+				  <span class="page-area">
+					#{se.label}
+				  </span>
+				  </foreignObject>
+			</svg> 
+    	</div>
+	</ui:repeat>
 
 </ui:composition>
