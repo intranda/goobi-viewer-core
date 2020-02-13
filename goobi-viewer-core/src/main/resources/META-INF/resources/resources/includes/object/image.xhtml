@@ -334,9 +334,9 @@
 		        	overlay.draw();
 		        })
 		    }
-		    viewImage.observables.viewerOpen.subscribe( () => {		        
-       	    	drawPageAreas(pageAreaConfig, viewImage);
-		    })
+// 		    viewImage.observables.viewerOpen.subscribe( () => {		        
+//        	    	drawPageAreas(pageAreaConfig, viewImage);
+// 		    })
 		    
 		} else {
 		    console.error("viewImage is not defined");
@@ -345,16 +345,16 @@
       	//]]>
     </script>
     
-    <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
-    	<div id="pageAreaFrame_#{se.logid}" class="page-area-frame">
-		    <svg viewBox="0 0 100 100">
-				  <foreignObject width="100%" height="100%">
-				  <span class="page-area">
-					#{se.label}
-				  </span>
-				  </foreignObject>
-			</svg> 
-    	</div>
-	</ui:repeat>
+<!--     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}"> -->
+<!--     	<div id="pageAreaFrame_#{se.logid}" class="page-area-frame"> -->
+<!-- 		    <svg viewBox="0 0 100 100"> -->
+<!-- 				  <foreignObject width="100%" height="100%"> -->
+<!-- 				  <span class="page-area"> -->
+<!-- 					#{se.label} -->
+<!-- 				  </span> -->
+<!-- 				  </foreignObject> -->
+<!-- 			</svg>  -->
+<!--     	</div> -->
+<!-- 	</ui:repeat> -->
 
 </ui:composition>
