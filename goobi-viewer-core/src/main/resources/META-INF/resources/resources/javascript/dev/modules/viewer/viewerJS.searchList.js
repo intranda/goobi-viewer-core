@@ -375,8 +375,9 @@ var viewerJS = ( function( viewer ) {
     }
     
     function _renderThumbnail( browseElement, url ) {
-        let $thumb = $("<img class='search-list__subhit-thumbnail'/>");
-        $thumb.attr("src", browseElement.thumbnailUrl);
+        let $thumb = $("<a><img class='search-list__subhit-thumbnail'></img></a>");
+        $thumb.find("img").attr("src", browseElement.thumbnailUrl);
+        $thumb.attr("href", _defaults.contextPath + "/" + url);
         if(!_searchListShowThumbs) {
             $thumb.css("display", "none");
         }
