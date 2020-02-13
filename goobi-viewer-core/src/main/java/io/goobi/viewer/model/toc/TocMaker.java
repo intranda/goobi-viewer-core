@@ -719,7 +719,9 @@ public class TocMaker {
             for (MetadataParameter param : labelConfig.getParams()) {
                 // logger.trace("param key: {}", param.getKey());
                 IMetadataValue value;
-                if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
+                if(MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
+                    value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
+                } else if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                     value = createMultiLanguageValue(doc, param.getKey());
                 } else {
                     value = new SimpleMetadataValue();
