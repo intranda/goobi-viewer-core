@@ -318,8 +318,8 @@
 				
 				
 				let activeArea = config.areas.find(a => a.logId === config.currentLogId);
-				console.log("found activeArea ", activeArea);
 				if(activeArea) {
+					activeArea.url = activeArea.url.replace("/" + activeArea.logId, "");
 				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
 		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
 					let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, rect, true);
@@ -341,6 +341,9 @@
 	                label: $("#pageAreaLabel_" + area.logId).get(0)
 	            });
 	        	overlay.draw();
+	        	$("#pageAreaFrame_" + area.logId + ", #pageAreaLabel_" + area.logId).on("click", () => {
+	        	    window.location.href = "#{request.contextPath}" + area.url;
+	        	})
 		    }
 		    
 		    
