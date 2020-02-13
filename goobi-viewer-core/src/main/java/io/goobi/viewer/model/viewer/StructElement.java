@@ -280,13 +280,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return
      */
     private String getPrettyUrl(String pi, String logid, int imageNumber) {
-        try {            
-            URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("image3").getPatternParser().getMappedURL(pi, imageNumber, logid);
-            return mappedUrl.toString();
-        } catch(NullPointerException e) {
-            logger.error("Error getting pretty url", e);
-            return null;
-        }
+            try {            
+                URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("image3").getPatternParser().getMappedURL(pi, imageNumber, logid);
+                return mappedUrl.toString();
+            } catch(NullPointerException e) {
+                logger.error("Error getting pretty url", e);
+                return null;
+            }  catch(IllegalStateException e) {
+                //no PrettyContext
+                return null;
+            }
     }
 
     /**
@@ -947,6 +950,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
     }
+    
 
     /**
      * @param shapeMetadata the shapeMetadata to set
