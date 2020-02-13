@@ -951,7 +951,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return shapeMetadata;
     }
     
-
+    public boolean hasShapeMetadata() {
+        return shapeMetadata != null && !shapeMetadata.isEmpty();
+    }
+    
     /**
      * @param shapeMetadata the shapeMetadata to set
      */

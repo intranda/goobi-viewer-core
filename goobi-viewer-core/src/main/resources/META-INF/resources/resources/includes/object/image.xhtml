@@ -317,26 +317,36 @@
 				
 				
 				
-// 				let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, config.areas.filter(a => config.currentLogId === a.logId)[0], false);
-// 				shadow.start();
-		        config.areas.forEach( (area, index) => {
-		            console.log("init area ", area, index);
-		            let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+				let activeArea = config.areas.find(a => a.logId === config.currentLogId);
+				console.log("found activeArea ", activeArea);
+				if(activeArea) {
+				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
 		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-		            console.log("element ", $("#pageAreaFrame_" + area.logId).get(0));
-		            let overlay = new ImageView.Overlay({
-		                rect: rect,
-		                viewer: imageView.viewer,
-		                style: (config.currentLogId === area.logId ? activeStyle : style),
-		                rotateWithImage: true,
-		                element: $("#pageAreaFrame_" + area.logId).get(0)
-		            });
-		        	overlay.draw();
-		        })
+					let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, rect, true);
+					shadow.start();
+				    drawArea(activeArea, imageView);
+				} else {
+			        config.areas.forEach( (area, index) => drawArea(area, imageView))				    
+				}
+
 		    }
-// 		    viewImage.observables.viewerOpen.subscribe( () => {		        
-//        	    	drawPageAreas(pageAreaConfig, viewImage);
-// 		    })
+		    function drawArea(area, imageView) {
+		        let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+	            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+	            let overlay = new ImageView.Overlay({
+	                rect: rect,
+	                viewer: imageView.viewer,
+	                rotateWithImage: true,
+	                element: $("#pageAreaFrame_" + area.logId).get(0),
+	                label: $("#pageAreaLabel_" + area.logId).get(0)
+	            });
+	        	overlay.draw();
+		    }
+		    
+		    
+		    viewImage.observables.viewerOpen.subscribe( () => {		        
+       	    	drawPageAreas(pageAreaConfig, viewImage);
+		    })
 		    
 		} else {
 		    console.error("viewImage is not defined");
@@ -345,16 +355,20 @@
       	//]]>
     </script>
     
-<!--     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}"> -->
-<!--     	<div id="pageAreaFrame_#{se.logid}" class="page-area-frame"> -->
-<!-- 		    <svg viewBox="0 0 100 100"> -->
-<!-- 				  <foreignObject width="100%" height="100%"> -->
-<!-- 				  <span class="page-area"> -->
-<!-- 					#{se.label} -->
-<!-- 				  </span> -->
-<!-- 				  </foreignObject> -->
-<!-- 			</svg>  -->
-<!--     	</div> -->
-<!-- 	</ui:repeat> -->
+    <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
+    	<ui:fragment rendered="#{se.hasShapeMetadata()}">
+    	<div id="pageAreaFrame_#{se.logid}" class="page-area #{se.logid == activeDocumentBean.logid ? 'focus':''}">
+    	</div>
+    	<div id="pageAreaLabel_#{se.logid}" class="page-area-label-frame">
+		    <svg viewBox="0 0 100 100">
+				  <foreignObject width="100%" height="100%">
+				  <div class="page-area page-area-label #{se.logid == activeDocumentBean.logid ? 'focus':''}">
+					#{se.label}
+				  </div>
+				  </foreignObject>
+			</svg> 
+    	</div>
+    	</ui:fragment>
+	</ui:repeat>
 
 </ui:composition>
