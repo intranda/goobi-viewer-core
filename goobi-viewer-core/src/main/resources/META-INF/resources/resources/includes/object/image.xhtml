@@ -324,6 +324,9 @@
 		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, rect, true);
 					shadow.start();
 				    drawArea(activeArea, imageView, true);
+	        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
+	        	    $(document).scrollTop(parseInt(scrollPosition));
+	        	    window.sessionStorage.removeItem("scrollPosition");
 				} else {
 			        config.areas.forEach( (area, index) => drawArea(area, imageView))				    
 				}
@@ -352,7 +355,8 @@
 		        	})
 	        	} else {
 		        	$area.on("click", () => {
-		        	    window.location.href = "#{request.contextPath}" + area.url + "#pageAreaFrame_" + area.logId;
+		        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
+		        	    window.location.href = "#{request.contextPath}" + area.url;
 		        	})
 	        	}
 	        	$area.hover(
