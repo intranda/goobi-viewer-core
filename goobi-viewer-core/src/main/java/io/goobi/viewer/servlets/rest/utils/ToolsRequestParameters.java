@@ -13,27 +13,42 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.managedbeans;
+package io.goobi.viewer.servlets.rest.utils;
 
-import java.util.List;
+/**
+ * POST request parameters for RecordsResource.
+ */
+public class ToolsRequestParameters {
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.managedbeans.SitelinkBean;
-
-public class SitelinkBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+    private String pi;
+    private String dataRepositoryName;
 
     /**
-     * @see SitelinkBean#getAvailableValuesForField(String,String)
-     * @verifies return all existing values for the given field
+     * @return the pi
      */
-    @Test
-    public void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
-        SitelinkBean sb = new SitelinkBean();
-        List<String> values = sb.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
-        Assert.assertEquals(63, values.size());
+    public String getPi() {
+        return pi;
     }
+
+    /**
+     * @param pi the pi to set
+     */
+    public void setPi(String pi) {
+        this.pi = pi;
+    }
+
+    /**
+     * @return the dataRepositoryName
+     */
+    public String getDataRepositoryName() {
+        return dataRepositoryName;
+    }
+
+    /**
+     * @param dataRepositoryName the dataRepositoryName to set
+     */
+    public void setDataRepositoryName(String dataRepositoryName) {
+        this.dataRepositoryName = dataRepositoryName;
+    };
+
 }

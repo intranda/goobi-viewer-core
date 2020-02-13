@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -90,6 +91,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
+
 
     /**
      * Empty constructor for unit tests.
@@ -376,6 +378,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true).
+     * If the element itself is an anchor, itself will be returned.
+     * If no topStruct element is found because no metadata {@link SolrConstants#IDDOC_TOPSTRUCT} is found
+     * or because it could not be resolved, null is returned
      *
      * @should retrieve top struct correctly
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -383,22 +388,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        if(work) {
-            return this;
-        } else if(anchor) {
+        if(work || anchor) {
             return this;
         } else {
             if(this.topStruct == null) {
                 String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
                 try {
                     if (topstructIddoc != null) {
-                        topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                        this.topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
                     }
                 } catch (NumberFormatException e) {
                     logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
                 }
             }
-            return this.topStruct;
+        return this.topStruct;
         }
     }
 
@@ -492,9 +495,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getPi() {
         if (pi != null && !pi.equals("null")) {
             return pi;
+        } else if(getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
+            return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+        } else if(!work && !anchor) {
+            try {
+                return Optional.ofNullable(this.getTopStruct()).map(StructElement::getPi).orElse(null);
+            } catch (PresentationException | IndexUnreachableException e) {
+                return null;
+            }
+        } else {
+            return null;
         }
 
-        return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
     }
 
     /** {@inheritDoc} */

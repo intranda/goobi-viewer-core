@@ -230,12 +230,12 @@ public class WatermarkHandler implements Serializable {
                         }
                     } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
                         String urn = doc.getMetadataValue(SolrConstants.URN);
-                        if (StringUtils.isBlank(urn)) {
-                            try {
-                                urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
-                            } catch (PresentationException | IndexUnreachableException e) {
-                                logger.error(e.toString());
+                        try {
+                            if (StringUtils.isBlank(urn) && doc.getTopStruct() != null) {
+                                    urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
                             }
+                        } catch (PresentationException | IndexUnreachableException e) {
+                            logger.error(e.toString());
                         }
                         if (StringUtils.isNotEmpty(urn)) {
                             urlBuilder.append(urn);
