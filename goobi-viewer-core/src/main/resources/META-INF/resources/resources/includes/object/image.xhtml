@@ -319,36 +319,55 @@
 				
 				let activeArea = config.areas.find(a => a.logId === config.currentLogId);
 				if(activeArea) {
-					activeArea.url = activeArea.url.replace("/" + activeArea.logId, "");
 				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
 		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-					let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, rect, true);
+		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, rect, true);
 					shadow.start();
-				    drawArea(activeArea, imageView);
+				    drawArea(activeArea, imageView, true);
 				} else {
 			        config.areas.forEach( (area, index) => drawArea(area, imageView))				    
 				}
 
 		    }
-		    function drawArea(area, imageView) {
+		    function drawArea(area, imageView, clickToLeave) {
 		        let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
 	            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+	        	let $area = $("#pageAreaFrame_" + area.logId);
+	        	let $label = $("#pageAreaLabel_" + area.logId);
 	            let overlay = new ImageView.Overlay({
 	                rect: rect,
 	                viewer: imageView.viewer,
 	                rotateWithImage: true,
-	                element: $("#pageAreaFrame_" + area.logId).get(0),
-	                label: $("#pageAreaLabel_" + area.logId).get(0)
+	                element: $area.get(0),
+	                label: $label.get(0)
 	            });
 	        	overlay.draw();
-	        	$("#pageAreaFrame_" + area.logId + ", #pageAreaLabel_" + area.logId).on("click", () => {
-	        	    window.location.href = "#{request.contextPath}" + area.url;
-	        	})
+	        	if(clickToLeave) {
+	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
+	        	    $(imageView.viewer.canvas).on("click", (event) => {
+	        	        let $target = $(event.target);
+	        	        if($target.filter($area).length == 0) {
+		        	    	window.location.href = "#{request.contextPath}" + area.url.replace("/" + area.logId, "");
+	        	        }
+		        	})
+	        	} else {
+		        	$area.on("click", () => {
+		        	    window.location.href = "#{request.contextPath}" + area.url + "#pageAreaFrame_" + area.logId;
+		        	})
+	        	}
+	        	$area.hover(
+	        		() => $label.addClass("hover"),
+	        		() => $label.removeClass("hover")
+	        	);
+
 		    }
 		    
 		    
-		    viewImage.observables.viewerOpen.subscribe( () => {		        
-       	    	drawPageAreas(pageAreaConfig, viewImage);
+		    viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
+       	 	    let originClean = viewImage.isOriginClean();
+       	 	    if(originClean) {
+       	    		drawPageAreas(pageAreaConfig, viewImage);
+       	 	    }
 		    })
 		    
 		} else {
@@ -360,12 +379,12 @@
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">
-    	<div id="pageAreaFrame_#{se.logid}" class="page-area #{se.logid == activeDocumentBean.logid ? 'focus':''}">
+    	<div id="pageAreaFrame_#{se.logid}" class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}">
     	</div>
-    	<div id="pageAreaLabel_#{se.logid}" class="page-area-label-frame">
+    	<div id="pageAreaLabel_#{se.logid}" class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">
 		    <svg viewBox="0 0 100 100">
 				  <foreignObject width="100%" height="100%">
-				  <div class="page-area page-area-label #{se.logid == activeDocumentBean.logid ? 'focus':''}"
+				  <div class="page-area-label-text"
 				  	title="#{se.label}">
 					#{se.label}
 				  </div>

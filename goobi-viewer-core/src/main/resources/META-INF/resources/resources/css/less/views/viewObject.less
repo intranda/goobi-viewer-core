@@ -77,27 +77,33 @@
 }
 .page-area {
 	display: none;
-    border-color: #3365a9;
+    border-color: rgba(51,101,169,0.5);
     border-style: solid;
-    border-width: 1px;  
+    border-width: 2px;  
     cursor: pointer;
-    &.focus { 
+    &.active {
+    	cursor: default;
+    }
+    &:hover {
     	border-color: #3365a9;
     }
     &-label {
-    	display: inline-block;
-    	border: none;
-    	background: rgba(51,101,169,1);
-    	color: white;
-    	width: 100%;
-    	padding: 2px 5px;
-    	vertical-align: top;
-    	font-size: 1.6rem;
-    	&.focus {
-    		background: rgba(51,101,169,1);
+    	display: none;
+		min-width: 100px;
+    	&-text {
+    		display: none;
+	    	background: rgba(51,101,169,1);
+	    	color: white;
+	    	width: 100%;
+	    	padding: 2px 5px;
+	    	vertical-align: top;
+	    	font-size: 1.6rem;
     	}
-    	&-frame {
-    		min-width: 100px;
+    	&.active,
+    	&.hover {
+    		.page-area-label-text {    			
+    			display: inline-block;
+    		}
     	}
     } 
 }
