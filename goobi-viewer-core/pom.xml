@@ -120,7 +120,7 @@
 		<mockito.version>3.2.4</mockito.version>
 		<mockserver.version>5.9.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
-		<poi.version>4.1.1</poi.version>
+		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>7.0</primefaces.version>
 		<rome.version>1.12.2</rome.version>
