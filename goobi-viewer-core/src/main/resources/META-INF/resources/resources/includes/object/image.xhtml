@@ -147,7 +147,6 @@
                 areas : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson},
                 currentLogId : "#{activeDocumentBean.logid}"
         }
-        console.log("pageAreaConfig", pageAreaConfig);
         
         // check for fullscreen and change container height 
         if ( $( '#fullscreen' ).length > 0 ) {
@@ -315,7 +314,14 @@
 				        fillColor: activeStyles["background-color"]
 				}
 				
-				
+        	    imageView.viewer.addHandler("canvas-press", () => {
+        	        console.log("canvas-press");
+        	        imageView.dragging = false;
+        	    })
+        	    imageView.viewer.addHandler("canvas-drag", () => {
+        	        console.log("canvas-drag");
+        	        imageView.dragging = true;
+        	    })
 				
 				let activeArea = config.areas.find(a => a.logId === config.currentLogId);
 				if(activeArea) {
@@ -347,16 +353,21 @@
 	        	overlay.draw();
 	        	if(clickToLeave) {
 	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
-	        	    $(imageView.viewer.canvas).on("click", (event) => {
-	        	        let $target = $(event.target);
-	        	        if($target.filter($area).length == 0) {
-		        	    	window.location.href = "#{request.contextPath}" + area.url.replace("/" + area.logId, "");
+	        	     imageView.viewer.addHandler("canvas-release", () => {
+	        	        console.log("canvas-release");
+	        	        if(!imageView.dragging) {		        	            
+		        	        let $target = $(event.target);
+		        	        if($target.filter($area).length == 0) {
+			        	    	window.location.href = "#{request.contextPath}" + area.url.replace("/" + area.logId, "");
+		        	        }
 	        	        }
-		        	})
+	        	    })
 	        	} else {
 		        	$area.on("click", () => {
-		        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
-		        	    window.location.href = "#{request.contextPath}" + area.url;
+		        	    if(!imageView.dragging) {		        	        
+			        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
+			        	    window.location.href = "#{request.contextPath}" + area.url;
+		        	    }
 		        	})
 	        	}
 	        	$area.hover(
