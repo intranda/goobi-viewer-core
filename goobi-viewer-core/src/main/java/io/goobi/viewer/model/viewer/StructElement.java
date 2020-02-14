@@ -53,6 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.MetadataTools;
@@ -263,7 +264,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         String label = getLabel();// (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
                         String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
                         String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, this.logid, getPrettyUrl(getTopStruct().getPi(), this.logid, getImageNumber())));
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(), getImageNumber(), this.logid));
                     }
                 }
             }
@@ -271,25 +272,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
-    }
-
-    /**
-     * @param pi
-     * @param logid
-     * @param imageNumber
-     * @return
-     */
-    private String getPrettyUrl(String pi, String logid, int imageNumber) {
-            try {            
-                URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("image3").getPatternParser().getMappedURL(pi, imageNumber, logid);
-                return mappedUrl.toString();
-            } catch(NullPointerException e) {
-                logger.error("Error getting pretty url", e);
-                return null;
-            }  catch(IllegalStateException e) {
-                //no PrettyContext
-                return null;
-            }
     }
 
     /**
@@ -983,8 +965,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         private static final long serialVersionUID = -4043298882984117424L;
 
-        /** The URL to a view of this structElement */
-        private final String url;
         /** Display label */
         private final String label;
         /** Type of shape (currently only RECT) */
@@ -992,6 +972,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         /** Shape coordinates */
         private final String coords;
         private final String logId;
+        private final String structPi;
+        private final int pageNo;
         /**
          * Constructor.
          * 
@@ -999,12 +981,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @param shape
          * @param coords
          */
-        public ShapeMetadata(String label, String shape, String coords, String logId, String url) {
+        public ShapeMetadata(String label, String shape, String coords, String pi, int pageNo, String logId) {
             this.label = label;
             this.shape = shape;
             this.coords = coords;
             this.logId = logId;
-            this.url = url;
+            this.structPi = pi;
+            this.pageNo = pageNo;
         }
 
         /**
@@ -1032,7 +1015,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @return the url
          */
         public String getUrl() {
-            return url;
+            PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper())
+                    .map(NavigationHelper::getCurrentPageType)
+                    .orElse(PageType.viewImage);
+            return getUrl(pageType);
+        }
+        
+        public String getUrl(PageType pageType) {
+            StringBuilder sbUrl = new StringBuilder();
+            sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append('/')
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType));
+            return sbUrl.toString();
         }
         
         /**

@@ -358,7 +358,7 @@
 	        	        if(!imageView.dragging) {		        	            
 		        	        let $target = $(event.target);
 		        	        if($target.filter($area).length == 0) {
-			        	    	window.location.href = "#{request.contextPath}" + area.url.replace("/" + area.logId, "");
+			        	    	window.location.href = area.url.replace("/" + area.logId, "");
 		        	        }
 	        	        }
 	        	    })
@@ -366,7 +366,7 @@
 		        	$area.on("click", () => {
 		        	    if(!imageView.dragging) {		        	        
 			        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
-			        	    window.location.href = "#{request.contextPath}" + area.url;
+			        	    window.location.href = area.url;
 		        	    }
 		        	})
 	        	}

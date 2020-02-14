@@ -1665,6 +1665,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     
     public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException {
         List<StructElement> elements = getContainedStructElements();
+        elements.forEach(element -> {
+            
+        });
         
         ObjectMapper mapper = new ObjectMapper();
         List<ShapeMetadata> shapes = elements.stream()
