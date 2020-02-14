@@ -315,11 +315,9 @@
 				}
 				
         	    imageView.viewer.addHandler("canvas-press", () => {
-        	        console.log("canvas-press");
         	        imageView.dragging = false;
         	    })
         	    imageView.viewer.addHandler("canvas-drag", () => {
-        	        console.log("canvas-drag");
         	        imageView.dragging = true;
         	    })
 				
@@ -327,7 +325,7 @@
 				if(activeArea) {
 				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
 		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, -100, rect, true);
+		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, rect, true);
 					shadow.start();
 				    drawArea(activeArea, imageView, true);
 	        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
