@@ -253,7 +253,7 @@
                         </ui:fragment>
                             
                             <!-- DOUBLEPAGEVIEW -->
-                            <ui:fragment rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
+                            <ui:fragment rendered="#{activeDocumentBean.numberOfImages gt 1 and activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
                                 <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
                                         <i class="image-doublePageView"></i>
@@ -404,7 +404,7 @@
                         </ui:fragment>
                         
                         <!-- IMAGE FILTER -->
-                        <ui:fragment>
+                        <ui:fragment rendered="{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                             <li class="image-controls__option image-filter">
                                 <button type="button" class="btn btn--icon" disabled="disabled"
                                 	
