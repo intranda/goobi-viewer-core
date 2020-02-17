@@ -594,7 +594,7 @@ public class MetadataTools {
                 .append(':')
                 .append(DocType.METADATA.name());
         if (StringUtils.isNotEmpty(subQuery)) {
-            sbQuery.append(subQuery);
+            sbQuery.append(' ').append(subQuery);
         }
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
     }
