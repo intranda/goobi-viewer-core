@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +57,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -77,20 +74,26 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
 
 	/** Constant <code>CONTENT_TYPE_DOCX="application/vnd.openxmlformats-officedo"{trunked}</code> */
+	@Deprecated
 	public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 	/** Constant <code>CONTENT_TYPE_DOC="application/msword"</code> */
 	public static final String CONTENT_TYPE_DOC = "application/msword";
 	/** Constant <code>CONTENT_TYPE_RTF="application/rtf"</code> */
+	@Deprecated
 	public static final String CONTENT_TYPE_RTF = "application/rtf";
 	/** Constant <code>CONTENT_TYPE_RTF2="application/x-rtf"</code> */
+	@Deprecated
 	public static final String CONTENT_TYPE_RTF2 = "application/x-rtf";
 	/** Constant <code>CONTENT_TYPE_RTF3="text/rtf"</code> */
+	@Deprecated
 	public static final String CONTENT_TYPE_RTF3 = "text/rtf";
 	/** Constant <code>CONTENT_TYPE_RTF4="text/richtext"</code> */
+	@Deprecated
 	public static final String CONTENT_TYPE_RTF4 = "text/richtext";
 	/** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
 	public static final String CONTENT_TYPE_XML = "text/xml";
 	/** Constant <code>CONTENT_TYPE_HTML="text/html"</code> */
+	@Deprecated
 	public static final String CONTENT_TYPE_HTML = "text/html";
 	/** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
 	public static final String CONTENT_TYPE_SVG = "image/svg+xml";

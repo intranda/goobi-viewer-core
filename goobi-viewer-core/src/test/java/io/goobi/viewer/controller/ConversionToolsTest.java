@@ -25,11 +25,13 @@ import org.junit.Test;
 import io.goobi.viewer.controller.ConversionTools;
 
 public class ConversionToolsTest {
+    
     /**
      * @see ConversionTools#convertFileToHtml(Path)
      * @verifies convert docx file correctly
      */
     @Test
+    @Deprecated
     public void convertFileToHtml_shouldConvertDocxFileCorrectly() throws Exception {
         Path rtfFile = Paths.get("src/test/resources/data/text_example.docx");
         Assert.assertTrue(Files.isRegularFile(rtfFile));
@@ -43,6 +45,7 @@ public class ConversionToolsTest {
      * @verifies convert rtf file correctly
      */
     @Test
+    @Deprecated
     public void convertFileToHtml_shouldConvertRtfFileCorrectly() throws Exception {
         Path rtfFile = Paths.get("src/test/resources/data/text_example.rtf");
         Assert.assertTrue(Files.isRegularFile(rtfFile));
@@ -56,6 +59,7 @@ public class ConversionToolsTest {
      * @verifies convert docx correctly
      */
     @Test
+    @Deprecated
     public void convertDocxToHtml_shouldConvertDocxCorrectly() throws Exception {
         String html = ConversionTools.convertDocxToHtml(Paths.get("src/test/resources/data/text_example.docx"));
         Assert.assertNotNull(html);

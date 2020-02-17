@@ -103,6 +103,7 @@ public class TEITools {
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
+    @Deprecated
     public static String convertDocxToTei(Path docxFile) throws IOException {
         if (docxFile == null) {
             throw new IllegalArgumentException("docxFile may not be null");
