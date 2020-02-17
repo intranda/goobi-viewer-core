@@ -11,6 +11,18 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW AUDIO -->
+    
+    <!-- THUMBNAIL -->
+    <div class="col-xs-12 col-sm-2">
+        <figure>
+            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}" class="viewer-thumbnail" />
+        </figure>
+    </div>
+    <!-- TITLE -->
+    <div class="search-list__hit-title">
+        <h:outputText value="#{activeDocumentBean.viewManager.currentDocument.label}" escape="false" />
+    </div>
+                                
     <div id="audioContainer" class="view-object__audio">
         <audio 
             id="audio_container" 
