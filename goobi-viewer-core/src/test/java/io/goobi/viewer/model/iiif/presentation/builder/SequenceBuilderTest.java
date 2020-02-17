@@ -84,8 +84,6 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         ObjectWriter writer = mapper.writer().forType(AnnotationList.class);
         String json = writer.writeValueAsString(fulltext);
         Assert.assertTrue(StringUtils.isNotBlank(json));
-        File jsonFile = new File("C:\\opt\\digiverso\\viewer\\annolist.json");
-        FileUtils.write(jsonFile, json, "UTF-8");
     }
 
 }
