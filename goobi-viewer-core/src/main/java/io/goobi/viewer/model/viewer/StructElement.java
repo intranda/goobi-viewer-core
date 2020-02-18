@@ -35,15 +35,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ocpsoft.pretty.PrettyContext;
-import com.ocpsoft.pretty.faces.config.PrettyConfig;
-import com.ocpsoft.pretty.faces.url.URL;
-
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.TimeAnalysis;
-import de.intranda.monitoring.timer.TimeAnalysisItem;
-import de.intranda.monitoring.timer.TimingStatistics;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;

@@ -193,9 +193,9 @@
                                     href="#{activeDocumentBean.viewManager.pdfDownloadLink}" 
                                     id="pdfWork" 
                                     class="label label-default widget-usage__work-download-pdf" 
-                                    title="#{msg.metadata_dl_pdf}" 
+                                    title="#{msg.label__pdf_download_record}" 
                                     target="_blank" rel="nofollow">
-                                    #{msg.pdfDownload}</a>
+                                    #{msg.label__pdf_download_record}}</a>
                             </ui:fragment>
                             <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
                                 <a 
@@ -206,8 +206,8 @@
                                     data-title="#{activeDocumentBean.titleBarLabel}" 
                                     data-id=""
                                     data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                    title="#{msg.pdfDownload}">
-                                    #{msg.pdfDownload}
+                                    title="#{msg.label__pdf_download_record}}">
+                                    #{msg.label__pdf_download_record}}
                                 </a>    
                             </ui:fragment>
                         </ui:fragment>
@@ -267,9 +267,9 @@
 	                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
 	                                    id="pdfStruct" 
 	                                    class="label label-default widget-usage__struct-download-pdf" 
-	                                    title="#{msg.metadata_dl_pdf}" 
+	                                    title="#{msg.label__pdf_download_section}" 
 	                                    target="_blank" rel="nofollow">
-	                                    #{msg.pdfDownload}</a>
+	                                    #{msg.label__pdf_download_section}</a>
 	                            </ui:fragment>
 	                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
 	                                <a 
@@ -280,8 +280,8 @@
 	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
 	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
-	                                    title="#{msg.pdfDownload}">
-	                                    #{msg.pdfDownload}
+	                                    title="#{msg.label__pdf_download_section}">
+	                                    #{msg.label__pdf_download_section}
 	                                </a>    
 	                            </ui:fragment>
                             </ui:fragment>
@@ -314,8 +314,8 @@
 								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 									id="pdfPage"
 									class="label label-default widget-usage__page-download-pdf"
-									title="#{msg.pdfDownloadCurrentPage}" target="_blank" rel="nofollow">
-									#{msg.pdfDownload} </a>
+									title="#{msg.label__pdf_download_image}" target="_blank" rel="nofollow">
+									#{msg.label__pdf_download_image} </a>
 							</ui:fragment>
 
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
