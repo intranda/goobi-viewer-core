@@ -947,7 +947,7 @@ public final class SolrSearchIndex {
 
         return dataRepositoryNames.get(pi);
     }
-    
+
     /**
      * 
      * @param pi
@@ -1339,24 +1339,30 @@ public final class SolrSearchIndex {
      *         no language information are listed as language {@code _DEFAULT}
      */
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
-        Map<String, List<String>> map = new HashMap<>();
-        if (doc != null) {
-            List<String> fieldNames =
-                    doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
-            for (String languageField : fieldNames) {
-                String locale = null;
-                if (languageField.startsWith(key + "_LANG_")) {
-                    locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
-                } else {
-                    locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
-                }
-                Collection<Object> languageValues = doc.getFieldValues(languageField);
-                if (languageValues != null) {
-                    List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
-                    map.put(locale, values);
-                }
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (key == null) {
+            throw new IllegalArgumentException("key may not be null");
+        }
+
+        List<String> fieldNames =
+                doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+        Map<String, List<String>> map = new HashMap<>(fieldNames.size());
+        for (String languageField : fieldNames) {
+            String locale = null;
+            if (languageField.startsWith(key + "_LANG_")) {
+                locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
+            } else {
+                locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
+            }
+            Collection<Object> languageValues = doc.getFieldValues(languageField);
+            if (languageValues != null) {
+                List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                map.put(locale, values);
             }
         }
+
         return map;
     }
 
@@ -1568,7 +1574,7 @@ public final class SolrSearchIndex {
         if (conditions == null) {
             return null;
         }
-        
+
         if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
             // Hack for getting the current year as a number for non-date Solr fields
             conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));

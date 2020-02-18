@@ -719,14 +719,22 @@ public class TocMaker {
             for (MetadataParameter param : labelConfig.getParams()) {
                 // logger.trace("param key: {}", param.getKey());
                 IMetadataValue value;
-                if(MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
-                    value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
-                } else if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
-                    value = createMultiLanguageValue(doc, param.getKey());
-                } else {
-                    value = new SimpleMetadataValue();
-                    value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
-                    // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                switch (param.getType()) {
+                    case TRANSLATEDFIELD:
+                        if (doc.getFirstValue(param.getKey()) != null) {
+                            value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
+                        } else {
+                            value = new MultiLanguageMetadataValue();
+                        }
+                        break;
+                    case FIELD:
+                        value = createMultiLanguageValue(doc, param.getKey());
+                        break;
+                    default:
+                        value = new SimpleMetadataValue();
+                        value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
+                        // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                        break;
                 }
                 // Special case: If LABEL is missing, use MD_TITLE. If MD_TITLE is missing, use DOCSTRCT.
                 if (StringUtils.isEmpty(value.toString()) && SolrConstants.LABEL.equals(param.getKey())) {
