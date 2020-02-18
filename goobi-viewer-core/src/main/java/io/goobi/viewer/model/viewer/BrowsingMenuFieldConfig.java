@@ -22,9 +22,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.model.search.SearchHelper;
 
 /**
- * <p>BrowsingMenuFieldConfig class.</p>
+ * <p>
+ * BrowsingMenuFieldConfig class.
+ * </p>
  */
 public class BrowsingMenuFieldConfig implements Serializable {
 
@@ -56,7 +59,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>field</code>.</p>
+     * <p>
+     * Getter for the field <code>field</code>.
+     * </p>
      *
      * @return the field
      */
@@ -65,7 +70,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sortField</code>.</p>
+     * <p>
+     * Getter for the field <code>sortField</code>.
+     * </p>
      *
      * @return the sortField
      */
@@ -74,7 +81,9 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>filterQueries</code>.</p>
+     * <p>
+     * Getter for the field <code>filterQueries</code>.
+     * </p>
      *
      * @return the filterQueries
      */
@@ -107,8 +116,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
      */
     void setRecordsAndAnchorsOnly(boolean recordsAndAnchorsOnly) {
         if (recordsAndAnchorsOnly) {
-            filterQueries
-                    .add(new StringBuilder().append(SolrConstants.ISWORK).append(":true ").append(SolrConstants.ISANCHOR).append(":true").toString());
+            filterQueries.add(SearchHelper.ALL_RECORDS_QUERY);
         }
     }
 }

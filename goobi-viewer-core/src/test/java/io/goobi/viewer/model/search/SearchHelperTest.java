@@ -1005,7 +1005,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void prepareQuery_shouldPrepareEmptyQueriesCorrectly() throws Exception {
         Assert.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup",
                 SearchHelper.prepareQuery(null, "(ISWORK:true OR ISANCHOR:true) AND BLA:blup"));
-        Assert.assertEquals("(ISWORK:true OR ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
+        Assert.assertEquals("+(ISWORK:true ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
     }
 
     /**

@@ -62,6 +62,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -168,7 +169,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      */
     @PostConstruct
     public void init() {
@@ -185,7 +188,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>clearSearchItemLists.</p>
+     * <p>
+     * clearSearchItemLists.
+     * </p>
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -281,7 +286,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>searchAdvanced.</p>
+     * <p>
+     * searchAdvanced.
+     * </p>
      *
      * @param resetParameters a boolean.
      * @return a {@link java.lang.String} object.
@@ -533,31 +540,31 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (StringUtils.isEmpty(queryItem.getValue())) {
                         continue;
                     }
-                    
+
                     String key = getBookmarkListSharedKey();
                     String name = getBookmarkListName();
 
-                    if(StringUtils.isNotBlank(key)) {
+                    if (StringUtils.isNotBlank(key)) {
                         try {
                             BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
                             if (bookmarkList != null) {
                                 queryItem.setValue(bookmarkList.getName());
                                 itemQuery = bookmarkList.getFilterQuery();
                             }
-                        } catch(DAOException e) {
+                        } catch (DAOException e) {
                             logger.error(e.toString(), e);
                         }
-                    }else if(StringUtils.isNotBlank(name) && !"session".equals(name)) {
-                            try {
-                                BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
-                                if (bookmarkList != null) {
-                                    queryItem.setValue(bookmarkList.getName());
-                                    itemQuery = bookmarkList.getFilterQuery();
-                                }
-                            } catch(DAOException e) {
-                                logger.error(e.toString(), e);
+                    } else if (StringUtils.isNotBlank(name) && !"session".equals(name)) {
+                        try {
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
+                            if (bookmarkList != null) {
+                                queryItem.setValue(bookmarkList.getName());
+                                itemQuery = bookmarkList.getFilterQuery();
                             }
-                                
+                        } catch (DAOException e) {
+                            logger.error(e.toString(), e);
+                        }
+
                     } else if (userBean.isLoggedIn()) {
                         // User bookmark list
                         try {
@@ -570,7 +577,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                     } else {
                         // Session bookmark list
-                        Optional<BookmarkList> obs = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                        Optional<BookmarkList> obs =
+                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -579,7 +587,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         // Skip empty bookmark list
                         continue;
                     }
-                    
+
                 } else {
                     // Generate item query
                     itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
@@ -663,7 +671,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>executeSearch.</p>
+     * <p>
+     * executeSearch.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -674,7 +684,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("executeSearch; searchString: {}", searchString);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
-//        String currentQuery = SearchHelper.prepareQuery(searchString);
+        //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
         if (StringUtils.isEmpty(sortString)) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
@@ -746,7 +756,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetActiveSearchType.</p>
+     * <p>
+     * resetActiveSearchType.
+     * </p>
      */
     public void resetActiveSearchType() {
         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
@@ -1226,7 +1238,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>removeFacetAction.</p>
+     * <p>
+     * removeFacetAction.
+     * </p>
      *
      * @param facetQuery a {@link java.lang.String} object.
      * @should remove facet correctly
@@ -1262,7 +1276,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentPage</code>.</p>
+     * <p>
+     * Setter for the field <code>currentPage</code>.
+     * </p>
      *
      * @param currentPage the currentPage to set
      */
@@ -1284,7 +1300,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>setHitsCount.</p>
+     * <p>
+     * setHitsCount.
+     * </p>
      *
      * @param hitsCount the hitsCount to set
      */
@@ -1295,7 +1313,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>searchTerms</code>.</p>
+     * <p>
+     * Getter for the field <code>searchTerms</code>.
+     * </p>
      *
      * @return the searchTerms
      */
@@ -1304,7 +1324,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentHitIndex</code>.</p>
+     * <p>
+     * Getter for the field <code>currentHitIndex</code>.
+     * </p>
      *
      * @return the currentHitIndex
      */
@@ -1313,7 +1335,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getCurrentHitIndexDisplay.</p>
+     * <p>
+     * getCurrentHitIndexDisplay.
+     * </p>
      *
      * @return a int.
      */
@@ -1322,7 +1346,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>increaseCurrentHitIndex.</p>
+     * <p>
+     * increaseCurrentHitIndex.
+     * </p>
      *
      * @should increase index correctly
      * @should decrease index correctly
@@ -1353,7 +1379,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hitIndexOperand</code>.</p>
+     * <p>
+     * Getter for the field <code>hitIndexOperand</code>.
+     * </p>
      *
      * @return the hitIndexOperand
      */
@@ -1362,7 +1390,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hitIndexOperand</code>.</p>
+     * <p>
+     * Setter for the field <code>hitIndexOperand</code>.
+     * </p>
      *
      * @param hitIndexOperand the hitIndexOperand to set
      */
@@ -1489,7 +1519,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetSearchFilter.</p>
+     * <p>
+     * resetSearchFilter.
+     * </p>
      */
     public void resetSearchFilter() {
         currentSearchFilter = null;
@@ -1502,14 +1534,18 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetCurrentHitIndex.</p>
+     * <p>
+     * resetCurrentHitIndex.
+     * </p>
      */
     public void resetCurrentHitIndex() {
         currentHitIndex = -1;
     }
 
     /**
-     * <p>isSortingEnabled.</p>
+     * <p>
+     * isSortingEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1518,7 +1554,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>advancedQueryGroups</code>.</p>
+     * <p>
+     * Getter for the field <code>advancedQueryGroups</code>.
+     * </p>
      *
      * @return the advancedQueryGroups
      */
@@ -1528,7 +1566,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>addNewAdvancedQueryGroup.</p>
+     * <p>
+     * addNewAdvancedQueryGroup.
+     * </p>
      *
      * @should add group correctly
      * @return a boolean.
@@ -1539,7 +1579,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>removeAdvancedQueryGroup.</p>
+     * <p>
+     * removeAdvancedQueryGroup.
+     * </p>
      *
      * @param group a {@link io.goobi.viewer.model.search.SearchQueryGroup} object.
      * @should remove group correctly
@@ -1591,7 +1633,8 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Session bookmark list
-                    Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                    Optional<BookmarkList> bookmarkList =
+                            DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                     if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
                         ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
                     }
@@ -1681,7 +1724,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>advancedSearchGroupOperator</code>.</p>
+     * <p>
+     * Getter for the field <code>advancedSearchGroupOperator</code>.
+     * </p>
      *
      * @return the advancedSearchGroupOperator
      */
@@ -1690,7 +1735,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>advancedSearchGroupOperator</code>.</p>
+     * <p>
+     * Setter for the field <code>advancedSearchGroupOperator</code>.
+     * </p>
      *
      * @param advancedSearchGroupOperator the advancedSearchGroupOperator to set
      */
@@ -1699,7 +1746,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getAdvancedSearchAllowedFields.</p>
+     * <p>
+     * getAdvancedSearchAllowedFields.
+     * </p>
      *
      * @return List of allowed advanced search fields
      */
@@ -1741,7 +1790,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>searchInCurrentItemString</code>.</p>
+     * <p>
+     * Getter for the field <code>searchInCurrentItemString</code>.
+     * </p>
      *
      * @return the searchInCurrentItemString
      */
@@ -1750,7 +1801,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>searchInCurrentItemString</code>.</p>
+     * <p>
+     * Setter for the field <code>searchInCurrentItemString</code>.
+     * </p>
      *
      * @param searchInCurrentItemString the searchInCurrentItemString to set
      */
@@ -1761,7 +1814,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentSearch</code>.</p>
+     * <p>
+     * Getter for the field <code>currentSearch</code>.
+     * </p>
      *
      * @return the currentSearch
      */
@@ -1770,7 +1825,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentSearch</code>.</p>
+     * <p>
+     * Setter for the field <code>currentSearch</code>.
+     * </p>
      *
      * @param currentSearch the currentSearch to set
      */
@@ -1780,7 +1837,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>saveSearchAction.</p>
+     * <p>
+     * saveSearchAction.
+     * </p>
      *
      * @should add all values correctly
      * @return a {@link java.lang.String} object.
@@ -1830,7 +1889,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getRssUrl.</p>
+     * <p>
+     * getRssUrl.
+     * </p>
      *
      * @return URL to the RSS feed for the current search
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1866,7 +1927,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>isSearchSavingEnabled.</p>
+     * <p>
+     * isSearchSavingEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1875,7 +1938,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>executeSavedSearchAction.</p>
+     * <p>
+     * executeSavedSearchAction.
+     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
      * @return a {@link java.lang.String} object.
@@ -1899,7 +1964,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>exportSearchAsExcelAction.</p>
+     * <p>
+     * exportSearchAsExcelAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2030,7 +2097,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hitsPerPage</code>.</p>
+     * <p>
+     * Getter for the field <code>hitsPerPage</code>.
+     * </p>
      *
      * @return the hitsPerPage
      */
@@ -2039,7 +2108,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hitsPerPage</code>.</p>
+     * <p>
+     * Setter for the field <code>hitsPerPage</code>.
+     * </p>
      *
      * @param hitsPerPage the hitsPerPage to set
      */
@@ -2048,14 +2119,18 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetHitsPerPage.</p>
+     * <p>
+     * resetHitsPerPage.
+     * </p>
      */
     public void resetHitsPerPage() {
         setHitsPerPage(DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
     }
 
     /**
-     * <p>Getter for the field <code>advancedSearchQueryInfo</code>.</p>
+     * <p>
+     * Getter for the field <code>advancedSearchQueryInfo</code>.
+     * </p>
      *
      * @return the advancedSearchQueryInfo
      */
@@ -2077,7 +2152,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>isDownloadReady.</p>
+     * <p>
+     * isDownloadReady.
+     * </p>
      *
      * @return a {@link java.util.concurrent.Future} object.
      */
@@ -2092,14 +2169,16 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getTotalNumberOfVolumes.</p>
+     * <p>
+     * getTotalNumberOfVolumes.
+     * </p>
      *
      * @return a long.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
-        String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
+        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, DataManager.getInstance().getConfiguration().isAggregateHits());
         return DataManager.getInstance().getSearchIndex().count(query);
     }
 
@@ -2133,7 +2212,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getStructElement.</p>
+     * <p>
+     * getStructElement.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -2159,7 +2240,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getCurrentSearchUrlPart.</p>
+     * <p>
+     * getCurrentSearchUrlPart.
+     * </p>
      *
      * @return Parameter string for pretty:search5 URLs.
      */
@@ -2177,7 +2260,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>updateFacetItem.</p>
+     * <p>
+     * updateFacetItem.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param hierarchical a boolean.
@@ -2240,12 +2325,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<FacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
-        sbQuery.append('(')
-                .append(SolrConstants.ISWORK)
-                .append(":true OR ")
-                .append(SolrConstants.ISANCHOR)
-                .append(":true)")
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true, true));
+        sbQuery.append(SearchHelper.ALL_RECORDS_QUERY).append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true, true));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {
@@ -2307,7 +2387,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>isShowReducedSearchOptions.</p>
+     * <p>
+     * isShowReducedSearchOptions.
+     * </p>
      *
      * @return the showReducedSearchOptions
      */
@@ -2316,32 +2398,40 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>showReducedSearchOptions</code>.</p>
+     * <p>
+     * Setter for the field <code>showReducedSearchOptions</code>.
+     * </p>
      *
      * @param showReducedSearchOptions the showReducedSearchOptions to set
      */
     public void setShowReducedSearchOptions(boolean showReducedSearchOptions) {
         this.showReducedSearchOptions = showReducedSearchOptions;
     }
-    
+
     /**
-     * <p>setFirstQueryItemValue.</p>
+     * <p>
+     * setFirstQueryItemValue.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      */
     public void setFirstQueryItemValue(String value) {
         this.advancedQueryGroups.get(0).getQueryItems().get(0).setValue(value);
     }
-    
+
     /**
-     * <p>getFirstQueryItemValue.</p>
+     * <p>
+     * getFirstQueryItemValue.
+     * </p>
      */
     public void getFirstQueryItemValue() {
         this.advancedQueryGroups.get(0).getQueryItems().get(0).getValue();
     }
-    
+
     /**
-     * <p>setBookmarkListName.</p>
+     * <p>
+     * setBookmarkListName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -2352,22 +2442,29 @@ public class SearchBean implements SearchInterface, Serializable {
         item.setOperator(SearchItemOperator.IS);
 
     }
-    
+
     /**
-     * <p>getBookmarkListName.</p>
+     * <p>
+     * getBookmarkListName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListName() {
-        String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
-        .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
-        .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
-        .findFirst().map(SearchQueryItem::getValue).orElse("");
+        String value = this.advancedQueryGroups.stream()
+                .flatMap(group -> group.getQueryItems().stream())
+                .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
+                .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
+                .findFirst()
+                .map(SearchQueryItem::getValue)
+                .orElse("");
         return value;
     }
-    
+
     /**
-     * <p>setBookmarkListName.</p>
+     * <p>
+     * setBookmarkListName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -2378,16 +2475,22 @@ public class SearchBean implements SearchInterface, Serializable {
         item.setOperator(SearchItemOperator.IS);
 
     }
-    
+
     /**
-     * <p>getBookmarkListName.</p>
+     * <p>
+     * getBookmarkListName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListSharedKey() {
-        String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
-        .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
-        .filter(item -> item.getValue() != null && item.getValue().startsWith("KEY::")).findFirst().map(SearchQueryItem::getValue).orElse("");
+        String value = this.advancedQueryGroups.stream()
+                .flatMap(group -> group.getQueryItems().stream())
+                .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
+                .filter(item -> item.getValue() != null && item.getValue().startsWith("KEY::"))
+                .findFirst()
+                .map(SearchQueryItem::getValue)
+                .orElse("");
         return value.replace("KEY::", "");
     }
 

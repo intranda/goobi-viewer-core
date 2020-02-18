@@ -56,6 +56,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -304,10 +305,8 @@ public class TocMaker {
         String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(new StringBuilder("(").append(SolrConstants.ISWORK)
-                        .append(":true OR ")
-                        .append(SolrConstants.ISANCHOR)
-                        .append(":true) AND ")
+                .search(new StringBuilder().append(SearchHelper.ALL_RECORDS_QUERY)
+                        .append(" AND ")
                         .append(groupIdField)
                         .append(':')
                         .append(groupIdValue)
