@@ -91,47 +91,65 @@
         .form-group {
             margin-bottom: 5px;
         }
-        .input-group-addon {
-	        padding: 0;
-            border-radius: 0;
-            background-color: @white;
-            a {
-                color: @black;
-                &:hover,
-                &:focus,
-                &:active {
-                    text-decoration: none;
-                    color: @black;
-                }
-            }
-            a, button {}
-            input[type="submit"] {
-	            padding: 6px 20px;
-	            background-image: url("@{images}/icons/icon-search.png");
-	            background-repeat: no-repeat;
-	            background-position: center center;
-	            background-size: 40%;
-            }
-            &.reset {
-                background-color: @lightgray;
-                a, button {
-                	padding: 6px 12px;
-                }
-                &.focus {
-                	border-color: @blue;
-                }
-            }
-            &.search {
-                background-color: @blue;
-                border-color: @blue;
-                a {
-                    display: block;
-                    color: @white;
-                }
-            }
+        .input-group {
+        	display: flex;
+        	display: -webkit-box; 
+			display: -moz-box; 
+			display: -ms-flexbox;
+			display: -webkit-flex; 
+	        .input-group-addon {
+		        padding: 0;
+	            border-radius: 0;
+	            background-color: @white;
+	            a {
+	                color: @black;
+	                &:hover,
+	                &:focus,
+	                &:active {
+	                    text-decoration: none;
+	                    color: @black;
+	                }
+	            }
+	            a, button {}
+	            input[type="submit"] {
+		            background-image: url("@{images}/icons/icon-search.png");
+		            background-repeat: no-repeat;
+		            background-position: center center;
+		            background-size: 40%;
+		            padding: 1.7rem;
+		            padding: -ms-0;
+	            }
+	            &.reset {
+	            	flex: 0 0 max-content;
+	            	width: 100%;
+	            	max-width: 3.4rem;
+	            	max-height: 3.4rem;
+	                background-color: @lightgray;
+	                a, button {
+	                	padding: .9rem 1.2rem;
+	                }
+	                &.focus {
+	                	border-color: @blue;
+	                }
+	            }
+	            &.search {
+	                flex: 0 0 max-content;
+	                width: 100%;
+	            	max-width: 3.4rem;
+	            	max-height: 3.4rem;
+	                background-color: @blue;
+	                border-color: @blue;
+	                display: inherit; 
+	                a {
+	                    display: block;
+	                    color: @white;
+	                }
+	            }
+        	}
         }
         .form-control {
             border-right: none;
+            max-height: 3.4rem;
             &:focus {
             	border-left-color: @middlegray;
             }
