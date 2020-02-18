@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
 
 public class BrowsingMenuFieldConfigTest {
@@ -41,6 +42,6 @@ public class BrowsingMenuFieldConfigTest {
     public void setRecordsAndAnchorsOnly_shouldCreateFilterQueryCorrectly() throws Exception {
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_TITLE", "SORT_TITLE", null, null, true);
         Assert.assertEquals(1, bmfc.getFilterQueries().size());
-        Assert.assertEquals(SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true", bmfc.getFilterQueries().get(0));
+        Assert.assertEquals(SearchHelper.ALL_RECORDS_QUERY, bmfc.getFilterQueries().get(0));
     }
 }
