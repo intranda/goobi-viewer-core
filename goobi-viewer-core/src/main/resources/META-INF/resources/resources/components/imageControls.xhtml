@@ -364,29 +364,43 @@
                             </ui:repeat>
                         </ui:fragment>
                     
-                        <!-- FULLTEXT -->
-                        <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
-                            <li class="image-controls__option fulltext">
-                                <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
-                                    title="#{msg.fulltext}" target="_blank">
-                                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                    <f:passThroughAttribute name="data-placement" value="bottom" />
-                                </h:outputLink>
-                            </li>
-                        </ui:fragment>
-                        
+                        <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
+                            <!-- FULLTEXT -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                                <li class="image-controls__option fulltext">
+                                    <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
+                                        title="#{msg.fulltext}" target="_blank">
+                                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                        <f:passThroughAttribute name="data-placement" value="bottom" />
+                                    </h:outputLink>
+                                </li>
+                            </ui:fragment>
                                                 
-                        <!-- SHARE IMAGE REGION -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
-                            <li class="image-controls__option share-image-region">
-                                <a title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="bottom"
-                                onclick="selectImageFragment(this)">
+                            <!-- SHARE IMAGE REGION -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                                <li class="image-controls__option share-image-region">
+                                    <a title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="bottom"
+                                    onclick="selectImageFragment(this)">
 	                                    <i class="fa fa-crop" aria-hidden="true"></i>
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            </ui:fragment>
+                        
+                            <!-- IMAGE FILTER -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                                <li class="image-controls__option image-filter">
+                                    <button type="button" class="btn btn--icon" disabled="disabled"
+                                	   data-popover-element="#imageFilterPopover"
+                                	   data-popover-dismiss="click-outside">
+	                                   <i class="fa fa-wrench" aria-hidden="true" 
+		                                  data-toggle="tooltip" 
+	                                	  title="#{msg.label__image_filter_toolkit__error}">
+	                                   </i>
+                                    </button>
+                                </li>
+                            </ui:fragment>
                         </ui:fragment>
-
                         
                         <!-- ADD TO BOOKMARK -->
                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
@@ -396,24 +410,9 @@
                                     data-pi="#{activeDocumentBean.viewManager.pi}"
                                     data-page="#{activeDocumentBean.viewManager.currentImageNo}">
                                     <span title="#{msg.bookmarkList_addToBookmarkList}" data-toggle="tooltip" data-placement="bottom">
-	                                    <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
-	                                    <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+                                        <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
+                                        <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
                                     </span>
-                                </button>
-                            </li>
-                        </ui:fragment>
-                        
-                        <!-- IMAGE FILTER -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
-                            <li class="image-controls__option image-filter">
-                                <button type="button" class="btn btn--icon" disabled="disabled"
-                                	
-                                	data-popover-element="#imageFilterPopover"
-                                	data-popover-dismiss="click-outside">
-	                                <i class="fa fa-wrench" aria-hidden="true" 
-		                                data-toggle="tooltip" 
-	                                	title="#{msg.label__image_filter_toolkit__error}">
-	                                </i>
                                 </button>
                             </li>
                         </ui:fragment>
