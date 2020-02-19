@@ -195,7 +195,7 @@
                                     class="label label-default widget-usage__work-download-pdf" 
                                     title="#{msg.label__pdf_download_record}" 
                                     target="_blank" rel="nofollow">
-                                    #{msg.label__pdf_download_record}}</a>
+                                    #{msg.label__pdf_download_record}</a>
                             </ui:fragment>
                             <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
                                 <a 
@@ -206,8 +206,8 @@
                                     data-title="#{activeDocumentBean.titleBarLabel}" 
                                     data-id=""
                                     data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                    title="#{msg.label__pdf_download_record}}">
-                                    #{msg.label__pdf_download_record}}
+                                    title="#{msg.label__pdf_download_record}">
+                                    #{msg.label__pdf_download}
                                 </a>    
                             </ui:fragment>
                         </ui:fragment>
@@ -281,7 +281,7 @@
 	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
 	                                    title="#{msg.label__pdf_download_section}">
-	                                    #{msg.label__pdf_download_section}
+	                                    #{msg.label__pdf_download}
 	                                </a>    
 	                            </ui:fragment>
                             </ui:fragment>
@@ -315,7 +315,7 @@
 									id="pdfPage"
 									class="label label-default widget-usage__page-download-pdf"
 									title="#{msg.label__pdf_download_image}" target="_blank" rel="nofollow">
-									#{msg.label__pdf_download_image} </a>
+									#{msg.label__pdf_download} </a>
 							</ui:fragment>
 
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
