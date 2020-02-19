@@ -141,7 +141,9 @@ public class DateTools {
     }
 
     /**
-     * <p>parseDateTimeFromString.</p>
+     * <p>
+     * parseDateTimeFromString.
+     * </p>
      *
      * @param dateString a {@link java.lang.String} object.
      * @should parse iso date formats correctly
@@ -216,7 +218,9 @@ public class DateTools {
     }
 
     /**
-     * <p>parseDateFromString.</p>
+     * <p>
+     * parseDateFromString.
+     * </p>
      *
      * @param dateString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.

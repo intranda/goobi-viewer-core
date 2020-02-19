@@ -63,7 +63,9 @@ public class XmlTools {
     private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
 
     /**
-     * <p>readXmlFile.</p>
+     * <p>
+     * readXmlFile.
+     * </p>
      *
      * @param filePath a {@link java.lang.String} object.
      * @should build document from string correctly
@@ -96,7 +98,9 @@ public class XmlTools {
     }
 
     /**
-     * <p>readXmlFile.</p>
+     * <p>
+     * readXmlFile.
+     * </p>
      *
      * @param path a {@link java.nio.file.Path} object.
      * @should build document from path correctly
@@ -112,7 +116,9 @@ public class XmlTools {
     }
 
     /**
-     * <p>writeXmlFile.</p>
+     * <p>
+     * writeXmlFile.
+     * </p>
      *
      * @param doc a {@link org.jdom2.Document} object.
      * @param filePath a {@link java.lang.String} object.
@@ -156,7 +162,9 @@ public class XmlTools {
     }
 
     /**
-     * <p>getStringFromElement.</p>
+     * <p>
+     * getStringFromElement.
+     * </p>
      *
      * @param element a {@link java.lang.Object} object.
      * @param encoding a {@link java.lang.String} object.
@@ -237,7 +245,9 @@ public class XmlTools {
     }
 
     /**
-     * <p>determineFileFormat.</p>
+     * <p>
+     * determineFileFormat.
+     * </p>
      *
      * @param xml a {@link java.lang.String} object.
      * @param encoding a {@link java.lang.String} object.

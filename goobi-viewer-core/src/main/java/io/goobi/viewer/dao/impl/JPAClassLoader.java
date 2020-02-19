@@ -36,7 +36,9 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * <p>JPAClassLoader class.</p>
+ * <p>
+ * JPAClassLoader class.
+ * </p>
  */
 public class JPAClassLoader extends ClassLoader {
 
@@ -72,7 +74,9 @@ public class JPAClassLoader extends ClassLoader {
     //    }
 
     /**
-     * <p>Constructor for JPAClassLoader.</p>
+     * <p>
+     * Constructor for JPAClassLoader.
+     * </p>
      *
      * @param parent a {@link java.lang.ClassLoader} object.
      */
@@ -196,7 +200,7 @@ public class JPAClassLoader extends ClassLoader {
                     file.getParentFile().mkdirs();
                     XmlTools.writeXmlFile(docMerged, file.getAbsolutePath());
                     newUrl = file.toURI().toURL();
-//                    newUrl = new URL("file://" + file.getAbsolutePath());
+                    //                    newUrl = new URL("file://" + file.getAbsolutePath());
                     logger.info("URL: " + newUrl);
                 } catch (JDOMException e) {
                     throw new IOException(e.toString());

@@ -50,7 +50,9 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 
 /**
- * <p>ImageRequestFilter class.</p>
+ * <p>
+ * ImageRequestFilter class.
+ * </p>
  */
 @Provider
 @ContentServerImageBinding
@@ -67,14 +69,14 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
-       
+
         String mediaType = MediaType.APPLICATION_JSON;
-        if(servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
+        if (servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
             mediaType = MediaType.TEXT_XML;
         }
-        
+
         try {
-            
+
             String requestPath = servletRequest.getRequestURI();
             requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
             // logger.trace("Filtering request {}", requestPath);
@@ -104,7 +106,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName, isThumb);
-//                filterForImageSize(requestPath, size);
+                //                filterForImageSize(requestPath, size);
                 setRequestParameter(request, isThumb);
             }
         } catch (ServiceNotAllowedException e) {
@@ -112,14 +114,18 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         } catch (ViewerConfigurationException e) {
-            Response response =
-                    Response.status(Status.INTERNAL_SERVER_ERROR).type(mediaType).entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false)).build();
+            Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .type(mediaType)
+                    .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
+                    .build();
             request.abortWith(response);
         }
     }
 
     /**
-     * <p>forwardToCanonicalUrl.</p>
+     * <p>
+     * forwardToCanonicalUrl.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param imageName a {@link java.lang.String} object.
@@ -157,11 +163,11 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         }
         Integer maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
         request.setProperty("param:maxWidth", maxWidth.toString());
-        
+
         Integer maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
         request.setProperty("param:maxHeight", maxHeight.toString());
-        
-        if(!DataManager.getInstance().getConfiguration().isDiscloseImageContentLocation()) {
+
+        if (!DataManager.getInstance().getConfiguration().isDiscloseImageContentLocation()) {
             request.setProperty("param:disclose-content-location", "false");
 
         }
@@ -199,7 +205,9 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>getIsThumbnail.</p>
+     * <p>
+     * getIsThumbnail.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param size a {@link java.lang.String} object.

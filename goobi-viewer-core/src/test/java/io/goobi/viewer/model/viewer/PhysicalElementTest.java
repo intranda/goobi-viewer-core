@@ -60,7 +60,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
     }
 
-
     /**
      * @see PhysicalElement#handleAltoComposedBlock(Element)
      * @verifies return all words from nested ComposedBlocks
@@ -128,8 +127,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
     }
 
-    
-    
     @Test
     public void isAdaptImageViewHeight_test() {
         PhysicalElement page =

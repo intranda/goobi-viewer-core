@@ -35,12 +35,16 @@ import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.services.Service;
 
 /**
- * <p>ImageInformationClient class.</p>
+ * <p>
+ * ImageInformationClient class.
+ * </p>
  */
 public class ImageInformationClient {
 
     /**
-     * <p>getImageInfo.</p>
+     * <p>
+     * getImageInfo.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.

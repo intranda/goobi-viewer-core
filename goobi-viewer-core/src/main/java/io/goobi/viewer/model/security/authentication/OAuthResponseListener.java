@@ -19,7 +19,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Implementation of {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} which keeps all providers waiting for a response in a {@link java.util.concurrent.ConcurrentHashMap}
+ * Implementation of {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} which keeps all providers waiting for a response in
+ * a {@link java.util.concurrent.ConcurrentHashMap}
  *
  * @author Florian Alpers
  */
@@ -27,7 +28,6 @@ public class OAuthResponseListener implements IOAuthResponseListener {
 
     private final ConcurrentHashMap<OpenIdProvider, Boolean> authenticationProviders = new ConcurrentHashMap<>(5, 0.75f, 6);
 
-    
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IOAuthResponseListener#register(io.goobi.viewer.model.security.authentication.OpenIdProvider)
      */
@@ -43,9 +43,9 @@ public class OAuthResponseListener implements IOAuthResponseListener {
     /** {@inheritDoc} */
     @Override
     public void unregister(OpenIdProvider provider) {
-        authenticationProviders.remove(provider);        
+        authenticationProviders.remove(provider);
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IOAuthResponseListener#getProviders()
      */
@@ -54,7 +54,5 @@ public class OAuthResponseListener implements IOAuthResponseListener {
     public Set<OpenIdProvider> getProviders() {
         return authenticationProviders.keySet();
     }
-
-
 
 }

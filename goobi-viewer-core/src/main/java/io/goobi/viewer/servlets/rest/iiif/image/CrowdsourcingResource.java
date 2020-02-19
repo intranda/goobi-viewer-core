@@ -27,26 +27,30 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 
 /**
- * <p>CrowdsourcingResource class.</p>
+ * <p>
+ * CrowdsourcingResource class.
+ * </p>
  */
 @ContentServerImageInfoBinding
 @Path("/crowdsourcing")
 public class CrowdsourcingResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ImageResource.class);
-    
+
     @Context
     private ResourceContext resourceContext;
 
     /**
-     * <p>forwardToContentServer.</p>
+     * <p>
+     * forwardToContentServer.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @return a {@link de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource} object.
      */
     @Path("/image/{directory}/{filename}")
     public ImageResource forwardToContentServer(@Context ContainerRequestContext request) {
-            return resourceContext.getResource(ImageResource.class);
+        return resourceContext.getResource(ImageResource.class);
     }
 
 }

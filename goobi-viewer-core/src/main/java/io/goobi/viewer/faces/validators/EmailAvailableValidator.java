@@ -55,16 +55,16 @@ public class EmailAvailableValidator implements Validator<String> {
 
     /**
      * @param email
-     * @return  true if the given email is not already assigned to a user except a possibly currently logged in user in this session
-     * @throws DAOException 
+     * @return true if the given email is not already assigned to a user except a possibly currently logged in user in this session
+     * @throws DAOException
      */
     private static boolean validateEmailUniqueness(String email) throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         User currentUser = BeanUtils.getUserBean().getUser();
-        if(user != null) {
+        if (user != null) {
             return currentUser != null && user.getId().equals(currentUser.getId());
         }
-        
+
         return true;
     }
 }

@@ -21,21 +21,25 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
- * <p>ViewerApplication class.</p>
+ * <p>
+ * ViewerApplication class.
+ * </p>
  */
 @ApplicationPath("rest")
 @ViewerRestServiceBinding
 public class ViewerApplication extends ResourceConfig {
 
-	/**
-	 * <p>Constructor for ViewerApplication.</p>
-	 */
-	public ViewerApplication() {
-		super();
-		register(MultiPartFeature.class);
-		packages(true, "io.goobi.viewer.servlets.rest");
-		packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
+    /**
+     * <p>
+     * Constructor for ViewerApplication.
+     * </p>
+     */
+    public ViewerApplication() {
+        super();
+        register(MultiPartFeature.class);
+        packages(true, "io.goobi.viewer.servlets.rest");
+        packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
 
-	}
+    }
 
 }

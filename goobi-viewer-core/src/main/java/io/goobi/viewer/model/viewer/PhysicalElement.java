@@ -1662,17 +1662,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return containedStructElements;
     }
-    
+
     public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException {
         List<StructElement> elements = getContainedStructElements();
         elements.forEach(element -> {
-            
+
         });
-        
+
         ObjectMapper mapper = new ObjectMapper();
         List<ShapeMetadata> shapes = elements.stream()
                 .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
-                .flatMap(ele -> ele.getShapeMetadata().stream()).collect(Collectors.toList());
+                .flatMap(ele -> ele.getShapeMetadata().stream())
+                .collect(Collectors.toList());
         String json = mapper.writeValueAsString(shapes);
         return json;
     }

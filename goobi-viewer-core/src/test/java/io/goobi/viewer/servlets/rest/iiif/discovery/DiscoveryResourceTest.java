@@ -39,7 +39,7 @@ import io.goobi.viewer.servlets.rest.iiif.discovery.DiscoveryResource;
 public class DiscoveryResourceTest extends AbstractSolrEnabledTest {
 
     private DiscoveryResource resource = new DiscoveryResource();
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -70,7 +70,7 @@ public class DiscoveryResourceTest extends AbstractSolrEnabledTest {
         Assert.assertTrue("No activities in collection", collection.getTotalItems() > 0);
         Assert.assertEquals("https://testServer:80/viewer/rest/iiif/discovery/activities/0", collection.getFirst().getId().toString());
     }
-    
+
     @Test
     public void testGetPage() throws PresentationException, IndexUnreachableException {
         Mockito.when(resource.servletRequest.getRequestURI()).thenReturn("/viewer/rest/iiif/discovery/activities/0");
@@ -87,10 +87,10 @@ public class DiscoveryResourceTest extends AbstractSolrEnabledTest {
         OrderedCollection<Activity> collection = resource.getAllChanges();
         long itemCount = collection.getTotalItems();
         int itemsPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
-        int numPages = (int) (itemCount/itemsPerPage)+1;
-        
+        int numPages = (int) (itemCount / itemsPerPage) + 1;
+
         String lastPageUrl = collection.getLast().getId().toString();
-        String pageNo = lastPageUrl.substring(lastPageUrl.lastIndexOf("/")+1);
-        Assert.assertEquals(numPages-1, Integer.parseInt(pageNo), 0);
+        String pageNo = lastPageUrl.substring(lastPageUrl.lastIndexOf("/") + 1);
+        Assert.assertEquals(numPages - 1, Integer.parseInt(pageNo), 0);
     }
 }

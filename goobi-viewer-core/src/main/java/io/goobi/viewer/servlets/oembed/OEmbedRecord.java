@@ -19,7 +19,9 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>OEmbedRecord class.</p>
+ * <p>
+ * OEmbedRecord class.
+ * </p>
  */
 public class OEmbedRecord {
 
@@ -27,7 +29,9 @@ public class OEmbedRecord {
     private PhysicalElement physicalElement;
 
     /**
-     * <p>Getter for the field <code>structElement</code>.</p>
+     * <p>
+     * Getter for the field <code>structElement</code>.
+     * </p>
      *
      * @return the structElement
      */
@@ -36,7 +40,9 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Setter for the field <code>structElement</code>.</p>
+     * <p>
+     * Setter for the field <code>structElement</code>.
+     * </p>
      *
      * @param structElement the structElement to set
      */
@@ -45,7 +51,9 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Getter for the field <code>physicalElement</code>.</p>
+     * <p>
+     * Getter for the field <code>physicalElement</code>.
+     * </p>
      *
      * @return the physicalElement
      */
@@ -54,7 +62,9 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Setter for the field <code>physicalElement</code>.</p>
+     * <p>
+     * Setter for the field <code>physicalElement</code>.
+     * </p>
      *
      * @param physicalElement the physicalElement to set
      */

@@ -30,7 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>Abstract Translation class.</p>
+ * <p>
+ * Abstract Translation class.
+ * </p>
  */
 @MappedSuperclass
 public abstract class Translation {
@@ -55,13 +57,17 @@ public abstract class Translation {
     protected String value;
 
     /**
-     * <p>Constructor for Translation.</p>
+     * <p>
+     * Constructor for Translation.
+     * </p>
      */
     public Translation() {
     }
 
     /**
-     * <p>Constructor for Translation.</p>
+     * <p>
+     * Constructor for Translation.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -72,7 +78,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Constructor for Translation.</p>
+     * <p>
+     * Constructor for Translation.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param tag a {@link java.lang.String} object.
@@ -83,9 +91,11 @@ public abstract class Translation {
         this.tag = tag;
         this.value = value;
     }
-    
+
     /**
-     * <p>getTranslation.</p>
+     * <p>
+     * getTranslation.
+     * </p>
      *
      * @param tag a {@link java.lang.String} object.
      * @param lang a {@link java.lang.String} object.
@@ -97,11 +107,13 @@ public abstract class Translation {
     }
 
     /**
-     * <p>getTranslation.</p>
+     * <p>
+     * getTranslation.
+     * </p>
      *
      * @param tag a {@link java.lang.String} object.
      * @param lang a {@link java.lang.String} object.
-     * @param useFallback   if no translation for lang exists, use the application default language
+     * @param useFallback if no translation for lang exists, use the application default language
      * @param translations a {@link java.util.List} object.
      * @return a {@link java.lang.String} object.
      */
@@ -116,7 +128,7 @@ public abstract class Translation {
             }
         }
 
-        if(useFallback) {
+        if (useFallback) {
             String defaultLanguage = Optional.of(BeanUtils.getDefaultLocale()).map(Locale::getLanguage).orElse("en");
             return getTranslation(translations, defaultLanguage, tag, false);
         } else {
@@ -124,9 +136,10 @@ public abstract class Translation {
         }
     }
 
-
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -135,7 +148,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -144,7 +159,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Getter for the field <code>tag</code>.</p>
+     * <p>
+     * Getter for the field <code>tag</code>.
+     * </p>
      *
      * @return the tag
      */
@@ -153,7 +170,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Setter for the field <code>tag</code>.</p>
+     * <p>
+     * Setter for the field <code>tag</code>.
+     * </p>
      *
      * @param tag the tag to set
      */
@@ -162,7 +181,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Getter for the field <code>language</code>.</p>
+     * <p>
+     * Getter for the field <code>language</code>.
+     * </p>
      *
      * @return the language
      */
@@ -171,7 +192,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Setter for the field <code>language</code>.</p>
+     * <p>
+     * Setter for the field <code>language</code>.
+     * </p>
      *
      * @param language the language to set
      */
@@ -180,7 +203,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return the value
      */
@@ -189,7 +214,9 @@ public abstract class Translation {
     }
 
     /**
-     * <p>Setter for the field <code>value</code>.</p>
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
      *
      * @param value the value to set
      */

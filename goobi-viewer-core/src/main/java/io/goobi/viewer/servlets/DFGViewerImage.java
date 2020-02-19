@@ -41,7 +41,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>DFGViewerImage class.</p>
+ * <p>
+ * DFGViewerImage class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -55,7 +57,9 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     private static final long serialVersionUID = 683037127834153441L;
 
     /**
-     * <p>Constructor for DFGViewerImage.</p>
+     * <p>
+     * Constructor for DFGViewerImage.
+     * </p>
      */
     public DFGViewerImage() {
         super();
@@ -86,8 +90,10 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
             }
 
             String baseUri = DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id;
-            String uri = BeanUtils.getImageDeliveryBean().getIiif().getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width),
-                    new Rotation(rotation), Colortype.DEFAULT, ImageFileFormat.valueOf(format.toUpperCase()));
+            String uri = BeanUtils.getImageDeliveryBean()
+                    .getIiif()
+                    .getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width), new Rotation(rotation), Colortype.DEFAULT,
+                            ImageFileFormat.valueOf(format.toUpperCase()));
             logger.trace("Forwarding " + request.getPathInfo() + " to " + uri);
             //            getServletContext().getRequestDispatcher(uri).forward(request, response);
 

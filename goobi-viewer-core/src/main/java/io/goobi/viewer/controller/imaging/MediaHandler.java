@@ -24,27 +24,29 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
  * @author Florian Alpers
  */
 public class MediaHandler {
-    
+
     private static final String URL_TEMPLATE = "media/{mimeType}/{identifier}/{filename}";
 
     private final String mediaRestApiUrl;
-    
+
     /**
-     * <p>Constructor for MediaHandler.</p>
+     * <p>
+     * Constructor for MediaHandler.
+     * </p>
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      */
     public MediaHandler(Configuration config) {
         this.mediaRestApiUrl = config.getIIIFApiUrl();
     }
-    
+
     /**
      * Returns the url to the media object for the given pi and filename
      *
-     * @param mimeType  The mime type to use
-     * @param pi        The pi of the requested work
-     * @param filename  The media filename
-     * @return  the url to the media file of the given pi and filename
+     * @param mimeType The mime type to use
+     * @param pi The pi of the requested work
+     * @param filename The media filename
+     * @return the url to the media file of the given pi and filename
      */
     public String getMediaUrl(String mimeType, String pi, String filename) {
         return this.mediaRestApiUrl + URL_TEMPLATE.replace("{mimeType}", mimeType).replace("{identifier}", pi).replace("{filename}", filename);

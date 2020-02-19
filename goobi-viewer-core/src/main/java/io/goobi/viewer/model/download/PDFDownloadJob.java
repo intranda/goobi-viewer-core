@@ -40,7 +40,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>PDFDownloadJob class.</p>
+ * <p>
+ * PDFDownloadJob class.
+ * </p>
  */
 @Entity
 @DiscriminatorValue(PDFDownloadJob.TYPE)
@@ -54,14 +56,18 @@ public class PDFDownloadJob extends DownloadJob {
     private static final Logger logger = LoggerFactory.getLogger(PDFDownloadJob.class);
 
     /**
-     * <p>Constructor for PDFDownloadJob.</p>
+     * <p>
+     * Constructor for PDFDownloadJob.
+     * </p>
      */
     public PDFDownloadJob() {
         type = TYPE;
     }
 
     /**
-     * <p>Constructor for PDFDownloadJob.</p>
+     * <p>
+     * Constructor for PDFDownloadJob.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param logid a {@link java.lang.String} object.
@@ -138,7 +144,9 @@ public class PDFDownloadJob extends DownloadJob {
     }
 
     /**
-     * <p>triggerCreation.</p>
+     * <p>
+     * triggerCreation.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
@@ -188,7 +196,9 @@ public class PDFDownloadJob extends DownloadJob {
     }
 
     /**
-     * <p>getPDFJobsInQueue.</p>
+     * <p>
+     * getPDFJobsInQueue.
+     * </p>
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a int.
@@ -212,7 +222,9 @@ public class PDFDownloadJob extends DownloadJob {
     }
 
     /**
-     * <p>getPdfSizeFromTaskManager.</p>
+     * <p>
+     * getPdfSizeFromTaskManager.
+     * </p>
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a long.

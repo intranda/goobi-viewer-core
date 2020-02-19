@@ -150,7 +150,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Constructor for Search.</p>
+     * <p>
+     * Constructor for Search.
+     * </p>
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
@@ -209,7 +211,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>execute.</p>
+     * <p>
+     * execute.
+     * </p>
      *
      * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
      * @param searchTerms a {@link java.util.Map} object.
@@ -428,7 +432,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -437,7 +443,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -446,7 +454,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -455,7 +465,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */
@@ -464,7 +476,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -473,7 +487,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -482,7 +498,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>userInput</code>.</p>
+     * <p>
+     * Getter for the field <code>userInput</code>.
+     * </p>
      *
      * @return the userInput
      */
@@ -491,7 +509,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>userInput</code>.</p>
+     * <p>
+     * Setter for the field <code>userInput</code>.
+     * </p>
      *
      * @param userInput the userInput to set
      */
@@ -500,7 +520,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>searchType</code>.</p>
+     * <p>
+     * Getter for the field <code>searchType</code>.
+     * </p>
      *
      * @return the searchType
      */
@@ -509,7 +531,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>searchType</code>.</p>
+     * <p>
+     * Setter for the field <code>searchType</code>.
+     * </p>
      *
      * @param searchType the searchType to set
      */
@@ -518,7 +542,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>searchFilter</code>.</p>
+     * <p>
+     * Getter for the field <code>searchFilter</code>.
+     * </p>
      *
      * @return the searchFilter
      */
@@ -527,7 +553,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>searchFilter</code>.</p>
+     * <p>
+     * Setter for the field <code>searchFilter</code>.
+     * </p>
      *
      * @param searchFilter the searchFilter to set
      */
@@ -536,7 +564,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>query</code>.</p>
+     * <p>
+     * Getter for the field <code>query</code>.
+     * </p>
      *
      * @return the query
      */
@@ -545,7 +575,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>query</code>.</p>
+     * <p>
+     * Setter for the field <code>query</code>.
+     * </p>
      *
      * @param query the query to set
      */
@@ -554,7 +586,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>expandQuery</code>.</p>
+     * <p>
+     * Getter for the field <code>expandQuery</code>.
+     * </p>
      *
      * @return the expandQuery
      */
@@ -563,7 +597,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>expandQuery</code>.</p>
+     * <p>
+     * Setter for the field <code>expandQuery</code>.
+     * </p>
      *
      * @param expandQuery the expandQuery to set
      */
@@ -572,7 +608,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>page</code>.</p>
+     * <p>
+     * Getter for the field <code>page</code>.
+     * </p>
      *
      * @return the page
      */
@@ -581,7 +619,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>page</code>.</p>
+     * <p>
+     * Setter for the field <code>page</code>.
+     * </p>
      *
      * @param page the page to set
      */
@@ -590,7 +630,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hierarchicalFacetString</code>.</p>
+     * <p>
+     * Getter for the field <code>hierarchicalFacetString</code>.
+     * </p>
      *
      * @return the hierarchicalFacetString
      */
@@ -600,7 +642,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hierarchicalFacetString</code>.</p>
+     * <p>
+     * Setter for the field <code>hierarchicalFacetString</code>.
+     * </p>
      *
      * @param hierarchicalFacetString the hierarchicalFacetString to set
      */
@@ -610,7 +654,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>facetString</code>.</p>
+     * <p>
+     * Getter for the field <code>facetString</code>.
+     * </p>
      *
      * @return the facetString
      */
@@ -619,7 +665,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>facetString</code>.</p>
+     * <p>
+     * Setter for the field <code>facetString</code>.
+     * </p>
      *
      * @param facetString the facetString to set
      */
@@ -628,7 +676,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sortString</code>.</p>
+     * <p>
+     * Getter for the field <code>sortString</code>.
+     * </p>
      *
      * @return the sortString
      */
@@ -637,7 +687,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>sortString</code>.</p>
+     * <p>
+     * Setter for the field <code>sortString</code>.
+     * </p>
      *
      * @param sortString the sortString to set
      */
@@ -647,7 +699,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sortFields</code>.</p>
+     * <p>
+     * Getter for the field <code>sortFields</code>.
+     * </p>
      *
      * @return the sortFields
      */
@@ -656,7 +710,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @return the dateUpdated
      */
@@ -665,7 +721,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -674,7 +732,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lastHitsCount</code>.</p>
+     * <p>
+     * Getter for the field <code>lastHitsCount</code>.
+     * </p>
      *
      * @return the lastHitsCount
      */
@@ -683,7 +743,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>lastHitsCount</code>.</p>
+     * <p>
+     * Setter for the field <code>lastHitsCount</code>.
+     * </p>
      *
      * @param lastHitsCount the lastHitsCount to set
      */
@@ -692,7 +754,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>isNewHitsNotification.</p>
+     * <p>
+     * isNewHitsNotification.
+     * </p>
      *
      * @return the newHitsNotification
      */
@@ -701,7 +765,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>newHitsNotification</code>.</p>
+     * <p>
+     * Setter for the field <code>newHitsNotification</code>.
+     * </p>
      *
      * @param newHitsNotification the newHitsNotification to set
      */
@@ -710,7 +776,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>isSaved.</p>
+     * <p>
+     * isSaved.
+     * </p>
      *
      * @return the saved
      */
@@ -719,7 +787,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>saved</code>.</p>
+     * <p>
+     * Setter for the field <code>saved</code>.
+     * </p>
      *
      * @param saved the saved to set
      */
@@ -728,7 +798,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hitsCount</code>.</p>
+     * <p>
+     * Getter for the field <code>hitsCount</code>.
+     * </p>
      *
      * @return the hitsCount
      */
@@ -737,7 +809,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hitsCount</code>.</p>
+     * <p>
+     * Setter for the field <code>hitsCount</code>.
+     * </p>
      *
      * @param hitsCount the hitsCount to set
      */
@@ -746,7 +820,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hits</code>.</p>
+     * <p>
+     * Getter for the field <code>hits</code>.
+     * </p>
      *
      * @return the hits
      */
@@ -756,7 +832,9 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>getLastPage.</p>
+     * <p>
+     * getLastPage.
+     * </p>
      *
      * @param hitsPerPage a int.
      * @return a int.

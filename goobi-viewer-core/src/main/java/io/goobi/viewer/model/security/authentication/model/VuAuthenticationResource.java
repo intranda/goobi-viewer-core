@@ -31,19 +31,21 @@ import io.goobi.viewer.model.security.user.User;
 //@Path("/authentication/vufind")
 public class VuAuthenticationResource {
 
-//    @POST
-//    @Path("/user/auth")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
+    //    @POST
+    //    @Path("/user/auth")
+    //    @Consumes(MediaType.APPLICATION_JSON)
+    //    @Produces(MediaType.APPLICATION_JSON)
     /**
-     * <p>handleAuthorizationResponse.</p>
+     * <p>
+     * handleAuthorizationResponse.
+     * </p>
      *
      * @param request a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest} object.
      * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public VuAuthenticationResponse handleAuthorizationResponse(UserPasswordAuthenticationRequest request) throws DAOException {
-        
+
         VuAuthenticationResponse.User vuUser = new VuAuthenticationResponse.User();
         vuUser.setExists(true);
         vuUser.setIsValid(true);
@@ -58,17 +60,17 @@ public class VuAuthenticationResource {
         VuAuthenticationResponse.Blocks blocks = new VuAuthenticationResponse.Blocks();
         blocks.setIsBlocked(false);
         response.setBlocks(blocks);
-        
+
         User user = DataManager.getInstance().getDao().getUserByNickname(request.getUsername());
-        if(user == null) {
+        if (user == null) {
             user = DataManager.getInstance().getDao().getUserByEmail(request.getUsername());
         }
-        if(user == null || !user.isActive()) {
+        if (user == null || !user.isActive()) {
             vuUser.setExists(false);
             vuUser.setIsValid(false);
-        } else if(user.isSuspended()) {
+        } else if (user.isSuspended()) {
             vuUser.setIsValid(false);
-        } else if(!new BCrypt().checkpw(request.getPassword(), user.getPasswordHash())) {
+        } else if (!new BCrypt().checkpw(request.getPassword(), user.getPasswordHash())) {
             blocks.setIsBlocked(false);
             VuAuthenticationResponse.Reason reason = new VuAuthenticationResponse.Reason();
             reason.setCode("07");
@@ -78,13 +80,15 @@ public class VuAuthenticationResource {
 
         return response;
     }
-    
-//    @POST
-//    @Path("/send")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
+
+    //    @POST
+    //    @Path("/send")
+    //    @Consumes(MediaType.APPLICATION_JSON)
+    //    @Produces(MediaType.APPLICATION_JSON)
     /**
-     * <p>handleAuthorizationResponse.</p>
+     * <p>
+     * handleAuthorizationResponse.
+     * </p>
      *
      * @param response a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
      * @return a {@link io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse} object.
@@ -92,12 +96,14 @@ public class VuAuthenticationResource {
     public VuAuthenticationResponse handleAuthorizationResponse(VuAuthenticationResponse response) {
         return response;
     }
-    
-//    @GET
-//    @Path("/get")
-//    @Produces(MediaType.APPLICATION_JSON)
+
+    //    @GET
+    //    @Path("/get")
+    //    @Produces(MediaType.APPLICATION_JSON)
     /**
-     * <p>getRequest.</p>
+     * <p>
+     * getRequest.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.model.UserPasswordAuthenticationRequest} object.
      */

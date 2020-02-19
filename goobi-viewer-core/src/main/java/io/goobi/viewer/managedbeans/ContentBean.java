@@ -61,14 +61,18 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      */
     @PostConstruct
     public void init() {
     }
 
     /**
-     * <p>Getter for the field <code>userGeneratedContentsForDisplay</code>.</p>
+     * <p>
+     * Getter for the field <code>userGeneratedContentsForDisplay</code>.
+     * </p>
      *
      * @return User-generated contents for the given page
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -89,7 +93,9 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>loadUserGeneratedContentsForDisplay.</p>
+     * <p>
+     * loadUserGeneratedContentsForDisplay.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -104,9 +110,8 @@ public class ContentBean implements Serializable {
         pi = page.getPi();
         currentPage = page.getOrder();
         userGeneratedContentsForDisplay = new ArrayList<>();
-        List<DisplayUserGeneratedContent> allContent = DataManager.getInstance()
-            .getSearchIndex()
-            .getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder());
+        List<DisplayUserGeneratedContent> allContent =
+                DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder());
         for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
             if (!ugcContent.isEmpty()) {
@@ -117,7 +122,9 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentUGCCoords.</p>
+     * <p>
+     * getCurrentUGCCoords.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return a {@link java.util.List} object.

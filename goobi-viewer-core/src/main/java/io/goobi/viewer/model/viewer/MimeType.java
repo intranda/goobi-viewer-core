@@ -45,7 +45,9 @@ public enum MimeType {
     }
 
     /**
-     * <p>getByName.</p>
+     * <p>
+     * getByName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @should find mime type by short name correctly
@@ -65,7 +67,9 @@ public enum MimeType {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -74,7 +78,9 @@ public enum MimeType {
     }
 
     /**
-     * <p>isImageOrPdfDownloadAllowed.</p>
+     * <p>
+     * isImageOrPdfDownloadAllowed.
+     * </p>
      *
      * @return true if image or PDF download is allowed for this mime type; false otherwise
      */
@@ -90,7 +96,9 @@ public enum MimeType {
     }
 
     /**
-     * <p>isImageOrPdfDownloadAllowed.</p>
+     * <p>
+     * isImageOrPdfDownloadAllowed.
+     * </p>
      *
      * @return true if image or PDF download is allowed for the given mime type name; false otherwise
      * @param mimeTypeName a {@link java.lang.String} object.

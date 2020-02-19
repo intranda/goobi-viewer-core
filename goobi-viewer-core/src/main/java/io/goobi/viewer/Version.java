@@ -15,9 +15,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-
 /**
- * <p>Version class.</p>
+ * <p>
+ * Version class.
+ * </p>
  */
 public class Version {
     /** Constant <code>APPLICATION_NAME</code> */
@@ -30,7 +31,7 @@ public class Version {
     public static final String BUILDVERSION;
     /** Constant <code>BUILDDATE</code> */
     public static final String BUILDDATE;
-    
+
     @Deprecated
     private static final String MANIFEST_DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
@@ -88,12 +89,14 @@ public class Version {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        
+
         return "?";
     }
-    
+
     /**
-     * <p>getBuildDate.</p>
+     * <p>
+     * getBuildDate.
+     * </p>
      *
      * @param pattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -104,7 +107,9 @@ public class Version {
     }
 
     /**
-     * <p>convertDate.</p>
+     * <p>
+     * convertDate.
+     * </p>
      *
      * @param inputString a {@link java.lang.String} object.
      * @param inputPattern a {@link java.lang.String} object.
@@ -115,7 +120,7 @@ public class Version {
     public static String convertDate(String inputString, String inputPattern, String outputPattern) {
         DateTimeFormatter in = DateTimeFormatter.ofPattern(inputPattern);
         DateTimeFormatter out = DateTimeFormatter.ofPattern(outputPattern);
-        
+
         TemporalAccessor time = in.parse(inputString);
         String formatted = out.format(time);
         return formatted;

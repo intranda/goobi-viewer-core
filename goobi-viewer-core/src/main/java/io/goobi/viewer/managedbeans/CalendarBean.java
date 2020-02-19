@@ -94,7 +94,9 @@ public class CalendarBean implements Serializable {
     private List<CalendarItemMonth> monthList;
 
     /**
-     * <p>Constructor for CalendarBean.</p>
+     * <p>
+     * Constructor for CalendarBean.
+     * </p>
      */
     public CalendarBean() {
         // the emptiness inside
@@ -438,7 +440,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentYear</code>.</p>
+     * <p>
+     * Getter for the field <code>currentYear</code>.
+     * </p>
      *
      * @return selected year
      */
@@ -472,7 +476,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>rowIndex</code>.</p>
+     * <p>
+     * Getter for the field <code>rowIndex</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -481,7 +487,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>rowIndex</code>.</p>
+     * <p>
+     * Setter for the field <code>rowIndex</code>.
+     * </p>
      *
      * @param rowIndex a int.
      */
@@ -490,7 +498,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>monthRow</code>.</p>
+     * <p>
+     * Getter for the field <code>monthRow</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.calendar.CalendarRow} object.
      */
@@ -499,7 +509,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>monthRow</code>.</p>
+     * <p>
+     * Setter for the field <code>monthRow</code>.
+     * </p>
      *
      * @param monthRow a {@link io.goobi.viewer.model.calendar.CalendarRow} object.
      */
@@ -508,7 +520,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentMonth</code>.</p>
+     * <p>
+     * Getter for the field <code>currentMonth</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
      */
@@ -537,7 +551,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentDay</code>.</p>
+     * <p>
+     * Getter for the field <code>currentDay</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
      */
@@ -546,7 +562,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentDay</code>.</p>
+     * <p>
+     * Setter for the field <code>currentDay</code>.
+     * </p>
      *
      * @param currentDay a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
      */
@@ -559,7 +577,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentDate.</p>
+     * <p>
+     * getCurrentDate.
+     * </p>
      *
      * @return a {@link java.util.Date} object.
      */
@@ -579,7 +599,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>dayRow</code>.</p>
+     * <p>
+     * Getter for the field <code>dayRow</code>.
+     * </p>
      *
      * @return the dayRow
      */
@@ -588,7 +610,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>dayRow</code>.</p>
+     * <p>
+     * Setter for the field <code>dayRow</code>.
+     * </p>
      *
      * @param dayRow the dayRow to set
      */
@@ -730,7 +754,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>resetYears.</p>
+     * <p>
+     * resetYears.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -767,7 +793,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>selectYear</code>.</p>
+     * <p>
+     * Getter for the field <code>selectYear</code>.
+     * </p>
      *
      * @return the selectYear
      */
@@ -850,7 +878,7 @@ public class CalendarBean implements Serializable {
         monthList.add(dec);
 
         for (Count monthCount : monthFacets) {
-            if(monthCount.getName().length() < 6) {
+            if (monthCount.getName().length() < 6) {
                 logger.warn("{} facet name too short: {}", SolrConstants._CALENDAR_MONTH, monthCount.getName());
                 continue;
             }
@@ -1030,7 +1058,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>monthList</code>.</p>
+     * <p>
+     * Getter for the field <code>monthList</code>.
+     * </p>
      *
      * @return the monthList
      */
@@ -1039,7 +1069,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>yearEnd</code>.</p>
+     * <p>
+     * Getter for the field <code>yearEnd</code>.
+     * </p>
      *
      * @return the yearEnd
      */
@@ -1048,7 +1080,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>yearStart</code>.</p>
+     * <p>
+     * Getter for the field <code>yearStart</code>.
+     * </p>
      *
      * @return the yearStart
      */
@@ -1057,7 +1091,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>yearEnd</code>.</p>
+     * <p>
+     * Setter for the field <code>yearEnd</code>.
+     * </p>
      *
      * @param yearEnd the yearEnd to set
      */
@@ -1066,7 +1102,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>yearStart</code>.</p>
+     * <p>
+     * Setter for the field <code>yearStart</code>.
+     * </p>
      *
      * @param yearStart the yearStart to set
      */
@@ -1075,7 +1113,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>collection</code>.</p>
+     * <p>
+     * Setter for the field <code>collection</code>.
+     * </p>
      *
      * @param collection the collection to set
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1089,7 +1129,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>collection</code>.</p>
+     * <p>
+     * Getter for the field <code>collection</code>.
+     * </p>
      *
      * @return the collection
      */
@@ -1098,7 +1140,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>searchCalendar.</p>
+     * <p>
+     * searchCalendar.
+     * </p>
      *
      * @param month a {@link io.goobi.viewer.model.calendar.CalendarItemMonth} object.
      * @param day a {@link io.goobi.viewer.model.calendar.CalendarItemDay} object.
@@ -1217,7 +1261,9 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * <p>getActualYear.</p>
+     * <p>
+     * getActualYear.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

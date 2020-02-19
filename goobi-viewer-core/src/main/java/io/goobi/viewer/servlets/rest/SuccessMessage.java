@@ -16,7 +16,9 @@
 package io.goobi.viewer.servlets.rest;
 
 /**
- * <p>SuccessMessage class.</p>
+ * <p>
+ * SuccessMessage class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -24,8 +26,11 @@ public class SuccessMessage {
 
     private final boolean success;
     private final String message;
+
     /**
-     * <p>Constructor for SuccessMessage.</p>
+     * <p>
+     * Constructor for SuccessMessage.
+     * </p>
      *
      * @param success a boolean.
      * @param message a {@link java.lang.String} object.
@@ -35,8 +40,11 @@ public class SuccessMessage {
         this.success = success;
         this.message = message;
     }
+
     /**
-     * <p>Constructor for SuccessMessage.</p>
+     * <p>
+     * Constructor for SuccessMessage.
+     * </p>
      *
      * @param success a boolean.
      */
@@ -45,23 +53,29 @@ public class SuccessMessage {
         this.success = success;
         this.message = "";
     }
+
     /**
-     * <p>isSuccess.</p>
+     * <p>
+     * isSuccess.
+     * </p>
      *
      * @return the success
      */
     public boolean isSuccess() {
         return success;
     }
+
     /**
-     * <p>Getter for the field <code>message</code>.</p>
+     * <p>
+     * Getter for the field <code>message</code>.
+     * </p>
      *
      * @return the message
      */
     public String getMessage() {
         return message;
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -69,14 +83,14 @@ public class SuccessMessage {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj == null) {
+        if (obj == null) {
             return false;
         }
-        if(obj.getClass().equals(this.getClass())) {
-            return this.success == ((SuccessMessage)obj).success;
+        if (obj.getClass().equals(this.getClass())) {
+            return this.success == ((SuccessMessage) obj).success;
         } else {
             return false;
         }
     }
-    
+
 }

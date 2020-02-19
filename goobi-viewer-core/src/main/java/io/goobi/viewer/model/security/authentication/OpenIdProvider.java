@@ -38,7 +38,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.openid.OAuthServlet;
 
 /**
- * <p>OpenIdProvider class.</p>
+ * <p>
+ * OpenIdProvider class.
+ * </p>
  */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 
@@ -46,7 +48,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";
-    
+
     /** OAuth client ID. */
     private String clientId;
     /** OAuth client secret. */
@@ -56,7 +58,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private String oAuthAccessToken = null;
     private JSONObject jsonResponse = null;
     private volatile LoginResult loginResult = null;
-    
 
     /**
      * Lock to be opened once login is completed
@@ -64,7 +65,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private Object responseLock = new Object();
 
     /**
-     * <p>Constructor for OpenIdProvider.</p>
+     * <p>
+     * Constructor for OpenIdProvider.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -80,9 +83,10 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         this.clientSecret = clientSecret;
     }
 
-
     /**
-     * <p>Getter for the field <code>clientId</code>.</p>
+     * <p>
+     * Getter for the field <code>clientId</code>.
+     * </p>
      *
      * @return the clientId
      */
@@ -91,7 +95,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>Getter for the field <code>clientSecret</code>.</p>
+     * <p>
+     * Getter for the field <code>clientSecret</code>.
+     * </p>
      *
      * @return the clientSecret
      */
@@ -145,16 +151,16 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
             if (request != null) {
                 BeanUtils.getResponse().sendRedirect(request.getLocationUri());
             }
-                return CompletableFuture.supplyAsync(() -> {
-                            synchronized (responseLock) {
-                                try {
-                                    responseLock.wait(getTimeoutMillis());
-                                    return this.loginResult;
-                                } catch (InterruptedException e) {
-                                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
-                                }
-                            }
-                });
+            return CompletableFuture.supplyAsync(() -> {
+                synchronized (responseLock) {
+                    try {
+                        responseLock.wait(getTimeoutMillis());
+                        return this.loginResult;
+                    } catch (InterruptedException e) {
+                        return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
+                    }
+                }
+            });
 
         } catch (OAuthSystemException e) {
             throw new AuthenticationProviderException(e);
@@ -164,21 +170,20 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a {@link io.goobi.viewer.model.security.authentication.LoginResult}
-     * containing the given request and response and either an optional containing the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException}
-     * if an internal error occured during login
-     * If this method is not called within {@link #getTimeoutMillis()} ms after calling {@#login(String, String)},
-     * a loginResponse is created containing an appropriate exception.
-     * In any case, the future returned by {@link #login(String, String)} is resolved
+     * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a
+     * {@link io.goobi.viewer.model.security.authentication.LoginResult} containing the given request and response and either an optional containing
+     * the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} if an
+     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling {@#login(String, String)},
+     * a loginResponse is created containing an appropriate exception. In any case, the future returned by {@link #login(String, String)} is resolved
      *
-     * @param json  The server response as json object. If null, the login request is resolved as failure
+     * @param json The server response as json object. If null, the login request is resolved as failure
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> completeLogin(JSONObject json, HttpServletRequest request, HttpServletResponse response) {
         try {
-            if(json == null) {
+            if (json == null) {
                 throw new AuthenticationProviderException("received no json object");
             }
             String email = null;
@@ -279,7 +284,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>Getter for the field <code>oAuthState</code>.</p>
+     * <p>
+     * Getter for the field <code>oAuthState</code>.
+     * </p>
      *
      * @return the oAuthState
      */
@@ -288,7 +295,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>Setter for the field <code>oAuthState</code>.</p>
+     * <p>
+     * Setter for the field <code>oAuthState</code>.
+     * </p>
      *
      * @param oAuthState the oAuthState to set
      */
@@ -297,7 +306,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>Getter for the field <code>oAuthAccessToken</code>.</p>
+     * <p>
+     * Getter for the field <code>oAuthAccessToken</code>.
+     * </p>
      *
      * @return the oAuthAccessToken
      */
@@ -306,7 +317,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>Setter for the field <code>oAuthAccessToken</code>.</p>
+     * <p>
+     * Setter for the field <code>oAuthAccessToken</code>.
+     * </p>
      *
      * @param oAuthAccessToken the oAuthAccessToken to set
      */
@@ -321,7 +334,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return Optional.ofNullable(jsonResponse);
     }
 
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
      */
@@ -330,7 +342,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     public boolean allowsNicknameChange() {
         return true;
     }
-
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()

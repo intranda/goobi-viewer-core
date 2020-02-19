@@ -61,7 +61,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private static final long serialVersionUID = 9048792944197887061L;
 
     private static final Logger logger = LoggerFactory.getLogger(StructElement.class);
-    
+
     /** If false; the Solr document with the given IDDOC does not exist in the index. */
     private boolean exists = false;
     private DocType docType = null;;
@@ -84,7 +84,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
-
 
     /**
      * Empty constructor for unit tests.
@@ -354,10 +353,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true).
-     * If the element itself is an anchor, itself will be returned.
-     * If no topStruct element is found because no metadata {@link SolrConstants#IDDOC_TOPSTRUCT} is found
-     * or because it could not be resolved, null is returned
+     * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true). If the element itself is an anchor, itself
+     * will be returned. If no topStruct element is found because no metadata {@link SolrConstants#IDDOC_TOPSTRUCT} is found or because it could not
+     * be resolved, null is returned
      *
      * @should retrieve top struct correctly
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -365,10 +363,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        if(work || anchor) {
+        if (work || anchor) {
             return this;
         } else {
-            if(this.topStruct == null) {
+            if (this.topStruct == null) {
                 String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
                 try {
                     if (topstructIddoc != null) {
@@ -378,7 +376,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
                 }
             }
-        return this.topStruct;
+            return this.topStruct;
         }
     }
 
@@ -472,9 +470,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getPi() {
         if (pi != null && !pi.equals("null")) {
             return pi;
-        } else if(getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
+        } else if (getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
             return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
-        } else if(!work && !anchor) {
+        } else if (!work && !anchor) {
             try {
                 return Optional.ofNullable(this.getTopStruct()).map(StructElement::getPi).orElse(null);
             } catch (PresentationException | IndexUnreachableException e) {
@@ -924,11 +922,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
     }
-    
+
     public boolean hasShapeMetadata() {
         return shapeMetadata != null && !shapeMetadata.isEmpty();
     }
-    
+
     /**
      * @param shapeMetadata the shapeMetadata to set
      */
@@ -966,6 +964,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         private final String logId;
         private final String structPi;
         private final int pageNo;
+
         /**
          * Constructor.
          * 
@@ -1002,25 +1001,24 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         public String getCoords() {
             return coords;
         }
-        
+
         /**
          * @return the url
          */
         public String getUrl() {
-            PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper())
-                    .map(NavigationHelper::getCurrentPageType)
-                    .orElse(PageType.viewImage);
+            PageType pageType =
+                    Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(PageType.viewImage);
             return getUrl(pageType);
         }
-        
+
         public String getUrl(PageType pageType) {
             StringBuilder sbUrl = new StringBuilder();
             sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                .append('/')
-                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType));
+                    .append('/')
+                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType));
             return sbUrl.toString();
         }
-        
+
         /**
          * @return the logId
          */

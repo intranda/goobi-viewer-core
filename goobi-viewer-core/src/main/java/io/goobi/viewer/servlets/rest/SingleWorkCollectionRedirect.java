@@ -35,7 +35,9 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>SingleWorkCollectionRedirect class.</p>
+ * <p>
+ * SingleWorkCollectionRedirect class.
+ * </p>
  */
 @Path("/redirect/toFirstWork")
 @ViewerRestServiceBinding
@@ -45,7 +47,9 @@ public class SingleWorkCollectionRedirect {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>redirectToWork.</p>
+     * <p>
+     * redirectToWork.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.

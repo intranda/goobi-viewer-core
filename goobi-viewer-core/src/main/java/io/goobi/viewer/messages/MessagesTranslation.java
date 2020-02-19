@@ -24,14 +24,18 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.model.misc.Translation;
 
 /**
- * <p>MessagesTranslation class.</p>
+ * <p>
+ * MessagesTranslation class.
+ * </p>
  *
  * @author florian
  */
 public class MessagesTranslation extends Translation {
 
     /**
-     * <p>Constructor for MessagesTranslation.</p>
+     * <p>
+     * Constructor for MessagesTranslation.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -39,11 +43,13 @@ public class MessagesTranslation extends Translation {
      */
     public MessagesTranslation(String key, String value, String language) {
         super(language, key, value);
-        this.id = 0l;   //just to prevent nullpointer
+        this.id = 0l; //just to prevent nullpointer
     }
-    
+
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
@@ -52,7 +58,7 @@ public class MessagesTranslation extends Translation {
         Collection<Translation> translations = new ArrayList<>();
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
             String value = ViewerResourceBundle.getTranslation(key, locale, true);
-            if(StringUtils.isNotBlank(value)) {
+            if (StringUtils.isNotBlank(value)) {
                 MessagesTranslation translation = new MessagesTranslation(key, value, locale.getLanguage());
                 translations.add(translation);
             }
@@ -60,6 +66,4 @@ public class MessagesTranslation extends Translation {
         return translations;
     }
 
-    
-    
 }

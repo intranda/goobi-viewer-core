@@ -41,42 +41,46 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 
 /**
- * Management tool to updated deprecated viewer database setups to the one required by the viewer. to be run at viewer start, right after initializing the dao
- * Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link io.goobi.viewer.dao.IDAO} which are responsible to make the required changes
+ * Management tool to updated deprecated viewer database setups to the one required by the viewer. to be run at viewer start, right after initializing
+ * the dao Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link io.goobi.viewer.dao.IDAO} which are responsible to make the
+ * required changes
  *
  * @author florian
  */
 public class DatabaseUpdater {
 
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
 
-	private static final IModelUpdate[] updates = {new SidebarWidgetTypeUpdate(), new CMSCategoryUpdate()};
-	
-	private final IDAO dao;
+    private static final IModelUpdate[] updates = { new SidebarWidgetTypeUpdate(), new CMSCategoryUpdate() };
 
-	/**
-	 * <p>Constructor for DatabaseUpdater.</p>
-	 *
-	 * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
-	 */
-	public DatabaseUpdater(IDAO dao) {
-		this.dao = dao;
-	}
+    private final IDAO dao;
 
-	/**
-	 * <p>update.</p>
-	 */
-	public void update(){
-		for (IModelUpdate update : updates) {
-			try {
-				if(update.update(dao)) {					
-					logger.info("Successfully updated database using " + update.getClass().getSimpleName());
-				}
-			} catch (SQLException | DAOException e) {
-				logger.error("Failed to update database using " + update.getClass().getSimpleName(), e);
-			}
-		}
-	}
+    /**
+     * <p>
+     * Constructor for DatabaseUpdater.
+     * </p>
+     *
+     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     */
+    public DatabaseUpdater(IDAO dao) {
+        this.dao = dao;
+    }
 
+    /**
+     * <p>
+     * update.
+     * </p>
+     */
+    public void update() {
+        for (IModelUpdate update : updates) {
+            try {
+                if (update.update(dao)) {
+                    logger.info("Successfully updated database using " + update.getClass().getSimpleName());
+                }
+            } catch (SQLException | DAOException e) {
+                logger.error("Failed to update database using " + update.getClass().getSimpleName(), e);
+            }
+        }
+    }
 
 }

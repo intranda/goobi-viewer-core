@@ -29,8 +29,8 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- *  An item containing a campaign and a source to be annotated.
- *  Used to set up a frontend annotation view in javascript as well as process status changes created by that view
+ * An item containing a campaign and a source to be annotated. Used to set up a frontend annotation view in javascript as well as process status
+ * changes created by that view
  *
  * @author florian
  */
@@ -53,7 +53,9 @@ public class CampaignItem {
     }
 
     /**
-     * <p>Setter for the field <code>source</code>.</p>
+     * <p>
+     * Setter for the field <code>source</code>.
+     * </p>
      *
      * @param source the source to set
      */
@@ -71,7 +73,9 @@ public class CampaignItem {
     }
 
     /**
-     * <p>Setter for the field <code>campaign</code>.</p>
+     * <p>
+     * Setter for the field <code>campaign</code>.
+     * </p>
      *
      * @param campaign the campaign to set
      */
@@ -80,7 +84,9 @@ public class CampaignItem {
     }
 
     /**
-     * <p>getQuestions.</p>
+     * <p>
+     * getQuestions.
+     * </p>
      *
      * @return a new list containing all queries
      */
@@ -97,34 +103,42 @@ public class CampaignItem {
     public CampaignRecordStatus getRecordStatus() {
         return recordStatus;
     }
-    
+
     /**
-     * <p>Setter for the field <code>recordStatus</code>.</p>
+     * <p>
+     * Setter for the field <code>recordStatus</code>.
+     * </p>
      *
      * @param recordStatus the recordStatus to set
      */
     public void setRecordStatus(CampaignRecordStatus recordStatus) {
         this.recordStatus = recordStatus;
     }
-    
+
     /**
-     * <p>isFinished.</p>
+     * <p>
+     * isFinished.
+     * </p>
      *
-     * @return true exactly if {@link #getRecordStatus()} is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.FINISHED FINISHED}
+     * @return true exactly if {@link #getRecordStatus()} is
+     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.FINISHED FINISHED}
      */
     public boolean isFinished() {
         return CampaignRecordStatus.FINISHED.equals(getRecordStatus());
     }
 
     /**
-     * <p>isInReview.</p>
+     * <p>
+     * isInReview.
+     * </p>
      *
-     * @return true exactly if {@link #getRecordStatus()} is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.REVIEW REVIEW}
+     * @return true exactly if {@link #getRecordStatus()} is
+     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus.REVIEW REVIEW}
      */
     public boolean isInReview() {
         return CampaignRecordStatus.REVIEW.equals(getRecordStatus());
     }
-    
+
     /**
      * URI for a user who edited the status of this item in the crowdsourcing frontend. The actual {@link io.goobi.viewer.model.security.user.User}-Id
      * may be determined by calling {@link io.goobi.viewer.model.security.user.User#getId(URI)}
@@ -134,14 +148,16 @@ public class CampaignItem {
     public URI getCreatorURI() {
         return creatorURI;
     }
-    
+
     /**
-     * <p>Setter for the field <code>creatorURI</code>.</p>
+     * <p>
+     * Setter for the field <code>creatorURI</code>.
+     * </p>
      *
      * @param creatorURI the creatorURI to set
      */
     public void setCreatorURI(URI creatorURI) {
         this.creatorURI = creatorURI;
     }
-    
+
 }

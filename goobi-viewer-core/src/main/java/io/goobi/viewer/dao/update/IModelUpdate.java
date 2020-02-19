@@ -27,13 +27,15 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 public interface IModelUpdate {
 
-	/**
-	 * <p>update.</p>
-	 *
-	 * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
-	 * @return a boolean.
-	 * @throws io.goobi.viewer.exceptions.DAOException if any.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public boolean update(IDAO dao) throws DAOException, SQLException;
+    /**
+     * <p>
+     * update.
+     * </p>
+     *
+     * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws java.sql.SQLException if any.
+     */
+    public boolean update(IDAO dao) throws DAOException, SQLException;
 }

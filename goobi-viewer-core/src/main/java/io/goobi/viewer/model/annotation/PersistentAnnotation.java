@@ -221,7 +221,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -230,7 +232,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -239,7 +243,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
@@ -254,7 +260,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getIdAsURI.</p>
+     * <p>
+     * getIdAsURI.
+     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
@@ -263,7 +271,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getIdAsURI.</p>
+     * <p>
+     * getIdAsURI.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
@@ -273,7 +283,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @return the dateCreated
      */
@@ -282,7 +294,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -291,7 +305,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>dateModified</code>.</p>
+     * <p>
+     * Getter for the field <code>dateModified</code>.
+     * </p>
      *
      * @return the dateModified
      */
@@ -300,7 +316,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>dateModified</code>.</p>
+     * <p>
+     * Setter for the field <code>dateModified</code>.
+     * </p>
      *
      * @param dateModified the dateModified to set
      */
@@ -309,7 +327,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getCreator.</p>
+     * <p>
+     * getCreator.
+     * </p>
      *
      * @return the creator
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -322,7 +342,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>setCreator.</p>
+     * <p>
+     * setCreator.
+     * </p>
      *
      * @param creator the creator to set
      */
@@ -331,7 +353,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getGenerator.</p>
+     * <p>
+     * getGenerator.
+     * </p>
      *
      * @return the generator
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -344,7 +368,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>setGenerator.</p>
+     * <p>
+     * setGenerator.
+     * </p>
      *
      * @param generator the generator to set
      */
@@ -353,7 +379,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>creatorId</code>.</p>
+     * <p>
+     * Getter for the field <code>creatorId</code>.
+     * </p>
      *
      * @return the creatorId
      */
@@ -362,7 +390,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>creatorId</code>.</p>
+     * <p>
+     * Setter for the field <code>creatorId</code>.
+     * </p>
      *
      * @param creatorId the creatorId to set
      */
@@ -371,7 +401,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>reviewerId</code>.</p>
+     * <p>
+     * Getter for the field <code>reviewerId</code>.
+     * </p>
      *
      * @return the reviewerId
      */
@@ -380,7 +412,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>reviewerId</code>.</p>
+     * <p>
+     * Setter for the field <code>reviewerId</code>.
+     * </p>
      *
      * @param reviewerId the reviewerId to set
      */
@@ -389,7 +423,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>generatorId</code>.</p>
+     * <p>
+     * Getter for the field <code>generatorId</code>.
+     * </p>
      *
      * @return the generatorId
      */
@@ -398,7 +434,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>generatorId</code>.</p>
+     * <p>
+     * Setter for the field <code>generatorId</code>.
+     * </p>
      *
      * @param generatorId the generatorId to set
      */
@@ -407,7 +445,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>body</code>.</p>
+     * <p>
+     * Getter for the field <code>body</code>.
+     * </p>
      *
      * @return the body
      */
@@ -416,7 +456,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>body</code>.</p>
+     * <p>
+     * Setter for the field <code>body</code>.
+     * </p>
      *
      * @param body the body to set
      */
@@ -425,7 +467,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>motivation</code>.</p>
+     * <p>
+     * Getter for the field <code>motivation</code>.
+     * </p>
      *
      * @return the motivation
      */
@@ -434,7 +478,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>motivation</code>.</p>
+     * <p>
+     * Setter for the field <code>motivation</code>.
+     * </p>
      *
      * @param motivation the motivation to set
      */
@@ -462,7 +508,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getBodyAsOAResource.</p>
+     * <p>
+     * getBodyAsOAResource.
+     * </p>
      *
      * @return a {@link de.intranda.api.annotation.IResource} object.
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
@@ -479,7 +527,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>target</code>.</p>
+     * <p>
+     * Getter for the field <code>target</code>.
+     * </p>
      *
      * @return the target
      */
@@ -488,7 +538,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>targetPI</code>.</p>
+     * <p>
+     * Getter for the field <code>targetPI</code>.
+     * </p>
      *
      * @return the targetPI
      */
@@ -497,7 +549,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Getter for the field <code>targetPageOrder</code>.</p>
+     * <p>
+     * Getter for the field <code>targetPageOrder</code>.
+     * </p>
      *
      * @return the targetPageOrder
      */
@@ -506,7 +560,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>targetPI</code>.</p>
+     * <p>
+     * Setter for the field <code>targetPI</code>.
+     * </p>
      *
      * @param targetPI the targetPI to set
      */
@@ -515,7 +571,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>targetPageOrder</code>.</p>
+     * <p>
+     * Setter for the field <code>targetPageOrder</code>.
+     * </p>
      *
      * @param targetPageOrder the targetPageOrder to set
      */
@@ -524,7 +582,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>Setter for the field <code>target</code>.</p>
+     * <p>
+     * Setter for the field <code>target</code>.
+     * </p>
      *
      * @param target the target to set
      */
@@ -685,7 +745,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getContentString.</p>
+     * <p>
+     * getContentString.
+     * </p>
      *
      * @return Just the string value of the body document
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
@@ -704,7 +766,9 @@ public class PersistentAnnotation {
     }
 
     /**
-     * <p>getTargetLink.</p>
+     * <p>
+     * getTargetLink.
+     * </p>
      *
      * @return URL string to the record view
      */

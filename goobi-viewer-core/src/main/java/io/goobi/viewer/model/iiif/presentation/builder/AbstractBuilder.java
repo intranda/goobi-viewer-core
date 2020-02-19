@@ -75,129 +75,144 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>Abstract AbstractBuilder class.</p>
+ * <p>
+ * Abstract AbstractBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public abstract class AbstractBuilder {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
 
-	/** Constant <code>REQUIRED_SOLR_FIELDS</code> */
-	public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE,
-			SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT,
-			SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM,
-			SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK,
-			SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
-			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
-			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
-	
-	/** Constant <code>UGC_SOLR_FIELDS</code> */
-	public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS};
+    /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
+    public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
+            SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
+            SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID,
+            SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
+            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
+            SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 
+    /** Constant <code>UGC_SOLR_FIELDS</code> */
+    public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
+            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS };
 
-	private final URI servletURI;
-	private final URI requestURI;
-	private final Optional<HttpServletRequest> request;
+    private final URI servletURI;
+    private final URI requestURI;
+    private final Optional<HttpServletRequest> request;
 
-	/**
-	 * <p>Constructor for AbstractBuilder.</p>
-	 *
-	 * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-	 */
-	public AbstractBuilder(HttpServletRequest request) {
-		this.request = Optional.ofNullable(request);
-		this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-		this.requestURI = URI.create(
-				ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
-	}
-
-	/**
-	 * <p>Constructor for AbstractBuilder.</p>
-	 *
-	 * @param servletUri a {@link java.net.URI} object.
-	 * @param requestURI a {@link java.net.URI} object.
-	 */
-	public AbstractBuilder(URI servletUri, URI requestURI) {
-		this.request = Optional.empty();
-		this.servletURI = servletUri;
-		this.requestURI = requestURI;
-	}
-
-	/**
-	 * <p>getLocale.</p>
-	 *
-	 * @param language a {@link java.lang.String} object.
-	 * @return a {@link java.util.Locale} object.
-	 */
-	protected Locale getLocale(String language) {
-		Locale locale = Locale.forLanguageTag(language);
-		if (locale == null) {
-			locale = Locale.ENGLISH;
-		}
-		return locale;
-	}
-
-	/**
-	 * <p>Getter for the field <code>servletURI</code>.</p>
-	 *
-	 * @return a {@link java.net.URI} object.
-	 */
-	protected URI getServletURI() {
-		return servletURI;
-	}
-
-	/**
-	 * <p>absolutize.</p>
-	 *
-	 * @param uri a {@link java.net.URI} object.
-	 * @return a {@link java.net.URI} object.
-	 * @throws java.net.URISyntaxException if any.
-	 */
-	protected URI absolutize(URI uri) throws URISyntaxException {
-		if (uri != null && !uri.isAbsolute()) {
-			return new URI(getServletURI().toString() + uri.toString());
-		}
-		return uri;
-	}
-
-	/**
-	 * <p>absolutize.</p>
-	 *
-	 * @param url a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 * @throws java.net.URISyntaxException if any.
-	 */
-	protected URI absolutize(String url) throws URISyntaxException {
-		if (url != null) {
-			url = url.replaceAll("\\s", "+");
-		}
-		return absolutize(new URI(url));
-	}
-
-	/**
-	 * <p>getBaseUrl.</p>
-	 *
-	 * @return The requested url before any presentation specific parts. Generally
-	 *         the rest api url. Includes a trailing slash
-	 */
-	protected URI getBaseUrl() {
-
-		String request = requestURI.toString();
-		if (!request.contains("/iiif/")) {
-			return requestURI;
-		}
-		request = request.substring(0, request.indexOf("/iiif/") + 1);
-		try {
-			return new URI(request);
-		} catch (URISyntaxException e) {
-			return requestURI;
-		}
-
-	}
-	
     /**
-     * <p>Getter for the field <code>requestURI</code>.</p>
+     * <p>
+     * Constructor for AbstractBuilder.
+     * </p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     */
+    public AbstractBuilder(HttpServletRequest request) {
+        this.request = Optional.ofNullable(request);
+        this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+        this.requestURI = URI.create(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
+    }
+
+    /**
+     * <p>
+     * Constructor for AbstractBuilder.
+     * </p>
+     *
+     * @param servletUri a {@link java.net.URI} object.
+     * @param requestURI a {@link java.net.URI} object.
+     */
+    public AbstractBuilder(URI servletUri, URI requestURI) {
+        this.request = Optional.empty();
+        this.servletURI = servletUri;
+        this.requestURI = requestURI;
+    }
+
+    /**
+     * <p>
+     * getLocale.
+     * </p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link java.util.Locale} object.
+     */
+    protected Locale getLocale(String language) {
+        Locale locale = Locale.forLanguageTag(language);
+        if (locale == null) {
+            locale = Locale.ENGLISH;
+        }
+        return locale;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>servletURI</code>.
+     * </p>
+     *
+     * @return a {@link java.net.URI} object.
+     */
+    protected URI getServletURI() {
+        return servletURI;
+    }
+
+    /**
+     * <p>
+     * absolutize.
+     * </p>
+     *
+     * @param uri a {@link java.net.URI} object.
+     * @return a {@link java.net.URI} object.
+     * @throws java.net.URISyntaxException if any.
+     */
+    protected URI absolutize(URI uri) throws URISyntaxException {
+        if (uri != null && !uri.isAbsolute()) {
+            return new URI(getServletURI().toString() + uri.toString());
+        }
+        return uri;
+    }
+
+    /**
+     * <p>
+     * absolutize.
+     * </p>
+     *
+     * @param url a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     * @throws java.net.URISyntaxException if any.
+     */
+    protected URI absolutize(String url) throws URISyntaxException {
+        if (url != null) {
+            url = url.replaceAll("\\s", "+");
+        }
+        return absolutize(new URI(url));
+    }
+
+    /**
+     * <p>
+     * getBaseUrl.
+     * </p>
+     *
+     * @return The requested url before any presentation specific parts. Generally the rest api url. Includes a trailing slash
+     */
+    protected URI getBaseUrl() {
+
+        String request = requestURI.toString();
+        if (!request.contains("/iiif/")) {
+            return requestURI;
+        }
+        request = request.substring(0, request.indexOf("/iiif/") + 1);
+        try {
+            return new URI(request);
+        } catch (URISyntaxException e) {
+            return requestURI;
+        }
+
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>requestURI</code>.
+     * </p>
      *
      * @return the requestURI
      */
@@ -205,295 +220,297 @@ public abstract class AbstractBuilder {
         return requestURI;
     }
 
-	/**
-	 * <p>getMetsResolverUrl.</p>
-	 *
-	 * @return METS resolver link for the DFG Viewer
-	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-	 */
-	public String getMetsResolverUrl(StructElement ele) {
-		try {
-			return getServletURI() + "/metsresolver?id=" + ele.getPi();
-		} catch (Exception e) {
-			logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
-			Messages.error("errGetCurrUrl");
-		}
-		return getServletURI() + "/metsresolver?id=" + 0;
-	}
-
-	/**
-	 * <p>getLidoResolverUrl.</p>
-	 *
-	 * @return LIDO resolver link for the DFG Viewer
-	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-	 */
-	public String getLidoResolverUrl(StructElement ele) {
-		try {
-			return getServletURI() + "/lidoresolver?id=" + ele.getPi();
-		} catch (Exception e) {
-			logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
-			Messages.error("errGetCurrUrl");
-		}
-		return getServletURI() + "/lidoresolver?id=" + 0;
-	}
-
-	/**
-	 * <p>getViewUrl.</p>
-	 *
-	 * @return viewer url for the given page in the given {@link io.goobi.viewer.model.viewer.PageType}
-	 * @param ele a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-	 * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-	 */
-	public String getViewUrl(PhysicalElement ele, PageType pageType) {
-		try {
-			return getServletURI() + "/" + pageType.getName() + ele.getPurlPart();
-		} catch (Exception e) {
-			logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
-			Messages.error("errGetCurrUrl");
-		}
-		return getServletURI() + "/metsresolver?id=" + 0;
-	}
-
-	/**
-	 * Simple method to create a label for a {@link org.apache.solr.common.SolrDocument} from
-	 * {@link io.goobi.viewer.controller.SolrConstants.LABEL}, {@link io.goobi.viewer.controller.SolrConstants.TITLE} or
-	 * {@link io.goobi.viewer.controller.SolrConstants.DOCSTRUCT}
-	 *
-	 * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
-	 * @return a {@link java.util.Optional} object.
-	 */
-	public static Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
-
-		String label = (String) solrDocument.getFirstValue(SolrConstants.LABEL);
-		String title = (String) solrDocument.getFirstValue(SolrConstants.TITLE);
-		String docStruct = (String) solrDocument.getFirstValue(SolrConstants.DOCSTRCT);
-
-		if (StringUtils.isNotBlank(label)) {
-			return Optional.of(new SimpleMetadataValue(label));
-		} else if (StringUtils.isNotBlank(title)) {
-			return Optional.of(new SimpleMetadataValue(title));
-		} else if (StringUtils.isNotBlank(docStruct)) {
-			return Optional.of(ViewerResourceBundle.getTranslations(docStruct));
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	/**
-	 * <p>addMetadata.</p>
-	 *
-	 * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
-	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-	 */
-	public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
-		List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-		List<String> eventFields = DataManager.getInstance().getConfiguration().getIIIFEventFields();
-		displayFields.addAll(eventFields);
-
-		for (String field : getMetadataFields(ele)) {
-			if (contained(field, displayFields) && !field.endsWith(SolrConstants._UNTOKENIZED)
-					&& !field.matches(".*_LANG_\\w{2,3}")) {
-				String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
-				String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel : (field.contains("/") ? field.substring(field.indexOf("/")+1) : field);
-				SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
-						.map(value -> new Metadata(ViewerResourceBundle.getTranslations(label), value)).ifPresent(md -> {
-							md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-							md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-							manifest.addMetadata(md);
-						});
-			}
-		}
-	}
-
-	/**
-	 * Return true if the field is contained in displayFields, accounting for
-	 * wildcard characters
-	 * 
-	 * @param field
-	 * @param displayFields
-	 * @return
-	 */
-	private boolean contained(String field, List<String> displayFields) {
-
-		return displayFields.stream().map(displayField -> displayField.replace("*", ""))
-				.anyMatch(displayField -> field.startsWith(displayField));
-	}
-
-	/**
-	 * @param displayFields
-	 * @param allLocales
-	 * @return
-	 */
-	private List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
-		return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream())
-				.collect(Collectors.toList());
-	}
-
-	private List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
-		List<String> fields = new ArrayList<>();
-		if (includeSelf) {
-			fields.add(field);
-		}
-		fields.addAll(locales.stream().map(Locale::getLanguage).map(String::toUpperCase)
-				.map(string -> field.concat("_LANG_").concat(string)).collect(Collectors.toList()));
-		return fields;
-	}
-
-	/**
-	 * @param ele
-	 * @return
-	 */
-	private static List<String> getMetadataFields(StructElement ele) {
-		Set<String> fields = ele.getMetadataFields().keySet();
-		List<String> baseFields = fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct()
-				.collect(Collectors.toList());
-		return baseFields;
-	}
-
-	/**
-	 * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or
-	 * are the anchor themselves). Works are sorted by a
-	 * {@link io.goobi.viewer.model.iiif.presentation.builder.StructElementComparator} If no hits are found, an empty list is
-	 * returned
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @return A list of all docstructs with the given pi or children thereof. An
-	 *         empty list if no hits are found
-	 * @throws io.goobi.viewer.exceptions.PresentationException if any.
-	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-	 */
-	public List<StructElement> getDocumentWithChildren(String pi)
-			throws PresentationException, IndexUnreachableException {
-		String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
-		String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
-		String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
-		List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
-
-		// handle metadata fields from events
-		Map<String, List<String>> eventFields = getEventFields();
-		if (!eventFields.isEmpty()) {
-			String eventQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:EVENT";
-			query += " OR (" + eventQuery + ")";
-			displayFields.addAll(
-					eventFields.values().stream().flatMap(value -> value.stream()).collect(Collectors.toList()));
-			displayFields.add(SolrConstants.EVENTTYPE);
-		}
-
-		List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
-		List<StructElement> eles = new ArrayList<>();
-		List<SolrDocument> events = new ArrayList<>();
-		if (docs != null) {
-			for (SolrDocument doc : docs) {
-				if ("EVENT".equals(doc.get(SolrConstants.DOCTYPE))) {
-					events.add(doc);
-				} else {
-					StructElement ele = new StructElement(
-							Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
-					eles.add(ele);
-					try {
-						Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
-						ele.setImageNumber(pageNo);
-						// Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
-					} catch (NullPointerException | ClassCastException e) {
-						ele.setImageNumber(1);
-					}
-				}
-			}
-		}
-		Collections.sort(eles, new StructElementComparator());
-		addEventMetadataToWorkElement(eles, events);
-		return eles;
-	}
-
-	/**
-	 * Adds all metadata from the given events to the first work document contained
-	 * in eles. All metadata will be attached twice, once in the form "/[fieldName]"
-	 * and once in the form "[eventType]/[fieldName]"
-	 *
-	 * @param eles   The list of StructElements from which to select the first work
-	 *               document. All metadata are attached to this document
-	 * @param events The list of event SolrDocuments from which to take the metadata
-	 */
-	protected void addEventMetadataToWorkElement(List<StructElement> eles, List<SolrDocument> events) {
-		Optional<StructElement> main_o = eles.stream().filter(ele -> ele.isWork()).findFirst();
-		if (main_o.isPresent()) {
-			StructElement main = main_o.get();
-			for (SolrDocument event : events) {
-				String eventType = event.getFieldValue(SolrConstants.EVENTTYPE).toString();
-				Map<String, List<String>> mds = main.getMetadataFields();
-				for (String eventField : event.getFieldNames()) {
-					Collection<Object> fieldValues = event.getFieldValues(eventField);
-					List<String> fieldValueList = fieldValues.stream().map(Object::toString)
-							.collect(Collectors.toList());
-					// add the event field twice to the md-list: Once for unspecified event type and
-					// once for the specific event type
-					mds.put("/" + eventField, fieldValueList);
-					mds.put(eventType + "/" + eventField, fieldValueList);
-				}
-			}
-		}
-	}
-
-	/**
-	 * <p>getEventFields.</p>
-	 *
-	 * @return a {@link java.util.Map} object.
-	 */
-	protected Map<String, List<String>> getEventFields() {
-		List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
-		Map<String, List<String>> events = new HashMap<>();
-		for (String string : eventStrings) {
-			String event, field;
-			int separatorIndex = string.indexOf("/");
-			if (separatorIndex > -1) {
-				event = string.substring(0, separatorIndex);
-				field = string.substring(separatorIndex + 1);
-			} else {
-				event = "";
-				field = string;
-			}
-			List<String> eventFields = events.get(event);
-			if (eventFields == null) {
-				eventFields = new ArrayList<>();
-				events.put(event, eventFields);
-			}
-			eventFields.add(field);
-		}
-		return events;
-	}
-
-	/**
-	 * <p>getDocument.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
-	 * @throws io.goobi.viewer.exceptions.PresentationException if any.
-	 * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-	 */
-	public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
-		String query = "PI:" + pi;
-		List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
-		SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, displayFields);
-		if (doc != null) {
-			StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()),
-					doc);
-			ele.setImageNumber(1);
-			return ele;
-		}
-		return null;
-	}
-	
     /**
-     * Get all annotations for the given PI from the SOLR index, sorted by page number.
-     * The annotations are stored as DOCTYPE:UGC in the SOLR and are converted to OpenAnnotations here
+     * <p>
+     * getMetsResolverUrl.
+     * </p>
      *
-     * @param pi   The persistent identifier of the work to query
-     * @return     A map of page numbers (1-based) mapped to a list of associated annotations
+     * @return METS resolver link for the DFG Viewer
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     */
+    public String getMetsResolverUrl(StructElement ele) {
+        try {
+            return getServletURI() + "/metsresolver?id=" + ele.getPi();
+        } catch (Exception e) {
+            logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
+            Messages.error("errGetCurrUrl");
+        }
+        return getServletURI() + "/metsresolver?id=" + 0;
+    }
+
+    /**
+     * <p>
+     * getLidoResolverUrl.
+     * </p>
+     *
+     * @return LIDO resolver link for the DFG Viewer
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     */
+    public String getLidoResolverUrl(StructElement ele) {
+        try {
+            return getServletURI() + "/lidoresolver?id=" + ele.getPi();
+        } catch (Exception e) {
+            logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
+            Messages.error("errGetCurrUrl");
+        }
+        return getServletURI() + "/lidoresolver?id=" + 0;
+    }
+
+    /**
+     * <p>
+     * getViewUrl.
+     * </p>
+     *
+     * @return viewer url for the given page in the given {@link io.goobi.viewer.model.viewer.PageType}
+     * @param ele a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     */
+    public String getViewUrl(PhysicalElement ele, PageType pageType) {
+        try {
+            return getServletURI() + "/" + pageType.getName() + ele.getPurlPart();
+        } catch (Exception e) {
+            logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
+            Messages.error("errGetCurrUrl");
+        }
+        return getServletURI() + "/metsresolver?id=" + 0;
+    }
+
+    /**
+     * Simple method to create a label for a {@link org.apache.solr.common.SolrDocument} from {@link io.goobi.viewer.controller.SolrConstants.LABEL},
+     * {@link io.goobi.viewer.controller.SolrConstants.TITLE} or {@link io.goobi.viewer.controller.SolrConstants.DOCSTRUCT}
+     *
+     * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    public static Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
+
+        String label = (String) solrDocument.getFirstValue(SolrConstants.LABEL);
+        String title = (String) solrDocument.getFirstValue(SolrConstants.TITLE);
+        String docStruct = (String) solrDocument.getFirstValue(SolrConstants.DOCSTRCT);
+
+        if (StringUtils.isNotBlank(label)) {
+            return Optional.of(new SimpleMetadataValue(label));
+        } else if (StringUtils.isNotBlank(title)) {
+            return Optional.of(new SimpleMetadataValue(title));
+        } else if (StringUtils.isNotBlank(docStruct)) {
+            return Optional.of(ViewerResourceBundle.getTranslations(docStruct));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * <p>
+     * addMetadata.
+     * </p>
+     *
+     * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     */
+    public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
+        List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+        List<String> eventFields = DataManager.getInstance().getConfiguration().getIIIFEventFields();
+        displayFields.addAll(eventFields);
+
+        for (String field : getMetadataFields(ele)) {
+            if (contained(field, displayFields) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+                String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
+                String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
+                        : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
+                SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
+                        .map(value -> new Metadata(ViewerResourceBundle.getTranslations(label), value))
+                        .ifPresent(md -> {
+                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            manifest.addMetadata(md);
+                        });
+            }
+        }
+    }
+
+    /**
+     * Return true if the field is contained in displayFields, accounting for wildcard characters
+     * 
+     * @param field
+     * @param displayFields
+     * @return
+     */
+    private boolean contained(String field, List<String> displayFields) {
+
+        return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.startsWith(displayField));
+    }
+
+    /**
+     * @param displayFields
+     * @param allLocales
+     * @return
+     */
+    private List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
+        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
+    }
+
+    private List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
+        List<String> fields = new ArrayList<>();
+        if (includeSelf) {
+            fields.add(field);
+        }
+        fields.addAll(locales.stream()
+                .map(Locale::getLanguage)
+                .map(String::toUpperCase)
+                .map(string -> field.concat("_LANG_").concat(string))
+                .collect(Collectors.toList()));
+        return fields;
+    }
+
+    /**
+     * @param ele
+     * @return
+     */
+    private static List<String> getMetadataFields(StructElement ele) {
+        Set<String> fields = ele.getMetadataFields().keySet();
+        List<String> baseFields = fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().collect(Collectors.toList());
+        return baseFields;
+    }
+
+    /**
+     * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a
+     * {@link io.goobi.viewer.model.iiif.presentation.builder.StructElementComparator} If no hits are found, an empty list is returned
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public List<StructElement> getDocumentWithChildren(String pi) throws PresentationException, IndexUnreachableException {
+        String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
+        String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
+        String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
+        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+
+        // handle metadata fields from events
+        Map<String, List<String>> eventFields = getEventFields();
+        if (!eventFields.isEmpty()) {
+            String eventQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:EVENT";
+            query += " OR (" + eventQuery + ")";
+            displayFields.addAll(eventFields.values().stream().flatMap(value -> value.stream()).collect(Collectors.toList()));
+            displayFields.add(SolrConstants.EVENTTYPE);
+        }
+
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
+        List<StructElement> eles = new ArrayList<>();
+        List<SolrDocument> events = new ArrayList<>();
+        if (docs != null) {
+            for (SolrDocument doc : docs) {
+                if ("EVENT".equals(doc.get(SolrConstants.DOCTYPE))) {
+                    events.add(doc);
+                } else {
+                    StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+                    eles.add(ele);
+                    try {
+                        Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                        ele.setImageNumber(pageNo);
+                        // Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
+                    } catch (NullPointerException | ClassCastException e) {
+                        ele.setImageNumber(1);
+                    }
+                }
+            }
+        }
+        Collections.sort(eles, new StructElementComparator());
+        addEventMetadataToWorkElement(eles, events);
+        return eles;
+    }
+
+    /**
+     * Adds all metadata from the given events to the first work document contained in eles. All metadata will be attached twice, once in the form
+     * "/[fieldName]" and once in the form "[eventType]/[fieldName]"
+     *
+     * @param eles The list of StructElements from which to select the first work document. All metadata are attached to this document
+     * @param events The list of event SolrDocuments from which to take the metadata
+     */
+    protected void addEventMetadataToWorkElement(List<StructElement> eles, List<SolrDocument> events) {
+        Optional<StructElement> main_o = eles.stream().filter(ele -> ele.isWork()).findFirst();
+        if (main_o.isPresent()) {
+            StructElement main = main_o.get();
+            for (SolrDocument event : events) {
+                String eventType = event.getFieldValue(SolrConstants.EVENTTYPE).toString();
+                Map<String, List<String>> mds = main.getMetadataFields();
+                for (String eventField : event.getFieldNames()) {
+                    Collection<Object> fieldValues = event.getFieldValues(eventField);
+                    List<String> fieldValueList = fieldValues.stream().map(Object::toString).collect(Collectors.toList());
+                    // add the event field twice to the md-list: Once for unspecified event type and
+                    // once for the specific event type
+                    mds.put("/" + eventField, fieldValueList);
+                    mds.put(eventType + "/" + eventField, fieldValueList);
+                }
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * getEventFields.
+     * </p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    protected Map<String, List<String>> getEventFields() {
+        List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
+        Map<String, List<String>> events = new HashMap<>();
+        for (String string : eventStrings) {
+            String event, field;
+            int separatorIndex = string.indexOf("/");
+            if (separatorIndex > -1) {
+                event = string.substring(0, separatorIndex);
+                field = string.substring(separatorIndex + 1);
+            } else {
+                event = "";
+                field = string;
+            }
+            List<String> eventFields = events.get(event);
+            if (eventFields == null) {
+                eventFields = new ArrayList<>();
+                events.put(event, eventFields);
+            }
+            eventFields.add(field);
+        }
+        return events;
+    }
+
+    /**
+     * <p>
+     * getDocument.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
+        String query = "PI:" + pi;
+        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, displayFields);
+        if (doc != null) {
+            StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+            ele.setImageNumber(1);
+            return ele;
+        }
+        return null;
+    }
+
+    /**
+     * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * converted to OpenAnnotations here
+     *
+     * @param pi The persistent identifier of the work to query
+     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @param urlOnlyTarget a boolean.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget) throws PresentationException, IndexUnreachableException {
+    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget)
+            throws PresentationException, IndexUnreachableException {
         String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
         List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
         SolrDocumentList ugcDocs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
@@ -501,9 +518,9 @@ public abstract class AbstractBuilder {
         if (ugcDocs != null && !ugcDocs.isEmpty()) {
             for (SolrDocument doc : ugcDocs) {
                 OpenAnnotation anno = createOpenAnnotation(pi, doc, urlOnlyTarget);
-                Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
+                Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
                 List<OpenAnnotation> annoList = annoMap.get(page);
-                if(annoList == null) {
+                if (annoList == null) {
                     annoList = new ArrayList<>();
                     annoMap.put(page, annoList);
                 }
@@ -514,7 +531,9 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>createOpenAnnotation.</p>
+     * <p>
+     * createOpenAnnotation.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param urlOnlyTarget a boolean.
@@ -525,9 +544,11 @@ public abstract class AbstractBuilder {
         return createOpenAnnotation(pi, doc, urlOnlyTarget);
 
     }
-    
+
     /**
-     * <p>createOpenAnnotation.</p>
+     * <p>
+     * createOpenAnnotation.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -538,11 +559,11 @@ public abstract class AbstractBuilder {
         OpenAnnotation anno;
         String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
-        Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
+        Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
         anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
-        
+
         IResource body = null;
-        if(doc.containsKey(SolrConstants.MD_BODY)) {
+        if (doc.containsKey(SolrConstants.MD_BODY)) {
             String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
             try {
                 JSONObject json = new JSONObject(bodyString);
@@ -550,32 +571,32 @@ public abstract class AbstractBuilder {
             } catch (JSONException e) {
                 logger.error("Error building annotation body from '" + bodyString + "'");
             }
-        } else if(doc.containsKey(SolrConstants.MD_TEXT)) {
+        } else if (doc.containsKey(SolrConstants.MD_TEXT)) {
             String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
             body = new TextualResource(text);
         }
         anno.setBody(body);
-        
-        try {                    
+
+        try {
             FragmentSelector selector = new FragmentSelector(coordString);
-            if(urlOnlyTarget) {
+            if (urlOnlyTarget) {
                 anno.setTarget(new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector));
-            } else {                
+            } else {
                 anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
             }
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             //old UGC coords format
             String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
             Matcher matcher = Pattern.compile(regex).matcher(coordString);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 int x1 = Math.round(Float.parseFloat(matcher.group(1)));
                 int y1 = Math.round(Float.parseFloat(matcher.group(2)));
                 int x2 = Math.round(Float.parseFloat(matcher.group(3)));
                 int y2 = Math.round(Float.parseFloat(matcher.group(4)));
-                FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2-x1, y2-y1));
-                if(urlOnlyTarget) {
+                FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2 - x1, y2 - y1));
+                if (urlOnlyTarget) {
                     anno.setTarget(new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector));
-                } else {                
+                } else {
                     anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
                 }
             } else {
@@ -593,212 +614,229 @@ public abstract class AbstractBuilder {
     private String readSolrField(SolrDocument doc, Object fieldValue) {
         String text;
         Object textObject = Optional.ofNullable(fieldValue).orElse("");
-        if(textObject != null && textObject instanceof Collection) {
-            text = (String) ((Collection)textObject).stream().map(Object::toString).collect(Collectors.joining(", "));
+        if (textObject != null && textObject instanceof Collection) {
+            text = (String) ((Collection) textObject).stream().map(Object::toString).collect(Collectors.joining(", "));
         } else {
             text = Optional.ofNullable(textObject).map(Object::toString).orElse("");
         }
         return text;
     }
-    
 
     /**
      * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap
      *
-     * @param canvases  The list of canvases which should receive the annotations as otherContent
-     * @param crowdsourcingAnnotations  A map of annotations by page number
-     * @param annotationMap     A global annotation map for a whole manifest; may be null if not needed
+     * @param canvases The list of canvases which should receive the annotations as otherContent
+     * @param crowdsourcingAnnotations A map of annotations by page number
+     * @param annotationMap A global annotation map for a whole manifest; may be null if not needed
      */
-    public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations, Map<AnnotationType, List<AnnotationList>> annotationMap) {
+    public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations,
+            Map<AnnotationType, List<AnnotationList>> annotationMap) {
 
         for (Canvas canvas : canvases) {
             Integer order = this.getPageOrderFromCanvasURI(canvas.getId());
             String pi = this.getPIFromCanvasURI(canvas.getId());
-            if(crowdsourcingAnnotations.containsKey(order)) {
+            if (crowdsourcingAnnotations.containsKey(order)) {
                 AnnotationList crowdList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.CROWDSOURCING));
                 crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
                 List<OpenAnnotation> annos = crowdsourcingAnnotations.get(order);
                 annos.forEach(anno -> crowdList.addResource(anno));
                 canvas.addOtherContent(crowdList);
-                if(annotationMap != null) { 
+                if (annotationMap != null) {
                     List<AnnotationList> crowdAnnos = annotationMap.get(AnnotationType.CROWDSOURCING);
-                    if(crowdAnnos == null) {
+                    if (crowdAnnos == null) {
                         crowdAnnos = new ArrayList<>();
-                        annotationMap.put(AnnotationType.CROWDSOURCING, crowdAnnos);                        
+                        annotationMap.put(AnnotationType.CROWDSOURCING, crowdAnnos);
                     }
                     crowdAnnos.add(crowdList);
                 }
             }
         }
-        
+
     }
 
-	/**
-	 * <p>getSolrFieldList.</p>
-	 *
-	 * @return a {@link java.util.List} object.
-	 */
-	public List<String> getSolrFieldList() {
-		List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-		for (String string : REQUIRED_SOLR_FIELDS) {
-			if (!fields.contains(string)) {
-				fields.add(string);
-			}
-		}
-		String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-		if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
-			fields.add(navDateField);
-		}
-		fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
-		return fields;
-	}
+    /**
+     * <p>
+     * getSolrFieldList.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<String> getSolrFieldList() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+        for (String string : REQUIRED_SOLR_FIELDS) {
+            if (!fields.contains(string)) {
+                fields.add(string);
+            }
+        }
+        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
+        if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
+            fields.add(navDateField);
+        }
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
+        return fields;
+    }
 
-	/**
-	 * Gets the attribution text configured in webapi.iiif.attribution and returns
-	 * all translations if any are found, or the configured string itself otherwise
-	 *
-	 * @return the configured attribution
-	 */
-	protected IMetadataValue getAttribution() {
-		String message = DataManager.getInstance().getConfiguration().getIIIFAttribution();
-		return ViewerResourceBundle.getTranslations(message);
-	}
+    /**
+     * Gets the attribution text configured in webapi.iiif.attribution and returns all translations if any are found, or the configured string itself
+     * otherwise
+     *
+     * @return the configured attribution
+     */
+    protected IMetadataValue getAttribution() {
+        String message = DataManager.getInstance().getConfiguration().getIIIFAttribution();
+        return ViewerResourceBundle.getTranslations(message);
+    }
 
-	/**
-	 * <p>getDescription.</p>
-	 *
-	 * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-	 * @return a {@link java.util.Optional} object.
-	 */
-	protected Optional<IMetadataValue> getDescription(StructElement ele) {
-		List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
-		for (String field : fields) {
-			Optional<IMetadataValue> optional = SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
-					.map(md -> {
-						md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-						return md;
-					});
-			if (optional.isPresent()) {
-				return optional;
-			}
-		}
-		return Optional.empty();
-	}
+    /**
+     * <p>
+     * getDescription.
+     * </p>
+     *
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    protected Optional<IMetadataValue> getDescription(StructElement ele) {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
+        for (String field : fields) {
+            Optional<IMetadataValue> optional = SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+                md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                return md;
+            });
+            if (optional.isPresent()) {
+                return optional;
+            }
+        }
+        return Optional.empty();
+    }
 
-	/**
-	 * <p>Getter for the field <code>request</code>.</p>
-	 *
-	 * @return the request
-	 */
-	protected Optional<HttpServletRequest> getRequest() {
-		return request;
-	}
+    /**
+     * <p>
+     * Getter for the field <code>request</code>.
+     * </p>
+     *
+     * @return the request
+     */
+    protected Optional<HttpServletRequest> getRequest() {
+        return request;
+    }
 
-	/**
-	 * <p>getCollectionURI.</p>
-	 *
-	 * @param collectionField a {@link java.lang.String} object.
-	 * @param baseCollectionName a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getCollectionURI(String collectionField, String baseCollectionName) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/collections/")
-				.append(collectionField).append("/");
-		if (StringUtils.isNotBlank(baseCollectionName)) {
-			sb.append(baseCollectionName).append("/");
-		}
-		return URI.create(sb.toString());
-	}
+    /**
+     * <p>
+     * getCollectionURI.
+     * </p>
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param baseCollectionName a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getCollectionURI(String collectionField, String baseCollectionName) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/collections/").append(collectionField).append("/");
+        if (StringUtils.isNotBlank(baseCollectionName)) {
+            sb.append(baseCollectionName).append("/");
+        }
+        return URI.create(sb.toString());
+    }
 
-	/**
-	 * <p>getManifestURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getManifestURI(String pi) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/manifest/");
-		return URI.create(sb.toString());
-	}
-	
-	   /**
-	    * <p>getManifestURI.</p>
-	    *
-	    * @param pi a {@link java.lang.String} object.
-	    * @param mode a {@link io.goobi.viewer.model.iiif.presentation.builder.BuildMode} object.
-	    * @return a {@link java.net.URI} object.
-	    */
-	   public URI getManifestURI(String pi, BuildMode mode) {
-	        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-	                .append("/manifest/");
-	        if(BuildMode.IIIF_SIMPLE.equals(mode)) {
-	            sb.append("simple/");
-	        } else if(BuildMode.IIIF_BASE.equals(mode)) {
-	            sb.append("base/");
-	        }
-	        return URI.create(sb.toString());
-	    }
+    /**
+     * <p>
+     * getManifestURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getManifestURI(String pi) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/manifest/");
+        return URI.create(sb.toString());
+    }
 
-	/**
-	 * <p>getRangeURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param logId a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getRangeURI(String pi, String logId) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/range/").append(logId).append("/");;
-		return URI.create(sb.toString());
-	}
+    /**
+     * <p>
+     * getManifestURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param mode a {@link io.goobi.viewer.model.iiif.presentation.builder.BuildMode} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getManifestURI(String pi, BuildMode mode) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/manifest/");
+        if (BuildMode.IIIF_SIMPLE.equals(mode)) {
+            sb.append("simple/");
+        } else if (BuildMode.IIIF_BASE.equals(mode)) {
+            sb.append("base/");
+        }
+        return URI.create(sb.toString());
+    }
 
-	/**
-	 * <p>getSequenceURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param label a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getSequenceURI(String pi, String label) {
-		if (StringUtils.isBlank(label)) {
-			label = "basic";
-		}
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/sequence/").append(label).append("/");;
-		return URI.create(sb.toString());
-	}
+    /**
+     * <p>
+     * getRangeURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getRangeURI(String pi, String logId) {
+        StringBuilder sb =
+                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/range/").append(logId).append("/");
+        ;
+        return URI.create(sb.toString());
+    }
 
-	/**
-	 * <p>getCanvasURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param pageNo a int.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getCanvasURI(String pi, int pageNo) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/canvas/").append(pageNo).append("/");;
-		return URI.create(sb.toString());
-	}
-	
-	/**
-	 * Get the page order (1-based) from a canavs URI. That is the number in the last path paramter after '/canvas/'
-	 * If the URI doesn't match a canvas URI, null is returned
-	 *
-	 * @param uri a {@link java.net.URI} object.
-	 * @return a {@link java.lang.Integer} object.
-	 */
-	public Integer getPageOrderFromCanvasURI(URI uri) {
-	    String regex = "/canvas/(\\d+)/$";
-	    Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
-	    if(matcher.find()) {
-	        return Integer.parseInt(matcher.group(1));
-	    } else {
-	        return null;
-	    }
-	}
-	
+    /**
+     * <p>
+     * getSequenceURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getSequenceURI(String pi, String label) {
+        if (StringUtils.isBlank(label)) {
+            label = "basic";
+        }
+        StringBuilder sb =
+                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/sequence/").append(label).append("/");
+        ;
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getCanvasURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param pageNo a int.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getCanvasURI(String pi, int pageNo) {
+        StringBuilder sb =
+                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(pageNo).append("/");
+        ;
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * Get the page order (1-based) from a canavs URI. That is the number in the last path paramter after '/canvas/' If the URI doesn't match a canvas
+     * URI, null is returned
+     *
+     * @param uri a {@link java.net.URI} object.
+     * @return a {@link java.lang.Integer} object.
+     */
+    public Integer getPageOrderFromCanvasURI(URI uri) {
+        String regex = "/canvas/(\\d+)/$";
+        Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Get the persistent identifier from a canvas URI. This is the URI path param between '/iiif/manifests/' and '/canvas/'
      *
@@ -815,153 +853,194 @@ public abstract class AbstractBuilder {
         }
     }
 
-	/**
-	 * <p>getAnnotationListURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param pageNo a int.
-	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/list/").append(pageNo).append("/").append(type.name()).append("/");
-		return URI.create(sb.toString());
-	}
-
-	/**
-	 * <p>getAnnotationListURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getAnnotationListURI(String pi, AnnotationType type) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/list/").append(type.name()).append("/");
-		return URI.create(sb.toString());
-	}
-
-	
-   /**
-    * <p>getCommentAnnotationURI.</p>
-    *
-    * @param pi a {@link java.lang.String} object.
-    * @param pageNo a int.
-    * @param id a long.
-    * @return a {@link java.net.URI} object.
-    */
-   public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("webannotation/comments/").append(pi)
-                .append("/").append(pageNo).append("/").append(id).append("/");
-        return URI.create(sb.toString());
-    }
-
-	/**
-	 * <p>getLayerURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getLayerURI(String pi, AnnotationType type) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/layer");
-		sb.append("/").append(type.name()).append("/");
-		return URI.create(sb.toString());
-	}
-
-	/**
-	 * <p>getLayerURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param logId a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getLayerURI(String pi, String logId) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/layer/");
-		if (StringUtils.isNotBlank(logId)) {
-			sb.append(logId).append("/");
-		} else {
-			sb.append("base/");
-		}
-		return URI.create(sb.toString());
-	}
-
-	/**
-	 * <p>getImageAnnotationURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param order a int.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getImageAnnotationURI(String pi, int order) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/canvas/").append(order).append("/image/1/");
-		return URI.create(sb.toString());
-	}
-
-	/**
-	 * <p>getAnnotationURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param order a int.
-	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-	 * @param annoNum a int.
-	 * @return a {@link java.net.URI} object.
-	 * @throws java.net.URISyntaxException if any.
-	 */
-	public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/canvas/").append(order).append("/").append(type.name()).append("/").append(annoNum).append("/");
-		return URI.create(sb.toString());
-	}
-	
-	/**
-	 * <p>getAnnotationURI.</p>
-	 *
-	 * @param pi a {@link java.lang.String} object.
-	 * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-	 * @param id a {@link java.lang.String} object.
-	 * @return a {@link java.net.URI} object.
-	 */
-	public URI getAnnotationURI(String pi, AnnotationType type, String id) {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/")
-                .append(type.name()).append("/").append(id).append("/");
-        return URI.create(sb.toString());
-    }
-	
     /**
-     * <p>getSearchServiceURI.</p>
+     * <p>
+     * getAnnotationListURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param pageNo a int.
+     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/")
+                .append(pi)
+                .append("/list/")
+                .append(pageNo)
+                .append("/")
+                .append(type.name())
+                .append("/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getAnnotationListURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getAnnotationListURI(String pi, AnnotationType type) {
+        StringBuilder sb =
+                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(type.name()).append("/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getCommentAnnotationURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param pageNo a int.
+     * @param id a long.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("webannotation/comments/")
+                .append(pi)
+                .append("/")
+                .append(pageNo)
+                .append("/")
+                .append(id)
+                .append("/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getLayerURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getLayerURI(String pi, AnnotationType type) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/layer");
+        sb.append("/").append(type.name()).append("/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getLayerURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getLayerURI(String pi, String logId) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/layer/");
+        if (StringUtils.isNotBlank(logId)) {
+            sb.append(logId).append("/");
+        } else {
+            sb.append("base/");
+        }
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getImageAnnotationURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param order a int.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getImageAnnotationURI(String pi, int order) {
+        StringBuilder sb =
+                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(order).append("/image/1/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getAnnotationURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param order a int.
+     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param annoNum a int.
+     * @return a {@link java.net.URI} object.
+     * @throws java.net.URISyntaxException if any.
+     */
+    public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/")
+                .append(pi)
+                .append("/canvas/")
+                .append(order)
+                .append("/")
+                .append(type.name())
+                .append("/")
+                .append(annoNum)
+                .append("/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getAnnotationURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getAnnotationURI(String pi, AnnotationType type, String id) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/")
+                .append(pi)
+                .append("/")
+                .append(type.name())
+                .append("/")
+                .append(id)
+                .append("/");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * <p>
+     * getSearchServiceURI.
+     * </p>
      *
      * @param target a {@link java.net.URI} object.
      * @return a {@link java.net.URI} object.
      */
     public URI getSearchServiceURI(URI target) {
         String baseURI = target.toString();
-        if(!baseURI.endsWith("/")) {
+        if (!baseURI.endsWith("/")) {
             baseURI += "/";
         }
         return URI.create(baseURI + "search");
     }
-    
+
     /**
-     * <p>getAutoSuggestServiceURI.</p>
+     * <p>
+     * getAutoSuggestServiceURI.
+     * </p>
      *
      * @param target a {@link java.net.URI} object.
      * @return a {@link java.net.URI} object.
      */
     public URI getAutoSuggestServiceURI(URI target) {
         String baseURI = target.toString();
-        if(!baseURI.endsWith("/")) {
+        if (!baseURI.endsWith("/")) {
             baseURI += "/";
         }
         return URI.create(baseURI + "autocomplete");
     }
 
     /**
-     * <p>getSearchURI.</p>
+     * <p>
+     * getSearchURI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -970,15 +1049,17 @@ public abstract class AbstractBuilder {
      */
     public URI getSearchURI(String pi, String query, List<String> motivation) {
         String uri = getSearchServiceURI(getManifestURI(pi)).toString();
-        uri += ("?q="+query);
-        if(!motivation.isEmpty()) {
-            uri += ("&motivation="+StringUtils.join(motivation, "+"));
+        uri += ("?q=" + query);
+        if (!motivation.isEmpty()) {
+            uri += ("&motivation=" + StringUtils.join(motivation, "+"));
         }
         return URI.create(uri);
     }
-    
+
     /**
-     * <p>getAutoSuggestURI.</p>
+     * <p>
+     * getAutoSuggestURI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -987,14 +1068,13 @@ public abstract class AbstractBuilder {
      */
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
         String uri = getAutoSuggestServiceURI(getManifestURI(pi)).toString();
-        if(StringUtils.isNotBlank(query)) {            
-            uri += ("?q="+query);
-            if(!motivation.isEmpty()) {
-                uri += ("&motivation="+StringUtils.join(motivation, "+"));
+        if (StringUtils.isNotBlank(query)) {
+            uri += ("?q=" + query);
+            if (!motivation.isEmpty()) {
+                uri += ("&motivation=" + StringUtils.join(motivation, "+"));
             }
         }
         return URI.create(uri);
     }
-
 
 }

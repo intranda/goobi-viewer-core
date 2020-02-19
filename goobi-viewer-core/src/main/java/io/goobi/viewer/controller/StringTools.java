@@ -414,7 +414,7 @@ public class StringTools {
 
         return ret;
     }
-    
+
     /**
      * <p>
      * getMatch.
@@ -432,7 +432,7 @@ public class StringTools {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        
+
         return "";
     }
 }

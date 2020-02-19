@@ -27,7 +27,6 @@ import javax.faces.validator.ValidatorException;
 @FacesValidator("anyStringValidator")
 public class AnyStringValidator implements Validator<String> {
 
-
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */

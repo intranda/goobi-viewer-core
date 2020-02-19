@@ -25,7 +25,7 @@ import org.junit.Test;
 import io.goobi.viewer.controller.ConversionTools;
 
 public class ConversionToolsTest {
-    
+
     /**
      * @see ConversionTools#convertFileToHtml(Path)
      * @verifies convert docx file correctly

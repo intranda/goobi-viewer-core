@@ -48,7 +48,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * http://www.facebook.com/note.php?note_id=125229397708&comments&ref=mf
  */
 /**
- * <p>MyExceptionHandler class.</p>
+ * <p>
+ * MyExceptionHandler class.
+ * </p>
  */
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
@@ -57,7 +59,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     private ExceptionHandler wrapped;
 
     /**
-     * <p>Constructor for MyExceptionHandler.</p>
+     * <p>
+     * Constructor for MyExceptionHandler.
+     * </p>
      *
      * @param wrapped a {@link javax.faces.context.ExceptionHandler} object.
      */
@@ -107,32 +111,30 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     requestMap.put("errorType", "viewExpired");
                     flash.put("errorType", "viewExpired");
                     HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
-                    if(session != null) {
-                    	StringBuilder details = new StringBuilder();
-                    	
-                    	details.append("Session ID: ").append(session.getId());
-                    	details.append("</br>");
-                    	details.append("Session created: ").append(new Date(session.getCreationTime()));
-                    	details.append("</br>");
-                    	details.append("Session last accessed: ").append(new Date(session.getLastAccessedTime()));
-                    	
-                    	Optional<Map<Object, Map>> logicalViews = Optional.ofNullable(
-                    			(Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
-                    	Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
-                    	Integer numberOfTotalViews = logicalViews
-                    			.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
-                    	details.append("</br>");
-                    	details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
-                    	details.append("</br>");
-                    	details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
-                    	
-                    	flash.put("errorDetails", details.toString());
+                    if (session != null) {
+                        StringBuilder details = new StringBuilder();
+
+                        details.append("Session ID: ").append(session.getId());
+                        details.append("</br>");
+                        details.append("Session created: ").append(new Date(session.getCreationTime()));
+                        details.append("</br>");
+                        details.append("Session last accessed: ").append(new Date(session.getLastAccessedTime()));
+
+                        Optional<Map<Object, Map>> logicalViews =
+                                Optional.ofNullable((Map) session.getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
+                        Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
+                        Integer numberOfTotalViews =
+                                logicalViews.map(map -> map.values().stream().mapToInt(value -> value.keySet().size()).sum()).orElse(0);
+                        details.append("</br>");
+                        details.append("Logical Views stored in session: ").append(numberOfLogicalViews.toString());
+                        details.append("</br>");
+                        details.append("Total views stored in session: ").append(numberOfTotalViews.toString());
+
+                        flash.put("errorDetails", details.toString());
                     } else {
-                    	flash.put("errorDetails", "No session details available");
+                        flash.put("errorDetails", "No session details available");
                     }
-                    
-                    
-                    
+
                     nav.handleNavigation(fc, null, "pretty:error");
                     fc.renderResponse();
                 } finally {
@@ -237,7 +239,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ")
                             .append(t.getMessage())
                             .toString();
-//                    flash.put("errorDetails", msg);
+                    //                    flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "general");
                     flash.put("errorType", "general");

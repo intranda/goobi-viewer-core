@@ -66,7 +66,9 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>CrowdsourcingBean class.</p>
+ * <p>
+ * CrowdsourcingBean class.
+ * </p>
  */
 @Named
 @SessionScoped
@@ -198,7 +200,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getCampaignCount.</p>
+     * <p>
+     * getCampaignCount.
+     * </p>
      *
      * @param visibility a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility} object.
      * @return The total number of campaigns of a certain {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility}
@@ -225,7 +229,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getAllLocales.</p>
+     * <p>
+     * getAllLocales.
+     * </p>
      *
      * @return A list of all locales supported by this viewer application
      */
@@ -245,7 +251,8 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * Sets a new {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view for creating a new campaign
+     * Sets a new {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view
+     * for creating a new campaign
      *
      * @return a {@link java.lang.String} object.
      */
@@ -255,7 +262,8 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * Sets the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view for editing this campaign
+     * Sets the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} as the {@link #selectedCampaign} and returns a pretty url to the
+     * view for editing this campaign
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return a {@link java.lang.String} object.
@@ -327,7 +335,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getAllCampaigns.</p>
+     * <p>
+     * getAllCampaigns.
+     * </p>
      *
      * @return All campaigns from the database
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -338,7 +348,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getAllCampaigns.</p>
+     * <p>
+     * getAllCampaigns.
+     * </p>
      *
      * @param visibility a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility} object.
      * @return All camapaigns of the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility} from the database
@@ -448,7 +460,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getCampaignsRootUrl.</p>
+     * <p>
+     * getCampaignsRootUrl.
+     * </p>
      *
      * @return root URL for the permalink value
      */
@@ -457,7 +471,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelCampaigns</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelCampaigns</code>.
+     * </p>
      *
      * @return the lazyModelCampaigns
      */
@@ -466,7 +482,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelAnnotations</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelAnnotations</code>.
+     * </p>
      *
      * @return the lazyModelAnnotations
      */
@@ -507,7 +525,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>selectedCampaign</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedCampaign</code>.
+     * </p>
      *
      * @return the selectedCampaign
      */
@@ -516,7 +536,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>selectedCampaign</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedCampaign</code>.
+     * </p>
      *
      * @param selectedCampaign the selectedCampaign to set
      */
@@ -525,7 +547,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>isEditMode.</p>
+     * <p>
+     * isEditMode.
+     * </p>
      *
      * @return the editMode
      */
@@ -534,7 +558,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>editMode</code>.</p>
+     * <p>
+     * Setter for the field <code>editMode</code>.
+     * </p>
      *
      * @param editMode the editMode to set
      */
@@ -543,7 +569,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getSelectedCampaignId.</p>
+     * <p>
+     * getSelectedCampaignId.
+     * </p>
      *
      * @return The id of the {@link io.goobi.viewer.managedbeans.CrowdsourcingBean#selectedCampaign} as String
      */
@@ -568,7 +596,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>targetCampaign</code>.</p>
+     * <p>
+     * Getter for the field <code>targetCampaign</code>.
+     * </p>
      *
      * @return the {@link #targetCampaign}
      */
@@ -577,7 +607,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>targetCampaign</code>.</p>
+     * <p>
+     * Setter for the field <code>targetCampaign</code>.
+     * </p>
      *
      * @param targetCampaign the targetCampaign to set
      */
@@ -589,7 +621,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getTargetCampaignId.</p>
+     * <p>
+     * getTargetCampaignId.
+     * </p>
      *
      * @return the identifier of the {@link #targetCampaign}
      */
@@ -599,7 +633,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>setTargetCampaignId.</p>
+     * <p>
+     * setTargetCampaignId.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @throws java.lang.NumberFormatException if any.
@@ -649,7 +685,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>forwardToAnnotationTarget.</p>
+     * <p>
+     * forwardToAnnotationTarget.
+     * </p>
      *
      * @return the pretty url to annotatate the {@link #targetIdentifier} by the {@link #targetCampaign}
      */
@@ -658,7 +696,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>forwardToReviewTarget.</p>
+     * <p>
+     * forwardToReviewTarget.
+     * </p>
      *
      * @return the pretty url to review the {@link #targetIdentifier} for the {@link #targetCampaign}
      */
@@ -667,7 +707,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>targetIdentifier</code>.</p>
+     * <p>
+     * Getter for the field <code>targetIdentifier</code>.
+     * </p>
      *
      * @return the PI of a work selected for editing
      */
@@ -676,7 +718,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getTargetIdentifierForUrl.</p>
+     * <p>
+     * getTargetIdentifierForUrl.
+     * </p>
      *
      * @return the PI of a work selected for editing or "-" if no targetIdentifier exists
      */
@@ -685,7 +729,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>setTargetIdentifierForUrl.</p>
+     * <p>
+     * setTargetIdentifierForUrl.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      */
@@ -694,7 +740,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>targetIdentifier</code>.</p>
+     * <p>
+     * Setter for the field <code>targetIdentifier</code>.
+     * </p>
      *
      * @param targetIdentifier the targetIdentifier to set
      */
@@ -703,7 +751,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>forwardToCrowdsourcingAnnotation.</p>
+     * <p>
+     * forwardToCrowdsourcingAnnotation.
+     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return a pretty url to annotate a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
@@ -714,7 +764,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>forwardToCrowdsourcingReview.</p>
+     * <p>
+     * forwardToCrowdsourcingReview.
+     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return a pretty url to review a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
@@ -725,7 +777,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>forwardToCrowdsourcingAnnotation.</p>
+     * <p>
+     * forwardToCrowdsourcingAnnotation.
+     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
@@ -738,7 +792,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>forwardToCrowdsourcingReview.</p>
+     * <p>
+     * forwardToCrowdsourcingReview.
+     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
@@ -751,10 +807,13 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getRandomItemUrl.</p>
+     * <p>
+     * getRandomItemUrl.
+     * </p>
      *
      * @param campaign The campaign with which to annotate/review
-     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW}, return a url for reviewing, otherwise for annotating
+     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW}, return a url for
+     *            reviewing, otherwise for annotating
      * @return The pretty url to either review or annotate a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
      */
     public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
@@ -765,9 +824,12 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getTargetRecordStatus.</p>
+     * <p>
+     * getTargetRecordStatus.
+     * </p>
      *
-     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} of the {@link #targetCampaign} for the {@link #targetIdentifier}
+     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} of the {@link #targetCampaign}
+     *         for the {@link #targetIdentifier}
      */
     public CampaignRecordStatus getTargetRecordStatus() {
         if (getTargetCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
@@ -777,10 +839,12 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>handleInvalidTarget.</p>
+     * <p>
+     * handleInvalidTarget.
+     * </p>
      *
-     * @return the pretty URL to the crowdsourcing campaigns page if {@link io.goobi.viewer.managedbeans.UserBean#getUser()} is not eligible for viewing the
-     *         {@link #targetCampaign}
+     * @return the pretty URL to the crowdsourcing campaigns page if {@link io.goobi.viewer.managedbeans.UserBean#getUser()} is not eligible for
+     *         viewing the {@link #targetCampaign}
      */
     public String handleInvalidTarget() {
         if (StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {

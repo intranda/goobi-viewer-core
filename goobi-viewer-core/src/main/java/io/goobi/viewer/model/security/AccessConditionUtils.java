@@ -55,14 +55,18 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
- * <p>AccessConditionUtils class.</p>
+ * <p>
+ * AccessConditionUtils class.
+ * </p>
  */
 public class AccessConditionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessConditionUtils.class);
 
     /**
-     * <p>checkAccess.</p>
+     * <p>
+     * checkAccess.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param action a {@link java.lang.String} object.
@@ -555,7 +559,9 @@ public class AccessConditionUtils {
     }
 
     /**
-     * <p>checkAccessPermission.</p>
+     * <p>
+     * checkAccessPermission.
+     * </p>
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
@@ -629,7 +635,9 @@ public class AccessConditionUtils {
     }
 
     /**
-     * <p>checkAccessPermissionByIdentifierAndFilePathWithSessionMap.</p>
+     * <p>
+     * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
@@ -718,7 +726,9 @@ public class AccessConditionUtils {
     }
 
     /**
-     * <p>checkAccessPermission.</p>
+     * <p>
+     * checkAccessPermission.
+     * </p>
      *
      * @param allLicenseTypes a {@link java.util.List} object.
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
@@ -746,7 +756,9 @@ public class AccessConditionUtils {
     }
 
     /**
-     * <p>checkAccessPermission.</p>
+     * <p>
+     * checkAccessPermission.
+     * </p>
      *
      * @param allLicenseTypes a {@link java.util.List} object.
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
@@ -860,9 +872,9 @@ public class AccessConditionUtils {
     }
 
     /**
-     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.controller.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS} condition and OPENACCESS is
-     * not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If OPENACCESS is in the
-     * database then it likely contains some access restrictions which need to be checked
+     * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.controller.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
+     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If
+     * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param allLicenseTypes all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
@@ -879,7 +891,7 @@ public class AccessConditionUtils {
                             : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
             return containsOpenAccess && !openAccessIsConfiguredLicenceType;
         }
-        
+
         return false;
     }
 
@@ -969,17 +981,17 @@ public class AccessConditionUtils {
         return ret;
     }
 
-//    /**
-//     * Testing
-//     * 
-//     * @return
-//     */
-//    private static long getNumberOfOpenFiles() {
-//        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-//        if (os instanceof UnixOperatingSystemMXBean) {
-//            return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
-//        }
-//
-//        return -1;
-//    }
+    //    /**
+    //     * Testing
+    //     * 
+    //     * @return
+    //     */
+    //    private static long getNumberOfOpenFiles() {
+    //        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+    //        if (os instanceof UnixOperatingSystemMXBean) {
+    //            return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
+    //        }
+    //
+    //        return -1;
+    //    }
 }

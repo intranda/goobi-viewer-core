@@ -4,8 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Handle checked exception in java 8 streams.
- * Usage: stream.map(Try.lift(function)).map(try -> try.getValue().orElse(try.getException));
+ * Handle checked exception in java 8 streams. Usage: stream.map(Try.lift(function)).map(try -> try.getValue().orElse(try.getException));
  *
  * @author florian
  * @param <R>
@@ -26,60 +25,64 @@ public class Try<R> {
     }
 
     /**
-     * <p>lift.</p>
+     * <p>
+     * lift.
+     * </p>
      *
      * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
      * @param <T> a T object.
      * @param <R> a R object.
      * @return a {@link java.util.function.Function} object.
      */
-    public static <T,R> Function<T, Try> lift(CheckedFunction<T,R> function) {
+    public static <T, R> Function<T, Try> lift(CheckedFunction<T, R> function) {
 
         return t -> {
 
-          try {
+            try {
 
-            return Try.Success(function.apply(t));
+                return Try.Success(function.apply(t));
 
-          } catch (Exception ex) {
+            } catch (Exception ex) {
 
-            return Try.Exception(ex);
+                return Try.Exception(ex);
 
-          }
+            }
 
         };
 
-      }
-    
+    }
 
+    /**
+     * <p>
+     * liftWithValue.
+     * </p>
+     *
+     * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
+     * @param <R> a R object.
+     * @return a {@link java.util.function.Function} object.
+     */
+    public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Exception, R> function) {
 
-/**
- * <p>liftWithValue.</p>
- *
- * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
- * @param <R> a R object.
- * @return a {@link java.util.function.Function} object.
- */
-public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Exception,R> function) {
+        return t -> {
 
-  return t -> {
+            try {
 
-    try {
+                return Try.Success(function.apply(t));
 
-      return Try.Success(function.apply(t));
+            } catch (Exception ex) {
 
-    } catch (Exception ex) {
+                return Try.Exception(ex);
 
-      return Try.Exception(ex);
+            }
+
+        };
 
     }
 
-  };
-
-}
-    
     /**
-     * <p>Exception.</p>
+     * <p>
+     * Exception.
+     * </p>
      *
      * @param value a {@link java.lang.Exception} object.
      * @param <R> a R object.
@@ -92,20 +95,24 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>Success.</p>
+     * <p>
+     * Success.
+     * </p>
      *
      * @param value a R object.
      * @param <R> a R object.
      * @return a {@link io.goobi.viewer.exceptions.streams.Try} object.
      */
-    public static <R> Try<R> Success( R value) {
+    public static <R> Try<R> Success(R value) {
 
         return new Try<R>(null, value);
 
     }
 
     /**
-     * <p>Getter for the field <code>exception</code>.</p>
+     * <p>
+     * Getter for the field <code>exception</code>.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -116,7 +123,9 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>getValue.</p>
+     * <p>
+     * getValue.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -127,7 +136,9 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>isException.</p>
+     * <p>
+     * isException.
+     * </p>
      *
      * @return a boolean.
      */
@@ -138,7 +149,9 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>isSuccess.</p>
+     * <p>
+     * isSuccess.
+     * </p>
      *
      * @return a boolean.
      */
@@ -149,7 +162,9 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>mapLeft.</p>
+     * <p>
+     * mapLeft.
+     * </p>
      *
      * @param mapper a {@link java.util.function.Function} object.
      * @param <T> a T object.
@@ -168,7 +183,9 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>mapRight.</p>
+     * <p>
+     * mapRight.
+     * </p>
      *
      * @param mapper a {@link java.util.function.Function} object.
      * @param <T> a T object.
@@ -187,7 +204,9 @@ public static <R> Function<Exception, Try> liftWithValue(CheckedFunction<Excepti
     }
 
     /**
-     * <p>toString.</p>
+     * <p>
+     * toString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

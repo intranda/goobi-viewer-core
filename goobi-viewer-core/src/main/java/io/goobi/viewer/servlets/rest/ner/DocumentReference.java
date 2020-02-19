@@ -31,7 +31,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * <p>DocumentReference class.</p>
+ * <p>
+ * DocumentReference class.
+ * </p>
  */
 @XmlRootElement
 @XmlType(propOrder = { "pi", "pages" })
@@ -42,7 +44,9 @@ public class DocumentReference {
     private List<TagGroup> pageRanges;
 
     /**
-     * <p>Constructor for DocumentReference.</p>
+     * <p>
+     * Constructor for DocumentReference.
+     * </p>
      */
     public DocumentReference() {
         super();
@@ -51,7 +55,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>Constructor for DocumentReference.</p>
+     * <p>
+     * Constructor for DocumentReference.
+     * </p>
      *
      * @param piTopStruct a {@link java.lang.String} object.
      */
@@ -62,7 +68,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -72,7 +80,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>Setter for the field <code>pageRanges</code>.</p>
+     * <p>
+     * Setter for the field <code>pageRanges</code>.
+     * </p>
      *
      * @param ranges a {@link java.util.List} object.
      */
@@ -82,7 +92,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>addPageRange.</p>
+     * <p>
+     * addPageRange.
+     * </p>
      *
      * @param range a {@link io.goobi.viewer.servlets.rest.ner.TagGroup} object.
      */
@@ -92,7 +104,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>addPageRanges.</p>
+     * <p>
+     * addPageRanges.
+     * </p>
      *
      * @param ranges a {@link java.util.Collection} object.
      */
@@ -102,7 +116,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>Getter for the field <code>pageRanges</code>.</p>
+     * <p>
+     * Getter for the field <code>pageRanges</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -114,7 +130,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>getPageRange.</p>
+     * <p>
+     * getPageRange.
+     * </p>
      *
      * @param startPage a int.
      * @return a {@link io.goobi.viewer.servlets.rest.ner.TagGroup} object.
@@ -144,7 +162,9 @@ public class DocumentReference {
     }
 
     /**
-     * <p>getRangeSize.</p>
+     * <p>
+     * getRangeSize.
+     * </p>
      *
      * @return a int.
      */

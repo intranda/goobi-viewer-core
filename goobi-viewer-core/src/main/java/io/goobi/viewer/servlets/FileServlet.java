@@ -54,7 +54,9 @@ public class FileServlet extends HttpServlet implements Serializable {
     // private HttpClient httpClient;
 
     /**
-     * <p>Constructor for FileServlet.</p>
+     * <p>
+     * Constructor for FileServlet.
+     * </p>
      *
      * @see HttpServlet#HttpServlet()
      */
@@ -110,38 +112,39 @@ public class FileServlet extends HttpServlet implements Serializable {
         boolean access = false;
         try {
             Path path = getFile(pi, fileName, page);
-            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, Collections.singletonList(path)).containsValue(Boolean.FALSE);
+            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, Collections.singletonList(path))
+                    .containsValue(Boolean.FALSE);
             if (access) {
-                    if (Files.isRegularFile(path)) {
-                        try {
-                            String contentType = Files.probeContentType(path);
-                            logger.trace("content type: {}", contentType);
-                            if (contentType == null) {
-                                contentType = "application/pdf";
-                            }
-                            response.setContentType(contentType);
-                            response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(fileName).toString());
-                            response.setHeader("Content-Length", String.valueOf(Files.size(path)));
-                            response.flushBuffer();
-                            OutputStream os = response.getOutputStream();
-                            try (FileInputStream fis = new FileInputStream(path.toFile())) {
-                                byte[] buffer = new byte[1024];
-                                int bytesRead = 0;
-                                while ((bytesRead = fis.read(buffer)) != -1) {
-                                    os.write(buffer, 0, bytesRead);
-                                }
-                            }
-                            // os.flush();
-                        } catch (ClientAbortException | SocketException e) {
-                            logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
+                if (Files.isRegularFile(path)) {
+                    try {
+                        String contentType = Files.probeContentType(path);
+                        logger.trace("content type: {}", contentType);
+                        if (contentType == null) {
+                            contentType = "application/pdf";
                         }
-                    } else {
-                        logger.error("File not found: {}", path.toAbsolutePath().toString());
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND, path.getFileName().toString());
-                        return;
+                        response.setContentType(contentType);
+                        response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(fileName).toString());
+                        response.setHeader("Content-Length", String.valueOf(Files.size(path)));
+                        response.flushBuffer();
+                        OutputStream os = response.getOutputStream();
+                        try (FileInputStream fis = new FileInputStream(path.toFile())) {
+                            byte[] buffer = new byte[1024];
+                            int bytesRead = 0;
+                            while ((bytesRead = fis.read(buffer)) != -1) {
+                                os.write(buffer, 0, bytesRead);
+                            }
+                        }
+                        // os.flush();
+                    } catch (ClientAbortException | SocketException e) {
+                        logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
                     }
+                } else {
+                    logger.error("File not found: {}", path.toAbsolutePath().toString());
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, path.getFileName().toString());
+                    return;
+                }
             } else {
                 logger.debug("Access condition for download not met for '{}'.", pi);
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -161,11 +164,12 @@ public class FileServlet extends HttpServlet implements Serializable {
             return;
         }
 
-
     }
 
     /**
-     * <p>getFile.</p>
+     * <p>
+     * getFile.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -175,27 +179,27 @@ public class FileServlet extends HttpServlet implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Path getFile(String pi, String fileName, String page) throws PresentationException, IndexUnreachableException {
-//        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-//        StringBuilder sbFilePath = new StringBuilder();
-//        if (StringUtils.isNotEmpty(dataRepository)) {
-//            sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
-//                    File.separator);
-//        } else {
-//            sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
-//        }
-//        sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
-//        sbFilePath.append(File.separator).append(pi).append(File.separator);
-//
-//        if (page != null) {
-//            sbFilePath.append(page).append(File.separator);
-//        }
-//        sbFilePath.append(fileName);
-//        
-//        Path path = Paths.get(sbFilePath.toString());
-//        
-//        return path;
-        
-        return  Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, fileName);
+        //        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        //        StringBuilder sbFilePath = new StringBuilder();
+        //        if (StringUtils.isNotEmpty(dataRepository)) {
+        //            sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
+        //                    File.separator);
+        //        } else {
+        //            sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
+        //        }
+        //        sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        //        sbFilePath.append(File.separator).append(pi).append(File.separator);
+        //
+        //        if (page != null) {
+        //            sbFilePath.append(page).append(File.separator);
+        //        }
+        //        sbFilePath.append(fileName);
+        //        
+        //        Path path = Paths.get(sbFilePath.toString());
+        //        
+        //        return path;
+
+        return Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, fileName);
     }
 
     /** {@inheritDoc} */

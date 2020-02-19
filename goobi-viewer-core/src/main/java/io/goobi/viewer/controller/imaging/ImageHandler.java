@@ -105,7 +105,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>getImageInformation.</p>
+     * <p>
+     * getImageInformation.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return The image information for the image file of the given page
@@ -132,7 +134,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>getImageInformation.</p>
+     * <p>
+     * getImageInformation.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
@@ -154,7 +158,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>isExternalUrl.</p>
+     * <p>
+     * isExternalUrl.
+     * </p>
      *
      * @param path a {@link java.lang.String} object.
      * @return true exactly if the given path starts with {@code http://} or {@code https://}
@@ -164,7 +170,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>isImageUrl.</p>
+     * <p>
+     * isImageUrl.
+     * </p>
      *
      * @param displayableTypesOnly if true, the method only returns true for images that can be directly displayed in a browser (jpg and png)
      * @return true if the url ends with an image file suffix
@@ -190,7 +198,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>isRestrictedUrl.</p>
+     * <p>
+     * isRestrictedUrl.
+     * </p>
      *
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      * @param path a {@link java.lang.String} object.
@@ -204,7 +214,9 @@ public class ImageHandler {
     }
 
     /**
-     * <p>getImageType.</p>
+     * <p>
+     * getImageType.
+     * </p>
      *
      * @param info a {@link de.intranda.api.iiif.image.ImageInformation} object.
      * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.

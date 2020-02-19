@@ -45,7 +45,9 @@ import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
- * <p>SearchFunctionality class.</p>
+ * <p>
+ * SearchFunctionality class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -66,7 +68,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     //    private SearchBean searchBean;
 
     /**
-     * <p>Constructor for SearchFunctionality.</p>
+     * <p>
+     * Constructor for SearchFunctionality.
+     * </p>
      *
      * @param pageFacetString a {@link java.lang.String} object.
      * @param baseUrl a {@link java.lang.String} object.
@@ -85,7 +89,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>redirectToSearchUrl.</p>
+     * <p>
+     * redirectToSearchUrl.
+     * </p>
      *
      * @param keepUrlParameter a boolean.
      */
@@ -137,7 +143,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>searchFacetted.</p>
+     * <p>
+     * searchFacetted.
+     * </p>
      */
     public void searchFacetted() {
         logger.trace("searchSimple");
@@ -150,7 +158,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -200,7 +210,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getUrlSuffix.</p>
+     * <p>
+     * getUrlSuffix.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -246,7 +258,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getSearchBean.</p>
+     * <p>
+     * getSearchBean.
+     * </p>
      *
      * @return the searchBean
      */
@@ -255,7 +269,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getHitsPerPage.</p>
+     * <p>
+     * getHitsPerPage.
+     * </p>
      *
      * @return the hitsPerPage
      */
@@ -276,7 +292,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getFacetString.</p>
+     * <p>
+     * getFacetString.
+     * </p>
      *
      * @return the facetString
      */
@@ -285,7 +303,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>setFacetString.</p>
+     * <p>
+     * setFacetString.
+     * </p>
      *
      * @param facetString the facetString to set
      */
@@ -308,7 +328,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     //    }
 
     /**
-     * <p>getQueryString.</p>
+     * <p>
+     * getQueryString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -323,7 +345,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>setQueryString.</p>
+     * <p>
+     * setQueryString.
+     * </p>
      *
      * @param s a {@link java.lang.String} object.
      */
@@ -332,7 +356,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>Getter for the field <code>baseUrl</code>.</p>
+     * <p>
+     * Getter for the field <code>baseUrl</code>.
+     * </p>
      *
      * @return the baseUrl
      */
@@ -351,7 +377,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>Getter for the field <code>pageFacetString</code>.</p>
+     * <p>
+     * Getter for the field <code>pageFacetString</code>.
+     * </p>
      *
      * @return the pageFacetString
      */
@@ -360,7 +388,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getNewSearchUrl.</p>
+     * <p>
+     * getNewSearchUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -369,7 +399,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getSortUrl.</p>
+     * <p>
+     * getSortUrl.
+     * </p>
      *
      * @param sortString a {@link java.lang.String} object.
      * @param descending a boolean.
@@ -381,7 +413,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getFacettedUrl.</p>
+     * <p>
+     * getFacettedUrl.
+     * </p>
      *
      * @param facetString a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -397,7 +431,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>removeFacet.</p>
+     * <p>
+     * removeFacet.
+     * </p>
      *
      * @param facet a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -418,7 +454,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /**
-     * <p>getCurrentPagePath.</p>
+     * <p>
+     * getCurrentPagePath.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

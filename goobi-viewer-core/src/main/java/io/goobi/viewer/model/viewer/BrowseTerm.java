@@ -32,7 +32,9 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>BrowseTerm class.</p>
+ * <p>
+ * BrowseTerm class.
+ * </p>
  */
 public class BrowseTerm implements Serializable {
 
@@ -58,7 +60,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>Constructor for BrowseTerm.</p>
+     * <p>
+     * Constructor for BrowseTerm.
+     * </p>
      *
      * @param term a {@link java.lang.String} object.
      * @param sortTerm a {@link java.lang.String} object.
@@ -113,7 +117,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>term</code>.</p>
+     * <p>
+     * Getter for the field <code>term</code>.
+     * </p>
      *
      * @return the term
      */
@@ -122,7 +128,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sortTerm</code>.</p>
+     * <p>
+     * Getter for the field <code>sortTerm</code>.
+     * </p>
      *
      * @return the sortTerm
      */
@@ -235,7 +243,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>addToHitCount.</p>
+     * <p>
+     * addToHitCount.
+     * </p>
      *
      * @param num a int.
      */
@@ -244,7 +254,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hitCount</code>.</p>
+     * <p>
+     * Getter for the field <code>hitCount</code>.
+     * </p>
      *
      * @return the hitCount
      */
@@ -253,7 +265,9 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>piList</code>.</p>
+     * <p>
+     * Getter for the field <code>piList</code>.
+     * </p>
      *
      * @return the piList
      */

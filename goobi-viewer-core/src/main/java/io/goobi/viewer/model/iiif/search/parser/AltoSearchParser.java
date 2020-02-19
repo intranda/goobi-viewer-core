@@ -32,14 +32,18 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 import de.intranda.digiverso.ocr.alto.model.superclasses.Child;
 
 /**
- * <p>AltoSearchParser class.</p>
+ * <p>
+ * AltoSearchParser class.
+ * </p>
  *
  * @author florian
  */
-public class AltoSearchParser extends AbstractSearchParser{
+public class AltoSearchParser extends AbstractSearchParser {
 
     /**
-     * <p>findWordMatches.</p>
+     * <p>
+     * findWordMatches.
+     * </p>
      *
      * @param words a {@link java.util.List} object.
      * @param regex a {@link java.lang.String} object.
@@ -48,14 +52,14 @@ public class AltoSearchParser extends AbstractSearchParser{
     public List<List<Word>> findWordMatches(List<Word> words, String regex) {
         ListIterator<Word> iterator = words.listIterator();
         List<List<Word>> results = new ArrayList<>();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Word word = iterator.next();
-            if(Pattern.matches(regex, word.getSubsContent())) {
+            if (Pattern.matches(regex, word.getSubsContent())) {
                 List<Word> phrase = new ArrayList<>();
                 phrase.add(word);
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     Word nextWord = iterator.next();
-                    if(Pattern.matches(regex, nextWord.getSubsContent())) {
+                    if (Pattern.matches(regex, nextWord.getSubsContent())) {
                         phrase.add(nextWord);
                     } else {
                         break;
@@ -66,9 +70,11 @@ public class AltoSearchParser extends AbstractSearchParser{
         }
         return results;
     }
-    
+
     /**
-     * <p>findLineMatches.</p>
+     * <p>
+     * findLineMatches.
+     * </p>
      *
      * @param lines a {@link java.util.List} object.
      * @param regex a {@link java.lang.String} object.
@@ -79,7 +85,7 @@ public class AltoSearchParser extends AbstractSearchParser{
         Map<Range<Integer>, List<Line>> map = new LinkedHashMap<>();
         String singleWordRegex = getSingleWordRegex(regex);
         Matcher matcher = Pattern.compile(singleWordRegex).matcher(text);
-        while(matcher.find()) {
+        while (matcher.find()) {
             int indexStart = matcher.start(1);
             int indexEnd = matcher.end(1);
             List<Line> containingLines = getContainingLines(lines, indexStart, indexEnd);
@@ -90,7 +96,9 @@ public class AltoSearchParser extends AbstractSearchParser{
     }
 
     /**
-     * <p>getText.</p>
+     * <p>
+     * getText.
+     * </p>
      *
      * @param lines a {@link java.util.List} object.
      * @return a {@link java.lang.String} object.
@@ -99,9 +107,11 @@ public class AltoSearchParser extends AbstractSearchParser{
         String text = lines.stream().map(Line::getContent).collect(Collectors.joining(" "));
         return text;
     }
-    
+
     /**
-     * <p>getLines.</p>
+     * <p>
+     * getLines.
+     * </p>
      *
      * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
      * @return a {@link java.util.List} object.
@@ -109,19 +119,26 @@ public class AltoSearchParser extends AbstractSearchParser{
     public List<Line> getLines(AltoDocument doc) {
         return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllLinesAsList().stream()).collect(Collectors.toList());
     }
-    
+
     /**
-     * <p>getWords.</p>
+     * <p>
+     * getWords.
+     * </p>
      *
      * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
      * @return a {@link java.util.List} object.
      */
     public List<Word> getWords(AltoDocument doc) {
-        return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllWordsAsList().stream().filter(w -> w instanceof Word).map(w -> (Word)w)).collect(Collectors.toList());
+        return doc.getAllPagesAsList()
+                .stream()
+                .flatMap(p -> p.getAllWordsAsList().stream().filter(w -> w instanceof Word).map(w -> (Word) w))
+                .collect(Collectors.toList());
     }
-    
+
     /**
-     * <p>getContainingLines.</p>
+     * <p>
+     * getContainingLines.
+     * </p>
      *
      * @param indexStart a int.
      * @param indexEnd a int.
@@ -133,16 +150,18 @@ public class AltoSearchParser extends AbstractSearchParser{
         int lineStartIndex = 0;
         for (Line line : allLines) {
             int lineEndIndex = lineStartIndex + line.getContent().length();
-            if(indexStart <= lineEndIndex && indexEnd >= lineStartIndex) {
+            if (indexStart <= lineEndIndex && indexEnd >= lineStartIndex) {
                 containingLines.add(line);
             }
-            lineStartIndex = lineEndIndex+1;
+            lineStartIndex = lineEndIndex + 1;
         }
         return containingLines;
     }
-    
+
     /**
-     * <p>getLineStartIndex.</p>
+     * <p>
+     * getLineStartIndex.
+     * </p>
      *
      * @param allLines a {@link java.util.List} object.
      * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
@@ -152,16 +171,18 @@ public class AltoSearchParser extends AbstractSearchParser{
         int lineStartIndex = 0;
         for (Line l : allLines) {
             int lineEndIndex = lineStartIndex + line.getContent().length();
-            if(l.getId().endsWith(line.getId())) {
+            if (l.getId().endsWith(line.getId())) {
                 return lineStartIndex;
             }
-            lineStartIndex = lineEndIndex+1;
+            lineStartIndex = lineEndIndex + 1;
         }
         return -1;
     }
-    
+
     /**
-     * <p>getLineEndIndex.</p>
+     * <p>
+     * getLineEndIndex.
+     * </p>
      *
      * @param allLines a {@link java.util.List} object.
      * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
@@ -171,17 +192,18 @@ public class AltoSearchParser extends AbstractSearchParser{
         int lineStartIndex = 0;
         for (Line l : allLines) {
             int lineEndIndex = lineStartIndex + line.getContent().length();
-            if(l.getId().endsWith(line.getId())) {
+            if (l.getId().endsWith(line.getId())) {
                 return lineEndIndex;
             }
-            lineStartIndex = lineEndIndex+1;
+            lineStartIndex = lineEndIndex + 1;
         }
         return -1;
     }
 
-
     /**
-     * <p>getPrecedingText.</p>
+     * <p>
+     * getPrecedingText.
+     * </p>
      *
      * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param maxLength a int.
@@ -190,17 +212,19 @@ public class AltoSearchParser extends AbstractSearchParser{
     public String getPrecedingText(Word w, int maxLength) {
         String before = "";
         Child sibling = w.getPreviousSibling();
-        while(sibling != null && before.length() < maxLength) {
-            if(sibling instanceof Word) {
+        while (sibling != null && before.length() < maxLength) {
+            if (sibling instanceof Word) {
                 before = ((Word) sibling).getSubsContent() + " " + before;
             }
             sibling = sibling.getPreviousSibling();
         }
         return before;
     }
-    
+
     /**
-     * <p>getSucceedingText.</p>
+     * <p>
+     * getSucceedingText.
+     * </p>
      *
      * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param maxLength a int.
@@ -209,13 +233,13 @@ public class AltoSearchParser extends AbstractSearchParser{
     public String getSucceedingText(Word w, int maxLength) {
         String after = "";
         Child sibling = w.getNextSibling();
-        while(sibling != null && after.length() < maxLength) {
-            if(sibling instanceof Word) {
+        while (sibling != null && after.length() < maxLength) {
+            if (sibling instanceof Word) {
                 after = after + " " + ((Word) sibling).getSubsContent();
             }
             sibling = sibling.getNextSibling();
         }
         return after;
     }
-    
+
 }

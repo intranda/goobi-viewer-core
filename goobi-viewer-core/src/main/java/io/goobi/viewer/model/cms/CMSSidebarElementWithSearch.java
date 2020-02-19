@@ -21,7 +21,9 @@ import javax.persistence.Entity;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <p>CMSSidebarElementWithSearch class.</p>
+ * <p>
+ * CMSSidebarElementWithSearch class.
+ * </p>
  */
 @Entity
 public class CMSSidebarElementWithSearch extends CMSSidebarElement {
@@ -30,14 +32,18 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     private String additionalQuery = "";
 
     /**
-     * <p>Constructor for CMSSidebarElementWithSearch.</p>
+     * <p>
+     * Constructor for CMSSidebarElementWithSearch.
+     * </p>
      */
     public CMSSidebarElementWithSearch() {
-        
+
     }
-    
+
     /**
-     * <p>Constructor for CMSSidebarElementWithSearch.</p>
+     * <p>
+     * Constructor for CMSSidebarElementWithSearch.
+     * </p>
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSSidebarElementWithSearch} object.
      * @param owner a {@link io.goobi.viewer.model.cms.CMSPage} object.
@@ -48,7 +54,9 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     }
 
     /**
-     * <p>Getter for the field <code>additionalQuery</code>.</p>
+     * <p>
+     * Getter for the field <code>additionalQuery</code>.
+     * </p>
      *
      * @return the additionalQuery
      */
@@ -57,7 +65,9 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     }
 
     /**
-     * <p>Setter for the field <code>additionalQuery</code>.</p>
+     * <p>
+     * Setter for the field <code>additionalQuery</code>.
+     * </p>
      *
      * @param additionalQuery the additionalQuery to set
      */
@@ -85,14 +95,14 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     @Override
     public boolean equals(Object o) {
         return o.getClass().equals(CMSSidebarElementWithSearch.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
-                && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithSearch) o).getWidgetTitle()) && bothNullOrEqual(getAdditionalQuery(),
-                        ((CMSSidebarElementWithSearch) o).getAdditionalQuery());
+                && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithSearch) o).getWidgetTitle())
+                && bothNullOrEqual(getAdditionalQuery(), ((CMSSidebarElementWithSearch) o).getAdditionalQuery());
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public PageList getLinkedPages() {
-        if(super.getLinkedPages() == null) {
+        if (super.getLinkedPages() == null) {
             setLinkedPages(new PageList());
         }
         return super.getLinkedPages();

@@ -39,7 +39,9 @@ import io.goobi.viewer.model.cms.tilegrid.TileGridBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * <p>TileGridResource class.</p>
+ * <p>
+ * TileGridResource class.
+ * </p>
  */
 @Path("/tilegrid")
 @ViewerRestServiceBinding
@@ -52,9 +54,11 @@ public class TileGridResource {
 
     @Context
     private HttpServletRequest servletRequest;
-    
+
     /**
-     * <p>getTileGrid.</p>
+     * <p>
+     * getTileGrid.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param gridSize a int.
@@ -81,7 +85,8 @@ public class TileGridResource {
             tags = tagString.split(TAG_SEPARATOR_REGEX);
         }
 
-        TileGrid grid = new TileGridBuilder(servletRequest).language(language).size(gridSize).reserveForHighPriority(priorityPlaces).tags(tags).build(items);
+        TileGrid grid =
+                new TileGridBuilder(servletRequest).language(language).size(gridSize).reserveForHighPriority(priorityPlaces).tags(tags).build(items);
         return grid;
     }
 }

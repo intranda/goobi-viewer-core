@@ -58,7 +58,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Constructor for UserRole.</p>
+     * <p>
+     * Constructor for UserRole.
+     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
@@ -121,7 +123,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -130,7 +134,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -139,7 +145,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Getter for the field <code>userGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>userGroup</code>.
+     * </p>
      *
      * @return the userGroup
      */
@@ -148,7 +156,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Setter for the field <code>userGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>userGroup</code>.
+     * </p>
      *
      * @param userGroup the userGroup to set
      */
@@ -157,7 +167,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Getter for the field <code>user</code>.</p>
+     * <p>
+     * Getter for the field <code>user</code>.
+     * </p>
      *
      * @return the user
      */
@@ -166,7 +178,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Setter for the field <code>user</code>.</p>
+     * <p>
+     * Setter for the field <code>user</code>.
+     * </p>
      *
      * @param user the user to set
      */
@@ -175,7 +189,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Getter for the field <code>role</code>.</p>
+     * <p>
+     * Getter for the field <code>role</code>.
+     * </p>
      *
      * @return the role
      */
@@ -184,7 +200,9 @@ public class UserRole {
     }
 
     /**
-     * <p>Setter for the field <code>role</code>.</p>
+     * <p>
+     * Setter for the field <code>role</code>.
+     * </p>
      *
      * @param role the role to set
      */

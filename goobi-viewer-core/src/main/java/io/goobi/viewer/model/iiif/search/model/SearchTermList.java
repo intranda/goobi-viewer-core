@@ -21,7 +21,8 @@ import java.util.Collection;
 import de.intranda.api.iiif.search.SearchTerm;
 
 /**
- * A collection of search terms. If a {@link de.intranda.api.iiif.search.SearchTerm} is to be added which already exists in the list, the {@link de.intranda.api.iiif.search.SearchTerm#getCount()} is increased by one instead
+ * A collection of search terms. If a {@link de.intranda.api.iiif.search.SearchTerm} is to be added which already exists in the list, the
+ * {@link de.intranda.api.iiif.search.SearchTerm#getCount()} is increased by one instead
  *
  * @author florian
  */
@@ -30,7 +31,9 @@ public class SearchTermList extends ArrayList<SearchTerm> {
     private static final long serialVersionUID = -8451140510669249168L;
 
     /**
-     * <p>Constructor for SearchTermList.</p>
+     * <p>
+     * Constructor for SearchTermList.
+     * </p>
      */
     public SearchTermList() {
         super();
@@ -39,8 +42,8 @@ public class SearchTermList extends ArrayList<SearchTerm> {
     /**
      * {@inheritDoc}
      *
-     * Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. Otherwise add the
-     * {@link SearchTerm#getCount()} of the given term to the existing term
+     * Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. Otherwise add the {@link SearchTerm#getCount()}
+     * of the given term to the existing term
      */
     @Override
     public boolean add(SearchTerm term) {

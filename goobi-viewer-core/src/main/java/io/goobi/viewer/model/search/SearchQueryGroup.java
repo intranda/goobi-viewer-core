@@ -47,7 +47,9 @@ public class SearchQueryGroup implements Serializable {
     private final Locale locale;
 
     /**
-     * <p>Constructor for SearchQueryGroup.</p>
+     * <p>
+     * Constructor for SearchQueryGroup.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @param initSize a int.
@@ -60,7 +62,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>getAvailableOperators.</p>
+     * <p>
+     * getAvailableOperators.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -69,7 +73,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>queryItems</code>.</p>
+     * <p>
+     * Getter for the field <code>queryItems</code>.
+     * </p>
      *
      * @return the queryItems
      */
@@ -78,7 +84,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>addNewQueryItem.</p>
+     * <p>
+     * addNewQueryItem.
+     * </p>
      *
      * @should add item correctly
      * @return a boolean.
@@ -88,7 +96,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>removeQueryItem.</p>
+     * <p>
+     * removeQueryItem.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
      * @should remove item correctly
@@ -104,7 +114,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>operator</code>.</p>
+     * <p>
+     * Getter for the field <code>operator</code>.
+     * </p>
      *
      * @return the operator
      */
@@ -113,7 +125,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>operator</code>.</p>
+     * <p>
+     * Setter for the field <code>operator</code>.
+     * </p>
      *
      * @param operator the operator to set
      */
@@ -122,7 +136,9 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>locale</code>.</p>
+     * <p>
+     * Getter for the field <code>locale</code>.
+     * </p>
      *
      * @return the locale
      */

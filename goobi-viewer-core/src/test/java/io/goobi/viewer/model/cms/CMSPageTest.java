@@ -67,12 +67,12 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-//        FacesContext facesContext = TestUtils.mockFacesContext();
-//        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-//        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
+        //        FacesContext facesContext = TestUtils.mockFacesContext();
+        //        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
+        //        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
 
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        
+
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
         //        if (webContentPath.startsWith("file:/")) {
@@ -96,8 +96,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         String allowedTags = "a$b$cde";
         List<CMSCategory> categories = new ArrayList<>();
         for (String catName : allowedTags.split("\\$")) {
-			categories.add(new CMSCategory(catName));
-		}
+            categories.add(new CMSCategory(catName));
+        }
         boolean preferImportant = true;
         int numTiles = 12;
 

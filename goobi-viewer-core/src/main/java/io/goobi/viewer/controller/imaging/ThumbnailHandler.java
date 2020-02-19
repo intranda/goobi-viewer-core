@@ -498,7 +498,7 @@ public class ThumbnailHandler {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
             String region = Region.FULL_IMAGE;
-            if(doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
+            if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
                 region = doc.getShapeMetadata().get(0).getCoords();
             }
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", "default", "jpg");
@@ -598,7 +598,7 @@ public class ThumbnailHandler {
             if (StringUtils.isBlank(imagePath) && !se.isWork()) {
                 if (se.isAnchor()) {
                     imagePath = se.getFirstVolumeFieldValue(field);
-                } else if(se.getTopStruct() != null){
+                } else if (se.getTopStruct() != null) {
                     imagePath = se.getTopStruct().getMetadataValue(field);
                 }
             }

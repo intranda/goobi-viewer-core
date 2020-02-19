@@ -25,7 +25,7 @@ import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 
 public class AbstractPageLoaderTest {
-    
+
     /**
      * @see AbstractPageLoader#buildPageLabelTemplate(String, Locale)
      * @verifies replace numpages currectly

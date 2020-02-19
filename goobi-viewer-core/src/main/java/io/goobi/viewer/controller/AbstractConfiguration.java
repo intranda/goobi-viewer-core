@@ -36,7 +36,9 @@ public abstract class AbstractConfiguration {
     protected XMLConfiguration configLocal;
 
     /**
-     * <p>getLocalInt.</p>
+     * <p>
+     * getLocalInt.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a int.
@@ -55,7 +57,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalFloat.</p>
+     * <p>
+     * getLocalFloat.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a float.
@@ -63,9 +67,11 @@ public abstract class AbstractConfiguration {
     protected float getLocalFloat(String inPath) {
         return configLocal.getFloat(inPath, config.getFloat(inPath));
     }
-    
+
     /**
-     * <p>getLocalFloat.</p>
+     * <p>
+     * getLocalFloat.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a float.
@@ -84,7 +90,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalString.</p>
+     * <p>
+     * getLocalString.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a {@link java.lang.String} object.
@@ -100,7 +108,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalString.</p>
+     * <p>
+     * getLocalString.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -110,7 +120,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalList.</p>
+     * <p>
+     * getLocalList.
+     * </p>
      *
      * @param config Preferred configuration
      * @param altConfig Alternative configuration
@@ -118,7 +130,8 @@ public abstract class AbstractConfiguration {
      * @param defaultList List of default values to return if none found in config
      * @return a {@link java.util.List} object.
      */
-    protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath, List<String> defaultList) {
+    protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath,
+            List<String> defaultList) {
         if (config == null) {
             throw new IllegalArgumentException("config may not be null");
         }
@@ -135,7 +148,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalNodeList.</p>
+     * <p>
+     * getLocalNodeList.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -154,7 +169,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalList.</p>
+     * <p>
+     * getLocalList.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param defaultList a {@link java.util.List} object.
@@ -165,7 +182,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalList.</p>
+     * <p>
+     * getLocalList.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return configured list; empty list if none found
@@ -175,7 +194,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalBoolean.</p>
+     * <p>
+     * getLocalBoolean.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a boolean.
@@ -191,7 +212,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalConfigurationsAt.</p>
+     * <p>
+     * getLocalConfigurationsAt.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -206,7 +229,9 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>getLocalConfigurationAt.</p>
+     * <p>
+     * getLocalConfigurationAt.
+     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link org.apache.commons.configuration.HierarchicalConfiguration} object.

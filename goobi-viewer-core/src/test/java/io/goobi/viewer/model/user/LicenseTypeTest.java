@@ -32,8 +32,8 @@ public class LicenseTypeTest {
     public void getProcessedConditions_shouldReplaceNOWYEARWithTheCurrentYearIfNotUsingADateField() throws Exception {
         LicenseType lt = new LicenseType();
         lt.setConditions("-MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]");
-        Assert.assertEquals("-MDNUM_PUBLICRELEASEYEAR:[* TO " + String.valueOf(Calendar.getInstance().get(Calendar.YEAR)) + "]", lt
-                .getProcessedConditions());
+        Assert.assertEquals("-MDNUM_PUBLICRELEASEYEAR:[* TO " + String.valueOf(Calendar.getInstance().get(Calendar.YEAR)) + "]",
+                lt.getProcessedConditions());
         lt.setConditions("-DATE_PUBLICRELEASEDATE:[* TO NOW/DAY]");
         Assert.assertEquals("-DATE_PUBLICRELEASEDATE:[* TO NOW/DAY]", lt.getProcessedConditions());
     }

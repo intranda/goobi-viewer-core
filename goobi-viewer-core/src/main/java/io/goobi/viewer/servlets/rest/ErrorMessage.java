@@ -21,7 +21,9 @@ import java.io.StringWriter;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * <p>ErrorMessage class.</p>
+ * <p>
+ * ErrorMessage class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -30,8 +32,11 @@ public class ErrorMessage {
     private final int status;
     private final String message;
     private final String stackTrace;
+
     /**
-     * <p>Constructor for ErrorMessage.</p>
+     * <p>
+     * Constructor for ErrorMessage.
+     * </p>
      *
      * @param status a int.
      * @param message a {@link java.lang.String} object.
@@ -43,8 +48,11 @@ public class ErrorMessage {
         this.message = message;
         this.stackTrace = stackTrace;
     }
+
     /**
-     * <p>Constructor for ErrorMessage.</p>
+     * <p>
+     * Constructor for ErrorMessage.
+     * </p>
      *
      * @param exception a {@link io.goobi.viewer.exceptions.RestApiException} object.
      */
@@ -53,31 +61,40 @@ public class ErrorMessage {
         this.message = exception.getMessage();
         this.stackTrace = getStackTrace(exception);
     }
+
     /**
-     * <p>Getter for the field <code>status</code>.</p>
+     * <p>
+     * Getter for the field <code>status</code>.
+     * </p>
      *
      * @return the status
      */
     public int getStatus() {
         return status;
     }
+
     /**
-     * <p>Getter for the field <code>message</code>.</p>
+     * <p>
+     * Getter for the field <code>message</code>.
+     * </p>
      *
      * @return the message
      */
     public String getMessage() {
         return message;
     }
+
     /**
-     * <p>Getter for the field <code>stackTrace</code>.</p>
+     * <p>
+     * Getter for the field <code>stackTrace</code>.
+     * </p>
      *
      * @return the stackTrace
      */
     public String getStackTrace() {
         return stackTrace;
     }
-    
+
     private String getStackTrace(RestApiException exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);

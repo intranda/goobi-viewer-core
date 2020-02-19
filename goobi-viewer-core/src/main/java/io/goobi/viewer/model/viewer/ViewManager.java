@@ -282,18 +282,17 @@ public class ViewManager implements Serializable {
     private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
-        if(topDocument != null && topDocument.isRtl()) {
+        if (topDocument != null && topDocument.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
         if (actualPageOrientation.equals(PageOrientation.left)) {
             return getPage(this.currentImageOrder);
-        } else if(topDocument != null && topDocument.isRtl()) {
+        } else if (topDocument != null && topDocument.isRtl()) {
             return getPage(this.currentImageOrder + 1);
         } else {
             return getPage(this.currentImageOrder - 1);
         }
 
-        
     }
 
     /**
@@ -305,12 +304,12 @@ public class ViewManager implements Serializable {
     private Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
-        if(topDocument != null && topDocument.isRtl()) {
+        if (topDocument != null && topDocument.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
         if (actualPageOrientation.equals(PageOrientation.right)) {
             return getPage(this.currentImageOrder);
-        } else if(topDocument != null && topDocument.isRtl()) {
+        } else if (topDocument != null && topDocument.isRtl()) {
             return getPage(this.currentImageOrder - 1);
         } else {
             return getPage(this.currentImageOrder + 1);
@@ -3300,16 +3299,17 @@ public class ViewManager implements Serializable {
 
     /**
      * Creates an instance of ViewManager loaded with the record with the given identifier.
+     * 
      * @param pi Record identifier
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public static ViewManager createViewManager(String pi) throws PresentationException, IndexUnreachableException {
-        if(pi == null) {
+        if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
-        
+
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
         if (doc == null) {
             return null;
@@ -3318,7 +3318,7 @@ public class ViewManager implements Serializable {
         long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
         StructElement topDocument = new StructElement(iddoc, doc);
         ViewManager ret = new ViewManager(topDocument, new LeanPageLoader(topDocument, topDocument.getNumPages()), iddoc, null, null, null);
-        
+
         return ret;
     }
 }

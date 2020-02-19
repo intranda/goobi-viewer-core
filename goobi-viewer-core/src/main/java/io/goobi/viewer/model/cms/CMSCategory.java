@@ -23,7 +23,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * <p>CMSCategory class.</p>
+ * <p>
+ * CMSCategory class.
+ * </p>
  *
  * @author florian
  */
@@ -44,14 +46,18 @@ public class CMSCategory implements Comparable<CMSCategory> {
     private String description;
 
     /**
-     * <p>Constructor for CMSCategory.</p>
+     * <p>
+     * Constructor for CMSCategory.
+     * </p>
      */
     public CMSCategory() {
 
     }
 
     /**
-     * <p>Constructor for CMSCategory.</p>
+     * <p>
+     * Constructor for CMSCategory.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -62,7 +68,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Constructor for CMSCategory.</p>
+     * <p>
+     * Constructor for CMSCategory.
+     * </p>
      *
      * @param blueprint a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @param keepId a boolean.
@@ -74,7 +82,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -83,7 +93,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -92,7 +104,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -101,7 +115,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -110,7 +126,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -119,7 +137,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -156,27 +176,27 @@ public class CMSCategory implements Comparable<CMSCategory> {
             return super.hashCode();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     /** {@inheritDoc} */
     @Override
     public String toString() {
-    	return getName();
+        return getName();
     }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public int compareTo(CMSCategory other) {
-		if(other != null) {
-			return this.getName().compareTo(other.getName());
-		} else {
-			return 0;
-		}
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(CMSCategory other) {
+        if (other != null) {
+            return this.getName().compareTo(other.getName());
+        } else {
+            return 0;
+        }
+    }
 
 }

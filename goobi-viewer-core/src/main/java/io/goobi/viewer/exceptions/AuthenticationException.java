@@ -18,14 +18,18 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>AuthenticationException class.</p>
+ * <p>
+ * AuthenticationException class.
+ * </p>
  */
 public class AuthenticationException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -5535245246816475462L;
 
     /**
-     * <p>Constructor for AuthenticationException.</p>
+     * <p>
+     * Constructor for AuthenticationException.
+     * </p>
      *
      * @param string {@link java.lang.String}
      */

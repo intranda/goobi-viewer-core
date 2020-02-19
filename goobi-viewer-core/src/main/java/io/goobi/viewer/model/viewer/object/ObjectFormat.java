@@ -19,7 +19,9 @@ package io.goobi.viewer.model.viewer.object;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * <p>ObjectFormat class.</p>
+ * <p>
+ * ObjectFormat class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -30,7 +32,9 @@ public enum ObjectFormat {
     TDS;
 
     /**
-     * <p>getByFileExtension.</p>
+     * <p>
+     * getByFileExtension.
+     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.

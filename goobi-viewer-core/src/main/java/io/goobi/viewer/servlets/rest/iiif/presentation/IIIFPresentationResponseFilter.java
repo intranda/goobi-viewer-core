@@ -27,11 +27,13 @@ import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 
 /**
- * <p>IIIFPresentationResponseFilter class.</p>
+ * <p>
+ * IIIFPresentationResponseFilter class.
+ * </p>
  *
  * @author Florian Alpers
  *
- *Adds the @context property to all IIIF Presentation responses in the topmost json element
+ *         Adds the @context property to all IIIF Presentation responses in the topmost json element
  */
 @Provider
 @IIIFPresentationBinding
@@ -42,7 +44,6 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     /** Constant <code>CONTEXT_SEARCH="http://iiif.io/api/search/1/context.jso"{trunked}</code> */
     public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
 
-    
     /* (non-Javadoc)
      * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, javax.ws.rs.container.ContainerResponseContext)
      */
@@ -59,7 +60,7 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
             SearchResult element = (SearchResult) responseObject;
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT);
-            if(!element.getHits().isEmpty()) {
+            if (!element.getHits().isEmpty()) {
                 element.addContext(CONTEXT_SEARCH);
             }
         } else if (responseObject != null && responseObject instanceof AutoSuggestResult) {
@@ -67,11 +68,13 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT_SEARCH);
         }
-        
+
     }
 
     /**
-     * <p>setResponseCharset.</p>
+     * <p>
+     * setResponseCharset.
+     * </p>
      *
      * @param response a {@link javax.ws.rs.container.ContainerResponseContext} object.
      * @param charset a {@link java.lang.String} object.

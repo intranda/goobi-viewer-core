@@ -54,7 +54,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author florian
  *
  */
-public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
+public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private WebAnnotation annotation;
     private PersistentAnnotation daoAnno;
@@ -62,7 +62,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     private Question generator;
     private IResource body;
     private IResource target;
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -70,7 +70,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        
+
         creator = DataManager.getInstance().getDao().getUser(2);
 
         Campaign campaign = new Campaign();
@@ -108,21 +108,20 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testIdConversion() throws JsonParseException, JsonMappingException, IOException, DAOException {
-       
+
         URI webAnnoURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "annotations/562");
-        
+
         PersistentAnnotation persAnno = new PersistentAnnotation();
         persAnno.setId(PersistentAnnotation.getId(webAnnoURI));
-        
+
         Assert.assertEquals(persAnno.getId(), 562l, 0l);
-        
+
         WebAnnotation webAnno = persAnno.getAsAnnotation();
-        
+
         Assert.assertEquals(webAnno.getId(), webAnnoURI);
-        
+
     }
 
-    
     @Test
     public void testSerialize() throws JsonParseException, JsonMappingException, IOException {
 
@@ -147,11 +146,11 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     public void testSave() throws DAOException, JsonParseException, JsonMappingException, IOException {
 
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
-    
+
         EntityManager em = dao.getFactory().createEntityManager();
-        
+
         long existingAnnotations = getAnnotations(em).size();
-        
+
         try {
             em.getTransaction().begin();
             em.persist(this.daoAnno);
@@ -159,13 +158,13 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         } finally {
             em.close();
         }
-        
+
         em = dao.getFactory().createEntityManager();
         try {
-            List<PersistentAnnotation>list = getAnnotations(em);
-            Assert.assertEquals(existingAnnotations+1, list.size());
-            
-            PersistentAnnotation retrieved = list.get(list.size()-1);
+            List<PersistentAnnotation> list = getAnnotations(em);
+            Assert.assertEquals(existingAnnotations + 1, list.size());
+
+            PersistentAnnotation retrieved = list.get(list.size() - 1);
             Assert.assertEquals(body, retrieved.getBodyAsResource());
             Assert.assertEquals(target, retrieved.getTargetAsResource());
 
@@ -185,23 +184,22 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         return list;
     }
 
-    
     @Test
     public void testPersistAnnotation() throws DAOException, JsonParseException, JsonMappingException, IOException {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assert.assertTrue(added);
-        
+
         PersistentAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         WebAnnotation webAnno = daoAnno.getAsAnnotation();
         WebAnnotation fromDAOWebAnno = fromDAO.getAsAnnotation();
         Assert.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);
-        
+
         Date changed = new Date();
         fromDAO.setDateModified(changed);
         boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
-        
+
         PersistentAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         Assert.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
     }

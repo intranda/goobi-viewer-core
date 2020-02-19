@@ -25,40 +25,42 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSPage;
 
 /**
- * <p>CmsPageConverter class.</p>
+ * <p>
+ * CmsPageConverter class.
+ * </p>
  */
 @FacesConverter("cmsPageConverter")
-public class CmsPageConverter implements Converter{
+public class CmsPageConverter implements Converter {
 
-	/* (non-Javadoc)
-	 * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public Object getAsObject(FacesContext context, UIComponent component, String value) {
-//		System.out.println("GET AS OBJECT: " + value);
-		try{
-			Long id = Long.parseLong(value);
-			CMSPage page = DataManager.getInstance().getDao().getCMSPage(id);
-			return page;
-		} catch(NullPointerException | NumberFormatException | DAOException e) {
-			return null;
-		}
-	}
+    /* (non-Javadoc)
+     * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        //		System.out.println("GET AS OBJECT: " + value);
+        try {
+            Long id = Long.parseLong(value);
+            CMSPage page = DataManager.getInstance().getDao().getCMSPage(id);
+            return page;
+        } catch (NullPointerException | NumberFormatException | DAOException e) {
+            return null;
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see javax.faces.convert.Converter#getAsString(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object object) {
-		if(object instanceof CMSPage) {
-			Long id = ((CMSPage)object).getId();
-//			System.out.println("GET CMSPAGEID AS STRING: " + id);
-			return id.toString();
-		} else {
-			return "";
-		}
-	}
+    /* (non-Javadoc)
+     * @see javax.faces.convert.Converter#getAsString(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object object) {
+        if (object instanceof CMSPage) {
+            Long id = ((CMSPage) object).getId();
+            //			System.out.println("GET CMSPAGEID AS STRING: " + id);
+            return id.toString();
+        } else {
+            return "";
+        }
+    }
 
 }

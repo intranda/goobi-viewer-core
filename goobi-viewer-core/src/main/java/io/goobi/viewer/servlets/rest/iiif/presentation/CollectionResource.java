@@ -105,7 +105,9 @@ public class CollectionResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>collectionBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>collectionBuilder</code>.
+     * </p>
      *
      * @return the manifestBuilder
      */

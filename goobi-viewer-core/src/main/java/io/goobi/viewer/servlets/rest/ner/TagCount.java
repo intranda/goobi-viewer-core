@@ -31,7 +31,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * <p>TagCount class.</p>
+ * <p>
+ * TagCount class.
+ * </p>
  */
 @XmlRootElement(name = "tag")
 @XmlType(propOrder = { "value", "type", "counter", "references" })
@@ -44,7 +46,9 @@ public class TagCount implements Comparable<TagCount> {
     private List<ElementReference> references = new ArrayList<>();
 
     /**
-     * <p>Constructor for TagCount.</p>
+     * <p>
+     * Constructor for TagCount.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
      * @param value a {@link java.lang.String} object.
@@ -59,7 +63,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return the value
      */
@@ -68,7 +74,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>Setter for the field <code>value</code>.</p>
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
      *
      * @param value the value to set
      */
@@ -77,7 +85,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>getCounter.</p>
+     * <p>
+     * getCounter.
+     * </p>
      *
      * @return the counter
      */
@@ -88,7 +98,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -97,7 +109,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>Setter for the field <code>type</code>.</p>
+     * <p>
+     * Setter for the field <code>type</code>.
+     * </p>
      *
      * @param type the type to set
      */
@@ -106,7 +120,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>Getter for the field <code>references</code>.</p>
+     * <p>
+     * Getter for the field <code>references</code>.
+     * </p>
      *
      * @return the references
      */
@@ -115,7 +131,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>Setter for the field <code>references</code>.</p>
+     * <p>
+     * Setter for the field <code>references</code>.
+     * </p>
      *
      * @param references the references to set
      */
@@ -154,7 +172,9 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
-     * <p>addReferences.</p>
+     * <p>
+     * addReferences.
+     * </p>
      *
      * @param references a {@link java.util.List} object.
      */

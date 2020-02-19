@@ -47,16 +47,17 @@ public class EmailValidator implements Validator<String> {
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-            if (!validateEmailAddress(value)) {
-                FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errlnvalid", null), "");
-                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                throw new ValidatorException(msg);
-            }
+        if (!validateEmailAddress(value)) {
+            FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errlnvalid", null), "");
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            throw new ValidatorException(msg);
+        }
     }
 
-
     /**
-     * <p>validateEmailAddress.</p>
+     * <p>
+     * validateEmailAddress.
+     * </p>
      *
      * @param email a {@link java.lang.String} object.
      * @should match correct email addresses

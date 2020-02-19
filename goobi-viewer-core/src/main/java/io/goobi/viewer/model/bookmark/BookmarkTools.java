@@ -28,7 +28,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>BookmarkTools class.</p>
+ * <p>
+ * BookmarkTools class.
+ * </p>
  */
 public class BookmarkTools {
 
@@ -36,7 +38,9 @@ public class BookmarkTools {
     private static final Logger logger = LoggerFactory.getLogger(BookmarkTools.class);
 
     /**
-     * <p>getBookmarkListsSharedWithUser.</p>
+     * <p>
+     * getBookmarkListsSharedWithUser.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @should return shared bookmark lists

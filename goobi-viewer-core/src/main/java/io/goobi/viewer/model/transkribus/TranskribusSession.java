@@ -16,7 +16,9 @@
 package io.goobi.viewer.model.transkribus;
 
 /**
- * <p>TranskribusSession class.</p>
+ * <p>
+ * TranskribusSession class.
+ * </p>
  */
 public class TranskribusSession {
 
@@ -28,7 +30,9 @@ public class TranskribusSession {
     private final String sessionId;
 
     /**
-     * <p>Constructor for TranskribusSession.</p>
+     * <p>
+     * Constructor for TranskribusSession.
+     * </p>
      *
      * @param userId a {@link java.lang.String} object.
      * @param userName a {@link java.lang.String} object.
@@ -41,7 +45,9 @@ public class TranskribusSession {
     }
 
     /**
-     * <p>Getter for the field <code>userId</code>.</p>
+     * <p>
+     * Getter for the field <code>userId</code>.
+     * </p>
      *
      * @return the userId
      */
@@ -50,7 +56,9 @@ public class TranskribusSession {
     }
 
     /**
-     * <p>Getter for the field <code>userName</code>.</p>
+     * <p>
+     * Getter for the field <code>userName</code>.
+     * </p>
      *
      * @return the userName
      */
@@ -59,7 +67,9 @@ public class TranskribusSession {
     }
 
     /**
-     * <p>Getter for the field <code>sessionId</code>.</p>
+     * <p>
+     * Getter for the field <code>sessionId</code>.
+     * </p>
      *
      * @return the sessionId
      */

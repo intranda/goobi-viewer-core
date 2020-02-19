@@ -16,11 +16,13 @@
 package io.goobi.viewer.model.cms.itemfunctionality;
 
 /**
- * <p>TrivialFunctionality class.</p>
+ * <p>
+ * TrivialFunctionality class.
+ * </p>
  *
  * @author Florian Alpers
  */
-public class TrivialFunctionality implements Functionality{
+public class TrivialFunctionality implements Functionality {
 
     /** {@inheritDoc} */
     @Override

@@ -31,15 +31,19 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>AuthenticationEndpoint class.</p>
+ * <p>
+ * AuthenticationEndpoint class.
+ * </p>
  */
 @Path("/auth")
 public class AuthenticationEndpoint {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationEndpoint.class);
 
     /**
-     * <p>authenticateUser.</p>
+     * <p>
+     * authenticateUser.
+     * </p>
      *
      * @param email a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
@@ -91,7 +95,7 @@ public class AuthenticationEndpoint {
         // Issue a token (can be a random String persisted to a database or a JWT token)
         // The issued token must be associated to a user
         // Return the issued token
-        
+
         return email;
     }
 }

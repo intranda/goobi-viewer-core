@@ -35,7 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>ConvertAbbyyToAlto class.</p>
+ * <p>
+ * ConvertAbbyyToAlto class.
+ * </p>
  */
 public class ConvertAbbyyToAlto {
 
@@ -63,7 +65,9 @@ public class ConvertAbbyyToAlto {
     private int pageBlockCount = 0;
 
     /**
-     * <p>convert.</p>
+     * <p>
+     * convert.
+     * </p>
      *
      * @param input a {@link java.io.File} object.
      * @return a {@link org.jdom2.Element} object.
@@ -85,7 +89,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>convert.</p>
+     * <p>
+     * convert.
+     * </p>
      *
      * @param abbyyDoc a {@link org.jdom2.Document} object.
      * @return a {@link org.jdom2.Element} object.
@@ -385,8 +391,8 @@ public class ConvertAbbyyToAlto {
             }
             string += abbyyCharParams.get(c).getValue();
             characterCount++;
-            if (abbyyCharParams.get(c).getAttributeValue("charConfidence") != null && abbyyCharParams.get(c).getAttributeValue("charConfidence")
-                    .length() > 0) {
+            if (abbyyCharParams.get(c).getAttributeValue("charConfidence") != null
+                    && abbyyCharParams.get(c).getAttributeValue("charConfidence").length() > 0) {
                 confidenceTotal += Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("charConfidence"));
             }
             try {
@@ -459,8 +465,8 @@ public class ConvertAbbyyToAlto {
     private Element addAltoHeader() {
 
         Element alto = new Element("alto", defaultNamespace);
-        alto.setAttribute(new Attribute("schemaLocation", "http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto.xsd",
-                xsi));
+        alto.setAttribute(
+                new Attribute("schemaLocation", "http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto.xsd", xsi));
 
         Element description = new Element("Description", defaultNamespace);
         alto.addContent(description);
@@ -528,7 +534,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>main.</p>
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.io.IOException if any.
@@ -576,7 +584,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>Getter for the field <code>inputfilename</code>.</p>
+     * <p>
+     * Getter for the field <code>inputfilename</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -585,7 +595,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>Setter for the field <code>inputfilename</code>.</p>
+     * <p>
+     * Setter for the field <code>inputfilename</code>.
+     * </p>
      *
      * @param inputfilename a {@link java.lang.String} object.
      */
@@ -594,7 +606,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>Getter for the field <code>creationtime</code>.</p>
+     * <p>
+     * Getter for the field <code>creationtime</code>.
+     * </p>
      *
      * @return a {@link java.util.Date} object.
      */
@@ -603,7 +617,9 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>Setter for the field <code>creationtime</code>.</p>
+     * <p>
+     * Setter for the field <code>creationtime</code>.
+     * </p>
      *
      * @param creationtime a {@link java.util.Date} object.
      */

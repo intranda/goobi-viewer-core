@@ -41,7 +41,9 @@ public class RssItem implements Comparable<RssItem> {
     String docType;
 
     /**
-     * <p>Getter for the field <code>title</code>.</p>
+     * <p>
+     * Getter for the field <code>title</code>.
+     * </p>
      *
      * @return the title
      */
@@ -50,7 +52,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Setter for the field <code>title</code>.</p>
+     * <p>
+     * Setter for the field <code>title</code>.
+     * </p>
      *
      * @param title the title to set
      */
@@ -59,7 +63,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Getter for the field <code>link</code>.</p>
+     * <p>
+     * Getter for the field <code>link</code>.
+     * </p>
      *
      * @return the link
      */
@@ -68,7 +74,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Setter for the field <code>link</code>.</p>
+     * <p>
+     * Setter for the field <code>link</code>.
+     * </p>
      *
      * @param link the link to set
      */
@@ -77,7 +85,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -86,7 +96,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -95,7 +107,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Getter for the field <code>pubDate</code>.</p>
+     * <p>
+     * Getter for the field <code>pubDate</code>.
+     * </p>
      *
      * @return the pubDate
      */
@@ -104,7 +118,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Setter for the field <code>pubDate</code>.</p>
+     * <p>
+     * Setter for the field <code>pubDate</code>.
+     * </p>
      *
      * @param pubDate the pubDate to set
      */
@@ -113,7 +129,9 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Getter for the field <code>creator</code>.</p>
+     * <p>
+     * Getter for the field <code>creator</code>.
+     * </p>
      *
      * @return the creator
      */
@@ -122,25 +140,31 @@ public class RssItem implements Comparable<RssItem> {
     }
 
     /**
-     * <p>Setter for the field <code>creator</code>.</p>
+     * <p>
+     * Setter for the field <code>creator</code>.
+     * </p>
      *
      * @param creator the creator to set
      */
     public void setCreator(String creator) {
         this.creator = creator;
     }
-    
+
     /**
-     * <p>Setter for the field <code>docType</code>.</p>
+     * <p>
+     * Setter for the field <code>docType</code>.
+     * </p>
      *
      * @param docType the docType to set
      */
     public void setDocType(String docType) {
         this.docType = docType;
     }
-    
+
     /**
-     * <p>Getter for the field <code>docType</code>.</p>
+     * <p>
+     * Getter for the field <code>docType</code>.
+     * </p>
      *
      * @return the docType
      */

@@ -41,11 +41,11 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
         bean = new CmsMediaBean();
-        
+
         UserBean userBean = new UserBean();
         userBean.setAuthenticationProvider(TestUtils.testAuthenticationProvider);
         userBean.setEmail("1@users.org");
-        userBean.setPassword("abcdef1"); 
+        userBean.setPassword("abcdef1");
         userBean.login();
         bean.userBean = userBean;
     }
@@ -75,25 +75,25 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetMediaItems() throws DAOException {
 
-    	bean.setFilter("");
+        bean.setFilter("");
         Assert.assertEquals(4, bean.getMediaItems().size());
-    	bean.setFilter("tag1");
+        bean.setFilter("tag1");
         Assert.assertEquals(3, bean.getMediaItems().size());
         bean.setFilter("");
-    	bean.setFilenameFilter(bean.getImageFilter());
+        bean.setFilenameFilter(bean.getImageFilter());
         Assert.assertEquals(4, bean.getMediaItems().size());
-    	bean.setFilenameFilter(".*\\.xml");
+        bean.setFilenameFilter(".*\\.xml");
         Assert.assertEquals(0, bean.getMediaItems().size());
     }
-    
+
     @Test
     public void testGetImageFilter() {
-    	String file1 = "image.jpg";
-    	String file2 = "image.JPEG";
-    	String file3 = "image.xml";
-    	Assert.assertTrue(file1.matches(bean.getImageFilter()));
-    	Assert.assertTrue(file2.matches(bean.getImageFilter()));
-    	Assert.assertFalse(file3.matches(bean.getImageFilter()));
+        String file1 = "image.jpg";
+        String file2 = "image.JPEG";
+        String file3 = "image.xml";
+        Assert.assertTrue(file1.matches(bean.getImageFilter()));
+        Assert.assertTrue(file2.matches(bean.getImageFilter()));
+        Assert.assertFalse(file3.matches(bean.getImageFilter()));
     }
 
 }

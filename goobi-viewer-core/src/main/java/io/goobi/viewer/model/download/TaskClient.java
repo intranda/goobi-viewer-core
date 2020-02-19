@@ -31,14 +31,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>TaskClient class.</p>
+ * <p>
+ * TaskClient class.
+ * </p>
  *
  * @author florian
  */
 public class TaskClient {
 
     /**
-     * <p>createPost.</p>
+     * <p>
+     * createPost.
+     * </p>
      *
      * @param ocrServiceUrl a {@link java.lang.String} object.
      * @param fsourceDir a {@link java.lang.String} object.
@@ -59,9 +63,10 @@ public class TaskClient {
      * @param frightToLeft a boolean.
      * @return a {@link org.apache.http.client.methods.HttpPost} object.
      */
-    public static HttpPost createPost(final String ocrServiceUrl, final String fsourceDir, final String ftargetDir, final String flanguage, final String ffontType, final int fpriority,
-            final String fpostOCR, final String ftitlePrefix, final String ftemplateName, final String fjobType, final String fgoobiId, final String fserverType, final String fimageDir,
-            final String fmetsFile, final String fanchorMetsFile, final String flocale, final boolean frightToLeft) {
+    public static HttpPost createPost(final String ocrServiceUrl, final String fsourceDir, final String ftargetDir, final String flanguage,
+            final String ffontType, final int fpriority, final String fpostOCR, final String ftitlePrefix, final String ftemplateName,
+            final String fjobType, final String fgoobiId, final String fserverType, final String fimageDir, final String fmetsFile,
+            final String fanchorMetsFile, final String flocale, final boolean frightToLeft) {
 
         HttpPost post = new HttpPost(ocrServiceUrl);
         ContentProducer cp = new ContentProducer() {
@@ -98,9 +103,11 @@ public class TaskClient {
         post.setEntity(e);
         return post;
     }
-    
+
     /**
-     * <p>getJsonResponse.</p>
+     * <p>
+     * getJsonResponse.
+     * </p>
      *
      * @param client a {@link org.apache.http.client.HttpClient} object.
      * @param post a {@link org.apache.http.client.methods.HttpPost} object.

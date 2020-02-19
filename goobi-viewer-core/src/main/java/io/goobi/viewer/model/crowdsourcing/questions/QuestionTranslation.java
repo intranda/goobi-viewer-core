@@ -39,14 +39,18 @@ public class QuestionTranslation extends Translation {
     private Question owner;
 
     /**
-     * <p>Constructor for QuestionTranslation.</p>
+     * <p>
+     * Constructor for QuestionTranslation.
+     * </p>
      */
     public QuestionTranslation() {
         super();
     }
 
     /**
-     * <p>Constructor for QuestionTranslation.</p>
+     * <p>
+     * Constructor for QuestionTranslation.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param tag a {@link java.lang.String} object.
@@ -59,7 +63,9 @@ public class QuestionTranslation extends Translation {
     }
 
     /**
-     * <p>setTranslation.</p>
+     * <p>
+     * setTranslation.
+     * </p>
      *
      * @param translations a {@link java.util.List} object.
      * @param lang a {@link java.lang.String} object.
@@ -85,7 +91,9 @@ public class QuestionTranslation extends Translation {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -94,7 +102,9 @@ public class QuestionTranslation extends Translation {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */

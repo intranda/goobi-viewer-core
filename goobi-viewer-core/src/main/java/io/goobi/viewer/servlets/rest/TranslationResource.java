@@ -36,18 +36,22 @@ import io.goobi.viewer.servlets.rest.bookmarks.BookmarkResource;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
- * <p>TranslationResource class.</p>
+ * <p>
+ * TranslationResource class.
+ * </p>
  *
  * @author florian
  */
 @Path("/messages")
 @ViewerRestServiceBinding
 public class TranslationResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(TranslationResource.class);
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param keys a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.servlets.rest.TranslationResource.TranslationList} object.
@@ -65,22 +69,22 @@ public class TranslationResource {
         }
         return new TranslationList(translations);
     }
-    
+
     public static class TranslationList {
         private final List<Translation> translations;
-        
+
         public TranslationList(List<Translation> translations) {
             this.translations = translations;
         }
-        
+
         /**
          * @return the translations
          */
         @JsonValue
-        @JsonSerialize(using=TranslationListSerializer.class)
+        @JsonSerialize(using = TranslationListSerializer.class)
         public List<Translation> getTranslations() {
             return translations;
         }
     }
-    
+
 }

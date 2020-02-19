@@ -46,20 +46,24 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * <p>AnnotationResource class.</p>
+ * <p>
+ * AnnotationResource class.
+ * </p>
  *
  * @author florian
  */
 @Path("/annotations")
 public class AnnotationResource {
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    
+
     /**
-     * <p>getAnnotation.</p>
+     * <p>
+     * getAnnotation.
+     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @param type a {@link java.lang.String} object.
@@ -74,22 +78,25 @@ public class AnnotationResource {
     @Path("/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public IAnnotation getAnnotation(@PathParam("id") Long id, @QueryParam("type") String type) throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
-    
+    public IAnnotation getAnnotation(@PathParam("id") Long id, @QueryParam("type") String type)
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+
         PersistentAnnotation data = DataManager.getInstance().getDao().getAnnotation(id);
-        
+
         IAnnotation anno;
-        if("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
+        if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
             anno = data.getAsOpenAnnotation();
-        } else {            
+        } else {
             anno = data.getAsAnnotation();
         }
-        
+
         return anno;
     }
-    
+
     /**
-     * <p>getOpenAnnotation.</p>
+     * <p>
+     * getOpenAnnotation.
+     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @param id a {@link java.lang.Long} object.
@@ -104,23 +111,25 @@ public class AnnotationResource {
     @Path("/{type}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public IAnnotation getOpenAnnotation(@PathParam("type") String type, @PathParam("id") Long id) throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
-    
+    public IAnnotation getOpenAnnotation(@PathParam("type") String type, @PathParam("id") Long id)
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+
         PersistentAnnotation data = DataManager.getInstance().getDao().getAnnotation(id);
-        
+
         IAnnotation anno;
-        if("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
+        if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
             anno = data.getAsOpenAnnotation();
-        } else {            
+        } else {
             anno = data.getAsAnnotation();
         }
-        
+
         return anno;
     }
-    
-    
+
     /**
-     * <p>getAnnotationsForPage.</p>
+     * <p>
+     * getAnnotationsForPage.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageString a {@link java.lang.String} object.
@@ -135,15 +144,16 @@ public class AnnotationResource {
     @Path("/collection/{pi}/{page}/")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public AnnotationPage getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") String pageString) throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
-    
+    public AnnotationPage getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") String pageString)
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+
         Integer page = StringUtils.isBlank(pageString.replace("-", "")) ? null : Integer.parseInt(pageString);
-        
+
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
-        
+
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(URI.create(servletRequest.getRequestURL().toString()), data.size());
         AnnotationPage annoPage = builder.buildPage(data.stream().map(PersistentAnnotation::getAsAnnotation).collect(Collectors.toList()), 1);
-        
+
         return annoPage;
     }
 

@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * <p>CollectionLabeledLink class.</p>
+ * <p>
+ * CollectionLabeledLink class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -32,7 +34,9 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
     private final CollectionView collection;
 
     /**
-     * <p>Constructor for CollectionLabeledLink.</p>
+     * <p>
+     * Constructor for CollectionLabeledLink.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.

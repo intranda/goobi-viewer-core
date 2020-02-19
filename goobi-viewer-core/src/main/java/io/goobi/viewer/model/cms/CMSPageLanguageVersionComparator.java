@@ -19,9 +19,10 @@ import java.util.Comparator;
 import java.util.Locale;
 
 /**
- * Sorts {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s so that the version for the given locale is at the beginning of the Collection, followed by
- * the given defaultLocale, followed by the English and German locale, followed by all others in alphabetical order. The global language version is always the last element of the Collection
- * Language Versions that don't exist are ignored silently, as are the passed local and defaultLocale if they are null
+ * Sorts {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s so that the version for the given locale is at the beginning of the Collection,
+ * followed by the given defaultLocale, followed by the English and German locale, followed by all others in alphabetical order. The global language
+ * version is always the last element of the Collection Language Versions that don't exist are ignored silently, as are the passed local and
+ * defaultLocale if they are null
  *
  * @author Florian Alpers
  */
@@ -29,17 +30,21 @@ public class CMSPageLanguageVersionComparator implements Comparator<CMSPageLangu
 
     private final Locale locale;
     private final Locale defaultLocale;
+
     /**
-     * <p>Constructor for CMSPageLanguageVersionComparator.</p>
+     * <p>
+     * Constructor for CMSPageLanguageVersionComparator.
+     * </p>
      *
-     * @param locale            The preferred locale, ignored if null
-     * @param defaultLocale     The default locale, ignored if null
+     * @param locale The preferred locale, ignored if null
+     * @param defaultLocale The default locale, ignored if null
      */
     public CMSPageLanguageVersionComparator(Locale locale, Locale defaultLocale) {
         super();
         this.locale = locale;
         this.defaultLocale = defaultLocale;
     }
+
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
@@ -47,31 +52,30 @@ public class CMSPageLanguageVersionComparator implements Comparator<CMSPageLangu
     @Override
     public int compare(CMSPageLanguageVersion l1, CMSPageLanguageVersion l2) {
         {
-            if(l1.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+            if (l1.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 return 1;
-            } else if(l2.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+            } else if (l2.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 return -1;
-            } else if(locale != null && l1.getLanguage().equals(locale.toString())) {
+            } else if (locale != null && l1.getLanguage().equals(locale.toString())) {
                 return -1;
-            } else if(locale != null && l2.getLanguage().equals(locale.toString())) {
+            } else if (locale != null && l2.getLanguage().equals(locale.toString())) {
                 return 1;
-            } else if(defaultLocale != null && l1.getLanguage().equals(defaultLocale.toString())) {
+            } else if (defaultLocale != null && l1.getLanguage().equals(defaultLocale.toString())) {
                 return -1;
-            } else if(defaultLocale != null && l2.getLanguage().equals(defaultLocale.toString())) {
+            } else if (defaultLocale != null && l2.getLanguage().equals(defaultLocale.toString())) {
                 return 1;
-            } else if(l1.getLanguage().equals(Locale.ENGLISH.toString())) {
+            } else if (l1.getLanguage().equals(Locale.ENGLISH.toString())) {
                 return -1;
-            } else if(l2.getLanguage().equals(Locale.ENGLISH.toString())) {
+            } else if (l2.getLanguage().equals(Locale.ENGLISH.toString())) {
                 return 1;
-            } else if(l1.getLanguage().equals(Locale.GERMAN.toString())) {
+            } else if (l1.getLanguage().equals(Locale.GERMAN.toString())) {
                 return -1;
-            } else if(l2.getLanguage().equals(Locale.GERMAN.toString())) {
+            } else if (l2.getLanguage().equals(Locale.GERMAN.toString())) {
                 return 1;
             } else {
                 return l1.getLanguage().compareTo(l2.getLanguage());
             }
         }
     }
-    
-    
+
 }

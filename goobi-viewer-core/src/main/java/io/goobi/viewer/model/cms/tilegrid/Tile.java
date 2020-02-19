@@ -32,7 +32,9 @@ public class Tile {
     private final int displayOrder;
 
     /**
-     * <p>Constructor for Tile.</p>
+     * <p>
+     * Constructor for Tile.
+     * </p>
      *
      * @param title a {@link java.lang.String} object.
      * @param caption a {@link java.lang.String} object.
@@ -59,7 +61,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>title</code>.</p>
+     * <p>
+     * Getter for the field <code>title</code>.
+     * </p>
      *
      * @return the title
      */
@@ -68,7 +72,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -77,7 +83,9 @@ public class Tile {
     }
 
     /**
-     * <p>getAlt.</p>
+     * <p>
+     * getAlt.
+     * </p>
      *
      * @return the alt
      */
@@ -86,7 +94,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>caption</code>.</p>
+     * <p>
+     * Getter for the field <code>caption</code>.
+     * </p>
      *
      * @return the caption
      */
@@ -95,7 +105,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>url</code>.</p>
+     * <p>
+     * Getter for the field <code>url</code>.
+     * </p>
      *
      * @return the url
      */
@@ -113,7 +125,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>tags</code>.</p>
+     * <p>
+     * Getter for the field <code>tags</code>.
+     * </p>
      *
      * @return the tags
      */
@@ -122,7 +136,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>collection</code>.</p>
+     * <p>
+     * Getter for the field <code>collection</code>.
+     * </p>
      *
      * @return the collection
      */
@@ -131,7 +147,9 @@ public class Tile {
     }
 
     /**
-     * <p>isImportant.</p>
+     * <p>
+     * isImportant.
+     * </p>
      *
      * @return the important
      */
@@ -140,7 +158,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>size</code>.</p>
+     * <p>
+     * Getter for the field <code>size</code>.
+     * </p>
      *
      * @return the size
      */
@@ -149,7 +169,9 @@ public class Tile {
     }
 
     /**
-     * <p>Getter for the field <code>displayOrder</code>.</p>
+     * <p>
+     * Getter for the field <code>displayOrder</code>.
+     * </p>
      *
      * @return the displayOrder
      */

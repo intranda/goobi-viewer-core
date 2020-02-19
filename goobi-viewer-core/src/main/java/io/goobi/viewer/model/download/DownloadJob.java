@@ -75,7 +75,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>Abstract DownloadJob class.</p>
+ * <p>
+ * Abstract DownloadJob class.
+ * </p>
  */
 @Entity
 @Table(name = "download_jobs")
@@ -170,12 +172,16 @@ public abstract class DownloadJob implements Serializable {
     protected List<String> observers = new ArrayList<>();
 
     /**
-     * <p>generateDownloadIdentifier.</p>
+     * <p>
+     * generateDownloadIdentifier.
+     * </p>
      */
     public abstract void generateDownloadIdentifier();
 
     /**
-     * <p>generateDownloadJobId.</p>
+     * <p>
+     * generateDownloadJobId.
+     * </p>
      *
      * @param criteria a {@link java.lang.String} object.
      * @should generate same id from same criteria
@@ -193,7 +199,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>checkDownload.</p>
+     * <p>
+     * checkDownload.
+     * </p>
      *
      * @param type For now just 'pdf'.
      * @param email Optional e-mail address to be notified.
@@ -286,7 +294,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>triggerCreation.</p>
+     * <p>
+     * triggerCreation.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -295,7 +305,9 @@ public abstract class DownloadJob implements Serializable {
     protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException, DownloadException;
 
     /**
-     * <p>ocrFolderExists.</p>
+     * <p>
+     * ocrFolderExists.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a boolean.
@@ -309,7 +321,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>cleanupExpiredDownloads.</p>
+     * <p>
+     * cleanupExpiredDownloads.
+     * </p>
      *
      * @should delete expired jobs correctly
      * @return a int.
@@ -342,7 +356,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>isExpired.</p>
+     * <p>
+     * isExpired.
+     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -356,7 +372,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>getMimeType.</p>
+     * <p>
+     * getMimeType.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -364,7 +382,9 @@ public abstract class DownloadJob implements Serializable {
     public abstract String getMimeType();
 
     /**
-     * <p>getFileExtension.</p>
+     * <p>
+     * getFileExtension.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -372,7 +392,9 @@ public abstract class DownloadJob implements Serializable {
     public abstract String getFileExtension();
 
     /**
-     * <p>getDisplayName.</p>
+     * <p>
+     * getDisplayName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -380,21 +402,27 @@ public abstract class DownloadJob implements Serializable {
     public abstract String getDisplayName();
 
     /**
-     * <p>getSize.</p>
+     * <p>
+     * getSize.
+     * </p>
      *
      * @return a long.
      */
     public abstract long getSize();
 
     /**
-     * <p>getQueuePosition.</p>
+     * <p>
+     * getQueuePosition.
+     * </p>
      *
      * @return a int.
      */
     public abstract int getQueuePosition();
 
     /**
-     * <p>getFile.</p>
+     * <p>
+     * getFile.
+     * </p>
      *
      * @return a {@link java.nio.file.Path} object.
      */
@@ -410,7 +438,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>notifyObservers.</p>
+     * <p>
+     * notifyObservers.
+     * </p>
      *
      * @param status a {@link io.goobi.viewer.model.download.DownloadJob.JobStatus} object.
      * @param message a {@link java.lang.String} object.
@@ -460,7 +490,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>getDownloadFile.</p>
+     * <p>
+     * getDownloadFile.
+     * </p>
      *
      * @param pi The pi of the work to download.
      * @param logId the logId of the structure element to download. Is ignored if it is null, empty, blank or equals "-"
@@ -481,7 +513,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>getDownloadFileStatic.</p>
+     * <p>
+     * getDownloadFileStatic.
+     * </p>
      *
      * @param identifier the identifier of the download
      * @param type either "pdf" or "epub"
@@ -501,7 +535,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -510,7 +546,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -519,7 +557,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -528,7 +568,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -537,7 +579,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -546,7 +590,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>logId</code>.</p>
+     * <p>
+     * Getter for the field <code>logId</code>.
+     * </p>
      *
      * @return the logId
      */
@@ -555,7 +601,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>logId</code>.</p>
+     * <p>
+     * Setter for the field <code>logId</code>.
+     * </p>
      *
      * @param logId the logId to set
      */
@@ -564,7 +612,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>identifier</code>.</p>
+     * <p>
+     * Getter for the field <code>identifier</code>.
+     * </p>
      *
      * @return the identifier
      */
@@ -573,7 +623,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>identifier</code>.</p>
+     * <p>
+     * Setter for the field <code>identifier</code>.
+     * </p>
      *
      * @param identifier the identifier to set
      */
@@ -582,7 +634,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lastRequested</code>.</p>
+     * <p>
+     * Getter for the field <code>lastRequested</code>.
+     * </p>
      *
      * @return the lastRequested
      */
@@ -592,7 +646,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>lastRequested</code>.</p>
+     * <p>
+     * Setter for the field <code>lastRequested</code>.
+     * </p>
      *
      * @param lastRequested the lastRequested to set
      */
@@ -601,7 +657,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>ttl</code>.</p>
+     * <p>
+     * Getter for the field <code>ttl</code>.
+     * </p>
      *
      * @return the ttl
      */
@@ -611,7 +669,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>getTimeToLive.</p>
+     * <p>
+     * getTimeToLive.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -621,7 +681,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>ttl</code>.</p>
+     * <p>
+     * Setter for the field <code>ttl</code>.
+     * </p>
      *
      * @param ttl the ttl to set
      */
@@ -630,7 +692,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>status</code>.</p>
+     * <p>
+     * Getter for the field <code>status</code>.
+     * </p>
      *
      * @return the status
      */
@@ -642,7 +706,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>status</code>.</p>
+     * <p>
+     * Setter for the field <code>status</code>.
+     * </p>
      *
      * @param status the status to set
      */
@@ -651,7 +717,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -660,7 +728,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -669,7 +739,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>observers</code>.</p>
+     * <p>
+     * Getter for the field <code>observers</code>.
+     * </p>
      *
      * @return the observers
      */
@@ -679,7 +751,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>observers</code>.</p>
+     * <p>
+     * Setter for the field <code>observers</code>.
+     * </p>
      *
      * @param observers the observers to set
      */
@@ -695,7 +769,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>message</code>.</p>
+     * <p>
+     * Getter for the field <code>message</code>.
+     * </p>
      *
      * @return the message
      */
@@ -704,7 +780,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>message</code>.</p>
+     * <p>
+     * Setter for the field <code>message</code>.
+     * </p>
      *
      * @param message the message to set
      */
@@ -713,7 +791,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>getJobStatus.</p>
+     * <p>
+     * getJobStatus.
+     * </p>
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -737,7 +817,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>updateStatus.</p>
+     * <p>
+     * updateStatus.
+     * </p>
      */
     public void updateStatus() {
         String ret = PDFDownloadJob.getJobStatus(identifier);

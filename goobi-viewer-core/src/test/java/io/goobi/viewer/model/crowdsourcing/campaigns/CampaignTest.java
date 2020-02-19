@@ -120,10 +120,10 @@ public class CampaignTest extends AbstractTest {
     @Test
     public void isHasEnded_shouldReturnTrueIfDateEndBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
-            MutableDateTime earlier = new MutableDateTime();
-            earlier.addDays(-20);
-            campaign.setDateEnd(earlier.toDate());
-            Assert.assertTrue(campaign.isHasEnded());
+        MutableDateTime earlier = new MutableDateTime();
+        earlier.addDays(-20);
+        campaign.setDateEnd(earlier.toDate());
+        Assert.assertTrue(campaign.isHasEnded());
     }
 
     /**
@@ -148,7 +148,6 @@ public class CampaignTest extends AbstractTest {
         Campaign campaign = new Campaign();
         Assert.assertTrue(campaign.isHasStarted());
     }
-
 
     /**
      * @see Campaign#isHasStarted()

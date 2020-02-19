@@ -27,7 +27,9 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 
 /**
- * <p>FullscreenResource class.</p>
+ * <p>
+ * FullscreenResource class.
+ * </p>
  */
 @ContentServerImageInfoBinding
 @Path("/fullscreen")
@@ -39,7 +41,9 @@ public class FullscreenResource {
     private ResourceContext resourceContext;
 
     /**
-     * <p>forwardToContentServer.</p>
+     * <p>
+     * forwardToContentServer.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @return a {@link de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource} object.
