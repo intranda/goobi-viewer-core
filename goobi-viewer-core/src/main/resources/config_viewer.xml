@@ -1138,22 +1138,6 @@
                     <displayLinkToTiffImage>true</displayLinkToTiffImage>
                 </page>
             </sidebarWidgetUsage>
-    
-		<!-- This defines the order of sidebar-elements related to the navigation 
-			of the current work. The order corresponds to the order of <item>s in this 
-			list. 'type' defines the name of the particular PageType. Elements missing 
-			in this list won't be displayed in the sidebar at all. If the whole <wordNavItem>-Element 
-			is missing, a default order is used, including all possible Elements (provided 
-			their visibility is set to true). -->
-		<workNavItems>
-			<item type="page"></item>
-			<item type="toc"></item>
-			<item type="thumbs"></item>
-			<item type="metadata"></item>
-			<item type="fulltext"></item>
-			<item type="dfg"></item>
-			<item type="opac"></item>
-		</workNavItems>
 
 		<!-- page: if false, the image view is hidden -->
 		<page>
