@@ -40,6 +40,7 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 
+@SuppressWarnings("deprecation")
 public class TestUtils {
 
     /**
@@ -157,7 +158,6 @@ public class TestUtils {
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#getSessionContext()
          */
-        @SuppressWarnings("deprecation")
         @Override
         public HttpSessionContext getSessionContext() {
             return null;
