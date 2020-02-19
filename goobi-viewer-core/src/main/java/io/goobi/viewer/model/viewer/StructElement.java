@@ -358,26 +358,29 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * be resolved, null is returned
      *
      * @should retrieve top struct correctly
+     * @should return self if topstruct or anchor
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
         if (work || anchor) {
+            this.topStruct = this;
             return this;
-        } else {
-            if (this.topStruct == null) {
-                String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
-                try {
-                    if (topstructIddoc != null) {
-                        this.topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
-                    }
-                } catch (NumberFormatException e) {
-                    logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
-                }
-            }
-            return this.topStruct;
         }
+
+        if (this.topStruct == null) {
+            String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
+            try {
+                if (topstructIddoc != null) {
+                    this.topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
+            }
+        }
+
+        return this.topStruct;
     }
 
     /**
@@ -464,23 +467,27 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * {@inheritDoc}
      *
-     * Returns the identifier of the record to which this struct element belongs.
+     * @returns the identifier of the record to which this struct element belongs.
+     * @should return pi if topstruct
+     * @should retriveve pi from topstruct if not topstruct
+     * 
      */
     @Override
     public String getPi() {
         if (pi != null && !pi.equals("null")) {
             return pi;
         } else if (getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
-            return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+            pi = getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+            return pi;
         } else if (!work && !anchor) {
             try {
                 return Optional.ofNullable(this.getTopStruct()).map(StructElement::getPi).orElse(null);
             } catch (PresentationException | IndexUnreachableException e) {
                 return null;
             }
-        } else {
-            return null;
         }
+
+        return null;
 
     }
 
