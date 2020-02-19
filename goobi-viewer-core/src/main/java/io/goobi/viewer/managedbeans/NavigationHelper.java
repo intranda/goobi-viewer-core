@@ -835,7 +835,6 @@ public class NavigationHelper implements Serializable {
      *
      * @return the activePartnerId
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should return value correctly
      */
     @Deprecated
     public String getActivePartnerId() {
@@ -849,8 +848,6 @@ public class NavigationHelper implements Serializable {
      *
      * @param activePartnerId the activePartnerId to set
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should reset current partner page
-     * @should set value correctly
      */
     @Deprecated
     public void setActivePartnerId(String activePartnerId) {
@@ -868,7 +865,6 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should reset value correctly
      */
     @Deprecated
     public void resetActivePartnerId() {

@@ -23,17 +23,6 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see NavigationHelper#getActivePartnerId()
-     * @verifies return value correctly
-     */
-    @Test
-    public void getActivePartnerId_shouldReturnValueCorrectly() throws Exception {
-        NavigationHelper nh = new NavigationHelper();
-        nh.statusMap.put(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE, NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value", nh.getActivePartnerId());
-    }
-
-    /**
      * @see NavigationHelper#getCurrentPartnerPage()
      * @verifies return value correctly
      */
@@ -97,43 +86,6 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put("new_key", "new_value");
         Assert.assertEquals("new_value", nh.getStatusMapValue("new_key"));
-    }
-
-    /**
-     * @see NavigationHelper#resetActivePartnerId()
-     * @verifies reset value correctly
-     */
-    @Test
-    public void resetActivePartnerId_shouldResetValueCorrectly() throws Exception {
-        NavigationHelper nh = new NavigationHelper();
-        nh.statusMap.put(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE, NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value");
-        nh.resetActivePartnerId();
-        Assert.assertEquals("", nh.statusMap.get(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
-
-    }
-
-    /**
-     * @see NavigationHelper#setActivePartnerId(String)
-     * @verifies reset current partner page
-     */
-    @Test
-    public void setActivePartnerId_shouldResetCurrentPartnerPage() throws Exception {
-        NavigationHelper nh = new NavigationHelper();
-        nh.statusMap.put(NavigationHelper.KEY_CURRENT_PARTNER_PAGE, NavigationHelper.KEY_CURRENT_PARTNER_PAGE + "_value");
-        nh.setActivePartnerId(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value");
-        Assert.assertEquals("", nh.statusMap.get(NavigationHelper.KEY_CURRENT_PARTNER_PAGE));
-    }
-
-    /**
-     * @see NavigationHelper#setActivePartnerId(String)
-     * @verifies set value correctly
-     */
-    @Test
-    public void setActivePartnerId_shouldSetValueCorrectly() throws Exception {
-        NavigationHelper nh = new NavigationHelper();
-        nh.setActivePartnerId(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value",
-                nh.statusMap.get(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
 
     /**
