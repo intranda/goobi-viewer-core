@@ -1020,10 +1020,6 @@
 
 	<!-- Settings for the table of content page -->
 	<toc>
-		<!-- DEPRECATED: Use <labelConfig> instead. If true, TOC element labels 
-			will always have their docstruct as a prefix, unless the label is just the 
-			docstruct (default is false) -->
-		<alwaysDisplayDocstruct>false</alwaysDisplayDocstruct>
 		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
 			thumbnails -->
 		<multiVolumeThumbnailsWidth>50</multiVolumeThumbnailsWidth>

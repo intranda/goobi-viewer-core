@@ -56,8 +56,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     private static final Logger logger = LoggerFactory.getLogger(MyExceptionHandler.class);
 
-    private ExceptionHandler wrapped;
-
     /**
      * <p>
      * Constructor for MyExceptionHandler.
@@ -66,13 +64,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      * @param wrapped a {@link javax.faces.context.ExceptionHandler} object.
      */
     public MyExceptionHandler(ExceptionHandler wrapped) {
-        this.wrapped = wrapped;
+        super(wrapped);
     }
 
     /** {@inheritDoc} */
     @Override
     public ExceptionHandler getWrapped() {
-        return this.wrapped;
+        return super.getWrapped();
     }
 
     /** {@inheritDoc} */

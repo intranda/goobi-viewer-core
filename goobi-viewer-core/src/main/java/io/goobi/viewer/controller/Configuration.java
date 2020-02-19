@@ -3249,18 +3249,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isTocAlwaysDisplayDocstruct.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isTocAlwaysDisplayDocstruct() {
-        return getLocalBoolean("toc.alwaysDisplayDocstruct", false);
-    }
-
-    /**
-     * <p>
      * getFeedbackEmailAddress.
      * </p>
      *
