@@ -12,7 +12,7 @@
     <composite:implementation>
         
         <!--  WIDGET CHRONOLOGY -->
-        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('YEAR')) >= 1) and #{searchBean.facets.getCurrentMinRangeValue('YEAR') != searchBean.facets.getCurrentMaxRangeValue("YEAR")} and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
+        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('YEAR')) >= 1) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
         <div class="widget widget-chronology-slider">
 			<div class="widget-chronology-slider__topbar">
 				<div class="widget-chronology-slider__item chronology-slider-label">
