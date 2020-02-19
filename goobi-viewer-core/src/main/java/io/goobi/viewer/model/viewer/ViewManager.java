@@ -88,7 +88,7 @@ public class ViewManager implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewManager.class);
 
-    private ImageDeliveryBean imageDelivery;
+    private ImageDeliveryBean imageDeliveryBean;
 
     /** IDDOC of the top level document. */
     private long topDocumentIddoc;
@@ -146,13 +146,13 @@ public class ViewManager implements Serializable {
      * @param currentDocumentIddoc a long.
      * @param logId a {@link java.lang.String} object.
      * @param mainMimeType a {@link java.lang.String} object.
-     * @param imageDelivery a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
+     * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType,
-            ImageDeliveryBean imageDelivery) throws IndexUnreachableException, PresentationException {
-        this.imageDelivery = imageDelivery;
+            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
+        this.imageDeliveryBean = imageDeliveryBean;
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -318,7 +318,7 @@ public class ViewManager implements Serializable {
     }
 
     private String getImageInfo(PhysicalElement page, PageType pageType) {
-        return imageDelivery.getImages().getImageUrl(page, pageType);
+        return imageDeliveryBean.getImages().getImageUrl(page, pageType);
     }
 
     /**
@@ -383,7 +383,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return imageDelivery.getFooter()
+        return imageDeliveryBean.getFooter()
                 .getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()),
                         Optional.ofNullable(PageType.getByName(pageType)))
                 .orElse("");
@@ -414,7 +414,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
-        return imageDelivery.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
+        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
     }
 
     /**
@@ -484,12 +484,12 @@ public class ViewManager implements Serializable {
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
-        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getFullImageUrl(getCurrentPage(), scale));
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(getCurrentPage(), scale));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDelivery.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
-                sb.append(imageDelivery.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -505,12 +505,12 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     private String getCurrentImageUrl(PageType view, int size) throws IndexUnreachableException, DAOException {
-        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
-                sb.append(imageDelivery.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
-                sb.append(imageDelivery.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -540,7 +540,7 @@ public class ViewManager implements Serializable {
             throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
         }
 
-        return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+        return imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
     }
 
     /**
@@ -690,13 +690,25 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getRepresentativeImageUrl() throws IndexUnreachableException, PresentationException, DAOException {
+        return getRepresentativeImageUrl(representativePage.getImageWidth(), representativePage.getImageHeight());
+    }
 
-        if (getRepresentativePage() != null) {
-            Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
-            return imageDelivery.getThumbs().getThumbnailUrl(representativePage);
+    /**
+     * 
+     * @param width
+     * @param height
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public String getRepresentativeImageUrl(int width, int height) throws IndexUnreachableException, PresentationException, DAOException {
+        if (getRepresentativePage() == null) {
+            return null;
         }
-        return null;
-
+        
+        //      Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
+        return imageDeliveryBean.getThumbs().getThumbnailUrl(representativePage, width, height);
     }
 
     /**
@@ -1602,7 +1614,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
+        return imageDeliveryBean.getPdf().getPdfUrl(getTopDocument(), "");
     }
 
     /**
@@ -1618,7 +1630,7 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return null;
         }
-        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), currentPage);
+        return imageDeliveryBean.getPdf().getPdfUrl(getTopDocument(), currentPage);
     }
 
     /**
@@ -1632,7 +1644,7 @@ public class ViewManager implements Serializable {
      */
     public String getPdfStructDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException, PresentationException {
         StructElement currentStruct = getCurrentDocument();
-        return imageDelivery.getPdf().getPdfUrl(currentStruct, currentStruct.getLabel());
+        return imageDeliveryBean.getPdf().getPdfUrl(currentStruct, currentStruct.getLabel());
 
     }
 
@@ -1668,7 +1680,7 @@ public class ViewManager implements Serializable {
             //            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
         PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
-        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), pages.toArray(pageArr));
+        return imageDeliveryBean.getPdf().getPdfUrl(getTopDocument(), pages.toArray(pageArr));
     }
 
     /**
