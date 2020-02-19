@@ -56,12 +56,9 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordDeletedException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -1341,69 +1338,6 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
-     * not the main link.
-     *
-     * @return the List of flattened breadcrumb links
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public List<LabeledLink> getBreadcrumbs() {
-        return breadcrumbBean.getBreadcrumbs();
-    }
-
-    /**
-     * Returns the bottom breadcrumb. Used to return to the previous page from the errorGeneral page.
-     *
-     * @return a {@link io.goobi.viewer.model.viewer.LabeledLink} object.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public LabeledLink getLastBreadcrumb() {
-        return breadcrumbBean.getLastBreadcrumb();
-    }
-
-    /**
-     * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
-     *
-     * @param cmsPage The CMS page from which to create a breadcrumb
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws RecordNotFoundException
-     * @throws RecordDeletedException
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void updateBreadcrumbs(CMSPage cmsPage)
-            throws DAOException, RecordNotFoundException, IndexUnreachableException, ViewerConfigurationException, RecordDeletedException {
-        breadcrumbBean.updateBreadcrumbs(cmsPage);
-    }
-
-    /**
-     * Attaches a new link to the breadcrumb list at the appropriate position (depending on the link's weight).
-     *
-     * @param newLink The breadcrumb link to add.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * 
-     */
-    @Deprecated
-    public void updateBreadcrumbs(LabeledLink newLink) {
-        breadcrumbBean.updateBreadcrumbs(newLink);
-    }
-
-    /**
-     * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
-     *
-     * @param facetString a {@link java.lang.String} object.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void updateBreadcrumbsForSearchHits(String facetString) {
-        breadcrumbBean.updateBreadcrumbsForSearchHits(facetString);
-    }
-
-    /**
      * Adds a link to the breadcrumbs using the current PrettyURL. Can be called from XHTML.
      *
      * @param linkName a {@link java.lang.String} object.
@@ -1431,24 +1365,6 @@ public class NavigationHelper implements Serializable {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         breadcrumbBean.updateBreadcrumbs(newLink);
-    }
-
-    /**
-     * <p>
-     * addCollectionHierarchyToBreadcrumb.
-     * </p>
-     *
-     * @param collection Full collection string containing all levels
-     * @param field Solr field
-     * @param splittingChar a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
-            throws PresentationException, DAOException {
-        breadcrumbBean.addCollectionHierarchyToBreadcrumb(collection, field, splittingChar);
     }
 
     /**
