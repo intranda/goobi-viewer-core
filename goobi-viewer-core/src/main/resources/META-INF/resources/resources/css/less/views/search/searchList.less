@@ -110,33 +110,27 @@
 	                    color: @black;
 	                }
 	            }
-	            a, button {}
+	            a, button {
+	            	height: 100%;
+	            }
 	            input[type="submit"] {
 		            background-image: url("@{images}/icons/icon-search.png");
 		            background-repeat: no-repeat;
 		            background-position: center center;
 		            background-size: 40%;
-		            padding: 1.7rem;
-		            padding: -ms-0;
 	            }
 	            &.reset {
-	            	flex: 0 0 max-content;
-	            	width: 100%;
-	            	max-width: 3.4rem;
-	            	max-height: 3.4rem;
+	            	flex: 0 0 4rem;
 	                background-color: @lightgray;
-	                a, button {
-	                	padding: .9rem 1.2rem;
-	                }
+	                height: 3.4rem;
+	                a, button {}
 	                &.focus {
 	                	border-color: @blue;
 	                }
+	                .fa {}
 	            }
 	            &.search {
-	                flex: 0 0 max-content;
-	                width: 100%;
-	            	max-width: 3.4rem;
-	            	max-height: 3.4rem;
+	                flex: 0 0 4rem;
 	                background-color: @blue;
 	                border-color: @blue;
 	                display: inherit; 
@@ -149,7 +143,7 @@
         }
         .form-control {
             border-right: none;
-            max-height: 3.4rem;
+            height: auto;
             &:focus {
             	border-left-color: @middlegray;
             }
