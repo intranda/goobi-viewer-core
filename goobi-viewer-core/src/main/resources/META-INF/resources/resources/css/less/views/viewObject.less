@@ -69,16 +69,26 @@
 	border: 1px solid @middlegray;
 	padding: 1.5rem;
 	display: flex;
-	align-items: center;
 	margin-bottom: 1.5rem;
 	&__thumb { 
 		flex: 0 0 30%;
+		max-width: 80px;
+		max-height: 100%;
 		img {
 			width: 100%;
+			transition: 1s;
+			&:hover {
+				transform: scale(3);
+				transition: 1s;
+			}
 		}
 	}
 	&__objects {
 		flex: 0 0 70%;
+		.search-list__hit-title {
+		    width: 100%;
+		    text-align: center;
+		}
 	}
 	&__audio {
 		width: 70%;
@@ -86,15 +96,12 @@
 		audio {
 			width: 100%;
 			border-radius: 1rem;
+			margin-left: auto; 
+			margin-right: auto; 
+			margin-top: 25px;
 		}
 	}
-}
-	.search-list__hit-title {
-		height: 50%;
-	    width: 100%;
-	    text-align: center;
-		}
-	
+}	
 
 .image-fragment {
 	background-color: rgba(255,255,255,0.3);
