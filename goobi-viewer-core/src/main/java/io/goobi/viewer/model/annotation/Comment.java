@@ -49,7 +49,9 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>Comment class.</p>
+ * <p>
+ * Comment class.
+ * </p>
  */
 @Entity
 @Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
@@ -96,14 +98,18 @@ public class Comment implements Comparable<Comment> {
     private List<Comment> children;
 
     /**
-     * <p>Constructor for Comment.</p>
+     * <p>
+     * Constructor for Comment.
+     * </p>
      */
     public Comment() {
         // the emptiness inside
     }
 
     /**
-     * <p>Constructor for Comment.</p>
+     * <p>
+     * Constructor for Comment.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -148,14 +154,16 @@ public class Comment implements Comparable<Comment> {
         String body = null;
         if (StringUtils.isEmpty(oldText)) {
             subject = Helper.getTranslation("commentNewNotificationEmailSubject", locale);
-            subject = subject.replace("{0}", comment.getOwner().getDisplayName()).replace("{1}", comment.getPi()).replace("{2}",
-                    String.valueOf(comment.getPage()));
+            subject = subject.replace("{0}", comment.getOwner().getDisplayName())
+                    .replace("{1}", comment.getPi())
+                    .replace("{2}", String.valueOf(comment.getPage()));
             body = Helper.getTranslation("commentNewNotificationEmailBody", locale);
             body = body.replace("{0}", comment.getText());
         } else {
             subject = Helper.getTranslation("commentChangedNotificationEmailSubject", locale);
-            subject = subject.replace("{0}", comment.getOwner().getDisplayName()).replace("{1}", comment.getPi()).replace("{2}",
-                    String.valueOf(comment.getPage()));
+            subject = subject.replace("{0}", comment.getOwner().getDisplayName())
+                    .replace("{1}", comment.getPi())
+                    .replace("{2}", String.valueOf(comment.getPage()));
             body = Helper.getTranslation("commentChangedNotificationEmailBody", locale);
             body = body.replace("{0}", oldText).replace("{1}", comment.getText());
         }
@@ -184,7 +192,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>getDisplayDate.</p>
+     * <p>
+     * getDisplayDate.
+     * </p>
      *
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.lang.String} object.
@@ -211,7 +221,9 @@ public class Comment implements Comparable<Comment> {
     // Property accessors
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -220,7 +232,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -229,7 +243,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -238,7 +254,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -247,7 +265,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>page</code>.</p>
+     * <p>
+     * Getter for the field <code>page</code>.
+     * </p>
      *
      * @return the page
      */
@@ -256,7 +276,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>page</code>.</p>
+     * <p>
+     * Setter for the field <code>page</code>.
+     * </p>
      *
      * @param page the page to set
      */
@@ -265,7 +287,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -274,7 +298,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */
@@ -283,7 +309,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>text</code>.</p>
+     * <p>
+     * Setter for the field <code>text</code>.
+     * </p>
      *
      * @param text the text to set
      */
@@ -293,7 +321,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>text</code>.</p>
+     * <p>
+     * Getter for the field <code>text</code>.
+     * </p>
      *
      * @return the text
      */
@@ -302,7 +332,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>getDisplayText.</p>
+     * <p>
+     * getDisplayText.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -311,7 +343,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>oldText</code>.</p>
+     * <p>
+     * Getter for the field <code>oldText</code>.
+     * </p>
      *
      * @return the oldText
      */
@@ -320,7 +354,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @return the dateCreated
      */
@@ -329,7 +365,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -338,7 +376,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @return the dateUpdated
      */
@@ -347,7 +387,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -356,7 +398,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>parent</code>.</p>
+     * <p>
+     * Getter for the field <code>parent</code>.
+     * </p>
      *
      * @return the parent
      */
@@ -365,7 +409,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>parent</code>.</p>
+     * <p>
+     * Setter for the field <code>parent</code>.
+     * </p>
      *
      * @param parent the parent to set
      */
@@ -374,7 +420,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Getter for the field <code>children</code>.</p>
+     * <p>
+     * Getter for the field <code>children</code>.
+     * </p>
      *
      * @return the children
      */
@@ -383,7 +431,9 @@ public class Comment implements Comparable<Comment> {
     }
 
     /**
-     * <p>Setter for the field <code>children</code>.</p>
+     * <p>
+     * Setter for the field <code>children</code>.
+     * </p>
      *
      * @param children the children to set
      */

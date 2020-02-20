@@ -28,7 +28,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * <p>MultiPageReference class.</p>
+ * <p>
+ * MultiPageReference class.
+ * </p>
  */
 @XmlRootElement
 @XmlType(propOrder = { "firstPage, lastPage, tags" })
@@ -40,7 +42,9 @@ public class MultiPageReference implements TagGroup {
     private List<TagCount> tags;
 
     /**
-     * <p>Constructor for MultiPageReference.</p>
+     * <p>
+     * Constructor for MultiPageReference.
+     * </p>
      */
     public MultiPageReference() {
         super();
@@ -50,7 +54,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>Constructor for MultiPageReference.</p>
+     * <p>
+     * Constructor for MultiPageReference.
+     * </p>
      *
      * @param order a int.
      */
@@ -62,7 +68,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>Constructor for MultiPageReference.</p>
+     * <p>
+     * Constructor for MultiPageReference.
+     * </p>
      *
      * @param first a {@link java.lang.Integer} object.
      * @param last a {@link java.lang.Integer} object.
@@ -75,7 +83,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>Getter for the field <code>firstPage</code>.</p>
+     * <p>
+     * Getter for the field <code>firstPage</code>.
+     * </p>
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -86,7 +96,9 @@ public class MultiPageReference implements TagGroup {
     }
 
     /**
-     * <p>Getter for the field <code>lastPage</code>.</p>
+     * <p>
+     * Getter for the field <code>lastPage</code>.
+     * </p>
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -132,8 +144,8 @@ public class MultiPageReference implements TagGroup {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(MultiPageReference.class)) {
             if (getFirstPage() != null && getLastPage() != null) {
-                return getFirstPage().equals(((MultiPageReference) obj).getFirstPage()) && getLastPage().equals(((MultiPageReference) obj)
-                        .getLastPage());
+                return getFirstPage().equals(((MultiPageReference) obj).getFirstPage())
+                        && getLastPage().equals(((MultiPageReference) obj).getLastPage());
             } else if (getFirstPage() != null) {
                 return getFirstPage().equals(((MultiPageReference) obj).getFirstPage()) && ((MultiPageReference) obj).getLastPage() == null;
             } else if (getLastPage() != null) {

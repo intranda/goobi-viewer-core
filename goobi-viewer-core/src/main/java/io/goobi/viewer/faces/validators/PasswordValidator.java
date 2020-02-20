@@ -46,7 +46,9 @@ public class PasswordValidator implements Validator {
     }
 
     /**
-     * <p>validatePassword.</p>
+     * <p>
+     * validatePassword.
+     * </p>
      *
      * @param password a {@link java.lang.String} object.
      * @should return true if password good

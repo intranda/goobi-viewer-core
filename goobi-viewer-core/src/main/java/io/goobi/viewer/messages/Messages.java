@@ -24,12 +24,16 @@ import javax.faces.context.FacesContext;
 import io.goobi.viewer.controller.Helper;
 
 /**
- * <p>Messages class.</p>
+ * <p>
+ * Messages class.
+ * </p>
  */
 public class Messages {
 
     /**
-     * <p>error.</p>
+     * <p>
+     * error.
+     * </p>
      *
      * @param targetId a {@link java.lang.String} object.
      * @param message a {@link java.lang.String} object.
@@ -40,7 +44,9 @@ public class Messages {
     }
 
     /**
-     * <p>error.</p>
+     * <p>
+     * error.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -49,7 +55,9 @@ public class Messages {
     }
 
     /**
-     * <p>info.</p>
+     * <p>
+     * info.
+     * </p>
      *
      * @param targetId a {@link java.lang.String} object.
      * @param message a {@link java.lang.String} object.
@@ -60,7 +68,9 @@ public class Messages {
     }
 
     /**
-     * <p>info.</p>
+     * <p>
+     * info.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -69,7 +79,9 @@ public class Messages {
     }
 
     /**
-     * <p>warn.</p>
+     * <p>
+     * warn.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -78,7 +90,9 @@ public class Messages {
     }
 
     /**
-     * <p>warn.</p>
+     * <p>
+     * warn.
+     * </p>
      *
      * @param targetId a {@link java.lang.String} object.
      * @param message a {@link java.lang.String} object.
@@ -89,7 +103,9 @@ public class Messages {
     }
 
     /**
-     * <p>clear.</p>
+     * <p>
+     * clear.
+     * </p>
      */
     public static void clear() {
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -109,22 +125,24 @@ public class Messages {
         fc.addMessage(targetId, fm);
     }
 
-	/**
-	 * <p>translate.</p>
-	 *
-	 * @param inMessage a {@link java.lang.String} object.
-	 * @param messageParams a {@link java.lang.String} object.
-	 * @param locale a {@link java.util.Locale} object.
-	 * @return a {@link java.lang.String} object.
-	 */
-	public static String translate(String inMessage, Locale locale, String... messageParams) {
-		String translatedMessage = Helper.getTranslation(inMessage, locale);
+    /**
+     * <p>
+     * translate.
+     * </p>
+     *
+     * @param inMessage a {@link java.lang.String} object.
+     * @param messageParams a {@link java.lang.String} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translate(String inMessage, Locale locale, String... messageParams) {
+        String translatedMessage = Helper.getTranslation(inMessage, locale);
         for (int i = 0; i < messageParams.length; i++) {
-        	//two replacements to handle both placeholders with and without numbers
-        	translatedMessage = translatedMessage.replace("{" + i + "}", messageParams[i]);
-        	translatedMessage = translatedMessage.replaceFirst("\\{\\}", messageParams[i]);
-		}
-		return translatedMessage;
-	}
+            //two replacements to handle both placeholders with and without numbers
+            translatedMessage = translatedMessage.replace("{" + i + "}", messageParams[i]);
+            translatedMessage = translatedMessage.replaceFirst("\\{\\}", messageParams[i]);
+        }
+        return translatedMessage;
+    }
 
 }

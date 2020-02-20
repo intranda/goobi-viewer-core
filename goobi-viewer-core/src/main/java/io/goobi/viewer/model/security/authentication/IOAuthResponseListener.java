@@ -27,20 +27,22 @@ public interface IOAuthResponseListener {
     /**
      * Make an OAuth provider issuing an authentication request eligible for receiving a response
      *
-     * @param provider  The provider issuing the request
+     * @param provider The provider issuing the request
      */
     public void register(OpenIdProvider provider);
+
     /**
-     * Removing a provider from the list of issuers waiting for a response. To be called either after a request has been answered or if an
-     * answer is no longer expected
+     * Removing a provider from the list of issuers waiting for a response. To be called either after a request has been answered or if an answer is
+     * no longer expected
      *
-     * @param provider  The provider to remove
+     * @param provider The provider to remove
      */
     public void unregister(OpenIdProvider provider);
+
     /**
      * Gets a list of all registered providers
      *
-     * @return  The registered providers
+     * @return The registered providers
      */
     public Set<OpenIdProvider> getProviders();
 }

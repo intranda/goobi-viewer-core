@@ -770,35 +770,15 @@ public class TocMaker {
                             .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
                     label.setValue(langValue, language);
                 }
-                //                } else {
-                //                    for (String language : languages) {
-                //                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
-                //                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
-                //                        //                        String langValue =
-                //                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
-                //                        label.setValue(langValue, language);
-                //                    }
-                //                }
             }
         } else {
-            // Old style layout
+            // Fallback if no template found
             label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LABEL));
             if (StringUtils.isEmpty(label.toString())) {
                 label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
                 if (StringUtils.isEmpty(label.toString())) {
                     label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT));
-                } else if (DataManager.getInstance().getConfiguration().isTocAlwaysDisplayDocstruct()) {
-                    label.setValue(
-                            new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))
-                                    .append(": ")
-                                    .append(label.getValue())
-                                    .toString());
                 }
-            } else if (DataManager.getInstance().getConfiguration().isTocAlwaysDisplayDocstruct()) {
-                label.setValue(new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))
-                        .append(": ")
-                        .append(label.getValue())
-                        .toString());
             }
         }
 

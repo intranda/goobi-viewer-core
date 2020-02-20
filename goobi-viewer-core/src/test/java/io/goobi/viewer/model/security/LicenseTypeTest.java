@@ -30,7 +30,7 @@ import io.goobi.viewer.model.security.LicenseType;
  *
  */
 public class LicenseTypeTest {
-    
+
     private static final String CONDITION_QUERY_1 = "(DOCTYPE:Monograph AND isWork:true) -DC:privatecollection";
     private static final String CONDITION_FILENAME_1 = "(private|secret)\\..{2-4}";
 
@@ -53,9 +53,10 @@ public class LicenseTypeTest {
         LicenseType type = new LicenseType();
         type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "}");
         Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), StringUtils.isBlank(type.getProcessedConditions()));
-    
+
         type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "} " + CONDITION_QUERY_1);
-        Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));;
+        Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
+        ;
 
         type.setConditions(CONDITION_QUERY_1 + "FILENAME:{" + CONDITION_FILENAME_1 + "}");
         Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
@@ -63,15 +64,16 @@ public class LicenseTypeTest {
         type.setConditions(CONDITION_QUERY_1);
         Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
     }
-    
+
     @Test
     public void testGetFilenameConditions() {
         LicenseType type = new LicenseType();
         type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "}");
         Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));
-    
+
         type.setConditions("FILENAME:{" + CONDITION_FILENAME_1 + "} " + CONDITION_QUERY_1);
-        Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));;
+        Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));
+        ;
 
         type.setConditions(CONDITION_QUERY_1 + "FILENAME:{" + CONDITION_FILENAME_1 + "}");
         Assert.assertTrue("filename conditions are " + type.getFilenameConditions(), type.getFilenameConditions().equals(CONDITION_FILENAME_1));

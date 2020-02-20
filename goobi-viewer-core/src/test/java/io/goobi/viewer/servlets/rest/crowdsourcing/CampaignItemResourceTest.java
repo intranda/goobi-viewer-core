@@ -56,7 +56,6 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
 
     private CampaignItemResource resource;
 
-    
     /**
      * @throws java.lang.Exception
      */
@@ -75,11 +74,12 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         CampaignItem item = resource.getItemForManifest(1l, "PPN1234");
         Assert.assertNotNull(item);
         Assert.assertEquals(campaign, item.getCampaign());
-        
-        URI manifestUrl = new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI("PPN1234");
+
+        URI manifestUrl = new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()))
+                .getManifestURI("PPN1234");
         Assert.assertEquals(manifestUrl, item.getSource());
     }
-    
+
     /**
      * Note: setting a user for the status update breaks h2 database
      * 
@@ -89,49 +89,49 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
      */
     @Test
     public void testSetItemForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
-        
-        
+
         String pi = "PPN1234";
         CampaignItem item = resource.getItemForManifest(1l, pi);
-        
+
         User user = DataManager.getInstance().getDao().getUser(1l);
         item.setCreatorURI(user.getIdAsURI());
         item.setRecordStatus(CampaignRecordStatus.REVIEW);
         Assert.assertEquals(user.getIdAsURI(), item.getCreatorURI());
-        
-        
+
         resource.setItemForManifest(item, 1l, pi);
-        
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);    
-        
+
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
+
         Assert.assertEquals(CampaignRecordStatus.REVIEW, campaign.getRecordStatus(pi));
         Assert.assertTrue(campaign.getStatistics().get(pi).getAnnotators().contains(user));
 
     }
-    
+
     @Test
     public void testGetAnnotationsForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
         String pi = "PI 1";
         List<WebAnnotation> annotationList = resource.getAnnotationsForManifest(1l, pi);
         Assert.assertEquals(2, annotationList.size());
     }
-    
+
     @Test
-    public void testSetAnnotationsForManifest() throws ContentNotFoundException, URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+    public void testSetAnnotationsForManifest()
+            throws ContentNotFoundException, URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
         String pi = "PI_10";
-        URI manifestUrl = new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);    
+        URI manifestUrl =
+                new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
 
         WebAnnotation anno = new WebAnnotation();
         anno.setBody(new SimpleResource(URI.create("F")));
         anno.setTarget(new SimpleResource(manifestUrl));
         anno.setGenerator(new Agent(campaign.getQuestions().get(0).getIdAsURI(), AgentType.SOFTWARE, campaign.getTitle()));
-        
+
         AnnotationPage page = new AnnotationPage();
         page.setId(manifestUrl.toString());
         page.setAnnotations(Collections.singletonList(anno));
         resource.setAnnotationsForManifest(Collections.singletonList(page), campaign.getId(), pi);
-                
+
         Assert.assertFalse(DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).isEmpty());
         WebAnnotation anno2 = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).get(0).getAsAnnotation();
         Assert.assertEquals(anno.getBody(), anno2.getBody());

@@ -63,7 +63,7 @@ public class CmsCollectionsBean implements Serializable {
 
     @Inject
     CmsMediaBean cmsMediaBean;
-    
+
     private CMSCollection currentCollection;
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
@@ -71,7 +71,9 @@ public class CmsCollectionsBean implements Serializable {
     private boolean piValid = true;
 
     /**
-     * <p>Constructor for CmsCollectionsBean.</p>
+     * <p>
+     * Constructor for CmsCollectionsBean.
+     * </p>
      */
     public CmsCollectionsBean() {
         try {
@@ -83,7 +85,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentCollection</code>.</p>
+     * <p>
+     * Getter for the field <code>currentCollection</code>.
+     * </p>
      *
      * @return the currentCollection
      */
@@ -92,7 +96,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentCollection</code>.</p>
+     * <p>
+     * Setter for the field <code>currentCollection</code>.
+     * </p>
      *
      * @param currentCollection the currentCollection to set
      */
@@ -101,7 +107,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>solrField</code>.</p>
+     * <p>
+     * Getter for the field <code>solrField</code>.
+     * </p>
      *
      * @return the solrField
      */
@@ -110,7 +118,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>solrField</code>.</p>
+     * <p>
+     * Setter for the field <code>solrField</code>.
+     * </p>
      *
      * @param solrField the solrField to set
      */
@@ -125,7 +135,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>solrFieldValue</code>.</p>
+     * <p>
+     * Getter for the field <code>solrFieldValue</code>.
+     * </p>
      *
      * @return the solrFieldValue
      */
@@ -134,7 +146,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>solrFieldValue</code>.</p>
+     * <p>
+     * Setter for the field <code>solrFieldValue</code>.
+     * </p>
      *
      * @param solrFieldValue the solrFieldValue to set
      */
@@ -143,7 +157,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>getAllCollectionFields.</p>
+     * <p>
+     * getAllCollectionFields.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -153,7 +169,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>collections</code>.</p>
+     * <p>
+     * Getter for the field <code>collections</code>.
+     * </p>
      *
      * @return the configuredColelctions
      */
@@ -162,7 +180,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>updateCollections.</p>
+     * <p>
+     * updateCollections.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -176,12 +196,14 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>addCollection.</p>
+     * <p>
+     * addCollection.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addCollection() throws DAOException {
-        if(StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {            
+        if (StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {
             CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
             DataManager.getInstance().getDao().addCMSCollection(collection);
             updateCollections();
@@ -196,29 +218,30 @@ public class CmsCollectionsBean implements Serializable {
      */
     private void addToCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
-        if(collectionView != null) {
+        if (collectionView != null) {
             collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
         }
         List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));
     }
-    
 
     /**
      * @param collection
      */
     private void removeFromCollectionViews(CMSCollection collection) {
         CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
-        if(collectionView != null) {
+        if (collectionView != null) {
             collectionView.removeCollectionInfo(collection.getSolrFieldValue());
         }
         List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.removeCollectionInfo(collection.getSolrFieldValue()));
-        
+
     }
 
     /**
-     * <p>deleteCollection.</p>
+     * <p>
+     * deleteCollection.
+     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -229,9 +252,10 @@ public class CmsCollectionsBean implements Serializable {
         updateCollections();
     }
 
-
     /**
-     * <p>editCollection.</p>
+     * <p>
+     * editCollection.
+     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
      * @return a {@link java.lang.String} object.
@@ -244,7 +268,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentLabel.</p>
+     * <p>
+     * getCurrentLabel.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
@@ -254,7 +280,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentDescription.</p>
+     * <p>
+     * getCurrentDescription.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
@@ -264,7 +292,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>saveCurrentCollection.</p>
+     * <p>
+     * saveCurrentCollection.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -280,7 +310,9 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentCollection.</p>
+     * <p>
+     * resetCurrentCollection.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -292,14 +324,13 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsCollections";
     }
 
-    
     /**
      * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr
      *
      * @return a boolean.
      */
     public boolean isCurrentCollectionValid() {
-        if(getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
+        if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
             return piValid;
         } else {
             return true;
@@ -307,14 +338,16 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>validatePI.</p>
+     * <p>
+     * validatePI.
+     * </p>
      *
      * @param context a {@link javax.faces.context.FacesContext} object.
      * @param comp a {@link javax.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
      * @throws javax.faces.validator.ValidatorException if any.
      */
-    public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException{
+    public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
             try {
                 if (!validatePi((String) value)) {

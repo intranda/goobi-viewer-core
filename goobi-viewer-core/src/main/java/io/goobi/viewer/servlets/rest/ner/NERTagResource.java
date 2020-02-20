@@ -51,7 +51,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * <p>NERTagResource class.</p>
+ * <p>
+ * NERTagResource class.
+ * </p>
  */
 @Path("/ner")
 @ViewerRestServiceBinding
@@ -63,7 +65,9 @@ public class NERTagResource {
     private ResourceContext resourceContext;
 
     /**
-     * <p>getTagsForPageJson.</p>
+     * <p>
+     * getTagsForPageJson.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -81,7 +85,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagsForPage.</p>
+     * <p>
+     * getTagsForPage.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -100,7 +106,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagsForPageXml.</p>
+     * <p>
+     * getTagsForPageXml.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -118,7 +126,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagsForPageJson.</p>
+     * <p>
+     * getTagsForPageJson.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -137,7 +147,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagsForPage.</p>
+     * <p>
+     * getTagsForPage.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -158,7 +170,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagsForPageXml.</p>
+     * <p>
+     * getTagsForPageXml.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -212,7 +226,9 @@ public class NERTagResource {
     //    }
 
     /**
-     * <p>getTagsByType.</p>
+     * <p>
+     * getTagsByType.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -276,7 +292,9 @@ public class NERTagResource {
     //    }
 
     /**
-     * <p>getTagsForPageArea.</p>
+     * <p>
+     * getTagsForPageArea.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param startpage a int.
@@ -301,7 +319,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagsForPageArea.</p>
+     * <p>
+     * getTagsForPageArea.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param startpage a int.
@@ -330,7 +350,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagRangesByType.</p>
+     * <p>
+     * getTagRangesByType.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param rangeSize a int.
@@ -352,7 +374,9 @@ public class NERTagResource {
     }
 
     /**
-     * <p>getTagRanges.</p>
+     * <p>
+     * getTagRanges.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param rangeSize a int.

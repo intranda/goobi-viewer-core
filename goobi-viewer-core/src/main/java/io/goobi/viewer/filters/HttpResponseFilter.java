@@ -48,18 +48,17 @@ public class HttpResponseFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
+
         //rest calls should not carry character encoding
         String path = httpRequest.getServletPath();
-        if(!path.equals("/rest")) {            
+        if (!path.equals("/rest")) {
             request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-8");
         }
-        
+
         if (preventProxyCaching) {
             //            if (httpRequest.getRequestURI().contains("OpenLayers"))
             //            logger.debug(httpRequest.getRequestURI());
-            
 
             // Only disable caching if the URI doesn't match the regex
             Pattern p = Pattern.compile(alwaysCacheRegex);
@@ -74,13 +73,13 @@ public class HttpResponseFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
-//        chain.doFilter(request, new HttpServletResponseWrapper((HttpServletResponse) response) {
-//            public void setHeader(String name, String value) {
-//                if (!"etag".equalsIgnoreCase(name)) {
-//                    super.setHeader(name, value);
-//                }
-//            }
-//        });
+        //        chain.doFilter(request, new HttpServletResponseWrapper((HttpServletResponse) response) {
+        //            public void setHeader(String name, String value) {
+        //                if (!"etag".equalsIgnoreCase(name)) {
+        //                    super.setHeader(name, value);
+        //                }
+        //            }
+        //        });
     }
 
     /** {@inheritDoc} */

@@ -47,8 +47,8 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 public class ViewerPathBuilder {
 
     /**
-     * Returns the request path of the given {@code httpRequest} as a {@link io.goobi.viewer.model.urlresolution.ViewerPath}, including information on associated CMSPage and targeted
-     * PageType
+     * Returns the request path of the given {@code httpRequest} as a {@link io.goobi.viewer.model.urlresolution.ViewerPath}, including information on
+     * associated CMSPage and targeted PageType
      *
      * If the url has a pretty-url context and only consists of the server url, "/index" is appended to the url to redirect to the index
      * pretty-mapping Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
@@ -72,7 +72,9 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * <p>createPath.</p>
+     * <p>
+     * createPath.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param baseUrl a {@link java.lang.String} object.
@@ -184,7 +186,9 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * <p>getCampaign.</p>
+     * <p>
+     * getCampaign.
+     * </p>
      *
      * @param servicePath a {@link java.net.URI} object.
      * @return a {@link java.util.Optional} object.
@@ -254,7 +258,9 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * <p>resolve.</p>
+     * <p>
+     * resolve.
+     * </p>
      *
      * @param master a {@link java.net.URI} object.
      * @param slave a {@link java.net.URI} object.
@@ -265,7 +271,9 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * <p>resolve.</p>
+     * <p>
+     * resolve.
+     * </p>
      *
      * @param master a {@link java.net.URI} object.
      * @param slave a {@link java.lang.String} object.

@@ -19,7 +19,9 @@ package io.goobi.viewer.model.calendar;
 import io.goobi.viewer.controller.Helper;
 
 /**
- * <p>Abstract AbstractCalendarItem class.</p>
+ * <p>
+ * Abstract AbstractCalendarItem class.
+ * </p>
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
@@ -29,7 +31,9 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     protected boolean selected = false;
 
     /**
-     * <p>Constructor for AbstractCalendarItem.</p>
+     * <p>
+     * Constructor for AbstractCalendarItem.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param value a int.

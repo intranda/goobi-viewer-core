@@ -26,7 +26,9 @@ public class UrlParameterSeparator {
     int index = 0;
 
     /**
-     * <p>getChar.</p>
+     * <p>
+     * getChar.
+     * </p>
      *
      * @return {@code ?} the first time it is called, and {@code &} any subsequent time
      */
@@ -36,4 +38,3 @@ public class UrlParameterSeparator {
     }
 
 }
-

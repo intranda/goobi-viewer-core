@@ -53,7 +53,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
- * <p>RSSFeed class.</p>
+ * <p>
+ * RSSFeed class.
+ * </p>
  */
 public class RSSFeed {
     /**
@@ -71,7 +73,9 @@ public class RSSFeed {
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
-     * <p>createRss.</p>
+     * <p>
+     * createRss.
+     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -87,7 +91,9 @@ public class RSSFeed {
     }
 
     /**
-     * <p>getFieldsWithTranslation.</p>
+     * <p>
+     * getFieldsWithTranslation.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.util.List} object.
@@ -102,7 +108,9 @@ public class RSSFeed {
     }
 
     /**
-     * <p>createRss.</p>
+     * <p>
+     * createRss.
+     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -361,7 +369,9 @@ public class RSSFeed {
     }
 
     /**
-     * <p>createRssFeed.</p>
+     * <p>
+     * createRssFeed.
+     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -377,7 +387,9 @@ public class RSSFeed {
     }
 
     /**
-     * <p>createRssFeed.</p>
+     * <p>
+     * createRssFeed.
+     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -622,7 +634,9 @@ public class RSSFeed {
     }
 
     /**
-     * <p>createLink.</p>
+     * <p>
+     * createLink.
+     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
@@ -636,7 +650,9 @@ public class RSSFeed {
     }
 
     /**
-     * <p>createImageUrl.</p>
+     * <p>
+     * createImageUrl.
+     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param anchor a boolean.

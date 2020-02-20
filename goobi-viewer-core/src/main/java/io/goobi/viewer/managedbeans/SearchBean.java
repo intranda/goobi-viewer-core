@@ -111,7 +111,9 @@ public class SearchBean implements SearchInterface, Serializable {
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
-    UserBean userBean;
+    private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private UserBean userBean;
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPage();
@@ -206,8 +208,8 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
-        if (navigationHelper != null) {
-            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        if (breadcrumbBean != null) {
+            breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
         }
         resetSearchResults();
         executeSearch();
@@ -294,8 +296,8 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
-        if (navigationHelper != null) {
-            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        if (breadcrumbBean != null) {
+            breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
         }
         resetSearchResults();
         if (resetParameters) {

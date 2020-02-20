@@ -23,29 +23,31 @@ import javax.faces.convert.FacesConverter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <p>FloatingNumberConverter class.</p>
+ * <p>
+ * FloatingNumberConverter class.
+ * </p>
  *
  * @author Florian Alpers
  */
 @FacesConverter("floatingNumberConverter")
-public class FloatingNumberConverter implements Converter{
+public class FloatingNumberConverter implements Converter {
 
     private static final String REPLACEMENT_REGEX = "[^0-9.+-]";
-    
+
     /** {@inheritDoc} */
     @Override
     public Object getAsObject(final FacesContext context, final UIComponent component, String value) {
-        if(StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             return null;
         }
         value = value.replace(",", ".");
         value = value.replaceAll(REPLACEMENT_REGEX, "");
-        if(StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             return null;
         } else {
-            try {                
+            try {
                 return Double.parseDouble(value);
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 return null;
             }
         }
@@ -54,14 +56,14 @@ public class FloatingNumberConverter implements Converter{
     /** {@inheritDoc} */
     @Override
     public String getAsString(final FacesContext context, final UIComponent component, final Object object) {
-        if(object == null) {
+        if (object == null) {
             return "";
         }
-        if(object instanceof String) {
-            return (String)object;
+        if (object instanceof String) {
+            return (String) object;
         }
-        if(object instanceof Number) {
-            return Double.toString(((Number)object).doubleValue());
+        if (object instanceof Number) {
+            return Double.toString(((Number) object).doubleValue());
         }
         return "";
     }

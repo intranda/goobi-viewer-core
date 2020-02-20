@@ -39,7 +39,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * <p>TranskribusJob class.</p>
+ * <p>
+ * TranskribusJob class.
+ * </p>
  */
 @Entity
 @Table(name = "transkribus_jobs")
@@ -124,7 +126,9 @@ public class TranskribusJob implements Serializable {
     protected List<String> observers = new ArrayList<>();
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -133,7 +137,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -142,7 +148,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>jobId</code>.</p>
+     * <p>
+     * Getter for the field <code>jobId</code>.
+     * </p>
      *
      * @return the jobId
      */
@@ -151,7 +159,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>jobId</code>.</p>
+     * <p>
+     * Setter for the field <code>jobId</code>.
+     * </p>
      *
      * @param jobId the jobId to set
      */
@@ -160,7 +170,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>docId</code>.</p>
+     * <p>
+     * Getter for the field <code>docId</code>.
+     * </p>
      *
      * @return the docId
      */
@@ -169,7 +181,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>docId</code>.</p>
+     * <p>
+     * Setter for the field <code>docId</code>.
+     * </p>
      *
      * @param docId the docId to set
      */
@@ -178,7 +192,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -187,7 +203,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -196,7 +214,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>ownerId</code>.</p>
+     * <p>
+     * Getter for the field <code>ownerId</code>.
+     * </p>
      *
      * @return the ownerId
      */
@@ -205,7 +225,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>ownerId</code>.</p>
+     * <p>
+     * Setter for the field <code>ownerId</code>.
+     * </p>
      *
      * @param ownerId the ownerId to set
      */
@@ -214,7 +236,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>userCollectionId</code>.</p>
+     * <p>
+     * Getter for the field <code>userCollectionId</code>.
+     * </p>
      *
      * @return the userCollectionId
      */
@@ -223,7 +247,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>userCollectionId</code>.</p>
+     * <p>
+     * Setter for the field <code>userCollectionId</code>.
+     * </p>
      *
      * @param userCollectionId the userCollectionId to set
      */
@@ -232,7 +258,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>viewerCollectionId</code>.</p>
+     * <p>
+     * Getter for the field <code>viewerCollectionId</code>.
+     * </p>
      *
      * @return the viewerCollectionId
      */
@@ -241,7 +269,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>viewerCollectionId</code>.</p>
+     * <p>
+     * Setter for the field <code>viewerCollectionId</code>.
+     * </p>
      *
      * @param viewerCollectionId the viewerCollectionId to set
      */
@@ -250,7 +280,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>message</code>.</p>
+     * <p>
+     * Getter for the field <code>message</code>.
+     * </p>
      *
      * @return the message
      */
@@ -259,7 +291,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>message</code>.</p>
+     * <p>
+     * Setter for the field <code>message</code>.
+     * </p>
      *
      * @param message the message to set
      */
@@ -268,7 +302,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @return the dateCreated
      */
@@ -277,7 +313,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -286,7 +324,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>status</code>.</p>
+     * <p>
+     * Getter for the field <code>status</code>.
+     * </p>
      *
      * @return the status
      */
@@ -295,7 +335,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>status</code>.</p>
+     * <p>
+     * Setter for the field <code>status</code>.
+     * </p>
      *
      * @param status the status to set
      */
@@ -304,7 +346,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -313,7 +357,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -322,7 +368,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>observers</code>.</p>
+     * <p>
+     * Getter for the field <code>observers</code>.
+     * </p>
      *
      * @return the observers
      */
@@ -331,7 +379,9 @@ public class TranskribusJob implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>observers</code>.</p>
+     * <p>
+     * Setter for the field <code>observers</code>.
+     * </p>
      *
      * @param observers the observers to set
      */

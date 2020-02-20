@@ -19,7 +19,9 @@ import java.util.Comparator;
 import java.util.Locale;
 
 /**
- * <p>LocaleComparator class.</p>
+ * <p>
+ * LocaleComparator class.
+ * </p>
  */
 public class LocaleComparator implements Comparator<Locale> {
 
@@ -27,7 +29,9 @@ public class LocaleComparator implements Comparator<Locale> {
     private final Locale secondaryLocale;
 
     /**
-     * <p>Constructor for LocaleComparator.</p>
+     * <p>
+     * Constructor for LocaleComparator.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      */

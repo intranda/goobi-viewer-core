@@ -79,7 +79,9 @@ public class WebAnnotationResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for WebAnnotationResource.</p>
+     * <p>
+     * Constructor for WebAnnotationResource.
+     * </p>
      */
     public WebAnnotationResource() {
     }
@@ -120,9 +122,9 @@ public class WebAnnotationResource {
         if (comment == null) {
             throw new ContentNotFoundException("Resource not found");
         }
-        
+
         WebAnnotation anno = createAnnotation(comment);
-        
+
         return anno;
     }
 
@@ -132,15 +134,17 @@ public class WebAnnotationResource {
      * @throws URISyntaxException
      */
     private WebAnnotation createAnnotation(Comment comment) {
-            URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + comment.getPi() + "/" + comment.getPage() + "/" + comment.getId());
-            WebAnnotation anno = new WebAnnotation(resourceId);
-            anno.setBody(new TextualResource(comment.getText()));
-            anno.setTarget(new SimpleResource(new SequenceBuilder(servletRequest).getCanvasURI(comment.getPi(), comment.getPage())));
-            anno.setCreated(comment.getDateCreated());
-            anno.setModified(comment.getDateUpdated());
-            anno.setCreator(createAgent(comment.getOwner()));
-            anno.setGenerator(new Agent(URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)), AgentType.SOFTWARE, "Goobi viewer"));
-            return anno;
+        URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + comment.getPi() + "/"
+                + comment.getPage() + "/" + comment.getId());
+        WebAnnotation anno = new WebAnnotation(resourceId);
+        anno.setBody(new TextualResource(comment.getText()));
+        anno.setTarget(new SimpleResource(new SequenceBuilder(servletRequest).getCanvasURI(comment.getPi(), comment.getPage())));
+        anno.setCreated(comment.getDateCreated());
+        anno.setModified(comment.getDateUpdated());
+        anno.setCreator(createAgent(comment.getOwner()));
+        anno.setGenerator(
+                new Agent(URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)), AgentType.SOFTWARE, "Goobi viewer"));
+        return anno;
     }
 
     /**
@@ -148,8 +152,9 @@ public class WebAnnotationResource {
      * @return
      */
     private Agent createAgent(User owner) {
-            Agent agent = new Agent(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/" + owner.getId()), AgentType.PERSON, owner.getDisplayName());
-            return agent;
+        Agent agent = new Agent(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/" + owner.getId()), AgentType.PERSON,
+                owner.getDisplayName());
+        return agent;
     }
 
     /**
@@ -171,24 +176,24 @@ public class WebAnnotationResource {
     @Path("comments/{pi}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public AnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
-            throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
+    public AnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page) throws PresentationException,
+            DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
-        
+
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi + "/" + page);
 
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(resourceId, comments.size())
-                .setLabel(ViewerResourceBundle.getTranslations("userComments"))
-                .setItemsPerPage(comments.size())
-                .setPageUrlPrefix("page");
+        AnnotationCollectionBuilder builder =
+                new AnnotationCollectionBuilder(resourceId, comments.size()).setLabel(ViewerResourceBundle.getTranslations("userComments"))
+                        .setItemsPerPage(comments.size())
+                        .setPageUrlPrefix("page");
         AnnotationCollection collection = builder.buildCollection();
         AnnotationPage first = builder.buildPage(comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 1);
         collection.setFirst(first);
-        
+
         return collection;
     }
 
@@ -211,27 +216,25 @@ public class WebAnnotationResource {
     @Path("comments/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public AnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi)
-            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
-        
+    public AnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
+            DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
 
-        
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
-        
+
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi);
-        
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(resourceId, comments.size())
-                .setLabel(ViewerResourceBundle.getTranslations("userComments"))
-                .setItemsPerPage(comments.size())
-                .setPageUrlPrefix("page");
+
+        AnnotationCollectionBuilder builder =
+                new AnnotationCollectionBuilder(resourceId, comments.size()).setLabel(ViewerResourceBundle.getTranslations("userComments"))
+                        .setItemsPerPage(comments.size())
+                        .setPageUrlPrefix("page");
         AnnotationCollection collection = builder.buildCollection();
         AnnotationPage first = builder.buildPage(comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 1);
         collection.setFirst(first);
-        
+
         return collection;
     }
 

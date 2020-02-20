@@ -38,7 +38,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility
 public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private CrowdsourcingBean bean = new CrowdsourcingBean();
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -68,24 +68,24 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(1, numPrivate);
         Assert.assertEquals(0, numRestricted);
     }
-    
+
     @Test
     public void testGetAllCampaigns() throws DAOException {
         List<Campaign> campaigns = bean.getAllCampaigns();
         Assert.assertEquals(2, campaigns.size());
 
     }
-    
+
     @Test
     public void testSaveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
         bean.setSelectedCampaignId("1");
         Assert.assertNotNull(bean.getSelectedCampaign());
-        
+
         Date created = new Date();
         bean.getSelectedCampaign().setDateCreated(created);
         Assert.assertEquals("Date created does not match after setting", created, bean.getSelectedCampaign().getDateCreated());
         bean.saveSelectedCampaign();
-        
+
         bean.setSelectedCampaignId("1");
         Assert.assertEquals("Date created does not match in database", created, bean.getSelectedCampaign().getDateCreated());
     }

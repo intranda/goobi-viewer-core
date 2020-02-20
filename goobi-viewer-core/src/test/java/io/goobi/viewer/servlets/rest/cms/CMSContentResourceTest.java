@@ -94,8 +94,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.servlets.rest.cms.CMSContentResource#getContentUrl(io.goobi.viewer.model.cms.CMSContentItem)}.
+     * Test method for {@link io.goobi.viewer.servlets.rest.cms.CMSContentResource#getContentUrl(io.goobi.viewer.model.cms.CMSContentItem)}.
      * 
      * @throws DAOException
      * @throws CmsElementNotFoundException
@@ -111,8 +110,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.servlets.rest.cms.CMSContentResource#getSidebarElementUrl(io.goobi.viewer.model.cms.CMSSidebarElement)}.
+     * Test method for {@link io.goobi.viewer.servlets.rest.cms.CMSContentResource#getSidebarElementUrl(io.goobi.viewer.model.cms.CMSSidebarElement)}.
      * 
      * @throws DAOException
      */

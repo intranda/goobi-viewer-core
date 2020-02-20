@@ -76,7 +76,9 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
- * <p>ManifestResource class.</p>
+ * <p>
+ * ManifestResource class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -185,7 +187,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>autoCompleteInManifest.</p>
+     * <p>
+     * autoCompleteInManifest.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -598,7 +602,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>manifestBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>manifestBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.
      */
@@ -610,7 +616,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>sequenceBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>sequenceBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
      */
@@ -622,7 +630,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>layerBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>layerBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder} object.
      */

@@ -21,19 +21,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>Glossary class.</p>
+ * <p>
+ * Glossary class.
+ * </p>
  *
  * @author Florian Alpers
  */
 @JsonInclude(Include.NON_NULL)
 public class Glossary {
-    
+
     private final String title;
     private final String filename;
     private final String description;
     private List<GlossaryRecord> records;
+
     /**
-     * <p>Constructor for Glossary.</p>
+     * <p>
+     * Constructor for Glossary.
+     * </p>
      *
      * @param title a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
@@ -45,42 +50,55 @@ public class Glossary {
         this.filename = filename;
         this.description = description;
     }
+
     /**
-     * <p>Getter for the field <code>title</code>.</p>
+     * <p>
+     * Getter for the field <code>title</code>.
+     * </p>
      *
      * @return the title
      */
     public String getTitle() {
         return title;
     }
+
     /**
-     * <p>Getter for the field <code>filename</code>.</p>
+     * <p>
+     * Getter for the field <code>filename</code>.
+     * </p>
      *
      * @return the filename
      */
     public String getFilename() {
         return filename;
     }
+
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
     public String getDescription() {
         return description;
     }
-    
+
     /**
-     * <p>Getter for the field <code>records</code>.</p>
+     * <p>
+     * Getter for the field <code>records</code>.
+     * </p>
      *
      * @return the records
      */
     public List<GlossaryRecord> getRecords() {
         return records;
     }
-    
+
     /**
-     * <p>Setter for the field <code>records</code>.</p>
+     * <p>
+     * Setter for the field <code>records</code>.
+     * </p>
      *
      * @param records the records to set
      */

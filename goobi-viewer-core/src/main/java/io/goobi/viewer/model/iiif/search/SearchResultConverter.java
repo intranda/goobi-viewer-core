@@ -80,7 +80,6 @@ public class SearchResultConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(IIIFSearchBuilder.class);
 
-    
     private static final int MAX_TEXT_LENGTH = 20;
 
     private final AltoAnnotationBuilder altoBuilder = new AltoAnnotationBuilder();
@@ -94,10 +93,10 @@ public class SearchResultConverter {
     /**
      * Create a new converter; parameters are used to construct urls or result resources
      *
-     * @param requestURI    The URI of the search request
-     * @param restApiURI    The URI of the viewer rest api
-     * @param pi            The PI of the manifest to search
-     * @param pageNo        The page number of generated resources
+     * @param requestURI The URI of the search request
+     * @param restApiURI The URI of the viewer rest api
+     * @param pi The PI of the manifest to search
+     * @param pageNo The page number of generated resources
      */
     public SearchResultConverter(URI requestURI, URI restApiURI, String pi, Integer pageNo) {
         this.presentationBuilder = new AbstractBuilder(requestURI, restApiURI) {
@@ -107,7 +106,9 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      */
@@ -116,7 +117,9 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -125,7 +128,9 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>Setter for the field <code>pageNo</code>.</p>
+     * <p>
+     * Setter for the field <code>pageNo</code>.
+     * </p>
      *
      * @param pageNo a {@link java.lang.Integer} object.
      */
@@ -134,7 +139,9 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>Getter for the field <code>pageNo</code>.</p>
+     * <p>
+     * Getter for the field <code>pageNo</code>.
+     * </p>
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -143,20 +150,22 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>Getter for the field <code>presentationBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>presentationBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder} object.
      */
     public AbstractBuilder getPresentationBuilder() {
         return presentationBuilder;
     };
-    
+
     /**
      * Generates a search hit from a {@link io.goobi.viewer.model.annotation.Comment}
      *
-     * @param pi            The PI of the work containing the comment
-     * @param queryRegex    The regex matching the search terms
-     * @param comment       The comment containing the search terms
+     * @param pi The PI of the work containing the comment
+     * @param queryRegex The regex matching the search terms
+     * @param comment The comment containing the search terms
      * @return a {@link de.intranda.api.iiif.search.SearchHit}
      */
     public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
@@ -189,12 +198,12 @@ public class SearchResultConverter {
 
         return hit;
     }
-    
+
     /**
      * Create a IIIF Search hit from a UGC solr document (usually a crowdsouring created comment/metadata)
      *
      * @param queryRegex a {@link java.lang.String} object.
-     * @return  A search hit matching the queryRegex within the given UGC SolrDocument
+     * @return A search hit matching the queryRegex within the given UGC SolrDocument
      * @param ugc a {@link org.apache.solr.common.SolrDocument} object.
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
@@ -231,7 +240,6 @@ public class SearchResultConverter {
         return hit;
     }
 
-    
     /**
      * Create a IIIF Search hit from the field fieldName within the SolrDocumnet doc
      *
@@ -268,72 +276,73 @@ public class SearchResultConverter {
         hit.addAnnotation(anno);
         return hit;
     }
-    
 
     /**
-     *  Create annotations for all matches of the given query within the given alto file
+     * Create annotations for all matches of the given query within the given alto file
      *
-     * @param doc  The {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument}
-     * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more annotations referencing alto word or line elements
-     * @return  A result list containing hits for each mach of the query and annotations containing the hits
+     * @param doc The {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument}
+     * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
+     *            annotations referencing alto word or line elements
+     * @return A result list containing hits for each mach of the query and annotations containing the hits
      */
     public AnnotationResultList getAnnotationsFromAlto(AltoDocument doc, String query) {
         AnnotationResultList results = new AnnotationResultList();
-            AltoSearchParser parser = new AltoSearchParser();
-            List<Word> words = parser.getWords(doc);
-            if(!words.isEmpty()) {
-                List<List<Word>> matches = parser.findWordMatches(words, query);
-                for (List<Word> wordsHit : matches) {
-                    SearchHit hit = convertAltoToHit(wordsHit);
+        AltoSearchParser parser = new AltoSearchParser();
+        List<Word> words = parser.getWords(doc);
+        if (!words.isEmpty()) {
+            List<List<Word>> matches = parser.findWordMatches(words, query);
+            for (List<Word> wordsHit : matches) {
+                SearchHit hit = convertAltoToHit(wordsHit);
+                results.add(hit);
+            }
+        } else {
+            List<Line> lines = parser.getLines(doc);
+            if (!lines.isEmpty()) {
+                Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, query);
+                for (Range<Integer> position : hits.keySet()) {
+                    List<Line> containingLines = hits.get(position);
+                    SearchHit hit = createAltoHit(lines, position, containingLines);
                     results.add(hit);
                 }
-            } else {
-                List<Line> lines = parser.getLines(doc);
-                if(!lines.isEmpty()) {
-                    Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, query);
-                    for (Range<Integer> position : hits.keySet()) {
-                        List<Line> containingLines = hits.get(position);
-                        SearchHit hit = createAltoHit(lines, position, containingLines);
-                        results.add(hit);
-                    }
-                }
             }
+        }
         return results;
     }
 
     /**
-     *  Create annotations for all matches of the given query within the given text file
-     *  Returns only a partial result if the firstIndex is larger than 0 and numHits is smaller than the total number of hits
+     * Create annotations for all matches of the given query within the given text file Returns only a partial result if the firstIndex is larger than
+     * 0 and numHits is smaller than the total number of hits
      *
-     * @param text              the text to search
-     * @param pi                the PI of the work containing the annotations
-     * @param pageNo            The page number of the canvas containing the annotations
-     * @param query             The regex matching all hits in the text file
-     * @param previousHitCount  The number of hits already found in previous pages
-     * @param firstIndex        The index of the first overal hit to be returned in the result itself. Larger than 0 only for later pages within a paged annotation collection
-     * @param numHits           The maximal number of hits to be returned in the result itself. This is the maximal size of the hit list within a single result page of a paged annotation collection
-     * @return  A result list containing all matching hits within the range set by previousHitCount, firstIndex and numHits
+     * @param text the text to search
+     * @param pi the PI of the work containing the annotations
+     * @param pageNo The page number of the canvas containing the annotations
+     * @param query The regex matching all hits in the text file
+     * @param previousHitCount The number of hits already found in previous pages
+     * @param firstIndex The index of the first overal hit to be returned in the result itself. Larger than 0 only for later pages within a paged
+     *            annotation collection
+     * @param numHits The maximal number of hits to be returned in the result itself. This is the maximal size of the hit list within a single result
+     *            page of a paged annotation collection
+     * @return A result list containing all matching hits within the range set by previousHitCount, firstIndex and numHits
      */
-    public AnnotationResultList getAnnotationsFromFulltext(String text, String pi, Integer pageNo, String query,
-            long previousHitCount, int firstIndex, int numHits) {
+    public AnnotationResultList getAnnotationsFromFulltext(String text, String pi, Integer pageNo, String query, long previousHitCount,
+            int firstIndex, int numHits) {
         AnnotationResultList results = new AnnotationResultList();
-            long firstPageHitIndex = previousHitCount;
-            long lastPageHitIndex = firstPageHitIndex;
-            if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
-                results.add(createFulltextHit(query, text, pi, pageNo));
-            }
+        long firstPageHitIndex = previousHitCount;
+        long lastPageHitIndex = firstPageHitIndex;
+        if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
+            results.add(createFulltextHit(query, text, pi, pageNo));
+        }
         return results;
     }
-    
 
     /**
      * Get all matches to the given regex in the fieldsToSearch of the given doc as {@link SearchTerm SearchTerms}
      *
      * @param regex A regex matching all text wich should be returned as a searchTerm
-     * @param doc   The document within to search
-     * @param fieldsToSearch    The fields to search for the regex
-     * @param searchMotivation  The motivation to be set for the search url of the searchTerms
-     * @return  A list of search terms
+     * @param doc The document within to search
+     * @param fieldsToSearch The fields to search for the regex
+     * @param searchMotivation The motivation to be set for the search url of the searchTerms
+     * @return A list of search terms
      */
     public SearchTermList getSearchTerms(String regex, SolrDocument doc, List<String> fieldsToSearch, List<String> searchMotivation) {
         SearchTermList terms = new SearchTermList();
@@ -349,8 +358,8 @@ public class SearchResultConverter {
      *
      * @param regex A regex matching all text wich should be returned as a searchTerm
      * @param value The text to be searched with the regex
-     * @param searchMotivation  The motivation to be set for the search url of the searchTerms
-     * @return  A list of search terms
+     * @param searchMotivation The motivation to be set for the search url of the searchTerms
+     * @return A list of search terms
      */
     public SearchTermList getSearchTerms(String regex, String value, List<String> searchMotivation) {
         SearchTermList terms = new SearchTermList();
@@ -369,8 +378,8 @@ public class SearchResultConverter {
     /**
      * Convert a list of also word elements to a search hit, containing an annotation for each word in the list
      *
-     * @param altoElements  A list of ALTO word elements
-     * @return  A hit of the combined words
+     * @param altoElements A list of ALTO word elements
+     * @return A hit of the combined words
      */
     public SearchHit convertAltoToHit(List<Word> altoElements) {
         SearchHit hit = new SearchHit();
@@ -393,10 +402,10 @@ public class SearchResultConverter {
     /**
      * Creates a {@link de.intranda.api.iiif.search.SearchHit} of the text within the given position within the given lines.
      *
-     * @param lines             The lines containing the hit
-     * @param position          A range covering character positions of the matched text. the position is relative to the entire text of the given lines
-     * @param containingLines   The lines to be included as annotations in the hit
-     * @return  A search hit containing the match at the given position
+     * @param lines The lines containing the hit
+     * @param position A range covering character positions of the matched text. the position is relative to the entire text of the given lines
+     * @param containingLines The lines to be included as annotations in the hit
+     * @return A search hit containing the match at the given position
      */
     public SearchHit createAltoHit(List<Line> lines, Range<Integer> position, List<Line> containingLines) {
         SearchHit hit = new SearchHit();
@@ -427,28 +436,28 @@ public class SearchResultConverter {
     /**
      * Create a SearchHit for the given text. Each match of the given queryRegex in the text is included as a TextQuoteSelector in the hit
      *
-     * @param queryRegex        The regex matching the hit
-     * @param text              The text to search
-     * @param pi                The PI of the manifest containing the annotations
-     * @param pageNo            The order of the canvas containing the annotations
-     * @return  A search hit containing a TextQuoteSelector for each match of the regex and a single annotations covering the entire text
+     * @param queryRegex The regex matching the hit
+     * @param text The text to search
+     * @param pi The PI of the manifest containing the annotations
+     * @param pageNo The order of the canvas containing the annotations
+     * @return A search hit containing a TextQuoteSelector for each match of the regex and a single annotations covering the entire text
      */
     public SearchHit createFulltextHit(String queryRegex, String text, String pi, Integer pageNo) {
 
         SearchHit hit = new SearchHit();
 
         String regex = AbstractSearchParser.getSingleWordRegex(queryRegex);
-        
+
         Matcher m = Pattern.compile(regex).matcher(text);
         while (m.find()) {
-        
+
             String match = m.group(1);
             int indexStart = m.start(1);
             int indexEnd = m.end(1);
-            
+
             String before = AbstractSearchParser.getPrecedingText(text, indexStart, MAX_TEXT_LENGTH);
             String after = AbstractSearchParser.getSucceedingText(text, indexEnd, MAX_TEXT_LENGTH);
-    
+
             hit.setMatch(match);
             TextQuoteSelector selector = new TextQuoteSelector();
             selector.setFragment(match);
@@ -460,13 +469,13 @@ public class SearchResultConverter {
             }
             hit.addSelector(selector);
         }
-        
+
         IResource canvas = createSimpleCanvasResource(pi, pageNo);
         URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT);
         URI uri = getAnnotationId(baseURI.toString(), "plaintext");
         IAnnotation pageAnnotation = createAnnotation(text, canvas, uri);
         hit.addAnnotation(pageAnnotation);
-        
+
         return hit;
     }
 
@@ -485,9 +494,9 @@ public class SearchResultConverter {
         String id = pi + "/" + (StringUtils.isNotBlank(logId) ? (logId + "/") : "") + metadataField;
         OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, id));
         anno.setMotivation(Motivation.DESCRIBING);
-        if(thumbPageNo != null) {
+        if (thumbPageNo != null) {
             anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));
-        } else {            
+        } else {
             if (Boolean.TRUE.equals(isWork)) {
                 anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(pi)));
             } else {
@@ -502,17 +511,18 @@ public class SearchResultConverter {
 
         return anno;
     }
-    
+
     /**
      * Create an annotation from an ALTO element
      * 
-     * @param altoElement   The alto xml element
-     * @return  An annotation representing the element
+     * @param altoElement The alto xml element
+     * @return An annotation representing the element
      */
     private IAnnotation createAnnotation(GeometricData altoElement) {
         return altoBuilder.createAnnotation(altoElement, createSimpleCanvasResource(getPi(), getPageNo()),
                 getAnnotationListURI(getPi(), getPageNo(), AnnotationType.ALTO).toString(), true);
     }
+
     /**
      * create a text annotation with the given text in the given canvas
      */
@@ -524,7 +534,7 @@ public class SearchResultConverter {
         anno.setBody(body);
         return anno;
     }
-    
+
     private IAnnotation createAnnotation(String pi, Comment comment) {
         OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
         anno.setMotivation(Motivation.COMMENTING);
@@ -535,14 +545,12 @@ public class SearchResultConverter {
         return anno;
     }
 
-    
     /**
-     * Create a URI-only resource for a page. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width
-     * and height
+     * Create a URI-only resource for a page. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width and height
      * 
-     * @param pi        PI of the work containing the page
-     * @param pageNo    page number (ORDER) of the page
-     * @return      A URI to a canvas resource
+     * @param pi PI of the work containing the page
+     * @param pageNo page number (ORDER) of the page
+     * @return A URI to a canvas resource
      */
     private IResource createSimpleCanvasResource(String pi, int pageNo) {
         Dimension pageSize = solrParser.getPageSize(pi, pageNo);
@@ -553,7 +561,7 @@ public class SearchResultConverter {
             return new SpecificResourceURI(getPresentationBuilder().getCanvasURI(pi, pageNo), selector);
         }
     }
-    
+
     /**
      * Return a URI to an annotation list for the given pi and pageNo
      */

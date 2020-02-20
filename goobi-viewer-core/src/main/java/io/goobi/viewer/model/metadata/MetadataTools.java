@@ -503,10 +503,10 @@ public class MetadataTools {
                     continue;
                 }
             }
-            
+
             switch (replaceRule.getType()) {
                 case CHAR:
-                StringBuffer sb = new StringBuffer();
+                    StringBuffer sb = new StringBuffer();
                     sb.append(replaceRule.getKey());
                     ret = ret.replace(sb.toString(), replaceRule.getReplacement());
                     break;
@@ -519,8 +519,8 @@ public class MetadataTools {
                 default:
                     logger.error("Unknown replacement key type of '{}: {}", replaceRule.getKey(), replaceRule.getKey().getClass().getName());
                     break;
-                }
             }
+        }
 
         return ret;
     }

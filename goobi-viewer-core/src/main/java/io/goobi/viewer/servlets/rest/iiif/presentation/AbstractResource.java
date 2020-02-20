@@ -27,19 +27,20 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>Abstract AbstractResource class.</p>
+ * <p>
+ * Abstract AbstractResource class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public abstract class AbstractResource {
 
-    
     /**
      * Default constructor
      */
     public AbstractResource() {
     }
-    
+
     /**
      * Unit test constructor injecting request and response
      *
@@ -50,27 +51,32 @@ public abstract class AbstractResource {
         this.servletRequest = request;
         this.servletResponse = response;
     }
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
-    
+
     /**
-     * <p>getServletURI.</p>
+     * <p>
+     * getServletURI.
+     * </p>
      *
      * @return the servletURI
      */
     public URI getServletURI() {
-        return  URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
+        return URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
     }
-    
+
     /**
-     * <p>getRequestURI.</p>
+     * <p>
+     * getRequestURI.
+     * </p>
      *
      * @return the requestURI
      */
     public URI getRequestURI() {
-        return URI.create(
-                ServletUtils.getServletPathWithoutHostAsUrlFromRequest(servletRequest) + servletRequest.getRequestURI() + "?" + servletRequest.getQueryString());
+        return URI.create(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(servletRequest) + servletRequest.getRequestURI() + "?"
+                + servletRequest.getQueryString());
     }
-    
+
     @Context
     protected HttpServletRequest servletRequest;
     @Context

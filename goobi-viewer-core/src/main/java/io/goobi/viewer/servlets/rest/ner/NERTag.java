@@ -29,7 +29,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>NERTag class.</p>
+ * <p>
+ * NERTag class.
+ * </p>
  */
 @XmlRootElement(name = "tag")
 @XmlType(propOrder = { "id", "type", "value", "element" })
@@ -71,7 +73,9 @@ public class NERTag {
     private ElementReference element;
 
     /**
-     * <p>Constructor for NERTag.</p>
+     * <p>
+     * Constructor for NERTag.
+     * </p>
      */
     public NERTag() {
         this.id = null;
@@ -81,7 +85,9 @@ public class NERTag {
     }
 
     /**
-     * <p>Constructor for NERTag.</p>
+     * <p>
+     * Constructor for NERTag.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -96,7 +102,9 @@ public class NERTag {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -106,7 +114,9 @@ public class NERTag {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -116,7 +126,9 @@ public class NERTag {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
      */
@@ -126,7 +138,9 @@ public class NERTag {
     }
 
     /**
-     * <p>Getter for the field <code>element</code>.</p>
+     * <p>
+     * Getter for the field <code>element</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
      */
@@ -135,7 +149,9 @@ public class NERTag {
     }
 
     /**
-     * <p>Setter for the field <code>element</code>.</p>
+     * <p>
+     * Setter for the field <code>element</code>.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
      */
@@ -162,8 +178,8 @@ public class NERTag {
             NERTag other = (NERTag) obj;
             if ((this.getId() == null && other.getId() == null) || this.getId() != null && this.getId().equals(other.getId())) {
                 if ((this.getType() == null && other.getType() == null) || this.getType() != null && this.getType().equals(other.getType())) {
-                    if ((this.getValue() == null && other.getValue() == null) || this.getValue() != null && this.getValue().equals(other
-                            .getValue())) {
+                    if ((this.getValue() == null && other.getValue() == null)
+                            || this.getValue() != null && this.getValue().equals(other.getValue())) {
                         return true;
                     }
                 }

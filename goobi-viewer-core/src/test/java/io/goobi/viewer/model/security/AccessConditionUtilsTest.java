@@ -60,8 +60,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      */
     @Test
     public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(), new HashSet<>(
-                Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
+        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(),
+                new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
     }
 
     /**
@@ -206,8 +206,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("type2");
 
-        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions, SolrConstants.PI_TOPSTRUCT
-                + ":PPN517154005");
+        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
+                SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("type2", ret.get(0).getName());
     }
@@ -239,8 +239,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         recordAccessConditions.add("type2");
         recordAccessConditions.add("type3");
 
-        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions, SolrConstants.PI_TOPSTRUCT
-                + ":PPN517154005");
+        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
+                SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals("type2", ret.get(0).getName());
         Assert.assertEquals("type3", ret.get(1).getName());

@@ -47,7 +47,9 @@ public class SessionResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for SessionResource.</p>
+     * <p>
+     * Constructor for SessionResource.
+     * </p>
      */
     public SessionResource() {
     }
@@ -62,7 +64,9 @@ public class SessionResource {
     }
 
     /**
-     * <p>getSessionInfo.</p>
+     * <p>
+     * getSessionInfo.
+     * </p>
      *
      * @should return session info correctly
      * @return a {@link java.lang.String} object.

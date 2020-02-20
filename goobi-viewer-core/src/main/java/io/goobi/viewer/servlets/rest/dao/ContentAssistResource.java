@@ -35,15 +35,18 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * <p>ContentAssistResource class.</p>
+ * <p>
+ * ContentAssistResource class.
+ * </p>
  */
 @Path("/contentAssist")
 @ViewerRestServiceBinding
 public class ContentAssistResource {
 
-
     /**
-     * <p>getCollections.</p>
+     * <p>
+     * getCollections.
+     * </p>
      *
      * @param solrField a {@link java.lang.String} object.
      * @param inputString a {@link java.lang.String} object.

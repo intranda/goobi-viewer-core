@@ -24,7 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Timer class.</p>
+ * <p>
+ * Timer class.
+ * </p>
  */
 public class Timer {
 
@@ -41,7 +43,9 @@ public class Timer {
     }
 
     /**
-     * <p>Getter for the field <code>instance</code>.</p>
+     * <p>
+     * Getter for the field <code>instance</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.controller.Timer} object.
      */
@@ -50,7 +54,9 @@ public class Timer {
     }
 
     /**
-     * <p>startTiming.</p>
+     * <p>
+     * startTiming.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      */
@@ -59,14 +65,18 @@ public class Timer {
     }
 
     /**
-     * <p>startTiming.</p>
+     * <p>
+     * startTiming.
+     * </p>
      */
     public void startTiming() {
         startDate = System.nanoTime();
     }
 
     /**
-     * <p>pauseTiming.</p>
+     * <p>
+     * pauseTiming.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      */
@@ -75,7 +85,9 @@ public class Timer {
     }
 
     /**
-     * <p>ignoreLastMeasurement.</p>
+     * <p>
+     * ignoreLastMeasurement.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      */
@@ -84,7 +96,9 @@ public class Timer {
     }
 
     /**
-     * <p>stopTiming.</p>
+     * <p>
+     * stopTiming.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      */
@@ -98,7 +112,9 @@ public class Timer {
     }
 
     /**
-     * <p>stopTiming.</p>
+     * <p>
+     * stopTiming.
+     * </p>
      */
     public void stopTiming() {
         measure();
@@ -119,7 +135,9 @@ public class Timer {
     }
 
     /**
-     * <p>measure.</p>
+     * <p>
+     * measure.
+     * </p>
      *
      * @throws io.goobi.viewer.controller.Timer$TimerException if any.
      * @throws io.goobi.viewer.controller.Timer.TimerException if any.
@@ -132,7 +150,9 @@ public class Timer {
     }
 
     /**
-     * <p>debug.</p>
+     * <p>
+     * debug.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      * @param key a {@link java.lang.String} object.
@@ -144,7 +164,9 @@ public class Timer {
     }
 
     /**
-     * <p>getTime.</p>
+     * <p>
+     * getTime.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param scale a {@link io.goobi.viewer.controller.Timer.TimeScale} object.
@@ -174,10 +196,11 @@ public class Timer {
         }
         return timeString;
     }
-    
 
     /**
-     * <p>debug.</p>
+     * <p>
+     * debug.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      * @param key a {@link java.lang.String} object.
@@ -187,14 +210,18 @@ public class Timer {
     }
 
     /**
-     * <p>debug.</p>
+     * <p>
+     * debug.
+     * </p>
      */
     public void debug() {
         debug("Logged time: ");
     }
 
     /**
-     * <p>debug.</p>
+     * <p>
+     * debug.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -203,7 +230,9 @@ public class Timer {
     }
 
     /**
-     * <p>seconds.</p>
+     * <p>
+     * seconds.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -212,7 +241,9 @@ public class Timer {
     }
 
     /**
-     * <p>seconds.</p>
+     * <p>
+     * seconds.
+     * </p>
      *
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
@@ -226,7 +257,9 @@ public class Timer {
     }
 
     /**
-     * <p>millis.</p>
+     * <p>
+     * millis.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -235,7 +268,9 @@ public class Timer {
     }
 
     /**
-     * <p>millis.</p>
+     * <p>
+     * millis.
+     * </p>
      *
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
@@ -249,7 +284,9 @@ public class Timer {
     }
 
     /**
-     * <p>mikros.</p>
+     * <p>
+     * mikros.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -258,7 +295,9 @@ public class Timer {
     }
 
     /**
-     * <p>mikros.</p>
+     * <p>
+     * mikros.
+     * </p>
      *
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
@@ -272,7 +311,9 @@ public class Timer {
     }
 
     /**
-     * <p>nanos.</p>
+     * <p>
+     * nanos.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -281,7 +322,9 @@ public class Timer {
     }
 
     /**
-     * <p>nanos.</p>
+     * <p>
+     * nanos.
+     * </p>
      *
      * @param time a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
@@ -318,7 +361,9 @@ public class Timer {
     }
 
     /**
-     * <p>main.</p>
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.lang.InterruptedException if any.

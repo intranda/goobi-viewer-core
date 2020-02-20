@@ -18,14 +18,18 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>RecordNotFoundException class.</p>
+ * <p>
+ * RecordNotFoundException class.
+ * </p>
  */
 public class RecordNotFoundException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -8531031607653980345L;
 
     /**
-     * <p>Constructor for RecordNotFoundException.</p>
+     * <p>
+     * Constructor for RecordNotFoundException.
+     * </p>
      *
      * @param string {@link java.lang.String}
      */

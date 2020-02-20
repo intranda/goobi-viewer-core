@@ -16,21 +16,27 @@
 package io.goobi.viewer.model.toc.export.pdf;
 
 /**
- * <p>WriteTocException class.</p>
+ * <p>
+ * WriteTocException class.
+ * </p>
  */
 public class WriteTocException extends Exception {
 
     private static final long serialVersionUID = -4454192342277070479L;
 
     /**
-     * <p>Constructor for WriteTocException.</p>
+     * <p>
+     * Constructor for WriteTocException.
+     * </p>
      */
     public WriteTocException() {
         super();
     }
 
     /**
-     * <p>Constructor for WriteTocException.</p>
+     * <p>
+     * Constructor for WriteTocException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      * @param cause a {@link java.lang.Throwable} object.
@@ -42,7 +48,9 @@ public class WriteTocException extends Exception {
     }
 
     /**
-     * <p>Constructor for WriteTocException.</p>
+     * <p>
+     * Constructor for WriteTocException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      * @param cause a {@link java.lang.Throwable} object.
@@ -52,7 +60,9 @@ public class WriteTocException extends Exception {
     }
 
     /**
-     * <p>Constructor for WriteTocException.</p>
+     * <p>
+     * Constructor for WriteTocException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -61,7 +71,9 @@ public class WriteTocException extends Exception {
     }
 
     /**
-     * <p>Constructor for WriteTocException.</p>
+     * <p>
+     * Constructor for WriteTocException.
+     * </p>
      *
      * @param cause a {@link java.lang.Throwable} object.
      */

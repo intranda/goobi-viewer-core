@@ -18,34 +18,30 @@ package io.goobi.viewer.model.cms;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Optional property of a ContentItem within a template
- * Allows additional control about which fields are shown
- * in the cms-backend for this item.
- * The value is set in the template xml like
- * <content>
- *      <item type="expanded">...</item>
- * </content>
- * If no value is set, "simple" is assumed
+ * Optional property of a ContentItem within a template Allows additional control about which fields are shown in the cms-backend for this item. The
+ * value is set in the template xml like <content> <item type="expanded">...</item> </content> If no value is set, "simple" is assumed
  *
  * @author Florian Alpers
  */
 public enum ContentItemMode {
     simple,
     expanded;
-    
+
     /**
-     * <p>get.</p>
+     * <p>
+     * get.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.ContentItemMode} object.
      */
     public static ContentItemMode get(String name) {
-        if(StringUtils.isBlank(name)) {
+        if (StringUtils.isBlank(name)) {
             return simple;
         } else {
-            try {                
+            try {
                 return ContentItemMode.valueOf(name.toLowerCase());
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 return simple;
             }
         }

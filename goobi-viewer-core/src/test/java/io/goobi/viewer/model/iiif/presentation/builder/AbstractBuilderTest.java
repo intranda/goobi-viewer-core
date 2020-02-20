@@ -34,30 +34,30 @@ import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
  */
 public class AbstractBuilderTest {
 
-	AbstractBuilder builder;
-	
+    AbstractBuilder builder;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
-    
+
     @Before
     public void SetUp() {
-    	builder = new AbstractBuilder(URI.create("http://localhost:8080/viewer"), 
-        		URI.create("http://localhost:8080/viewer/rest/iiif/manifests/abcd/manifest")) {
-		};
+        builder = new AbstractBuilder(URI.create("http://localhost:8080/viewer"),
+                URI.create("http://localhost:8080/viewer/rest/iiif/manifests/abcd/manifest")) {
+        };
     }
-	
-	@Test
-	public void testGetEventFields() {
-		Map<String, List<String>> events = builder.getEventFields();
-		Assert.assertNotNull(events);
-		Assert.assertEquals(3, events.size());
-		Assert.assertEquals(2, events.get("").size());
-		Assert.assertEquals(2, events.get("Provenienz").size());
-		Assert.assertEquals(1, events.get("Expression Creation").size());
-		Assert.assertEquals("MD_EVENTARTIST", events.get("Expression Creation").iterator().next());
 
-	}
+    @Test
+    public void testGetEventFields() {
+        Map<String, List<String>> events = builder.getEventFields();
+        Assert.assertNotNull(events);
+        Assert.assertEquals(3, events.size());
+        Assert.assertEquals(2, events.get("").size());
+        Assert.assertEquals(2, events.get("Provenienz").size());
+        Assert.assertEquals(1, events.get("Expression Creation").size());
+        Assert.assertEquals("MD_EVENTARTIST", events.get("Expression Creation").iterator().next());
+
+    }
 
 }

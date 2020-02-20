@@ -47,7 +47,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
- * <p>LayerBuilder class.</p>
+ * <p>
+ * LayerBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -56,7 +58,9 @@ public class LayerBuilder extends AbstractBuilder {
     private static final Logger logger = LoggerFactory.getLogger(LayerBuilder.class);
 
     /**
-     * <p>Constructor for LayerBuilder.</p>
+     * <p>
+     * Constructor for LayerBuilder.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
@@ -65,7 +69,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Constructor for LayerBuilder.</p>
+     * <p>
+     * Constructor for LayerBuilder.
+     * </p>
      *
      * @param servletUri a {@link java.net.URI} object.
      * @param requestURI a {@link java.net.URI} object.
@@ -75,7 +81,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>createAnnotationLayer.</p>
+     * <p>
+     * createAnnotationLayer.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
@@ -90,8 +98,8 @@ public class LayerBuilder extends AbstractBuilder {
      */
     public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter,
             BiFunction<String, String, URI> linkGetter) throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
-                List<Path> files = ContentResource.getTEIFiles(pi);
-//        List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
+        List<Path> files = ContentResource.getTEIFiles(pi);
+        //        List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
         List<IAnnotation> annotations = new ArrayList<>();
         for (Path path : files) {
             Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
@@ -109,7 +117,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>createAnnotation.</p>
+     * <p>
+     * createAnnotation.
+     * </p>
      *
      * @param annotationId a {@link java.net.URI} object.
      * @param linkURI a {@link java.net.URI} object.
@@ -141,7 +151,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>createAnnotationList.</p>
+     * <p>
+     * createAnnotationList.
+     * </p>
      *
      * @param annotations a {@link java.util.List} object.
      * @param id a {@link java.net.URI} object.
@@ -158,7 +170,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>generateContentLayer.</p>
+     * <p>
+     * generateContentLayer.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.
@@ -182,7 +196,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>generateLayer.</p>
+     * <p>
+     * generateLayer.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.
@@ -199,7 +215,9 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>mergeAnnotationLists.</p>
+     * <p>
+     * mergeAnnotationLists.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.

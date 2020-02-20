@@ -1082,4 +1082,3 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
     }
 }
-

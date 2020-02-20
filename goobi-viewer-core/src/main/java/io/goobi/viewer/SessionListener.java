@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * <p>SessionListener class.</p>
+ * <p>
+ * SessionListener class.
+ * </p>
  */
 @WebListener
 public class SessionListener implements HttpSessionListener {
@@ -40,9 +42,9 @@ public class SessionListener implements HttpSessionListener {
     /** {@inheritDoc} */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
-//        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
-//            logger.trace("Session created: {}", event.getSession().getId());
-//        }
+        //        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
+        //            logger.trace("Session created: {}", event.getSession().getId());
+        //        }
     }
 
     /* (non-Javadoc)

@@ -37,7 +37,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * <p>MetadataResource class.</p>
+ * <p>
+ * MetadataResource class.
+ * </p>
  */
 @Path("/metadata")
 @ViewerRestServiceBinding
@@ -49,7 +51,9 @@ public class MetadataResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>getTagsForPageJson.</p>
+     * <p>
+     * getTagsForPageJson.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param fields a {@link java.lang.String} object.
@@ -61,8 +65,8 @@ public class MetadataResource {
     @GET
     @Path("/{query}/{fields}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getTagsForPageJson(@PathParam("query") String query, @PathParam("fields") String fields) throws PresentationException,
-            IndexUnreachableException {
+    public String getTagsForPageJson(@PathParam("query") String query, @PathParam("fields") String fields)
+            throws PresentationException, IndexUnreachableException {
         JSONArray jsonArray = new JSONArray();
 
         String[] fieldsSplit = fields.split(",");

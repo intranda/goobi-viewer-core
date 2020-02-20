@@ -35,27 +35,29 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * <p>RestApiExceptionMapper class.</p>
+ * <p>
+ * RestApiExceptionMapper class.
+ * </p>
  *
  * @author Florian Alpers
  */
 @Provider
-public class RestApiExceptionMapper implements ExceptionMapper<RestApiException>{
+public class RestApiExceptionMapper implements ExceptionMapper<RestApiException> {
 
-        private static final Logger logger = LoggerFactory.getLogger(ExceptionMapper.class);
-        
-        @Context HttpServletResponse response;
-        @Context HttpServletRequest request;
-        /* (non-Javadoc)
-         * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)
-         */
-        /** {@inheritDoc} */
-        @Override
-        public Response toResponse(RestApiException exception) {
-            return Response.status(exception.getStatusCode())
-                    .entity(new ErrorMessage(exception))
-                    .type(MediaType.APPLICATION_JSON)
-                    .build();
-        }
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionMapper.class);
+
+    @Context
+    HttpServletResponse response;
+    @Context
+    HttpServletRequest request;
+
+    /* (non-Javadoc)
+     * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public Response toResponse(RestApiException exception) {
+        return Response.status(exception.getStatusCode()).entity(new ErrorMessage(exception)).type(MediaType.APPLICATION_JSON).build();
+    }
 
 }

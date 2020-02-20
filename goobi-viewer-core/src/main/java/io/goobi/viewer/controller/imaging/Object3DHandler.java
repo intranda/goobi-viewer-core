@@ -29,7 +29,9 @@ public class Object3DHandler {
     private final String restApiUrl;
 
     /**
-     * <p>Constructor for Object3DHandler.</p>
+     * <p>
+     * Constructor for Object3DHandler.
+     * </p>
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      */

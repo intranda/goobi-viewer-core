@@ -37,7 +37,9 @@ import io.goobi.viewer.servlets.rest.utils.IndexingResource;
 import io.goobi.viewer.servlets.rest.utils.SitemapResource;
 
 /**
- * <p>AuthorizationFilter class.</p>
+ * <p>
+ * AuthorizationFilter class.
+ * </p>
  */
 @Provider
 @AuthenticationBinding

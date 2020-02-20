@@ -29,7 +29,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 public class BookmarksFunktionality implements Functionality {
 
     private int pageNo = 1;
-    
+
     @Override
     public void setPageNo(int pageNo) {
         this.pageNo = pageNo;
@@ -42,10 +42,10 @@ public class BookmarksFunktionality implements Functionality {
     public int getPageNo() {
         return pageNo;
     }
-    
+
     public List<BookmarkList> getBookmarkLists() throws DAOException {
-        List<BookmarkList> lists = DataManager.getInstance().getDao().getPublicBookmarkLists();    
-        if(lists == null) {
+        List<BookmarkList> lists = DataManager.getInstance().getDao().getPublicBookmarkLists();
+        if (lists == null) {
             return Collections.emptyList();
         } else {
             return lists;

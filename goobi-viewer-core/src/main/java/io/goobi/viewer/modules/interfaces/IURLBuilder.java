@@ -26,7 +26,9 @@ import io.goobi.viewer.model.viewer.PageType;
 public interface IURLBuilder {
 
     /**
-     * <p>generateURL.</p>
+     * <p>
+     * generateURL.
+     * </p>
      *
      * @param browseElement The browseElement for which we want to build a url
      * @return The url the the given BrowseElement should link to
@@ -34,7 +36,9 @@ public interface IURLBuilder {
     public String generateURL(BrowseElement browseElement);
 
     /**
-     * <p>buildPageUrl.</p>
+     * <p>
+     * buildPageUrl.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param imageNo a int.

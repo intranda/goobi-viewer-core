@@ -24,7 +24,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * <p>VuAuthenticationResponse class.</p>
+ * <p>
+ * VuAuthenticationResponse class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -35,102 +37,130 @@ public class VuAuthenticationResponse {
     private Expired expired;
     private Blocks blocks;
     private Request request;
-    
+
     /**
-     * <p>Getter for the field <code>user</code>.</p>
+     * <p>
+     * Getter for the field <code>user</code>.
+     * </p>
      *
      * @return the user
      */
     public User getUser() {
         return user;
     }
+
     /**
-     * <p>Setter for the field <code>user</code>.</p>
+     * <p>
+     * Setter for the field <code>user</code>.
+     * </p>
      *
      * @param user the user to set
      */
     public void setUser(User user) {
         this.user = user;
     }
+
     /**
-     * <p>Getter for the field <code>expired</code>.</p>
+     * <p>
+     * Getter for the field <code>expired</code>.
+     * </p>
      *
      * @return the expired
      */
     public Expired getExpired() {
         return expired;
     }
+
     /**
-     * <p>Setter for the field <code>expired</code>.</p>
+     * <p>
+     * Setter for the field <code>expired</code>.
+     * </p>
      *
      * @param expired the expired to set
      */
     public void setExpired(Expired expired) {
         this.expired = expired;
     }
+
     /**
-     * <p>Getter for the field <code>blocks</code>.</p>
+     * <p>
+     * Getter for the field <code>blocks</code>.
+     * </p>
      *
      * @return the blocks
      */
     public Blocks getBlocks() {
         return blocks;
     }
+
     /**
-     * <p>Setter for the field <code>blocks</code>.</p>
+     * <p>
+     * Setter for the field <code>blocks</code>.
+     * </p>
      *
      * @param blocks the blocks to set
      */
     public void setBlocks(Blocks blocks) {
         this.blocks = blocks;
     }
+
     /**
-     * <p>Getter for the field <code>request</code>.</p>
+     * <p>
+     * Getter for the field <code>request</code>.
+     * </p>
      *
      * @return the request
      */
     public Request getRequest() {
         return request;
     }
+
     /**
-     * <p>Setter for the field <code>request</code>.</p>
+     * <p>
+     * Setter for the field <code>request</code>.
+     * </p>
      *
      * @param request the request to set
      */
     public void setRequest(Request request) {
         this.request = request;
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class User {
-        
+
         private Boolean isValid;
         private Boolean exists;
         private Group group;
-        
-        @JsonDeserialize(using=BooleanDeserializer.class)
+
+        @JsonDeserialize(using = BooleanDeserializer.class)
         public void setIsValid(Boolean valid) {
             this.isValid = valid;
         }
-        @JsonDeserialize(using=BooleanDeserializer.class)
+
+        @JsonDeserialize(using = BooleanDeserializer.class)
         public void setExists(Boolean exists) {
             this.exists = exists;
         }
-        @JsonSerialize(using=BooleanSerializer.class)
+
+        @JsonSerialize(using = BooleanSerializer.class)
         public Boolean getIsValid() {
             return this.isValid;
         }
-        @JsonSerialize(using=BooleanSerializer.class)
+
+        @JsonSerialize(using = BooleanSerializer.class)
         public Boolean getExists() {
             return this.exists;
         }
+
         public void setGroup(Group group) {
             this.group = group;
         }
+
         public Group getGroup() {
             return group;
         }
-        
+
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
@@ -139,28 +169,31 @@ public class VuAuthenticationResponse {
             return "valid: " + getIsValid() + ", exists: " + getExists() + ", group: " + getGroup();
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Expired {
         private Boolean isExpired;
         private Date date;
-        
-        @JsonDeserialize(using=BooleanDeserializer.class)
+
+        @JsonDeserialize(using = BooleanDeserializer.class)
         public void setIsExpired(Boolean expired) {
             this.isExpired = expired;
         }
-        @JsonSerialize(using=BooleanSerializer.class)
+
+        @JsonSerialize(using = BooleanSerializer.class)
         public Boolean getIsExpired() {
             return this.isExpired;
         }
+
         public Date getDate() {
             return date;
         }
+
         public void setDate(Date date) {
             this.date = date;
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Date {
         private String timestamp;
@@ -169,103 +202,119 @@ public class VuAuthenticationResponse {
         public void setTimestamp(String timestamp) {
             this.timestamp = timestamp;
         }
+
         public String getTimestamp() {
             return timestamp;
         }
+
         public void setFormatted(String formatted) {
             this.formatted = formatted;
         }
+
         public String getFormatted() {
             return formatted;
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Blocks {
         private Boolean isBlocked;
         private List<Reason> reasons = new ArrayList<>();
-        
-        @JsonSerialize(using=BooleanSerializer.class)
+
+        @JsonSerialize(using = BooleanSerializer.class)
         public Boolean getIsBlocked() {
             return isBlocked;
         }
-        @JsonDeserialize(using=BooleanDeserializer.class)
+
+        @JsonDeserialize(using = BooleanDeserializer.class)
         public void setIsBlocked(Boolean blocked) {
             this.isBlocked = blocked;
         }
+
         public void setReasons(List<Reason> reasons) {
             this.reasons = reasons;
         }
+
         public List<Reason> getReasons() {
             return reasons;
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Reason {
         private String code;
         private String note;
-        
+
         public String getCode() {
             return code;
         }
+
         public void setCode(String code) {
             this.code = code;
         }
+
         public String getNote() {
             return note;
         }
+
         public void setNote(String note) {
             this.note = note;
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Request {
         private Boolean hasError;
         private String errorMsg;
-        
-        @JsonSerialize(using=BooleanSerializer.class)
+
+        @JsonSerialize(using = BooleanSerializer.class)
         public Boolean getHasError() {
             return hasError;
         }
-        @JsonDeserialize(using=BooleanDeserializer.class)
+
+        @JsonDeserialize(using = BooleanDeserializer.class)
         public void setHasError(Boolean hasError) {
             this.hasError = hasError;
         }
+
         public String getErrorMsg() {
             return errorMsg;
         }
+
         public void setErrorMsg(String errorMsg) {
             this.errorMsg = errorMsg;
         }
     }
-    
+
     @JsonInclude(Include.NON_EMPTY)
     public static class Group {
         private String desc;
         private String code;
-        
+
         public String getDesc() {
             return desc;
         }
+
         public void setDesc(String desc) {
             this.desc = desc;
         }
+
         public String getCode() {
             return code;
         }
+
         public void setCode(String code) {
             this.code = code;
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return getUser().toString() + "\n\tExpired: " + Boolean.TRUE.equals(getExpired().getIsExpired()) + "\n\tBlocked: " + Boolean.TRUE.equals(getBlocks().getIsBlocked());
+        return getUser().toString() + "\n\tExpired: " + Boolean.TRUE.equals(getExpired().getIsExpired()) + "\n\tBlocked: "
+                + Boolean.TRUE.equals(getBlocks().getIsBlocked());
     }
 }

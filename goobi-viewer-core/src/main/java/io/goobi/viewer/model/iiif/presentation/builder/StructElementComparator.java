@@ -20,8 +20,8 @@ import java.util.Comparator;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * Sorts StructElements by anchors first, then works, then everything else
- * within anchors and works, elements are sorted by PI, all other elements are sorted by LOGID
+ * Sorts StructElements by anchors first, then works, then everything else within anchors and works, elements are sorted by PI, all other elements are
+ * sorted by LOGID
  *
  * @author Florian Alpers
  */
@@ -30,28 +30,28 @@ public class StructElementComparator implements Comparator<StructElement> {
     /** {@inheritDoc} */
     @Override
     public int compare(StructElement ds1, StructElement ds2) {
-        if(ds1 == null) {
+        if (ds1 == null) {
             return 1;
-        } else if(ds2 == null) {
+        } else if (ds2 == null) {
             return -1;
         }
-        
-        if(ds1.isAnchor() && ds2.isAnchor()) {
+
+        if (ds1.isAnchor() && ds2.isAnchor()) {
             return ds1.getPi().compareTo(ds2.getPi());
-        } else if(ds1.isAnchor()) {
+        } else if (ds1.isAnchor()) {
             return -1;
-        } else if(ds2.isAnchor()) {
+        } else if (ds2.isAnchor()) {
             return 1;
         }
-        
-        if(ds1.isWork() && ds2.isWork()) {
+
+        if (ds1.isWork() && ds2.isWork()) {
             return ds1.getPi().compareTo(ds2.getPi());
-        } else if(ds1.isWork()) {
+        } else if (ds1.isWork()) {
             return -1;
-        } else if(ds2.isWork()) {
+        } else if (ds2.isWork()) {
             return 1;
         }
-                
+
         return ds1.getLogid().compareTo(ds2.getLogid());
     }
 

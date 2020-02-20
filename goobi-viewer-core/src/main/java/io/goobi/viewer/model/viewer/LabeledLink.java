@@ -24,7 +24,9 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>LabeledLink class.</p>
+ * <p>
+ * LabeledLink class.
+ * </p>
  */
 public class LabeledLink implements Serializable {
 
@@ -35,7 +37,9 @@ public class LabeledLink implements Serializable {
     protected int weight;
 
     /**
-     * <p>Constructor for LabeledLink.</p>
+     * <p>
+     * Constructor for LabeledLink.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -48,7 +52,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Constructor for LabeledLink.</p>
+     * <p>
+     * Constructor for LabeledLink.
+     * </p>
      *
      * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      * @param url a {@link java.lang.String} object.
@@ -90,16 +96,18 @@ public class LabeledLink implements Serializable {
                 return false;
         } else if (!getName().equals(other.getName()))
             return false;
-//        if (url == null) {
-//            if (other.url != null)
-//                return false;
-//        } else if (!url.equals(other.url))
-//            return false;
+        //        if (url == null) {
+        //            if (other.url != null)
+        //                return false;
+        //        } else if (!url.equals(other.url))
+        //            return false;
         return true;
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -108,7 +116,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -117,7 +127,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
@@ -126,7 +138,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>url</code>.</p>
+     * <p>
+     * Getter for the field <code>url</code>.
+     * </p>
      *
      * @return the url
      */
@@ -135,7 +149,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>url</code>.</p>
+     * <p>
+     * Setter for the field <code>url</code>.
+     * </p>
      *
      * @param url the url to set
      */
@@ -144,7 +160,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>weight</code>.</p>
+     * <p>
+     * Getter for the field <code>weight</code>.
+     * </p>
      *
      * @return the weight
      */
@@ -153,7 +171,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>weight</code>.</p>
+     * <p>
+     * Setter for the field <code>weight</code>.
+     * </p>
      *
      * @param weight the weight to set
      */
@@ -162,7 +182,9 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>isLink.</p>
+     * <p>
+     * isLink.
+     * </p>
      *
      * @return a boolean.
      */

@@ -64,7 +64,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
     public static final int MAX_HITS = 1000000;
 
     /**
-     * <p>Constructor for WebApiServlet.</p>
+     * <p>
+     * Constructor for WebApiServlet.
+     * </p>
      *
      * @see HttpServlet#HttpServlet()
      */

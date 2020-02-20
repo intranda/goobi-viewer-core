@@ -91,8 +91,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
+     * Test method for {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
      * 
      * @throws DAOException
      * @throws URISyntaxException
@@ -149,8 +148,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
+     * Test method for {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
      * 
      * @throws IOException
      * @throws DAOException

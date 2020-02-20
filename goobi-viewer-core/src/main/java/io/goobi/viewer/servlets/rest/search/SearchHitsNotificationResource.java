@@ -49,7 +49,9 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 
 /**
- * <p>SearchHitsNotificationResource class.</p>
+ * <p>
+ * SearchHitsNotificationResource class.
+ * </p>
  */
 @Path(SearchHitsNotificationResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
@@ -66,7 +68,9 @@ public class SearchHitsNotificationResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>sendNewHitsNotifications.</p>
+     * <p>
+     * sendNewHitsNotifications.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

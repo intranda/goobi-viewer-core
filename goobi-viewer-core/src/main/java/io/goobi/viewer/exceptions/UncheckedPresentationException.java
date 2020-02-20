@@ -16,62 +16,74 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>UncheckedPresentationException class.</p>
+ * <p>
+ * UncheckedPresentationException class.
+ * </p>
  *
  * @author florian
  */
 public class UncheckedPresentationException extends RuntimeException {
 
-	/**
-	 * <p>Constructor for UncheckedPresentationException.</p>
-	 */
-	public UncheckedPresentationException() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for UncheckedPresentationException.
+     * </p>
+     */
+    public UncheckedPresentationException() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for UncheckedPresentationException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.String} object.
-	 * @param arg1 a {@link java.lang.Throwable} object.
-	 * @param arg2 a boolean.
-	 * @param arg3 a boolean.
-	 */
-	public UncheckedPresentationException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
-		super(arg0, arg1, arg2, arg3);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for UncheckedPresentationException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     * @param arg1 a {@link java.lang.Throwable} object.
+     * @param arg2 a boolean.
+     * @param arg3 a boolean.
+     */
+    public UncheckedPresentationException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
+        super(arg0, arg1, arg2, arg3);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for UncheckedPresentationException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.String} object.
-	 * @param arg1 a {@link java.lang.Throwable} object.
-	 */
-	public UncheckedPresentationException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for UncheckedPresentationException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     * @param arg1 a {@link java.lang.Throwable} object.
+     */
+    public UncheckedPresentationException(String arg0, Throwable arg1) {
+        super(arg0, arg1);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for UncheckedPresentationException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.String} object.
-	 */
-	public UncheckedPresentationException(String arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for UncheckedPresentationException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     */
+    public UncheckedPresentationException(String arg0) {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for UncheckedPresentationException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.Throwable} object.
-	 */
-	public UncheckedPresentationException(Throwable arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for UncheckedPresentationException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.Throwable} object.
+     */
+    public UncheckedPresentationException(Throwable arg0) {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 
 }

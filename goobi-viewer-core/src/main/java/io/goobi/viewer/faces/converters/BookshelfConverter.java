@@ -25,7 +25,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 
 /**
- * <p>BookshelfConverter class.</p>
+ * <p>
+ * BookshelfConverter class.
+ * </p>
  */
 @FacesConverter("bookshelfConverter")
 public class BookshelfConverter implements Converter {

@@ -43,7 +43,9 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>WatermarkHandler class.</p>
+ * <p>
+ * WatermarkHandler class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -73,7 +75,9 @@ public class WatermarkHandler implements Serializable {
     private final String servletPath;
 
     /**
-     * <p>Constructor for WatermarkHandler.</p>
+     * <p>
+     * Constructor for WatermarkHandler.
+     * </p>
      *
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @param servletPath a {@link java.lang.String} object.
@@ -85,8 +89,8 @@ public class WatermarkHandler implements Serializable {
     }
 
     /**
-     * Creates the watermark url for the given pageType, adding watermarkId for the given {@link io.goobi.viewer.model.viewer.StructElement} and {@link page}. If the watermark
-     * height of the given pageType and image is 0, an empty optional is returned
+     * Creates the watermark url for the given pageType, adding watermarkId for the given {@link io.goobi.viewer.model.viewer.StructElement} and
+     * {@link page}. If the watermark height of the given pageType and image is 0, an empty optional is returned
      *
      * @param page a {@link java.util.Optional} object.
      * @param doc a {@link java.util.Optional} object.
@@ -103,9 +107,9 @@ public class WatermarkHandler implements Serializable {
     }
 
     /**
-     * Creates the watermark url for the given pageType, adding watermarkId for the current {@link io.goobi.viewer.managedbeans.ActiveDocumentBean#getTopDocument()} and
-     * watermarkText for the current {@link PhysicalElement page} If the watermark height of the given pageType and image is 0, an empty optional is
-     * returned
+     * Creates the watermark url for the given pageType, adding watermarkId for the current
+     * {@link io.goobi.viewer.managedbeans.ActiveDocumentBean#getTopDocument()} and watermarkText for the current {@link PhysicalElement page} If the
+     * watermark height of the given pageType and image is 0, an empty optional is returned
      *
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -232,7 +236,7 @@ public class WatermarkHandler implements Serializable {
                         String urn = doc.getMetadataValue(SolrConstants.URN);
                         try {
                             if (StringUtils.isBlank(urn) && doc.getTopStruct() != null) {
-                                    urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
+                                urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
                             }
                         } catch (PresentationException | IndexUnreachableException e) {
                             logger.error(e.toString());

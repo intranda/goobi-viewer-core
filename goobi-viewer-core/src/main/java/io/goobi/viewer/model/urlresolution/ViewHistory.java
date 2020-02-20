@@ -51,8 +51,8 @@ public class ViewHistory {
     private static final PageType[] IGNORED_VIEWS = new PageType[] {};
 
     /**
-     * Saves the current view information to the session map.
-     * Also saves the previous view information to the session map if it represents a different view than the current view
+     * Saves the current view information to the session map. Also saves the previous view information to the session map if it represents a different
+     * view than the current view
      *
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
@@ -72,7 +72,7 @@ public class ViewHistory {
                     }
 
                     Optional<ViewerPath> oCurrentPath = ViewerPathBuilder.createPath(hostUrl, applicationName, serviceUrl);
-                    if(oCurrentPath.isPresent()) {
+                    if (oCurrentPath.isPresent()) {
                         //viewer page url
                         setCurrentView(oCurrentPath.get(), session);
                     } else {
@@ -88,21 +88,21 @@ public class ViewHistory {
     }
 
     /**
-     * Saves the given {@code currentPath} to the session map, keeping the previously stored currentPath as previousPath if
-     * it has a different PageType than the current path
+     * Saves the given {@code currentPath} to the session map, keeping the previously stored currentPath as previousPath if it has a different
+     * PageType than the current path
      *
-     * The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path
-     * can be retrieved by {@link #getPreviousView(ServletRequest)}
+     * The path stored as currentPath can be retrieved by {@link #getCurrentView(ServletRequest)}; the previously stored path can be retrieved by
+     * {@link #getPreviousView(ServletRequest)}
      *
-     * @param session       The http session to store the path in
-     * @param currentPath   The path to store
+     * @param session The http session to store the path in
+     * @param currentPath The path to store
      */
     public static void setCurrentView(ViewerPath currentPath, HttpSession session) {
-        if(!isIgnoredView(currentPath.getPagePath())) {
+        if (!isIgnoredView(currentPath.getPagePath())) {
             ViewerPath previousPath = (ViewerPath) session.getAttribute(CURRENT_URL);
             session.setAttribute(CURRENT_URL, currentPath);
             logger.trace("Set session attribute {} to {}", CURRENT_URL, currentPath);
-            if(previousPath != null && !currentPath.getPagePath().equals(previousPath.getPagePath())) {
+            if (previousPath != null && !currentPath.getPagePath().equals(previousPath.getPagePath())) {
                 //different page
                 session.setAttribute(PREVIOUS_URL, previousPath);
                 logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousPath);
@@ -110,27 +110,26 @@ public class ViewHistory {
         }
     }
 
-
-
     /**
      * Returns true if the path matches one of the ignored views
      * 
-     * @param path  The path to check
+     * @param path The path to check
      * @return
      */
     private static boolean isIgnoredView(URI path) {
         for (PageType pageType : IGNORED_VIEWS) {
-            if(path.toString().equals(pageType.getName())) {
+            if (path.toString().equals(pageType.getName())) {
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
      * Retrieves the stored currentPath from the session associated the the passed {@code request}
      *
-     * @return          An optional containing the last stored current path if available. An empty optional if no session is available or no path has been stored yet
+     * @return An optional containing the last stored current path if available. An empty optional if no session is available or no path has been
+     *         stored yet
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
     public synchronized static Optional<ViewerPath> getCurrentView(ServletRequest request) {
@@ -139,8 +138,8 @@ public class ViewHistory {
             HttpSession session = httpRequest.getSession();
 
             if (session != null) {
-                ViewerPath previousPath =  (ViewerPath) session.getAttribute(CURRENT_URL);
-                if(previousPath != null) {
+                ViewerPath previousPath = (ViewerPath) session.getAttribute(CURRENT_URL);
+                if (previousPath != null) {
                     return Optional.of(new ViewerPath(previousPath));
                 }
             }
@@ -151,7 +150,8 @@ public class ViewHistory {
     /**
      * Retrieves the stored previousPath from the session associated the the passed {@code request}
      *
-     * @return          An optional containing the last stored previous path if available. An empty optional if no session is available or no previous path has been stored yet
+     * @return An optional containing the last stored previous path if available. An empty optional if no session is available or no previous path has
+     *         been stored yet
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
     public synchronized static Optional<ViewerPath> getPreviousView(ServletRequest request) {
@@ -160,8 +160,8 @@ public class ViewHistory {
             HttpSession session = httpRequest.getSession();
 
             if (session != null) {
-                ViewerPath previousPath =  (ViewerPath) session.getAttribute(PREVIOUS_URL);
-                if(previousPath != null) {
+                ViewerPath previousPath = (ViewerPath) session.getAttribute(PREVIOUS_URL);
+                if (previousPath != null) {
                     return Optional.of(new ViewerPath(previousPath));
                 }
             }
@@ -172,7 +172,7 @@ public class ViewHistory {
     /**
      * Directly redirect to the given url
      *
-     * @param url           The url to redirect to
+     * @param url The url to redirect to
      * @throws java.io.IOException if any.
      */
     public synchronized static void redirectToUrl(String url) throws IOException {
@@ -180,6 +180,5 @@ public class ViewHistory {
         FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
-
 
 }

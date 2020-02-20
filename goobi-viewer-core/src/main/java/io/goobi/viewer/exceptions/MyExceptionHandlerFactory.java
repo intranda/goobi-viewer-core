@@ -19,14 +19,18 @@ import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerFactory;
 
 /**
- * <p>MyExceptionHandlerFactory class.</p>
+ * <p>
+ * MyExceptionHandlerFactory class.
+ * </p>
  */
 public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
 
     private ExceptionHandlerFactory parent;
 
     /**
-     * <p>Constructor for MyExceptionHandlerFactory.</p>
+     * <p>
+     * Constructor for MyExceptionHandlerFactory.
+     * </p>
      *
      * @param parent a {@link javax.faces.context.ExceptionHandlerFactory} object.
      */

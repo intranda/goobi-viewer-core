@@ -35,7 +35,9 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>PdfHandler class.</p>
+ * <p>
+ * PdfHandler class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -45,7 +47,9 @@ public class PdfHandler {
     private final String iiifUrl;
 
     /**
-     * <p>Constructor for PdfHandler.</p>
+     * <p>
+     * Constructor for PdfHandler.
+     * </p>
      *
      * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
@@ -56,7 +60,8 @@ public class PdfHandler {
     }
 
     /**
-     * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and {@link io.goobi.viewer.model.viewer.PhysicalElement}
+     * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement}
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -67,7 +72,8 @@ public class PdfHandler {
     }
 
     /**
-     * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of {@link io.goobi.viewer.model.viewer.PhysicalElement}s
+     * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement}s
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pages an array of {@link io.goobi.viewer.model.viewer.PhysicalElement} objects.
@@ -132,7 +138,8 @@ public class PdfHandler {
     }
 
     /**
-     * Gets the url to the pdf for the given {@link io.goobi.viewer.model.viewer.StructElement}. The pi is the one of the topStruct element of the given StructElement
+     * Gets the url to the pdf for the given {@link io.goobi.viewer.model.viewer.StructElement}. The pi is the one of the topStruct element of the
+     * given StructElement
      *
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.

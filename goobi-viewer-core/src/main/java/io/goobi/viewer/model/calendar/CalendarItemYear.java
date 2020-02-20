@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * <p>CalendarItemYear class.</p>
+ * <p>
+ * CalendarItemYear class.
+ * </p>
  */
 public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
 
@@ -28,7 +30,9 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     private List<CalendarItemMonth> monthsOfYear;
 
     /**
-     * <p>Constructor for CalendarItemYear.</p>
+     * <p>
+     * Constructor for CalendarItemYear.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param value a int.
@@ -39,7 +43,9 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     }
 
     /**
-     * <p>Getter for the field <code>monthsOfYear</code>.</p>
+     * <p>
+     * Getter for the field <code>monthsOfYear</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -48,7 +54,9 @@ public class CalendarItemYear extends AbstractCalendarItem implements Serializab
     }
 
     /**
-     * <p>Setter for the field <code>monthsOfYear</code>.</p>
+     * <p>
+     * Setter for the field <code>monthsOfYear</code>.
+     * </p>
      *
      * @param monthsOfYear a {@link java.util.List} object.
      */

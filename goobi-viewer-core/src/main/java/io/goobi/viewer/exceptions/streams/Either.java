@@ -6,7 +6,9 @@ import java.util.function.Function;
 import org.apache.commons.math3.util.Pair;
 
 /**
- * <p>Either class.</p>
+ * <p>
+ * Either class.
+ * </p>
  */
 @SuppressWarnings("rawtypes")
 public class Either<L, R> {
@@ -24,89 +26,97 @@ public class Either<L, R> {
     }
 
     /**
-     * <p>lift.</p>
+     * <p>
+     * lift.
+     * </p>
      *
      * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
      * @param <T> a T object.
      * @param <R> a R object.
      * @return a {@link java.util.function.Function} object.
      */
-    public static <T,R> Function<T, Either> lift(CheckedFunction<T,R> function) {
+    public static <T, R> Function<T, Either> lift(CheckedFunction<T, R> function) {
 
         return t -> {
 
-          try {
+            try {
 
-            return Either.Right(function.apply(t));
+                return Either.Right(function.apply(t));
 
-          } catch (Exception ex) {
+            } catch (Exception ex) {
 
-            return Either.Left(ex);
+                return Either.Left(ex);
 
-          }
+            }
 
         };
 
-      }
-    
+    }
 
+    /**
+     * <p>
+     * liftWithValue.
+     * </p>
+     *
+     * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
+     * @param <T> a T object.
+     * @param <R> a R object.
+     * @return a {@link java.util.function.Function} object.
+     */
+    public static <T, R> Function<T, Either> liftWithValue(CheckedFunction<T, R> function) {
 
-/**
- * <p>liftWithValue.</p>
- *
- * @param function a {@link io.goobi.viewer.exceptions.streams.CheckedFunction} object.
- * @param <T> a T object.
- * @param <R> a R object.
- * @return a {@link java.util.function.Function} object.
- */
-public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> function) {
+        return t -> {
 
-  return t -> {
+            try {
 
-    try {
+                return Either.Right(function.apply(t));
 
-      return Either.Right(function.apply(t));
+            } catch (Exception ex) {
 
-    } catch (Exception ex) {
+                return Either.Left(new Pair(ex, t));
 
-      return Either.Left(new Pair(ex,t));
+            }
+
+        };
 
     }
 
-  };
-
-}
-    
     /**
-     * <p>Left.</p>
+     * <p>
+     * Left.
+     * </p>
      *
      * @param value a L object.
      * @param <L> a L object.
      * @param <R> a R object.
      * @return a {@link io.goobi.viewer.exceptions.streams.Either} object.
      */
-    public static <L,R> Either<L,R> Left( L value) {
+    public static <L, R> Either<L, R> Left(L value) {
 
         return new Either(value, null);
 
     }
 
     /**
-     * <p>Right.</p>
+     * <p>
+     * Right.
+     * </p>
      *
      * @param value a R object.
      * @param <L> a L object.
      * @param <R> a R object.
      * @return a {@link io.goobi.viewer.exceptions.streams.Either} object.
      */
-    public static <L,R> Either<L,R> Right( R value) {
+    public static <L, R> Either<L, R> Right(R value) {
 
         return new Either(null, value);
 
     }
 
     /**
-     * <p>Getter for the field <code>left</code>.</p>
+     * <p>
+     * Getter for the field <code>left</code>.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -117,7 +127,9 @@ public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> funct
     }
 
     /**
-     * <p>Getter for the field <code>right</code>.</p>
+     * <p>
+     * Getter for the field <code>right</code>.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -128,7 +140,9 @@ public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> funct
     }
 
     /**
-     * <p>isLeft.</p>
+     * <p>
+     * isLeft.
+     * </p>
      *
      * @return a boolean.
      */
@@ -139,7 +153,9 @@ public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> funct
     }
 
     /**
-     * <p>isRight.</p>
+     * <p>
+     * isRight.
+     * </p>
      *
      * @return a boolean.
      */
@@ -150,7 +166,9 @@ public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> funct
     }
 
     /**
-     * <p>mapLeft.</p>
+     * <p>
+     * mapLeft.
+     * </p>
      *
      * @param mapper a {@link java.util.function.Function} object.
      * @param <T> a T object.
@@ -169,7 +187,9 @@ public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> funct
     }
 
     /**
-     * <p>mapRight.</p>
+     * <p>
+     * mapRight.
+     * </p>
      *
      * @param mapper a {@link java.util.function.Function} object.
      * @param <T> a T object.
@@ -188,7 +208,9 @@ public static <T,R> Function<T, Either> liftWithValue(CheckedFunction<T,R> funct
     }
 
     /**
-     * <p>toString.</p>
+     * <p>
+     * toString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

@@ -56,12 +56,16 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the campaign status
+ * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
+ * campaign status
  *
  * The following api points are defined:
  * <ul>
- * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/ <br/> GET a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for the given campaignId and pi, or PUT the status for that combination</li>
- * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/annotations/ <br/> GET a list of annotations for the given campaignId and pi, sorted by target, or PUT the annotations for this combination</li>
+ * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/ <br/>
+ * GET a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for the given campaignId and pi, or PUT the status for that
+ * combination</li>
+ * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/annotations/ <br/>
+ * GET a list of annotations for the given campaignId and pi, sorted by target, or PUT the annotations for this combination</li>
  *
  * @author florian
  */
@@ -79,7 +83,9 @@ public class CampaignItemResource {
     private final URI requestURI;
 
     /**
-     * <p>Constructor for CampaignItemResource.</p>
+     * <p>
+     * Constructor for CampaignItemResource.
+     * </p>
      */
     public CampaignItemResource() {
         this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
@@ -98,12 +104,12 @@ public class CampaignItemResource {
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted resource (iiif manifest)
-     * and all information to create a GUI for the campaign's questions
+     * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted resource
+     * (iiif manifest) and all information to create a GUI for the campaign's questions
      *
      * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
-     * @return  a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem}
+     * @return a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem}
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
@@ -129,7 +135,8 @@ public class CampaignItemResource {
     }
 
     /**
-     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} for the given campaign and work and records the {@link io.goobi.viewer.model.security.user.User} who made the change
+     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus} for the given campaign and work and
+     * records the {@link io.goobi.viewer.model.security.user.User} who made the change
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
      * @param campaignId a {@link java.lang.Long} object.
@@ -226,7 +233,7 @@ public class CampaignItemResource {
             }
 
             //add entirely new annotations
-                        
+
             persistenceExceptions = newAnnotations.stream()
                     .filter(anno -> anno.getId() == null)
                     .map(Try.lift(dao::addAnnotation))

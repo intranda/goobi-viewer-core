@@ -72,7 +72,9 @@ public class MetadataBean {
     }
 
     /**
-     * <p>loadMetadata.</p>
+     * <p>
+     * loadMetadata.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -87,7 +89,7 @@ public class MetadataBean {
         if (currentElement == null) {
             return "viewMetadata";
         }
-        
+
         logger.trace("loadMetadata for: {}", currentElement.getLabel());
         try {
             Locale locale = BeanUtils.getLocale();
@@ -119,7 +121,9 @@ public class MetadataBean {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Setter for the field <code>metadataElementList</code>.</p>
+     * <p>
+     * Setter for the field <code>metadataElementList</code>.
+     * </p>
      *
      * @param metadataElementList the metadataElementList to set
      */
@@ -128,7 +132,9 @@ public class MetadataBean {
     }
 
     /**
-     * <p>Getter for the field <code>metadataElementList</code>.</p>
+     * <p>
+     * Getter for the field <code>metadataElementList</code>.
+     * </p>
      *
      * @return the metadataElementList
      */
@@ -147,7 +153,9 @@ public class MetadataBean {
     }
 
     /**
-     * <p>getTopMetadataElement.</p>
+     * <p>
+     * getTopMetadataElement.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
      */
@@ -180,7 +188,9 @@ public class MetadataBean {
     }
 
     /**
-     * <p>Getter for the field <code>events</code>.</p>
+     * <p>
+     * Getter for the field <code>events</code>.
+     * </p>
      *
      * @return the events
      */
@@ -189,7 +199,9 @@ public class MetadataBean {
     }
 
     /**
-     * <p>Setter for the field <code>events</code>.</p>
+     * <p>
+     * Setter for the field <code>events</code>.
+     * </p>
      *
      * @param events the events to set
      */
@@ -198,7 +210,9 @@ public class MetadataBean {
     }
 
     /**
-     * <p>displayChildStructs.</p>
+     * <p>
+     * displayChildStructs.
+     * </p>
      *
      * @return a boolean.
      */
@@ -207,13 +221,15 @@ public class MetadataBean {
     }
 
     /**
-     * <p>setSelectedRecordLanguage.</p>
+     * <p>
+     * setSelectedRecordLanguage.
+     * </p>
      *
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-       if(metadataElementList != null) {           
-           metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
-       }
+        if (metadataElementList != null) {
+            metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
+        }
     }
 }

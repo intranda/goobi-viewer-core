@@ -1129,7 +1129,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return urlString;
     }
-    
+
     public String getIIIFApiUrl() {
         String urlString = getLocalString("urls.iiif", getRestApiUrl());
         if (!urlString.endsWith("/")) {
@@ -3245,18 +3245,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isUseViewerLocaleAsRecordLanguage() {
         return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
-    }
-
-    /**
-     * <p>
-     * isTocAlwaysDisplayDocstruct.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isTocAlwaysDisplayDocstruct() {
-        return getLocalBoolean("toc.alwaysDisplayDocstruct", false);
     }
 
     /**

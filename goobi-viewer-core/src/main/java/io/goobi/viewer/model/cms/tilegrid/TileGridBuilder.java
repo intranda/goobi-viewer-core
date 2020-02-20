@@ -32,7 +32,9 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile.Priority;
 
 /**
- * <p>TileGridBuilder class.</p>
+ * <p>
+ * TileGridBuilder class.
+ * </p>
  */
 public class TileGridBuilder {
 
@@ -42,9 +44,11 @@ public class TileGridBuilder {
     private Set<String> tags = new HashSet<>();
 
     private final HttpServletRequest request;
-    
+
     /**
-     * <p>Constructor for TileGridBuilder.</p>
+     * <p>
+     * Constructor for TileGridBuilder.
+     * </p>
      *
      * @param servletRequest a {@link javax.servlet.http.HttpServletRequest} object.
      */
@@ -53,7 +57,9 @@ public class TileGridBuilder {
     }
 
     /**
-     * <p>size.</p>
+     * <p>
+     * size.
+     * </p>
      *
      * @param size a int.
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
@@ -64,7 +70,9 @@ public class TileGridBuilder {
     }
 
     /**
-     * <p>reserveForHighPriority.</p>
+     * <p>
+     * reserveForHighPriority.
+     * </p>
      *
      * @param reserve a int.
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
@@ -75,7 +83,9 @@ public class TileGridBuilder {
     }
 
     /**
-     * <p>tags.</p>
+     * <p>
+     * tags.
+     * </p>
      *
      * @param tags a {@link java.util.Collection} object.
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
@@ -86,7 +96,9 @@ public class TileGridBuilder {
     }
 
     /**
-     * <p>tags.</p>
+     * <p>
+     * tags.
+     * </p>
      *
      * @param tags a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.
@@ -99,7 +111,9 @@ public class TileGridBuilder {
     }
 
     /**
-     * <p>build.</p>
+     * <p>
+     * build.
+     * </p>
      *
      * @param items a {@link java.util.List} object.
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGrid} object.
@@ -108,30 +122,29 @@ public class TileGridBuilder {
         if (!tags.isEmpty()) {
             items = filter(items, tags);
         }
-        
+
         items = items.stream()
-        .filter(item -> tags.isEmpty() || countTags(item, tags) > 0)
-        .sorted(new SemiRandomOrderComparator<ImageGalleryTile>(tile -> tile.getDisplayOrder()))
-        .collect(Collectors.toList());
-         
+                .filter(item -> tags.isEmpty() || countTags(item, tags) > 0)
+                .sorted(new SemiRandomOrderComparator<ImageGalleryTile>(tile -> tile.getDisplayOrder()))
+                .collect(Collectors.toList());
+
         List<ImageGalleryTile> priorityItems = filter(items, Priority.IMPORTANT);
         priorityItems = priorityItems.subList(0, Math.min(gridSize, Math.min(priorityItems.size(), reserveForHighPriority)));
-        
+
         List<ImageGalleryTile> defaultItems = filter(items, Priority.DEFAULT);
         defaultItems = defaultItems.subList(0, Math.min(defaultItems.size(), gridSize - priorityItems.size()));
 
-        
         items = new ArrayList<>();
         items.addAll(priorityItems);
         items.addAll(defaultItems);
-        
-//        Collections.sort(items, new Comparator<ImageGalleryTile>() {
-//            @Override
-//            public int compare(ImageGalleryTile item1, ImageGalleryTile item2) {
-//                return Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder());
-//            }
-//        });
-        
+
+        //        Collections.sort(items, new Comparator<ImageGalleryTile>() {
+        //            @Override
+        //            public int compare(ImageGalleryTile item1, ImageGalleryTile item2) {
+        //                return Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder());
+        //            }
+        //        });
+
         return new TileGrid(items, tags, language, request);
     }
 
@@ -193,7 +206,9 @@ public class TileGridBuilder {
     }
 
     /**
-     * <p>language.</p>
+     * <p>
+     * language.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.TileGridBuilder} object.

@@ -26,74 +26,82 @@ import java.util.stream.Collectors;
  */
 public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T> {
 
-	private List<Selectable<CMSCategory>> categories;
-	
-	/**
-	 * <p>Constructor for CategorizableTranslatedSelectable.</p>
-	 *
-	 * @param value a T object.
-	 * @param selected a boolean.
-	 * @param defaultLocale a {@link java.util.Locale} object.
-	 * @param categories a {@link java.util.List} object.
-	 */
-	public CategorizableTranslatedSelectable(T value, boolean selected, Locale defaultLocale, List<Selectable<CMSCategory>> categories) {
-		super(value, selected, defaultLocale);
-		this.categories = categories;
-		// TODO Auto-generated constructor stub
-	}
-	
-	/**
-	 * <p>Getter for the field <code>categories</code>.</p>
-	 *
-	 * @return the categories
-	 */
-	public List<Selectable<CMSCategory>> getCategories() {
-		return categories;
-	}
-	
-	/**
-	 * <p>Setter for the field <code>categories</code>.</p>
-	 *
-	 * @param categories a {@link java.util.List} object.
-	 */
-	public void setCategories(List<Selectable<CMSCategory>> categories) {
-		this.categories = categories;
-	}
-	
-	/**
-	 * <p>getSelectedCategories.</p>
-	 *
-	 * @return a {@link java.util.List} object.
-	 */
-	public List<CMSCategory> getSelectedCategories() {
-		return categories.stream().filter(Selectable::isSelected).map(Selectable::getValue).collect(Collectors.toList());
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public int compareTo(Selectable<T> other) {
-		return super.compareTo(other);
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object obj) {
-		if(obj == null) {
-			return false;
-		} else if( obj == this) {
-			return true;
-		} else if(obj.getClass() == this.getClass()) {
-			CategorizableTranslatedSelectable other = (CategorizableTranslatedSelectable)obj;
-			return this.getValue().equals(other.getValue());
-		} else {
-			return false;
-		}
-	}
+    private List<Selectable<CMSCategory>> categories;
+
+    /**
+     * <p>
+     * Constructor for CategorizableTranslatedSelectable.
+     * </p>
+     *
+     * @param value a T object.
+     * @param selected a boolean.
+     * @param defaultLocale a {@link java.util.Locale} object.
+     * @param categories a {@link java.util.List} object.
+     */
+    public CategorizableTranslatedSelectable(T value, boolean selected, Locale defaultLocale, List<Selectable<CMSCategory>> categories) {
+        super(value, selected, defaultLocale);
+        this.categories = categories;
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>categories</code>.
+     * </p>
+     *
+     * @return the categories
+     */
+    public List<Selectable<CMSCategory>> getCategories() {
+        return categories;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>categories</code>.
+     * </p>
+     *
+     * @param categories a {@link java.util.List} object.
+     */
+    public void setCategories(List<Selectable<CMSCategory>> categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * <p>
+     * getSelectedCategories.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<CMSCategory> getSelectedCategories() {
+        return categories.stream().filter(Selectable::isSelected).map(Selectable::getValue).collect(Collectors.toList());
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(Selectable<T> other) {
+        return super.compareTo(other);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj == this) {
+            return true;
+        } else if (obj.getClass() == this.getClass()) {
+            CategorizableTranslatedSelectable other = (CategorizableTranslatedSelectable) obj;
+            return this.getValue().equals(other.getValue());
+        } else {
+            return false;
+        }
+    }
 
 }

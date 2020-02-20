@@ -43,7 +43,9 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>JsonTools class.</p>
+ * <p>
+ * JsonTools class.
+ * </p>
  */
 public class JsonTools {
 

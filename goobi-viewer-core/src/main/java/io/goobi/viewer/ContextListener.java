@@ -46,7 +46,9 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 
 /**
- * <p>ContextListener class.</p>
+ * <p>
+ * ContextListener class.
+ * </p>
  */
 @WebListener
 public class ContextListener implements ServletContextListener {
@@ -127,7 +129,7 @@ public class ContextListener implements ServletContextListener {
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
-        
+
         //set contentServerConfig
         ContentServerConfiguration.getInstance("contentServerConfig.xml");
     }

@@ -22,15 +22,19 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 
 /**
- * <p>TestResource class.</p>
+ * <p>
+ * TestResource class.
+ * </p>
  *
  * @author Florian Alpers
  */
 @Path("/imageTT")
 public class TestResource {
-    
+
     /**
-     * <p>forwardToContentServer.</p>
+     * <p>
+     * forwardToContentServer.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param a a {@link java.lang.String} object.
@@ -40,12 +44,14 @@ public class TestResource {
     @GET
     @Path("/{a}/{b}/default")
     public String forwardToContentServer(@Context ContainerRequestContext request, @PathParam("a") String a, @PathParam("b") String b) {
-            System.out.println("Received " + a + "/" + b);
-            return "Received " + a + "/" + b;
+        System.out.println("Received " + a + "/" + b);
+        return "Received " + a + "/" + b;
     }
 
     /**
-     * <p>forwardToContentServer1.</p>
+     * <p>
+     * forwardToContentServer1.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param b a {@link java.lang.String} object.
@@ -54,8 +60,8 @@ public class TestResource {
     @GET
     @Path("/{b}/default")
     public String forwardToContentServer1(@Context ContainerRequestContext request, @PathParam("b") String b) {
-            System.out.println("Received only" + b);
-            return "Received only " + b;
+        System.out.println("Received only" + b);
+        return "Received only " + b;
     }
-    
+
 }

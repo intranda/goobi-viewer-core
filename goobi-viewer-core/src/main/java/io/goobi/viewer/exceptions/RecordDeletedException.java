@@ -18,14 +18,18 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>RecordDeletedException class.</p>
+ * <p>
+ * RecordDeletedException class.
+ * </p>
  */
 public class RecordDeletedException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -2958431544270222156L;
 
     /**
-     * <p>Constructor for RecordDeletedException.</p>
+     * <p>
+     * Constructor for RecordDeletedException.
+     * </p>
      *
      * @param string {@link java.lang.String}
      */

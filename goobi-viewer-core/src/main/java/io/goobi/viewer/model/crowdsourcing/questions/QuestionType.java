@@ -16,8 +16,8 @@
 package io.goobi.viewer.model.crowdsourcing.questions;
 
 /**
- * The QuestionType determines GUI element to use to create annotations for a {@link io.goobi.viewer.model.crowdsourcing.questions.Question}, which also determines the
- * type of body the generated annotations have
+ * The QuestionType determines GUI element to use to create annotations for a {@link io.goobi.viewer.model.crowdsourcing.questions.Question}, which
+ * also determines the type of body the generated annotations have
  *
  * @author florian
  */
@@ -25,12 +25,9 @@ public enum QuestionType {
 
     PLAINTEXT,
     GEOLOCATION_POINT
-    /** Not implemented yet 
-    DATE_PICKER,
-    GEOLOCATION_AREA,
-    TRANSCRIPTION,
-    KEY_VALUE_LIST
-    **/
+    /**
+     * Not implemented yet DATE_PICKER, GEOLOCATION_AREA, TRANSCRIPTION, KEY_VALUE_LIST
+     **/
     ;
-    
+
 }

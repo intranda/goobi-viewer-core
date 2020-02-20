@@ -70,6 +70,20 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see StructElementStub#generateContextObject(String,StructElementStub)
+     * @verifies return unknown format if topstruct null
+     */
+    @Test
+    public void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
+        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElementStub stub = element.createStub();
+        Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
+        Assert.assertTrue(stub.generateContextObject(null, null)
+                .startsWith(
+                        "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:unknown"));
+    }
+
+    /**
      * @see StructElementStub#getLabel(Locale)
      * @verifies return locale specific title if so requested
      */

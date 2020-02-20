@@ -16,9 +16,8 @@
 package io.goobi.viewer.model.security.authentication;
 
 /**
- * An exception indicating that an error occured when trying to authenticate a user.
- * This should only be used if an internal error occured or the request could not be processed.
- * Ordinary login refusal should not be handled with exceptions
+ * An exception indicating that an error occured when trying to authenticate a user. This should only be used if an internal error occured or the
+ * request could not be processed. Ordinary login refusal should not be handled with exceptions
  *
  * @author Florian Alpers
  */
@@ -30,7 +29,9 @@ public class AuthenticationProviderException extends Exception {
     private static final long serialVersionUID = 2454421697805524935L;
 
     /**
-     * <p>Constructor for AuthenticationProviderException.</p>
+     * <p>
+     * Constructor for AuthenticationProviderException.
+     * </p>
      */
     public AuthenticationProviderException() {
         super();
@@ -38,7 +39,9 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>Constructor for AuthenticationProviderException.</p>
+     * <p>
+     * Constructor for AuthenticationProviderException.
+     * </p>
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -51,7 +54,9 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>Constructor for AuthenticationProviderException.</p>
+     * <p>
+     * Constructor for AuthenticationProviderException.
+     * </p>
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -62,7 +67,9 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>Constructor for AuthenticationProviderException.</p>
+     * <p>
+     * Constructor for AuthenticationProviderException.
+     * </p>
      *
      * @param arg0 a {@link java.lang.String} object.
      */
@@ -72,7 +79,9 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>Constructor for AuthenticationProviderException.</p>
+     * <p>
+     * Constructor for AuthenticationProviderException.
+     * </p>
      *
      * @param arg0 a {@link java.lang.Throwable} object.
      */
@@ -80,7 +89,5 @@ public class AuthenticationProviderException extends Exception {
         super(arg0);
         // TODO Auto-generated constructor stub
     }
-    
-    
 
 }

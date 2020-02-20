@@ -30,15 +30,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RssMetadata {
-    
+
     private final String link;
     private final String label;
     private final String value;
-    
-    
-    
+
     /**
-     * <p>Constructor for RssMetadata.</p>
+     * <p>
+     * Constructor for RssMetadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -50,9 +50,11 @@ public class RssMetadata {
         this.label = label;
         this.value = value;
     }
-    
+
     /**
-     * <p>Constructor for RssMetadata.</p>
+     * <p>
+     * Constructor for RssMetadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -65,7 +67,9 @@ public class RssMetadata {
     }
 
     /**
-     * <p>Getter for the field <code>link</code>.</p>
+     * <p>
+     * Getter for the field <code>link</code>.
+     * </p>
      *
      * @return the link
      */
@@ -73,10 +77,10 @@ public class RssMetadata {
         return link;
     }
 
-
-
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -84,16 +88,15 @@ public class RssMetadata {
         return label;
     }
 
-
-
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return the value
      */
     public String getValue() {
         return value;
     }
-
 
 }

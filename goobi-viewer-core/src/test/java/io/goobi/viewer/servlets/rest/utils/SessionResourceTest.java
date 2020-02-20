@@ -53,7 +53,7 @@ public class SessionResourceTest {
         Map<String, String> sessionMd = new HashMap<>();
         sessionMd.put("foo", "bar");
         DataManager.getInstance().getSessionMap().put(TEST_SESSION_ID, sessionMd);
-        
+
         String ret = resource.getSessionInfo();
         Assert.assertTrue(ret, resource.getSessionInfo().equals("foo: bar\n"));
     }

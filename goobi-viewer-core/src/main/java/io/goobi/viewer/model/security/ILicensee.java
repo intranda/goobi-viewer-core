@@ -21,19 +21,25 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>ILicensee interface.</p>
+ * <p>
+ * ILicensee interface.
+ * </p>
  */
 public interface ILicensee {
 
     /**
-     * <p>getName.</p>
+     * <p>
+     * getName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getName();
 
     /**
-     * <p>getLicenses.</p>
+     * <p>
+     * getLicenses.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */

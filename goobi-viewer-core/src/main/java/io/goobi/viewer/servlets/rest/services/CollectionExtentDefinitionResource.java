@@ -33,7 +33,8 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 public class CollectionExtentDefinitionResource {
 
     /**
-     * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained works
+     * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained
+     * works
      *
      * @return a {@link de.intranda.api.services.CollectionExtentDefinition} object.
      */
@@ -45,5 +46,5 @@ public class CollectionExtentDefinitionResource {
         return new CollectionExtentDefinition();
 
     }
-    
+
 }

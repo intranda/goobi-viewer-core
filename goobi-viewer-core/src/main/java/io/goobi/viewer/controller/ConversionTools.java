@@ -35,7 +35,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * <p>ConversionTools class.</p>
+ * <p>
+ * ConversionTools class.
+ * </p>
  */
 public class ConversionTools {
 

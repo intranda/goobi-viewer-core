@@ -16,12 +16,16 @@
 package io.goobi.viewer.model.iiif.presentation.builder;
 
 /**
- * <p>BuildMode class.</p>
+ * <p>
+ * BuildMode class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public enum BuildMode {
 
     IIIF,
-    THUMBS, IIIF_SIMPLE, IIIF_BASE
+    THUMBS,
+    IIIF_SIMPLE,
+    IIIF_BASE
 }

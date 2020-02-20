@@ -138,7 +138,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>validate.</p>
+     * <p>
+     * validate.
+     * </p>
      */
     public void validate() {
         if (StringUtils.isEmpty(id)) {
@@ -220,7 +222,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>createNewLanguageVersion.</p>
+     * <p>
+     * createNewLanguageVersion.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
      * @param language a {@link java.lang.String} object.
@@ -235,7 +239,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -244,7 +250,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -253,7 +261,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -262,7 +272,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -271,7 +283,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>version</code>.</p>
+     * <p>
+     * Getter for the field <code>version</code>.
+     * </p>
      *
      * @return the version
      */
@@ -280,7 +294,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>version</code>.</p>
+     * <p>
+     * Setter for the field <code>version</code>.
+     * </p>
      *
      * @param version the version to set
      */
@@ -289,7 +305,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -298,7 +316,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -307,7 +327,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>htmlFileName</code>.</p>
+     * <p>
+     * Getter for the field <code>htmlFileName</code>.
+     * </p>
      *
      * @return the htmlFileName
      */
@@ -317,7 +339,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>htmlFileName</code>.</p>
+     * <p>
+     * Setter for the field <code>htmlFileName</code>.
+     * </p>
      *
      * @param htmlFileName the htmlFileName to set
      */
@@ -326,7 +350,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>templateFileName</code>.</p>
+     * <p>
+     * Getter for the field <code>templateFileName</code>.
+     * </p>
      *
      * @return the templateFileName
      */
@@ -335,7 +361,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>templateFileName</code>.</p>
+     * <p>
+     * Setter for the field <code>templateFileName</code>.
+     * </p>
      *
      * @param templateFileName the templateFileName to set
      */
@@ -344,7 +372,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>iconFileName</code>.</p>
+     * <p>
+     * Getter for the field <code>iconFileName</code>.
+     * </p>
      *
      * @return the iconFileName
      */
@@ -353,7 +383,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>iconFileName</code>.</p>
+     * <p>
+     * Setter for the field <code>iconFileName</code>.
+     * </p>
      *
      * @param iconFileName the iconFileName to set
      */
@@ -362,7 +394,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>contentItems</code>.</p>
+     * <p>
+     * Getter for the field <code>contentItems</code>.
+     * </p>
      *
      * @return the contentItems
      */
@@ -371,7 +405,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>getContentItem.</p>
+     * <p>
+     * getContentItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSContentItemTemplate} object.
@@ -386,7 +422,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>contentItems</code>.</p>
+     * <p>
+     * Setter for the field <code>contentItems</code>.
+     * </p>
      *
      * @param contentItems the contentItems to set
      */
@@ -395,7 +433,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>isDisplaySortingField.</p>
+     * <p>
+     * isDisplaySortingField.
+     * </p>
      *
      * @return a boolean.
      */
@@ -404,7 +444,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>displaySortingField</code>.</p>
+     * <p>
+     * Setter for the field <code>displaySortingField</code>.
+     * </p>
      *
      * @param displaySortingField a boolean.
      */
@@ -413,7 +455,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>isThemeTemplate.</p>
+     * <p>
+     * isThemeTemplate.
+     * </p>
      *
      * @return the themeTemplate
      */
@@ -422,7 +466,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>themeTemplate</code>.</p>
+     * <p>
+     * Setter for the field <code>themeTemplate</code>.
+     * </p>
      *
      * @param themeTemplate the themeTemplate to set
      */
@@ -431,7 +477,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>appliesToExpandedUrl</code>.</p>
+     * <p>
+     * Setter for the field <code>appliesToExpandedUrl</code>.
+     * </p>
      *
      * @param appliesToExpandedUrl the appliesToExpandedUrl to set
      */
@@ -440,7 +488,9 @@ public class CMSPageTemplate implements Serializable {
     }
 
     /**
-     * <p>isAppliesToExpandedUrl.</p>
+     * <p>
+     * isAppliesToExpandedUrl.
+     * </p>
      *
      * @return the appliesToExpandedUrl
      */

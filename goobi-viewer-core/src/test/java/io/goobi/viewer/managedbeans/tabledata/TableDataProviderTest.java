@@ -49,41 +49,33 @@ public class TableDataProviderTest {
      */
     @Before
     public void setUp() throws Exception {
-        sourceList = IntStream.rangeClosed(1, 2005)
-                .boxed()
-                .collect(Collectors.toList());
+        sourceList = IntStream.rangeClosed(1, 2005).boxed().collect(Collectors.toList());
         Collections.shuffle(sourceList);
-        
+
         provider = new TableDataProvider<>(new TableDataSource<Integer>() {
 
             private Optional<Long> totalDataSize = Optional.empty();
-                
+
             @Override
             public List<Integer> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters)
                     throws TableDataSourceException {
 
-                return sourceList.stream()
-                        .sorted((i, j) -> {
-                            switch (sortOrder) {
-                                case DESCENDING:
-                                    return j.compareTo(i);
-                                case ASCENDING:
-                                    return i.compareTo(j);
-                                default:
-                                    return 0;
-                            }
-                        })
-                        .filter(i -> matches(i, filters))
-                        .skip(first)
-                        .limit(pageSize)
-                        .collect(Collectors.toList());
+                return sourceList.stream().sorted((i, j) -> {
+                    switch (sortOrder) {
+                        case DESCENDING:
+                            return j.compareTo(i);
+                        case ASCENDING:
+                            return i.compareTo(j);
+                        default:
+                            return 0;
+                    }
+                }).filter(i -> matches(i, filters)).skip(first).limit(pageSize).collect(Collectors.toList());
             }
 
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 if (!totalDataSize.isPresent()) {
-                    totalDataSize = Optional.of(sourceList.stream().filter(i -> matches(i, filters)).count())
-                            .map(i -> Long.valueOf(i));
+                    totalDataSize = Optional.of(sourceList.stream().filter(i -> matches(i, filters)).count()).map(i -> Long.valueOf(i));
                 }
                 return totalDataSize.orElse(0l);
             }
@@ -112,13 +104,13 @@ public class TableDataProviderTest {
         Assert.assertEquals(1, list.get(0), 0);
         Assert.assertEquals(10, list.get(9), 0);
     }
-    
+
     @Test
     public void testGetTotalSize() {
         provider.resetAll();
         Assert.assertEquals(2005, provider.getSizeOfDataList());
     }
-    
+
     @Test
     public void testChangePageSize() {
         provider.resetAll();
@@ -137,58 +129,58 @@ public class TableDataProviderTest {
         provider.resetAll();
         provider.cmdMoveLast();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(5, list.size(),  0);
+        Assert.assertEquals(5, list.size(), 0);
         Assert.assertEquals(2005, list.get(4), 0);
     }
-    
+
     @Test
     public void testGotoFirstPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMoveFirst();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(),  0);
+        Assert.assertEquals(10, list.size(), 0);
         Assert.assertEquals(10, list.get(9), 0);
     }
-    
+
     @Test
     public void testGotoNextPage() {
         provider.resetAll();
         provider.cmdMoveNext();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(),  0);
+        Assert.assertEquals(10, list.size(), 0);
         Assert.assertEquals(11, list.get(0), 0);
     }
-    
+
     @Test
     public void testGotoPreviousPage() {
         provider.resetAll();
         provider.cmdMoveLast();
         provider.cmdMovePrevious();
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(),  0);
+        Assert.assertEquals(10, list.size(), 0);
         Assert.assertEquals(2000, list.get(9), 0);
     }
-    
+
     @Test
     public void testGotoPage() {
         provider.resetAll();
         provider.setTxtMoveTo(100);
         List<Integer> list = provider.getPaginatorList();
-        Assert.assertEquals(10, list.size(),  0);
+        Assert.assertEquals(10, list.size(), 0);
         Assert.assertEquals(1000, list.get(9), 0);
     }
-    
+
     @Test
     public void testFilter() {
         provider.resetAll();
         provider.getFilterAsOptional("MIN").ifPresent(filter -> filter.setValue("100"));
         Assert.assertEquals("100", provider.getFilterAsOptional("MIN").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
-        Assert.assertEquals(2005-99, provider.getSizeOfDataList());
+        Assert.assertEquals(2005 - 99, provider.getSizeOfDataList());
         List<Integer> list = provider.getPaginatorList();
         Assert.assertEquals(100, list.get(0), 0);
-        
+
         provider.getFilterAsOptional("MAX").ifPresent(filter -> filter.setValue("200"));
         Assert.assertEquals("200", provider.getFilterAsOptional("MAX").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
@@ -196,11 +188,11 @@ public class TableDataProviderTest {
         list = provider.getPaginatorList();
         provider.cmdMoveLast();
         list = provider.getPaginatorList();
-        Assert.assertEquals(200, list.get(list.size()-1), 0);
+        Assert.assertEquals(200, list.get(list.size() - 1), 0);
         provider.cmdMoveFirst();
         list = provider.getPaginatorList();
         Assert.assertEquals(100, list.get(0), 0);
-        
+
         provider.getFilterAsOptional("MIN").ifPresent(filter -> filter.setValue(""));
         Assert.assertEquals("", provider.getFilterAsOptional("MIN").map(filter -> filter.getValue()).orElse("x"));
         provider.update();
@@ -211,36 +203,35 @@ public class TableDataProviderTest {
         Assert.assertEquals(1, list.get(0), 0);
         provider.cmdMoveLast();
         list = provider.getPaginatorList();
-        Assert.assertEquals(200, list.get(list.size()-1), 0);
-        
+        Assert.assertEquals(200, list.get(list.size() - 1), 0);
+
     }
-    
+
     @Test
     public void testSorting() {
         provider.resetAll();
         provider.setSortOrder(SortOrder.DESCENDING);
         Assert.assertEquals(2005, provider.getPaginatorList().get(0), 0);
         provider.cmdMoveLast();
-        Assert.assertEquals(1, provider.getPaginatorList().get(provider.getPaginatorList().size()-1), 0);
+        Assert.assertEquals(1, provider.getPaginatorList().get(provider.getPaginatorList().size() - 1), 0);
     }
-    
+
     /**
      * @param i
      * @param filters
      * @return
      */
     protected boolean matches(Integer i, Map<String, String> filters) {
-        return filters.entrySet().stream()
-        .allMatch(entry -> {
-            switch(entry.getKey()) {
+        return filters.entrySet().stream().allMatch(entry -> {
+            switch (entry.getKey()) {
                 case "MIN":
-                        Integer min = StringUtils.isNotBlank(entry.getValue()) ? Integer.parseInt(entry.getValue()) : Integer.MIN_VALUE;
-                        return i >= min;
+                    Integer min = StringUtils.isNotBlank(entry.getValue()) ? Integer.parseInt(entry.getValue()) : Integer.MIN_VALUE;
+                    return i >= min;
                 case "MAX":
                     Integer max = StringUtils.isNotBlank(entry.getValue()) ? Integer.parseInt(entry.getValue()) : Integer.MAX_VALUE;
                     return i <= max;
-                default: 
-                        return true;
+                default:
+                    return true;
             }
         });
     }

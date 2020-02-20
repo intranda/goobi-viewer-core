@@ -45,7 +45,9 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     private BCrypt bcrypt = new BCrypt();
 
     /**
-     * <p>Constructor for LocalAuthenticationProvider.</p>
+     * <p>
+     * Constructor for LocalAuthenticationProvider.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */

@@ -638,9 +638,11 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param currentUrl a {@link java.lang.String} object.
      * @param topStruct StructElementStub representing the top structure element.
-     * @should generate string element correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should generate string element correctly
+     * @should return unknown format if topstruct null
+     * @should throw illegal
      */
     public String generateContextObject(String currentUrl, StructElementStub topStruct) throws PresentationException {
         StringBuilder sb = new StringBuilder("ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:");
@@ -767,7 +769,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public static String getKEVForField(StructElementStub se, String solrField, String targetField, String prefix) {
         if (se == null) {
-            throw new IllegalArgumentException("se may not be null");
+            return "";
         }
         if (StringUtils.isEmpty(solrField)) {
             throw new IllegalArgumentException("solrField may not be null or empty");

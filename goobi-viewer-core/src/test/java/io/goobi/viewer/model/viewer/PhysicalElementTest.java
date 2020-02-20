@@ -15,17 +15,10 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.io.FileUtils;
-import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,12 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
-import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.model.viewer.PhysicalElement.CoordsFormat;
 
 public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -58,55 +48,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
-    }
-
-
-    /**
-     * @see PhysicalElement#handleAltoComposedBlock(Element)
-     * @verifies return all words from nested ComposedBlocks
-     */
-    @Test
-    public void handleAltoComposedBlock_shouldReturnAllWordsFromNestedComposedBlocks() throws Exception {
-        Element eleComposedBlock1 = new Element("ComposedBlock");
-        {
-            Element eleTextBlock = new Element("TextBlock");
-            Element eleTextLine = new Element("TextLine");
-            Element eleString = new Element("String");
-            eleString.setAttribute("CONTENT", "word1");
-            eleTextLine.addContent(eleString);
-            eleTextBlock.addContent(eleTextLine);
-            eleComposedBlock1.addContent(eleTextBlock);
-        }
-
-        Element eleComposedBlock2 = new Element("ComposedBlock");
-        {
-            Element eleTextBlock = new Element("TextBlock");
-            Element eleTextLine = new Element("TextLine");
-            Element eleString = new Element("String");
-            eleString.setAttribute("CONTENT", "word2");
-            eleTextLine.addContent(eleString);
-            eleTextBlock.addContent(eleTextLine);
-            eleComposedBlock2.addContent(eleTextBlock);
-        }
-        eleComposedBlock1.addContent(eleComposedBlock2);
-
-        Element eleComposedBlock3 = new Element("ComposedBlock");
-        {
-            Element eleTextBlock = new Element("TextBlock");
-            Element eleTextLine = new Element("TextLine");
-            Element eleString = new Element("String");
-            eleString.setAttribute("CONTENT", "word3");
-            eleTextLine.addContent(eleString);
-            eleTextBlock.addContent(eleTextLine);
-            eleComposedBlock3.addContent(eleTextBlock);
-        }
-        eleComposedBlock2.addContent(eleComposedBlock3);
-
-        List<Element> words = ALTOTools.handleAltoComposedBlock(eleComposedBlock1);
-        Assert.assertEquals(3, words.size());
-        Assert.assertEquals("word1", words.get(0).getAttributeValue("CONTENT"));
-        Assert.assertEquals("word2", words.get(1).getAttributeValue("CONTENT"));
-        Assert.assertEquals("word3", words.get(2).getAttributeValue("CONTENT"));
     }
 
     /**
@@ -128,8 +69,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
     }
 
-    
-    
     @Test
     public void isAdaptImageViewHeight_test() {
         PhysicalElement page =

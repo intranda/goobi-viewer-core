@@ -12,7 +12,7 @@
 	    border: 1px solid @lightgray;
 	    overflow: hidden;
 	}
-	&__image-loader {}
+	&__image-loader {} 
 	&__image-map {
 		position: relative;
 	    width: 100%;
@@ -52,19 +52,49 @@
 		left: 0;
 		z-index: 10;
 	}
+	
 	/* VIDEO, AUDIO, TEXT */
 	&__video,
 	&__audio,
-	&__text {
-		text-align: center;
-	}
+	&__text {}
 	/* VIDEO */
 	&__video {}
 	/* AUDIO */
-	&__audio {}
+	&__audio {} 
 	/* TEXT */
 	&__text {}
+	}
+.view-object-content {
+	background-color: white; 
+	border: 1px solid @middlegray;
+	padding: 1.5rem;
+	display: flex;
+	align-items: center;
+	margin-bottom: 1.5rem;
+	&__thumb { 
+		flex: 0 0 30%;
+		img {
+			width: 100%;
+		}
+	}
+	&__objects {
+		flex: 0 0 70%;
+	}
+	&__audio {
+		width: 70%;
+		margin: 0 auto;
+		audio {
+			width: 100%;
+			border-radius: 1rem;
+		}
+	}
 }
+	.search-list__hit-title {
+		height: 50%;
+	    width: 100%;
+	    text-align: center;
+		}
+	
 
 .image-fragment {
 	background-color: rgba(255,255,255,0.3);

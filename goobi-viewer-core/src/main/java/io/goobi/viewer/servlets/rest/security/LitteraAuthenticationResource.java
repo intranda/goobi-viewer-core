@@ -41,49 +41,49 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 @Path("/littera")
 public class LitteraAuthenticationResource {
 
-	private static final String QUERY_PARAM_REGEX_ID = "id=(.*?)(?:&|$)";
-	private static final String QUERY_PARAM_REGEX_PW = "pw=(.*?)(?:&|$)";
-	private static final String RESPONSE_YES = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-			"<Response authenticationSuccessful=\"true\" />";
-	private static final String RESPONSE_NO = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-			"<Response authenticationSuccessful=\"false\" />";
-	
+    private static final String QUERY_PARAM_REGEX_ID = "id=(.*?)(?:&|$)";
+    private static final String QUERY_PARAM_REGEX_PW = "pw=(.*?)(?:&|$)";
+    private static final String RESPONSE_YES = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<Response authenticationSuccessful=\"true\" />";
+    private static final String RESPONSE_NO = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<Response authenticationSuccessful=\"false\" />";
+
     @Context
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-	
-	/**
-	 * <p>getResponse.</p>
-	 *
-	 * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
-	 * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
-	 */
+
+    /**
+     * <p>
+     * getResponse.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
+     * @throws io.goobi.viewer.exceptions.AuthenticationException if any.
+     */
     @GET
-	@Path("/externalauth")
-	@Produces(MediaType.TEXT_XML)
-	@ViewerRestServiceBinding
-	public LitteraAuthenticationResponse getResponse() throws AuthenticationException {
-		String query = servletRequest.getQueryString();
-		String name = getFirstGroup(query, QUERY_PARAM_REGEX_ID).orElseThrow(() -> new AuthenticationException("No login name given"));
-		String pwd = getFirstGroup(query, QUERY_PARAM_REGEX_PW).orElseThrow(() -> new AuthenticationException("No password given"));
-		if(name.equals("test") && pwd.equals("test")) {
-			return new LitteraAuthenticationResponse(true);
-		} else {
-			return new LitteraAuthenticationResponse(false);
-		}
-	}
-	
-	private Optional<String> getFirstGroup(String text, String regex) {
-		if(StringUtils.isBlank(text)) {
-			return Optional.empty();
-		}
-		Matcher matcher = Pattern.compile(regex).matcher(text);
-		if(matcher.find() && StringUtils.isNotBlank(matcher.group(1))) {
-			return Optional.of(matcher.group(1));
-		} else {
-			return Optional.empty();
-		}
-	}
-	
+    @Path("/externalauth")
+    @Produces(MediaType.TEXT_XML)
+    @ViewerRestServiceBinding
+    public LitteraAuthenticationResponse getResponse() throws AuthenticationException {
+        String query = servletRequest.getQueryString();
+        String name = getFirstGroup(query, QUERY_PARAM_REGEX_ID).orElseThrow(() -> new AuthenticationException("No login name given"));
+        String pwd = getFirstGroup(query, QUERY_PARAM_REGEX_PW).orElseThrow(() -> new AuthenticationException("No password given"));
+        if (name.equals("test") && pwd.equals("test")) {
+            return new LitteraAuthenticationResponse(true);
+        } else {
+            return new LitteraAuthenticationResponse(false);
+        }
+    }
+
+    private Optional<String> getFirstGroup(String text, String regex) {
+        if (StringUtils.isBlank(text)) {
+            return Optional.empty();
+        }
+        Matcher matcher = Pattern.compile(regex).matcher(text);
+        if (matcher.find() && StringUtils.isNotBlank(matcher.group(1))) {
+            return Optional.of(matcher.group(1));
+        } else {
+            return Optional.empty();
+        }
+    }
+
 }

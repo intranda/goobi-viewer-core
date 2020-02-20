@@ -170,5 +170,4 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
         Assert.assertTrue(future.get().getUser().get().isSuspended());
     }
 
-
 }

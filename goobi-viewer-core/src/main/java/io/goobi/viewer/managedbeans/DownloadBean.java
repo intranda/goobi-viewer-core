@@ -43,7 +43,9 @@ import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
 
 /**
- * <p>DownloadBean class.</p>
+ * <p>
+ * DownloadBean class.
+ * </p>
  */
 @Named
 @SessionScoped
@@ -59,7 +61,9 @@ public class DownloadBean implements Serializable {
     private DownloadJob downloadJob;
 
     /**
-     * <p>reset.</p>
+     * <p>
+     * reset.
+     * </p>
      */
     public void reset() {
         synchronized (this) {
@@ -70,7 +74,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>getTimeToLive.</p>
+     * <p>
+     * getTimeToLive.
+     * </p>
      *
      * @return a long.
      */
@@ -79,7 +85,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>checkDownloadAction.</p>
+     * <p>
+     * checkDownloadAction.
+     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @param email a {@link java.lang.String} object.
@@ -91,8 +99,8 @@ public class DownloadBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @Deprecated
-    public String checkDownloadAction(String type, String email, String pi, String logId) throws DAOException, PresentationException,
-            IndexUnreachableException {
+    public String checkDownloadAction(String type, String email, String pi, String logId)
+            throws DAOException, PresentationException, IndexUnreachableException {
         if (DownloadJob.checkDownload(type, email, pi, logId, DownloadJob.generateDownloadJobId(type, pi, logId), ttl)) {
             return "pretty:download1";
         }
@@ -101,7 +109,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>openDownloadAction.</p>
+     * <p>
+     * openDownloadAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -118,7 +128,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>downloadFileAction.</p>
+     * <p>
+     * downloadFileAction.
+     * </p>
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
@@ -166,7 +178,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>downloadIdentifier</code>.</p>
+     * <p>
+     * Getter for the field <code>downloadIdentifier</code>.
+     * </p>
      *
      * @param criteria a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -176,7 +190,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>downloadIdentifier</code>.</p>
+     * <p>
+     * Getter for the field <code>downloadIdentifier</code>.
+     * </p>
      *
      * @return the downloadIdentifier
      */
@@ -185,7 +201,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>downloadIdentifier</code>.</p>
+     * <p>
+     * Setter for the field <code>downloadIdentifier</code>.
+     * </p>
      *
      * @param downloadIdentifier the downloadIdentifier to set
      */
@@ -194,7 +212,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>downloadJob</code>.</p>
+     * <p>
+     * Getter for the field <code>downloadJob</code>.
+     * </p>
      *
      * @return the downloadJob
      */
@@ -203,7 +223,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>downloadJob</code>.</p>
+     * <p>
+     * Setter for the field <code>downloadJob</code>.
+     * </p>
      *
      * @param downloadJob the downloadJob to set
      */
@@ -212,7 +234,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>getDownloadSize.</p>
+     * <p>
+     * getDownloadSize.
+     * </p>
      *
      * @return a long.
      */

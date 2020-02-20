@@ -134,6 +134,19 @@ public class StructElementTest extends AbstractSolrEnabledTest {
         Assert.assertNotEquals(element, topStruct);
         Assert.assertEquals(IDDOC_KLEIUNIV, topStruct.getLuceneId());
     }
+    
+
+    /**
+     * @see StructElement#getTopStruct()
+     * @verifies return self if topstruct or anchor
+     */
+    @Test
+    public void getTopStruct_shouldReturnSelfIfTopstructOrAnchor() throws Exception {
+        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement topStruct = element.getTopStruct();
+        Assert.assertEquals(element, topStruct);
+        Assert.assertEquals(IDDOC_KLEIUNIV, topStruct.getLuceneId());
+    }
 
     /**
      * @see StructElement#getFirstVolumeFieldValue(String)
@@ -183,5 +196,25 @@ public class StructElementTest extends AbstractSolrEnabledTest {
     public void getGroupLabel_shouldReturnAltValueOfNoLabelWasFound() throws Exception {
         StructElement element = new StructElement(1L);
         Assert.assertEquals("alt", element.getGroupLabel("id10T", "alt"));
+    }
+
+    /**
+     * @see StructElement#getPi()
+     * @verifies return pi if topstruct
+     */
+    @Test
+    public void getPi_shouldReturnPiIfTopstruct() throws Exception {
+        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        Assert.assertEquals(PI_KLEIUNIV, element.getPi());
+    }
+
+    /**
+     * @see StructElement#getPi()
+     * @verifies retriveve pi from topstruct if not topstruct
+     */
+    @Test
+    public void getPi_shouldRetrivevePiFromTopstructIfNotTopstruct() throws Exception {
+        StructElement element = new StructElement(1578198745608L);
+        Assert.assertEquals(PI_KLEIUNIV, element.getPi());
     }
 }

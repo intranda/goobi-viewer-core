@@ -89,7 +89,9 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>addRepositoryPathIfRequired.</p>
+     * <p>
+     * addRepositoryPathIfRequired.
+     * </p>
      *
      * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
@@ -110,6 +112,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             throw new PresentationException(e.getMessage());
         }
     }
+
     /**
      * @param request
      * @param dataRepository
