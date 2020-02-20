@@ -154,7 +154,22 @@ popover [data-copy] {
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.view-object-content {
+		&__thumb { 
+			display: none;
+		}
+		&__objects {
+			flex: 0 0 100%;
+			 .search-list__hit-title {
+			 	height: auto;
+			 }
+		}
+		&__audio {
+			margin-top: 1.5rem;
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}
