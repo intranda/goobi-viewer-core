@@ -112,6 +112,7 @@
 			&:focus {
 				text-decoration: none;
 				color: @gray;
+				background-color: @lightgray; 
 			}
 		}
 		span {
@@ -126,7 +127,13 @@
 			opacity: 0.4;
 	    	a,
 	    	span,
-	    	button {}
+	    	button {
+		    	&:hover,
+				&:active,
+				&:focus {
+					background-color: transparent;
+				}
+	    	}
 		}    
 	    /* ELEMENT */
 	    &.start {}

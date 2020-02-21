@@ -72,22 +72,16 @@
 	margin-bottom: 1.5rem;
 	&__thumb { 
 		flex: 0 0 30%;
-		max-width: 80px;
-		max-height: 100%;
 		img {
 			width: 100%;
-			transition: 1s;
-			&:hover {
-				transform: scale(3);
-				transition: 1s;
-			}
 		}
 	}
 	&__objects {
 		flex: 0 0 70%;
+		padding-left: 1.5rem;
 		.search-list__hit-title {
 		    width: 100%;
-		    text-align: center;
+		    height: 50%;
 		}
 	}
 	&__audio {
@@ -98,7 +92,6 @@
 			border-radius: 1rem;
 			margin-left: auto; 
 			margin-right: auto; 
-			margin-top: 25px;
 		}
 	}
 }	
@@ -161,7 +154,22 @@ popover [data-copy] {
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.view-object-content {
+		&__thumb { 
+			display: none;
+		}
+		&__objects {
+			flex: 0 0 100%;
+			 .search-list__hit-title {
+			 	height: auto;
+			 }
+		}
+		&__audio {
+			margin-top: 1.5rem;
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}
