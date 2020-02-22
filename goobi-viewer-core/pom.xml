@@ -106,7 +106,7 @@
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.persistence.version>2.2.1</javax.persistence.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jersey.version>2.30</jersey.version>
+		<jersey.version>2.30.1</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jgravatar.version>1.2</jgravatar.version>
 		<joda-time.version>2.10.5</joda-time.version>
@@ -117,7 +117,7 @@
 		<log4j.version>2.13.0</log4j.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<metadata-extractor.version>2.12.0</metadata-extractor.version>
-		<mockito.version>3.2.4</mockito.version>
+		<mockito.version>3.3.0</mockito.version>
 		<mockserver.version>5.9.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<poi.version>4.1.2</poi.version>
