@@ -172,7 +172,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
         String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
-        Assert.assertEquals("Monographie", label);
+        Assert.assertEquals("Monografie", label);
     }
 
     /**
