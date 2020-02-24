@@ -117,6 +117,17 @@ public class HelperTest {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/",
                 Helper.buildFullTextUrl("alto/PPN123/00000001.xml"));
     }
+    
+
+    /**
+     * @see Helper#buildFullTextUrl(String)
+     * @verifies escape spaces correctly
+     */
+    @Test
+    public void buildFullTextUrl_shouldEscapeSpacesCorrectly() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001%20(1).xml/",
+                Helper.buildFullTextUrl("alto/PPN123/00000001 (1).xml"));
+    }
 
     /**
      * @see Helper#deleteRecord(String,boolean)

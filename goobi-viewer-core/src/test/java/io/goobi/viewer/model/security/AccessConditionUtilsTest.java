@@ -296,4 +296,22 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
     }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies escape file name for wildcard search correctly
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
+        {
+            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1).xml");
+            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
+            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+        }
+        {
+            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
+            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
+            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+        }
+    }
 }

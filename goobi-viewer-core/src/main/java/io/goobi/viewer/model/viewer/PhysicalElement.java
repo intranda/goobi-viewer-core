@@ -857,28 +857,28 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String loadAlto()
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
-        if (altoText == null && altoFileName != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for ALTO file {}", altoFileName);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-            String url = Helper.buildFullTextUrl(altoFileName);
-            logger.trace("URL: {}", url);
-            try {
-                altoText = Helper.getWebContentGET(url);
-                if (altoText != null) {
-                    wordCoordsFormat = CoordsFormat.ALTO;
-                }
-                return altoText;
-            } catch (HTTPException e) {
-                logger.error("Could not retrieve file from {}", url);
-                logger.error(e.getMessage());
-            }
+        if (altoFileName == null) {
+            return null;
         }
 
-        return null;
-
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+            logger.debug("Access denied for ALTO file {}", altoFileName);
+            throw new AccessDeniedException("fulltextAccessDenied");
+        }
+        String url = Helper.buildFullTextUrl(altoFileName);
+        logger.trace("ALTO URL: {}", url);
+        try {
+            altoText = Helper.getWebContentGET(url);
+            if (altoText != null) {
+                wordCoordsFormat = CoordsFormat.ALTO;
+            }
+            return altoText;
+        } catch (HTTPException e) {
+            logger.error("Could not retrieve file from {}", url);
+            logger.error(e.getMessage());
+            return null;
+        }
     }
 
     /**
