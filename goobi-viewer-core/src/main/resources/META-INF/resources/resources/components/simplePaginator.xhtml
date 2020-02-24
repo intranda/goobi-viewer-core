@@ -25,10 +25,11 @@
 		<composite:attribute name="itemActive" required="true" />
 		<composite:attribute name="urlPrefix" required="true" />
 		<composite:attribute name="urlSuffix" required="false" />
+		<composite:attribute name="rtl" required="false" default="false" />
 	</composite:interface>
 
     <h:panelGroup rendered="#{cc.attrs.itemCount > 1}"
-        styleClass="#{activeDocumentBean.viewManager.topDocument.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'}">
+        styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'}">
         <nav id="numericPaginator" role="navigation">
             <ul>
                 <!-- PREV / NEXT (RTL) -->

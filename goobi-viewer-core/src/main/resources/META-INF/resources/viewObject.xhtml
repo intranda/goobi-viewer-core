@@ -97,7 +97,8 @@
                     itemCount="#{activeDocumentBean.viewManager.imagesCount}"
                     itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
-                    urlSuffix="#topDocAnchor" />                    
+                    urlSuffix="#topDocAnchor"
+                    rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />                    
                 
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
                     <!-- VIEW META MUSEAL -->
