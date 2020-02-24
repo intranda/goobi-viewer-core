@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -131,50 +132,59 @@ public class AccessConditionUtils {
      * @return
      * @should use correct field name for AV files
      * @should use correct file name for text files
+     * @should escape file name for wildcard search correctly
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
-        String[] ret = new String[2];
-        if (fileName != null) {
-            StringBuilder sbQuery = new StringBuilder();
-            String useFileField = SolrConstants.FILENAME;
-            String useFileName = fileName;
-            // Different media types have the file name in different fields
-            String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-            switch (extension) {
-                case "webm":
-                    useFileField = SolrConstants.FILENAME_WEBM;
-                    break;
-                case "mp4":
-                    useFileField = SolrConstants.FILENAME_MP4;
-                    break;
-                case "mp3":
-                    // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                    useFileField = SolrConstants.FILENAME_MPEG3;
-                    break;
-                case "ogg":
-                case "ogv":
-                    useFileField = SolrConstants.FILENAME_OGG;
-                    break;
-                case "txt":
-                case "xml":
-                    useFileName = fileName.replace(extension, "*");
-                    break;
-                case "":
-                    useFileName = fileName + ".*";
-                default:
-                    break;
-            }
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
-            if (useFileName.endsWith(".*")) {
-                sbQuery.append(useFileName);
-            } else {
-                sbQuery.append("\"").append(useFileName).append("\"");
-            }
-
-            // logger.trace(sbQuery.toString());
-            ret[0] = sbQuery.toString();
-            ret[1] = useFileField;
+        if (fileName == null) {
+            return new String[2];
         }
+
+        String[] ret = new String[2];
+        StringBuilder sbQuery = new StringBuilder();
+        String useFileField = SolrConstants.FILENAME;
+        String useFileName = fileName;
+        boolean wildcard = false;
+        // Different media types have the file name in different fields
+        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+        switch (extension) {
+            case "webm":
+                useFileField = SolrConstants.FILENAME_WEBM;
+                break;
+            case "mp4":
+                useFileField = SolrConstants.FILENAME_MP4;
+                break;
+            case "mp3":
+                // if the mime type in METS is not audio/mpeg3 but something else, access will be false
+                useFileField = SolrConstants.FILENAME_MPEG3;
+                break;
+            case "ogg":
+            case "ogv":
+                useFileField = SolrConstants.FILENAME_OGG;
+                break;
+            case "txt":
+            case "xml":
+                useFileName = fileName.replace("." + extension, "");
+                wildcard = true;
+                break;
+            case "":
+                useFileName = fileName;
+                wildcard = true;
+            default:
+                break;
+        }
+        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
+        if (wildcard) {
+            // Escape whitespaces etc. for wildcard searches
+            useFileName = ClientUtils.escapeQueryChars(useFileName) + ".*";
+            sbQuery.append(useFileName);
+        } else {
+            sbQuery.append('"').append(useFileName).append('"');
+        }
+
+        // logger.trace(sbQuery.toString());
+        ret[0] = sbQuery.toString();
+        ret[1] = useFileField;
+
         return ret;
     }
 
@@ -192,52 +202,52 @@ public class AccessConditionUtils {
     protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
-        if (StringUtils.isNotEmpty(identifier)) {
-            String[] query = generateAccessCheckQuery(identifier, fileName);
-            // logger.trace("query: {}", query[0]);
-            try {
-                // Collect access conditions required by the page
-                Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
-                SolrDocumentList results = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
-                                Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            Set<String> pageAccessConditions = new HashSet<>();
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                pageAccessConditions.add(accessCondition.toString());
-                                // logger.trace(accessCondition.toString());
-                            }
-                            requiredAccessConditions.put(fileName, pageAccessConditions);
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                if (user == null) {
-                    UserBean userBean = BeanUtils.getUserBean();
-                    if (userBean != null) {
-                        user = userBean.getUser();
-                    }
-                }
-                Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
-                for (String pageFileName : requiredAccessConditions.keySet()) {
-                    Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
-                    boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
-                            privilegeName, user, Helper.getIpAddress(request), query[0]);
-                    ret.put(pageFileName, access);
-                }
-                return ret;
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
+        if (StringUtils.isEmpty(identifier)) {
+            return Collections.emptyMap();
         }
 
-        return new HashMap<>(0);
+        String[] query = generateAccessCheckQuery(identifier, fileName);
+        // logger.trace("query: {}", query[0]);
+        try {
+            // Collect access conditions required by the page
+            Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
+            SolrDocumentList results = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
+                            Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
+            if (results != null) {
+                for (SolrDocument doc : results) {
+                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                    if (fieldsAccessConddition != null) {
+                        Set<String> pageAccessConditions = new HashSet<>();
+                        for (Object accessCondition : fieldsAccessConddition) {
+                            pageAccessConditions.add(accessCondition.toString());
+                            // logger.trace(accessCondition.toString());
+                        }
+                        requiredAccessConditions.put(fileName, pageAccessConditions);
+                    }
+                }
+            }
 
+            User user = BeanUtils.getUserFromRequest(request);
+            if (user == null) {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            }
+            Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
+            for (String pageFileName : requiredAccessConditions.keySet()) {
+                Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
+                boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
+                        privilegeName, user, Helper.getIpAddress(request), query[0]);
+                ret.put(pageFileName, access);
+            }
+            return ret;
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            return Collections.emptyMap();
+        }
     }
 
     /**

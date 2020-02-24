@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -765,14 +764,19 @@ public class Helper {
      *
      * @param filePath a {@link java.lang.String} object.
      * @return Full REST URL
-     * @should build url correctly
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should build url correctly
+     * @should escape spaces correctly
      */
     public static String buildFullTextUrl(String filePath) throws ViewerConfigurationException {
+        if (filePath == null) {
+            throw new IllegalArgumentException("filePath may not be null");
+        }
+
         return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
                 .append('-')
                 .append('/')
-                .append(filePath)
+                .append(filePath.replace(" ", "%20"))
                 .append('/')
                 .toString();
     }

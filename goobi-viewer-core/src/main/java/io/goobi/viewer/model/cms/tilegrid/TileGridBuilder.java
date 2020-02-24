@@ -17,7 +17,6 @@ package io.goobi.viewer.model.cms.tilegrid;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -148,7 +147,7 @@ public class TileGridBuilder {
         return new TileGrid(items, tags, language, request);
     }
 
-    private List<ImageGalleryTile> filter(List<ImageGalleryTile> items, Set<String> tags) {
+    private static List<ImageGalleryTile> filter(List<ImageGalleryTile> items, Set<String> tags) {
         List<ImageGalleryTile> filtered = new ArrayList<>();
         for (ImageGalleryTile item : items) {
             if (countTags(item, tags) > 0) {
@@ -158,7 +157,7 @@ public class TileGridBuilder {
         return filtered;
     }
 
-    private List<ImageGalleryTile> filter(List<ImageGalleryTile> items, Priority priority) {
+    private static List<ImageGalleryTile> filter(List<ImageGalleryTile> items, Priority priority) {
         List<ImageGalleryTile> filtered = new ArrayList<>();
         for (ImageGalleryTile item : items) {
             if (item.getPriority().equals(priority)) {
