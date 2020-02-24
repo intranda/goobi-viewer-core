@@ -159,9 +159,15 @@
                 </h:panelGroup>
                 
                 <!-- THUMBNAILS -->
-                <div class="fullscreen__view-image-thumbs-wrapper">
+                <h:panelGroup layout="block">
+	                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -ltr"/>
+	                </c:if>
+	                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -rtl"/>
+	                </c:if>
                     <fsThumbnails></fsThumbnails>
-                </div>
+                </h:panelGroup>
                 
                 <!-- OPEN SIDEBAR -->
                 <div id="viewSidebarOpen" class="fullscreen__view-sidebar-open">
