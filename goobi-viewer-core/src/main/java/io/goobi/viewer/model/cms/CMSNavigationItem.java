@@ -353,6 +353,10 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     public String getNavigationUrl() {
         String url = (isAbsolute(getPageUrl()) || isOnSameRessource(getPageUrl()) ? "" : BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/")
                 + getPageUrl();
+        //Handle cases where #getPageUrl == '/'
+        if(url.endsWith("//")) {
+            return url.substring(0, url.length()-1);
+        }
         return url;
     }
 
