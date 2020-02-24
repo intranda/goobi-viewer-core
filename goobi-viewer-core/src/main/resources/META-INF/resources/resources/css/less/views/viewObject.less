@@ -42,6 +42,17 @@
 			max-width: 100%;
 		}
 	}
+	form {
+		justify-content: center;
+		.image-controls{
+			&__actions {
+				flex-grow: 0;
+			}
+			&__options {
+				margin-left: 0;
+			}
+		}
+	}
 	/* IMAGE MOBILE OVERLAY */
 	&__image-mobile-overlay {
 		display: none;
@@ -58,11 +69,21 @@
 	&__audio,
 	&__text {}
 	/* VIDEO */
-	&__video {}
+	&__video {
+		display: flex;
+		background-color: @white;
+		border: 1px solid @middlegray;
+	}
 	/* AUDIO */
 	&__audio {} 
 	/* TEXT */
-	&__text {}
+	&__text {
+		text-align: center;
+		background-color: white;
+		border: 1px solid @middlegray;
+		border-top: 0;
+		padding: 10px;
+	}
 	}
 .view-object-content {
 	background-color: white; 
