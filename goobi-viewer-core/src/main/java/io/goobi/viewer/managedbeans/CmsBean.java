@@ -1029,7 +1029,9 @@ public class CmsBean implements Serializable {
     public List<CMSNavigationItem> getNavigationMenuItems() {
         try {
             String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-            String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+            String currentTheme =  Optional.ofNullable(getCurrentPage())
+                    .map(CMSPage::getSubThemeDiscriminatorValue)
+                    .orElse(BeanUtils.getNavigationHelper().getTheme());
             List<CMSNavigationItem> items = DataManager.getInstance()
                     .getDao()
                     .getAllTopCMSNavigationItems()
@@ -1785,7 +1787,7 @@ public class CmsBean implements Serializable {
         if (collection == null) {
             CMSContentItem contentItem = page.getContentItem(id);
             if (contentItem != null) {
-                collection = contentItem.initializeCollection();
+                collection = contentItem.initializeCollection(page.getSubThemeDiscriminatorValue());
                 collections.put(myId, collection);
             }
         }

@@ -24,7 +24,7 @@
 var cmsJS = ( function( cms ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     
     cms.modules = {
     	/**
@@ -112,6 +112,7 @@ var cmsJS = ( function( cms ) {
         	}
         },
         
+        /** 
          * @description Method to initialize all event listeners.
          * @method initEventListeners
          */
