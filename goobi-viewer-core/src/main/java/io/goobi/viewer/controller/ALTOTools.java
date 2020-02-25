@@ -37,7 +37,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +94,7 @@ public class ALTOTools {
             return alto2Txt(alto, mergeLineBreakWords, request);
             //            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
             //            return altoDoc.getContent();
-        } catch (IOException | XMLStreamException e) {
+        } catch (IOException | XMLStreamException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
 
@@ -173,22 +175,35 @@ public class ALTOTools {
      * @param alto a {@link java.lang.String} object.
      * @param mergeLineBreakWords a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @should use extract fulltext correctly
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
+     * @throws JDOMException
+     * @should use extract fulltext correctly
+     * @should concatenate word at line break correctly
      */
-    protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request) throws IOException, XMLStreamException {
+    protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request)
+            throws IOException, XMLStreamException, JDOMException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
+
+        String useAlto = alto;
+
+        // Link hyphenated words before parsing the document
+        if (mergeLineBreakWords) {
+            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
+            new HyphenationLinker().linkWords(altoDoc);
+            Document doc = new Document(altoDoc.writeToDom());
+            useAlto = new XMLOutputter().outputString(doc);
+        }
+
         Map<String, String> neTypeMap = new HashMap<>();
         Map<String, String> neLabelMap = new HashMap<>();
         Map<String, String> neUriMap = new HashMap<>();
         Set<String> usedTags = new HashSet<>();
         StringBuilder strings = new StringBuilder(500);
-        // boolean textline = false;
-        try (InputStream is = new ByteArrayInputStream(alto.getBytes(StandardCharsets.UTF_8))) {
+        try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(StandardCharsets.UTF_8))) {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             XMLStreamReader parser = factory.createXMLStreamReader(is);
 
