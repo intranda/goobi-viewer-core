@@ -131,14 +131,30 @@ public class ALTOToolsTest {
      */
     @Test
     public void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
-        File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
+            File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
+            Assert.assertTrue(file.isFile());
+            String alto = FileTools.getStringFromFile(file, "utf-8");
+            Assert.assertNotNull(alto);
+            String text = ALTOTools.alto2Txt(alto, true, null);
+            Assert.assertNotNull(text);
+            Assert.assertTrue(text.length() > 100);
+    }
+    
+    /**
+     * @see ALTOTools#alto2Txt(String,boolean,HttpServletRequest)
+     * @verifies concatenate word at line break correctly
+     */
+    @Test
+    public void alto2Txt_shouldConcatenateWordAtLineBreakCorrectly() throws Exception {
+        File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assert.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, "utf-8");
         Assert.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, false, null);
+        String text = ALTOTools.alto2Txt(alto, true, null);
         Assert.assertNotNull(text);
-        Assert.assertTrue(text.length() > 100);
+        Assert.assertTrue(text.contains("Wappen"));
     }
+
 
     /**
      * @see ALTOTools#getFullText(String,HttpServletRequest)
@@ -154,5 +170,4 @@ public class ALTOToolsTest {
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
     }
-
 }
