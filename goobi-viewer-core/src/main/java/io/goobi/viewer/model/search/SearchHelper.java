@@ -1311,6 +1311,9 @@ public final class SearchHelper {
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
             if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
+                if (count.getName().startsWith("")) {
+                    continue;
+                }
                 ret.add(count.getName());
             }
         }
