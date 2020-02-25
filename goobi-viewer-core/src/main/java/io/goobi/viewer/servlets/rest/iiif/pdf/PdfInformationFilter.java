@@ -32,7 +32,9 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfo
 import io.goobi.viewer.controller.Helper;
 
 /**
- * <p>PdfInformationFilter class.</p>
+ * <p>
+ * PdfInformationFilter class.
+ * </p>
  */
 @Provider
 @ContentServerPdfInfoBinding
@@ -58,5 +60,4 @@ public class PdfInformationFilter implements ContainerResponseFilter {
         }
     }
 
-    
 }

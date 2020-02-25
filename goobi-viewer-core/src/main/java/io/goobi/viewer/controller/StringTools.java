@@ -414,4 +414,25 @@ public class StringTools {
 
         return ret;
     }
+
+    /**
+     * <p>
+     * getMatch.
+     * </p>
+     *
+     * @param s a {@link java.lang.String} object.
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String getMatch(String s, String pattern) {
+        if (StringUtils.isBlank(s)) {
+            return "";
+        }
+        Matcher matcher = Pattern.compile(pattern).matcher(s);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return "";
+    }
 }

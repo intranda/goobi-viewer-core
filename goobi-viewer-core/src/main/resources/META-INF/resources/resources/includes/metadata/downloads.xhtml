@@ -78,13 +78,14 @@
                         <h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
                             <li class="dl-links__pdf">
                                 <a id="pdfDownloadLink" href="#{activeDocumentBean.viewManager.pdfDownloadLink}" title="#{msg.metadata_dl_pdf}" data-toggle="tooltip"
-                                    data-placement="top" class="btn btn--full" target="_blank">#{msg.pdfDownload}</a>
+                                    data-placement="top" class="btn btn--full" target="_blank">#{msg.label__pdf_download}</a>
                             </li>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
                             <li class="dl-links__pdf">
                                 <a href="#" class="btn btn--full download-modal" data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                                    data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.pdfDownload}" data-toggle="tooltip" data-placement="top" target="_blank">#{msg.pdfDownload}</a>
+                                    data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.label__pdf_download}" data-toggle="tooltip" data-placement="top"
+                                    target="_blank">#{msg.label__pdf_download}</a>
                             </li>
                         </h:panelGroup>
                     </h:panelGroup>

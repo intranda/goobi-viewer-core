@@ -29,7 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>TEITools class.</p>
+ * <p>
+ * TEITools class.
+ * </p>
  */
 public class TEITools {
 
@@ -62,7 +64,7 @@ public class TEITools {
                 for (Element ele : eleBody.getChildren()) {
                     eleNewRoot.addContent(ele.clone());
                 }
-                String ret= XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
+                String ret = XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
                 ret = ret.replaceAll("<note>[\\s\\S]*?<\\/note>", "");
                 return ret;
             }
@@ -72,7 +74,9 @@ public class TEITools {
     }
 
     /**
-     * <p>convertTeiToHtml.</p>
+     * <p>
+     * convertTeiToHtml.
+     * </p>
      *
      * @param tei a {@link java.lang.String} object.
      * @return HTML conversion of the TEI
@@ -96,13 +100,16 @@ public class TEITools {
     }
 
     /**
-     * <p>convertDocxToTei.</p>
+     * <p>
+     * convertDocxToTei.
+     * </p>
      *
      * @param docxFile a {@link java.nio.file.Path} object.
      * @should convert docx to tei correctly
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
+    @Deprecated
     public static String convertDocxToTei(Path docxFile) throws IOException {
         if (docxFile == null) {
             throw new IllegalArgumentException("docxFile may not be null");

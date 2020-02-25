@@ -21,7 +21,7 @@ import org.junit.Test;
 import io.goobi.viewer.model.search.SearchFilter;
 
 public class SearchFilterTest {
-    
+
     /**
      * @see SearchFilter#SearchFilter(String,String)
      * @verifies set attributes correctly

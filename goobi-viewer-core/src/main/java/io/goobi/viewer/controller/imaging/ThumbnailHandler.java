@@ -497,7 +497,11 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg");
+            String region = Region.FULL_IMAGE;
+            if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
+                region = doc.getShapeMetadata().get(0).getCoords();
+            }
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", "default", "jpg");
         } else {
             return null;
         }
@@ -594,7 +598,7 @@ public class ThumbnailHandler {
             if (StringUtils.isBlank(imagePath) && !se.isWork()) {
                 if (se.isAnchor()) {
                     imagePath = se.getFirstVolumeFieldValue(field);
-                } else if(se.getTopStruct() != null){
+                } else if (se.getTopStruct() != null) {
                     imagePath = se.getTopStruct().getMetadataValue(field);
                 }
             }
@@ -818,7 +822,8 @@ public class ThumbnailHandler {
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
+            String imageApiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
             url += "?updated=" + item.getLastModifiedTime();
             return url;
         }).orElse("");

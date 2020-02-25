@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>LanguageHelper class.</p>
+ * <p>
+ * LanguageHelper class.
+ * </p>
  */
 public class LanguageHelper {
 
@@ -36,7 +38,9 @@ public class LanguageHelper {
     private XMLConfiguration config;
 
     /**
-     * <p>Constructor for LanguageHelper.</p>
+     * <p>
+     * Constructor for LanguageHelper.
+     * </p>
      *
      * @param configFilePath a {@link java.lang.String} object.
      */
@@ -62,17 +66,16 @@ public class LanguageHelper {
         SubnodeConfiguration languageConfig = null;
         try {
             if (isoCode.length() == 3) {
-                List<HierarchicalConfiguration> nodes =  config.configurationsAt("language[iso_639-2=\"" + isoCode + "\"]");
-                if(nodes.isEmpty()) {
-                    nodes =  config.configurationsAt("language[iso_639-2T=\"" + isoCode + "\"]");
+                List<HierarchicalConfiguration> nodes = config.configurationsAt("language[iso_639-2=\"" + isoCode + "\"]");
+                if (nodes.isEmpty()) {
+                    nodes = config.configurationsAt("language[iso_639-2T=\"" + isoCode + "\"]");
                 }
-                if(nodes.isEmpty()) {
-                    nodes =  config.configurationsAt("language[iso_639-2B=\"" + isoCode + "\"]");
+                if (nodes.isEmpty()) {
+                    nodes = config.configurationsAt("language[iso_639-2B=\"" + isoCode + "\"]");
                 }
                 languageConfig = (SubnodeConfiguration) nodes.get(0);
             } else if (isoCode.length() == 2) {
-                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-1=\"" + isoCode + "\"]")
-                        .get(0);
+                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
             }
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("No matching language found for " + isoCode);

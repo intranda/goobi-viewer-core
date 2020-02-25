@@ -69,7 +69,9 @@ public class TOCElement implements Serializable {
     private PageType pageType = PageType.viewMetadata;
 
     /**
-     * <p>Constructor for TOCElement.</p>
+     * <p>
+     * Constructor for TOCElement.
+     * </p>
      *
      * @param label a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      * @param pageNo a {@link java.lang.String} object.
@@ -165,7 +167,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getContentServerPdfUrl.</p>
+     * <p>
+     * getContentServerPdfUrl.
+     * </p>
      *
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -191,7 +195,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>thumbnailUrl</code>.</p>
+     * <p>
+     * Getter for the field <code>thumbnailUrl</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -200,7 +206,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>thumbnailUrl</code>.</p>
+     * <p>
+     * Getter for the field <code>thumbnailUrl</code>.
+     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -227,7 +235,9 @@ public class TOCElement implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -241,7 +251,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      * @param locale a {@link java.util.Locale} object.
@@ -251,7 +263,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      * @param locale a {@link java.lang.String} object.
@@ -261,7 +275,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>metadata</code>.</p>
+     * <p>
+     * Getter for the field <code>metadata</code>.
+     * </p>
      *
      * @return the metadata
      */
@@ -270,7 +286,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getMetadataValue.</p>
+     * <p>
+     * getMetadataValue.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -280,7 +298,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>pageNo</code>.</p>
+     * <p>
+     * Getter for the field <code>pageNo</code>.
+     * </p>
      *
      * @return the pageNo
      */
@@ -289,7 +309,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>iddoc</code>.</p>
+     * <p>
+     * Getter for the field <code>iddoc</code>.
+     * </p>
      *
      * @return the iddoc
      */
@@ -298,7 +320,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>pageNoLabel</code>.</p>
+     * <p>
+     * Getter for the field <code>pageNoLabel</code>.
+     * </p>
      *
      * @return the pageNoLabel
      */
@@ -307,7 +331,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>topStructPi</code>.</p>
+     * <p>
+     * Getter for the field <code>topStructPi</code>.
+     * </p>
      *
      * @return the topStructPi
      */
@@ -325,7 +351,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>level</code>.</p>
+     * <p>
+     * Getter for the field <code>level</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -334,7 +362,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getSubLabel.</p>
+     * <p>
+     * getSubLabel.
+     * </p>
      *
      * @return the subLabel
      */
@@ -344,7 +374,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getUrl.</p>
+     * <p>
+     * getUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -387,7 +419,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getFullscreenUrl.</p>
+     * <p>
+     * getFullscreenUrl.
+     * </p>
      *
      * @return the fullscreenUrl
      */
@@ -396,7 +430,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getReadingModeUrl.</p>
+     * <p>
+     * getReadingModeUrl.
+     * </p>
      *
      * @return the fullscreenUrl
      * @deprecated renamed to fullscreen
@@ -407,7 +443,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>isVisible.</p>
+     * <p>
+     * isVisible.
+     * </p>
      *
      * @return a boolean.
      */
@@ -416,7 +454,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>visible</code>.</p>
+     * <p>
+     * Setter for the field <code>visible</code>.
+     * </p>
      *
      * @param visible a boolean.
      */
@@ -425,7 +465,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>parentId</code>.</p>
+     * <p>
+     * Getter for the field <code>parentId</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -434,7 +476,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>parentId</code>.</p>
+     * <p>
+     * Setter for the field <code>parentId</code>.
+     * </p>
      *
      * @param parentId a int.
      */
@@ -443,7 +487,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>getID.</p>
+     * <p>
+     * getID.
+     * </p>
      *
      * @return a int.
      */
@@ -452,7 +498,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>setID.</p>
+     * <p>
+     * setID.
+     * </p>
      *
      * @param iD a int.
      */
@@ -461,7 +509,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>isExpanded.</p>
+     * <p>
+     * isExpanded.
+     * </p>
      *
      * @return a boolean.
      */
@@ -470,7 +520,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>expanded</code>.</p>
+     * <p>
+     * Setter for the field <code>expanded</code>.
+     * </p>
      *
      * @param expanded a boolean.
      */
@@ -479,7 +531,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>isHasChild.</p>
+     * <p>
+     * isHasChild.
+     * </p>
      *
      * @return a boolean.
      */
@@ -488,7 +542,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hasChild</code>.</p>
+     * <p>
+     * Setter for the field <code>hasChild</code>.
+     * </p>
      *
      * @param hasChild a boolean.
      */
@@ -497,7 +553,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>groupIds</code>.</p>
+     * <p>
+     * Getter for the field <code>groupIds</code>.
+     * </p>
      *
      * @return the groupIds
      */
@@ -506,7 +564,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>groupIds</code>.</p>
+     * <p>
+     * Setter for the field <code>groupIds</code>.
+     * </p>
      *
      * @param groupIds the groupIds to set
      */
@@ -515,7 +575,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>recordMimeType</code>.</p>
+     * <p>
+     * Getter for the field <code>recordMimeType</code>.
+     * </p>
      *
      * @return the recordMimeType
      */
@@ -524,7 +586,9 @@ public class TOCElement implements Serializable {
     }
 
     /**
-     * <p>isEmpty.</p>
+     * <p>
+     * isEmpty.
+     * </p>
      *
      * @return true if label is null, empty or blank
      */

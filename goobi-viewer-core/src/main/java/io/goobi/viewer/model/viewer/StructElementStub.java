@@ -48,14 +48,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
     private static final Logger logger = LoggerFactory.getLogger(StructElementStub.class);
 
-    /** Constant <code>SOURCE_DOC_FORMAT_METS="METS"</code> */
-    public static final String SOURCE_DOC_FORMAT_METS = "METS";
-    /** Constant <code>SOURCE_DOC_FORMAT_LIDO="LIDO"</code> */
-    public static final String SOURCE_DOC_FORMAT_LIDO = "LIDO";
-
-    /** Docstruct types that represent museum objects. */
-    private static List<String> museumDocstructTypes;
-
     /** IDDOC of the Solr document representing this structure element. */
     protected long luceneId;
     /** Identifier of top level structure element of the tree to which this structure element belongs. */
@@ -81,7 +73,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /** Identifier of the partner institution to which this record belongs (top-level structure elements only). */
     protected String partnerId = null;
     /** Format of document format from which this record was indexed. */
-    protected String sourceDocFormat = SOURCE_DOC_FORMAT_METS;
+    protected String sourceDocFormat = SolrConstants._METS;
     /** Content of the LABEL or MD_TITLE fields. Used to display the record label in the browser's title bar. */
     protected String label = null;
     /** Name of the data repository for this record. */
@@ -90,14 +82,18 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected Map<String, List<String>> metadataFields = new HashMap<>();
 
     /**
-     * <p>Constructor for StructElementStub.</p>
+     * <p>
+     * Constructor for StructElementStub.
+     * </p>
      */
     public StructElementStub() {
         // the emptiness inside
     }
 
     /**
-     * <p>Constructor for StructElementStub.</p>
+     * <p>
+     * Constructor for StructElementStub.
+     * </p>
      *
      * @param luceneId a long.
      */
@@ -122,7 +118,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>isWork.</p>
+     * <p>
+     * isWork.
+     * </p>
      *
      * @return the work
      */
@@ -131,7 +129,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>work</code>.</p>
+     * <p>
+     * Setter for the field <code>work</code>.
+     * </p>
      *
      * @param work the work to set
      */
@@ -140,7 +140,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>isAnchor.</p>
+     * <p>
+     * isAnchor.
+     * </p>
      *
      * @return the anchor
      */
@@ -149,7 +151,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>anchor</code>.</p>
+     * <p>
+     * Setter for the field <code>anchor</code>.
+     * </p>
      *
      * @param anchor the anchor to set
      */
@@ -158,7 +162,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>isVolume.</p>
+     * <p>
+     * isVolume.
+     * </p>
      *
      * @return the volume
      */
@@ -167,7 +173,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>volume</code>.</p>
+     * <p>
+     * Setter for the field <code>volume</code>.
+     * </p>
      *
      * @param volume the volume to set
      */
@@ -176,7 +184,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>numVolumes</code>.</p>
+     * <p>
+     * Getter for the field <code>numVolumes</code>.
+     * </p>
      *
      * @return the numVolumes
      */
@@ -185,7 +195,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -194,7 +206,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -203,7 +217,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>luceneId</code>.</p>
+     * <p>
+     * Getter for the field <code>luceneId</code>.
+     * </p>
      *
      * @return a long.
      */
@@ -212,7 +228,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>logid</code>.</p>
+     * <p>
+     * Getter for the field <code>logid</code>.
+     * </p>
      *
      * @return the logid
      */
@@ -221,7 +239,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>logid</code>.</p>
+     * <p>
+     * Setter for the field <code>logid</code>.
+     * </p>
      *
      * @param logid the logid to set
      */
@@ -230,7 +250,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>docStructType</code>.</p>
+     * <p>
+     * Getter for the field <code>docStructType</code>.
+     * </p>
      *
      * @return the docStructType
      */
@@ -239,7 +261,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>docStructType</code>.</p>
+     * <p>
+     * Setter for the field <code>docStructType</code>.
+     * </p>
      *
      * @param docStructType the docStructType to set
      */
@@ -248,7 +272,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>imageNumber</code>.</p>
+     * <p>
+     * Getter for the field <code>imageNumber</code>.
+     * </p>
      *
      * @return the imageNumber
      */
@@ -257,7 +283,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>imageNumber</code>.</p>
+     * <p>
+     * Setter for the field <code>imageNumber</code>.
+     * </p>
      *
      * @param imageNumber the imageNumber to set
      */
@@ -266,7 +294,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>volumeNo</code>.</p>
+     * <p>
+     * Getter for the field <code>volumeNo</code>.
+     * </p>
      *
      * @return the volumeNo
      */
@@ -275,7 +305,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>volumeNo</code>.</p>
+     * <p>
+     * Setter for the field <code>volumeNo</code>.
+     * </p>
      *
      * @param volumeNo the volumeNo to set
      */
@@ -284,7 +316,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>volumeNoSort</code>.</p>
+     * <p>
+     * Getter for the field <code>volumeNoSort</code>.
+     * </p>
      *
      * @return the volumeNoSort
      */
@@ -293,7 +327,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>volumeNoSort</code>.</p>
+     * <p>
+     * Setter for the field <code>volumeNoSort</code>.
+     * </p>
      *
      * @param volumeNoSort the volumeNoSort to set
      */
@@ -302,7 +338,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>getUrl.</p>
+     * <p>
+     * getUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -324,7 +362,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>getUrl.</p>
+     * <p>
+     * getUrl.
+     * </p>
      *
      * @param pageTypeName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -338,7 +378,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>getUrl.</p>
+     * <p>
+     * getUrl.
+     * </p>
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return a {@link java.lang.String} object.
@@ -358,7 +400,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>isMuseumType.</p>
+     * <p>
+     * isMuseumType.
+     * </p>
      *
      * @deprecated Use StructElementStub.isLidoRecord()
      * @return a boolean.
@@ -369,7 +413,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>isLidoRecord.</p>
+     * <p>
+     * isLidoRecord.
+     * </p>
      *
      * @return a boolean.
      */
@@ -404,7 +450,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>partnerId</code>.</p>
+     * <p>
+     * Getter for the field <code>partnerId</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -413,7 +461,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>partnerId</code>.</p>
+     * <p>
+     * Setter for the field <code>partnerId</code>.
+     * </p>
      *
      * @param partnerId a {@link java.lang.String} object.
      */
@@ -422,7 +472,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>sourceDocFormat</code>.</p>
+     * <p>
+     * Getter for the field <code>sourceDocFormat</code>.
+     * </p>
      *
      * @return the sourceDocFormat
      */
@@ -431,7 +483,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>sourceDocFormat</code>.</p>
+     * <p>
+     * Setter for the field <code>sourceDocFormat</code>.
+     * </p>
      *
      * @param sourceDocFormat the sourceDocFormat to set
      */
@@ -440,7 +494,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -470,7 +526,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>label</code>.</p>
+     * <p>
+     * Setter for the field <code>label</code>.
+     * </p>
      *
      * @param label the label to set
      */
@@ -479,7 +537,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>dataRepository</code>.</p>
+     * <p>
+     * Getter for the field <code>dataRepository</code>.
+     * </p>
      *
      * @return the dataRepository
      */
@@ -488,7 +548,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>dataRepository</code>.</p>
+     * <p>
+     * Setter for the field <code>dataRepository</code>.
+     * </p>
      *
      * @param dataRepository the dataRepository to set
      */
@@ -497,7 +559,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Getter for the field <code>metadataFields</code>.</p>
+     * <p>
+     * Getter for the field <code>metadataFields</code>.
+     * </p>
      *
      * @return the metadataFields
      */
@@ -506,7 +570,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>Setter for the field <code>metadataFields</code>.</p>
+     * <p>
+     * Setter for the field <code>metadataFields</code>.
+     * </p>
      *
      * @param metadataFields the metadataFields to set
      */
@@ -572,9 +638,11 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param currentUrl a {@link java.lang.String} object.
      * @param topStruct StructElementStub representing the top structure element.
-     * @should generate string element correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should generate string element correctly
+     * @should return unknown format if topstruct null
+     * @should throw illegal
      */
     public String generateContextObject(String currentUrl, StructElementStub topStruct) throws PresentationException {
         StringBuilder sb = new StringBuilder("ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:");
@@ -583,23 +651,23 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
         // Format
         if (topStruct != null && topStruct.getDocStructType() != null) {
-            switch (topStruct.getDocStructType()) {
-                case "Monograph":
+            switch (topStruct.getDocStructType().toLowerCase()) {
+                case "monograph":
                     format = "book";
                     break;
-                case "Manuscript":
+                case "manuscript":
                     format = "book";
                     break;
-                case "Chapter":
+                case "chapter":
                     format = "bookitem";
                     break;
-                case "PeriodicalVolume":
+                case "periodicalVolume":
                     format = "journal";
                     break;
-                case "PeriodicalIssue":
+                case "periodicalIssue":
                     format = "issue";
                     break;
-                case "Article":
+                case "article":
                     format = "article";
                     break;
                 default:
@@ -657,7 +725,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * <p>getMultiLanguageMetadataValue.</p>
+     * <p>
+     * getMultiLanguageMetadataValue.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
@@ -674,7 +744,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
             //only default language: Simple MEtadata value
             return new SimpleMetadataValue(StringUtils.join(valueMap.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE), "; "));
         }
-        
+
         return new MultiLanguageMetadataValue(valueMap);
     }
 
@@ -682,12 +752,14 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (fieldName.contains("_LANG_")) {
             return fieldName.substring(fieldName.indexOf("_LANG_") + "_LANG_".length());
         }
-        
+
         return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
     }
 
     /**
-     * <p>getKEVForField.</p>
+     * <p>
+     * getKEVForField.
+     * </p>
      *
      * @param se a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
      * @param solrField a {@link java.lang.String} object.
@@ -697,7 +769,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public static String getKEVForField(StructElementStub se, String solrField, String targetField, String prefix) {
         if (se == null) {
-            throw new IllegalArgumentException("se may not be null");
+            return "";
         }
         if (StringUtils.isEmpty(solrField)) {
             throw new IllegalArgumentException("solrField may not be null or empty");

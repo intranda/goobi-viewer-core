@@ -18,20 +18,21 @@ package io.goobi.viewer.model.cms;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A contentItem to be used in a CMSPage template. Stores a value for
- * content item mode
+ * A contentItem to be used in a CMSPage template. Stores a value for content item mode
  *
  * @author Florian Alpers
  */
 public class CMSContentItemTemplate extends CMSContentItem {
-	
-	private String mediaFilter = "";
+
+    private String mediaFilter = "";
     private ContentItemMode mode = ContentItemMode.simple;
     private String inlineHelp = null;
     private boolean preview = false;
-    
+
     /**
-     * <p>Constructor for CMSContentItemTemplate.</p>
+     * <p>
+     * Constructor for CMSContentItemTemplate.
+     * </p>
      *
      * @param type a CMSContentItemType object.
      */
@@ -40,26 +41,28 @@ public class CMSContentItemTemplate extends CMSContentItem {
     }
 
     /**
-     * <p>Setter for the field <code>mode</code>.</p>
+     * <p>
+     * Setter for the field <code>mode</code>.
+     * </p>
      *
      * @param mode the mode to set
      */
     public void setMode(ContentItemMode mode) {
         this.mode = mode;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public ContentItemMode getMode() {
         return mode;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean isHasInlineHelp() {
         return StringUtils.isNotBlank(inlineHelp);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -69,9 +72,11 @@ public class CMSContentItemTemplate extends CMSContentItem {
     public String getInlineHelp() {
         return this.inlineHelp;
     }
-    
+
     /**
-     * <p>Setter for the field <code>inlineHelp</code>.</p>
+     * <p>
+     * Setter for the field <code>inlineHelp</code>.
+     * </p>
      *
      * @param inlineHelp the inlineHelp to set
      */
@@ -82,29 +87,33 @@ public class CMSContentItemTemplate extends CMSContentItem {
     /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
-    	return mediaFilter;
+        return mediaFilter;
     }
 
-	/**
-	 * <p>Setter for the field <code>mediaFilter</code>.</p>
-	 *
-	 * @param mediaFilter the mediaFilter to set
-	 */
-	public void setMediaFilter(String mediaFilter) {
-		this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public boolean isPreview() {
-	    return this.preview;
-	}
-	
     /**
-     * <p>Setter for the field <code>preview</code>.</p>
+     * <p>
+     * Setter for the field <code>mediaFilter</code>.
+     * </p>
+     *
+     * @param mediaFilter the mediaFilter to set
+     */
+    public void setMediaFilter(String mediaFilter) {
+        this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPreview() {
+        return this.preview;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>preview</code>.
+     * </p>
      *
      * @param preview the preview to set
      */
@@ -112,4 +121,3 @@ public class CMSContentItemTemplate extends CMSContentItem {
         this.preview = preview;
     }
 }
-

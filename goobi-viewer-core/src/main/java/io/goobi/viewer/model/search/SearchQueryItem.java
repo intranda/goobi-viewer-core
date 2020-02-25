@@ -83,7 +83,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>getAvailableOperators.</p>
+     * <p>
+     * getAvailableOperators.
+     * </p>
      *
      * @should return IS if displaySelectItems true
      * @should return AND, OR, PHRASE if displaySelectItems false
@@ -98,7 +100,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>getSelectItems.</p>
+     * <p>
+     * getSelectItems.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -114,7 +118,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>getSelectItems.</p>
+     * <p>
+     * getSelectItems.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -139,7 +145,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>reset.</p>
+     * <p>
+     * reset.
+     * </p>
      */
     public void reset() {
         displaySelectItems = false;
@@ -149,7 +157,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>isHierarchical.</p>
+     * <p>
+     * isHierarchical.
+     * </p>
      *
      * @return true or false
      */
@@ -158,7 +168,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>isUntokenizeForPhraseSearch.</p>
+     * <p>
+     * isUntokenizeForPhraseSearch.
+     * </p>
      *
      * @return true or false
      */
@@ -167,7 +179,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>field</code>.</p>
+     * <p>
+     * Getter for the field <code>field</code>.
+     * </p>
      *
      * @return the field
      */
@@ -176,7 +190,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>field</code>.</p>
+     * <p>
+     * Setter for the field <code>field</code>.
+     * </p>
      *
      * @param field the field to set
      */
@@ -186,7 +202,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>operator</code>.</p>
+     * <p>
+     * Getter for the field <code>operator</code>.
+     * </p>
      *
      * @return the operator
      */
@@ -213,7 +231,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>operator</code>.</p>
+     * <p>
+     * Setter for the field <code>operator</code>.
+     * </p>
      *
      * @param operator the operator to set
      */
@@ -222,7 +242,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return the value
      */
@@ -231,7 +253,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>value</code>.</p>
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
      *
      * @param value the value to set
      */
@@ -240,7 +264,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>isDisplaySelectItems.</p>
+     * <p>
+     * isDisplaySelectItems.
+     * </p>
      *
      * @return a boolean.
      */
@@ -257,7 +283,9 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>toggleDisplaySelectItems.</p>
+     * <p>
+     * toggleDisplaySelectItems.
+     * </p>
      */
     protected void toggleDisplaySelectItems() {
         if (field != null) {

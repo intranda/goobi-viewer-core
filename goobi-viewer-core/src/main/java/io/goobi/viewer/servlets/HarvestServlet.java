@@ -51,7 +51,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.misc.Harvestable;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
 
 /**
  * Servlet for harvesting crowdsourcing data and overview pages.
@@ -65,7 +64,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     // private HttpClient httpClient;
 
     /**
-     * <p>Constructor for HarvestServlet.</p>
+     * <p>
+     * Constructor for HarvestServlet.
+     * </p>
      *
      * @see HttpServlet#HttpServlet()
      */
@@ -168,8 +169,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     try {
                         // EXAMPLE: ?action=getlist_overviewpage&from=2015-06-26&until=2016-01-01&first=0&pageSize=100
                         long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate);
-                        List<CMSPage> cmsPages =
-                                DataManager.getInstance().getDao().getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate);
+                        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate);
                         JSONArray jsonArray = convertToJSON(count, cmsPages);
                         response.setContentType("application/json");
                         response.getWriter().write(jsonArray.toString());
@@ -202,9 +202,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), String.valueOf(Thread.currentThread().getId()));
                     try {
                         // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        List<CMSPage> pages = DataManager.getInstance()
-                                .getDao()
-                                .getCMSPagesForRecord(identifier,null);
+                        List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPagesForRecord(identifier, null);
                         if (pages.isEmpty()) {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
                             return;
@@ -333,7 +331,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>convertToJSON.</p>
+     * <p>
+     * convertToJSON.
+     * </p>
      *
      * @param totalCount a long.
      * @param objects a {@link java.util.List} object.

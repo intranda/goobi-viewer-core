@@ -57,7 +57,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -182,7 +181,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setBookshelfBean(BookmarkBean bookshelfBean) {
         this.bookmarkBean = bookshelfBean;
     }
-    
+
     /**
      * Required setter for ManagedProperty injection
      *
@@ -1268,24 +1267,24 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        TOC toc = getToc();
-
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+        if (navigationHelper != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
+            TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
-                String label = null;               
+                String label = null;
                 String labelTemplate = "_DEFAULT";
-                if(getViewManager() != null) {
+                if (getViewManager() != null) {
                     labelTemplate = getViewManager().getTopDocument().getDocStructType();
                 }
-                if(DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate) && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
+                if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
+                        && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
                     String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
                     prefix = Helper.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     suffix = Helper.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
-                } else {                    
+                } else {
                     label = toc.getLabel(viewManager.getPi(), language);
                 }
                 if (label != null) {
@@ -1553,7 +1552,7 @@ public class ActiveDocumentBean implements Serializable {
                     return false;
                 }
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Error checking PDF resources: {}", e.getMessage());
+                logger.error("Error checking EPUB resources: {}", e.getMessage());
                 return false;
             }
 
@@ -1631,7 +1630,7 @@ public class ActiveDocumentBean implements Serializable {
             ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
-            writer.createDocument(os, getToc().getTocElements());
+            writer.createPdfDocument(os, getToc().getTocElements());
             fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
         } catch (IndexOutOfBoundsException e) {
             logger.error("No toc to generate");

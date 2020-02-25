@@ -35,14 +35,16 @@ public class IIIFPresentationAPIHandler {
     private final AbstractBuilder builder;
 
     /**
-     * <p>Constructor for IIIFPresentationAPIHandler.</p>
+     * <p>
+     * Constructor for IIIFPresentationAPIHandler.
+     * </p>
      *
      * @param servletPath a {@link java.lang.String} object.
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @throws java.net.URISyntaxException if any.
      */
     public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
-        this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
+        this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getIIIFApiUrl())) {
         };
     }
 

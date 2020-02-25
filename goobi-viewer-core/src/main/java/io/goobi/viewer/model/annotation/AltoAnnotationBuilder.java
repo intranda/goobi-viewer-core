@@ -37,16 +37,17 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 
 /**
- * Creates an {@link de.intranda.api.iiif.presentation.AnnotationList} of {@link TextualAnnotation}s from the content of an ALTO document. Depending on selected granularity,
- * it is either one annotation per page, per TextBlock, per line or per word
+ * Creates an {@link de.intranda.api.iiif.presentation.AnnotationList} of {@link TextualAnnotation}s from the content of an ALTO document. Depending
+ * on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
  *
  * @author Florian
  */
 public class AltoAnnotationBuilder {
 
-    
     /**
-     * <p>createAnnotations.</p>
+     * <p>
+     * createAnnotations.
+     * </p>
      *
      * @param alto a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Page} object.
      * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
@@ -56,9 +57,9 @@ public class AltoAnnotationBuilder {
      * @return a {@link java.util.List} object.
      */
     public List<IAnnotation> createAnnotations(Page alto, Canvas canvas, Granularity granularity, String baseUrl, boolean urlOnlyTarget) {
-        
+
         List<GeometricData> elementsToInclude = new ArrayList<>();
-        switch(granularity) {
+        switch (granularity) {
             case PAGE:
                 elementsToInclude.add(alto);
                 break;
@@ -75,13 +76,16 @@ public class AltoAnnotationBuilder {
                 elementsToInclude.addAll(alto.getAllWordsAsList());
                 break;
         }
-        
-        List<IAnnotation> annoList = elementsToInclude.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
+
+        List<IAnnotation> annoList =
+                elementsToInclude.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
-    
+
     /**
-     * <p>createAnnotations.</p>
+     * <p>
+     * createAnnotations.
+     * </p>
      *
      * @param elements a {@link java.util.List} object.
      * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
@@ -90,13 +94,15 @@ public class AltoAnnotationBuilder {
      * @return a {@link java.util.List} object.
      */
     public List<IAnnotation> createAnnotations(List<GeometricData> elements, Canvas canvas, String baseUrl, boolean urlOnlyTarget) {
-        List<IAnnotation> annoList = elements.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
+        List<IAnnotation> annoList =
+                elements.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
 
-    
     /**
-     * <p>createAnnotation.</p>
+     * <p>
+     * createAnnotation.
+     * </p>
      *
      * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
      * @param canvas a {@link de.intranda.api.annotation.IResource} object.
@@ -112,7 +118,7 @@ public class AltoAnnotationBuilder {
         anno.setBody(body);
         return anno;
     }
-    
+
     /**
      * @param canvas
      * @param i
@@ -121,15 +127,15 @@ public class AltoAnnotationBuilder {
      * @param height
      * @return
      */
-        private IResource createSpecificResource(IResource canvas, Rectangle area, boolean urlOnly) {
-            SpecificResource part;
-            if(urlOnly) {
-                part = new SpecificResourceURI(canvas.getId(), new FragmentSelector(area));
-            } else {                
-                part = new SpecificResource(canvas.getId(), new FragmentSelector(area));
-            }
-            return part;
+    private IResource createSpecificResource(IResource canvas, Rectangle area, boolean urlOnly) {
+        SpecificResource part;
+        if (urlOnly) {
+            part = new SpecificResourceURI(canvas.getId(), new FragmentSelector(area));
+        } else {
+            part = new SpecificResource(canvas.getId(), new FragmentSelector(area));
         }
+        return part;
+    }
 
     /**
      * @param listId
@@ -137,7 +143,7 @@ public class AltoAnnotationBuilder {
      * @return
      */
     private URI createAnnotationId(String baseUrl, String id) {
-        if(baseUrl.endsWith("/")) {
+        if (baseUrl.endsWith("/")) {
             return URI.create(baseUrl + id);
         } else {
             return URI.create(baseUrl + "/" + id);

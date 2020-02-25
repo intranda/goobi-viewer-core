@@ -156,12 +156,12 @@ public class LoginFilter implements Filter {
                 if (uri.startsWith("/user/")) {
                     return true;
                 }
-                
+
                 //any URIs leading to campaign annotation/review
-                if(uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) {
+                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) {
                     return true;
                 }
-                
+
                 //make an exception for session bookmarks search list or share key
                 if (uri.contains("bookmarks/search/") || uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/")
                         || uri.contains("bookmarks/send/") || uri.contains("bookmarks/search/session")) {

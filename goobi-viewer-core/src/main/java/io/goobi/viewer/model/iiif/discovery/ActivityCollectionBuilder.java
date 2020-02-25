@@ -46,8 +46,8 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * Builder for both {@link de.intranda.api.iiif.discovery.OrderedCollection} and {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of {@link Activity Acvitities}
- * for the IIIF Discovery API.
+ * Builder for both {@link de.intranda.api.iiif.discovery.OrderedCollection} and {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of
+ * {@link Activity Acvitities} for the IIIF Discovery API.
  *
  * @author Florian Alpers
  */
@@ -66,7 +66,7 @@ public class ActivityCollectionBuilder {
     /**
      * Constructs the builder from a {@link javax.servlet.http.HttpServletRequest}
      *
-     * @param request   The request to which to respond (for URI creation)
+     * @param request The request to which to respond (for URI creation)
      */
     public ActivityCollectionBuilder(HttpServletRequest request) {
         this.request = Optional.ofNullable(request);
@@ -77,8 +77,8 @@ public class ActivityCollectionBuilder {
     /**
      * Constructs the builder from specific URIs; used to testing
      *
-     * @param servletUri    The URI of the containing server
-     * @param requestURI    The URI called by the request
+     * @param servletUri The URI of the containing server
+     * @param requestURI The URI called by the request
      */
     public ActivityCollectionBuilder(URI servletUri, URI requestURI) {
         this.request = Optional.empty();
@@ -90,7 +90,7 @@ public class ActivityCollectionBuilder {
      * Creates a An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained
      * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
      *
-     * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollection}
+     * @return An {@link de.intranda.api.iiif.discovery.OrderedCollection}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -103,12 +103,12 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Creates An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, i.e. a partial list of Activities.
-     * Which Activities are contained within the page depends on the given pageNo as well as the configured number of
-     * entries per page defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * Creates An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, i.e. a partial list of Activities. Which
+     * Activities are contained within the page depends on the given pageNo as well as the configured number of entries per page defined by
+     * {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
      *
-     * @param pageNo    The number of this page, beginning with 0
-     * @return  An {@link de.intranda.api.iiif.discovery.OrderedCollectionPage}
+     * @param pageNo The number of this page, beginning with 0
+     * @return An {@link de.intranda.api.iiif.discovery.OrderedCollectionPage}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -139,12 +139,13 @@ public class ActivityCollectionBuilder {
         return page;
 
     }
-    
+
     /**
      * Set the earliest date of Activities to be included in this collection.
      *
-     * @param startDate the earliest date of Activities to be included in this collection. If null, Activities are not filtered by date which is the default
-     * @return  The Builder itself
+     * @param startDate the earliest date of Activities to be included in this collection. If null, Activities are not filtered by date which is the
+     *            default
+     * @return The Builder itself
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -165,9 +166,11 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * Get the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage()
+     * Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
      *
-     * @return the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * @return the number of activities per page as defined by {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage()
+     *         Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
      */
     public int getActivitiesPerPage() {
         return activitiesPerPage;
@@ -200,14 +203,13 @@ public class ActivityCollectionBuilder {
     /**
      * Get the URI to request a specific collection page
      *
-     * @param no    the page number
-     * @return  the URI to request a specific collection page
+     * @param no the page number
+     * @return the URI to request a specific collection page
      */
     public URI getPageURI(int no) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities/").append(no);
         return URI.create(sb.toString());
     }
-    
 
     private int getLastPageNo() throws PresentationException, IndexUnreachableException {
         return getNumActivities() / getActivitiesPerPage();
@@ -217,14 +219,18 @@ public class ActivityCollectionBuilder {
         List<Activity> activities = new ArrayList<>();
         for (SolrDocument doc : docs) {
 
-            List<Long> updates = doc.getFieldValues(SolrConstants.DATEUPDATED).stream().map(o -> (Long) o).filter(date -> date >= startDate && date <= endDate).collect(Collectors.toList());
+            List<Long> updates = doc.getFieldValues(SolrConstants.DATEUPDATED)
+                    .stream()
+                    .map(o -> (Long) o)
+                    .filter(date -> date >= startDate && date <= endDate)
+                    .collect(Collectors.toList());
             Long created = (Long) doc.getFieldValue(SolrConstants.DATECREATED);
-            
+
             Long deleted = null;
             if (doc.containsKey(SolrConstants.DATEDELETED)) {
                 deleted = (Long) doc.getFieldValue(SolrConstants.DATEDELETED);
             }
-            if(created >= startDate && created <= endDate) {                
+            if (created >= startDate && created <= endDate) {
                 Activity createActivity = new Activity();
                 createActivity.setEndTime(new Date(created));
                 createActivity.setType(ActivityType.CREATE);
@@ -232,7 +238,7 @@ public class ActivityCollectionBuilder {
                 activities.add(createActivity);
             }
             for (Long update : updates) {
-                if(!update.equals(created)) {                    
+                if (!update.equals(created)) {
                     Activity activity = new Activity();
                     activity.setEndTime(new Date(update));
                     activity.setType(update.equals(deleted) ? ActivityType.DELETE : ActivityType.UPDATE);
@@ -240,9 +246,9 @@ public class ActivityCollectionBuilder {
                     activities.add(activity);
                 }
             }
-            
+
         }
-        activities.sort((a1,a2) -> a1.getEndTime().compareTo(a2.getEndTime()));
+        activities.sort((a1, a2) -> a1.getEndTime().compareTo(a2.getEndTime()));
         return activities;
     }
 
@@ -329,10 +335,8 @@ public class ActivityCollectionBuilder {
         if (startDate != null && endDate != null) {
             query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
         }
-        SolrDocumentList list =
-                DataManager.getInstance().getSearchIndex().search(query, getActivitiesPerPage(), null, Arrays.asList(SOLR_FIELDS));
+        SolrDocumentList list = DataManager.getInstance().getSearchIndex().search(query, getActivitiesPerPage(), null, Arrays.asList(SOLR_FIELDS));
         return list;
     }
-
 
 }

@@ -25,7 +25,9 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
- * <p>StringListConverter class.</p>
+ * <p>
+ * StringListConverter class.
+ * </p>
  */
 @FacesConverter("stringListConverter")
 public class StringListConverter implements Converter {

@@ -6,8 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>4.3.8</version>
-
+	<version>4.4.0-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 
@@ -17,7 +16,7 @@
 	<url>https://github.com/intranda/goobi-viewer-core</url>
 
 	<organization>
-		<name>Goobi</name>
+		<name>Goobi</name> 
 		<url>https://goobi.io</url>
 	</organization>
 
@@ -70,10 +69,10 @@
 		<buildDate>${maven.build.timestamp}</buildDate>
 
 		<!-- intranda libraries -->
-		<alto.version>1.3.5</alto.version>
-		<contentserver.version>1.9.11</contentserver.version>
-		<normdataimporter.version>1.2.7-SNAPSHOT</normdataimporter.version>
-		<iiif-api-model.version>1.5.2</iiif-api-model.version>
+		<alto.version>1.3.6</alto.version>
+		<contentserver.version>1.10.1</contentserver.version>
+		<normdataimporter.version>1.2.8</normdataimporter.version>
+		<iiif-api-model.version>1.6.0</iiif-api-model.version>
 		<tei-conversion.version>1.0.0</tei-conversion.version>
 
 		<!-- other libraries -->
@@ -89,7 +88,7 @@
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<commons-net.version>3.6</commons-net.version>
 		<commons-text.version>1.8</commons-text.version>
-		<dbunit.version>2.6.0</dbunit.version>
+		<dbunit.version>2.7.0</dbunit.version>
 		<docx4j.version>8.1.4</docx4j.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.11</httpclient.version>
@@ -97,30 +96,31 @@
 		<httpmime.version>4.5.11</httpmime.version>
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>65.1</icu.version>
-		<openpdf.version>1.3.12</openpdf.version>
+		<openpdf.version>1.3.13</openpdf.version>
 		<jackson.version>2.10.2</jackson.version>
+		<jackson-jaxrs.version>2.10.2.1</jackson-jaxrs.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
-		<jpa.version>2.7.5</jpa.version>
+		<jpa.version>2.7.6</jpa.version>
 		<javax.faces.version>2.4.0</javax.faces.version>
 		<javax.json-api.version>1.1.4</javax.json-api.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.persistence.version>2.2.1</javax.persistence.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jersey.version>2.30</jersey.version>
+		<jersey.version>2.30.1</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jgravatar.version>1.2</jgravatar.version>
 		<joda-time.version>2.10.5</joda-time.version>
 		<junit.version>4.13</junit.version>
 		<json.version>20190722</json.version>
-		<jsoup.version>1.12.1</jsoup.version>
+		<jsoup.version>1.12.2</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<log4j.version>2.13.0</log4j.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<metadata-extractor.version>2.12.0</metadata-extractor.version>
-		<mockito-all.version>1.10.19</mockito-all.version>
-		<mockserver.version>5.8.1</mockserver.version>
+		<mockito.version>3.3.0</mockito.version>
+		<mockserver.version>5.9.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
-		<poi.version>4.1.1</poi.version>
+		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>7.0</primefaces.version>
 		<rome.version>1.12.2</rome.version>
@@ -131,7 +131,7 @@
 		<stax-api.version>1.0-2</stax-api.version>
 		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
 		<tika.version>[1.20,)</tika.version>
-		<tomcat.version>9.0.30</tomcat.version>
+		<tomcat.version>9.0.31</tomcat.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
@@ -346,12 +346,12 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-base</artifactId>
-			<version>${jackson.version}</version>
+			<version>${jackson-jaxrs.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${jackson.version}</version>
+			<version>${jackson-jaxrs.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
@@ -526,8 +526,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>${mockito-all.version}</version>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -712,6 +712,26 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.3.9</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
@@ -735,7 +755,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.2.0</version>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
@@ -768,7 +788,7 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>4.0.0</version>
 				<configuration>
 					<commitIdGenerationMode>flat</commitIdGenerationMode>
 					<gitDescribe>

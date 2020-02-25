@@ -12,7 +12,7 @@
 	    border: 1px solid @lightgray;
 	    overflow: hidden;
 	}
-	&__image-loader {}
+	&__image-loader {} 
 	&__image-map {
 		position: relative;
 	    width: 100%;
@@ -42,7 +42,7 @@
 			max-width: 100%;
 		}
 	}
-	/* IMAGE MOBILE OVERLAY */
+	/* IMAGE MOBILE OVERLAY */ 
 	&__image-mobile-overlay {
 		display: none;
 		position: absolute;
@@ -52,19 +52,57 @@
 		left: 0;
 		z-index: 10;
 	}
+	
 	/* VIDEO, AUDIO, TEXT */
 	&__video,
 	&__audio,
+	&__text {}
+	/* VIDEO */
+	&__video {
+		display: flex;
+	}
+	/* AUDIO */
+	&__audio {} 
+	/* TEXT */
 	&__text {
 		text-align: center;
+		background-color: white;
+		border: 1px solid @middlegray;
+		border-top: 0;
+		padding: 10px;
 	}
-	/* VIDEO */
-	&__video {}
-	/* AUDIO */
-	&__audio {}
-	/* TEXT */
-	&__text {}
-}
+	}
+.view-object-content {
+	background-color: white; 
+	border: 1px solid @middlegray;
+	padding: 1.5rem;
+	display: flex;
+	margin-bottom: 1.5rem;
+	&__thumb { 
+		flex: 0 0 30%;
+		img {
+			width: 100%;
+		}
+	}
+	&__objects {
+		flex: 0 0 70%;
+		padding-left: 1.5rem;
+		.search-list__hit-title {
+		    width: 100%;
+		    height: 50%;
+		}
+	}
+	&__audio {
+		width: 70%;
+		margin: 0 auto;
+		audio {
+			width: 100%;
+			border-radius: 1rem;
+			margin-left: auto; 
+			margin-right: auto; 
+		}
+	}
+}	
 
 .image-fragment {
 	background-color: rgba(255,255,255,0.3);
@@ -75,7 +113,43 @@
     	background-color: transparent;
     }      	
 }
-popup [data-copy] {
+.page-area {
+	display: none;
+    border-color: rgba(51,101,169,0.5);
+    border-style: solid;
+    border-width: 2px;  
+    cursor: pointer;
+    z-index: 2;
+    &.active {
+    	cursor: default;
+    }
+    &:hover {
+    	border-color: #3365a9;
+    }
+    &-label {
+    	display: none;
+		min-width: 100px;
+		z-index: 3;
+		pointer-events: none;
+    	&-text {
+    		display: none;
+	    	background: rgba(51,101,169,1);
+	    	color: white;
+	    	width: 100%;
+	    	padding: 2px 5px;
+	    	vertical-align: top;
+	    	font-size: 1.6rem;	    	
+    	}
+    	&.active,
+    	&.hover {
+    		.page-area-label-text {    			
+    			display: inline-block;
+    		}
+    	}
+    } 
+}
+
+popover [data-copy] {
 	cursor: pointer;
 }
 
@@ -88,7 +162,22 @@ popup [data-copy] {
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.view-object-content {
+		&__thumb { 
+			display: none;
+		}
+		&__objects {
+			flex: 0 0 100%;
+			 .search-list__hit-title {
+			 	height: auto;
+			 }
+		}
+		&__audio {
+			margin-top: 1.5rem;
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}

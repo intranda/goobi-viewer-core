@@ -14,7 +14,7 @@ import io.goobi.viewer.model.viewer.PageType;
 
 public class JsonToolsTest extends AbstractSolrEnabledTest {
 
-    private static final String PI = "PPN517154005";
+    private static final String PI = PI_KLEIUNIV;
 
     /**
      * @see JsonTools#getRecordJsonObject(SolrDocument,String)

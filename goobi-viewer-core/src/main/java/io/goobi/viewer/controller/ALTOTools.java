@@ -37,7 +37,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -587,35 +586,6 @@ public class ALTOTools {
 
         Rectangle rect = new Rectangle(left, top, right - left, bottom - top);
         return rect;
-    }
-
-    /**
-     * An ALTO ComposedBlock can theoretically contain n levels of nested ComposedBlocks. Collect all words from contained TextBlocks recursively.
-     *
-     * @param eleComposedBlock a {@link org.jdom2.Element} object.
-     * @should return all words from nested ComposedBlocks
-     * @return a {@link java.util.List} object.
-     */
-    @Deprecated
-    public static List<Element> handleAltoComposedBlock(Element eleComposedBlock) {
-        List<Element> words = new ArrayList<>();
-
-        // Words from TextBlocks
-        for (Element eleTextBlock : eleComposedBlock.getChildren("TextBlock", null)) {
-            for (Element eleLine : eleTextBlock.getChildren("TextLine", null)) {
-                words.addAll(eleLine.getChildren("String", null));
-            }
-        }
-
-        // Nested ComposedBlocks
-        List<Element> eleListNextedComposedBlocks = eleComposedBlock.getChildren("ComposedBlock", null);
-        if (eleListNextedComposedBlocks != null) {
-            for (Element eleNestedComposedBlock : eleComposedBlock.getChildren("ComposedBlock", null)) {
-                words.addAll(handleAltoComposedBlock(eleNestedComposedBlock));
-            }
-        }
-
-        return words;
     }
 
     /**

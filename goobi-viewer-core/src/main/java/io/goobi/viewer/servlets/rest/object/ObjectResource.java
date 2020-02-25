@@ -55,7 +55,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
 
 /**
- * <p>ObjectResource class.</p>
+ * <p>
+ * ObjectResource class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -66,7 +68,9 @@ public class ObjectResource {
     private static final Logger logger = LoggerFactory.getLogger(ObjectResource.class);
 
     /**
-     * <p>getInfo.</p>
+     * <p>
+     * getInfo.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
@@ -135,7 +139,9 @@ public class ObjectResource {
     }
 
     /**
-     * <p>getObject.</p>
+     * <p>
+     * getObject.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
@@ -181,7 +187,9 @@ public class ObjectResource {
     }
 
     /**
-     * <p>getObjectResource.</p>
+     * <p>
+     * getObjectResource.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
@@ -197,7 +205,8 @@ public class ObjectResource {
     @javax.ws.rs.Path("/{pi}/{subfolder}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
-            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException, PresentationException, IndexUnreachableException {
+            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename)
+            throws IOException, PresentationException, IndexUnreachableException {
 
         Path mediaDirectory = Helper.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder).resolve(filename);
@@ -209,7 +218,9 @@ public class ObjectResource {
     }
 
     /**
-     * <p>getObjectResource2.</p>
+     * <p>
+     * getObjectResource2.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
@@ -225,12 +236,15 @@ public class ObjectResource {
     @javax.ws.rs.Path("/{pi}/{subfolder}//{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
-            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException, PresentationException, IndexUnreachableException {
+            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename)
+            throws IOException, PresentationException, IndexUnreachableException {
         return getObjectResource(request, response, pi, subfolder, filename);
     }
 
     /**
-     * <p>getObjectResource.</p>
+     * <p>
+     * getObjectResource.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
@@ -260,7 +274,9 @@ public class ObjectResource {
     }
 
     /**
-     * <p>getObjectResource2.</p>
+     * <p>
+     * getObjectResource2.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.

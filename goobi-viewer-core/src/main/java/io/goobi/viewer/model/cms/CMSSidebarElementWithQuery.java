@@ -21,7 +21,9 @@ import javax.persistence.Entity;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <p>CMSSidebarElementWithQuery class.</p>
+ * <p>
+ * CMSSidebarElementWithQuery class.
+ * </p>
  */
 @Entity
 public class CMSSidebarElementWithQuery extends CMSSidebarElement {
@@ -39,14 +41,18 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     private boolean descendingOrder = false;
 
     /**
-     * <p>Constructor for CMSSidebarElementWithQuery.</p>
+     * <p>
+     * Constructor for CMSSidebarElementWithQuery.
+     * </p>
      */
     public CMSSidebarElementWithQuery() {
-        
+
     }
-    
+
     /**
-     * <p>Constructor for CMSSidebarElementWithQuery.</p>
+     * <p>
+     * Constructor for CMSSidebarElementWithQuery.
+     * </p>
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSSidebarElementWithQuery} object.
      * @param owner a {@link io.goobi.viewer.model.cms.CMSPage} object.
@@ -60,7 +66,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Getter for the field <code>searchField</code>.</p>
+     * <p>
+     * Getter for the field <code>searchField</code>.
+     * </p>
      *
      * @return the searchField
      */
@@ -69,7 +77,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Setter for the field <code>searchField</code>.</p>
+     * <p>
+     * Setter for the field <code>searchField</code>.
+     * </p>
      *
      * @param searchField the searchField to set
      */
@@ -78,7 +88,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Getter for the field <code>resultDisplayLimit</code>.</p>
+     * <p>
+     * Getter for the field <code>resultDisplayLimit</code>.
+     * </p>
      *
      * @return the resultDisplayLimit
      */
@@ -87,7 +99,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Setter for the field <code>resultDisplayLimit</code>.</p>
+     * <p>
+     * Setter for the field <code>resultDisplayLimit</code>.
+     * </p>
      *
      * @param resultDisplayLimit the resultDisplayLimit to set
      */
@@ -100,7 +114,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>getAdditionalQuerySuffix.</p>
+     * <p>
+     * getAdditionalQuerySuffix.
+     * </p>
      *
      * @return additionalQuery with an AND() wrapper
      * @should build suffix correctly
@@ -114,7 +130,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Getter for the field <code>additionalQuery</code>.</p>
+     * <p>
+     * Getter for the field <code>additionalQuery</code>.
+     * </p>
      *
      * @return the additionalQuery
      */
@@ -123,7 +141,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Setter for the field <code>additionalQuery</code>.</p>
+     * <p>
+     * Setter for the field <code>additionalQuery</code>.
+     * </p>
      *
      * @param additionalQuery the additionalQuery to set
      */
@@ -132,7 +152,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>isDescendingOrder.</p>
+     * <p>
+     * isDescendingOrder.
+     * </p>
      *
      * @return the descendingOrder
      */
@@ -141,7 +163,9 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
-     * <p>Setter for the field <code>descendingOrder</code>.</p>
+     * <p>
+     * Setter for the field <code>descendingOrder</code>.
+     * </p>
      *
      * @param descendingOrder the descendingOrder to set
      */
@@ -172,15 +196,14 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
                 && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle())
                 && bothNullOrEqual(getSearchField(), ((CMSSidebarElementWithQuery) o).getSearchField());
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public PageList getLinkedPages() {
-        if(super.getLinkedPages() == null) {
+        if (super.getLinkedPages() == null) {
             setLinkedPages(new PageList());
         }
         return super.getLinkedPages();
     }
-
 
 }

@@ -27,31 +27,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.joda.time.MutableDateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
-import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
@@ -67,12 +57,12 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-//        FacesContext facesContext = TestUtils.mockFacesContext();
-//        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-//        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
+        //        FacesContext facesContext = TestUtils.mockFacesContext();
+        //        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
+        //        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
 
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        
+
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
         //        if (webContentPath.startsWith("file:/")) {
@@ -96,8 +86,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         String allowedTags = "a$b$cde";
         List<CMSCategory> categories = new ArrayList<>();
         for (String catName : allowedTags.split("\\$")) {
-			categories.add(new CMSCategory(catName));
-		}
+            categories.add(new CMSCategory(catName));
+        }
         boolean preferImportant = true;
         int numTiles = 12;
 
@@ -136,7 +126,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testCMSPage() throws DAOException, IOException, ServletException, URISyntaxException, ViewerConfigurationException {
+    public void testCMSPage() throws DAOException, IOException, ServletException, URISyntaxException {
         //setup
         CMSPage page = new CMSPage();
         String templateId = "template";
@@ -150,10 +140,10 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         global.setLanguage("global");
         page.addLanguageVersion(global);
 
-        Date created = new Date();
+        MutableDateTime created = new MutableDateTime();
         created.setYear(created.getYear() - 2);
         Date updated = new Date();
-        page.setDateCreated(created);
+        page.setDateCreated(created.toDate());
         page.setDateUpdated(updated);
 
         page.setCategories(DataManager.getInstance().getDao().getAllCategories());
@@ -199,7 +189,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         german.generateCompleteContentItemList();
 
         //tests
-        Assert.assertEquals(created, page.getDateCreated());
+        Assert.assertEquals(created.toDate(), page.getDateCreated());
         Assert.assertEquals(updated, page.getDateUpdated());
         Assert.assertEquals(DataManager.getInstance().getDao().getAllCategories(), page.getCategories());
         Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));

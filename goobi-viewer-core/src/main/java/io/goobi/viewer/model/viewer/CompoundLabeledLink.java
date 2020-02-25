@@ -28,7 +28,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 
 /**
- * <p>CompoundLabeledLink class.</p>
+ * <p>
+ * CompoundLabeledLink class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -42,7 +44,9 @@ public class CompoundLabeledLink extends LabeledLink {
     protected final List<String> hierarchy;
 
     /**
-     * <p>Constructor for CompoundLabeledLink.</p>
+     * <p>
+     * Constructor for CompoundLabeledLink.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -56,7 +60,9 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * <p>Constructor for CompoundLabeledLink.</p>
+     * <p>
+     * Constructor for CompoundLabeledLink.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -71,7 +77,9 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * <p>getSubLinks.</p>
+     * <p>
+     * getSubLinks.
+     * </p>
      *
      * @return List of labeled links, one for each hierarchy level
      */

@@ -764,14 +764,19 @@ public class Helper {
      *
      * @param filePath a {@link java.lang.String} object.
      * @return Full REST URL
-     * @should build url correctly
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should build url correctly
+     * @should escape spaces correctly
      */
     public static String buildFullTextUrl(String filePath) throws ViewerConfigurationException {
+        if (filePath == null) {
+            throw new IllegalArgumentException("filePath may not be null");
+        }
+
         return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
                 .append('-')
                 .append('/')
-                .append(filePath)
+                .append(filePath.replace(" ", "%20"))
                 .append('/')
                 .toString();
     }
@@ -802,8 +807,7 @@ public class Helper {
                     // IOUtils.copy(response.getEntity().getContent(), writer);
                     // return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
-                        IOUtils.toString(response.getEntity().getContent(), DEFAULT_ENCODING));
+                logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }
@@ -982,6 +986,7 @@ public class Helper {
      */
     public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
+        // TODO Find a way to use absolute repo paths in unit tests
         if (StringUtils.isBlank(dataRepositoryFolder)) {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder)).isAbsolute()) {

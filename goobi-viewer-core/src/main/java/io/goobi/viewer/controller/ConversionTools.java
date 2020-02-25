@@ -35,7 +35,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * <p>ConversionTools class.</p>
+ * <p>
+ * ConversionTools class.
+ * </p>
  */
 public class ConversionTools {
 
@@ -50,6 +52,7 @@ public class ConversionTools {
      * @should convert docx file correctly
      * @should convert rtf file correctly
      */
+    @Deprecated
     public static String convertFileToHtml(Path file) throws IOException {
         String ret = null;
 
@@ -98,6 +101,7 @@ public class ConversionTools {
      * @should convert docx correctly
      * @throws java.io.IOException if any.
      */
+    @Deprecated
     public static String convertDocxToHtml(Path file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");

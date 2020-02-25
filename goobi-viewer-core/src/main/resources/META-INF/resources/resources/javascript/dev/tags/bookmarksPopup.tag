@@ -74,19 +74,19 @@ add() {
     this.refs.inputValue.value = "";
     this.opts.bookmarks.addBookmarkList(name)
     .then( () => {
-        this.opts.bookmarks.listsNeedUpdate.onNext();
+        this.opts.bookmarks.listsNeedUpdate.next();
         this.update();
     })
 }
 
 setBookmarkTypeRecord() {
     this.opts.bookmarks.setTypeRecord();
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }
 
 setBookmarkTypePage() {
     this.opts.bookmarks.setTypePage();
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }
 
 hideLoader() {

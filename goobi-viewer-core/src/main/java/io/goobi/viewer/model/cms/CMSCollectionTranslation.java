@@ -37,13 +37,17 @@ public class CMSCollectionTranslation extends Translation {
     private CMSCollection owner;
 
     /**
-     * <p>Constructor for CMSCollectionTranslation.</p>
+     * <p>
+     * Constructor for CMSCollectionTranslation.
+     * </p>
      */
     public CMSCollectionTranslation() {
     }
 
     /**
-     * <p>Constructor for CMSCollectionTranslation.</p>
+     * <p>
+     * Constructor for CMSCollectionTranslation.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -53,7 +57,9 @@ public class CMSCollectionTranslation extends Translation {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -62,7 +68,9 @@ public class CMSCollectionTranslation extends Translation {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */

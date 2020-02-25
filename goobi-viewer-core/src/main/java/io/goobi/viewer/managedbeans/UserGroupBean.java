@@ -40,7 +40,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>UserGroupBean class.</p>
+ * <p>
+ * UserGroupBean class.
+ * </p>
  */
 @Named
 @SessionScoped
@@ -64,7 +66,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      */
     @PostConstruct
     public void init() {
@@ -208,7 +212,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>memberSelectedAction.</p>
+     * <p>
+     * memberSelectedAction.
+     * </p>
      *
      * @param event {@link javax.faces.event.ValueChangeEvent}
      */
@@ -237,7 +243,9 @@ public class UserGroupBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>currentOtherUserGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>currentOtherUserGroup</code>.
+     * </p>
      *
      * @return the currentOtherUserGroup
      */
@@ -246,7 +254,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentOtherUserGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>currentOtherUserGroup</code>.
+     * </p>
      *
      * @param currentOtherUserGroup the currentOtherUserGroup to set
      */
@@ -255,7 +265,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentOwnUserGroupId</code>.</p>
+     * <p>
+     * Getter for the field <code>currentOwnUserGroupId</code>.
+     * </p>
      *
      * @return the currentOwnUserGroupId
      */
@@ -264,7 +276,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentOwnUserGroupId</code>.</p>
+     * <p>
+     * Setter for the field <code>currentOwnUserGroupId</code>.
+     * </p>
      *
      * @param currentOwnUserGroupId the currentOwnUserGroupId to set
      */
@@ -273,7 +287,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentOwnUserGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>currentOwnUserGroup</code>.
+     * </p>
      *
      * @return the currentOwnUserGroup
      */
@@ -282,7 +298,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentOwnUserGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>currentOwnUserGroup</code>.
+     * </p>
      *
      * @param currentOwnUserGroup the currentOwnUserGroup to set
      */
@@ -296,7 +314,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentOwnUserGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>currentOwnUserGroup</code>.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -305,7 +325,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentMember</code>.</p>
+     * <p>
+     * Getter for the field <code>currentMember</code>.
+     * </p>
      *
      * @return the currentMember
      */
@@ -314,7 +336,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentMember</code>.</p>
+     * <p>
+     * Setter for the field <code>currentMember</code>.
+     * </p>
      *
      * @param currentMember the currentMember to set
      */
@@ -323,7 +347,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentRole</code>.</p>
+     * <p>
+     * Getter for the field <code>currentRole</code>.
+     * </p>
      *
      * @return the currentRole
      */
@@ -332,7 +358,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentRole</code>.</p>
+     * <p>
+     * Setter for the field <code>currentRole</code>.
+     * </p>
      *
      * @param currentRole the currentRole to set
      */
@@ -362,7 +390,9 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * <p>isNewUserGroup.</p>
+     * <p>
+     * isNewUserGroup.
+     * </p>
      *
      * @return a boolean.
      */

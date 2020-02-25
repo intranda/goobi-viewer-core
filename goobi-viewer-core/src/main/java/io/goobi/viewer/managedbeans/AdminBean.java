@@ -1426,7 +1426,7 @@ public class AdminBean implements Serializable {
         if (StringUtils.isEmpty(pi)) {
             return;
         }
-        
+
         Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
         try {
             String metsFilePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
@@ -1517,7 +1517,7 @@ public class AdminBean implements Serializable {
         Collections.sort(accessConditions);
         return accessConditions;
     }
-    
+
     public void triggerMessage(String message) {
         logger.debug("Show message " + message);
         Messages.info(Helper.getTranslation(message, null));

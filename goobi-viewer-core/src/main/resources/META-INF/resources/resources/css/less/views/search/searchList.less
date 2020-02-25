@@ -23,7 +23,7 @@
         display: flex;
     	align-items: center;
         font-size: @fontMedium;
-        a, button {
+        a, button{
             display: inline-block;
             padding: 3px;
             font-size: @fontNormal;
@@ -66,6 +66,13 @@
             }
         }
     }
+    &__toggle-thumbs {
+    	padding: 0 5px;
+    	border-left: 1px solid @middlegray;
+    	.-active {
+    		color: @blue;
+    	}
+    }
     &__views {
     	padding-left: 5px;
     	border-left: 1px solid @middlegray;
@@ -84,47 +91,61 @@
         .form-group {
             margin-bottom: 5px;
         }
-        .input-group-addon {
-	        padding: 0;
-            border-radius: 0;
-            background-color: @white;
-            a {
-                color: @black;
-                &:hover,
-                &:focus,
-                &:active {
-                    text-decoration: none;
-                    color: @black;
-                }
-            }
-            a, button {}
-            input[type="submit"] {
-	            padding: 6px 20px;
-	            background-image: url("@{images}/icons/icon-search.png");
-	            background-repeat: no-repeat;
-	            background-position: center center;
-	            background-size: 40%;
-            }
-            &.reset {
-                background-color: @lightgray;
-                a, button {
-                	padding: 6px 12px;
-                }
-                &.focus {
-                	border-color: @blue;
-                }
-            }
-            &.search {
-                background-color: @blue;
-                border-color: @blue;
-                a {
-                    display: block;
-                    color: @white;
-                }
-            }
+        .input-group {
+        	display: flex;
+        	display: -webkit-box; 
+			display: -moz-box; 
+			display: -ms-flexbox;
+			display: -webkit-flex; 
+	        .input-group-addon {
+		        padding: 0;
+	            border-radius: 0;
+	            background-color: @white;
+	            a {
+	                color: @black;
+	                &:hover,
+	                &:focus,
+	                &:active {
+	                    text-decoration: none;
+	                    color: @black;
+	                }
+	            }
+	            a, button {
+	            	height: 100%;
+	            }
+	            input[type="submit"] {
+		            background-image: url("@{images}/icons/icon-search.png");
+		            background-repeat: no-repeat;
+		            background-position: center center;
+		            background-size: 40%;
+		            width: 100%;
+		            padding: 0;
+	            }
+	            &.reset {
+	            	flex: 0 0 4rem;
+	                background-color: @lightgray;
+	                a, button {}
+	                &.focus {
+	                	border-color: @blue;
+	                }
+	                .fa {}
+	            }
+	            &.search {
+	                flex: 0 0 4rem;
+	                background-color: @blue;
+	                border-color: @blue;
+	                display: inherit;
+	                height: 3.4rem;
+	                a {
+	                    display: block;
+	                    color: @white;
+	                }
+	            }
+        	}
         }
         .form-control {
             border-right: none;
+            height: auto;
             &:focus {
             	border-left-color: @middlegray;
             }
@@ -243,7 +264,8 @@
     &__hit-text {}
     &__hit-text-label,
     &__hit-text-value {
-        display: block;
+        display: block; 
+        word-wrap: break-word;
     }
     &__hit-text-label {
         clear: left;
@@ -305,7 +327,22 @@
         }
     }
     &__hit-content-set {
-        padding: 0 0 5px 0;
+    	display: flex;
+    	justify-content: space-between;
+        margin: 0 0 5px 0;
+        &:hover {
+        	background-color: @lightgray;
+        	a {
+        		text-decoration: none;
+        		color: @labelGray;
+        	}
+        }
+    }
+    &__subhit-thumbnail {
+    	img {
+	    	height: 60px;
+	    	padding: 5px 5px 0 0;
+    	}
     }
     &__hit-content-more {
         padding: 5px;

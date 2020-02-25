@@ -19,19 +19,23 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * <p>TableDataFilter class.</p>
+ * <p>
+ * TableDataFilter class.
+ * </p>
  */
 public class TableDataFilter implements Serializable {
 
     private static final long serialVersionUID = 9120268561536080056L;
-    
+
     private String joinTable = null;
     private String column;
     private String value;
     private final TableDataProvider<?> owner;
 
     /**
-     * <p>Constructor for TableDataFilter.</p>
+     * <p>
+     * Constructor for TableDataFilter.
+     * </p>
      *
      * @param column a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -45,7 +49,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Constructor for TableDataFilter.</p>
+     * <p>
+     * Constructor for TableDataFilter.
+     * </p>
      *
      * @param joinTable a {@link java.lang.String} object.
      * @param column a {@link java.lang.String} object.
@@ -61,7 +67,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>column</code>.</p>
+     * <p>
+     * Getter for the field <code>column</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -70,7 +78,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>column</code>.</p>
+     * <p>
+     * Setter for the field <code>column</code>.
+     * </p>
      *
      * @param column a {@link java.lang.String} object.
      */
@@ -79,7 +89,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -88,7 +100,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>value</code>.</p>
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      */
@@ -99,7 +113,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>joinTable</code>.</p>
+     * <p>
+     * Setter for the field <code>joinTable</code>.
+     * </p>
      *
      * @param joinTable the joinTable to set
      */
@@ -108,7 +124,9 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>joinTable</code>.</p>
+     * <p>
+     * Getter for the field <code>joinTable</code>.
+     * </p>
      *
      * @return the joinTable
      */

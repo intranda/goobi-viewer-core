@@ -25,7 +25,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -35,17 +35,16 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.SuccessMessage;
-import io.goobi.viewer.servlets.rest.bookmarks.BookmarkResource;
 
 /**
  * @author Florian Alpers
  *
  */
-public class BookmarkResourceTest extends AbstractDatabaseEnabledTest {
+public class BookmarkResourceTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final String PI_1 = "pi1";
-    private static final String PI_2 = "pi2";
-    private static final String PI_3 = "pi3";
+    private static final String PI_1 = "PPN514154005";
+    private static final String PI_2 = "34115495_1940";
+    private static final String PI_3 = "168714434_1805";
     private static final String LOGID_1 = "LOG_0004";
     private static final String PAGE_1 = "7";
 

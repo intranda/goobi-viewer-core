@@ -56,7 +56,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private List<Metadata> sidebarMetadata;
 
     /**
-     * <p>Constructor for EventElement.</p>
+     * <p>
+     * Constructor for EventElement.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param locale a {@link java.util.Locale} object.
@@ -178,7 +180,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>displayDate</code>.</p>
+     * <p>
+     * Getter for the field <code>displayDate</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -198,7 +202,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>getLabel.</p>
+     * <p>
+     * getLabel.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -212,7 +218,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -221,7 +229,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>type</code>.</p>
+     * <p>
+     * Setter for the field <code>type</code>.
+     * </p>
      *
      * @param type the type to set
      */
@@ -230,7 +240,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>dateStart</code>.</p>
+     * <p>
+     * Getter for the field <code>dateStart</code>.
+     * </p>
      *
      * @return the dateStart
      */
@@ -239,7 +251,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>dateStart</code>.</p>
+     * <p>
+     * Setter for the field <code>dateStart</code>.
+     * </p>
      *
      * @param dateStart the dateStart to set
      */
@@ -248,7 +262,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>dateEnd</code>.</p>
+     * <p>
+     * Getter for the field <code>dateEnd</code>.
+     * </p>
      *
      * @return the dateEnd
      */
@@ -257,7 +273,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>dateEnd</code>.</p>
+     * <p>
+     * Setter for the field <code>dateEnd</code>.
+     * </p>
      *
      * @param dateEnd the dateEnd to set
      */
@@ -266,7 +284,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>metadata</code>.</p>
+     * <p>
+     * Getter for the field <code>metadata</code>.
+     * </p>
      *
      * @return the metadata
      */
@@ -281,7 +301,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>hasMetadata.</p>
+     * <p>
+     * hasMetadata.
+     * </p>
      *
      * @return a boolean.
      */
@@ -294,7 +316,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>hasSidebarMetadata.</p>
+     * <p>
+     * hasSidebarMetadata.
+     * </p>
      *
      * @return a boolean.
      */
@@ -307,7 +331,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarMetadata</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarMetadata</code>.
+     * </p>
      *
      * @return the sidebarMetadata
      */

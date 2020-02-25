@@ -44,10 +44,10 @@ public class LanguageHelperTest {
 
     @Test
     public void test() {
-       LanguageHelper helper = new LanguageHelper("languages.xml");
-       Assert.assertNotNull(helper.getLanguage("fra"));
-       Assert.assertNotNull(helper.getLanguage("fre"));
-       Assert.assertNotNull(helper.getLanguage("fr"));
+        LanguageHelper helper = new LanguageHelper("languages.xml");
+        Assert.assertNotNull(helper.getLanguage("fra"));
+        Assert.assertNotNull(helper.getLanguage("fre"));
+        Assert.assertNotNull(helper.getLanguage("fr"));
     }
 
 }

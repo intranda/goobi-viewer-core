@@ -1065,7 +1065,7 @@ public class SearchFacets implements Serializable {
      * @param facet
      * @return
      */
-    private String getFacetDescription(FacetItem facet) {
+    private static String getFacetDescription(FacetItem facet) {
         String desc = "";
         try {
             CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
@@ -1082,7 +1082,7 @@ public class SearchFacets implements Serializable {
      * @param facet
      * @return
      */
-    private String getFacetName(FacetItem facet) {
+    private static String getFacetName(FacetItem facet) {
         String name = "";
         try {
             CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());

@@ -251,7 +251,9 @@ public class RssResource {
     }
 
     /**
-     * <p>getSearchRssFeed.</p>
+     * <p>
+     * getSearchRssFeed.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param facets a {@link java.lang.String} object.

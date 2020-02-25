@@ -34,6 +34,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -44,7 +45,9 @@ import net.sf.ehcache.config.ConfigurationHelper;
 public class ConfigurationTest extends AbstractTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);;
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
+
+    public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
     @Before
     public void setUp() throws Exception {
@@ -169,7 +172,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getDownloadUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
+        Assert.assertEquals("https://viewer.goobi.io/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
     }
 
     /**
@@ -178,7 +181,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
+        Assert.assertEquals("https://viewer.goobi.io/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
     }
 
     /**
@@ -729,7 +732,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSolrUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("solr_value", DataManager.getInstance().getConfiguration().getSolrUrl());
+        Assert.assertEquals("https://viewer.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**
@@ -2488,7 +2491,9 @@ public class ConfigurationTest extends AbstractTest {
         Metadata mdTitle = metadataList.get(2);
         Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
         Assert.assertEquals(1, mdTitle.getParams().size());
-        Assert.assertEquals("bar", mdTitle.getParams().get(0).getReplaceRules().get("foo"));
+        Assert.assertEquals("foo", mdTitle.getParams().get(0).getReplaceRules().get(0).getKey());
+        Assert.assertEquals("bar", mdTitle.getParams().get(0).getReplaceRules().get(0).getReplacement());
+        Assert.assertEquals(MetadataReplaceRuleType.STRING, mdTitle.getParams().get(0).getReplaceRules().get(0).getType());
     }
 
     /**

@@ -68,7 +68,7 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
     public static final String PERCENT_REPLACEMENT = "U0025";
-    
+
     /**
      * Gets the current Request from the faces context
      *
@@ -80,7 +80,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getRequest.</p>
+     * <p>
+     * getRequest.
+     * </p>
      *
      * @param context a {@link javax.faces.context.FacesContext} object.
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
@@ -111,7 +113,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>hasJsfContext.</p>
+     * <p>
+     * hasJsfContext.
+     * </p>
      *
      * @return a boolean.
      */
@@ -120,7 +124,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getServletImagesPathFromRequest.</p>
+     * <p>
+     * getServletImagesPathFromRequest.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param theme a {@link java.lang.String} object.
@@ -140,7 +146,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getServletContext.</p>
+     * <p>
+     * getServletContext.
+     * </p>
      *
      * @return a {@link javax.servlet.ServletContext} object.
      */
@@ -153,7 +161,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getLocale.</p>
+     * <p>
+     * getLocale.
+     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -165,9 +175,11 @@ public class BeanUtils {
 
         return Locale.ENGLISH;
     }
-    
+
     /**
-     * <p>getDefaultLocale.</p>
+     * <p>
+     * getDefaultLocale.
+     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -204,13 +216,15 @@ public class BeanUtils {
             InitialContext initialContext = new InitialContext();
             return (BeanManager) initialContext.lookup("java:comp/BeanManager");
         } catch (NamingException e) {
-            logger.warn("Couldn't get BeanManager through JNDI: {}", e.getMessage());
+            // logger.warn("Couldn't get BeanManager through JNDI: {}", e.getMessage());
             return null;
         }
     }
 
     /**
-     * <p>getBeanByName.</p>
+     * <p>
+     * getBeanByName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param clazz a {@link java.lang.Class} object.
@@ -229,7 +243,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getNavigationHelper.</p>
+     * <p>
+     * getNavigationHelper.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
      */
@@ -245,9 +261,10 @@ public class BeanUtils {
         return navigationHelper;
     }
 
-
     /**
-     * <p>getActiveDocumentBean.</p>
+     * <p>
+     * getActiveDocumentBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} object.
      */
@@ -256,29 +273,35 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getSearchBean.</p>
+     * <p>
+     * getSearchBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.SearchBean} object.
      */
     public static SearchBean getSearchBean() {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
-    
+
     public static BookmarkBean getBookmarkBean() {
         return (BookmarkBean) getBeanByName("bookmarkBean", BookmarkBean.class);
     }
 
     /**
-     * <p>getCMSCollectionsBean.</p>
+     * <p>
+     * getCMSCollectionsBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CmsCollectionsBean} object.
      */
     public static CmsCollectionsBean getCMSCollectionsBean() {
         return (CmsCollectionsBean) getBeanByName("cmsCollectionsBean", CmsCollectionsBean.class);
     }
-    
+
     /**
-     * <p>getMetadataBean.</p>
+     * <p>
+     * getMetadataBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.MetadataBean} object.
      */
@@ -287,7 +310,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getCmsBean.</p>
+     * <p>
+     * getCmsBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CmsBean} object.
      */
@@ -296,7 +321,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getCmsMediaBean.</p>
+     * <p>
+     * getCmsMediaBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CmsMediaBean} object.
      */
@@ -304,9 +331,10 @@ public class BeanUtils {
         return (CmsMediaBean) getBeanByName("cmsMediaBean", CmsMediaBean.class);
     }
 
-    
     /**
-     * <p>getCalendarBean.</p>
+     * <p>
+     * getCalendarBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CalendarBean} object.
      */
@@ -315,7 +343,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getUserBean.</p>
+     * <p>
+     * getUserBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
@@ -324,7 +354,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getImageDeliveryBean.</p>
+     * <p>
+     * getImageDeliveryBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      */
@@ -332,20 +364,24 @@ public class BeanUtils {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
         if (bean == null) {
             bean = new ImageDeliveryBean();
-            bean.init(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
+            bean.init(DataManager.getInstance().getConfiguration(),
+                    DataManager.getInstance().getConfiguration().getIIIFApiUrl().replace("rest/", ""));
         } else {
             try {
                 bean.getThumbs();
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
-                bean.init(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
+                bean.init(DataManager.getInstance().getConfiguration(),
+                        DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
             }
         }
         return bean;
     }
 
     /**
-     * <p>getBrowseBean.</p>
+     * <p>
+     * getBrowseBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.BrowseBean} object.
      */
@@ -354,7 +390,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getUserBeanFromRequest.</p>
+     * <p>
+     * getUserBeanFromRequest.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
@@ -368,7 +406,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getUserFromRequest.</p>
+     * <p>
+     * getUserFromRequest.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
@@ -383,7 +423,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>escapeCriticalUrlChracters.</p>
+     * <p>
+     * escapeCriticalUrlChracters.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -393,7 +435,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>escapeCriticalUrlChracters.</p>
+     * <p>
+     * escapeCriticalUrlChracters.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @should replace characters correctly
@@ -405,7 +449,11 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        value = value.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT).replace("|", PIPE_REPLACEMENT).replace("%7C", PIPE_REPLACEMENT).replace("?", QUESTION_MARK_REPLACEMENT);
+        value = value.replace("/", SLASH_REPLACEMENT)
+                .replace("\\", BACKSLASH_REPLACEMENT)
+                .replace("|", PIPE_REPLACEMENT)
+                .replace("%7C", PIPE_REPLACEMENT)
+                .replace("?", QUESTION_MARK_REPLACEMENT);
         if (escapePercentCharacters) {
             value = value.replace("%", PERCENT_REPLACEMENT);
         }
@@ -413,7 +461,9 @@ public class BeanUtils {
     }
 
     /**
-     * <p>unescapeCriticalUrlChracters.</p>
+     * <p>
+     * unescapeCriticalUrlChracters.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @should replace characters correctly
@@ -432,38 +482,40 @@ public class BeanUtils {
     }
 
     /**
-     * <p>getResponse.</p>
+     * <p>
+     * getResponse.
+     * </p>
      *
      * @return a {@link javax.servlet.http.HttpServletResponse} object.
      */
     public static HttpServletResponse getResponse() {
         FacesContext context = FacesContext.getCurrentInstance();
-        if (context != null && context.getExternalContext() != null) {            
+        if (context != null && context.getExternalContext() != null) {
             HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
             return response;
-        } else {
-            return null;
         }
+
+        return null;
     }
-    
+
     public static Object getManagedBeanValue(String expr) {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context == null) {
             return null;
-        } else {
-            Object value = null;
-            Application application = context.getApplication();
-            if (application != null) {
-                ValueBinding vb = application.createValueBinding(expr);
-                if (vb != null) {
-                    try {
-                        value = vb.getValue(context);
-                    } catch (Exception e) {
-                        logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
-                    }
+        }
+
+        Object value = null;
+        Application application = context.getApplication();
+        if (application != null) {
+            ValueBinding vb = application.createValueBinding(expr);
+            if (vb != null) {
+                try {
+                    value = vb.getValue(context);
+                } catch (Exception e) {
+                    logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
                 }
             }
-            return value;
         }
+        return value;
     }
 }

@@ -42,7 +42,9 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>Abstract AbstractPageLoader class.</p>
+ * <p>
+ * Abstract AbstractPageLoader class.
+ * </p>
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
@@ -73,7 +75,9 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * <p>loadPage.</p>
+     * <p>
+     * loadPage.
+     * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a int.
@@ -115,7 +119,9 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * <p>loadPageFromDoc.</p>
+     * <p>
+     * loadPageFromDoc.
+     * </p>
      *
      * @param doc Solr document from which to construct the page
      * @param pi Record identifier

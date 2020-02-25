@@ -87,8 +87,11 @@
 		<contentServerWrapper>http://localhost:8080/viewer/content/
 		</contentServerWrapper>
 
-		<!--rest: TODO -->
+		<!--endpoint to viewer rest api -->
 		<rest>http://localhost:8080/viewer/rest/</rest>
+		<!-- Rest endpoint for content data, mostly images which are delivered via iiif image api -->
+		<iiif>https://viewer.goobi.io/rest/</iiif>
+		
 
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
@@ -1017,10 +1020,6 @@
 
 	<!-- Settings for the table of content page -->
 	<toc>
-		<!-- DEPRECATED: Use <labelConfig> instead. If true, TOC element labels 
-			will always have their docstruct as a prefix, unless the label is just the 
-			docstruct (default is false) -->
-		<alwaysDisplayDocstruct>false</alwaysDisplayDocstruct>
 		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
 			thumbnails -->
 		<multiVolumeThumbnailsWidth>50</multiVolumeThumbnailsWidth>
@@ -1135,22 +1134,6 @@
                     <displayLinkToTiffImage>true</displayLinkToTiffImage>
                 </page>
             </sidebarWidgetUsage>
-    
-		<!-- This defines the order of sidebar-elements related to the navigation 
-			of the current work. The order corresponds to the order of <item>s in this 
-			list. 'type' defines the name of the particular PageType. Elements missing 
-			in this list won't be displayed in the sidebar at all. If the whole <wordNavItem>-Element 
-			is missing, a default order is used, including all possible Elements (provided 
-			their visibility is set to true). -->
-		<workNavItems>
-			<item type="page"></item>
-			<item type="toc"></item>
-			<item type="thumbs"></item>
-			<item type="metadata"></item>
-			<item type="fulltext"></item>
-			<item type="dfg"></item>
-			<item type="opac"></item>
-		</workNavItems>
 
 		<!-- page: if false, the image view is hidden -->
 		<page>

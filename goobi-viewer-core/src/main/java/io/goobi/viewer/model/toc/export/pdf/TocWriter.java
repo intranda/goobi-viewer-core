@@ -41,7 +41,9 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.model.toc.TOCElement;
 
 /**
- * <p>TocWriter class.</p>
+ * <p>
+ * TocWriter class.
+ * </p>
  */
 public class TocWriter {
 
@@ -57,7 +59,9 @@ public class TocWriter {
     private int levelIndent = DEFAULT_LEVEL_INDENT;
 
     /**
-     * <p>Constructor for TocWriter.</p>
+     * <p>
+     * Constructor for TocWriter.
+     * </p>
      *
      * @param author a {@link java.lang.String} object.
      * @param title a {@link java.lang.String} object.
@@ -68,7 +72,9 @@ public class TocWriter {
     }
 
     /**
-     * <p>Getter for the field <code>author</code>.</p>
+     * <p>
+     * Getter for the field <code>author</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -77,7 +83,9 @@ public class TocWriter {
     }
 
     /**
-     * <p>Getter for the field <code>title</code>.</p>
+     * <p>
+     * Getter for the field <code>title</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -86,7 +94,9 @@ public class TocWriter {
     }
 
     /**
-     * <p>Getter for the field <code>levelIndent</code>.</p>
+     * <p>
+     * Getter for the field <code>levelIndent</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -95,7 +105,9 @@ public class TocWriter {
     }
 
     /**
-     * <p>Setter for the field <code>levelIndent</code>.</p>
+     * <p>
+     * Setter for the field <code>levelIndent</code>.
+     * </p>
      *
      * @param levelIndent a int.
      */
@@ -104,13 +116,15 @@ public class TocWriter {
     }
 
     /**
-     * <p>createDocument.</p>
+     * <p>
+     * createDocument.
+     * </p>
      *
      * @param output a {@link java.io.OutputStream} object.
      * @param elements a {@link java.util.List} object.
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
-    public void createDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
+    public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
 
         Document document = new Document();
         try {
@@ -161,11 +175,40 @@ public class TocWriter {
         } finally {
             document.close();
         }
-
     }
 
     /**
-     * <p>main.</p>
+     * 
+     * @param elements TOC element list
+     * @return
+     */
+    public String getAsText(List<TOCElement> elements) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getAuthor()).append('\n');
+        sb.append(getTitle()).append("\n\n");
+
+        for (TOCElement tocElement : elements) {
+            for (int i = 0; i < getLevelIndent() * tocElement.getLevel(); ++i) {
+                sb.append(' ');
+            }
+            sb.append(tocElement.getLabel());
+
+            String location = tocElement.getPageNoLabel();
+            if (StringUtils.isNotBlank(location)) {
+                sb.append(" (").append(location).append(')');
+            }
+
+            sb.append("\n\n");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.io.FileNotFoundException if any.
@@ -182,7 +225,7 @@ public class TocWriter {
 
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             TocWriter writer = new TocWriter("Its a me", "Inhaltsverzeichnis");
-            writer.createDocument(fos, list);
+            writer.createPdfDocument(fos, list);
         }
     }
 

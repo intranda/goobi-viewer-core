@@ -21,18 +21,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.sitemap.Sitemap;
 
-public class SitemapTest {
+public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapTest.class);
 
@@ -92,7 +94,7 @@ public class SitemapTest {
             logger.info("Written sitemap files to {}", path.toAbsolutePath());
         } finally {
             if (Files.isDirectory(path)) {
-                Files.delete(path);
+                FileUtils.deleteDirectory(path.toFile());
             }
         }
 

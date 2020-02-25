@@ -27,51 +27,57 @@ import javax.persistence.Table;
 import org.apache.logging.log4j.core.pattern.NotANumber;
 
 /**
- * <p>CMSProperty class.</p>
+ * <p>
+ * CMSProperty class.
+ * </p>
  *
  * @author Florian Alpers
  */
 @Entity
 @Table(name = "cms_properties")
 public class CMSProperty {
-    
+
     /** Constant <code>KEY_EMPTY="EMPTY"</code> */
-    public static final String KEY_EMPTY= "EMPTY";
-    
+    public static final String KEY_EMPTY = "EMPTY";
+
     /**
      * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header
      */
     public static final String KEY_DISPLAY_CHILD_TAGS_AS_HEADERS = "DISPLAY_CHILD_TAGS_AS_HEADERS";
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    
+
     @Column(name = "property_key", nullable = true)
     private String key = KEY_EMPTY;
-    
-    @Column(name = "property_value", nullable = true,  columnDefinition = "LONGTEXT")
+
+    @Column(name = "property_value", nullable = true, columnDefinition = "LONGTEXT")
     private String value;
-    
-//    /** Reference to the owning {@link PersistentEntity}. */
-//    @ManyToOne
-//    @JoinColumn(name = "property_owner_id")
-//    private CMSPage owner;
-    
+
+    //    /** Reference to the owning {@link PersistentEntity}. */
+    //    @ManyToOne
+    //    @JoinColumn(name = "property_owner_id")
+    //    private CMSPage owner;
+
     /**
-     * <p>Constructor for CMSProperty.</p>
+     * <p>
+     * Constructor for CMSProperty.
+     * </p>
      */
     public CMSProperty() {
     }
-    
+
     /**
-     * <p>Constructor for CMSProperty.</p>
+     * <p>
+     * Constructor for CMSProperty.
+     * </p>
      *
      * @param key a {@link java.lang.String} object.
      */
     public CMSProperty(String key) {
-       this.key = key;
+        this.key = key;
     }
 
     /**
@@ -80,61 +86,73 @@ public class CMSProperty {
      * @param original a {@link io.goobi.viewer.model.cms.CMSProperty} object.
      */
     public CMSProperty(CMSProperty original) {
-        if(original.id != null) {            
+        if (original.id != null) {
             this.id = new Long(original.id);
         }
         this.key = original.getKey();
         this.value = original.getValue();
-        
+
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
     public Long getId() {
         return id;
     }
-    
+
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
-     * <p>Getter for the field <code>key</code>.</p>
+     * <p>
+     * Getter for the field <code>key</code>.
+     * </p>
      *
      * @return the key
      */
     public String getKey() {
         return key;
     }
-    
+
     /**
-     * <p>Setter for the field <code>key</code>.</p>
+     * <p>
+     * Setter for the field <code>key</code>.
+     * </p>
      *
      * @param key the key to set
      */
     public void setKey(String key) {
         this.key = key;
     }
-    
+
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return the value
      */
     public String getValue() {
         return value;
     }
-    
+
     /**
-     * <p>Setter for the field <code>value</code>.</p>
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
      *
      * @param value the value to set
      */
@@ -152,36 +170,42 @@ public class CMSProperty {
     }
 
     /**
-     * <p>getBooleanValue.</p>
+     * <p>
+     * getBooleanValue.
+     * </p>
      *
      * @return a boolean.
      */
     public boolean getBooleanValue() {
         return Boolean.parseBoolean(value);
     }
-    
+
     /**
-     * <p>getLongValue.</p>
+     * <p>
+     * getLongValue.
+     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
     public Long getLongValue() {
         try {
             return Long.parseLong(value);
-        } catch(NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException | NumberFormatException e) {
             return null;
         }
     }
-    
+
     /**
-     * <p>getDoubleValue.</p>
+     * <p>
+     * getDoubleValue.
+     * </p>
      *
      * @return a {@link java.lang.Double} object.
      */
     public Double getDoubleValue() {
         try {
             return Double.parseDouble(value);
-        } catch(NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException | NumberFormatException e) {
             return null;
         }
     }

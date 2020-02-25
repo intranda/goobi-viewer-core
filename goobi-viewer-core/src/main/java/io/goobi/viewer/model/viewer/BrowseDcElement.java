@@ -49,7 +49,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private BrowseElementInfo info;
 
     /**
-     * <p>Constructor for BrowseDcElement.</p>
+     * <p>
+     * Constructor for BrowseDcElement.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param number a long.
@@ -72,7 +74,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Constructor for BrowseDcElement.</p>
+     * <p>
+     * Constructor for BrowseDcElement.
+     * </p>
      *
      * @param blueprint a {@link io.goobi.viewer.model.viewer.BrowseDcElement} object.
      */
@@ -134,7 +138,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -143,7 +149,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getLabel.</p>
+     * <p>
+     * getLabel.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -179,7 +187,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getLuceneName.</p>
+     * <p>
+     * getLuceneName.
+     * </p>
      *
      * @return the name
      */
@@ -188,7 +198,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>addToNumber.</p>
+     * <p>
+     * addToNumber.
+     * </p>
      *
      * @param inNumber a long.
      */
@@ -197,7 +209,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>hasSubelements</code>.</p>
+     * <p>
+     * Setter for the field <code>hasSubelements</code>.
+     * </p>
      *
      * @param hasSubelements a boolean.
      */
@@ -206,7 +220,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>isHasSubelements.</p>
+     * <p>
+     * isHasSubelements.
+     * </p>
      *
      * @return a boolean.
      */
@@ -215,7 +231,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>isDisplayNumberOfVolumes.</p>
+     * <p>
+     * isDisplayNumberOfVolumes.
+     * </p>
      *
      * @return a boolean.
      */
@@ -224,7 +242,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getNumberOfVolumes.</p>
+     * <p>
+     * getNumberOfVolumes.
+     * </p>
      *
      * @return number of elements
      */
@@ -233,7 +253,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getLevel.</p>
+     * <p>
+     * getLevel.
+     * </p>
      *
      * @return a int.
      */
@@ -245,7 +267,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getParentName.</p>
+     * <p>
+     * getParentName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -258,7 +282,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>sortField</code>.</p>
+     * <p>
+     * Getter for the field <code>sortField</code>.
+     * </p>
      *
      * @return the sortField
      */
@@ -267,7 +293,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>sortField</code>.</p>
+     * <p>
+     * Setter for the field <code>sortField</code>.
+     * </p>
      *
      * @param sortField the sortField to set
      */
@@ -276,7 +304,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>isShowSubElements.</p>
+     * <p>
+     * isShowSubElements.
+     * </p>
      *
      * @return a boolean.
      */
@@ -285,7 +315,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>showSubElements</code>.</p>
+     * <p>
+     * Setter for the field <code>showSubElements</code>.
+     * </p>
      *
      * @param showSubElements a boolean.
      */
@@ -294,7 +326,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>isShowDescription.</p>
+     * <p>
+     * isShowDescription.
+     * </p>
      *
      * @return the showDescription
      */
@@ -303,7 +337,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>showDescription</code>.</p>
+     * <p>
+     * Setter for the field <code>showDescription</code>.
+     * </p>
      *
      * @param showDescription the showDescription to set
      */
@@ -322,7 +358,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getRssUrl.</p>
+     * <p>
+     * getRssUrl.
+     * </p>
      *
      * @param request HttpServletRequest
      * @return RSS feed URL for this collection
@@ -371,7 +409,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Setter for the field <code>info</code>.</p>
+     * <p>
+     * Setter for the field <code>info</code>.
+     * </p>
      *
      * @param info the info to set
      */
@@ -380,7 +420,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>Getter for the field <code>info</code>.</p>
+     * <p>
+     * Getter for the field <code>info</code>.
+     * </p>
      *
      * @return the info
      */
@@ -403,7 +445,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>hasCMSDescription.</p>
+     * <p>
+     * hasCMSDescription.
+     * </p>
      *
      * @return a boolean.
      */
@@ -412,7 +456,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>hasIcon.</p>
+     * <p>
+     * hasIcon.
+     * </p>
      *
      * @return a boolean.
      */
@@ -421,7 +467,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>getIcon.</p>
+     * <p>
+     * getIcon.
+     * </p>
      *
      * @return a {@link java.net.URI} object.
      */

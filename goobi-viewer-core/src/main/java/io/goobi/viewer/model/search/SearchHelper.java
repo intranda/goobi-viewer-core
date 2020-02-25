@@ -110,8 +110,10 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    /** Standard Solr query for all records and anchors. */
+    public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
     /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code> */
-    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = "(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)";
+    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
 
     private static final Object lock = new Object();
 
@@ -371,7 +373,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>getFirstWorkUrlWithFieldValue.</p>
+     * <p>
+     * getFirstWorkUrlWithFieldValue.
+     * </p>
      *
      * @param luceneField a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -633,7 +637,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>searchCalendar.</p>
+     * <p>
+     * searchCalendar.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param facetFields a {@link java.util.List} object.
@@ -653,7 +659,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>getMinMaxYears.</p>
+     * <p>
+     * getMinMaxYears.
+     * </p>
      *
      * @param subQuery a {@link java.lang.String} object.
      * @return an array of {@link int} objects.
@@ -783,7 +791,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>generateCollectionBlacklistFilterSuffix.</p>
+     * <p>
+     * generateCollectionBlacklistFilterSuffix.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @should construct suffix correctly
@@ -808,7 +818,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>getDiscriminatorFieldFilterSuffix.</p>
+     * <p>
+     * getDiscriminatorFieldFilterSuffix.
+     * </p>
      *
      * @param discriminatorField a {@link java.lang.String} object.
      * @should construct subquery correctly
@@ -1124,13 +1136,17 @@ public final class SearchHelper {
      * 
      * @param string
      * @return
+     * @should preserve digits
+     * @should preserve latin chars
+     * @should preserve hebrew chars
      */
     static String normalizeString(String string) {
         if (string == null) {
             return null;
         }
 
-        return string.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+        return string.toLowerCase().replaceAll("[^\\p{L}0-9#]", " ");
+        //        return string;
     }
 
     /**
@@ -1145,7 +1161,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>replaceHighlightingPlaceholdersForHyperlinks.</p>
+     * <p>
+     * replaceHighlightingPlaceholdersForHyperlinks.
+     * </p>
      *
      * @param phrase a {@link java.lang.String} object.
      * @should replace placeholders with bold tags
@@ -1156,7 +1174,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>replaceHighlightingPlaceholders.</p>
+     * <p>
+     * replaceHighlightingPlaceholders.
+     * </p>
      *
      * @param phrase a {@link java.lang.String} object.
      * @should replace placeholders with html tags
@@ -1168,7 +1188,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>removeHighlightingTags.</p>
+     * <p>
+     * removeHighlightingTags.
+     * </p>
      *
      * @param phrase a {@link java.lang.String} object.
      * @return Given phrase without the highlighting html tags
@@ -1614,7 +1636,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>generateQueryParams.</p>
+     * <p>
+     * generateQueryParams.
+     * </p>
      *
      * @return a {@link java.util.Map} object.
      */
@@ -1637,7 +1661,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>facetifyList.</p>
+     * <p>
+     * facetifyList.
+     * </p>
      *
      * @param sourceList a {@link java.util.List} object.
      * @should facetify correctly
@@ -1659,7 +1685,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>facetifyField.</p>
+     * <p>
+     * facetifyField.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @should facetify correctly
@@ -1670,7 +1698,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>sortifyField.</p>
+     * <p>
+     * sortifyField.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @should sortify correctly
@@ -1710,7 +1740,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>defacetifyField.</p>
+     * <p>
+     * defacetifyField.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @should defacetify correctly
@@ -1904,7 +1936,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>getExpandQueryFieldList.</p>
+     * <p>
+     * getExpandQueryFieldList.
+     * </p>
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
@@ -1982,7 +2016,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>prepareQuery.</p>
+     * <p>
+     * prepareQuery.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -2009,10 +2045,10 @@ public final class SearchHelper {
      * Puts non-empty queries into parentheses and replaces empty queries with a top level record-only query (for collection listing).
      *
      * @param query a {@link java.lang.String} object.
-     * @should prepare non-empty queries correctly
-     * @should prepare empty queries correctly
      * @param docstructWhitelistFilterQuery a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @should prepare non-empty queries correctly
+     * @should prepare empty queries correctly
      */
     public static String prepareQuery(String query, String docstructWhitelistFilterQuery) {
         StringBuilder sbQuery = new StringBuilder();
@@ -2023,7 +2059,7 @@ public final class SearchHelper {
             if (StringUtils.isNotEmpty(docstructWhitelistFilterQuery)) {
                 sbQuery.append(docstructWhitelistFilterQuery);
             } else {
-                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+                sbQuery.append(SearchHelper.ALL_RECORDS_QUERY);
             }
 
         }
@@ -2071,7 +2107,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>exportSearchAsExcel.</p>
+     * <p>
+     * exportSearchAsExcel.
+     * </p>
      *
      * @param query Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
@@ -2160,7 +2198,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>getAllFacetFields.</p>
+     * <p>
+     * getAllFacetFields.
+     * </p>
      *
      * @param hierarchicalFacetFields a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
@@ -2175,7 +2215,9 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>parseSortString.</p>
+     * <p>
+     * parseSortString.
+     * </p>
      *
      * @param sortString a {@link java.lang.String} object.
      * @param navigationHelper a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.

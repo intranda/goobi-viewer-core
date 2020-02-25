@@ -59,8 +59,8 @@
 
             <script type="text/javascript">	  
             $(document).ready( () => {	
-                if(mapBoxToken) {                    
-		        	widgetGeoLocationsConfig = {
+            if (typeof mapBoxToken !== 'undefined') {		        	
+                widgetGeoLocationsConfig = {
 	        			locations: '#{cc.attrs.widget.geoLocationsString}',
 	        			mapboxAccessToken: mapBoxToken,
 	        			msg: {

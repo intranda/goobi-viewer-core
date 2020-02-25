@@ -34,8 +34,9 @@
 						<ul>
 							<c:forEach items="#{browseBean.browseTermListEscaped}" var="term"
 								varStatus="status">
+								<!-- newSearch5 pattern link -->
 								<li><h:outputLink
-										value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}:&quot;#{term}&quot;/1/-/#{browseBean.filterQuery}/"
+										value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}&#58;&quot;#{term}&quot;/1/-/#{browseBean.filterQuery}/"
 										title="#{browseBean.browseTermList[status.count-1]}">
 										<h:outputText
 											value="#{browseBean.browseTermList[status.count-1]}"

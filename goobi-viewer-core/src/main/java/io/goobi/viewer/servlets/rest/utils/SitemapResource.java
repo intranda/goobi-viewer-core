@@ -63,7 +63,9 @@ public class SitemapResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for SitemapResource.</p>
+     * <p>
+     * Constructor for SitemapResource.
+     * </p>
      */
     public SitemapResource() {
     }
@@ -78,7 +80,9 @@ public class SitemapResource {
     }
 
     /**
-     * <p>updateSitemap.</p>
+     * <p>
+     * updateSitemap.
+     * </p>
      *
      * @param params a {@link io.goobi.viewer.servlets.rest.utils.SitemapRequestParameters} object.
      * @return Short summary of files created

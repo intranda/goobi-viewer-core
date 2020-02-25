@@ -71,7 +71,9 @@ public class Role {
     }
 
     /**
-     * <p>Constructor for Role.</p>
+     * <p>
+     * Constructor for Role.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -153,7 +155,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivDeleteOcrPage.</p>
+     * <p>
+     * isPrivDeleteOcrPage.
+     * </p>
      *
      * @return a boolean.
      */
@@ -162,7 +166,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivDeleteOcrPage.</p>
+     * <p>
+     * setPrivDeleteOcrPage.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -175,7 +181,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivSetRepresentativeImage.</p>
+     * <p>
+     * isPrivSetRepresentativeImage.
+     * </p>
      *
      * @return a boolean.
      */
@@ -184,7 +192,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivSetRepresentativeImage.</p>
+     * <p>
+     * setPrivSetRepresentativeImage.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -197,7 +207,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsPages.</p>
+     * <p>
+     * isPrivCmsPages.
+     * </p>
      *
      * @return a boolean.
      */
@@ -206,7 +218,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsPages.</p>
+     * <p>
+     * setPrivCmsPages.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -219,7 +233,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsAllSubthemes.</p>
+     * <p>
+     * isPrivCmsAllSubthemes.
+     * </p>
      *
      * @return a boolean.
      */
@@ -228,7 +244,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsAllSubthemes.</p>
+     * <p>
+     * setPrivCmsAllSubthemes.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -241,7 +259,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsAllCategories.</p>
+     * <p>
+     * isPrivCmsAllCategories.
+     * </p>
      *
      * @return a boolean.
      */
@@ -250,7 +270,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsAllCategories.</p>
+     * <p>
+     * setPrivCmsAllCategories.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -263,7 +285,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsAllTemplates.</p>
+     * <p>
+     * isPrivCmsAllTemplates.
+     * </p>
      *
      * @return a boolean.
      */
@@ -272,7 +296,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsAllTemplates.</p>
+     * <p>
+     * setPrivCmsAllTemplates.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -285,7 +311,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsMenu.</p>
+     * <p>
+     * isPrivCmsMenu.
+     * </p>
      *
      * @return a boolean.
      */
@@ -294,7 +322,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsMenu.</p>
+     * <p>
+     * setPrivCmsMenu.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -307,7 +337,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsStaticPages.</p>
+     * <p>
+     * isPrivCmsStaticPages.
+     * </p>
      *
      * @return a boolean.
      */
@@ -316,7 +348,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsStaticPages.</p>
+     * <p>
+     * setPrivCmsStaticPages.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -329,7 +363,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsCollections.</p>
+     * <p>
+     * isPrivCmsCollections.
+     * </p>
      *
      * @return a boolean.
      */
@@ -338,7 +374,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsCollections.</p>
+     * <p>
+     * setPrivCmsCollections.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -351,7 +389,9 @@ public class Role {
     }
 
     /**
-     * <p>isPrivCmsCategories.</p>
+     * <p>
+     * isPrivCmsCategories.
+     * </p>
      *
      * @return a boolean.
      */
@@ -360,7 +400,9 @@ public class Role {
     }
 
     /**
-     * <p>setPrivCmsCategories.</p>
+     * <p>
+     * setPrivCmsCategories.
+     * </p>
      *
      * @param priv a boolean.
      */
@@ -375,7 +417,9 @@ public class Role {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -384,7 +428,9 @@ public class Role {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -393,7 +439,9 @@ public class Role {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -402,7 +450,9 @@ public class Role {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -411,7 +461,9 @@ public class Role {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -420,7 +472,9 @@ public class Role {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -429,7 +483,9 @@ public class Role {
     }
 
     /**
-     * <p>Getter for the field <code>privileges</code>.</p>
+     * <p>
+     * Getter for the field <code>privileges</code>.
+     * </p>
      *
      * @return the privileges
      */
@@ -438,7 +494,9 @@ public class Role {
     }
 
     /**
-     * <p>Setter for the field <code>privileges</code>.</p>
+     * <p>
+     * Setter for the field <code>privileges</code>.
+     * </p>
      *
      * @param privileges the privileges to set
      */
@@ -447,7 +505,9 @@ public class Role {
     }
 
     /**
-     * <p>Getter for the field <code>inheritedRoles</code>.</p>
+     * <p>
+     * Getter for the field <code>inheritedRoles</code>.
+     * </p>
      *
      * @return the inheritedRoles
      */
@@ -456,7 +516,9 @@ public class Role {
     }
 
     /**
-     * <p>Setter for the field <code>inheritedRoles</code>.</p>
+     * <p>
+     * Setter for the field <code>inheritedRoles</code>.
+     * </p>
      *
      * @param inheritedRoles the inheritedRoles to set
      */

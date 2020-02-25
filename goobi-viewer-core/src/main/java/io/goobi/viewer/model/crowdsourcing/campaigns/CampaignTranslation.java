@@ -39,14 +39,18 @@ public class CampaignTranslation extends Translation {
     private Campaign owner;
 
     /**
-     * <p>Constructor for CampaignTranslation.</p>
+     * <p>
+     * Constructor for CampaignTranslation.
+     * </p>
      */
     public CampaignTranslation() {
         super();
     }
 
     /**
-     * <p>Constructor for CampaignTranslation.</p>
+     * <p>
+     * Constructor for CampaignTranslation.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param tag a {@link java.lang.String} object.
@@ -59,7 +63,9 @@ public class CampaignTranslation extends Translation {
     }
 
     /**
-     * <p>setTranslation.</p>
+     * <p>
+     * setTranslation.
+     * </p>
      *
      * @param translations a {@link java.util.List} object.
      * @param lang a {@link java.lang.String} object.
@@ -85,7 +91,9 @@ public class CampaignTranslation extends Translation {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -94,7 +102,9 @@ public class CampaignTranslation extends Translation {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */

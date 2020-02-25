@@ -29,9 +29,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.imaging.ImageHandler;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
@@ -73,16 +72,16 @@ public class ImageHandlerTest {
     }
 
     @Test
-    public void testGetImageUrlLocal() throws ViewerConfigurationException {
+    public void testGetImageUrlLocal() {
         PhysicalElement page =
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getImageUrl(page);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/info.json", url);
+        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/1234/00000001.tif/info.json", url);
     }
 
     @Test
-    public void testGetImageUrlExternal() throws ViewerConfigurationException {
+    public void testGetImageUrlExternal() {
         PhysicalElement page = new PhysicalElement("PHYS_0001", "http://otherServer/images/00000001.tif/info.json", 1, "Seite 1", "urn:234235:3423",
                 "http://purl", "1234", "image/tiff", null);
 
@@ -91,12 +90,13 @@ public class ImageHandlerTest {
     }
 
     @Test
-    public void testGetImageUrlInternal() throws ViewerConfigurationException {
+    public void testGetImageUrlInternal() {
         PhysicalElement page = new PhysicalElement("PHYS_0001", "http://exteral/restricted/images/00000001.tif", 1, "Seite 1", "urn:234235:3423",
                 "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getImageUrl(page);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
+        Assert.assertEquals(
+                ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
                 url);
     }
 

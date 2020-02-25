@@ -57,7 +57,7 @@ public class TocWriterTest {
 
     @Test
     public void testCreateRandomPdf() throws FileNotFoundException, IOException, WriteTocException {
-        File outputFile = new File("build/toc.pdf");
+        File outputFile = new File("target/toc.pdf");
 
         List<TOCElement> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
@@ -66,7 +66,7 @@ public class TocWriterTest {
 
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             TocWriter writer = new TocWriter("Its a me", "Inhaltsverzeichnis");
-            writer.createDocument(fos, list);
+            writer.createPdfDocument(fos, list);
         }
     }
 

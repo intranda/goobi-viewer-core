@@ -16,16 +16,20 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>RestApiException class.</p>
+ * <p>
+ * RestApiException class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public class RestApiException extends Exception {
 
     private final int statusCode;
-    
+
     /**
-     * <p>Constructor for RestApiException.</p>
+     * <p>
+     * Constructor for RestApiException.
+     * </p>
      *
      * @param statusCode a int.
      */
@@ -35,7 +39,9 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>Constructor for RestApiException.</p>
+     * <p>
+     * Constructor for RestApiException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      * @param cause a {@link java.lang.Throwable} object.
@@ -47,7 +53,9 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>Constructor for RestApiException.</p>
+     * <p>
+     * Constructor for RestApiException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object.
      * @param statusCode a int.
@@ -58,7 +66,9 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>Constructor for RestApiException.</p>
+     * <p>
+     * Constructor for RestApiException.
+     * </p>
      *
      * @param cause a {@link java.lang.Throwable} object.
      * @param statusCode a int.
@@ -69,12 +79,14 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>Getter for the field <code>statusCode</code>.</p>
+     * <p>
+     * Getter for the field <code>statusCode</code>.
+     * </p>
      *
      * @return the statusCode
      */
     public int getStatusCode() {
         return statusCode;
     }
-    
+
 }

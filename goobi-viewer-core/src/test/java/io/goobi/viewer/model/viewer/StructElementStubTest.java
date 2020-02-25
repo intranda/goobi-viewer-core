@@ -61,12 +61,26 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
-        StructElement element = new StructElement(1387459019070L);
+        StructElement element = new StructElement(IDDOC_KLEIUNIV);
         StructElementStub stub = element.createStub();
         Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
         Assert.assertEquals(
                 "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.title=Universit%C3%A4t+und+Technische+Hochschule&rft.au=Klein%2C+Felix&rft.tpages=16",
                 stub.generateContextObject(null, element.getTopStruct().createStub()));
+    }
+
+    /**
+     * @see StructElementStub#generateContextObject(String,StructElementStub)
+     * @verifies return unknown format if topstruct null
+     */
+    @Test
+    public void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
+        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElementStub stub = element.createStub();
+        Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
+        Assert.assertTrue(stub.generateContextObject(null, null)
+                .startsWith(
+                        "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:unknown"));
     }
 
     /**

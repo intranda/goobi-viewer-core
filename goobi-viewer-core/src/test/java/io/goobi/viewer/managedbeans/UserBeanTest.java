@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,33 +42,34 @@ import io.goobi.viewer.model.security.user.User;
 public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     UserBean bean = new UserBean();
-    
+
     String userActive_nickname = "nick 1";
     String userActive_email = "1@users.org";
     String userActive_pwHash = "abcdef1";
-    
+
     String userSuspended_nickname = "nick 3";
     String userSuspended_email = "3@users.org";
     String userSuspended_pwHash = "abcdef3";
-    
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
         bean.setAuthenticationProvider(new IAuthenticationProvider() {
-            
+
             private User user = null;
-            
+
             @Override
-            public void logout() throws AuthenticationProviderException {}
-            
+            public void logout() throws AuthenticationProviderException {
+            }
+
             @Override
             public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
                 LoginResult result;
                 try {
                     user = DataManager.getInstance().getDao().getUserByEmail(loginName);
-                    if(user != null && user.getPasswordHash().equals(password)) {
+                    if (user != null && user.getPasswordHash().equals(password)) {
                         result = new LoginResult(null, null, Optional.ofNullable(user), false);
                     } else {
                         result = new LoginResult(null, null, Optional.empty(), true);
@@ -79,17 +79,17 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
                 }
                 return CompletableFuture.completedFuture(result);
             }
-            
+
             @Override
             public String getType() {
                 return "test";
             }
-            
+
             @Override
             public String getName() {
                 return "test";
             }
-            
+
             @Override
             public boolean allowsPasswordChange() {
                 return false;
@@ -112,7 +112,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
             @Override
             public void setAddUserToGroups(List<String> addUserToGroups) {
-                
+
             }
         });
     }
@@ -126,48 +126,46 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-        
+
         bean.setEmail(userActive_email);
-        bean.setPassword(userActive_pwHash); 
+        bean.setPassword(userActive_pwHash);
         Assert.assertNull(bean.getUser());
         bean.login();
         Assert.assertNotNull(bean.getUser());
         Assert.assertTrue(bean.getUser().isActive());
         Assert.assertFalse(bean.getUser().isSuspended());
     }
-    
+
     @Test
     public void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email);
-        bean.setPassword(userSuspended_pwHash); 
+        bean.setPassword(userSuspended_pwHash);
         Assert.assertNull(bean.getUser());
         bean.login();
         Assert.assertNull(bean.getUser());
     }
-    
+
     @Test
     public void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userActive_email + "test");
-        bean.setPassword(userActive_pwHash); 
+        bean.setPassword(userActive_pwHash);
         Assert.assertNull(bean.getUser());
         bean.login();
         Assert.assertNull(bean.getUser());
     }
-    
+
     @Test
     public void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
         bean.setEmail(userSuspended_email);
-        bean.setPassword(userSuspended_pwHash); 
+        bean.setPassword(userSuspended_pwHash);
         Assert.assertNull(bean.getUser());
         bean.login();
         Assert.assertNull(bean.getUser());
-//        Assert.assertTrue(bean.getUser().isActive());
-//        Assert.assertTrue(bean.getUser().isSuspended());
+        //        Assert.assertTrue(bean.getUser().isActive());
+        //        Assert.assertTrue(bean.getUser().isSuspended());
     }
-
-
 
 }

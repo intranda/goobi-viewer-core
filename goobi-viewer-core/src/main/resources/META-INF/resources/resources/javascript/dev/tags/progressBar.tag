@@ -10,7 +10,6 @@
 <script>
 	this.values = JSON.parse(this.opts.values);
 	this.styleClasses = JSON.parse(this.opts.styleclasses);
-	console.log("init progressbar ", this.values, this.styleClasses);
 	
 	this.on("mount", function() {
 	    let bar = this.root.querySelector(".goobi-progress-bar");

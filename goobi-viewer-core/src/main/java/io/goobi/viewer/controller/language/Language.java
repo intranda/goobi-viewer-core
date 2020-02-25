@@ -16,7 +16,9 @@
 package io.goobi.viewer.controller.language;
 
 /**
- * <p>Language class.</p>
+ * <p>
+ * Language class.
+ * </p>
  */
 public class Language {
 
@@ -37,61 +39,75 @@ public class Language {
     private String germanName;
 
     /**
-     * <p>getIsoCode639_1.</p>
+     * <p>
+     * getIsoCode639_1.
+     * </p>
      *
      * @return the language code according to iso 639-1
      */
     public String getIsoCode639_1() {
         return isoCode_639_1;
     }
-    
+
     /**
-     * <p>getIsoCode639_2B.</p>
+     * <p>
+     * getIsoCode639_2B.
+     * </p>
      *
      * @return the language code according to iso 639-2/B
      */
     public String getIsoCode639_2B() {
         return isoCode_639_2_B;
     }
-    
+
     /**
-     * <p>getIsoCode639_2T.</p>
+     * <p>
+     * getIsoCode639_2T.
+     * </p>
      *
      * @return the language code according to iso 639-2/T
      */
     public String getIsoCode639_2T() {
         return isoCode_639_2_T;
     }
-    
+
     /**
-     * <p>Setter for the field <code>isoCode_639_1</code>.</p>
+     * <p>
+     * Setter for the field <code>isoCode_639_1</code>.
+     * </p>
      *
      * @param isoCode_639_1 the isoCode_639_1 to set
      */
     public void setIsoCode_639_1(String isoCode_639_1) {
         this.isoCode_639_1 = isoCode_639_1;
     }
-    
+
     /**
-     * <p>setIsoCode_639_2B.</p>
+     * <p>
+     * setIsoCode_639_2B.
+     * </p>
      *
      * @param isoCode_639_2_B the isoCode_639_2_B to set
      */
     public void setIsoCode_639_2B(String isoCode_639_2_B) {
         this.isoCode_639_2_B = isoCode_639_2_B;
     }
-    
+
     /**
-     * <p>setIsoCode_639_2T.</p>
+     * <p>
+     * setIsoCode_639_2T.
+     * </p>
      *
      * @param isoCode_639_2_T the isoCode_639_2_T to set
      */
     public void setIsoCode_639_2T(String isoCode_639_2_T) {
         this.isoCode_639_2_T = isoCode_639_2_T;
     }
-    
+
     /**
-     * <p>getIsoCode.</p>
+     * <p>
+     * getIsoCode.
+     * </p>
      *
      * @return the language code according to iso 639-2/B
      */
@@ -100,7 +116,9 @@ public class Language {
     }
 
     /**
-     * <p>setIsoCode.</p>
+     * <p>
+     * setIsoCode.
+     * </p>
      *
      * @param isoCode a {@link java.lang.String} object.
      */
@@ -109,7 +127,9 @@ public class Language {
     }
 
     /**
-     * <p>getIsoCodeOld.</p>
+     * <p>
+     * getIsoCodeOld.
+     * </p>
      *
      * @return the language code according to iso 639-1
      */
@@ -118,7 +138,9 @@ public class Language {
     }
 
     /**
-     * <p>setIsoCodeOld.</p>
+     * <p>
+     * setIsoCodeOld.
+     * </p>
      *
      * @param isoCodeOld a {@link java.lang.String} object.
      */
@@ -127,7 +149,9 @@ public class Language {
     }
 
     /**
-     * <p>Getter for the field <code>englishName</code>.</p>
+     * <p>
+     * Getter for the field <code>englishName</code>.
+     * </p>
      *
      * @return the englishName
      */
@@ -136,7 +160,9 @@ public class Language {
     }
 
     /**
-     * <p>Setter for the field <code>englishName</code>.</p>
+     * <p>
+     * Setter for the field <code>englishName</code>.
+     * </p>
      *
      * @param englishName the englishName to set
      */
@@ -145,7 +171,9 @@ public class Language {
     }
 
     /**
-     * <p>Getter for the field <code>frenchName</code>.</p>
+     * <p>
+     * Getter for the field <code>frenchName</code>.
+     * </p>
      *
      * @return the frenchName
      */
@@ -154,7 +182,9 @@ public class Language {
     }
 
     /**
-     * <p>Setter for the field <code>frenchName</code>.</p>
+     * <p>
+     * Setter for the field <code>frenchName</code>.
+     * </p>
      *
      * @param frenchName the frenchName to set
      */
@@ -163,7 +193,9 @@ public class Language {
     }
 
     /**
-     * <p>Getter for the field <code>germanName</code>.</p>
+     * <p>
+     * Getter for the field <code>germanName</code>.
+     * </p>
      *
      * @return the germanName
      */
@@ -172,7 +204,9 @@ public class Language {
     }
 
     /**
-     * <p>Setter for the field <code>germanName</code>.</p>
+     * <p>
+     * Setter for the field <code>germanName</code>.
+     * </p>
      *
      * @param germanName the germanName to set
      */

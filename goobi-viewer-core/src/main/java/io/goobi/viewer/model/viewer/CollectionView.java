@@ -36,7 +36,9 @@ import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 
 /**
- * <p>CollectionView class.</p>
+ * <p>
+ * CollectionView class.
+ * </p>
  */
 public class CollectionView {
 
@@ -57,7 +59,9 @@ public class CollectionView {
     private List<String> ignoreList = new ArrayList<>();
 
     /**
-     * <p>Constructor for CollectionView.</p>
+     * <p>
+     * Constructor for CollectionView.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param dataProvider a {@link io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider} object.
@@ -83,7 +87,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>populateCollectionList.</p>
+     * <p>
+     * populateCollectionList.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -155,14 +161,18 @@ public class CollectionView {
     }
 
     /**
-     * <p>calculateVisibleDcElements.</p>
+     * <p>
+     * calculateVisibleDcElements.
+     * </p>
      */
     public void calculateVisibleDcElements() {
         calculateVisibleDcElements(true);
     }
 
     /**
-     * <p>calculateVisibleDcElements.</p>
+     * <p>
+     * calculateVisibleDcElements.
+     * </p>
      *
      * @param loadDescriptions a boolean.
      */
@@ -235,7 +245,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>associateElementsWithCMSData.</p>
+     * <p>
+     * associateElementsWithCMSData.
+     * </p>
      */
     public void associateElementsWithCMSData() {
         try {
@@ -246,7 +258,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>associateWithCMSCollections.</p>
+     * <p>
+     * associateWithCMSCollections.
+     * </p>
      *
      * @param collections a {@link java.util.List} object.
      * @param solrField a {@link java.lang.String} object.
@@ -276,7 +290,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getVisibleDcElements.</p>
+     * <p>
+     * getVisibleDcElements.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -307,7 +323,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>calculateLevel.</p>
+     * <p>
+     * calculateLevel.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a int.
@@ -321,7 +339,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>resetCollectionList.</p>
+     * <p>
+     * resetCollectionList.
+     * </p>
      */
     public void resetCollectionList() {
         synchronized (this) {
@@ -330,7 +350,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>isSubcollection.</p>
+     * <p>
+     * isSubcollection.
+     * </p>
      *
      * @return a boolean.
      */
@@ -340,7 +362,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Getter for the field <code>topVisibleElement</code>.</p>
+     * <p>
+     * Getter for the field <code>topVisibleElement</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -352,7 +376,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Setter for the field <code>topVisibleElement</code>.</p>
+     * <p>
+     * Setter for the field <code>topVisibleElement</code>.
+     * </p>
      *
      * @param topVisibleElement a {@link java.lang.String} object.
      */
@@ -361,7 +387,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Setter for the field <code>topVisibleElement</code>.</p>
+     * <p>
+     * Setter for the field <code>topVisibleElement</code>.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      */
@@ -370,7 +398,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>showChildren.</p>
+     * <p>
+     * showChildren.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      */
@@ -384,7 +414,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>hideChildren.</p>
+     * <p>
+     * hideChildren.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      */
@@ -398,7 +430,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>toggleChildren.</p>
+     * <p>
+     * toggleChildren.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
@@ -632,7 +666,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getCompleteList.</p>
+     * <p>
+     * getCompleteList.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -641,7 +677,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>expand.</p>
+     * <p>
+     * expand.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -667,7 +705,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Getter for the field <code>baseElementName</code>.</p>
+     * <p>
+     * Getter for the field <code>baseElementName</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -676,7 +716,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Setter for the field <code>baseElementName</code>.</p>
+     * <p>
+     * Setter for the field <code>baseElementName</code>.
+     * </p>
      *
      * @param baseElementName a {@link java.lang.String} object.
      */
@@ -686,7 +728,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Getter for the field <code>baseLevels</code>.</p>
+     * <p>
+     * Getter for the field <code>baseLevels</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -695,7 +739,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Setter for the field <code>baseLevels</code>.</p>
+     * <p>
+     * Setter for the field <code>baseLevels</code>.
+     * </p>
      *
      * @param baseLevels a int.
      */
@@ -704,7 +750,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>isTopVisibleElement.</p>
+     * <p>
+     * isTopVisibleElement.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @return a boolean.
@@ -714,7 +762,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>showAll.</p>
+     * <p>
+     * showAll.
+     * </p>
      */
     public void showAll() {
         if (completeCollectionList != null) {
@@ -726,7 +776,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>hideAll.</p>
+     * <p>
+     * hideAll.
+     * </p>
      */
     public void hideAll() {
         if (completeCollectionList != null) {
@@ -759,7 +811,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getTopVisibleElementLevel.</p>
+     * <p>
+     * getTopVisibleElementLevel.
+     * </p>
      *
      * @return a int.
      */
@@ -771,7 +825,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getBaseElementLevel.</p>
+     * <p>
+     * getBaseElementLevel.
+     * </p>
      *
      * @return a int.
      */
@@ -783,7 +839,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Setter for the field <code>showAllHierarchyLevels</code>.</p>
+     * <p>
+     * Setter for the field <code>showAllHierarchyLevels</code>.
+     * </p>
      *
      * @param showAllHierarchyLevels the showAllHierarchyLevels to set
      */
@@ -792,7 +850,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>isShowAllHierarchyLevels.</p>
+     * <p>
+     * isShowAllHierarchyLevels.
+     * </p>
      *
      * @return the showAllHierarchyLevels
      */
@@ -801,7 +861,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getCollectionUrl.</p>
+     * <p>
+     * getCollectionUrl.
+     * </p>
      *
      * @param collection a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -815,7 +877,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>loadCollection.</p>
+     * <p>
+     * loadCollection.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
@@ -829,7 +893,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getCollectionUrl.</p>
+     * <p>
+     * getCollectionUrl.
+     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
@@ -839,7 +905,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>getCollectionUrl.</p>
+     * <p>
+     * getCollectionUrl.
+     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
@@ -882,7 +950,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Setter for the field <code>displayParentCollections</code>.</p>
+     * <p>
+     * Setter for the field <code>displayParentCollections</code>.
+     * </p>
      *
      * @param displayParents a boolean.
      */
@@ -891,7 +961,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>isDisplayParentCollections.</p>
+     * <p>
+     * isDisplayParentCollections.
+     * </p>
      *
      * @return the displayParentCollections
      */
@@ -900,7 +972,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>setIgnore.</p>
+     * <p>
+     * setIgnore.
+     * </p>
      *
      * @param collectionName a {@link java.lang.String} object.
      */
@@ -909,7 +983,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>setIgnore.</p>
+     * <p>
+     * setIgnore.
+     * </p>
      *
      * @param collectionNames a {@link java.util.Collection} object.
      */
@@ -918,14 +994,17 @@ public class CollectionView {
     }
 
     /**
-     * <p>resetIgnore.</p>
+     * <p>
+     * resetIgnore.
+     * </p>
      */
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
     }
 
     /**
-     * Set the {@link io.goobi.viewer.model.viewer.BrowseElementInfo} of the {@link io.goobi.viewer.model.viewer.BrowseDcElement} with the given name to the given info object
+     * Set the {@link io.goobi.viewer.model.viewer.BrowseElementInfo} of the {@link io.goobi.viewer.model.viewer.BrowseDcElement} with the given name
+     * to the given info object
      *
      * @param name The collection name
      * @param info The info to apply
@@ -939,7 +1018,8 @@ public class CollectionView {
     }
 
     /**
-     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link io.goobi.viewer.model.viewer.SimpleBrowseElementInfo}
+     * Remove all custom collection info from the browse element with the given name. The element will get a new
+     * {@link io.goobi.viewer.model.viewer.SimpleBrowseElementInfo}
      *
      * @param name The collection name
      */
@@ -952,7 +1032,9 @@ public class CollectionView {
     }
 
     /**
-     * <p>Getter for the field <code>field</code>.</p>
+     * <p>
+     * Getter for the field <code>field</code>.
+     * </p>
      *
      * @return the field
      */

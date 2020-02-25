@@ -48,11 +48,11 @@ public class JPAClassLoaderTest extends AbstractTest {
 
         {
             Element elePU1 = eleListPU.get(0);
-            Assert.assertEquals(37+2, elePU1.getChildren("class", null).size());
+            Assert.assertEquals(37, elePU1.getChildren("class", null).size());
             Set<String> classes = new HashSet<>();
             for (Element eleClass : elePU1.getChildren("class", null)) {
                 classes.add(eleClass.getText());
-                logger.error(eleClass.getText());
+                logger.trace(eleClass.getText());
             }
             Assert.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass1"));
             Assert.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass2"));

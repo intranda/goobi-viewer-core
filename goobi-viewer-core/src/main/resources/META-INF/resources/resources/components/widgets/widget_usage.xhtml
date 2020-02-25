@@ -29,73 +29,123 @@
                     <h4 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h4>
                     
                     <!-- WORK DOWNLOADS -->
-                    <div class="widget-usage__work-downloads">                
-                        <!-- METS -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.metsResolverUrl}"
-                                id="lidomets" 
-                                class="label label-default widget-usage__work-download-lido-mets" 
-                                title="#{msg.metadata_dl_mets}" 
-                                target="_blank" rel="nofollow"> 
-                                #{msg.downloadMetsButtonLabel}
-                            </a>
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+                    <div class="widget-usage__work-downloads">     
+                    
+                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.accessPermissionDownloadMetadata}">           
+                        
+                            <!-- METS -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
                                 <a 
-                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
-                                    id="metsanchor" 
-                                    class="label label-default widget-usage__work-download-mets-anchor" 
-                                    title="#{msg.metadata_dl_metsAnchor}" 
+                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+                                    id="lidomets" 
+                                    class="label label-default widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_mets}" 
                                     target="_blank" rel="nofollow"> 
-                                     #{msg.downloadAnchorMetsButtonLabel}
+                                    #{msg.downloadMetsButtonLabel}
+                                </a>
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+                                    <a 
+                                        href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+                                        id="metsanchor" 
+                                        class="label label-default widget-usage__work-download-mets-anchor" 
+                                        title="#{msg.metadata_dl_metsAnchor}" 
+                                        target="_blank" rel="nofollow"> 
+                                        #{msg.downloadAnchorMetsButtonLabel}
+                                    </a>
+                                </ui:fragment>
+                            </ui:fragment>
+                        
+                            <!-- LIDO -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'LIDO'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+                                    id="lidomets" 
+                                    class="label label-default widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_lido}" 
+                                    target="_blank" rel="nofollow"> 
+                                    #{msg.downloadLidoButtonLabel}
                                 </a>
                             </ui:fragment>
-                        </ui:fragment>
-                        
-                        <!-- LIDO -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'LIDO'}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
-                                id="lidomets" 
-                                class="label label-default widget-usage__work-download-lido-mets" 
-                                title="#{msg.metadata_dl_lido}" 
-                                target="_blank" rel="nofollow"> 
-                                #{msg.downloadLidoButtonLabel}
-                            </a>
-                        </ui:fragment>
+                            
+                            <!-- DENKXWEB -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DENKXWEB'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
+                                    id="lidomets" 
+                                    class="label label-default widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_denkxweb}" 
+                                    target="_blank" rel="nofollow"> 
+                                    #{msg.downloadDenkxwebButtonLabel}
+                                </a>
+                            </ui:fragment>
     
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null}">
-                            <a
-                                id="marc"
-                                href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
-                                class="label label-default widget-usage__work-download-oai-marc"
-                                title="#{msg.metadata_dl_marc}"
-                                target="_blank" rel="nofollow"> #{msg.marcLink} </a>
+                            <!-- MARCXML -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null}">
+                                <a
+                                    id="marc"
+                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+                                    class="label label-default widget-usage__work-download-oai-marc"
+                                    title="#{msg.metadata_dl_marc}"
+                                    target="_blank" rel="nofollow"> #{msg.marcLink} </a>
+                            </ui:fragment>
+                        
+                            <!-- OAI DC -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
+                                <a
+                                    id="dc"
+                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+                                    class="label label-default widget-usage__work-download-oai-dc"
+                                    title="#{msg.metadata_dl_dublinCore}"
+                                    target="_blank" rel="nofollow"> 
+                                    #{msg.dcLink} 
+                                </a>
+                            </ui:fragment>
+                      
+                            <!-- RIS (topstruct) -->
+                            <ui:fragment>
+                                <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.topDocumentIddoc}"
+                                    id="ris"
+                                    class="label label-default widget-usage__work-download-ris" 
+                                    title="#{msg.risLinkTopstruct}" 
+                                    rel="nofollow"> #{msg.risLinkTopstruct} </a>
+                            </ui:fragment>
+                        
                         </ui:fragment>
                         
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
-                            <a
-                                id="dc"
-                                href="#{activeDocumentBean.viewManager.oaiDcUrl}"
-                                class="label label-default widget-usage__work-download-oai-dc"
-                                title="#{msg.metadata_dl_dublinCore}"
-                                target="_blank" rel="nofollow"> 
-                                #{msg.dcLink} 
-                           </a>
+                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.accessPermissionGenerateIiifManifest}">   
+                        
+                            <!-- IIIF MANIFEST -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+	                           <a 
+	                               id="iiifManifest" 
+	                                class="label label-default widget-usage__work-download-iiif" 
+	                               data-copy="iiif-manifest" 
+	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
+	                               data-copy-done="#{msg.copyUrlDone}"
+	                               title="#{msg.copyUrl}"> 
+	                               #{msg.iiif}
+	                           </a> 
+	                       </ui:fragment>      
+	                    
+                            <!-- MIRADOR -->
+                            <ui:fragment
+                                rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
+                                    <a
+                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" 
+                                        id="mirador"
+                                        class="label label-default widget-usage__work-link-mirador-viewer" 
+                                        title="#{msg.action__view_in_mirador__tooltip}" 
+                                        target="_blank" rel="nofollow"> 
+                                        #{msg.action__view_in_mirador}
+                                    </a>
+                            </ui:fragment>
+                        
                         </ui:fragment>
                         
-                        <!-- IIIF MANIFEST -->
-                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
-	                        <a 
-	                            id="iiifManifest" 
-	                            class="label label-default widget-usage__work-download-iiif" 
-	                            data-copy="iiif-manifest" 
-	                            data-clipboard-text="#{imageDelivery.iiifManifest}" 
-	                            data-copy-done="#{msg.copyUrlDone}"
-	                            title="#{msg.copyUrl}"> 
-	                            #{msg.iiif}
-	                        </a> 
-	                    </ui:fragment>                       
+                        <!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
+                        <ui:fragment>
     
                         <!-- ALTO (WORK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
@@ -132,17 +182,20 @@
                                 #{msg.FULLEXT}
                             </a>
                         </ui:fragment>
+                        
+                        </ui:fragment>
         
                         <!-- PDF (WORK) -->
-                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
+                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages
+                            and activeDocumentBean.accessPermissionPdf}">
                             <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.pdfDownloadLink}" 
                                     id="pdfWork" 
                                     class="label label-default widget-usage__work-download-pdf" 
-                                    title="#{msg.metadata_dl_pdf}" 
+                                    title="#{msg.label__pdf_download_record}" 
                                     target="_blank" rel="nofollow">
-                                    #{msg.pdfDownload}</a>
+                                    #{msg.label__pdf_download}</a>
                             </ui:fragment>
                             <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
                                 <a 
@@ -153,8 +206,8 @@
                                     data-title="#{activeDocumentBean.titleBarLabel}" 
                                     data-id=""
                                     data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                    title="#{msg.pdfDownload}">
-                                    #{msg.pdfDownload}
+                                    title="#{msg.label__pdf_download_record}">
+                                    #{msg.label__pdf_download}
                                 </a>    
                             </ui:fragment>
                         </ui:fragment>
@@ -174,7 +227,8 @@
                         </ui:fragment>
         
                         <!-- DFG Viewer -->
-                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
+                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
+                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
                            <a 
                                 href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
                                 id="dfgViewer" 
@@ -184,19 +238,6 @@
                                #{msg.dfgViewerLink}
                             </a>
                         </ui:fragment>
-                        
-                        <!-- MIRADOR -->
-						<ui:fragment
-							rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">						
-								<a
-									href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" 
-									id="mirador"
-									class="label label-default widget-usage__work-link-mirador-viewer" 
-	                                title="#{msg.action__view_in_mirador__tooltip}" 
-	                                target="_blank" rel="nofollow"> 
-									#{msg.action__view_in_mirador}
-								</a>
-						</ui:fragment>
     
                         <!-- OPAC -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
@@ -207,34 +248,28 @@
                                 target="_blank" rel="nofollow"> #{msg.opacLink} </a>
                         </ui:fragment>
                       
-                      	<!-- RIS (topstruct) -->
-                        <ui:fragment>
-                            <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.topDocumentIddoc}"
-                                id="ris"
-                                class="label label-default widget-usage__work-download-ris" 
-                                title="#{msg.risLinkTopstruct}" 
-                                rel="nofollow"> #{msg.risLinkTopstruct} </a>
-                        </ui:fragment>
-                      
                     </div>
                     
                     <!-- STRUCT ELEMENT -->
 					<ui:fragment
-						rendered="#{(activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc) or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf)}">
+						rendered="#{(activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc)
+						    or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf)}">
 						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentDocument.label}">#{msg.label__struct_element}</h4>
 
 						<!-- STRUCT ELEMENT DOWNLOADS -->
 						<div class="widget-usage__struct-downloads">
+						
 							<!-- PDF (STRUCT ELEMENT) -->
-							<ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
+							<ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages
+							    and activeDocumentBean.accessPermissionPdf}">
 	                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
 	                                    id="pdfStruct" 
 	                                    class="label label-default widget-usage__struct-download-pdf" 
-	                                    title="#{msg.metadata_dl_pdf}" 
+	                                    title="#{msg.label__pdf_download_section}" 
 	                                    target="_blank" rel="nofollow">
-	                                    #{msg.pdfDownload}</a>
+	                                    #{msg.label__pdf_download}</a>
 	                            </ui:fragment>
 	                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
 	                                <a 
@@ -245,22 +280,22 @@
 	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
 	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
-	                                    title="#{msg.pdfDownload}">
-	                                    #{msg.pdfDownload}
+	                                    title="#{msg.label__pdf_download_section}">
+	                                    #{msg.label__pdf_download}
 	                                </a>    
 	                            </ui:fragment>
-                          </ui:fragment>
+                            </ui:fragment>
                           
-                          
-                        <!-- RIS (current) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc}">
-                            <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.currentDocumentIddoc}"
-                                id="ris"
-                                class="label label-default widget-usage__struct-download-ris" 
-                                title="#{msg.risLinkTopstruct}"
-                                rel="nofollow">
-                                #{msg.risLinkTopstruct} </a>
-                        </ui:fragment>
+                            <!-- RIS (current) -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc
+                                and activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
+                                <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.currentDocumentIddoc}"
+                                    id="ris"
+                                    class="label label-default widget-usage__struct-download-ris" 
+                                    title="#{msg.risLinkTopstruct}"
+                                    rel="nofollow">
+                                    #{msg.risLinkTopstruct} </a>
+                            </ui:fragment>
                         
 						</div>
                     </ui:fragment>
@@ -272,14 +307,15 @@
 
 						<!-- PAGE DOWNLOADS -->
 						<div class="widget-usage__page-downloads">
+						
 							<!-- PDF (PAGE) -->
 							<ui:fragment
 								rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
 								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 									id="pdfPage"
 									class="label label-default widget-usage__page-download-pdf"
-									title="#{msg.pdfDownloadCurrentPage}" target="_blank" rel="nofollow">
-									#{msg.pdfDownload} </a>
+									title="#{msg.label__pdf_download_image}" target="_blank" rel="nofollow">
+									#{msg.label__pdf_download} </a>
 							</ui:fragment>
 
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
@@ -304,35 +340,40 @@
                                 </ui:fragment>
                             </ui:fragment>
 
-							<!-- ALTO (PAGE) -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
-								<a href="#{activeDocumentBean.viewManager.altoUrl}"
-									id="altoPage"
-									class="label label-default widget-usage__page-download-alto"
-									title="#{msg.metadata_dl_alto_page}" target="_blank" rel="nofollow">
-									#{msg.downloadAltoPageButtonLabel} </a>
-							</ui:fragment>
+                            <!-- PAGE FULLTEXT FORMATS (VIEW_FULLTEXT CHECK) -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionFulltext}">
+                            
+                                <!-- ALTO (PAGE) -->
+                                <ui:fragment
+								    rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
+								    <a href="#{activeDocumentBean.viewManager.altoUrl}"
+									   id="altoPage"
+									   class="label label-default widget-usage__page-download-alto"
+									   title="#{msg.metadata_dl_alto_page}" target="_blank" rel="nofollow">
+									   #{msg.downloadAltoPageButtonLabel} </a>
+                                </ui:fragment>
 
-                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
-							    <!-- TEI (PAGE) -->
-							    <ui:fragment
-								    rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
-								    <a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
-									    class="label label-default widget-usage__page-download-tei"
-									    title="#{msg.downloadPageTei}" target="_blank" rel="nofollow"> #{msg.TEI}
-								    </a>
-							    </ui:fragment>
+                                <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+                                    <!-- TEI (PAGE) -->
+                                    <ui:fragment
+								        rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
+								        <a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
+									       class="label label-default widget-usage__page-download-tei"
+									       title="#{msg.downloadPageTei}" target="_blank" rel="nofollow"> #{msg.TEI}
+								        </a>
+                                    </ui:fragment>
 
-							    <!-- FULLTEXT (PAGE) -->
-							    <ui:fragment
-								    rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
-								    <a href="#{activeDocumentBean.viewManager.fulltextUrl}"
-									    id="textPage"
-									    class="label label-default widget-usage__page-download-fulltext"
-									    title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow">
-									    #{msg.FULLEXT} </a>
-							    </ui:fragment>
+                                    <!-- FULLTEXT (PAGE) -->
+                                    <ui:fragment
+								        rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
+								        <a href="#{activeDocumentBean.viewManager.fulltextUrl}"
+									       id="textPage"
+									       class="label label-default widget-usage__page-download-fulltext"
+									       title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow">
+									       #{msg.FULLEXT} </a>
+                                    </ui:fragment>
+                                </ui:fragment>
+                                
 							</ui:fragment>
 						</div>
 					</ui:fragment>

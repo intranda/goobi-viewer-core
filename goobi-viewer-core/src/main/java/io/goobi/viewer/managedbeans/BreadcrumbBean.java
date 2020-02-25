@@ -504,7 +504,7 @@ public class BreadcrumbBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    private String getApplicationUrl() {
+    private static String getApplicationUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
     }
 }

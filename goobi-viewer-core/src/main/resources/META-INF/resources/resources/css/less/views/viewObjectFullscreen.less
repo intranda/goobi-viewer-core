@@ -147,6 +147,12 @@
 		padding-top: 85px;
 		overflow-y: auto;
 		z-index: 10;
+		&.-rtl {
+			direction: rtl;
+		}
+		&.-ltr {
+			direction: ltr;
+		}
 	}
 	&__view-image-thumbs {
 		display: flex;
@@ -323,6 +329,11 @@
 		&:first-child {
 			h3 {
 				border-top: 0;
+			}
+		}
+		&.fs-imagefilters {
+			imageFilters {					
+				display: none;
 			}
 		}
 	}

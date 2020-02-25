@@ -19,17 +19,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 /**
- * <p>TestObject class.</p>
+ * <p>
+ * TestObject class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public class TestObject {
-    
+
     @Context
     private HttpServletRequest servletRequest;
-    
+
     /**
-     * <p>getRequest.</p>
+     * <p>
+     * getRequest.
+     * </p>
      *
      * @return a {@link javax.servlet.http.HttpServletRequest} object.
      */

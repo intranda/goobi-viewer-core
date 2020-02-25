@@ -72,7 +72,7 @@
 		<taskManager>taskmanager_url/</taskManager>
 
 		<!-- solr: URL to the Solr index core -->
-		<solr>solr_value/</solr>
+		<solr>https://viewer.goobi.io/solr/collection1</solr>
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
@@ -86,9 +86,9 @@
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
 
-		<rest>http://localhost:8080/viewer/rest/</rest>
+		<rest>https://viewer.goobi.io/rest/</rest>
 
-		<download>http://localhost:8080/viewer/download/</download>
+		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
 	<user>
@@ -730,12 +730,6 @@
 	</metadata>
 
 	<toc>
-		<!-- DEPRECATED: Use <labelConfig> instead. If true, TOC element labels 
-			will always have their docstruct as a prefix, unless the label is just the 
-			docstruct (default is false) -->
-		<alwaysDisplayDocstruct>true</alwaysDisplayDocstruct>
-
-
 		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
 			thumbnails -->
 		<multiVolumeThumbnailsWidth>12</multiVolumeThumbnailsWidth>

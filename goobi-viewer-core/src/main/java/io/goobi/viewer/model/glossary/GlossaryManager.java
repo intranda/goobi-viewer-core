@@ -36,7 +36,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * <p>GlossaryManager class.</p>
+ * <p>
+ * GlossaryManager class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -47,7 +49,9 @@ public class GlossaryManager {
     private static final String VOCABULARY_DESCRIPTION_REGEX = "\"description\":\"(.*?)\"";
 
     /**
-     * <p>getGlossaries.</p>
+     * <p>
+     * getGlossaries.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
@@ -72,7 +76,9 @@ public class GlossaryManager {
     }
 
     /**
-     * <p>getGlossaryAsJson.</p>
+     * <p>
+     * getGlossaryAsJson.
+     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -92,7 +98,9 @@ public class GlossaryManager {
     }
 
     /**
-     * <p>getGlossary.</p>
+     * <p>
+     * getGlossary.
+     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
@@ -146,7 +154,7 @@ public class GlossaryManager {
             glossary.setRecords(glossaryRecords);
             return glossary;
         }
-        
+
         throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
     }
 
@@ -162,8 +170,11 @@ public class GlossaryManager {
                 logger.error("Unable to read file " + path, e);
                 return new ArrayList<String>();
             }
-        }).map(lines -> lines.size() > 0 ? lines.get(0) : "").map(line -> Pattern.compile(regex).matcher(line)).filter(matcher -> matcher.find()).map(
-                matcher -> matcher.group(group));
+        })
+                .map(lines -> lines.size() > 0 ? lines.get(0) : "")
+                .map(line -> Pattern.compile(regex).matcher(line))
+                .filter(matcher -> matcher.find())
+                .map(matcher -> matcher.group(group));
         return title;
     }
 

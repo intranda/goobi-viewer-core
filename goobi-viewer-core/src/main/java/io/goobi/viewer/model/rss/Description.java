@@ -33,67 +33,86 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Description {
-    
+
     private String image;
     private String text;
     private List<RssMetadata> metadata = new ArrayList<>();
-    
+
     /**
-     * <p>Constructor for Description.</p>
+     * <p>
+     * Constructor for Description.
+     * </p>
      */
     public Description() {
         text = null;
     }
+
     /**
-     * <p>Constructor for Description.</p>
+     * <p>
+     * Constructor for Description.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      */
     public Description(String value) {
         text = value;
     }
+
     /**
-     * <p>Getter for the field <code>image</code>.</p>
+     * <p>
+     * Getter for the field <code>image</code>.
+     * </p>
      *
      * @return the image
      */
     public String getImage() {
         return image;
     }
+
     /**
-     * <p>Setter for the field <code>image</code>.</p>
+     * <p>
+     * Setter for the field <code>image</code>.
+     * </p>
      *
      * @param image the image to set
      */
     public void setImage(String image) {
         this.image = image;
     }
+
     /**
-     * <p>Getter for the field <code>text</code>.</p>
+     * <p>
+     * Getter for the field <code>text</code>.
+     * </p>
      *
      * @return the description
      */
     public String getText() {
         return text;
     }
+
     /**
-     * <p>Setter for the field <code>text</code>.</p>
+     * <p>
+     * Setter for the field <code>text</code>.
+     * </p>
      *
      * @param description the description to set
      */
     public void setText(String description) {
         this.text = description;
     }
-    
+
     /**
-     * <p>Getter for the field <code>metadata</code>.</p>
+     * <p>
+     * Getter for the field <code>metadata</code>.
+     * </p>
      *
      * @return all rss metadata of this object
      */
     public List<RssMetadata> getMetadata() {
         return this.metadata;
     }
-    
+
     /**
      * Add rss metadata to this object
      *
@@ -102,7 +121,5 @@ public class Description {
     public void addMetadata(RssMetadata metadata) {
         this.metadata.add(metadata);
     }
-    
-    
 
 }

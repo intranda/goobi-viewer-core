@@ -55,7 +55,7 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
 
     private LitteraProvider provider;
 
-//    private static ClientAndProxy proxy;
+    //    private static ClientAndProxy proxy;
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 

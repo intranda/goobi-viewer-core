@@ -57,7 +57,9 @@ import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.SimpleBrowseElementInfo;
 
 /**
- * <p>CollectionBuilder class.</p>
+ * <p>
+ * CollectionBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -79,7 +81,9 @@ public class CollectionBuilder extends AbstractBuilder {
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
 
     /**
-     * <p>Constructor for CollectionBuilder.</p>
+     * <p>
+     * Constructor for CollectionBuilder.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws java.net.URISyntaxException if any.
@@ -89,7 +93,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Constructor for CollectionBuilder.</p>
+     * <p>
+     * Constructor for CollectionBuilder.
+     * </p>
      *
      * @param servletUri a {@link java.net.URI} object.
      * @param requestURI a {@link java.net.URI} object.
@@ -99,7 +105,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>generateCollection.</p>
+     * <p>
+     * generateCollection.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
@@ -170,7 +178,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>addContainedWorks.</p>
+     * <p>
+     * addContainedWorks.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
@@ -213,7 +223,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>createCollectionQuery.</p>
+     * <p>
+     * createCollectionQuery.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
@@ -231,7 +243,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>createCollection.</p>
+     * <p>
+     * createCollection.
+     * </p>
      *
      * @param baseElement a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @param collectionView a {@link io.goobi.viewer.model.viewer.CollectionView} object.
@@ -297,7 +311,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>getCollectionView.</p>
+     * <p>
+     * getCollectionView.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param facetField a {@link java.lang.String} object.
@@ -328,7 +344,9 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>getFacetField.</p>
+     * <p>
+     * getFacetField.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

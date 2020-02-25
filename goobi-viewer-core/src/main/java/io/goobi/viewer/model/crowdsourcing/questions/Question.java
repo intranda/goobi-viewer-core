@@ -50,8 +50,8 @@ import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
- * An annotation generator to create a specific type of annotation for a specific question.
- * One or more of these may be contained within a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
+ * An annotation generator to create a specific type of annotation for a specific question. One or more of these may be contained within a
+ * {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
  *
  * @author florian
  */
@@ -123,7 +123,9 @@ public class Question {
     }
 
     /**
-     * <p>getText.</p>
+     * <p>
+     * getText.
+     * </p>
      *
      * @return translation of the 'text' attribute for the currently selected locale in the owner campaign
      */
@@ -141,7 +143,9 @@ public class Question {
     }
 
     /**
-     * <p>getAvailableQuestionTypes.</p>
+     * <p>
+     * getAvailableQuestionTypes.
+     * </p>
      *
      * @return available values of the QuestionType enum
      */
@@ -151,7 +155,9 @@ public class Question {
     }
 
     /**
-     * <p>getAvailableTargetSelectors.</p>
+     * <p>
+     * getAvailableTargetSelectors.
+     * </p>
      *
      * @return available values of the TargetSelector enum
      */
@@ -161,7 +167,9 @@ public class Question {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -171,7 +179,9 @@ public class Question {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -180,7 +190,9 @@ public class Question {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -189,7 +201,9 @@ public class Question {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */
@@ -198,7 +212,9 @@ public class Question {
     }
 
     /**
-     * <p>Getter for the field <code>translations</code>.</p>
+     * <p>
+     * Getter for the field <code>translations</code>.
+     * </p>
      *
      * @return the translations
      */
@@ -207,7 +223,9 @@ public class Question {
     }
 
     /**
-     * <p>Setter for the field <code>translations</code>.</p>
+     * <p>
+     * Setter for the field <code>translations</code>.
+     * </p>
      *
      * @param translations the translations to set
      */
@@ -216,7 +234,9 @@ public class Question {
     }
 
     /**
-     * <p>Getter for the field <code>questionType</code>.</p>
+     * <p>
+     * Getter for the field <code>questionType</code>.
+     * </p>
      *
      * @return the questionType
      */
@@ -225,7 +245,9 @@ public class Question {
     }
 
     /**
-     * <p>Setter for the field <code>questionType</code>.</p>
+     * <p>
+     * Setter for the field <code>questionType</code>.
+     * </p>
      *
      * @param questionType the questionType to set
      */
@@ -234,7 +256,9 @@ public class Question {
     }
 
     /**
-     * <p>Getter for the field <code>targetSelector</code>.</p>
+     * <p>
+     * Getter for the field <code>targetSelector</code>.
+     * </p>
      *
      * @return the targetSelector
      */
@@ -243,7 +267,9 @@ public class Question {
     }
 
     /**
-     * <p>Setter for the field <code>targetSelector</code>.</p>
+     * <p>
+     * Setter for the field <code>targetSelector</code>.
+     * </p>
      *
      * @param targetSelector the targetSelector to set
      */
@@ -252,7 +278,9 @@ public class Question {
     }
 
     /**
-     * <p>Getter for the field <code>targetFrequency</code>.</p>
+     * <p>
+     * Getter for the field <code>targetFrequency</code>.
+     * </p>
      *
      * @return the targetFrequency
      */
@@ -261,7 +289,9 @@ public class Question {
     }
 
     /**
-     * <p>Setter for the field <code>targetFrequency</code>.</p>
+     * <p>
+     * Setter for the field <code>targetFrequency</code>.
+     * </p>
      *
      * @param targetFrequency the targetFrequency to set
      */
@@ -284,7 +314,7 @@ public class Question {
 
         return null;
     }
-    
+
     /**
      * get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question
      *
@@ -302,9 +332,11 @@ public class Question {
     }
 
     /**
-     * <p>getIdAsURI.</p>
+     * <p>
+     * getIdAsURI.
+     * </p>
      *
-     * @return  The URI identifier for this question from the question and campaign id
+     * @return The URI identifier for this question from the question and campaign id
      */
     @JsonProperty("id")
     public URI getIdAsURI() {

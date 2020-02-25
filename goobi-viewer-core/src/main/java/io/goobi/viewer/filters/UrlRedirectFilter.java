@@ -41,8 +41,8 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 /**
  * Filter for redirecting prettified calls to cmsPages
  * <p>
- * Forwarding is handled by {@link javax.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't change, but
- * the internal handling of the request is according to the forwarded url
+ * Forwarding is handled by {@link javax.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't
+ * change, but the internal handling of the request is according to the forwarded url
  * </p>
  * <p>
  * 'prettified' in this context refers to calling CMSPages by either their 'alternative url' or the url of the static page they replace.
@@ -53,8 +53,9 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  * forward)
  * </p>
  * <p>
- * This filter also stores the called url to the session map using {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to
- * leaving a view to return to a previous view (for example when leaving the reading mode)
+ * This filter also stores the called url to the session map using
+ * {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to leaving a view to return to a
+ * previous view (for example when leaving the reading mode)
  * </p>
  */
 public class UrlRedirectFilter implements Filter {

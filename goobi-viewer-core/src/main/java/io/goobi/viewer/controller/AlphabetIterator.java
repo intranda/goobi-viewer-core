@@ -18,7 +18,9 @@ package io.goobi.viewer.controller;
 import java.util.Iterator;
 
 /**
- * <p>AlphabetIterator class.</p>
+ * <p>
+ * AlphabetIterator class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -27,25 +29,29 @@ public class AlphabetIterator implements Iterator<String> {
     private char currentValue;
 
     /**
-     * <p>Constructor for AlphabetIterator.</p>
+     * <p>
+     * Constructor for AlphabetIterator.
+     * </p>
      */
     public AlphabetIterator() {
         currentValue = decrement('a');
     }
-    
+
     /**
-     * <p>Constructor for AlphabetIterator.</p>
+     * <p>
+     * Constructor for AlphabetIterator.
+     * </p>
      *
      * @param firstLetter a char.
      */
     public AlphabetIterator(char firstLetter) {
-        if(firstLetter >= 'a' && firstLetter <= 'z') {            
+        if (firstLetter >= 'a' && firstLetter <= 'z') {
             currentValue = decrement(firstLetter);
         } else {
             throw new IllegalArgumentException("Can only start with lower case letters");
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.util.Iterator#hasNext()
      */
@@ -61,18 +67,18 @@ public class AlphabetIterator implements Iterator<String> {
     /** {@inheritDoc} */
     @Override
     public String next() {
-       currentValue = increment(currentValue);
-       return String.valueOf(currentValue);
+        currentValue = increment(currentValue);
+        return String.valueOf(currentValue);
     }
-    
+
     private char increment(char c) {
-        int i = ((int)c)+1;
-         return (char)i;
+        int i = ((int) c) + 1;
+        return (char) i;
     }
-    
+
     private char decrement(char c) {
-        int i = ((int)c)-1;
-         return (char)i;
+        int i = ((int) c) - 1;
+        return (char) i;
     }
 
 }

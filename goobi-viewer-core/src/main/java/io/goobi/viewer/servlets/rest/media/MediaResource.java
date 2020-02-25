@@ -52,7 +52,9 @@ public class MediaResource {
     private HttpServletResponse response;
 
     /**
-     * <p>serveMediaContent.</p>
+     * <p>
+     * serveMediaContent.
+     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
@@ -86,7 +88,9 @@ public class MediaResource {
     }
 
     /**
-     * <p>checkAccess.</p>
+     * <p>
+     * checkAccess.
+     * </p>
      *
      * @param action a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.

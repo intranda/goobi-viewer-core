@@ -98,7 +98,9 @@ public class ContentResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for ContentResource.</p>
+     * <p>
+     * Constructor for ContentResource.
+     * </p>
      */
     public ContentResource() {
     }
@@ -156,7 +158,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getAltoDocument.</p>
+     * <p>
+     * Returns all ALTO documents for the given record identifier as a ZIP file.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @should return document correctly
@@ -185,6 +189,9 @@ public class ContentResource {
         try {
             List<File> altoFilePaths =
                     getFiles(altoPathCrowd, altoPath, "(?i).*\\.(alto|xml)").stream().map(java.nio.file.Path::toFile).collect(Collectors.toList());
+            if (altoFilePaths.isEmpty()) {
+                throw new ContentNotFoundException("Resource not found or not accessible");
+            }
 
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
                 throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
@@ -194,10 +201,11 @@ public class ContentResource {
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
-                    //                  IOUtils.copyLarge(in, out);   
-                } finally {
                     out.flush();
                     out.close();
+                } catch (IOException e) {
+                    logger.trace(e.getMessage(), e);
+                } finally {
                     if (tempFile.exists()) {
                         FileUtils.deleteQuietly(tempFile);
                     }
@@ -208,11 +216,14 @@ public class ContentResource {
                 FileUtils.deleteQuietly(tempFile);
             }
             throw new ContentNotFoundException("Resource not found or not accessible", e);
+
         }
     }
 
     /**
-     * <p>getAltoDocument.</p>
+     * <p>
+     * getAltoDocument.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -256,7 +267,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFulltextDocument.</p>
+     * <p>
+     * Returns all full-text documents for the given record identifier as a ZIP file.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @should return document correctly
@@ -278,6 +291,9 @@ public class ContentResource {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         Map<java.nio.file.Path, String> fileMap = getFulltext(pi);
+        if (fileMap.isEmpty()) {
+            throw new ContentNotFoundException("Resource not found or not accessible");
+        }
 
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
         try {
@@ -289,10 +305,11 @@ public class ContentResource {
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
-                    //                  IOUtils.copyLarge(in, out);   
-                } finally {
                     out.flush();
                     out.close();
+                } catch (IOException e) {
+                    logger.trace(e.getMessage(), e);
+                } finally {
                     if (tempFile.exists()) {
                         FileUtils.deleteQuietly(tempFile);
                     }
@@ -307,7 +324,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFulltextDocument.</p>
+     * <p>
+     * getFulltextDocument.
+     * </p>
      *
      * @param pi Record identifier
      * @param fileName a {@link java.lang.String} object.
@@ -334,7 +353,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFulltextAsTEI.</p>
+     * <p>
+     * getFulltextAsTEI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @should return document correctly
@@ -381,7 +402,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getTeiDocument.</p>
+     * <p>
+     * getTeiDocument.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @should return document correctly
@@ -463,7 +486,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getCmdiDocument.</p>
+     * <p>
+     * getCmdiDocument.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @should return document correctly
@@ -507,7 +532,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>checkAccess.</p>
+     * <p>
+     * checkAccess.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -525,7 +552,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>checkAccess.</p>
+     * <p>
+     * checkAccess.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param privilegeType a {@link java.lang.String} object.
@@ -541,7 +570,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>setResponseHeader.</p>
+     * <p>
+     * setResponseHeader.
+     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      */
@@ -555,7 +586,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFulltext.</p>
+     * <p>
+     * getFulltext.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -593,7 +626,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFulltext.</p>
+     * <p>
+     * getFulltext.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
@@ -631,7 +666,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFiles.</p>
+     * <p>
+     * getFiles.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param foldername a {@link java.lang.String} object.
@@ -652,7 +689,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFiles.</p>
+     * <p>
+     * getFiles.
+     * </p>
      *
      * @param folder a {@link java.nio.file.Path} object.
      * @param altFolder a {@link java.nio.file.Path} object.
@@ -690,7 +729,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>createTEIHeader.</p>
+     * <p>
+     * createTEIHeader.
+     * </p>
      *
      * @param solrDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link de.intranda.digiverso.ocr.tei.header.TEIHeaderBuilder} object.
@@ -759,7 +800,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getAltoURI.</p>
+     * <p>
+     * getAltoURI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
@@ -773,7 +816,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getFulltextURI.</p>
+     * <p>
+     * getFulltextURI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
@@ -787,7 +832,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getTEIURI.</p>
+     * <p>
+     * getTEIURI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param locale a {@link java.lang.String} object.
@@ -805,7 +852,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getCMDIURI.</p>
+     * <p>
+     * getCMDIURI.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param locale a {@link java.lang.String} object.
@@ -851,7 +900,9 @@ public class ContentResource {
     //    }
 
     /**
-     * <p>getTEIFiles.</p>
+     * <p>
+     * getTEIFiles.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -880,7 +931,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getCMDIFile.</p>
+     * <p>
+     * getCMDIFile.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param langCode a {@link java.lang.String} object.
@@ -905,7 +958,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getCMDIFiles.</p>
+     * <p>
+     * getCMDIFiles.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -934,7 +989,9 @@ public class ContentResource {
     }
 
     /**
-     * <p>getLanguage.</p>
+     * <p>
+     * getLanguage.
+     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.

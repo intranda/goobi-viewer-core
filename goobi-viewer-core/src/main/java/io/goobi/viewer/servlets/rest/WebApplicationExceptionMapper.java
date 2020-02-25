@@ -81,7 +81,9 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     }
 
     /**
-     * <p>getRequestHeaders.</p>
+     * <p>
+     * getRequestHeaders.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

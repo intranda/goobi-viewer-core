@@ -40,6 +40,7 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 
+@SuppressWarnings("deprecation")
 public class TestUtils {
 
     /**
@@ -157,7 +158,6 @@ public class TestUtils {
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#getSessionContext()
          */
-        @SuppressWarnings("deprecation")
         @Override
         public HttpSessionContext getSessionContext() {
             return null;
@@ -216,20 +216,21 @@ public class TestUtils {
         }
 
     }
-    
-   public static IAuthenticationProvider testAuthenticationProvider = new IAuthenticationProvider() {
-        
+
+    public static IAuthenticationProvider testAuthenticationProvider = new IAuthenticationProvider() {
+
         private User user = null;
-        
+
         @Override
-        public void logout() throws AuthenticationProviderException {}
-        
+        public void logout() throws AuthenticationProviderException {
+        }
+
         @Override
         public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
             LoginResult result;
             try {
                 user = DataManager.getInstance().getDao().getUserByEmail(loginName);
-                if(user != null && user.getPasswordHash().equals(password)) {
+                if (user != null && user.getPasswordHash().equals(password)) {
                     result = new LoginResult(null, null, Optional.ofNullable(user), false);
                 } else {
                     result = new LoginResult(null, null, Optional.empty(), true);
@@ -239,17 +240,17 @@ public class TestUtils {
             }
             return CompletableFuture.completedFuture(result);
         }
-        
+
         @Override
         public String getType() {
             return "test";
         }
-        
+
         @Override
         public String getName() {
             return "test";
         }
-        
+
         @Override
         public boolean allowsPasswordChange() {
             return false;

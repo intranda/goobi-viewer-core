@@ -29,7 +29,9 @@ public class RecordsRequestParameters {
     private boolean randomize;
 
     /**
-     * <p>Getter for the field <code>query</code>.</p>
+     * <p>
+     * Getter for the field <code>query</code>.
+     * </p>
      *
      * @return the query
      */
@@ -38,7 +40,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>query</code>.</p>
+     * <p>
+     * Setter for the field <code>query</code>.
+     * </p>
      *
      * @param query the query to set
      */
@@ -47,7 +51,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Getter for the field <code>sortFields</code>.</p>
+     * <p>
+     * Getter for the field <code>sortFields</code>.
+     * </p>
      *
      * @return the sortFields
      */
@@ -56,7 +62,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>sortFields</code>.</p>
+     * <p>
+     * Setter for the field <code>sortFields</code>.
+     * </p>
      *
      * @param sortFields the sortFields to set
      */
@@ -65,7 +73,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Getter for the field <code>sortOrder</code>.</p>
+     * <p>
+     * Getter for the field <code>sortOrder</code>.
+     * </p>
      *
      * @return the sortOrder
      */
@@ -74,7 +84,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>sortOrder</code>.</p>
+     * <p>
+     * Setter for the field <code>sortOrder</code>.
+     * </p>
      *
      * @param sortOrder the sortOrder to set
      */
@@ -83,7 +95,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Getter for the field <code>jsonFormat</code>.</p>
+     * <p>
+     * Getter for the field <code>jsonFormat</code>.
+     * </p>
      *
      * @return the jsonFormat
      */
@@ -92,7 +106,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>jsonFormat</code>.</p>
+     * <p>
+     * Setter for the field <code>jsonFormat</code>.
+     * </p>
      *
      * @param jsonFormat the jsonFormat to set
      */
@@ -101,7 +117,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Getter for the field <code>count</code>.</p>
+     * <p>
+     * Getter for the field <code>count</code>.
+     * </p>
      *
      * @return the count
      */
@@ -110,7 +128,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>count</code>.</p>
+     * <p>
+     * Setter for the field <code>count</code>.
+     * </p>
      *
      * @param count the count to set
      */
@@ -119,7 +139,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Getter for the field <code>offset</code>.</p>
+     * <p>
+     * Getter for the field <code>offset</code>.
+     * </p>
      *
      * @return the offset
      */
@@ -128,7 +150,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>offset</code>.</p>
+     * <p>
+     * Setter for the field <code>offset</code>.
+     * </p>
      *
      * @param offset the offset to set
      */
@@ -137,7 +161,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>isRandomize.</p>
+     * <p>
+     * isRandomize.
+     * </p>
      *
      * @return the randomize
      */
@@ -146,7 +172,9 @@ public class RecordsRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>randomize</code>.</p>
+     * <p>
+     * Setter for the field <code>randomize</code>.
+     * </p>
      *
      * @param randomize the randomize to set
      */

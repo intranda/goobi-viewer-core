@@ -33,12 +33,13 @@ import com.meterware.servletunit.ServletUnitClient;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.servlets.MetsResolver;
 
 public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final String RESOLVER_NAME = "metsResolver";
+    private static final String RESOLVER_NAME = "mets";
 
     private ServletRunner sr;
 
@@ -61,8 +62,8 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void doGet_shouldReturnMETSFileCorrectlyViaPi() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("id", "PPN517154005");
+        WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        request.setParameter("id", PI_KLEIUNIV);
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
@@ -74,8 +75,8 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("urn", "ooe:landesbibliothek-610285");
+        WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        request.setParameter("urn", "urn:nbn:de:gbv:9-g-4882158");
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
@@ -87,8 +88,8 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void doGet_shouldReturnLIDOFileCorrectly() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("id", "aa000274");
+        WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+        request.setParameter("id", "455820");
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
@@ -101,12 +102,12 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     public void doGet_shouldReturn404IfFileNotFound() throws Exception {
         ServletUnitClient sc = sr.newClient();
         {
-            WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+            WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
             request.setParameter("id", "NOTFOUND");
             WebResponse response = sc.getResponse(request);
         }
         {
-            WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+            WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
             request.setParameter("urn", "NOTFOUND");
             WebResponse response = sc.getResponse(request);
         }
@@ -119,7 +120,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = HttpException.class)
     public void doGet_shouldReturn409IfMoreThanOneRecordMatched() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        WebRequest request = new PostMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("urn", "test:1234:goobi:3431");
         WebResponse response = sc.getResponse(request);
     }
@@ -131,7 +132,7 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = HttpException.class)
     public void doGet_shouldReturn500IfRecordIdentifierBad() throws Exception {
         ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
         request.setParameter("id", "a:b");
         WebResponse response = sc.getResponse(request);
     }

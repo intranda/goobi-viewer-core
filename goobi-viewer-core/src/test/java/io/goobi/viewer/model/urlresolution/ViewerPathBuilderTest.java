@@ -54,16 +54,16 @@ public class ViewerPathBuilderTest {
         String url4 = "f";
         String url5 = "b/a";
         String url6 = "a/bc";
-        
+
         URI uri = URI.create("a/b/cdef");
-        
+
         Assert.assertTrue(ViewerPathBuilder.startsWith(uri, url1));
         Assert.assertTrue(ViewerPathBuilder.startsWith(uri, url2));
         Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url3));
         Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url4));
         Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url5));
         Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url6));
-        
+
     }
 
 }

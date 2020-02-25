@@ -29,12 +29,14 @@ public class Object3DHandler {
     private final String restApiUrl;
 
     /**
-     * <p>Constructor for Object3DHandler.</p>
+     * <p>
+     * Constructor for Object3DHandler.
+     * </p>
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
      */
     public Object3DHandler(Configuration config) {
-        this.restApiUrl = config.getRestApiUrl();
+        this.restApiUrl = config.getIIIFApiUrl();
     }
 
     /**

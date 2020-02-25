@@ -27,7 +27,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
- * <p>IPageLoader interface.</p>
+ * <p>
+ * IPageLoader interface.
+ * </p>
  */
 public interface IPageLoader {
 
@@ -40,7 +42,9 @@ public interface IPageLoader {
             SolrConstants.MDNUM_FILESIZE };
 
     /**
-     * <p>getNumPages.</p>
+     * <p>
+     * getNumPages.
+     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -48,21 +52,27 @@ public interface IPageLoader {
     public int getNumPages() throws IndexUnreachableException;
 
     /**
-     * <p>getFirstPageOrder.</p>
+     * <p>
+     * getFirstPageOrder.
+     * </p>
      *
      * @return a int.
      */
     public int getFirstPageOrder();
 
     /**
-     * <p>getLastPageOrder.</p>
+     * <p>
+     * getLastPageOrder.
+     * </p>
      *
      * @return a int.
      */
     public int getLastPageOrder();
 
     /**
-     * <p>getPage.</p>
+     * <p>
+     * getPage.
+     * </p>
      *
      * @param pageOrder a int.
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -72,7 +82,9 @@ public interface IPageLoader {
     public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException, DAOException;
 
     /**
-     * <p>getPageForFileName.</p>
+     * <p>
+     * getPageForFileName.
+     * </p>
      *
      * @param fileName a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -83,7 +95,9 @@ public interface IPageLoader {
     public PhysicalElement getPageForFileName(String fileName) throws PresentationException, IndexUnreachableException, DAOException;
 
     /**
-     * <p>getOwnerIddocForPage.</p>
+     * <p>
+     * getOwnerIddocForPage.
+     * </p>
      *
      * @param pageOrder a int.
      * @return a {@link java.lang.Long} object.
@@ -93,7 +107,9 @@ public interface IPageLoader {
     public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
 
     /**
-     * <p>generateSelectItems.</p>
+     * <p>
+     * generateSelectItems.
+     * </p>
      *
      * @param dropdownPages Image view drop-down item
      * @param dropdownFulltext Full-text view drop-down item list

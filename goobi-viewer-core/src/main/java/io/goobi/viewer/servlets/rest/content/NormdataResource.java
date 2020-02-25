@@ -70,7 +70,9 @@ public class NormdataResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for NormdataResource.</p>
+     * <p>
+     * Constructor for NormdataResource.
+     * </p>
      */
     public NormdataResource() {
     }

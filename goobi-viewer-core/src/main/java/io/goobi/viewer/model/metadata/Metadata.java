@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -42,10 +42,8 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -78,7 +76,9 @@ public class Metadata implements Serializable {
     private final boolean group;
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      */
     public Metadata() {
         this.label = "";
@@ -89,7 +89,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -109,7 +111,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -131,7 +135,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -149,7 +155,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Constructor for Metadata.</p>
+     * <p>
+     * Constructor for Metadata.
+     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -218,7 +226,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>isHasLabel.</p>
+     * <p>
+     * isHasLabel.
+     * </p>
      *
      * @return a boolean.
      */
@@ -227,7 +237,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -236,7 +248,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>masterValue</code>.</p>
+     * <p>
+     * Getter for the field <code>masterValue</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -249,7 +263,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -258,7 +274,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>values</code>.</p>
+     * <p>
+     * Getter for the field <code>values</code>.
+     * </p>
      *
      * @return the values
      */
@@ -267,7 +285,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>setParamValue.</p>
+     * <p>
+     * setParamValue.
+     * </p>
      *
      * @param valueIndex a int.
      * @param paramIndex a int.
@@ -391,8 +411,7 @@ public class Metadata implements Serializable {
                         }
                         // Popup button
                         String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
-                        html = html
-                                .replace("{0}", nh.getApplicationUrl())
+                        html = html.replace("{0}", nh.getApplicationUrl())
                                 .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
                                 .replace("{2}", normDataType == null ? MetadataGroupType.OTHER.name() : normDataType)
                                 .replace("{3}", nh.getLocaleString())
@@ -482,7 +501,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>params</code>.</p>
+     * <p>
+     * Getter for the field <code>params</code>.
+     * </p>
      *
      * @return the params
      */
@@ -491,7 +512,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>hasParam.</p>
+     * <p>
+     * hasParam.
+     * </p>
      *
      * @param paramName a {@link java.lang.String} object.
      * @return a boolean.
@@ -560,20 +583,7 @@ public class Metadata implements Serializable {
             }
             String iddoc = se.getMetadataFields().get(SolrConstants.IDDOC).get(0);
             try {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.LABEL)
-                        .append(':')
-                        .append(label)
-                        .append(" AND ")
-                        .append(SolrConstants.IDDOC_OWNER)
-                        .append(':')
-                        .append(iddoc)
-                        .append(" AND ")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(':')
-                        .append(DocType.METADATA.name());
-                logger.trace("GROUP QUERY: {}", sbQuery.toString());
-                SolrDocumentList groupedMdList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+                SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(iddoc, '+' + SolrConstants.LABEL + ":" + label);
                 int count = 0;
                 for (SolrDocument doc : groupedMdList) {
                     Map<String, List<String>> groupFieldMap = new HashMap<>();
@@ -675,7 +685,7 @@ public class Metadata implements Serializable {
                     found = true;
                     // Apply replace rules
                     if (!param.getReplaceRules().isEmpty()) {
-                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
+                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules(), se.getPi());
                     }
                     // Format dates
                     if (param.getKey().equals(SolrConstants.DATECREATED)) {
@@ -763,7 +773,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>number</code>.</p>
+     * <p>
+     * Getter for the field <code>number</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -772,7 +784,9 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * <p>isGroup.</p>
+     * <p>
+     * isGroup.
+     * </p>
      *
      * @return the group
      */

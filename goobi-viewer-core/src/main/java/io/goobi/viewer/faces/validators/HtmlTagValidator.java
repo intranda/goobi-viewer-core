@@ -31,32 +31,33 @@ import org.jsoup.nodes.Document;
 
 import io.goobi.viewer.controller.Helper;
 
-
 /**
- * Validates that any input text has no html-tags other than <br> <
+ * Validates that any input text has no html-tags other than <br>
+ * <
  *
  * @author Florian Alpers
  */
 @FacesValidator("htmlTagValidator")
 public class HtmlTagValidator implements Validator<String> {
 
-    private static final List<String> allowedTags = Arrays.asList(new String[]{"br", "b", "strong", "em", "i", "mark", "small", "del", "ins", "sub", "sup"});
+    private static final List<String> allowedTags =
+            Arrays.asList(new String[] { "br", "b", "strong", "em", "i", "mark", "small", "del", "ins", "sub", "sup" });
 
     /**
      * {@inheritDoc}
      *
-     * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag}  if {@link #validate(String)} returns false
+     * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {
-        if(!validate(input)) {
+        if (!validate(input)) {
             FacesMessage msg = new FacesMessage(Helper.getTranslation("validate_error_invalidTag", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }
-        
+
     }
-    
+
     /**
      * Returns false if the input string is not blank and does not contain any tags other than the allowed
      *
@@ -64,12 +65,14 @@ public class HtmlTagValidator implements Validator<String> {
      * @return a boolean.
      */
     public boolean validate(String input) {
-        if(StringUtils.isNotBlank(input)) {            
-            Document doc = Jsoup.parse(input);   
+        if (StringUtils.isNotBlank(input)) {
+            Document doc = Jsoup.parse(input);
             return doc.head().childNodes().isEmpty() && //no content in head
-                    doc.body().select("*").stream() //all tags within body
-                    .skip(1) //skip body tag itself
-                    .allMatch(element -> allowedTags.contains(element.tagName().toLowerCase())); //all tags have names contained in allowedTags
+                    doc.body()
+                            .select("*")
+                            .stream() //all tags within body
+                            .skip(1) //skip body tag itself
+                            .allMatch(element -> allowedTags.contains(element.tagName().toLowerCase())); //all tags have names contained in allowedTags
         } else {
             return true;
         }

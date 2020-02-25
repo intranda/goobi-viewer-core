@@ -120,15 +120,20 @@ public class Sitemap {
 
         // Create query that filters out blacklisted collections and any records that do not allow listing by default (ignore any individual agent's privileges for the sitemap).
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI).append(":* AND NOT(").append(SolrConstants.DATEDELETED).append(":*)").append(
-                SearchHelper.getAllSuffixes(false));
+        sbQuery.append(SolrConstants.PI)
+                .append(":* AND NOT(")
+                .append(SolrConstants.DATEDELETED)
+                .append(":*)")
+                .append(SearchHelper.getAllSuffixes(false));
         logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.DOCTYPE, SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };
         String[] pageFields = { SolrConstants.ORDER };
 
-        QueryResponse qr = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
-                Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "asc")), null, null, Arrays.asList(fields), null, null);
+        QueryResponse qr = DataManager.getInstance()
+                .getSearchIndex()
+                .search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "asc")),
+                        null, null, Arrays.asList(fields), null, null);
         logger.debug("Sitemap: found {} records.", qr.getResults().size());
 
         long latestTimestampModified = 0;
@@ -216,8 +221,11 @@ public class Sitemap {
                         .append(SolrConstants.FULLTEXTAVAILABLE)
                         .append(":true");
                 // logger.trace("Sitemap: pages query: {}", sbPagesQuery.toString());
-                qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
-                        Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
+                qrPages = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
+                                Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null,
+                                null);
                 if (!qrPages.getResults().isEmpty()) {
                     logger.debug("Sitemap: found {} pages with full-text for '{}'.", qrPages.getResults().size(), pi);
                     for (SolrDocument solrPageDoc : qrPages.getResults()) {

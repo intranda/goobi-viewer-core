@@ -25,33 +25,43 @@ import io.goobi.viewer.controller.AbstractConfiguration;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 /**
- * <p>IModule interface.</p>
+ * <p>
+ * IModule interface.
+ * </p>
  */
 public interface IModule {
 
     /**
-     * <p>getId.</p>
+     * <p>
+     * getId.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getId();
 
     /**
-     * <p>getName.</p>
+     * <p>
+     * getName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getName();
 
     /**
-     * <p>getVersion.</p>
+     * <p>
+     * getVersion.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getVersion();
 
     /**
-     * <p>isLoaded.</p>
+     * <p>
+     * isLoaded.
+     * </p>
      *
      * @return a boolean.
      */
@@ -124,22 +134,6 @@ public interface IModule {
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception;
 
     /**
-     * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param recordType a {@link java.lang.String} object.
-     * @param dataRepository a {@link java.lang.String} object.
-     * @param namingScheme a {@link java.lang.String} object.
-     * @return true if successful; false otherwise
-     * @throws java.lang.Exception if any.
-     */
-    @Deprecated
-    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String recordType, String dataRepository, String namingScheme)
-            throws Exception;
-
-    /**
      * Any clean-up the module might want to do when resetting the currently loaded record.
      *
      * @return true if successful; false otherwise
@@ -147,9 +141,12 @@ public interface IModule {
     public boolean augmentResetRecord();
 
     /**
-     * <p>getURLBuilder.</p>
+     * <p>
+     * getURLBuilder.
+     * </p>
      *
-     * @return the {@link io.goobi.viewer.modules.interfaces.IURLBuilder} for this module, if any. If this module should not alter url building, an empty optional should be returned
+     * @return the {@link io.goobi.viewer.modules.interfaces.IURLBuilder} for this module, if any. If this module should not alter url building, an
+     *         empty optional should be returned
      */
     default Optional<IURLBuilder> getURLBuilder() {
         return Optional.empty();

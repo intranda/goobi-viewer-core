@@ -22,16 +22,20 @@ import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.iiif.search.SearchHit;
 
 /**
- * <p>AnnotationResultList class.</p>
+ * <p>
+ * AnnotationResultList class.
+ * </p>
  */
 public class AnnotationResultList {
-    
+
     public long numHits;
     public final List<IAnnotation> annotations;
     public final List<SearchHit> hits;
 
     /**
-     * <p>Constructor for AnnotationResultList.</p>
+     * <p>
+     * Constructor for AnnotationResultList.
+     * </p>
      */
     public AnnotationResultList() {
         this.annotations = new ArrayList<>();
@@ -39,7 +43,9 @@ public class AnnotationResultList {
     }
 
     /**
-     * <p>add.</p>
+     * <p>
+     * add.
+     * </p>
      *
      * @param hit a {@link de.intranda.api.iiif.search.SearchHit} object.
      */
@@ -47,14 +53,16 @@ public class AnnotationResultList {
         numHits++;
         this.hits.add(hit);
         for (IAnnotation annotation : hit.getAnnotations()) {
-            if(!annotations.contains(annotation)) {
+            if (!annotations.contains(annotation)) {
                 annotations.add(annotation);
             }
-        } 
+        }
     }
 
     /**
-     * <p>add.</p>
+     * <p>
+     * add.
+     * </p>
      *
      * @param partialResults a {@link io.goobi.viewer.model.iiif.search.model.AnnotationResultList} object.
      */
@@ -65,7 +73,9 @@ public class AnnotationResultList {
     }
 
     /**
-     * <p>Constructor for AnnotationResultList.</p>
+     * <p>
+     * Constructor for AnnotationResultList.
+     * </p>
      *
      * @param numHits a long.
      * @param hits a {@link java.util.List} object.

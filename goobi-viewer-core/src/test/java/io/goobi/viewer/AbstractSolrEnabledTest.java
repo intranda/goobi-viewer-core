@@ -17,7 +17,7 @@ package io.goobi.viewer;
 
 import java.io.File;
 
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.core.CoreContainer;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -33,7 +33,10 @@ import io.goobi.viewer.controller.SolrSearchIndex;
  */
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
-    private static final String CORE_NAME = "test-viewer";
+    private static final String CORE_NAME = "test-viewer-2020";
+
+    protected static final String PI_KLEIUNIV = "PPN517154005";
+    protected static final long IDDOC_KLEIUNIV = 1578198745589L;
 
     private static String solrPath = "/opt/digiverso/viewer/apache-solr/";
     private static CoreContainer coreContainer;
@@ -55,7 +58,8 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, CORE_NAME);
+        // EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, CORE_NAME);
+        HttpSolrServer server = SolrSearchIndex.getNewHttpSolrServer();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
     }
 

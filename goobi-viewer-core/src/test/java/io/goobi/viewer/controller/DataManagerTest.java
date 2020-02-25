@@ -135,15 +135,6 @@ public class DataManagerTest {
             }
 
             /* (non-Javadoc)
-             * @see io.goobi.viewer.modules.IModule#augmentReIndexPage(java.lang.String, int, org.apache.solr.common.SolrDocument, java.lang.String, java.lang.String, java.lang.String)
-             */
-            @Override
-            public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String recordType, String dataRepository, String namingScheme)
-                    throws Exception {
-                return false;
-            }
-
-            /* (non-Javadoc)
              * @see io.goobi.viewer.modules.IModule#augmentResetRecord()
              */
             @Override

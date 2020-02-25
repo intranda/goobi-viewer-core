@@ -23,12 +23,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 /**
- * <p>ElementReference class.</p>
+ * <p>
+ * ElementReference class.
+ * </p>
  */
 @XmlRootElement
-@XmlType(propOrder={"id", "content", "coordinates"})
+@XmlType(propOrder = { "id", "content", "coordinates" })
 public class ElementReference {
 
     private final String id;
@@ -36,10 +37,10 @@ public class ElementReference {
     private String content;
     private int page;
 
-    
-    
     /**
-     * <p>Constructor for ElementReference.</p>
+     * <p>
+     * Constructor for ElementReference.
+     * </p>
      */
     public ElementReference() {
         super();
@@ -48,10 +49,10 @@ public class ElementReference {
         this.content = null;
     }
 
-
-
     /**
-     * <p>Constructor for ElementReference.</p>
+     * <p>
+     * Constructor for ElementReference.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @param coordinates a {@link java.awt.Rectangle} object.
@@ -65,7 +66,9 @@ public class ElementReference {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -75,7 +78,9 @@ public class ElementReference {
     }
 
     /**
-     * <p>Getter for the field <code>coordinates</code>.</p>
+     * <p>
+     * Getter for the field <code>coordinates</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -85,7 +90,9 @@ public class ElementReference {
     }
 
     /**
-     * <p>getCoordinatesAsRect.</p>
+     * <p>
+     * getCoordinatesAsRect.
+     * </p>
      *
      * @return a {@link java.awt.Rectangle} object.
      */
@@ -94,9 +101,10 @@ public class ElementReference {
         return coordinates;
     }
 
-
     /**
-     * <p>Setter for the field <code>coordinates</code>.</p>
+     * <p>
+     * Setter for the field <code>coordinates</code>.
+     * </p>
      *
      * @param coordinates a {@link java.awt.Rectangle} object.
      */
@@ -104,9 +112,10 @@ public class ElementReference {
         this.coordinates = coordinates;
     }
 
-
     /**
-     * <p>Getter for the field <code>content</code>.</p>
+     * <p>
+     * Getter for the field <code>content</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -115,10 +124,10 @@ public class ElementReference {
         return content;
     }
 
-
-
     /**
-     * <p>Setter for the field <code>content</code>.</p>
+     * <p>
+     * Setter for the field <code>content</code>.
+     * </p>
      *
      * @param content a {@link java.lang.String} object.
      */
@@ -127,16 +136,20 @@ public class ElementReference {
     }
 
     /**
-     * <p>Getter for the field <code>page</code>.</p>
+     * <p>
+     * Getter for the field <code>page</code>.
+     * </p>
      *
      * @return the pageNo
      */
     public int getPage() {
         return page;
     }
-    
+
     /**
-     * <p>Setter for the field <code>page</code>.</p>
+     * <p>
+     * Setter for the field <code>page</code>.
+     * </p>
      *
      * @param pageNo the pageNo to set
      */
@@ -144,13 +157,12 @@ public class ElementReference {
         this.page = pageNo;
     }
 
-
     /**
      * @param rect
      * @return A String representation of the rectangle in the form of x1,y1,x2,y2
      */
     private static String getAsString(Rectangle rect) {
-        return rect.getMinX() + ","  + rect.getMinY() + "," + rect.getMaxX() + ","  +rect.getMaxY();
+        return rect.getMinX() + "," + rect.getMinY() + "," + rect.getMaxX() + "," + rect.getMaxY();
     }
 
 }

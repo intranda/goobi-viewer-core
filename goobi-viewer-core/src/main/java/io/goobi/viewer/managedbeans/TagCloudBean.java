@@ -56,7 +56,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTagsAutor.</p>
+     * <p>
+     * getTagsAutor.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -70,7 +72,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTags.</p>
+     * <p>
+     * getTags.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -84,7 +88,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTagsSize.</p>
+     * <p>
+     * getTagsSize.
+     * </p>
      *
      * @return a int.
      */
@@ -93,7 +99,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTagsTitles.</p>
+     * <p>
+     * getTagsTitles.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -107,7 +115,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTagsPlaces.</p>
+     * <p>
+     * getTagsPlaces.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -121,7 +131,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTagsYears.</p>
+     * <p>
+     * getTagsYears.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -135,7 +147,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTagsPersons.</p>
+     * <p>
+     * getTagsPersons.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -149,7 +163,9 @@ public class TagCloudBean implements Serializable {
     }
 
     /**
-     * <p>getTags.</p>
+     * <p>
+     * getTags.
+     * </p>
      *
      * @param luceneField a {@link java.lang.String} object.
      * @param shuffle a boolean.

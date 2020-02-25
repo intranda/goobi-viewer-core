@@ -27,7 +27,9 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.Helper;
 
 /**
- * <p>CMSTitleValidator class.</p>
+ * <p>
+ * CMSTitleValidator class.
+ * </p>
  */
 @FacesValidator("cmsTitleValidator")
 public class CMSTitleValidator implements Validator {
@@ -46,7 +48,9 @@ public class CMSTitleValidator implements Validator {
     }
 
     /**
-     * <p>validate.</p>
+     * <p>
+     * validate.
+     * </p>
      *
      * @param s a {@link java.lang.String} object.
      * @return a boolean.

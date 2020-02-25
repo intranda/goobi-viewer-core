@@ -18,7 +18,9 @@ package io.goobi.viewer.model.misc;
 import java.util.Iterator;
 
 /**
- * <p>NumberIterator class.</p>
+ * <p>
+ * NumberIterator class.
+ * </p>
  */
 public class NumberIterator implements Iterator<Integer> {
 
@@ -45,7 +47,7 @@ public class NumberIterator implements Iterator<Integer> {
             return counter++;
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.util.Iterator#remove()
      */

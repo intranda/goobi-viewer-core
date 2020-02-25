@@ -37,7 +37,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>MetadataElement class.</p>
+ * <p>
+ * MetadataElement class.
+ * </p>
  */
 public class MetadataElement {
 
@@ -160,7 +162,9 @@ public class MetadataElement {
     private String selectedRecordLanguage;
 
     /**
-     * <p>Constructor for MetadataElement.</p>
+     * <p>
+     * Constructor for MetadataElement.
+     * </p>
      *
      * @param se {@link io.goobi.viewer.model.viewer.StructElement}
      * @param sessionLocale a {@link java.util.Locale} object.
@@ -192,9 +196,9 @@ public class MetadataElement {
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
-        
+
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            try {                
+            try {
                 if (!metadata.populate(se, sessionLocale)) {
                     continue;
                 }
@@ -205,7 +209,7 @@ public class MetadataElement {
                 } else {
                     metadataList.add(metadata);
                 }
-            } catch(Throwable e) {
+            } catch (Throwable e) {
                 logger.error("Error populating " + metadata.getLabel(), e);
             }
         }
@@ -342,7 +346,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>getMetadata.</p>
+     * <p>
+     * getMetadata.
+     * </p>
      *
      * @param fields a {@link java.util.List} object.
      * @return List of Metadata objects that match the given field names
@@ -364,7 +370,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Setter for the field <code>metadataList</code>.</p>
+     * <p>
+     * Setter for the field <code>metadataList</code>.
+     * </p>
      *
      * @param metadataList the metadataList to set
      */
@@ -373,7 +381,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>metadataList</code>.</p>
+     * <p>
+     * Getter for the field <code>metadataList</code>.
+     * </p>
      *
      * @return the oneMetadataList
      */
@@ -382,7 +392,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>hasMetadata.</p>
+     * <p>
+     * hasMetadata.
+     * </p>
      *
      * @return a boolean.
      */
@@ -394,7 +406,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>hasSidebarMetadata.</p>
+     * <p>
+     * hasSidebarMetadata.
+     * </p>
      *
      * @return a boolean.
      */
@@ -406,7 +420,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarMetadataList</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarMetadataList</code>.
+     * </p>
      *
      * @return the sidebarMetadataList
      */
@@ -415,7 +431,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Setter for the field <code>sidebarMetadataList</code>.</p>
+     * <p>
+     * Setter for the field <code>sidebarMetadataList</code>.
+     * </p>
      *
      * @param sidebarMetadataList the sidebarMetadataList to set
      */
@@ -424,7 +442,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>isHasSidebarMetadata.</p>
+     * <p>
+     * isHasSidebarMetadata.
+     * </p>
      *
      * @return a boolean.
      */
@@ -433,7 +453,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -445,7 +467,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Setter for the field <code>label</code>.</p>
+     * <p>
+     * Setter for the field <code>label</code>.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      */
@@ -453,7 +477,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>title</code>.</p>
+     * <p>
+     * Getter for the field <code>title</code>.
+     * </p>
      *
      * @return the title
      */
@@ -462,7 +488,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>url</code>.</p>
+     * <p>
+     * Getter for the field <code>url</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -471,7 +499,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Setter for the field <code>url</code>.</p>
+     * <p>
+     * Setter for the field <code>url</code>.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      */
@@ -489,7 +519,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>docType</code>.</p>
+     * <p>
+     * Getter for the field <code>docType</code>.
+     * </p>
      *
      * @return the docType
      */
@@ -498,7 +530,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>Getter for the field <code>docStructType</code>.</p>
+     * <p>
+     * Getter for the field <code>docStructType</code>.
+     * </p>
      *
      * @return the docStructType
      */
@@ -507,7 +541,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>isAnchor.</p>
+     * <p>
+     * isAnchor.
+     * </p>
      *
      * @return a boolean.
      */
@@ -516,7 +552,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>isFilesOnly.</p>
+     * <p>
+     * isFilesOnly.
+     * </p>
      *
      * @return a boolean.
      */
@@ -525,7 +563,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>getFirstMetadataValue.</p>
+     * <p>
+     * getFirstMetadataValue.
+     * </p>
      *
      * @param name The name of the metadata
      * @return the best available metadata value, or an empty string if no metadata was found
@@ -546,7 +586,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>getFirstMetadataValueIfExists.</p>
+     * <p>
+     * getFirstMetadataValueIfExists.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
@@ -560,7 +602,9 @@ public class MetadataElement {
     }
 
     /**
-     * <p>getFirstMetadataValue.</p>
+     * <p>
+     * getFirstMetadataValue.
+     * </p>
      *
      * @param prefix a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
@@ -574,9 +618,11 @@ public class MetadataElement {
         }
         return value;
     }
-    
+
     /**
-     * <p>Setter for the field <code>selectedRecordLanguage</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedRecordLanguage</code>.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      */

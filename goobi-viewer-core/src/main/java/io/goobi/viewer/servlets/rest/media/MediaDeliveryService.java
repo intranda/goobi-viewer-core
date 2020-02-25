@@ -39,7 +39,9 @@ import org.apache.commons.lang3.StringUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 /**
- * <p>MediaDeliveryService class.</p>
+ * <p>
+ * MediaDeliveryService class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -58,15 +60,14 @@ public class MediaDeliveryService {
      * @param mimeType a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public void processRequest(HttpServletRequest request, HttpServletResponse response, String filePath, String mimeType)
-            throws IOException {
+    public void processRequest(HttpServletRequest request, HttpServletResponse response, String filePath, String mimeType) throws IOException {
 
         if (filePath == null || mimeType == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-        } 
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         Path file = Paths.get(filePath);
-        
+
         // Check if file actually exists in filesystem.
         if (!Files.exists(file)) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -82,9 +83,9 @@ public class MediaDeliveryService {
         // Validate request headers for caching ---------------------------------------------------
 
         Optional<Integer> cachingResponseCode = getCachingResponse(request, lastModified, eTag);
-        if(cachingResponseCode.isPresent()) {        
+        if (cachingResponseCode.isPresent()) {
             Integer code = cachingResponseCode.get();
-            if(code.equals(HttpServletResponse.SC_NOT_MODIFIED)) {
+            if (code.equals(HttpServletResponse.SC_NOT_MODIFIED)) {
                 response.setHeader("ETag", eTag); // Required in 304.                
             }
             response.sendError(code);
@@ -93,9 +94,9 @@ public class MediaDeliveryService {
 
         // Validate and process range -------------------------------------------------------------
         List<Section> sections;
-        try {            
-           sections = getSections(request, response, length, lastModified, eTag);
-        } catch(IllegalRequestException e) {
+        try {
+            sections = getSections(request, response, length, lastModified, eTag);
+        } catch (IllegalRequestException e) {
             response.setHeader("Content-Range", "bytes */" + length); // Required in 416.
             response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
             return;
@@ -121,7 +122,7 @@ public class MediaDeliveryService {
             String accept = request.getHeader("Accept");
             disposition = accept != null && accepts(accept, contentType) ? "inline" : "attachment";
         }
-        if(acceptsGzip) {
+        if (acceptsGzip) {
             response.setHeader("Content-Encoding", "gzip");
         }
 
@@ -130,7 +131,9 @@ public class MediaDeliveryService {
 
         // Send requested file (part(s)) to client ------------------------------------------------
 
-        try(RandomAccessFile raf = new RandomAccessFile(file.toString(), "r"); FileChannel input = raf.getChannel(); OutputStream out = acceptsGzip ? new GZIPOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE) : response.getOutputStream(); WritableByteChannel output = Channels.newChannel(response.getOutputStream())) {
+        try (RandomAccessFile raf = new RandomAccessFile(file.toString(), "r"); FileChannel input = raf.getChannel();
+                OutputStream out = acceptsGzip ? new GZIPOutputStream(response.getOutputStream(), DEFAULT_BUFFER_SIZE) : response.getOutputStream();
+                WritableByteChannel output = Channels.newChannel(response.getOutputStream())) {
             // Open streams.
 
             if (sections.isEmpty()) {
@@ -140,14 +143,14 @@ public class MediaDeliveryService {
                 response.setContentType(contentType);
                 response.setHeader("Content-Range", "bytes " + sec.start + "-" + sec.end + "/" + sec.total);
 
-                        // Content length is not directly predictable in case of GZIP.
-                        // So only add it if there is no means of GZIP, else browser will hang.
-                    if(!acceptsGzip) {
-                        response.setHeader("Content-Length", String.valueOf(sec.length));
-                    }
+                // Content length is not directly predictable in case of GZIP.
+                // So only add it if there is no means of GZIP, else browser will hang.
+                if (!acceptsGzip) {
+                    response.setHeader("Content-Length", String.valueOf(sec.length));
+                }
 
-                    // Copy full range.
-                    copy(input, output, sec);
+                // Copy full range.
+                copy(input, output, sec);
 
             } else if (sections.size() == 1) {
 
@@ -165,36 +168,36 @@ public class MediaDeliveryService {
                 response.setContentType("multipart/byteranges; boundary=" + MULTIPART_BOUNDARY);
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
 
-                    // Cast back to ServletOutputStream to get the easy println methods.
-                    ServletOutputStream sos = (ServletOutputStream) response.getOutputStream();
-                    
-                    // Copy multi part range.
-                    for (Section sec : sections) {
-                        // Add multipart boundary and header fields for every range.
-                        sos.println();
-                        sos.println("--" + MULTIPART_BOUNDARY);
-                        sos.println("Content-Type: " + contentType);
-                        sos.println("Content-Range: bytes " + sec.start + "-" + sec.end + "/" + sec.total);
+                // Cast back to ServletOutputStream to get the easy println methods.
+                ServletOutputStream sos = (ServletOutputStream) response.getOutputStream();
 
-                        // Copy single part range of multi part range.
-                        copy(input, output, sec);
-                    }
-
-                    // End with multipart boundary.
+                // Copy multi part range.
+                for (Section sec : sections) {
+                    // Add multipart boundary and header fields for every range.
                     sos.println();
-                    sos.println("--" + MULTIPART_BOUNDARY + "--");
+                    sos.println("--" + MULTIPART_BOUNDARY);
+                    sos.println("Content-Type: " + contentType);
+                    sos.println("Content-Range: bytes " + sec.start + "-" + sec.end + "/" + sec.total);
+
+                    // Copy single part range of multi part range.
+                    copy(input, output, sec);
+                }
+
+                // End with multipart boundary.
+                sos.println();
+                sos.println("--" + MULTIPART_BOUNDARY + "--");
             }
         }
-}
+    }
 
     /**
      * @param input
      * @param output
      * @param sec
-     * @throws IOException 
+     * @throws IOException
      */
     private void copy(FileChannel input, WritableByteChannel output, Section sec) throws IOException {
-        
+
         input.transferTo(sec.start, sec.length, output);
 
     }
@@ -224,7 +227,7 @@ public class MediaDeliveryService {
      * @param eTag
      * @return
      * @throws IOException
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     private List<Section> getSections(HttpServletRequest request, HttpServletResponse response, long length, long lastModified, String eTag)
             throws IOException, IllegalRequestException {
@@ -283,8 +286,8 @@ public class MediaDeliveryService {
     }
 
     /**
-     * Returns a status code for a response indicating cached content
-     * If the return value is empty, the no caching can be achieved and the request needs to continue
+     * Returns a status code for a response indicating cached content If the return value is empty, the no caching can be achieved and the request
+     * needs to continue
      * 
      * @param request
      * @param response
@@ -319,10 +322,10 @@ public class MediaDeliveryService {
         if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified) {
             return Optional.of(HttpServletResponse.SC_PRECONDITION_FAILED);
         }
-        
+
         return Optional.empty();
     }
-    
+
     /**
      * Returns true if the given match header matches the given value.
      * 
@@ -335,7 +338,7 @@ public class MediaDeliveryService {
         Arrays.sort(matchValues);
         return Arrays.binarySearch(matchValues, toMatch) > -1 || Arrays.binarySearch(matchValues, "*") > -1;
     }
-    
+
     /**
      * Returns a substring of the given string value from the given begin index to the given end index as a long. If the substring is empty, then -1
      * will be returned
@@ -349,7 +352,7 @@ public class MediaDeliveryService {
         String substring = value.substring(beginIndex, endIndex);
         return (substring.length() > 0) ? Long.parseLong(substring) : -1;
     }
-    
+
     /**
      * Returns true if the given accept header accepts the given value.
      * 
@@ -363,7 +366,7 @@ public class MediaDeliveryService {
         return Arrays.binarySearch(acceptValues, toAccept) > -1 || Arrays.binarySearch(acceptValues, toAccept.replaceAll("/.*$", "/*")) > -1
                 || Arrays.binarySearch(acceptValues, "*/*") > -1;
     }
-    
+
     /**
      * A section within a byte array
      */
@@ -386,22 +389,23 @@ public class MediaDeliveryService {
             this.length = end - start + 1;
             this.total = total;
         }
-        
+
         /**
          * Creates a "full" section spanning the entire content
+         * 
          * @param total
          */
         public Section(long total) {
             this.start = 0;
-            this.end = total-1;
+            this.end = total - 1;
             this.length = total;
             this.total = total;
         }
-        
+
         public boolean isFull() {
             return this.length == this.total;
         }
 
     }
-    
+
 }

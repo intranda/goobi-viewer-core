@@ -41,12 +41,11 @@ import io.goobi.viewer.model.cms.tilegrid.TileGridBuilder;
 import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile.Priority;
 
 public class TileGridBuilderTest {
-    
+
     private static final String SERVLET_PATH = "http://localhost:8080/viewer/";
 
     private ThumbnailHandler thumbs;
 
-    
     /**
      * @throws java.lang.Exception
      */
@@ -65,7 +64,7 @@ public class TileGridBuilderTest {
 
     @Test
     public void testCountTags() {
-        List<String> itemTags = Arrays.asList(new String[] { "tag1", "tag2", "tag3", "other"});
+        List<String> itemTags = Arrays.asList(new String[] { "tag1", "tag2", "tag3", "other" });
         List<CMSCategory> categories = itemTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
         List<String> selectionTags = Arrays.asList(new String[] { "tag2", "tag3", "news" });
         List<CMSCategory> selectionCategories = selectionTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
@@ -75,16 +74,17 @@ public class TileGridBuilderTest {
 
     }
 
-	/**
-	 * Just create a temporary category to avoid having to set up the DAO
-	 * @param tag
-	 * @return
-	 * @throws DAOException
-	 */
-	private CMSCategory getCategory(String tag) {
-		CMSCategory cat = new CMSCategory(tag);
-		return cat;
-	}
+    /**
+     * Just create a temporary category to avoid having to set up the DAO
+     * 
+     * @param tag
+     * @return
+     * @throws DAOException
+     */
+    private CMSCategory getCategory(String tag) {
+        CMSCategory cat = new CMSCategory(tag);
+        return cat;
+    }
 
     @Test
     public void testBuild() {
@@ -129,7 +129,7 @@ public class TileGridBuilderTest {
      */
     private static boolean contains(List<Tile> items, CMSMediaItem mediaItem) {
         for (Tile tile : items) {
-            if (tile.getName().equals(mediaItem.getIconURI(0,0).toString())) {
+            if (tile.getName().equals(mediaItem.getIconURI(0, 0).toString())) {
                 return true;
             }
         }

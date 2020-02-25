@@ -60,8 +60,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      */
     @Test
     public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
-        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(), new HashSet<>(
-                Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
+        Assert.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(),
+                new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
     }
 
     /**
@@ -206,8 +206,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("type2");
 
-        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions, SolrConstants.PI_TOPSTRUCT
-                + ":PPN517154005");
+        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
+                SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("type2", ret.get(0).getName());
     }
@@ -239,8 +239,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         recordAccessConditions.add("type2");
         recordAccessConditions.add("type3");
 
-        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions, SolrConstants.PI_TOPSTRUCT
-                + ":PPN517154005");
+        List<LicenseType> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
+                SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals("type2", ret.get(0).getName());
         Assert.assertEquals("type3", ret.get(1).getName());
@@ -293,6 +293,24 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         {
             String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.xml");
             Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001.*", result[0]);
+            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies escape file name for wildcard search correctly
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
+        {
+            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1).xml");
+            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
+            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
+        }
+        {
+            String[] result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
+            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME, result[1]);
         }
     }

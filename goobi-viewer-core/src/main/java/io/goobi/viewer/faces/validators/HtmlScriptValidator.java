@@ -34,22 +34,21 @@ import io.goobi.viewer.controller.Helper;
 @FacesValidator("htmlScriptValidator")
 public class HtmlScriptValidator implements Validator<String> {
 
-
     /**
      * {@inheritDoc}
      *
-     * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag}  if {@link #validate(String)} returns false
+     * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {
-        if(!validate(input)) {
+        if (!validate(input)) {
             FacesMessage msg = new FacesMessage(Helper.getTranslation("validate_error_scriptTag", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }
-        
+
     }
-    
+
     /**
      * Returns false if the input string is not blank and does not contain the string {@code <script} (disregarding case)
      *

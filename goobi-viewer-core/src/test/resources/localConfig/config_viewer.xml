@@ -610,12 +610,6 @@
 	</metadata>
 
 	<toc>
-		<!-- DEPRECATED: Use <labelConfig> instead. If true, TOC element labels 
-			will always have their docstruct as a prefix, unless the label is just the 
-			docstruct (default is false) -->
-		<alwaysDisplayDocstruct>true</alwaysDisplayDocstruct>
-
-
 		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
 			thumbnails -->
 		<multiVolumeThumbnailsWidth>12</multiVolumeThumbnailsWidth>
