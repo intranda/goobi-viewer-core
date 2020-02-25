@@ -1105,6 +1105,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return this.collection;
     }
 
+    
+    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+        return initializeCollection(null);
+    }
+    
     /**
      * Creates a collection view object from the item's collection related properties
      *
@@ -1112,11 +1117,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+    public CollectionView initializeCollection(String subThemeDiscriminatorValue) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
-        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getSearchPrefix());
+        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getFilterQuery(subThemeDiscriminatorValue));
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
@@ -1129,6 +1134,22 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
+     * @param subThemeDiscriminatorValue
+     * @return
+     */
+    private String getFilterQuery(String subThemeDiscriminatorValue) {
+        String searchPrefix = getSearchPrefix();
+        if(StringUtils.isNoneBlank(subThemeDiscriminatorValue, searchPrefix)) {
+            String filter = "(" + searchPrefix + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
+            return filter;
+        }else if(StringUtils.isNotBlank(subThemeDiscriminatorValue)) {
+            return DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
+        } else {
+            return searchPrefix;
+        }
+    }
+
+    /**
      * Adds a CollecitonView object for the given field to the map and populates its values.
      *
      * @param collectionField
@@ -1138,7 +1159,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
-
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
                 Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
