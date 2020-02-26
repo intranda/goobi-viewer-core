@@ -1010,11 +1010,13 @@ public class CollectionView {
      * @param info The info to apply
      */
     public void setCollectionInfo(String name, BrowseElementInfo info) {
-        completeCollectionList.stream()
-                .flatMap(ele -> ele.getAllDescendents(true).stream())
-                .filter(ele -> ele.getName().equals(name))
-                .findFirst()
-                .ifPresent(ele -> ele.setInfo(info));
+        if(completeCollectionList != null) {            
+            completeCollectionList.stream()
+            .flatMap(ele -> ele.getAllDescendents(true).stream())
+            .filter(ele -> ele.getName().equals(name))
+            .findFirst()
+            .ifPresent(ele -> ele.setInfo(info));
+        }
     }
 
     /**
@@ -1024,11 +1026,13 @@ public class CollectionView {
      * @param name The collection name
      */
     public void removeCollectionInfo(String name) {
-        completeCollectionList.stream()
-                .flatMap(ele -> ele.getAllDescendents(true).stream())
-                .filter(ele -> ele.getName().equals(name))
-                .findFirst()
-                .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+        if(completeCollectionList != null) {            
+            completeCollectionList.stream()
+            .flatMap(ele -> ele.getAllDescendents(true).stream())
+            .filter(ele -> ele.getName().equals(name))
+            .findFirst()
+            .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+        }
     }
 
     /**
