@@ -403,6 +403,7 @@ public class ALTOTools {
      * @param rotation Image rotation in degrees
      * @return a {@link java.util.List} object.
      * @should match hyphenated words
+     * @should match phrases
      */
     public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation) {
         if (altoString == null) {
