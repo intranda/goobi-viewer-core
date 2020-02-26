@@ -163,6 +163,9 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
+        Assert.assertNotNull("Converter is null", converter);
+        Assert.assertNotNull("Alto doc is null", doc);
+
         AnnotationResultList results = converter.getAnnotationsFromAlto(doc, queryRegex);
         Assert.assertEquals(9, results.hits.size());
 

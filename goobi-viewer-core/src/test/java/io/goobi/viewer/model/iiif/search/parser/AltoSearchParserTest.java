@@ -63,6 +63,8 @@ public class AltoSearchParserTest {
         String regex = parser.getQueryRegex(query);
         List<Word> words =
                 doc.getFirstPage().getAllWordsAsList().stream().filter(l -> l instanceof Word).map(l -> (Word) l).collect(Collectors.toList());
+        Assert.assertFalse("No words found in " + altoFile, words == null || words.isEmpty());
+        Assert.assertNotNull("AltoSearchParser is not initialized", parser);
         List<List<Word>> hits = parser.findWordMatches(words, regex);
 
         //        for (List<Word> hit : hits) {
