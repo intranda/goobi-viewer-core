@@ -261,7 +261,7 @@
 										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
 											<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
 												<div class="row">
-													<div class="col-xs-12 col-sm-9 col-md-10">
+													<div class="col-xs-12 col-sm-8 col-md-9">
 														<!-- TITLE -->
 														<div class="toc__list-full-title">
 															<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
@@ -272,7 +272,7 @@
 															</h:outputLink>
 														</div>
 													</div>
-													<div class="col-xs-12 col-sm-3 col-md-2">
+													<div class="col-xs-12 col-sm-4 col-md-3">
 														<!-- NUMBER -->
 														<div class="toc__list-full-number text-right">
 															<ul>
