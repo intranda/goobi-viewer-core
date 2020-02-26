@@ -839,7 +839,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSubthemeDiscriminatorField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("discriminatorField_value", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     /**

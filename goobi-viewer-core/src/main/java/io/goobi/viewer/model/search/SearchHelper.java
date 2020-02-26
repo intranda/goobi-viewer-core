@@ -663,7 +663,7 @@ public final class SearchHelper {
     public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
-        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true, BeanUtils.getNavigationHelper()));
+        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
         return DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
@@ -741,7 +741,7 @@ public final class SearchHelper {
                     logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
             }
-            sbQuery.append(getAllSuffixes(true, BeanUtils.getNavigationHelper()));
+            sbQuery.append(getAllSuffixes(true));
             logger.debug("Autocomplete query: {}", sbQuery.toString());
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
@@ -2081,6 +2081,7 @@ public final class SearchHelper {
         return sbQuery.toString();
     }
 
+    
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
@@ -2091,6 +2092,19 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
+        return buildFinalQuery(rawQuery, aggregateHits, BeanUtils.getNavigationHelper());
+    }
+    
+    /**
+     * Constructs the complete query using the raw query and adding all available suffixes.
+     *
+     * @param rawQuery a {@link java.lang.String} object.
+     * @param aggregateHits a boolean.
+     * @should add join statement if aggregateHits true
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, NavigationHelper nh) throws IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
         if (aggregateHits) {
             sbQuery.append("{!join from=PI_TOPSTRUCT to=PI}");
@@ -2098,7 +2112,7 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
-        String suffixes = getAllSuffixes(true);
+        String suffixes = getAllSuffixes(true, nh);
         if(StringUtils.isNotBlank(suffixes)) {            
            sbQuery.append(suffixes);
         }
