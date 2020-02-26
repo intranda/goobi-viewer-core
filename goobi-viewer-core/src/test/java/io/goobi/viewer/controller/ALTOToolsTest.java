@@ -91,17 +91,17 @@ public class ALTOToolsTest extends AbstractTest {
     @Test
     public void testGetWordCoords() throws IOException {
         File testFile = new File("src/test/resources/data/sample_alto.xml");
-        String searchTerms = "105";
+        String searchTerms = "hinauf";
         int rotation = 0;
 
         String altoString = FileUtils.readFileToString(testFile, "UTF-8");
         List<String> coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms), rotation);
         Assert.assertFalse(coords.isEmpty());
-        Assert.assertEquals("1740,2645,1794,2673", coords.get(0));
+        Assert.assertEquals("1133,2549,1263,2584", coords.get(0));
 
         coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms + " puh bear"), rotation);
         Assert.assertFalse(coords.isEmpty());
-        Assert.assertEquals("1740,2645,1794,2673", coords.get(0));
+        Assert.assertEquals("1133,2549,1263,2584", coords.get(0));
 
         Set<String> terms = new LinkedHashSet<>();
         terms.add("Santa");
