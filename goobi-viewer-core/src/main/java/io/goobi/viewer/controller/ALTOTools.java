@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -662,8 +663,9 @@ public class ALTOTools {
             }
             return hitCount;
         }
-        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase());
-        if (content.trim().toLowerCase().startsWith(word)) {
+        String word = Normalizer.normalize(words[0].toLowerCase(), Normalizer.Form.NFD);
+        String contentString = Normalizer.normalize(content.trim().toLowerCase(), Normalizer.Form.NFD);
+        if (contentString.startsWith(word)) {
             return 1;
         }
 
