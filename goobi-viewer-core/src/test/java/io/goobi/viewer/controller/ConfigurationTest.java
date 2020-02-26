@@ -1587,9 +1587,9 @@ public class ConfigurationTest extends AbstractTest {
         List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("DC", result.get(0));
-        Assert.assertEquals("FIELD1", result.get(1));
-        Assert.assertEquals("FIELD3", result.get(2));
-        Assert.assertEquals("FIELD2", result.get(3));
+        Assert.assertEquals("YEAR", result.get(1));
+        Assert.assertEquals("MD_CREATOR", result.get(2));
+        Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
     }
 
     /**
@@ -1617,7 +1617,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(SolrConstants.DC));
-        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD2"));
+        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("MD_PLACEPUBLISH"));
         Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
     }
 
@@ -1627,7 +1627,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
-        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("YEAR"));
     }
 
     /**
@@ -1636,7 +1636,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("FIELD2");
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("MD_PLACEPUBLISH");
         Assert.assertNotNull(result);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("val1", result.get(0));
@@ -1659,9 +1659,9 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void getSortOrderTest() {
-        Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("FIELD1"));
-        Assert.assertEquals("default", DataManager.getInstance().getConfiguration().getSortOrder("FIELD2"));
-        Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("FIELD3"));
+        Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("YEAR"));
+        Assert.assertEquals("default", DataManager.getInstance().getConfiguration().getSortOrder("MD_PLACEPUBLISH"));
+        Assert.assertEquals("alphabetical", DataManager.getInstance().getConfiguration().getSortOrder("MD_CREATOR"));
     }
 
     /**
@@ -1697,7 +1697,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getStaticQuerySuffix_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("AND -BOOL_HIDE:true", DataManager.getInstance().getConfiguration().getStaticQuerySuffix());
+        Assert.assertEquals("-BOOL_HIDE:true", DataManager.getInstance().getConfiguration().getStaticQuerySuffix());
     }
 
     /**

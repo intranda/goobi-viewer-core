@@ -606,7 +606,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, true, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, null, true, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -617,7 +617,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, false, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, null, false, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -629,7 +629,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
 
-        String suffix = SearchHelper.getAllSuffixes(false);
+        String suffix = SearchHelper.getAllSuffixes(false, null);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }

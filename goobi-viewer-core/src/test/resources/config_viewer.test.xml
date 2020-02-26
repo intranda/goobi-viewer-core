@@ -382,9 +382,9 @@
 		</sorting>
 		<drillDown>
 			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
-			<field sortOrder="numerical">FIELD1</field>
-			<hierarchicalField sortOrder="numerical">FIELD3</hierarchicalField>
-			<field initialElementNumber="16" priorityValues="val1;val2;val3">FIELD2</field>
+			<field sortOrder="numerical">YEAR</field>
+			<hierarchicalField sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
+			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
@@ -460,7 +460,7 @@
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
-		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
         <docstrctWhitelistFilterQuery>ISWORK:true OR ISANCHOR:true</docstrctWhitelistFilterQuery>
