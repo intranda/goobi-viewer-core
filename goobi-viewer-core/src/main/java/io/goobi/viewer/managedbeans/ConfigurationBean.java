@@ -1362,6 +1362,14 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @return number of allowed metadata parameters for metadata configuration
+     */
+    public int getMetadataParamNumber() {
+        return DataManager.getInstance().getConfiguration().getMetadataParamNumber(); 
+    }
+
+    /**
      * <p>
      * isDisplayWidgetUsage.
      * </p>

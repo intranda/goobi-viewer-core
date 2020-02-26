@@ -100,7 +100,7 @@
                                                     <ui:repeat var="val" value="#{browseElementMetadata.values}">
                                                         <h:outputFormat value="#{msg[val.masterValue]}" escape="false" rendered="#{!browseElementMetadata.blank}"
                                                             styleClass="search-list__hit-text-value">
-                                                            <c:forEach begin="0" end="19" var="ind">
+                                                            <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                                 <f:param value="#{val.getComboValueShort(ind)}" />
                                                             </c:forEach>
                                                         </h:outputFormat>
