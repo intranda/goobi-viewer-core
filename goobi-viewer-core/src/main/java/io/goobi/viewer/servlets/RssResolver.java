@@ -105,7 +105,7 @@ public class RssResolver extends HttpServlet {
                 SyndFeedOutput output = new SyndFeedOutput();
                 output.output(
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
-                                query + SearchHelper.getAllSuffixes(request, true, true,
+                                query + SearchHelper.getAllSuffixes(request, null, true, true,
                                         DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()),
                                 null, language),
                         new OutputStreamWriter(response.getOutputStream(), "utf-8"));

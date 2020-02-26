@@ -49,6 +49,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.calendar.CalendarItemDay;
 import io.goobi.viewer.model.calendar.CalendarItemMonth;
 import io.goobi.viewer.model.calendar.CalendarItemWeek;
@@ -725,7 +726,7 @@ public class CalendarBean implements Serializable {
             } else {
                 sbSearchString.append(SolrConstants._CALENDAR_DAY).append(":*").append(docstructFilterQuery);
             }
-            sbSearchString.append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+            sbSearchString.append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), BeanUtils.getNavigationHelper()));
 
             logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
             QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);

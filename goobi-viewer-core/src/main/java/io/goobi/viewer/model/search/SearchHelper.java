@@ -284,7 +284,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+    public static String getAllSuffixes(HttpServletRequest request, NavigationHelper navigationHelper, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
             boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
@@ -301,7 +301,7 @@ public final class SearchHelper {
             }
         }
         if (addDiscriminatorValueSuffix) {
-            sbSuffix.append(getDiscriminatorFieldFilterSuffix(BeanUtils.getNavigationHelper(),
+            sbSuffix.append(getDiscriminatorFieldFilterSuffix(navigationHelper,
                     DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField()));
         }
         String filterQuerySuffix = getFilterQuerySuffix(request);
@@ -312,7 +312,7 @@ public final class SearchHelper {
 
         return sbSuffix.toString();
     }
-
+    
     /**
      * Returns all suffixes relevant to search filtering.
      *
@@ -321,7 +321,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, true, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(null, BeanUtils.getNavigationHelper(), true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -331,8 +331,19 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, true, false, addDiscriminatorValueSuffix);
+    public static String getAllSuffixes(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper) throws IndexUnreachableException {
+        return getAllSuffixes(null, navigationHelper, true, true, addDiscriminatorValueSuffix);
+    }
+
+    /**
+     * Returns all suffixes relevant to search filtering.
+     *
+     * @param addDiscriminatorValueSuffix a boolean.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper) throws IndexUnreachableException {
+        return getAllSuffixes(null, navigationHelper, true, false, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -396,7 +407,7 @@ public final class SearchHelper {
             }
             sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
-        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
+        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
         sbQuery.append(" AND (")
                 .append(luceneField)
                 .append(":")
@@ -485,7 +496,7 @@ public final class SearchHelper {
                 }
                 sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
             }
-            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
+            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
             Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
                 String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -652,7 +663,7 @@ public final class SearchHelper {
     public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
-        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
+        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true, BeanUtils.getNavigationHelper()));
         return DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
@@ -730,7 +741,7 @@ public final class SearchHelper {
                     logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
             }
-            sbQuery.append(getAllSuffixes(true));
+            sbQuery.append(getAllSuffixes(true, BeanUtils.getNavigationHelper()));
             logger.debug("Autocomplete query: {}", sbQuery.toString());
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()

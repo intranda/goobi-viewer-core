@@ -375,7 +375,7 @@ public class RssResource {
 
         if (addSuffixes) {
             sbQuery.append(
-                    SearchHelper.getAllSuffixes(servletRequest, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+                    SearchHelper.getAllSuffixes(servletRequest, null, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
         }
 
         return sbQuery.toString();
