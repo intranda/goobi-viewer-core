@@ -834,7 +834,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, searchTerms, rotation, getImageFooterHeight());
+            return ALTOTools.getWordCoords(altoText, searchTerms, rotation);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 

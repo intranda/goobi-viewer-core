@@ -36,10 +36,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.ALTOTools;
-import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.AbstractTest;
 
-public class ALTOToolsTest {
+public class ALTOToolsTest extends AbstractTest {
 
     /**
      * @throws java.lang.Exception
@@ -94,14 +93,13 @@ public class ALTOToolsTest {
         File testFile = new File("src/test/resources/data/sample_alto.xml");
         String searchTerms = "105";
         int rotation = 0;
-        int imageFooterHeight = 0;
 
         String altoString = FileUtils.readFileToString(testFile, "UTF-8");
-        List<String> coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms), rotation, imageFooterHeight);
+        List<String> coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms), rotation);
         Assert.assertFalse(coords.isEmpty());
         Assert.assertEquals("1740,2645,1794,2673", coords.get(0));
 
-        coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms + " puh bear"), rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms + " puh bear"), rotation);
         Assert.assertFalse(coords.isEmpty());
         Assert.assertEquals("1740,2645,1794,2673", coords.get(0));
 
@@ -109,19 +107,19 @@ public class ALTOToolsTest {
         terms.add("Santa");
         terms.add("Monica.");
         terms.add("puh");
-        coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, terms, rotation);
         Assert.assertTrue(coords.size() == 2);
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica.");
-        coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, terms, rotation);
         Assert.assertTrue(coords.size() == 2);
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica. puh");
-        coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, terms, rotation);
         Assert.assertTrue(coords.size() == 0);
     }
 
@@ -131,15 +129,15 @@ public class ALTOToolsTest {
      */
     @Test
     public void alto2Txt_shouldUseExtractFulltextCorrectly() throws Exception {
-            File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
-            Assert.assertTrue(file.isFile());
-            String alto = FileTools.getStringFromFile(file, "utf-8");
-            Assert.assertNotNull(alto);
-            String text = ALTOTools.alto2Txt(alto, false, null);
-            Assert.assertNotNull(text);
-            Assert.assertTrue(text.length() > 100);
+        File file = new File("src/test/resources/data/viewer/alto/LIWZ_1877_01_05_001.xml");
+        Assert.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, "utf-8");
+        Assert.assertNotNull(alto);
+        String text = ALTOTools.alto2Txt(alto, false, null);
+        Assert.assertNotNull(text);
+        Assert.assertTrue(text.length() > 100);
     }
-    
+
     /**
      * @see ALTOTools#alto2Txt(String,boolean,HttpServletRequest)
      * @verifies concatenate word at line break correctly
@@ -155,7 +153,6 @@ public class ALTOToolsTest {
         Assert.assertTrue(text.contains("Wappen"));
     }
 
-
     /**
      * @see ALTOTools#getFullText(String,HttpServletRequest)
      * @verifies extract fulltext correctly
@@ -169,5 +166,18 @@ public class ALTOToolsTest {
         String text = ALTOTools.getFullText(alto, true, null);
         Assert.assertNotNull(text);
         Assert.assertTrue(text.length() > 100);
+    }
+
+    /**
+     * @see ALTOTools#getWordCoords(String,Set,int,int)
+     * @verifies match hyphenated words
+     */
+    @Test
+    public void getWordCoords_shouldMatchHyphenatedWords() throws Exception {
+        File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
+        Assert.assertTrue(file.isFile());
+        String altoString = FileTools.getStringFromFile(file, "utf-8");
+        List<String> result = ALTOTools.getWordCoords(altoString, Collections.singletonMap("wappen", null).keySet(), 0);
+        Assert.assertFalse(result.isEmpty());
     }
 }
