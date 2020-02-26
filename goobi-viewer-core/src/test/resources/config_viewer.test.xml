@@ -325,7 +325,7 @@
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="true" mainTheme="mainTheme_value"
-			discriminatorField="discriminatorField_value" autoSwitch="true"
+			discriminatorField="FACET_VIEWERSUBTHEME" autoSwitch="true"
 			addFilterQuery="true" filterQueryVisible="true">
             <!-- rootPath: If the theme is localed externally, the CMS template loading
                  mechanism needs the root path of the theme. The path must be defined down

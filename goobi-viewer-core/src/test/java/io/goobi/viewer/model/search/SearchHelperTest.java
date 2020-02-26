@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,12 +41,9 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.model.search.BrowseElement;
-import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.SearchHit;
-import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
@@ -538,7 +536,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("val");
-        Assert.assertEquals(" AND fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
+        Assert.assertEquals(" +fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
     }
 
     /**
@@ -1080,5 +1078,27 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void normalizeString_shouldPreserveHebrewChars() throws Exception {
         Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
+    }
+    
+    /**
+     * Verify that a search for 'DC:dctei' yields 65 results overall, and 4 results within 'FACET_VIEWERSUBTHEME:subtheme1'
+     * This also checks that the queries built by {@link SearchHelper#buildFinalQuery(String, boolean, NavigationHelper)} are valid SOLR queries
+     * 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    @Test
+    public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
+        NavigationHelper nh = new NavigationHelper();
+        String query = "DC:dctei";
+        
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
+        Assert.assertEquals(65, docs.size()); 
+        
+        nh.setSubThemeDiscriminatorValue("subtheme1");
+        finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
+        Assert.assertEquals(4, docs.size()); 
     }
 }
