@@ -490,7 +490,6 @@ public final class SolrSearchIndex {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    @SuppressWarnings("unchecked")
     public List<Tag> generateFilteredTagCloud(String fieldName, String querySuffix) throws IndexUnreachableException {
         List<Tag> tags = new ArrayList<>();
 
@@ -533,7 +532,7 @@ public final class SolrSearchIndex {
 
             // Cutoff
             float topTermCutoff = 0.02F;
-            Collections.sort(termlist, new ReverseComparator(new TermWeightComparator(frequencyMap)));
+            Collections.sort(termlist, new ReverseComparator<>(new TermWeightComparator(frequencyMap)));
             float topFreq = -1.0F;
             for (String term : termlist) {
                 if (topFreq < 0.0F) {

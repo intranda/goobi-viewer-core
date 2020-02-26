@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
@@ -366,7 +367,7 @@ public class ALTOTools {
      * @return a {@link java.util.List} object.
      */
     public static List<String> getWordCoords(String altoString, Set<String> searchTerms) {
-        return getWordCoords(altoString, searchTerms, 0, 0);
+        return getWordCoords(altoString, searchTerms, 0);
     }
 
     /**
@@ -397,14 +398,13 @@ public class ALTOTools {
     /**
      * TODO Re-implement using stream
      *
-     * @param searchTerms a {@link java.util.Set} object.
-     * @should throw IllegalArgumentException if altoDoc is null
-     * @param altoString a {@link java.lang.String} object.
-     * @param rotation a int.
-     * @param imageFooterHeight a int.
+     * @param altoString String containing the ALTO XML document
+     * @param searchTerms Set of search terms
+     * @param rotation Image rotation in degrees
      * @return a {@link java.util.List} object.
+     * @should match hyphenated words
      */
-    public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation, int imageFooterHeight) {
+    public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation) {
         if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
         }
@@ -414,6 +414,7 @@ public class ALTOTools {
             AltoDocument document = AltoDocument.getDocumentFromString(altoString);
             HyphenationLinker linker = new HyphenationLinker();
             linker.linkWords(document);
+
             Page page = document.getFirstPage();
             List<Line> lines = page.getAllLinesAsList();
             for (Line line : lines) {
@@ -610,9 +611,12 @@ public class ALTOTools {
      *
      * @param eleWord a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param words an array of {@link java.lang.String} objects.
-     * @return a int.
+     * @return 1 if there is a match; 0 otherwise
      */
     public static int getMatchALTOWord(Word eleWord, String[] words) {
+        if (eleWord == null) {
+            throw new IllegalArgumentException("eleWord may not be null");
+        }
         if (words == null || words.length == 0) {
             return 0;
         }
@@ -621,15 +625,13 @@ public class ALTOTools {
         String content = eleWord.getContent();
         // Normalize (remove diacritical marks)
         content = StringTools.removeDiacriticalMarks(content);
-        // Clean up leading non-alphanumeric characters so that matching
-        // works
+        // Clean up leading non-alphanumeric characters so that matching works
         while (content.length() > 0 && !StringUtils.isAlphanumeric(content.substring(0, 1))) {
             content = content.substring(1);
         }
-        // replace content with complete content of hyphenated word if
-        // applicable
+        // replace content with complete content of hyphenated word if applicable
         if (content.matches("\\S+")) {
-            String subsContent = eleWord.getAttributeValue("SUBS_CONTENT");
+            String subsContent = eleWord.getSubsContent();
             if (subsContent != null && !subsContent.isEmpty()) {
                 content = subsContent;
             }
