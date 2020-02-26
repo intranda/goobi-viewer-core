@@ -663,9 +663,10 @@ public class ALTOTools {
             }
             return hitCount;
         }
-        String word = Normalizer.normalize(words[0].toLowerCase(), Normalizer.Form.NFD);
-        String contentString = Normalizer.normalize(content.trim().toLowerCase(), Normalizer.Form.NFD);
-        if (contentString.startsWith(word)) {
+        //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
+        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
+        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
+        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
             return 1;
         }
 
