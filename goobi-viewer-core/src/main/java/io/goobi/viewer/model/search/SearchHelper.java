@@ -2086,10 +2086,10 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
-        sbQuery.append('(').append(rawQuery).append(')');
+        sbQuery.append("+(").append(rawQuery).append(")");
         String suffixes = getAllSuffixes(true);
         if(StringUtils.isNotBlank(suffixes)) {            
-           sbQuery.append(" AND (") .append(suffixes).append(")");
+           sbQuery.append(suffixes);
         }
         return sbQuery.toString();
     }
