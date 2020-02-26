@@ -286,7 +286,7 @@ public final class SearchHelper {
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
             boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        StringBuilder sbSuffix = new StringBuilder();
+        StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
             if (staticSuffix.charAt(0) != ' ') {
@@ -837,7 +837,7 @@ public final class SearchHelper {
             logger.trace("discriminatorValue: {}", discriminatorValue);
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 StringBuilder sbSuffix = new StringBuilder();
-                sbSuffix.append(" AND ").append(discriminatorField).append(':').append(discriminatorValue);
+                sbSuffix.append(" +").append(discriminatorField).append(':').append(discriminatorValue);
                 logger.trace("Discriminator field suffix: {}", sbSuffix.toString());
                 return sbSuffix.toString();
             }
@@ -2086,7 +2086,11 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
-        sbQuery.append('(').append(rawQuery).append(')').append(getAllSuffixes(true));
+        sbQuery.append('(').append(rawQuery).append(')');
+        String suffixes = getAllSuffixes(true);
+        if(StringUtils.isNotBlank(suffixes)) {            
+           sbQuery.append(" AND (") .append(suffixes).append(")");
+        }
         return sbQuery.toString();
     }
 
