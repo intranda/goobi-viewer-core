@@ -1440,18 +1440,18 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getNextElement: {}", currentHitIndex);
-        if (currentHitIndex > -1 && currentSearch != null) {
-            if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-                return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
-                        facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
-            }
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+        if (currentHitIndex <= -1 || currentSearch == null) {
+            return null;
+        }
+
+        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
-
-        return null;
+        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
     }
 
     /**
@@ -1465,16 +1465,18 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPreviousElement: {}", currentHitIndex);
-        if (currentHitIndex > -1 && currentSearch != null) {
-            if (currentHitIndex > 0) {
-                return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
-                        facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
-            } else if (currentSearch.getHitsCount() > 0) {
-                return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
-                        facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
-            }
+        if (currentHitIndex <= -1 || currentSearch == null) {
+            return null;
+        }
+        
+        if (currentHitIndex > 0) {
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+        } else if (currentSearch.getHitsCount() > 0) {
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
 
         return null;
@@ -2326,7 +2328,8 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<FacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
-        sbQuery.append(SearchHelper.ALL_RECORDS_QUERY).append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, true));
+        sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, true));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {

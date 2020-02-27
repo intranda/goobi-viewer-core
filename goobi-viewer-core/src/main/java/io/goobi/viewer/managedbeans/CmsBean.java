@@ -1029,7 +1029,7 @@ public class CmsBean implements Serializable {
     public List<CMSNavigationItem> getNavigationMenuItems() {
         try {
             String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-            String currentTheme =  Optional.ofNullable(getCurrentPage())
+            String currentTheme = Optional.ofNullable(getCurrentPage())
                     .map(CMSPage::getSubThemeDiscriminatorValue)
                     .orElse(BeanUtils.getNavigationHelper().getTheme());
             List<CMSNavigationItem> items = DataManager.getInstance()
@@ -1436,16 +1436,23 @@ public class CmsBean implements Serializable {
     public String cmsContextAction(boolean resetSearch)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("cmsContextAction: {}", resetSearch);
-        if (currentPage != null) {
-            List<CMSContentItem> contentItems = currentPage.getGlobalContentItems();
-            for (CMSContentItem item : contentItems) {
-                if (item != null && CMSContentItemType.SOLRQUERY.equals(item.getType())) {
+        if (currentPage == null) {
+            return "";
+        }
+
+        List<CMSContentItem> contentItems = currentPage.getGlobalContentItems();
+        for (CMSContentItem item : contentItems) {
+            if (item == null || item.getType() == null) {
+                continue;
+            }
+            switch (item.getType()) {
+                case SOLRQUERY:
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
+                        searchBean.setExactSearchString(item.getSolrQuery());
                     }
                     return searchAction(item);
-                } else if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
-                    //                    setSearchType();
+                case SEARCH:
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
                         searchBean.setActiveSearchType(item.getSearchType());
@@ -1455,30 +1462,34 @@ public class CmsBean implements Serializable {
                         return searchAction(item);
                     } else if (item.isDisplayEmptySearchResults()) {
                         String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
+                        searchBean.setSearchString(item.getSolrQuery());
                         searchBean.setExactSearchString(searchString);
                         searchBean.setShowReducedSearchOptions(false);
                         return searchAction(item);
                     } else {
                         searchBean.setShowReducedSearchOptions(false);
                     }
-                } else if (item != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
+                    break;
+                case COLLECTION:
                     getCollection(item.getItemId(), currentPage).reset(true);
-                }
+                    break;
+                default:
+                    break;
             }
+        }
 
-            // If the page is related to a record, load that record
-            if (StringUtils.isNotEmpty(currentPage.getRelatedPI())) {
-                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                if (adb != null && !currentPage.getRelatedPI().equals(adb.getPersistentIdentifier())) {
-                    logger.trace("Loading related record: {}", currentPage.getRelatedPI());
-                    try {
-                        adb.setPersistentIdentifier(currentPage.getRelatedPI());
-                        adb.update();
-                    } catch (RecordNotFoundException e) {
-                        logger.warn(e.getMessage());
-                    } catch (RecordDeletedException e) {
-                        logger.warn(e.getMessage());
-                    }
+        // If the page is related to a record, load that record
+        if (StringUtils.isNotEmpty(currentPage.getRelatedPI())) {
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null && !currentPage.getRelatedPI().equals(adb.getPersistentIdentifier())) {
+                logger.trace("Loading related record: {}", currentPage.getRelatedPI());
+                try {
+                    adb.setPersistentIdentifier(currentPage.getRelatedPI());
+                    adb.update();
+                } catch (RecordNotFoundException e) {
+                    logger.warn(e.getMessage());
+                } catch (RecordDeletedException e) {
+                    logger.warn(e.getMessage());
                 }
             }
         }
