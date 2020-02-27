@@ -171,6 +171,10 @@
 					<groupId>com.fasterxml.jackson.dataformat</groupId>
 					<artifactId>*</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.lowagie</groupId>
+					<artifactId>itext</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
