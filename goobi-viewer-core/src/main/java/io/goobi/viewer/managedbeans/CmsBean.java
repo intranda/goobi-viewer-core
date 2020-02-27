@@ -43,11 +43,6 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.TimeAnalysis;
-import de.intranda.monitoring.timer.TimeAnalysisItem;
-import de.intranda.monitoring.timer.Timer;
-import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
@@ -1556,18 +1551,18 @@ public class CmsBean implements Serializable {
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
 
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
-            search.setQuery("+(" + item.getSolrQuery() + ") +(ISWORK:* ISANCHOR:*)");
+            //            search.setQuery("+(" + item.getSolrQuery() + ") +(ISWORK:* ISANCHOR:*)");
+            search.setQuery(item.getSolrQuery());
             if (StringUtils.isNotBlank(searchBean.getSortString().replace("-", ""))) {
                 search.setSortString(searchBean.getSortString());
             } else if (StringUtils.isNotBlank(item.getSolrSortFields())) {
                 search.setSortString(item.getSolrSortFields());
+                searchBean.setSortString(item.getSolrSortFields());
             }
             SearchFacets facets = searchBean.getFacets();
-            String sortString = searchBean.getSortString();
             search.setPage(searchBean.getCurrentPage());
-            search.execute(facets, null, item.getElementsPerPage(), 0, null);
+            search.execute(facets, null, item.getElementsPerPage(), 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
             searchBean.setCurrentSearch(search);
-            String newSortString = searchBean.getSortString();
             return null;
         } else if (item == null) {
             logger.error("Cannot search: item is null");
