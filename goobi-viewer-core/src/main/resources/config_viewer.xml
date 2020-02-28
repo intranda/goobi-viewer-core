@@ -832,16 +832,6 @@
 					<param type="field" key="MD_RISMSEAL" />
 				</metadata>
 				
-        <metadata label="MD_HAAB_PROVENIENCE" value="MASTERVALUE_GROUP" group="true">
-          <param type="translatedfield" key="MD_CODE" suffix=":_SPACE_"/>
-          <param type="field" key="MD_PREVIOUS_OWNER"/>
-          <param type="normdatauri" key="NORM_URI"/>
-          <param type="field" key="MD_CHARACTERISTIC" prefix="_SPACE_|_SPACE_"/>
-          <param type="field" key="MD_DATE" prefix="_SPACE_|_SPACE_Datum:_SPACE_"/>
-          <param type="field" key="MD_EXPLANATION" prefix="_SPACE_|_SPACE_Erläuterung:_SPACE_"/>
-          <param type="normdatauri" key="NORM_URI_RECORD"/>
-        </metadata>
-				
 			</template>
 		</mainMetadataList>
 
@@ -898,6 +888,7 @@
 			<!-- valueLength: defines the maximum length in characters for each value, 
 				longer values are truncated [since 2.0] -->
 			<valueLength>40</valueLength>
+
 		</searchHitMetadataList>
 
 		<!-- sideBarMetadataList: defines metadata that are displayed in the sidebar. -->
@@ -1016,6 +1007,9 @@
 
 		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
 		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
+		          
+        <!-- metadataParamNumber: Number of possible parameters for metadata elements (for all metadata lists). Default ist 10. -->
+        <metadataParamNumber>10</metadataParamNumber>
 	</metadata>
 
 	<!-- Settings for the table of content page -->

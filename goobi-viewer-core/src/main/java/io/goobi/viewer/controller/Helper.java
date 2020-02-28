@@ -871,8 +871,9 @@ public class Helper {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
                     logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
-                    IOUtils.copy(response.getEntity().getContent(), writer, DEFAULT_ENCODING);
-                    return writer.toString();
+                    return EntityUtils.toString(response.getEntity(), DEFAULT_ENCODING);
+                    //                    IOUtils.copy(response.getEntity().getContent(), writer, DEFAULT_ENCODING);
+                    //                    return writer.toString();
                 }
                 logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
                         IOUtils.toString(response.getEntity().getContent(), DEFAULT_ENCODING));

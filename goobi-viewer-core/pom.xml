@@ -77,6 +77,7 @@
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
+		<inject.version>1</inject.version>
 		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 		<commons-codec.version>1.14</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
@@ -112,8 +113,10 @@
 		<joda-time.version>2.10.5</joda-time.version>
 		<junit.version>4.13</junit.version>
 		<json.version>20190722</json.version>
+		<json-simple.version>1.1.1</json-simple.version>
 		<jsoup.version>1.12.2</jsoup.version>
 		<jstl.version>1.2</jstl.version>
+		<servlet-api.version>4.0.1</servlet-api.version>
 		<log4j.version>2.13.0</log4j.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<metadata-extractor.version>2.12.0</metadata-extractor.version>
@@ -171,6 +174,10 @@
 					<groupId>com.fasterxml.jackson.dataformat</groupId>
 					<artifactId>*</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.lowagie</groupId>
+					<artifactId>itext</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -199,6 +206,12 @@
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 			<version>${cdi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>${inject.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -264,6 +277,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j-core</artifactId>
+			<version>${docx4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 			<version>${docx4j.version}</version>
 			<exclusions>
@@ -317,6 +335,12 @@
 			<artifactId>httpunit</artifactId>
 			<version>${httpunit.version}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
@@ -494,6 +518,11 @@
 			<version>${json.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>${json-simple.version}</version>
+                </dependency>
+		<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
 			<version>${javax.json-api.version}</version>
@@ -502,6 +531,11 @@
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>${jsoup.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -721,6 +755,11 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

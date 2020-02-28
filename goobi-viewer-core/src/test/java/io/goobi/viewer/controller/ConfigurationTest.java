@@ -1098,6 +1098,16 @@ public class ConfigurationTest extends AbstractTest {
     public void isAddHighwirePressMetaTags_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags());
     }
+    
+
+    /**
+     * @see Configuration#getMetadataParamNumber()
+     * @verifies return correct value
+     */
+    @Test
+    public void getMetadataParamNumber_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getMetadataParamNumber());
+    }
 
     /**
      * @see Configuration#isMetadataPdfEnabled()

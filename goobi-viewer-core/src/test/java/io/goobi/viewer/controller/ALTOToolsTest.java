@@ -127,7 +127,7 @@ public class ALTOToolsTest extends AbstractTest {
         File file = new File("src/test/resources/data/viewer/alto/0230L.xml");
         Assert.assertTrue(file.isFile());
         String altoString = FileTools.getStringFromFile(file, "utf-8");
-        List<String> result = ALTOTools.getWordCoords(altoString, Collections.singletonMap("wappen", null).keySet(), 0);
+        List<String> result = ALTOTools.getWordCoords(altoString, Collections.singleton("wappen"), 0);
         Assert.assertFalse(result.isEmpty());
     }
 
@@ -141,16 +141,32 @@ public class ALTOToolsTest extends AbstractTest {
         Assert.assertTrue(file.isFile());
         String altoString = FileTools.getStringFromFile(file, "utf-8");
         {
-            List<String> result = ALTOTools.getWordCoords(altoString, Collections.singletonMap("ein neues doppelpyramidenrätsel", null).keySet(), 0);
+            List<String> result = ALTOTools.getWordCoords(altoString, Collections.singleton("ein neues doppelpyramidenrätsel"), 0);
             Assert.assertEquals(3, result.size());
             Assert.assertEquals("843,478,904,509", result.get(0));
             Assert.assertEquals("923,489,1021,509", result.get(1));
             Assert.assertEquals("1039,477,1482,516", result.get(2));
         }
         {
-            List<String> result = ALTOTools.getWordCoords(altoString, Collections.singletonMap("ein neues dreifachpyramidenrätsel", null).keySet(), 0);
+            List<String> result =
+                    ALTOTools.getWordCoords(altoString, Collections.singletonMap("ein neues dreifachpyramidenrätsel", null).keySet(), 0);
             Assert.assertEquals(0, result.size());
         }
+    }
+
+    /**
+     * @see ALTOTools#getWordCoords(String,Set,int)
+     * @verifies match diacritics via base letter
+     */
+    @Test
+    public void getWordCoords_shouldMatchDiacriticsViaBaseLetter() throws Exception {
+        File file = new File("src/test/resources/data/sample_alto.xml");
+        Assert.assertTrue(file.isFile());
+        String altoString = FileTools.getStringFromFile(file, "utf-8");
+
+        List<String> result = ALTOTools.getWordCoords(altoString, Collections.singleton("doppelpyramidenratsel"), 0);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("1039,477,1482,516", result.get(0));
     }
 
     /**

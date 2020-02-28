@@ -727,6 +727,9 @@
 
 		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
 		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
+		
+        <!-- metadataParamNumber: Number of possible parameters for metadata elements (for all metadata lists). Default ist 10. -->
+        <metadataParamNumber>5</metadataParamNumber>
 	</metadata>
 
 	<toc>

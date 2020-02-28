@@ -405,6 +405,7 @@ public class ALTOTools {
      * @return a {@link java.util.List} object.
      * @should match hyphenated words
      * @should match phrases
+     * @should match diacritics via base letter
      */
     public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation) {
         if (altoString == null) {

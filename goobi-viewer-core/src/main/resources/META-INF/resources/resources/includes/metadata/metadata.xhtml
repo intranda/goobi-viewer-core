@@ -39,7 +39,7 @@
                                         <ui:repeat value="#{metadata.values}" var="val">
                                             <span class="metadata__event-value">
                                                 <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <c:forEach begin="0" end="19" var="ind">
+                                                    <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
                                                         <f:param value="#{val.getComboValueShort(ind)}" />
                                                     </c:forEach>
                                                 </h:outputFormat>
