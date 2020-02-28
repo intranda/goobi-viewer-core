@@ -16,7 +16,7 @@
 	<url>https://github.com/intranda/goobi-viewer-core</url>
 
 	<organization>
-		<name>Goobi</name> 
+		<name>Goobi</name>
 		<url>https://goobi.io</url>
 	</organization>
 
@@ -138,9 +138,13 @@
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
-		<!-- This needs to be added explicitly because otherwise Solr will use 
+		<!-- This needs to be added explicitly because otherwise Solr will use
 		an older version that's incompatible -->
 		<xerces.version>2.12.0</xerces.version>
+		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
+		<jakarta.xml.bind-api.version>2.3.2</jakarta.xml.bind-api.version>
+		<jakarta.persistence.version>2.2.3</jakarta.persistence.version>
+		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 
 	</properties>
 
@@ -178,22 +182,16 @@
 					<groupId>com.lowagie</groupId>
 					<artifactId>itext</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jersey.containers</groupId>
+					<artifactId>jersey-container-servlet-core</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.intranda.api.iiif</groupId>
 			<artifactId>iiif-api-model</artifactId>
 			<version>${iiif-api-model.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.dataformat</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
@@ -202,6 +200,26 @@
 		</dependency>
 
 		<!-- other libraries -->
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>${jakarta.annotation-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>${jakarta.xml.bind-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>jakarta.persistence</artifactId>
+			<version>${jakarta.persistence.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xmlParserAPIs</artifactId>
+			<version>${xmlParserAPIs.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
@@ -433,8 +451,8 @@
 			<version>${jaxb-api.version}</version>
 		</dependency>
 		<!-- tools.jar depencency so that the Solr dependencies don't cause errors -->
-		<!-- <dependency> <groupId>jdk.tools</groupId> <artifactId>jdk.tools</artifactId> 
-			<version>1.8.0</version> <scope>system</scope> <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath> 
+		<!-- <dependency> <groupId>jdk.tools</groupId> <artifactId>jdk.tools</artifactId>
+			<version>1.8.0</version> <scope>system</scope> <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
 			</dependency> -->
 		<dependency>
 			<groupId>jdk.tools</groupId>
@@ -614,6 +632,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>${poi.version}</version>
 		</dependency>
@@ -760,6 +783,24 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>analyze</id>
+						<goals>
+							<goal>analyze-only</goal>
+						</goals>
+						<configuration>
+							<failOnWarning>false</failOnWarning>
+							<ignoredUnusedDeclaredDependencies>
+								<!-- JSTL is used within JSF for example c:forEach -->
+								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
+
+								<!-- Primefaces is used for autocomplete -->
+								<ignoredUnusedDeclaredDependency>org.primefaces:primefaces</ignoredUnusedDeclaredDependency>
+							</ignoredUnusedDeclaredDependencies>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
