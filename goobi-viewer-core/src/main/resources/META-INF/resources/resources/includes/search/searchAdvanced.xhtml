@@ -62,7 +62,10 @@
                                             <div class="custom-control custom-control--select">
                                                 <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
                                                     valueChangeListener="#{queryItem.selectOneMenuListener}">
-                                                    <f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
+                                                    <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
+                                                        <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
+                                                    </c:forEach>
+<!--                                                     <f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" /> -->
                                                     <f:ajax
                                                         render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
                                                 </h:selectOneMenu>

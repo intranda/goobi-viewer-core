@@ -395,7 +395,7 @@
 			<!-- advancedSearchDefaultItemNumber: number of advanced search items 
 				to be rendered by default. Default is 2. -->
 			<defaultItemNumber>3</defaultItemNumber>
-			<!-- advancedSearchFields: index fields to be used in avanced search -->
+			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
 				<field hierarchical="true">DC</field>
 				<field untokenizeForPhraseSearch="true">MD_TITLE</field>
@@ -404,6 +404,7 @@
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
+				<field label="-----">#SEPARATOR1#</field>
 				<field>MD_FOO_LANG_EN</field>
 				<field>MD_FOO_LANG_DE</field>
 				<field>MD_FOO_LANG_ES</field>
