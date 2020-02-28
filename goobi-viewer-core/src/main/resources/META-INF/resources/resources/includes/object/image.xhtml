@@ -46,8 +46,7 @@
   		      		    
     	var imageMap = $( "#imageMap" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
-        var accessDeniedImagePath = "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/access_denied.png";
-        var accessDeniedImageWrapper = $( "<div />" ).addClass( "view-object__access-denied" ).html( '<img src="' + accessDeniedImagePath + '" />' );
+        var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         var page = "#{navigationHelper.currentPage}";
 
         var configViewer = {
@@ -170,6 +169,7 @@
         }
 
        	// desktop object view
+       	console.log("access ", access, accessDeniedMessage);
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
@@ -188,7 +188,7 @@
            	} );
         } 
        	else {
-       		imageMap.append( accessDeniedImageWrapper );
+       		imageMap.append( accessDeniedMessage );
        	}
 
        	// mobile overlay

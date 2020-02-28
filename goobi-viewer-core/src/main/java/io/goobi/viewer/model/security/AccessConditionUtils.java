@@ -41,6 +41,9 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.TimeAnalysis;
+import de.intranda.monitoring.timer.TimeAnalysisItem;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -63,7 +66,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 public class AccessConditionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessConditionUtils.class);
-
+    
     /**
      * <p>
      * checkAccess.

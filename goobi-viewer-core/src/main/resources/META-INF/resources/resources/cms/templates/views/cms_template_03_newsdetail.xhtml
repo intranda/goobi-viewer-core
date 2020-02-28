@@ -169,7 +169,9 @@
 	            							<!-- IMAGE -->
 	                                        <div class="solr-query-collection__image">
 	            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
-	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{hit.browseElement.label}" />
+	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive" 
+	            									data-viewer-thumbnail="thumbnail"
+	            									alt="#{hit.browseElement.label}" />
 	            								</h:outputLink>
 	            							</div>
 	            
