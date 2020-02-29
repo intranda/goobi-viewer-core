@@ -189,6 +189,10 @@
 					<groupId>javax.servlet</groupId>
 					<artifactId>servlet-api</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -778,6 +782,10 @@
 
 								<!-- Primefaces is used for autocomplete -->
 								<ignoredUnusedDeclaredDependency>org.primefaces:primefaces</ignoredUnusedDeclaredDependency>
+
+								<!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
+								<ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
