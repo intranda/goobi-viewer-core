@@ -137,6 +137,7 @@ public class LoginFilter implements Filter {
      * @should return false for bookmarks session uris
      * @should return false for bookmarks share key uris
      * @should return false for bookmarks send list uris
+     * @should return false for user account activation uris
      */
     public static boolean isRestrictedUri(String uri) {
         if (uri == null) {
