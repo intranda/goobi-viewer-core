@@ -152,6 +152,10 @@ public class LoginFilter implements Filter {
             case "/mysearches/":
                 return true;
             default:
+                // Allow activation URLs
+                if (uri.startsWith("/user/activate/")) {
+                    return false;
+                }
                 // any URIs starting with /user/ are supposed to be only accessible to logged in users
                 if (uri.startsWith("/user/")) {
                     return true;
