@@ -760,17 +760,17 @@
 
 		<!-- labelConfig: Layout configuration for the label of TOC elements. The 
 			configuration is analogous to a metadata template. -->
-		<labelConfig>
+		<labelConfig xml:space="preserve">
 			<template name="_DEFAULT">
 				<metadata label="" value="{LABEL}{MD_CREATOR}">
 					<param type="field" key="LABEL" />
-					<param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
+					<param xml:space="preserve" type="field" key="MD_CREATOR" prefix=" / " />
 				</metadata>
 			</template>
 			<template name="PeriodicalVolume">
 				<metadata label="" value="{CURRENTNO}{MD_TITLE}">
-					<param type="field" key="CURRENTNO" prefix="Number_SPACE_" />
-					<param type="field" key="MD_TITLE" prefix=":_SPACE_" />
+					<param type="field" key="CURRENTNO" prefix="Number " />
+					<param type="field" key="MD_TITLE" prefix=": " />
 				</metadata>
 			</template>
 		</labelConfig>

@@ -312,7 +312,7 @@ public final class SearchHelper {
 
         return sbSuffix.toString();
     }
-    
+
     /**
      * Returns all suffixes relevant to search filtering.
      *
@@ -342,7 +342,8 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper) throws IndexUnreachableException {
+    public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper)
+            throws IndexUnreachableException {
         return getAllSuffixes(null, navigationHelper, true, false, addDiscriminatorValueSuffix);
     }
 
@@ -2047,7 +2048,8 @@ public final class SearchHelper {
             if (StringUtils.isNotEmpty(docstructWhitelistFilterQuery)) {
                 sbQuery.append(docstructWhitelistFilterQuery);
             } else {
-                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+                sbQuery.append(ALL_RECORDS_QUERY);
+                // sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
             }
 
         }
@@ -2081,7 +2083,6 @@ public final class SearchHelper {
         return sbQuery.toString();
     }
 
-    
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
@@ -2094,7 +2095,7 @@ public final class SearchHelper {
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
         return buildFinalQuery(rawQuery, aggregateHits, BeanUtils.getNavigationHelper());
     }
-    
+
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
@@ -2113,8 +2114,8 @@ public final class SearchHelper {
         }
         sbQuery.append("+(").append(rawQuery).append(")");
         String suffixes = getAllSuffixes(true, nh);
-        if(StringUtils.isNotBlank(suffixes)) {            
-           sbQuery.append(suffixes);
+        if (StringUtils.isNotBlank(suffixes)) {
+            sbQuery.append(suffixes);
         }
         return sbQuery.toString();
     }
