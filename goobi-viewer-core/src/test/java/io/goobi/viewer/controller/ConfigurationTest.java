@@ -35,6 +35,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -1098,7 +1099,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isAddHighwirePressMetaTags_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags());
     }
-    
 
     /**
      * @see Configuration#getMetadataParamNumber()
@@ -1502,7 +1502,16 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getAdvancedSearchFields().size());
+        List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+        Assert.assertEquals(11, result.size());
+
+        Assert.assertTrue(result.get(0).isHierarchical());
+
+        Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
+
+        Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
+        Assert.assertEquals("-----", result.get(7).getLabel());
+        Assert.assertTrue(result.get(7).isDisabled());
     }
 
     /**
@@ -1523,6 +1532,15 @@ public class ConfigurationTest extends AbstractTest {
     public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC));
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE"));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldSeparatorLabel(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getAdvancedSearchFieldSeparatorLabel_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#"));
     }
 
     /**

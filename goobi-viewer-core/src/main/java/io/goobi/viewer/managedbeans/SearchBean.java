@@ -71,6 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.Search;
@@ -1179,56 +1180,58 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
+        if (advancedQueryGroups.isEmpty()) {
+            return;
+        }
+
         if (!facets.getCurrentFacets().isEmpty()) {
-            if (!advancedQueryGroups.isEmpty()) {
-                SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
-                if (!queryGroup.getQueryItems().isEmpty()) {
-                    int index = 0;
-                    for (FacetItem facetItem : facets.getCurrentFacets()) {
-                        if (!facetItem.isHierarchial()) {
-                            continue;
-                        }
-                        if (index < queryGroup.getQueryItems().size()) {
-                            // Fill existing search query items
-                            SearchQueryItem item = queryGroup.getQueryItems().get(index);
-                            while (!item.isHierarchical() && StringUtils.isNotEmpty(item.getValue())
-                                    && index + 1 < queryGroup.getQueryItems().size()) {
-                                // Skip items that already have values
-                                ++index;
-                                item = queryGroup.getQueryItems().get(index);
-                            }
-                            item.setField(facetItem.getField());
-                            item.setOperator(SearchItemOperator.IS);
-                            item.setValue(facetItem.getValue());
-                        } else {
-                            // If no search field is set up for collection search, add new field containing the currently selected collection
-                            SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
-                            item.setField(facetItem.getField());
-                            item.setOperator(SearchItemOperator.IS);
-                            item.setValue(facetItem.getValue());
-                            queryGroup.getQueryItems().add(item);
-                        }
-                        ++index;
+            SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
+            if (!queryGroup.getQueryItems().isEmpty()) {
+                int index = 0;
+                for (FacetItem facetItem : facets.getCurrentFacets()) {
+                    if (!facetItem.isHierarchial()) {
+                        continue;
                     }
-                    // If additional query items are configured for collections but are no longer in use, reset them
                     if (index < queryGroup.getQueryItems().size()) {
-                        for (int i = index; i < queryGroup.getQueryItems().size(); ++i) {
-                            SearchQueryItem item = queryGroup.getQueryItems().get(i);
-                            if (item.isHierarchical()) {
-                                item.reset();
-                                logger.trace("Reset advanced query item {}", i);
-                            }
+                        // Fill existing search query items
+                        SearchQueryItem item = queryGroup.getQueryItems().get(index);
+                        while (!item.isHierarchical() && StringUtils.isNotEmpty(item.getValue())
+                                && index + 1 < queryGroup.getQueryItems().size()) {
+                            // Skip items that already have values
+                            ++index;
+                            item = queryGroup.getQueryItems().get(index);
+                        }
+                        item.setField(facetItem.getField());
+                        item.setOperator(SearchItemOperator.IS);
+                        item.setValue(facetItem.getValue());
+                    } else {
+                        // If no search field is set up for collection search, add new field containing the currently selected collection
+                        SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
+                        item.setField(facetItem.getField());
+                        item.setOperator(SearchItemOperator.IS);
+                        item.setValue(facetItem.getValue());
+                        queryGroup.getQueryItems().add(item);
+                    }
+                    ++index;
+                }
+                // If additional query items are configured for collections but are no longer in use, reset them
+                if (index < queryGroup.getQueryItems().size()) {
+                    for (int i = index; i < queryGroup.getQueryItems().size(); ++i) {
+                        SearchQueryItem item = queryGroup.getQueryItems().get(i);
+                        if (item.isHierarchical()) {
+                            item.reset();
+                            logger.trace("Reset advanced query item {}", i);
                         }
                     }
-                    // If all items are full, add a new one for user query
-                    // if (currentHierarchicalFacets.size() ==
-                    // queryGroup.getQueryItems().size()) {
-                    // queryGroup.getQueryItems().add(new
-                    // SearchQueryItem(BeanUtils.getLocale()));
-                    // }
                 }
+                // If all items are full, add a new one for user query
+                // if (currentHierarchicalFacets.size() ==
+                // queryGroup.getQueryItems().size()) {
+                // queryGroup.getQueryItems().add(new
+                // SearchQueryItem(BeanUtils.getLocale()));
+                // }
             }
-        } else if (!advancedQueryGroups.isEmpty()) {
+        } else {
             SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
             for (SearchQueryItem item : queryGroup.getQueryItems()) {
                 if (item.isHierarchical()) {
@@ -1653,7 +1656,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
                 }
             }
-            //public bookmark lists
+            // public bookmark lists
             List<BookmarkList> publicBookmarkLists = DataManager.getInstance().getDao().getPublicBookmarkLists();
             if (!publicBookmarkLists.isEmpty()) {
                 for (BookmarkList bookmarkList : publicBookmarkLists) {
@@ -1765,7 +1768,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @return List of allowed advanced search fields
      */
-    public List<String> getAdvancedSearchAllowedFields() {
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
         return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString());
     }
 
@@ -1777,18 +1780,18 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
      */
-    public static List<String> getAdvancedSearchAllowedFields(String language) {
-        List<String> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language) {
+        List<AdvancedSearchFieldConfiguration> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         if (fields == null) {
-            fields = new ArrayList<>();
+            return Collections.emptyList();
         }
 
         // Omit other languages
         if (!fields.isEmpty() && StringUtils.isNotEmpty(language)) {
-            List<String> toRemove = new ArrayList<>();
+            List<AdvancedSearchFieldConfiguration> toRemove = new ArrayList<>();
             language = language.toUpperCase();
-            for (String field : fields) {
-                if (field.contains(SolrConstants._LANG_) && !field.endsWith(language)) {
+            for (AdvancedSearchFieldConfiguration field : fields) {
+                if (field.getField().contains(SolrConstants._LANG_) && !field.getField().endsWith(language)) {
                     toRemove.add(field);
                 }
             }
@@ -1797,7 +1800,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
 
-        fields.add(0, SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+        fields.add(0, new AdvancedSearchFieldConfiguration(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, null, false, false, false));
 
         return fields;
     }

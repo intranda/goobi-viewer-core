@@ -55,6 +55,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
@@ -137,41 +138,42 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param stopwordsFilePath a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
      * @should load all stopwords
      * @should remove parts starting with pipe
      * @should not add empty stopwords
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
-     * @return a {@link java.util.Set} object.
-     * @throws java.io.FileNotFoundException if any.
-     * @throws java.io.IOException if any.
      */
     protected static Set<String> loadStopwords(String stopwordsFilePath) throws FileNotFoundException, IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             throw new IllegalArgumentException("stopwordsFilePath may not be null or empty");
         }
-        Set<String> ret = new HashSet<>();
 
-        if (StringUtils.isNotEmpty(stopwordsFilePath)) {
-            try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (StringUtils.isNotBlank(line)) {
-                        if (line.charAt(0) != '#') {
-                            int pipeIndex = line.indexOf('|');
-                            if (pipeIndex != -1) {
-                                line = line.substring(0, pipeIndex).trim();
-                            }
-                            if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
-                                ret.add(line);
-                            }
+        if (StringUtils.isEmpty(stopwordsFilePath)) {
+            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
+            return Collections.emptySet();
+        }
+
+        Set<String> ret = new HashSet<>();
+        try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (StringUtils.isNotBlank(line)) {
+                    if (line.charAt(0) != '#') {
+                        int pipeIndex = line.indexOf('|');
+                        if (pipeIndex != -1) {
+                            line = line.substring(0, pipeIndex).trim();
+                        }
+                        if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
+                            ret.add(line);
                         }
                     }
                 }
             }
-        } else {
-            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
         }
 
         return ret;
@@ -1254,8 +1256,29 @@ public final class Configuration extends AbstractConfiguration {
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getAdvancedSearchFields() {
-        return getLocalList("search.advanced.searchFields.field");
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            Collections.emptyList();
+        }
+
+        List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            String field = subElement.getString(".");
+            if (StringUtils.isEmpty(field)) {
+                logger.warn("No advanced search field name defined, skipping.");
+                continue;
+            }
+            String label = subElement.getString("[@label]", null);
+            boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
+            boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+
+            ret.add(new AdvancedSearchFieldConfiguration(field, label, hierarchical, untokenizeForPhraseSearch,
+                    field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
+        }
+
+        return ret;
     }
 
     /**
@@ -1312,23 +1335,11 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return correct value
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isAdvancedSearchFieldHierarchical(String field) {
-        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
-        if (fieldList == null) {
-            return false;
-        }
-
-        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString(".").equals(field)) {
-                return subElement.getBoolean("[@hierarchical]", false);
-            }
-        }
-
-        return false;
+        return isAdvancedSearchFieldHasAttribute(field, "hierarchical");
     }
 
     /**
@@ -1337,10 +1348,45 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return correct value
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
+        return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
+    }
+
+    /**
+     * <p>
+     * isAdvancedSearchFieldHierarchical.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return Label attribute value for the given field name
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldSeparatorLabel(String field) {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return null;
+        }
+
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@label]", "");
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param field Advanced search field name
+     * @param attribute Attribute name
+     * @return
+     */
+    boolean isAdvancedSearchFieldHasAttribute(String field, String attribute) {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
             return false;
@@ -1349,7 +1395,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             if (subElement.getString(".").equals(field)) {
-                return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+                return subElement.getBoolean("[@" + attribute + "]", false);
             }
         }
 
@@ -2822,7 +2868,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isAddHighwirePressMetaTags() {
         return getLocalBoolean("metadata.addHighwirePressMetaTags", false);
     }
-    
+
     /**
      * 
      * @return

@@ -103,4 +103,22 @@ public class LoginFilterTest {
     public void isRestrictedUri_shouldReturnFalseForBookmarksShareKeyUris() throws Exception {
         Assert.assertFalse(LoginFilter.isRestrictedUri("bookmarks/key/somesharekey/"));
     }
+
+    /**
+     * @see LoginFilter#isRestrictedUri(String)
+     * @verifies return false for bookmarks send list uris
+     */
+    @Test
+    public void isRestrictedUri_shouldReturnFalseForBookmarksSendListUris() throws Exception {
+        Assert.assertFalse(LoginFilter.isRestrictedUri("bookmarks/send/"));
+    }
+
+    /**
+     * @see LoginFilter#isRestrictedUri(String)
+     * @verifies return false for user account activation uris
+     */
+    @Test
+    public void isRestrictedUri_shouldReturnFalseForUserAccountActivationUris() throws Exception {
+        Assert.assertFalse(LoginFilter.isRestrictedUri("user/activate/foo@bar.com/abcde/"));
+    }
 }
