@@ -354,9 +354,9 @@ public class ConfigurationTest extends AbstractTest {
         List<MetadataParameter> params = metadata.getParams();
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("CURRENTNO", params.get(0).getKey());
-        Assert.assertEquals("Number ", params.get(0).getPrefix());
+        Assert.assertEquals("Number", params.get(0).getPrefix());
         Assert.assertEquals("MD_TITLE", params.get(1).getKey());
-        Assert.assertEquals(": ", params.get(1).getPrefix());
+        Assert.assertEquals(":", params.get(1).getPrefix());
     }
 
     /**
@@ -375,7 +375,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("LABEL", params.get(0).getKey());
         Assert.assertEquals("MD_CREATOR", params.get(1).getKey());
-        Assert.assertEquals(" / ", params.get(1).getPrefix());
+        Assert.assertEquals("/", params.get(1).getPrefix());
     }
 
     /**
