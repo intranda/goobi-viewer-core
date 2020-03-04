@@ -96,7 +96,7 @@ public class ActivityCollectionBuilder {
      */
     public OrderedCollection<Activity> buildCollection() throws PresentationException, IndexUnreachableException {
         OrderedCollection<Activity> collection = new OrderedCollection<>(getCollectionURI());
-        collection.setTotalItems(getNumActivities());
+        collection.setTotalItems(new Long(getNumActivities()));
         collection.setFirst(new OrderedCollectionPage<>(getPageURI(0)));
         collection.setLast(new OrderedCollectionPage<>(getPageURI(getLastPageNo())));
         return collection;
