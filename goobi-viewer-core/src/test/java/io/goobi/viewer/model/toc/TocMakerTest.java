@@ -203,14 +203,16 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             SolrDocument doc = new SolrDocument();
             doc.setField(SolrConstants.LABEL, "label");
             doc.setField("MD_CREATOR", "creator");
-            Assert.assertEquals("label / creator", TocMaker.buildLabel(doc, null).getValue().orElse(""));
+            String label = TocMaker.buildLabel(doc, null).getValue().orElse("");
+            System.out.println("Toc label : " + label);
+            Assert.assertEquals("label/creator", label);
         }
         {
             SolrDocument doc = new SolrDocument();
             //            doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");
             doc.setField(SolrConstants.CURRENTNO, "1");
             doc.setField("MD_TITLE", "title");
-            Assert.assertEquals("Number 1: title", TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse(""));
+            Assert.assertEquals("Number1:title", TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse(""));
         }
     }
 }
