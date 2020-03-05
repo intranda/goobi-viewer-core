@@ -84,7 +84,7 @@
                 	<span>#{cc.attrs.itemActive}</span>
                 </li>
 
-                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCounts}">
+                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
                     <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount)}">
                         <li>
                             <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive + 1}</a>
