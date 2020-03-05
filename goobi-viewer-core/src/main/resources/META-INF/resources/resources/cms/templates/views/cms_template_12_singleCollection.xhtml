@@ -68,7 +68,8 @@
                 </div>
 
                 <!-- PAGINATOR -->
-                <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cmsPage.pageUrl}-/-/"
+                <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" 
+                itemActive="#{searchBean.currentPage}" urlPrefix="#{cmsPage.pageUrl}-/-/"
                     urlSuffix="#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/" />
             </div>
 

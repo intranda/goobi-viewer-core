@@ -189,7 +189,7 @@
 	
 						<!-- paginator -->
 						<viewerComponent:simplePaginator 
-							itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('gallery'))}"
+							itemCount="#{cmsBean.getQueryResultCount()}"
 							itemActive="#{cmsPage.listPage}"
 							urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
 					</div>

@@ -382,7 +382,7 @@ public class CmsBean implements Serializable {
         }
         //check if all page content items exist in template
         List<CMSContentItem> allPageItems =
-                page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
+                page.getLanguageVersions().stream().filter(lang -> lang.getContentItems() != null).flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
             if (template.getContentItem(pageItem.getItemId()) == null) {
                 //if not, remove them
@@ -1457,7 +1457,7 @@ public class CmsBean implements Serializable {
                         return searchAction(item);
                     } else if (item.isDisplayEmptySearchResults()) {
                         String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
-                        searchBean.setSearchString(item.getSolrQuery());
+//                        searchBean.setSearchString(item.getSolrQuery());
                         searchBean.setExactSearchString(searchString);
                         searchBean.setShowReducedSearchOptions(false);
                         return searchAction(item);
@@ -1561,7 +1561,8 @@ public class CmsBean implements Serializable {
             }
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
-            search.execute(facets, null, item.getElementsPerPage(), 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
+            searchBean.setHitsPerPage(item.getElementsPerPage());
+            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
             searchBean.setCurrentSearch(search);
             return null;
         } else if (item == null) {
