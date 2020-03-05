@@ -2524,5 +2524,19 @@ public class CmsBean implements Serializable {
 
         return "";
     }
+    
+    /**
+     * For cms pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass.
+     * Otherwise return an empty String 
+     * 
+     * @return
+     */
+    public String getCMSBodyClass() {
+        if(getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getWrapperElementClass())) {
+            return "body_" + getCurrentPage().getWrapperElementClass();
+        } else {
+            return "";
+        }
+    }
 
 }
