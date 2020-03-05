@@ -2532,7 +2532,7 @@ public class CmsBean implements Serializable {
      * @return
      */
     public String getCmsBodyClass() {
-        if(getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getWrapperElementClass())) {
+        if(navigationHelper.isCmsPage() &&  getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getWrapperElementClass())) {
             return "body_" + getCurrentPage().getWrapperElementClass();
         } else {
             return "";
