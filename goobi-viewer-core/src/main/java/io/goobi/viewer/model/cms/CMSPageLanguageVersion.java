@@ -380,23 +380,7 @@ public class CMSPageLanguageVersion {
         } else {
             completeContentItemList = getContentItems();
         }
-        sortItems(completeContentItemList);
-    }
-
-    /**
-     * @param completeContentItemList2
-     */
-    private void sortItems(List<CMSContentItem> items) {
-        if (getOwnerPage().getTemplate() != null) {
-            for (CMSContentItem cmsContentItem : items) {
-                for (CMSContentItem templateItem : getOwnerPage().getTemplate().getContentItems()) {
-                    if (templateItem.getItemId().equals(cmsContentItem.getItemId())) {
-                        cmsContentItem.setOrder(templateItem.getOrder());
-                    }
-                }
-            }
-        }
-        Collections.sort(items);
+        Collections.sort(completeContentItemList);
     }
 
     /** {@inheritDoc} */

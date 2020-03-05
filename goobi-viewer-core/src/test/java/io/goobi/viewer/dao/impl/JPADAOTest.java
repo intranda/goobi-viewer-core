@@ -1630,7 +1630,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         item.setOwnerPageLanguageVersion(version);
         item.setItemId("I1");
         item.setType(CMSContentItemType.SOLRQUERY);
-        item.setMandatory(true);
         item.setElementsPerPage(3);
         item.setSolrQuery("PI:PPN517154005");
         item.setSolrSortFields("SORT_TITLE,DATECREATED");
@@ -1661,7 +1660,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, page.getLanguageVersions().get(0).getContentItems().size());
         Assert.assertEquals(item.getItemId(), page.getLanguageVersions().get(0).getContentItems().get(0).getItemId());
         Assert.assertEquals(item.getType(), page.getLanguageVersions().get(0).getContentItems().get(0).getType());
-        Assert.assertEquals(item.isMandatory(), page.getLanguageVersions().get(0).getContentItems().get(0).isMandatory());
         Assert.assertEquals(item.getElementsPerPage(), page.getLanguageVersions().get(0).getContentItems().get(0).getElementsPerPage());
         Assert.assertEquals(item.getSolrQuery(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrQuery());
         Assert.assertEquals(item.getSolrSortFields(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrSortFields());

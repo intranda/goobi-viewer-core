@@ -155,18 +155,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "item_id")
     private String itemId;
 
-    /** Label to display during page creation */
-    @Column(name = "item_label")
-    private String itemLabel;
-
     /** Content item type. */
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private CMSContentItemType type;
-
-    /** Mandatory items must be filled with actual content in a page. */
-    @Column(name = "mandatory", nullable = false)
-    private boolean mandatory = false;
 
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
@@ -289,8 +281,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Transient
     private int nestedPagesCount = 0;
 
-    @Transient
-    private int order = 0;
 
     /**
      * Noop constructor for javax.persistence
@@ -311,10 +301,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             this.id = blueprint.id;
         }
         this.setItemId(blueprint.itemId);
-        this.setItemLabel(blueprint.itemLabel);
         this.setType(blueprint.type);
-        this.setMandatory(blueprint.mandatory);
-        this.setOrder(blueprint.order);
         this.setHtmlFragment(blueprint.getHtmlFragment());
         this.setElementsPerPage(blueprint.elementsPerPage);
         this.setBaseCollection(blueprint.getBaseCollection());
@@ -455,23 +442,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return the itemLabel
      */
     public String getItemLabel() {
-        if (itemLabel != null && !itemLabel.isEmpty()) {
-            return itemLabel;
-        }
-
-        return itemId;
+        return getItemTemplate().getItemLabel();
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>itemLabel</code>.
-     * </p>
-     *
-     * @param itemLabel the itemLabel to set
-     */
-    public void setItemLabel(String itemLabel) {
-        this.itemLabel = itemLabel;
-    }
 
     /**
      * <p>
@@ -503,19 +476,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return the mandatory
      */
     public boolean isMandatory() {
-        return mandatory;
+        return getItemTemplate().isMandatory();
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>mandatory</code>.
-     * </p>
-     *
-     * @param mandatory the mandatory to set
-     */
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
 
     /**
      * <p>
@@ -923,19 +886,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a int.
      */
     public int getOrder() {
-        return order;
+        return getItemTemplate().getOrder();
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>order</code>.
-     * </p>
-     *
-     * @param order a int.
-     */
-    public void setOrder(int order) {
-        this.order = order;
-    }
 
     /**
      * <p>
@@ -1273,8 +1226,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link io.goobi.viewer.model.cms.ContentItemMode} object.
      */
     public ContentItemMode getMode() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
+        return getItemTemplate().getMode();
     }
+
+
 
     /**
      * Message key to display when clicking the inline help button. Taken from contentItem of template
@@ -1282,7 +1237,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link java.lang.String} object.
      */
     public String getInlineHelp() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getInlineHelp();
+        return getItemTemplate().getInlineHelp();
     }
 
     /**
@@ -1293,7 +1248,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return true if the item has a non-empty inline help text. Taken from contentItem of template
      */
     public boolean isHasInlineHelp() {
-        CMSContentItem item = getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        CMSContentItem item = getItemTemplate();
         if (item != null) {
             return item.isHasInlineHelp();
         }
@@ -1558,26 +1513,23 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
-        CMSContentItemTemplate template = getTemplateItem();
+        CMSContentItemTemplate template = getItemTemplate();
         return template.getMediaFilter();
     }
 
+    
     /**
-     * 
+     * @return
      */
-    private CMSContentItemTemplate getTemplateItem() {
+    public CMSContentItemTemplate getItemTemplate() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
     }
 
     /**
-     * <p>
-     * isPreview.
-     * </p>
-     *
-     * @return a boolean.
+     * @return true if this contentItem should only appear in a preview of this page
      */
     public boolean isPreview() {
-        return getTemplateItem().isPreview();
+        return getItemTemplate().isPreview();
     }
 
     /**
