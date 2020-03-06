@@ -130,7 +130,6 @@
 		<primefaces.version>7.0</primefaces.version>
 		<rome.version>1.12.2</rome.version>
 		<rs-api.version>2.1.1</rs-api.version>
-		<saxon.version>9.0</saxon.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<solr.version>4.10.4</solr.version>
@@ -175,10 +174,6 @@
 			<artifactId>ics</artifactId>
 			<version>${contentserver.version}</version>
 			<exclusions>
-				<exclusion>
-					<groupId>net.sf.saxon</groupId>
-					<artifactId>saxon</artifactId>
-				</exclusion>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>*</artifactId>
@@ -636,16 +631,6 @@
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>${rs-api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.saxon</groupId>
-			<artifactId>saxon-dom</artifactId>
-			<version>${saxon.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.saxon</groupId>
-			<artifactId>saxon</artifactId>
-			<version>${saxon.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
