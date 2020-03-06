@@ -886,7 +886,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a int.
      */
     public int getOrder() {
-        return getItemTemplate().getOrder();
+        CMSContentItemTemplate template = getItemTemplate();
+        if(template != null) {            
+            return template.getOrder();
+        } else {
+            return Integer.MAX_VALUE;
+        }
     }
 
 
@@ -1522,7 +1527,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return
      */
     public CMSContentItemTemplate getItemTemplate() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        try {            
+            return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        } catch(NullPointerException e) {
+            return null;
+        }
     }
 
     /**
