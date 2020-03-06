@@ -205,7 +205,7 @@ public class MetadataBean {
                 if (thumbPage < 1) {
                     continue;
                 }
-                if (thumbPage == order || thumbPage + numPages >= order) {
+                if (thumbPage == order || thumbPage + numPages - 1 >= order) {
                     StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
                     Locale locale = BeanUtils.getLocale();
                     MetadataElement metadataElement = new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage());
