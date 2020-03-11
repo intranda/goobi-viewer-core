@@ -75,6 +75,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
@@ -1530,6 +1531,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         logger.warn("Did not find search functionality in page " + this);
         return new SearchFunctionality("", getPageUrl());
     }
+    
+    /**
+     * @return
+     */
+    public BrowseFunctionality getBrowse() {
+        Optional<CMSContentItem> item =
+                getGlobalContentItems().stream().filter(i -> CMSContentItemType.BROWSETERMS.equals(i.getType())).findFirst();
+        if (item.isPresent()) {
+            return (BrowseFunctionality) item.get().getFunctionality();
+        }
+        logger.warn("Did not find browse functionality in page " + this);
+        return new BrowseFunctionality("");
+    }
 
     /**
      * <p>
@@ -2001,4 +2015,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPi() {
         return getRelatedPI();
     }
+
+
 }

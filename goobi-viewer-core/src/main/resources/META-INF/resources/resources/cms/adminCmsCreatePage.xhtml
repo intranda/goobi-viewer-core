@@ -226,6 +226,11 @@
                                                                 <ui:fragment rendered="#{contentItem.type == 'METADATA'}">
                                                                     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMetadata.xhtml" />
                                                                 </ui:fragment>
+                                                                
+                                                                <!-- CONTENT TYPE BROWSE -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'BROWSETERMS'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeBrowse.xhtml" />
+                                                                </ui:fragment>
                                                             </ui:repeat>
 
                                                             <!-- CONTENT TYPE LOCALE -->

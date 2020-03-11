@@ -808,6 +808,12 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
+	<url-mapping id="cmsBrowse3">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:browseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+	</url-mapping>
     <url-mapping id="cmsOpenPage3">
         <pattern
             value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" />

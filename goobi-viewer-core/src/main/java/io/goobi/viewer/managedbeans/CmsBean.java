@@ -79,6 +79,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.PageValidityStatus;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
+import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
@@ -1449,6 +1450,7 @@ public class CmsBean implements Serializable {
                     return searchAction(item);
                 case SEARCH:
                     if (resetSearch && searchBean != null) {
+                        //TODO: perform searchBean.resetSearchFilter herer instead of in pretty-config. Needs testing
                         searchBean.resetSearchAction();
                         searchBean.setActiveSearchType(item.getSearchType());
                     }
@@ -1468,6 +1470,16 @@ public class CmsBean implements Serializable {
                 case COLLECTION:
                     getCollection(item.getItemId(), currentPage).reset(true);
                     break;
+                case BROWSETERMS:
+                    BrowseFunctionality browse = currentPage.getBrowse();
+                    if(resetSearch) {
+                        browse.reset();
+                    }
+                    //filter for subtheme
+                    if(StringUtils.isNotBlank(currentPage.getSubThemeDiscriminatorValue())) {                        
+                        browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), currentPage.getSubThemeDiscriminatorValue());
+                    }
+                    browse.searchTerms();
                 default:
                     break;
             }
