@@ -994,10 +994,10 @@ public class NavigationHelper implements Serializable {
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
         //        resetCurrentPage();
         theme = DataManager.getInstance().getConfiguration().getTheme();
+        setCmsPage(false);
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
         }
-        setCmsPage(false);
     }
 
     /**
