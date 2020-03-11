@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,15 +41,13 @@ import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
@@ -138,13 +134,13 @@ public class NormdataResource {
             }
         }
 
-        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(url);
-        if (marcRecord == null) {
+        Record record = NormDataImporter.getSingleRecord(url);
+        if (record == null) {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        List<NormData> normDataList = marcRecord.getNormDataList();
-        if (normDataList == null) {
+        List<NormData> normDataList = record.getNormDataList();
+        if (normDataList == null || normDataList.isEmpty()) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
         }
