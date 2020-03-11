@@ -17,6 +17,7 @@ package io.goobi.viewer.servlets.rest.rss;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +38,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedOutput;
 
+import de.intranda.api.iiif.presentation.Collection;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
@@ -44,6 +46,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.Description;
@@ -93,6 +96,39 @@ public class RssResource {
 
         Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
                 createQuery(query, bookshelfId, partnerId, servletRequest, true), null, numHits, language);
+
+        servletResponse.setContentType("application/json");
+
+        return rss;
+    }
+    
+    /**
+     * Returns the RSS feed containing the @numHits most recently indexed objects which match the given filterQuery
+     * All metadata is provided in the passed language
+     *
+     * @param numHits a int.
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.rss.Channel} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    @GET
+    @Path("/{language}/{numhits}/filterBy/{filterQuery}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Channel getTagsForPageAndFilterJson(@PathParam("numhits") int numHits, @PathParam("language") String language, @PathParam("filterQuery") String filterQuery)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
+        Long bookshelfId = null;
+        String query = null;
+        String partnerId = null;
+        if(filterQuery != null) {
+            filterQuery = filterQuery.replaceAll("^-$", "");
+            filterQuery = BeanUtils.unescapeCriticalUrlChracters(filterQuery);
+        }
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                createQuery(query, bookshelfId, partnerId, servletRequest, true), Collections.singletonList(filterQuery), numHits, language);
 
         servletResponse.setContentType("application/json");
 

@@ -290,7 +290,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 CMSSidebarElement element = getAvailableSidebarElement(ids[i]);
                 if (element != null) {
                     // element.setType(ids[i]);
-                    element.setValue("bds");
+//                    element.setValue("bds");
                     element.setOrder(i);
                     //		    element.setId(null);
                     element.setOwnerPage(this);

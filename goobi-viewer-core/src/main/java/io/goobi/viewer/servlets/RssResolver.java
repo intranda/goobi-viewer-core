@@ -17,6 +17,7 @@ package io.goobi.viewer.servlets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,8 +45,10 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * Servlet implementation class RssResolver
+ * 
+ * TODO: Removed deprecation marker because this servlet is still required for delivering RSS feeds for sidebar widget. The alternative, the rss REST-resource
+ * delivers a json which need to be parsed and turned into html
  */
-@Deprecated
 public class RssResolver extends HttpServlet {
     private static final long serialVersionUID = -8188360280492927624L;
 
@@ -66,6 +69,13 @@ public class RssResolver extends HttpServlet {
             language = request.getParameterMap().get("language")[0];
         }
         logger.trace("RSS request language: {}", language);
+        
+        String filterQuery = "";
+        if (request.getParameterMap().get("filterQuery") != null && request.getParameterMap().get("filterQuery").length > 0) {
+            filterQuery = request.getParameterMap().get("filterQuery")[0];
+        }
+        logger.trace("RSS request filter query: {}", filterQuery);
+        
         Long bookshelfId = null;
         if (request.getParameterMap().get("bookshelfId") != null) {
             try {
@@ -107,7 +117,7 @@ public class RssResolver extends HttpServlet {
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
                                 query + SearchHelper.getAllSuffixes(request, null, true, true,
                                         DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()),
-                                null, language),
+                                Collections.singletonList(filterQuery), language),
                         new OutputStreamWriter(response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");

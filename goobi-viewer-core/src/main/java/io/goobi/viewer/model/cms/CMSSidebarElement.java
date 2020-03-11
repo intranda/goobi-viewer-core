@@ -546,7 +546,7 @@ public class CMSSidebarElement {
             return SidebarElementType.Category.pageLinks;
         } else if (this.getGeoLocations() != null) {
             return SidebarElementType.Category.geoLocations;
-        }
+        } 
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
 
