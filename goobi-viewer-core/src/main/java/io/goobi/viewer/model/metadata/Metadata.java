@@ -362,7 +362,7 @@ public class Metadata implements Serializable {
                 case TRANSLATEDFIELD:
                     // Values that are message keys
                     value = Helper.getTranslation(value, locale);
-                    value = StringEscapeUtils.escapeHtml4(value);
+                    // value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
                     break;
