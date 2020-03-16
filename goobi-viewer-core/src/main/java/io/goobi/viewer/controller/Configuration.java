@@ -1141,7 +1141,7 @@ public final class Configuration extends AbstractConfiguration {
     }
     
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
-        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", false);
+        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
         return use;
     }
 
