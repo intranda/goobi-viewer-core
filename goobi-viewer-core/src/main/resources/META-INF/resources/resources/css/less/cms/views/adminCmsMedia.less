@@ -451,26 +451,36 @@
 
 /* CREATE PAGE VIEW */
 .cms-create-page {
+	.cms-module {
+		&__option-control {
+			.admin-cms-media {
+				&__file {
+					margin-bottom: 5px;
+					padding: 0;
+					background-color: @white;
+				}
+				&__file-select {
+					.mx-hidden;
+				}
+				&__file-image {
+					cursor: default;
+				}
+				&__file-top {
+					margin: 0;
+				}
+				&__file-bottom {
+					display: none;
+				}
+			}
+		}
+	}
 	.admin-cms-media {
-		&__file {
-			margin-bottom: 5px;
-			padding: 0;
-			background-color: @white;
-		}
-		&__file-select {
-			.mx-hidden;
-		}
-		&__file-image {
-			cursor: default;
-		}
-		&__file-top {
-			margin: 0;
-		}
-		&__file-bottom {
+		&__file-actions {
 			display: none;
 		}
 	}
 }
+
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
