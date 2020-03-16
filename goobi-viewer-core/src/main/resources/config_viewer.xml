@@ -90,7 +90,7 @@
 		<!--endpoint to viewer rest api -->
 		<rest>http://localhost:8080/viewer/rest/</rest>
 		<!-- Rest endpoint for content data, mostly images which are delivered via iiif image api -->
-		<iiif>https://viewer.goobi.io/rest/</iiif>
+		<iiif useForCmsMedia="true">https://viewer.goobi.io/rest/</iiif>
 		
 
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
