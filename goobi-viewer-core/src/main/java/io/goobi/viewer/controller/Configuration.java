@@ -1139,6 +1139,11 @@ public final class Configuration extends AbstractConfiguration {
         }
         return urlString;
     }
+    
+    public boolean isUseIIIFApiUrlForCmsMediaUrls() {
+        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", false);
+        return use;
+    }
 
     /**
      * <p>
