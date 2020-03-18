@@ -1025,9 +1025,9 @@ public class CmsBean implements Serializable {
     public List<CMSNavigationItem> getNavigationMenuItems() {
         try {
             String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-            String currentTheme = Optional.ofNullable(getCurrentPage())
+            String currentTheme = getCurrentCmsPageIfLoaded()
                     .map(CMSPage::getSubThemeDiscriminatorValue)
-                    .orElse(BeanUtils.getNavigationHelper().getTheme());
+                    .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
             List<CMSNavigationItem> items = DataManager.getInstance()
                     .getDao()
                     .getAllTopCMSNavigationItems()
@@ -1047,6 +1047,16 @@ public class CmsBean implements Serializable {
         } catch (DAOException e) {
             return Collections.emptyList();
         }
+    }
+    
+    /**
+     * 
+     * @return the {@link #getCurrentPage()} if one is set, 
+     * or an empty Optional if the current page is not a cmsPage (i.e. if {@link NavigationHelper#isCmsPage()} == false)
+     */
+    public Optional<CMSPage> getCurrentCmsPageIfLoaded() {
+        return Optional.ofNullable(currentPage)
+        .filter( page -> BeanUtils.getNavigationHelper().isCmsPage());
     }
 
     /**
