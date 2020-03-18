@@ -84,6 +84,9 @@
                                                     <ui:fragment rendered="#{visibleItem.absoluteLink}">
                                                         <small>(#{msg.cms_menu_custom_menu_item})</small>
                                                     </ui:fragment>
+                                                    <ui:fragment rendered="#{visibleItem.associatedWithSubtheme}">
+                                                        <small>(#{visibleItem.associatedSubtheme})</small>
+                                                    </ui:fragment>
                                                 </div>
     
                                                 <!-- ITEM EDIT -->
@@ -178,7 +181,12 @@
                                                                 <div class="cms-menu__available-item-page-checkbox">
                                                                     <h:selectBooleanCheckbox value="#{availableItem.selected}" />
                                                                 </div>
-                                                                <div class="cms-menu__available-item-page-label">#{msg[availableItem.itemLabel]}</div>
+                                                                <div class="cms-menu__available-item-page-label">
+                                                                <span>#{msg[availableItem.itemLabel]}</span>
+                                                                <ui:fragment rendered="#{availableItem.associatedWithSubtheme}">
+			                                                        <small>(#{availableItem.associatedSubtheme})</small>
+			                                                    </ui:fragment>
+                                                                </div>
                                                             </label>
                                                         </ui:repeat>
                                                     </div>
