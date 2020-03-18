@@ -75,10 +75,15 @@ var viewerJS = ( function( viewer ) {
                     var page = $button.attr( 'data-page' );
                     
                     let added = this.contained(pi, page, logid);
+                    console.log("set added to " + added + " for ", pi, page)
+                    let $span = $button.find("span");
+                    console.log("update ", $span)
                     if(added) {
                         $button.addClass("added");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("fixTitle");
                     } else {
                         $button.removeClass("added");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("fixTitle");
                     }
                     
                 } );
