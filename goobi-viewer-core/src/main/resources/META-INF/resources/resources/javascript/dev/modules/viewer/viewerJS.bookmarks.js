@@ -158,14 +158,20 @@ var viewerJS = ( function( viewer ) {
                     if( (this.config.userLoggedIn && this.getBookmarkListsCount() > 0) || this.getBookmarksCount() > 0) {                        
                         $dropdown.slideToggle( 'fast');
                     }
-                    event.stopPropagation();
                 })
                 $("body").on("click", (event) => {
+                    let $target = $(event.target);
+                    if( $target.closest('[data-bookmark-list-type="dropdown"]').length > 0 ) {
+                        return; //click on bookmarks button. Don't close
+                    }
+                    if( $target.closest('bookmarkList').length > 0 ) {
+                        return; //click on bookmark list. Don't close
+                    }
                     if($dropdown.is(":visible")) {                        
                         $dropdown.slideToggle( 'fast');
                     }
                 })
-                $dropdown.on("click", (event) => event.stopPropagation());
+//                $dropdown.on("click", (event) => event.stopPropagation());
                 
             },
             prepareBookmarksPopup: function() {
