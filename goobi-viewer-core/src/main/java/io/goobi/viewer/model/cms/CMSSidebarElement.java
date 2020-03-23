@@ -799,4 +799,11 @@ public class CMSSidebarElement {
         return this.linkedPages != null && !this.linkedPages.isEmpty();
     }
 
+    
+    /**
+     * @return the simple name of the actual class of the widget. Usually CMSSidebarWidget
+     */
+    public String getWidgetType() {
+        return this.widgetType;
+    }
 }

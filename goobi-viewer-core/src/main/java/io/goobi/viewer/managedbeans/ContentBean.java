@@ -143,7 +143,9 @@ public class ContentBean implements Serializable {
             if (content.hasArea()) {
                 String rect = StringTools.normalizeWebAnnotationCoordinates(content.getAreaString());
 
-                rect += (",\"" + content.getLabel() + "\"");
+                String text = content.getLabel();
+                text = text.replaceAll("[\r\n]+", "<br/>");
+                rect += (",\"" + text + "\"");
                 rect += (",\"" + content.getId() + "\"");
                 coords.add(Arrays.asList(rect.split(",")));
             }

@@ -154,11 +154,20 @@ public class Helper {
      * Translation method for Java code. (Re-)loads resource bundles if necessary.
      *
      * @param text Message key to translate.
-     * @param locale a {@link java.util.Locale} object.
+     * @param locale The language for which we want the translation. If null, the current locale from the faces context will be used if available, or else English
      * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(String text, Locale locale) {
         return ViewerResourceBundle.getTranslation(text, locale);
+    }
+    
+    /**
+     * Translation method for Java code. (Re-)loads resource bundles if necessary.
+     * @param Message key to translate.
+     * @return the translation for the current locale from faces context if available, otherwise the English translation
+     */
+    public static String getTranslation(String text) {
+        return ViewerResourceBundle.getTranslation(text, null);
     }
 
     /**

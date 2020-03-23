@@ -273,29 +273,31 @@
                                                                         </div>
                                                                     </h:panelGroup>
 																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
-																		<div class="form-group">
-																			<h4>#{msg.cms_sidebarElement_searchField}:</h4>
-																			<div class="custom-control custom-control--select">
-																				<h:selectOneMenu value="#{element.searchField}">
-																					<f:selectItems value="#{cmsBean.getLuceneFields(true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
-																					<f:ajax render="baseCollectionMenu" />
-																				</h:selectOneMenu>
+																		<ui:fragment rendered="#{element.type != 'widgetRssFeed'}">
+																			<div class="form-group">
+																				<label>#{msg.cms_sidebarElement_searchField}:</label>
+																				<div class="custom-control custom-control--select">
+																					<h:selectOneMenu value="#{element.searchField}">
+																						<f:selectItems value="#{cmsBean.getLuceneFields(true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+																						<f:ajax render="baseCollectionMenu" />
+																					</h:selectOneMenu>
+																				</div>
 																			</div>
-																		</div>
+																			<div class="form-group">
+																				<label>#{msg.cms_sidebarElement_searchResultDisplayLimit}:</label>
+																				<h:inputText value="#{element.resultDisplayLimit}" styleClass="form-control input-integer"></h:inputText>
+																			</div>
+																			<div class="form-group">
+																				<label>#{msg.cms_sidebarElement_sortOrder}:</label>
+																				<h:selectOneRadio id="sortOrderRadioTable" value="#{element.descendingOrder}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																					<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="#{false}"></f:selectItem>
+																					<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="#{true}"></f:selectItem>
+																				</h:selectOneRadio>
+																			</div>
+																		</ui:fragment>
 																		<div class="form-group">
-																			<h4>#{msg.cms_sidebarElement_searchResultDisplayLimit}:</h4>
-																			<h:inputText value="#{element.resultDisplayLimit}" styleClass="form-control"></h:inputText>
-																		</div>
-																		<div class="form-group">
-																			<h4>#{msg.cms_sidebarElement_additionalQuery}:</h4>
+																			<label>#{msg.cms_sidebarElement_additionalQuery}:</label>
 																			<h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
-																		</div>
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_sortOrder}:</label>
-																			<h:selectOneRadio id="sortOrderRadioTable" value="#{element.descendingOrder}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																				<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="#{false}"></f:selectItem>
-																				<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="#{true}"></f:selectItem>
-																			</h:selectOneRadio>
 																		</div>
 																	</h:panelGroup>
 																	<!-- page links -->

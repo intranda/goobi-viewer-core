@@ -41,6 +41,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -740,6 +741,21 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
             items.addAll(getChildItems().stream().flatMap(child -> child.getMeWithDescendants().stream()).collect(Collectors.toList()));
         }
         return items;
+    }
+    
+    /**
+     * @return true if the item links to a cmsPage and that page has a subtheme associated wih it.
+     */
+    public boolean isAssociatedWithSubtheme() {
+        return Optional.ofNullable(cmsPage).map(CMSPage::getSubThemeDiscriminatorValue).filter(StringUtils::isNotBlank).isPresent();
+    }
+    
+    public String getAssociatedSubtheme() {
+        if(cmsPage != null && StringUtils.isNotBlank(cmsPage.getSubThemeDiscriminatorValue())) {
+            return Helper.getTranslation(cmsPage.getSubThemeDiscriminatorValue());
+        } else {
+            return "";
+        }
     }
 
 }

@@ -822,11 +822,23 @@ public class ThumbnailHandler {
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
-            String imageApiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+            String imageApiUrl = getCMSMediaImageApiUrl();
             String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
             url += "?updated=" + item.getLastModifiedTime();
             return url;
         }).orElse("");
+    }
+
+    /**
+     * @return
+     */
+    private String getCMSMediaImageApiUrl() {
+        if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
+            return DataManager.getInstance().getConfiguration().getIIIFApiUrl();
+        } else {
+            return DataManager.getInstance().getConfiguration().getRestApiUrl();
+
+        }
     }
 
     /**
