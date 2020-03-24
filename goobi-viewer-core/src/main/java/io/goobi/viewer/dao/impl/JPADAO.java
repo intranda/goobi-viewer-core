@@ -2234,14 +2234,14 @@ public class JPADAO implements IDAO {
     @Override
     public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
+        StringBuilder sbQuery =
+                new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
             sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
-        sbQuery.append(" GROUP BY o.relatedPI");
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);
@@ -2253,10 +2253,10 @@ public class JPADAO implements IDAO {
         Object o = q.getResultList().get(0);
         // MySQL
         if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
+            return ((BigInteger) o).longValue();
         }
         // H2
-        return (long) q.getResultList().get(0);
+        return (long) o;
     }
 
     /** {@inheritDoc} */
