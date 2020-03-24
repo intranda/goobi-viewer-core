@@ -2186,7 +2186,7 @@ public class JPADAO implements IDAO {
         if (toDate != null) {
             sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
-        sbQuery.append(" ORDER BY o.dateUpdated DESC");
+        sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);
@@ -2241,6 +2241,7 @@ public class JPADAO implements IDAO {
         if (toDate != null) {
             sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
+        sbQuery.append(" GROUP BY o.relatedPI");
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);

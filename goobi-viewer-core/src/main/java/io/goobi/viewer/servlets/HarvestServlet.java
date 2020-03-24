@@ -216,23 +216,26 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
                         }
 
+                        if (tempFiles.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                            return;
+                        }
+
                         // Compress to a ZIP
-                        if (!tempFiles.isEmpty()) {
-                            FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
-                            if (Files.isRegularFile(zipFile)) {
-                                String now = DateTools.formatterFilename.print(System.currentTimeMillis());
-                                response.setContentType("application/zip");
-                                response.setHeader("Content-Disposition",
-                                        new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
-                                response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
-                                response.flushBuffer();
-                                OutputStream os = response.getOutputStream();
-                                try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
-                                    byte[] buffer = new byte[1024];
-                                    int bytesRead = 0;
-                                    while ((bytesRead = fis.read(buffer)) != -1) {
-                                        os.write(buffer, 0, bytesRead);
-                                    }
+                        FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
+                        if (Files.isRegularFile(zipFile)) {
+                            String now = DateTools.formatterFilename.print(System.currentTimeMillis());
+                            response.setContentType("application/zip");
+                            response.setHeader("Content-Disposition",
+                                    new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+                            response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
+                            response.flushBuffer();
+                            OutputStream os = response.getOutputStream();
+                            try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead = 0;
+                                while ((bytesRead = fis.read(buffer)) != -1) {
+                                    os.write(buffer, 0, bytesRead);
                                 }
                             }
                         }
@@ -241,7 +244,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
                     } finally {
                         if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
-                            FileUtils.deleteDirectory(localTempFolder.toFile());
+                            //FileUtils.deleteDirectory(localTempFolder.toFile());
                         }
                     }
                 }
