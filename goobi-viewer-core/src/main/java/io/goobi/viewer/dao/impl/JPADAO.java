@@ -2177,16 +2177,28 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate) throws DAOException {
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL");
+        StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
+            sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
-        sbQuery.append(" ORDER BY o.dateUpdated DESC");
+        if (templateIds != null && !templateIds.isEmpty()) {
+            sbQuery.append(" AND (");
+            int count = 0;
+            for (String templateId : templateIds) {
+                if (count != 0) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append("o.templateId = '").append(templateId).append("'");
+                count++;
+            }
+            sbQuery.append(')');
+        }
+        sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
             q.setParameter("fromDate", fromDate);
@@ -2232,14 +2244,27 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate) throws DAOException {
+    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI IS NOT NULL");
+        StringBuilder sbQuery =
+                new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
+            sbQuery.append(" AND o.dateUpdated <= :toDate");
+        }
+        if (templateIds != null && !templateIds.isEmpty()) {
+            sbQuery.append(" AND (");
+            int count = 0;
+            for (String templateId : templateIds) {
+                if (count != 0) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append("o.templateId = '").append(templateId).append("'");
+                count++;
+            }
+            sbQuery.append(')');
         }
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
@@ -2252,10 +2277,10 @@ public class JPADAO implements IDAO {
         Object o = q.getResultList().get(0);
         // MySQL
         if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList().get(0)).longValue();
+            return ((BigInteger) o).longValue();
         }
         // H2
-        return (long) q.getResultList().get(0);
+        return (long) o;
     }
 
     /** {@inheritDoc} */

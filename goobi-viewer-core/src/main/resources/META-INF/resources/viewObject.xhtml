@@ -99,13 +99,6 @@
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
                     urlSuffix="#topDocAnchor"
                     rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />                    
-                
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
-                    <!-- VIEW META MUSEAL -->
-                    <ui:insert name="viewMetaMuseal">
-                        <ui:include src="/resources/includes/object/metaMuseal.xhtml" />
-                    </ui:insert>
-                </h:panelGroup>
 
 				<!-- USER GENERATED CONTENT -->
 				<ui:insert name="userGeneratedContent">
