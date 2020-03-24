@@ -204,7 +204,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             doc.setField(SolrConstants.LABEL, "label");
             doc.setField("MD_CREATOR", "creator");
             String label = TocMaker.buildLabel(doc, null).getValue().orElse("");
-            System.out.println("Toc label : " + label);
+            //System.out.println("Toc label : " + label);
             Assert.assertEquals("label/creator", label);
         }
         {
