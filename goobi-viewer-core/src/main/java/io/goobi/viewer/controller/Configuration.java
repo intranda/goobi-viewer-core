@@ -4536,6 +4536,10 @@ public final class Configuration extends AbstractConfiguration {
 
         return " ";
     }
+    
+    public String getMapBoxToken() {
+        return getLocalString("maps.mapbox.token", "");
+    }
 
     /**
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
@@ -4566,4 +4570,6 @@ public final class Configuration extends AbstractConfiguration {
 
         return defaultConf;
     }
+    
+    
 }

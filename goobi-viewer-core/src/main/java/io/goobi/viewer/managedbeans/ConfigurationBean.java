@@ -1443,5 +1443,9 @@ public class ConfigurationBean implements Serializable {
     public boolean isAggregateSearchHits() {
         return DataManager.getInstance().getConfiguration().isAggregateHits();
     }
+    
+    public String getMapBoxToken() {
+        return DataManager.getInstance().getConfiguration().getMapBoxToken();
+    }
 
 }

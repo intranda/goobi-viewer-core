@@ -1407,5 +1407,11 @@
            <userName>@goobi</userName>
        </twitter>
     </embedding>
+    
+    <maps>
+    	<mapbox>
+    		<token></token>
+    	</mapbox>
+    </maps>
 
 </config>
