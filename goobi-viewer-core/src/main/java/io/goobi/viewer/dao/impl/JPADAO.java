@@ -2184,7 +2184,7 @@ public class JPADAO implements IDAO {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
+            sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
         sbQuery.append(" ORDER BY o.dateUpdated DESC");
         Query q = em.createQuery(sbQuery.toString());
@@ -2239,7 +2239,7 @@ public class JPADAO implements IDAO {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
+            sbQuery.append(" AND o.dateUpdated <= :toDate");
         }
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
