@@ -2179,7 +2179,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL");
+        StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
@@ -2234,7 +2234,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI IS NOT NULL");
+        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
             sbQuery.append(" AND o.dateUpdated >= :fromDate");
         }
