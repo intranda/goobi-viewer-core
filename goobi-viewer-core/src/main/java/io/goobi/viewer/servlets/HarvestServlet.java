@@ -308,7 +308,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 case "getlist_crowdsourcing":
                 case "snoop_cs":
                 case "get_cs": {
-                    String forward = "/csharvest?" + request.getQueryString();
+                    String contextPath = request.getContextPath();
+                    if (contextPath == null || contextPath.equals("/")) {
+                        contextPath = "";
+                    }
+                    String forward = contextPath + "/csharvest?" + request.getQueryString();
                     logger.trace("Redirecting to {}", forward);
                     response.sendRedirect(forward);
                 }
