@@ -2695,4 +2695,9 @@ public class ConfigurationTest extends AbstractTest {
     public void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(2.0f == DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
     }
+    
+    @Test
+    public void testReadMapBoxToken() {
+        Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
+    }
 }
