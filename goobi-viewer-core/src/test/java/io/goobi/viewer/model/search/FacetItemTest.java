@@ -100,6 +100,16 @@ public class FacetItemTest {
     }
 
     /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies construct polygon link correctly
+     */
+    @Test
+    public void getQueryEscapedLink_shouldConstructPolygonLinkCorrectly() throws Exception {
+        FacetItem item = new FacetItem("COORDS_SEARCH:0 0, 0 90, 90 90, 90 0, 0 0", false);
+        Assert.assertEquals("COORDS_SEARCH:\"IsWithin(POLYGON((0 0, 0 90, 90 90, 90 0, 0 0))) distErrPct=0\"", item.getQueryEscapedLink());
+    }
+
+    /**
      * @see FacetItem#generateFacetItems(String,Map,boolean,boolean,boolean)
      * @verifies sort items correctly
      */

@@ -325,11 +325,23 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should escape values containing whitespaces
      * @should construct hierarchical link correctly
      * @should construct range link correctly
+     * @should construct polygon link correctly
      * @return a {@link java.lang.String} object.
      */
     public String getQueryEscapedLink() {
-        String escapedValue = getEscapedValue(value);
         String field = SearchHelper.facetifyField(this.field);
+        String escapedValue = getEscapedValue(value);
+        if (field.startsWith(SolrConstants.COORDS_)) {
+            String[] valueSplit = value.split(",");
+            if (valueSplit.length > 2) {
+                escapedValue = new StringBuilder()
+                        .append("\"IsWithin(POLYGON((")
+                        .append(value)
+                        .append("))) distErrPct=0\"")
+                        .toString();
+            }
+        }
+
         if (hierarchial) {
             return new StringBuilder("(").append(field)
                     .append(':')
