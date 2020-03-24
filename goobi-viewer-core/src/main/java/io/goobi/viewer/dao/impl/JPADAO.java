@@ -2177,7 +2177,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate) throws DAOException {
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
         if (fromDate != null) {
@@ -2185,6 +2185,18 @@ public class JPADAO implements IDAO {
         }
         if (toDate != null) {
             sbQuery.append(" AND o.dateUpdated <= :toDate");
+        }
+        if (templateIds != null && !templateIds.isEmpty()) {
+            sbQuery.append(" AND (");
+            int count = 0;
+            for (String templateId : templateIds) {
+                if (count != 0) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append("o.templateId = '").append(templateId).append("'");
+                count++;
+            }
+            sbQuery.append(')');
         }
         sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
         Query q = em.createQuery(sbQuery.toString());
@@ -2232,7 +2244,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate) throws DAOException {
+    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate, List<String> templateIds) throws DAOException {
         preQuery();
         StringBuilder sbQuery =
                 new StringBuilder("SELECT COUNT(DISTINCT o.relatedPI) FROM CMSPage o WHERE o.relatedPI IS NOT NULL AND o.relatedPI <> ''");
@@ -2241,6 +2253,18 @@ public class JPADAO implements IDAO {
         }
         if (toDate != null) {
             sbQuery.append(" AND o.dateUpdated <= :toDate");
+        }
+        if (templateIds != null && !templateIds.isEmpty()) {
+            sbQuery.append(" AND (");
+            int count = 0;
+            for (String templateId : templateIds) {
+                if (count != 0) {
+                    sbQuery.append(" OR ");
+                }
+                sbQuery.append("o.templateId = '").append(templateId).append("'");
+                count++;
+            }
+            sbQuery.append(')');
         }
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
