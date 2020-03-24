@@ -291,7 +291,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 CMSSidebarElement element = getAvailableSidebarElement(ids[i]);
                 if (element != null) {
                     // element.setType(ids[i]);
-//                    element.setValue("bds");
+                    //                    element.setValue("bds");
                     element.setOrder(i);
                     //		    element.setId(null);
                     element.setOwnerPage(this);
@@ -984,24 +984,24 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
         return item;
     }
-    
+
     public String getContentItemText(String itemId) throws CmsElementNotFoundException {
         CMSContentItem item = getContentItem(itemId);
-        if(item != null) {
-           switch(item.getType()) {
-               case TEXT:
-                   return item.getHtmlFragment();
-               case HTML:
-                   String htmlText = item.getHtmlFragment();
-                   String plainText = htmlText.replaceAll("\\<.*?\\>", "");
-                   plainText = StringEscapeUtils.unescapeHtml(plainText);
-                   return plainText;
-               default:
-                   return item.toString();
-           }
-        } else {
-            return "";
+        if (item != null) {
+            switch (item.getType()) {
+                case TEXT:
+                    return item.getHtmlFragment();
+                case HTML:
+                    String htmlText = item.getHtmlFragment();
+                    String plainText = htmlText.replaceAll("\\<.*?\\>", "");
+                    plainText = StringEscapeUtils.unescapeHtml(plainText);
+                    return plainText;
+                default:
+                    return item.toString();
+            }
         }
+        
+        return "";
     }
 
     /**
@@ -1551,7 +1551,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         logger.warn("Did not find search functionality in page " + this);
         return new SearchFunctionality("", getPageUrl());
     }
-    
+
     /**
      * @return
      */
@@ -1943,7 +1943,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
             if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
                 for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
-                    ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
+                    ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
                 }
             }
 
@@ -1954,7 +1954,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         List<CMSContentItem> globalContentItems = getGlobalContentItems();
         if (!globalContentItems.isEmpty()) {
             for (CMSContentItem item : globalContentItems) {
-                ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
+                ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
             }
         }
 
@@ -1967,19 +1967,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * 
      * @param item Content item to export
      * @param outputFolderPath Export path
-     * @param namingScheme Naming scheme for export files and folders
+     * @param namingScheme Naming scheme for export folders
+     * @param cmsPageId Parent page ID; used in the text file naming scheme
      * @return exported Files
      * @throws IOException
+     * @should return media files directly
      */
-    private List<File> exportItemText(CMSContentItem item, String outputFolderPath, String namingScheme) throws IOException {
+    static List<File> exportItemFiles(CMSContentItem item, String outputFolderPath, String namingScheme, long cmsPageId) throws IOException {
         if (item.getType() == null) {
             return Collections.emptyList();
         }
         switch (item.getType()) {
             case MEDIA:
+                return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
             case HTML:
             case TEXT:
-                return item.exportHtmlFragment(id, outputFolderPath, namingScheme);
+                return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
             default:
                 return Collections.emptyList();
         }
@@ -2035,6 +2038,5 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPi() {
         return getRelatedPI();
     }
-
 
 }
