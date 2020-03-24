@@ -51,6 +51,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;
@@ -982,6 +983,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
 
         return item;
+    }
+    
+    public String getContentItemText(String itemId) throws CmsElementNotFoundException {
+        CMSContentItem item = getContentItem(itemId);
+        if(item != null) {
+           switch(item.getType()) {
+               case TEXT:
+                   return item.getHtmlFragment();
+               case HTML:
+                   String htmlText = item.getHtmlFragment();
+                   String plainText = htmlText.replaceAll("\\<.*?\\>", "");
+                   plainText = StringEscapeUtils.unescapeHtml(plainText);
+                   return plainText;
+               default:
+                   return item.toString();
+           }
+        } else {
+            return "";
+        }
     }
 
     /**

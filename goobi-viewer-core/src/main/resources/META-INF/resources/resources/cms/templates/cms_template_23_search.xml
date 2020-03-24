@@ -6,7 +6,7 @@
     <html>cms_template_23_search.xhtml</html>
     
     <content>
-        <item id="text" order="1" label="cms__template_23__text__label" type="HTML" />
+        <item id="text" order="1" label="cms__template_23__text__label" type="TEXT" />
         <item id="search" order="2" label="cms_displayEmptySearchResults" type="SEARCH" />
     </content>
 </cms_page_template>
