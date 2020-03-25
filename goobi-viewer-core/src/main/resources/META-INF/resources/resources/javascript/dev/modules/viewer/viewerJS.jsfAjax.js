@@ -63,8 +63,9 @@ var viewerJS = ( function ( viewer ) {
                             viewerJS.helper.initBsFeatures();
                             // load thumbnails
                             viewer.loadThumbnails();
-                            // init tinyMCE                            
+                            // init tinyMCE    
                             if ( $( '.tinyMCE' ).length > 0 ) {
+                                viewerJS.tinyMce.close();
                             	viewerJS.tinyMce.init( viewerJS.tinyConfig );
                             }
                             break;
