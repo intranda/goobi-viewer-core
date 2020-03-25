@@ -46,8 +46,10 @@ module.exports = function (grunt) {
 			jsDevFolder: 'src/main/resources/META-INF/resources/resources/javascript/dev/',
 			jsDevFolderModules: 'src/main/resources/META-INF/resources/resources/javascript/dev/modules/',
 			jsDistFolder: 'src/main/resources/META-INF/resources/resources/javascript/dist/',
+			jsLibsFolder: 'src/main/resources/META-INF/resources/resources/javascript/libs/',
 			cssFolder: 'src/main/resources/META-INF/resources/resources/css/',
 			cssDistFolder: 'src/main/resources/META-INF/resources/resources/css/dist/',
+			cssLibsFolder: 'src/main/resources/META-INF/resources/resources/css/libs/',
 			lessDevFolder: 'src/main/resources/META-INF/resources/resources/css/less/',
 		},
 		less: {
@@ -140,6 +142,31 @@ module.exports = function (grunt) {
 				dest: '<%=src.jsDistFolder%>riot-tags.js'
 			}
 		},
+		copydeps : {
+            target : {
+                options : {
+                    minified : true,
+                    unminified : false,
+                    css : true,
+                    ignore: ["tinymce"],
+                    include : {
+                        js : {
+                            "tinymce/plugins" : "tinymce/",
+                            "tinymce/skins" : "tinymce/",
+                            "tinymce/themes" : "tinymce/",
+                            "tinymce/tinymce.min.js" : "tinymce/"
+                        },
+                        css : {
+                        }
+                    }
+                },
+                pkg : 'package.json',
+                dest : {
+                    js : '<%=src.jsLibsFolder %>',
+                    css : '<%=src.cssLibsFolder %>',
+                }
+            }
+        },
 		watch: {
 			configFiles: {
 				files: ['Gruntfile.js'],
@@ -214,6 +241,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-sync');
 	grunt.loadNpmTasks('grunt-concurrent');
+	grunt.loadNpmTasks('grunt-copy-deps');
 
 	// ---------- REGISTER TASKS ----------
 
@@ -245,5 +273,5 @@ module.exports = function (grunt) {
     // default task.
     // Default which runs the build task.
 	// $ grunt
-	grunt.registerTask('default', ['build']);
+	grunt.registerTask('default', ['build', "copydeps"]);
 };
