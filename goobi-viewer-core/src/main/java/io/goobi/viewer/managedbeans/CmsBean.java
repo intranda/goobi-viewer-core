@@ -50,6 +50,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
@@ -383,7 +384,12 @@ public class CmsBean implements Serializable {
         }
         //check if all page content items exist in template
         List<CMSContentItem> allPageItems =
-                page.getLanguageVersions().stream().filter(lang -> lang.getContentItems() != null).flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
+                page.getLanguageVersions()
+                        .stream()
+                        .filter(lang -> lang.getContentItems() != null)
+                        .flatMap(lang -> lang.getContentItems().stream())
+                        .distinct()
+                        .collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
             if (template.getContentItem(pageItem.getItemId()) == null) {
                 //if not, remove them
@@ -1048,15 +1054,15 @@ public class CmsBean implements Serializable {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * 
-     * @return the {@link #getCurrentPage()} if one is set, 
-     * or an empty Optional if the current page is not a cmsPage (i.e. if {@link NavigationHelper#isCmsPage()} == false)
+     * @return the {@link #getCurrentPage()} if one is set, or an empty Optional if the current page is not a cmsPage (i.e. if
+     *         {@link NavigationHelper#isCmsPage()} == false)
      */
     public Optional<CMSPage> getCurrentCmsPageIfLoaded() {
         return Optional.ofNullable(currentPage)
-        .filter( page -> BeanUtils.getNavigationHelper().isCmsPage());
+                .filter(page -> BeanUtils.getNavigationHelper().isCmsPage());
     }
 
     /**
@@ -1424,8 +1430,11 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws RecordDeletedException
+     * @throws RecordNotFoundException
      */
-    public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+            RecordNotFoundException, RecordDeletedException {
         return cmsContextAction(true);
     }
 
@@ -1438,9 +1447,12 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws RecordDeletedException
+     * @throws RecordNotFoundException
      */
     public String cmsContextAction(boolean resetSearch)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException,
+            RecordDeletedException {
         logger.trace("cmsContextAction: {}", resetSearch);
         if (currentPage == null) {
             return "";
@@ -1469,7 +1481,7 @@ public class CmsBean implements Serializable {
                         return searchAction(item);
                     } else if (item.isDisplayEmptySearchResults()) {
                         String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
-//                        searchBean.setSearchString(item.getSolrQuery());
+                        //                        searchBean.setSearchString(item.getSolrQuery());
                         searchBean.setExactSearchString(searchString);
                         searchBean.setShowReducedSearchOptions(false);
                         return searchAction(item);
@@ -1482,12 +1494,13 @@ public class CmsBean implements Serializable {
                     break;
                 case BROWSETERMS:
                     BrowseFunctionality browse = currentPage.getBrowse();
-                    if(resetSearch) {
+                    if (resetSearch) {
                         browse.reset();
                     }
                     //filter for subtheme
-                    if(StringUtils.isNotBlank(currentPage.getSubThemeDiscriminatorValue())) {                        
-                        browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(), currentPage.getSubThemeDiscriminatorValue());
+                    if (StringUtils.isNotBlank(currentPage.getSubThemeDiscriminatorValue())) {
+                        browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
+                                currentPage.getSubThemeDiscriminatorValue());
                     }
                     browse.searchTerms();
                 default:
@@ -1507,6 +1520,8 @@ public class CmsBean implements Serializable {
                     logger.warn(e.getMessage());
                 } catch (RecordDeletedException e) {
                     logger.warn(e.getMessage());
+                } catch (IDDOCNotFoundException e) {
+                    adb.reload(currentPage.getRelatedPI());
                 }
             }
         }
@@ -2546,19 +2561,19 @@ public class CmsBean implements Serializable {
 
         return "";
     }
-    
+
     /**
-     * For cms pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass.
-     * Otherwise return an empty String 
+     * For cms pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass. Otherwise return an empty
+     * String
      * 
      * @return
      */
     public String getCmsBodyClass() {
-        if(navigationHelper.isCmsPage() &&  getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getWrapperElementClass())) {
+        if (navigationHelper.isCmsPage() && getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getWrapperElementClass())) {
             return "body_" + getCurrentPage().getWrapperElementClass();
-        } else {
-            return "";
         }
+
+        return "";
     }
 
 }
