@@ -56,7 +56,7 @@ var viewerJS = (function () {
         }
 
         $.extend(true, _defaults, config);
-
+        console.log("init ", _defaults);
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
 
