@@ -763,7 +763,7 @@ public class TocMaker {
                 Set<String> languages = new HashSet<>(value.getLanguages());
 
                 languages.addAll(label.getLanguages());
-                //                if (MetadataParameterType.FIELD.equals(param.getType())) {
+                // Replace master value placeholders in the label object 
                 for (String language : languages) {
                     String langValue = label.getValue(language)
                             .orElse(labelConfig.getMasterValue())
@@ -782,7 +782,10 @@ public class TocMaker {
             }
         }
 
-        // logger.trace("label: {}", label);
+        //        for (String language : label.getLanguages()) {
+        //            logger.trace("label ({}): {}", language, label.getValue(language).get());
+        //        }
+
         return label;
     }
 

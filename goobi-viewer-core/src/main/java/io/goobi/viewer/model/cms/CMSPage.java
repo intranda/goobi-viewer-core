@@ -1000,7 +1000,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                     return item.toString();
             }
         }
-        
+
         return "";
     }
 
@@ -1994,22 +1994,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
-
-        if (selectableCategories != null) {
-            try {
-                List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
-                List<CMSCategory> tempCats = new ArrayList<>();
-                for (CMSCategory cat : allCats) {
-                    if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
-                        tempCats.add(cat);
-                    } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
-                        tempCats.add(cat);
-                    }
+        if (selectableCategories == null) {
+            return;
+        }
+        
+        try {
+            List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+            List<CMSCategory> tempCats = new ArrayList<>();
+            for (CMSCategory cat : allCats) {
+                if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+                    tempCats.add(cat);
+                } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+                    tempCats.add(cat);
                 }
-                this.categories = tempCats;
-            } catch (DAOException e) {
-                logger.error(e.toString(), e);
             }
+            this.categories = tempCats;
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
         }
     }
 
