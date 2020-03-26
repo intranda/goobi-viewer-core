@@ -82,7 +82,8 @@ var viewerJS = (function () {
         
         viewerJS.popovers.init();
         
-        
+	    viewerJS.userDropdown.init();
+       
         // init bookmarks if enabled
         if ( bookmarksEnabled ) {
             viewerJS.bookmarks.init( {
