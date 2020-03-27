@@ -249,6 +249,8 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
             DAOException, ViewerConfigurationException {
+        logger.trace("reload({}", pi);
+        reset();
         setPersistentIdentifier(pi);
         return open();
     }
