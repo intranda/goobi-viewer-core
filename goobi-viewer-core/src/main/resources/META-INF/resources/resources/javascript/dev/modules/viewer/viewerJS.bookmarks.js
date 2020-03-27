@@ -132,11 +132,7 @@ var viewerJS = ( function( viewer ) {
                         width: $button.width(),
                         height: $button.height()
                 }
-                var dropdownPosition = {
-                    left: buttonPosition.left + buttonSize.width - dropdownWidth,
-                    top: buttonPosition.top + buttonSize.height
-                }
-  
+
                 var $dropdown = $("<bookmarkList></bookmarkList>");
                 $dropdown.addClass("bookmark-navigation__dropdown");
                 

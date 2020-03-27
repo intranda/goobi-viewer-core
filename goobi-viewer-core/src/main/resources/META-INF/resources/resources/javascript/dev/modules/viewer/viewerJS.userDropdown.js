@@ -56,7 +56,7 @@ var viewerJS = ( function( viewer ) {
                     $( '.navigation__collection-panel' ).hide();
                 }
                 
-                $( '.login-navigation__user-dropdown' ).slideToggle( 'fast' );
+                $(this).next( '.login-navigation__user-dropdown' ).slideToggle( 'fast' );
             } );
             
             // remove dropdown by clicking on body
@@ -71,7 +71,7 @@ var viewerJS = ( function( viewer ) {
             } );
         }
     };
-    
+   
     return viewer;
     
 } )( viewerJS || {}, jQuery );
