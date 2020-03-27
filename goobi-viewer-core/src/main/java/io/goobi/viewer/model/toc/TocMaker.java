@@ -721,9 +721,11 @@ public class TocMaker {
                 switch (param.getType()) {
                     case TRANSLATEDFIELD:
                         if (doc.getFirstValue(param.getKey()) != null) {
+                            // Translate index field value, if available
                             value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
                         } else {
-                            value = new MultiLanguageMetadataValue();
+                            // Translate key, if no index field found
+                            value = ViewerResourceBundle.getTranslations(param.getKey().toString());
                         }
                         break;
                     case FIELD:
