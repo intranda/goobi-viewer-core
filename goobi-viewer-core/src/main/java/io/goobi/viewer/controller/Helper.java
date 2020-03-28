@@ -1098,9 +1098,10 @@ public class Helper {
             case SolrConstants._LIDO:
             case SolrConstants._DENKXWEB:
             case SolrConstants._WORLDVIEWS:
+            case SolrConstants._DUBLINCORE:
                 break;
             default:
-                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | WORLDVIEWS");
+                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | WORLDVIEWS | DUBLINCORE");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
@@ -1113,6 +1114,9 @@ public class Helper {
                 break;
             case SolrConstants._DENKXWEB:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());
+                break;
+            case SolrConstants._DUBLINCORE:
+                sb.append(DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
                 break;
             case SolrConstants._WORLDVIEWS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());

@@ -21,6 +21,8 @@
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
     <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
     <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
+    <!-- indexedDublinCoreFolder: contains indexed DublinCore files (used by the DublinCore resolver) -->
+    <indexedDublinCoreFolder>indexed_dublincore</indexedDublinCoreFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>media</mediaFolder>

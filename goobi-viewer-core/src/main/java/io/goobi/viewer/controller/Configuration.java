@@ -1517,6 +1517,18 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getIndexedDublinCoreFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedDublinCoreFolder() {
+        return getLocalString("indexedDublinCoreFolder");
+    }
+
+    /**
+     * <p>
      * getPageSelectionFormat.
      * </p>
      *

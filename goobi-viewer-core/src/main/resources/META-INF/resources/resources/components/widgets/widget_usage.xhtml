@@ -79,7 +79,19 @@
                                     #{msg.downloadDenkxwebButtonLabel}
                                 </a>
                             </ui:fragment>
-    
+     
+                            <!-- DUBLINCORE -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DUBLINCORE'}">
+                                <a 
+                                    href="#{activeDocumentBean.viewManager.dublincoreResolverUrl}"
+                                    id="lidomets" 
+                                    class="label label-default widget-usage__work-download-lido-mets" 
+                                    title="#{msg.metadata_dl_dublincore}" 
+                                    target="_blank" rel="nofollow"> 
+                                    #{msg.downloadDublinCoreButtonLabel}
+                                </a>
+                            </ui:fragment>
+
                             <!-- MARCXML -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null}">
                                 <a

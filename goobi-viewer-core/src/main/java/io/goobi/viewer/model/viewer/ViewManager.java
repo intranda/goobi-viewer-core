@@ -1507,6 +1507,23 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
+     * getDublinCoreResolverUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getDublinCoreResolverUrl() {
+        try {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + getPi();
+        } catch (Exception e) {
+            logger.error("Could not get DublinCore resolver URL for {}.", topDocumentIddoc);
+            Messages.error("errGetCurrUrl");
+        }
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + 0;
+    }
+
+    /**
+     * <p>
      * getAnchorMetsResolverUrl.
      * </p>
      *
