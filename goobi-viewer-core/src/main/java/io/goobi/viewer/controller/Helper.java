@@ -1074,7 +1074,7 @@ public class Helper {
     }
 
     /**
-     * Returns the absolute path to the source (METS/LIDO) file with the given file name.
+     * Returns the absolute path to the source (METS/LIDO/DENKXWEB/DUBLINCORE) file with the given file name.
      *
      * @param fileName a {@link java.lang.String} object.
      * @param dataRepository a {@link java.lang.String} object.
