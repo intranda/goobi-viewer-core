@@ -891,7 +891,10 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
             		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( 'fixTitle' ).tooltip( 'show' );
         		}
 
-        		this.controls[0].classList.toggle( 'faded' );
+        		console.log("controls", this.controls);
+        		for (let control of this.controls) {
+        		    control.classList.toggle( 'faded' );
+        		};
 
             	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
             	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;

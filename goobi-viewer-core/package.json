@@ -14,6 +14,7 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-less": "^2.0.0",
     "grunt-contrib-watch": "*",
+    "grunt-copy-deps": "^1.4.0",
     "grunt-jsdoc": "^2.4.1",
     "grunt-kss": "^5.0.1",
     "grunt-riot": "*",
@@ -34,8 +35,7 @@
     "less-plugin-autoprefix": "^1.5.1",
     "michelangelo": "^0.8.0",
     "pdfjs-dist": "^2.1.266",
-    "webpack": "4.0.0",
-    "grunt-copy-deps": "*"
+    "webpack": "4.0.0"
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",
