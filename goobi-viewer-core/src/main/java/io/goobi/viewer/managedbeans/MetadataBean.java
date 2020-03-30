@@ -62,11 +62,7 @@ public class MetadataBean {
 
     /** Metadata blocks for all docstructs that are included within a specific page. */
     private Map<Integer, List<MetadataElement>> allMetadataElementsforPage = new HashMap<>();
-    /**
-     * Events.
-     * 
-     * /** Events.
-     */
+    /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
     /**
@@ -133,8 +129,6 @@ public class MetadataBean {
         return "viewMetadata";
     }
 
-    /*********************************** Getter and Setter ***************************************/
-
     /**
      * <p>
      * Setter for the field <code>metadataElementList</code>.
@@ -168,12 +162,14 @@ public class MetadataBean {
     }
 
     /**
+     * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
+     * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
      * 
-     * @param order
-     * @return
+     * @param order Page number
+     * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @should return metadata elements for all relevant docstructs
+     * @should return metadata elements for all contained docstructs
      */
     public List<MetadataElement> getAllMetadataElementsForPage(int order) throws IndexUnreachableException, DAOException {
         if (allMetadataElementsforPage.get(order) != null) {
