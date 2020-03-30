@@ -1040,9 +1040,10 @@ public class ViewManager implements Serializable {
      * @param currentImageNo a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws IDDOCNotFoundException 
+     * @throws IDDOCNotFoundException
      */
     public void setCurrentImageNoForPaginator(int currentImageNo) throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        logger.trace("setCurrentImageNoForPaginator({})", currentImageNo);
         setCurrentImageNo(currentImageNo);
     }
 
@@ -1076,7 +1077,7 @@ public class ViewManager implements Serializable {
             if (iddoc != null && iddoc > -1) {
                 currentDocumentIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentDocumentIddoc, pi);
-            } else {
+            } else if (isHasPages()) {
                 logger.warn("currentDocumentIddoc not found for '{}', page {}", pi, currentImageNo);
                 throw new IDDOCNotFoundException("currentElementIddoc not found for '" + pi + "', page " + currentImageNo);
             }
@@ -1121,7 +1122,7 @@ public class ViewManager implements Serializable {
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws IDDOCNotFoundException 
+     * @throws IDDOCNotFoundException
      */
     public String nextImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         //        logger.debug("currentImageNo: {}", currentImageOrder);
@@ -1140,7 +1141,7 @@ public class ViewManager implements Serializable {
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws IDDOCNotFoundException 
+     * @throws IDDOCNotFoundException
      */
     public String prevImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         if (currentImageOrder > 0) {
@@ -1158,7 +1159,7 @@ public class ViewManager implements Serializable {
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws IDDOCNotFoundException 
+     * @throws IDDOCNotFoundException
      */
     public String firstImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         setCurrentImageNo(pageLoader.getFirstPageOrder());
@@ -1174,7 +1175,7 @@ public class ViewManager implements Serializable {
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws IDDOCNotFoundException 
+     * @throws IDDOCNotFoundException
      */
     public String lastImage() throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         setCurrentImageNo(pageLoader.getLastPageOrder());
@@ -1414,7 +1415,8 @@ public class ViewManager implements Serializable {
      * @throws java.lang.NumberFormatException if any.
      * @throws IDDOCNotFoundException
      */
-    public void dropdownAction(ValueChangeEvent event) throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+    public void dropdownAction(ValueChangeEvent event)
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         setCurrentImageNo(Integer.valueOf((String) event.getNewValue()) - 1);
     }
 
