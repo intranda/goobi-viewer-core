@@ -1073,7 +1073,7 @@ public class ViewManager implements Serializable {
         if (StringUtils.isEmpty(logId)) {
             Long iddoc = pageLoader.getOwnerIddocForPage(currentImageNo);
             // Set the currentDocumentIddoc to the IDDOC of the image owner document, but only if no specific document LOGID has been requested
-            if (iddoc != null && iddoc > -1 && iddoc != currentDocumentIddoc) {
+            if (iddoc != null && iddoc > -1) {
                 currentDocumentIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentDocumentIddoc, pi);
             } else {
