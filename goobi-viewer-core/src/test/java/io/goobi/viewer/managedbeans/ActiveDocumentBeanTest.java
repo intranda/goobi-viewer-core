@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -124,7 +125,10 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.update();
 
         adb.setLogid("LOG_0005");
-        adb.update();
+        try {
+            adb.update();
+        } catch (IDDOCNotFoundException e) {
+        }
         Assert.assertEquals(1578198745589L, adb.topDocumentIddoc);
     }
 
@@ -191,7 +195,10 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(2);
-        adb.update();
+        try {
+            adb.update();
+        } catch (IDDOCNotFoundException e) {
+        }
         Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getFirstPageOrder() + "/",
                 adb.getPreviousPageUrl(4));
     }
