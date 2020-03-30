@@ -679,6 +679,7 @@ public class Helper {
      * @param data String to send as a stream.
      * @return a boolean.
      */
+    @Deprecated
     public static synchronized boolean sendDataAsStream(String url, String data) {
         try (InputStream is = IOUtils.toInputStream(data, "UTF-8")) {
             HttpEntity entity = new InputStreamEntity(is, -1);
@@ -742,6 +743,7 @@ public class Helper {
      * @param entity
      * @return
      */
+    @Deprecated
     private static int simplePOSTRequest(String url, HttpEntity entity) {
         logger.debug(url);
 
@@ -1100,7 +1102,7 @@ public class Helper {
             case SolrConstants._WORLDVIEWS:
                 break;
             default:
-                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | WORLDVIEWS");
+                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | DUBLINCORE | WORLDVIEWS");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
