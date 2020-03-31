@@ -377,8 +377,8 @@ public class ActiveDocumentBean implements Serializable {
                 viewManager.setDoublePageMode(doublePageMode);
                 StructElement structElement = viewManager.getCurrentDocument();
                 if (!structElement.isExists()) {
-                    logger.trace("StructElement {} is not marked as existing.", structElement.getLuceneId());
-                    throw new RecordNotFoundException(lastReceivedIdentifier);
+                    logger.trace("StructElement {} is not marked as existing. Record will be reloaded", structElement.getLuceneId());
+                    throw new IDDOCNotFoundException(lastReceivedIdentifier + " - " + structElement.getLuceneId());
                 }
                 if (structElement.isAnchor()) {
                     anchor = true;
