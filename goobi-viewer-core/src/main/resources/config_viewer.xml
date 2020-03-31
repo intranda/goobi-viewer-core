@@ -1012,6 +1012,14 @@
 		          
         <!-- metadataParamNumber: Number of possible parameters for metadata elements (for all metadata lists). Default ist 10. -->
         <metadataParamNumber>10</metadataParamNumber>
+        
+        <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
+	    	of available license types when a user is asked to selec a license -->
+        <licenses>
+			<license label="CC0 1.0" icon="" url="https://creativecommons.org/publicdomain/zero/1.0/" />
+    		<license label="In Copyright" icon="" url="http://rightsstatements.org/vocab/InC/1.0/" />
+		</licenses>
+        
 	</metadata>
 
 	<!-- Settings for the table of content page -->

@@ -731,6 +731,11 @@
         <view-id value="/resources/admin/views/adminRole.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminCreateRecord">
+        <pattern value="/admin/record/dc/create/" />
+        <view-id value="/resources/admin/views/adminCreateRecord.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">

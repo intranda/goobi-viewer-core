@@ -2700,4 +2700,13 @@ public class ConfigurationTest extends AbstractTest {
     public void testReadMapBoxToken() {
         Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
     }
+    
+    @Test
+    public void testGetLicenseDescriptions() {
+        List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();
+        Assert.assertEquals(2, licenses.size());
+        Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
+        Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
+        Assert.assertEquals("", licenses.get(0).getIcon());
+    }
 }

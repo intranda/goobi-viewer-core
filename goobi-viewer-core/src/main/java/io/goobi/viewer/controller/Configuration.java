@@ -4583,5 +4583,22 @@ public final class Configuration extends AbstractConfiguration {
         return defaultConf;
     }
     
+    public List<LicenseDescription> getLicenseDescriptions() {
+        List<LicenseDescription> licenses = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String url = node.getString("[@url]", "");
+            if(StringUtils.isNotBlank(url)) {
+                String label = node.getString("[@label]", url);
+                String icon = node.getString("[@icon]", "");
+                LicenseDescription license = new LicenseDescription(url);
+                license.setLabel(label);
+                license.setIcon(icon);
+                licenses.add(license);
+            }
+        }
+        return licenses;
+    }
+    
     
 }
