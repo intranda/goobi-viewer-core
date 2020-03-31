@@ -154,15 +154,17 @@ public class Helper {
      * Translation method for Java code. (Re-)loads resource bundles if necessary.
      *
      * @param text Message key to translate.
-     * @param locale The language for which we want the translation. If null, the current locale from the faces context will be used if available, or else English
+     * @param locale The language for which we want the translation. If null, the current locale from the faces context will be used if available, or
+     *            else English
      * @return a {@link java.lang.String} object.
      */
     public static String getTranslation(String text, Locale locale) {
         return ViewerResourceBundle.getTranslation(text, locale);
     }
-    
+
     /**
      * Translation method for Java code. (Re-)loads resource bundles if necessary.
+     * 
      * @param Message key to translate.
      * @return the translation for the current locale from faces context if available, otherwise the English translation
      */
@@ -679,6 +681,7 @@ public class Helper {
      * @param data String to send as a stream.
      * @return a boolean.
      */
+    @Deprecated
     public static synchronized boolean sendDataAsStream(String url, String data) {
         try (InputStream is = IOUtils.toInputStream(data, "UTF-8")) {
             HttpEntity entity = new InputStreamEntity(is, -1);
@@ -742,6 +745,7 @@ public class Helper {
      * @param entity
      * @return
      */
+    @Deprecated
     private static int simplePOSTRequest(String url, HttpEntity entity) {
         logger.debug(url);
 
@@ -1101,7 +1105,7 @@ public class Helper {
             case SolrConstants._DUBLINCORE:
                 break;
             default:
-                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | WORLDVIEWS | DUBLINCORE");
+                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | DUBLINCORE | WORLDVIEWS");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
