@@ -26,6 +26,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 
@@ -219,7 +220,10 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
         ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
-        viewManager.setCurrentImageNo(1);
+        try {
+            viewManager.setCurrentImageNo(1);
+        } catch (IDDOCNotFoundException e) {
+        }
         Assert.assertEquals(docstructType, viewManager.getTopDocument().getDocStructType());
         Assert.assertEquals(pi, viewManager.getPi());
         Assert.assertEquals(1, viewManager.getCurrentImageNo());

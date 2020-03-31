@@ -49,6 +49,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
@@ -222,7 +223,11 @@ public class ActiveDocumentBean implements Serializable {
     public ViewManager getViewManager() {
         if (viewManager == null) {
             try {
-                update();
+                try {
+                    update();
+                } catch (IDDOCNotFoundException e) {
+                    reload(lastReceivedIdentifier);
+                }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
@@ -230,6 +235,24 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return viewManager;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
+            DAOException, ViewerConfigurationException {
+        logger.trace("reload({})", pi);
+        reset();
+        setPersistentIdentifier(pi);
+        return open();
     }
 
     /**
@@ -244,9 +267,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.RecordDeletedException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IDDOCNotFoundException
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
-            ViewerConfigurationException {
+            ViewerConfigurationException, IDDOCNotFoundException {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -380,6 +404,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (imageToShow != viewManager.getCurrentImageNo() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
                     mayChangeHitIndex = true;
                 }
+
                 viewManager.setCurrentImageNo(imageToShow);
                 viewManager.updateDropdownSelected();
 
@@ -450,9 +475,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws PresentationException
      */
     public String open()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+            PresentationException {
         synchronized (this) {
             logger.trace("open()");
             try {
@@ -486,6 +513,8 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
                 Messages.error(e.getMessage());
+            } catch (IDDOCNotFoundException e) {
+                return reload(lastReceivedIdentifier);
             }
 
             return "";
@@ -503,9 +532,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws PresentationException
      */
     public String openFulltext()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+            PresentationException {
         open();
         return "viewFulltext";
     }
