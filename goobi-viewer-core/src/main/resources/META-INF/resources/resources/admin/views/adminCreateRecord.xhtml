@@ -84,12 +84,13 @@
 	                            </div>
 	                            <div class="input_form__option_control custom-control custom-control--select">
 	                                <h:selectOneMenu id="createDCLanguage" styleClass="form-control"
-	                                    value="#{createRecordBean.language}" converter="languageConverter">
+	                                    value="#{createRecordBean.language}" >
+	                                    <f:selectItem itemLabel="#{msg.select}" itemValue=""/>
 	                                    <f:selectItems 
 	                                    value="#{createRecordBean.possibleLanguages}" 
 	                                    var="language" 
 	                                    itemLabel="#{language.getName(navigationHelper.locale)}"
-	                                    itemValue="#{language}"
+	                                    itemValue="#{language.isoCode}"
 	                                    itemDescription="#{language.isoCode}"></f:selectItems>
 	                                </h:selectOneMenu>
 	                            </div>
@@ -172,6 +173,7 @@
 	                            <div class="input_form__option_control custom-control custom-control--select">
 	                                <h:selectOneMenu id="createDCLicense" styleClass="form-control"
 	                                    value="#{createRecordBean.license}">
+	                                    <f:selectItem itemLabel="#{msg.select}" itemValue=""/>
 	                                    <f:selectItems 
 	                                    value="#{createRecordBean.possibleLicenses}" 
 	                                    var="license" 

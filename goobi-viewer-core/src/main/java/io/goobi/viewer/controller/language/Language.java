@@ -42,6 +42,7 @@ public class Language implements Comparable<Language>{
     private String frenchName;
     private String germanName;
 
+    
     /**
      * <p>
      * getIsoCode639_1.

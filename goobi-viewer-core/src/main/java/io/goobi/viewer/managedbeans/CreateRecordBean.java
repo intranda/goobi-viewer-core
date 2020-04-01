@@ -53,7 +53,7 @@ public class CreateRecordBean implements Serializable {
 
     private String title;
     private String description;
-    private Language language;
+    private String language;
     private String date;
     private String creator;
     private String collection;
@@ -65,7 +65,7 @@ public class CreateRecordBean implements Serializable {
 
     public CreateRecordBean() {
         String languageCode = BeanUtils.getNavigationHelper().getLocale().getLanguage();
-        this.language = DataManager.getInstance().getLanguageHelper().getLanguage(languageCode);
+        this.language = "";
 
         this.uuid = createUUID();
 
@@ -127,14 +127,14 @@ public class CreateRecordBean implements Serializable {
     /**
      * @return the language
      */
-    public Language getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
     /**
      * @param language the language to set
      */
-    public void setLanguage(Language language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 
@@ -265,7 +265,7 @@ public class CreateRecordBean implements Serializable {
         DCRecordWriter writer = new DCRecordWriter();
         writer.addDCMetadata("title", getTitle());
         writer.addDCMetadata("description", getDescription());
-        writer.addDCMetadata("language", getLanguage().getIsoCode());
+        writer.addDCMetadata("language", getLanguage());
         writer.addDCMetadata("creator", getCreator());
         writer.addDCMetadata("identifier", getUuid());
         writer.addDCMetadata("subject", getCollection());
