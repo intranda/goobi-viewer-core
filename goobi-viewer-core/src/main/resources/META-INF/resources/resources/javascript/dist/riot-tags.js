@@ -1,7 +1,11 @@
 riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        if(this.opts.fileTypes) {
+            this.fileTypes = this.opts.fileTypes;
+        } else {
+        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        }
         this.isDragover = false;
 
         this.on('mount', function () {
@@ -85,11 +89,11 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
+                     console.log("settled ", result);
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
-                     }
-                     else {
+                     } else {
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -101,11 +105,11 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                      this.opts.onUploadSuccess();
                  }
 
-            		if (this.opts.onUploadComplete) {
-            			this.opts.onUploadComplete();
-            		}
-            }.bind(this))
+           		if (this.opts.onUploadComplete) {
+           			this.opts.onUploadComplete();
+           		}
 
+            }.bind(this))
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
@@ -163,6 +167,24 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             .then( data => fetch(this.opts.postUrl, {
                 method: "POST",
                 body: data,
+
+       		})
+       		.then( result => {
+       		    console.log("post result ", result);
+       		    var defer = Q.defer();
+       		    if(result.ok) {
+       		    	defer.resolve(result);
+       		    } else if(result.body && !result.responseText){
+                   result.body.getReader().read()
+					.then(({ done, value }) => {
+						defer.reject({
+						  responseText:   new TextDecoder("utf-8").decode(value)
+						})
+					});
+       		    } else {
+       		        defer.reject(result);
+       		    }
+       		    return defer.promise;
        		}));
 
         }.bind(this)

@@ -25,7 +25,11 @@
     <script>
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        if(this.opts.fileTypes) {
+            this.fileTypes = this.opts.fileTypes;
+        } else {            
+        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        }
         this.isDragover = false;
     
         this.on('mount', function () {
@@ -109,11 +113,11 @@
             Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
+                     console.log("settled ", result);
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
-                     } 
-                     else {
+                     } else {
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -125,11 +129,11 @@
                      this.opts.onUploadSuccess();
                  }
                  
-            		if (this.opts.onUploadComplete) {
-            			this.opts.onUploadComplete();
-            		}
-            }.bind(this))
+           		if (this.opts.onUploadComplete) {
+           			this.opts.onUploadComplete();
+           		}
             
+            }.bind(this))
         }
     
         fileUploaded(fileInfo) {
@@ -187,6 +191,24 @@
             .then( data => fetch(this.opts.postUrl, {
                 method: "POST",
                 body: data,
+                
+       		})
+       		.then( result => {
+       		    console.log("post result ", result);
+       		    var defer = Q.defer();
+       		    if(result.ok) {
+       		    	defer.resolve(result);    		        
+       		    } else if(result.body && !result.responseText){
+                   result.body.getReader().read()
+					.then(({ done, value }) => {
+						defer.reject({
+						  responseText:   new TextDecoder("utf-8").decode(value)
+						})
+					});
+       		    } else {
+       		        defer.reject(result);
+       		    }
+       		    return defer.promise;
        		}));
     	
             

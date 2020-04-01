@@ -44,7 +44,7 @@
 	                            </div>
 	                            <div class="input_form__option_control">
 	                                <h:inputText id="createDCTitle" styleClass="form-control"
-	                                    value="#{createRecordBean.title}" />
+	                                    value="#{createRecordBean.title}" required="true" requiredMessage="#{msg.error__title_required}"/>
 	                            </div>
 	                            <div class="input_form__option_help">
 	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp">
@@ -126,7 +126,7 @@
 	                            <div class="input_form__option_label">
 	                                <label for="createDCCreator">#{msg.MD_CREATOR}:</label>
 	                            </div>
-	                            <div class="input_form__option_marker in">
+	                            <div class="input_form__option_marker">
 	                            <label>*</label>
 	                            </div>
 	                            <div class="input_form__option_control">
@@ -146,7 +146,7 @@
 	                            <div class="input_form__option_label">
 	                                <label for="createDCCollection">#{msg.DC}:</label>
 	                            </div>
-	                            <div class="input_form__option_marker in">
+	                            <div class="input_form__option_marker">
 	                            <label>*</label>
 	                            </div>
 	                            <div class="input_form__option_control">
@@ -192,7 +192,7 @@
 	                            <div class="input_form__option_label">
 	                                <label for="createDCAccessCondition">#{msg.ACCESSCONDITION}:</label>
 	                            </div>
-	                            <div class="input_form__option_marker in">
+	                            <div class="input_form__option_marker">
 	                            <label>*</label>
 	                            </div>
 	                            <div class="input_form__option_control">
@@ -215,6 +215,7 @@
 	                		<h:outputText escape="false" value="#{msg.admin__create_record__files__description}"></h:outputText>
 	                	</div>
 	                	<h:panelGroup id="uploadForm" styleClass="admin__content-inner-content__upload_form">
+	                		<adminMediaUpload></adminMediaUpload>
 	                	</h:panelGroup>
 	                	
 	                	<div class="admin__content-inner-content__controls">
@@ -222,6 +223,30 @@
 	                	</div>
                 	
                 	</h:form>
+                	
+                	<script type="text/javascript">
+                	
+                	var fileUploadConfig = {
+                			postUrl : '#{navigationHelper.applicationUrl}rest/record/dc/#{createRecordBean.uuid}/upload/',
+                			msg : {
+                				buttonUpload : "#{msg.button__upload}",
+                				uploadText : "#{msg.admin__media_upload_text}",
+                				allowedFileTypes : "#{msg.admin__media_upload_filetypes}",
+                				mediaUploading : "#{msg.admin__media_upload_uploading}",
+                				mediaFinished : "#{msg.admin__media_upload_finished}",
+                				mediaError : "#{msg.admin__media_upload_error}",
+                				bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}"
+                			},
+                			fileTypes: "TIFF, JPEG, JP2, PNG",
+                			onUploadComplete : function() {
+								console.log("file upload complete")
+                			}
+                		};
+
+                		riot.mount( 'adminMediaUpload', fileUploadConfig );
+
+                	
+                	</script>
                 	
                 </div>
             </div>
