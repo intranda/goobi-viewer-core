@@ -33,6 +33,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.LicenseDescription;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.metadata.DCRecordWriter;
 
 /**
  * @author florian
@@ -44,11 +45,12 @@ public class CreateRecordBean implements Serializable {
 
     private static final long serialVersionUID = -8052248087187114268L;
     private static final Logger logger = LoggerFactory.getLogger(CreateRecordBean.class);
+
     
     private String title;
     private String description;
     private Language language;
-    private LocalDate date;
+    private String date;
     private String creator;
     private String collection;
     private String accessCondition;
@@ -57,8 +59,6 @@ public class CreateRecordBean implements Serializable {
     public CreateRecordBean() {
         String languageCode = BeanUtils.getNavigationHelper().getLocale().getLanguage();
         this.language = DataManager.getInstance().getLanguageHelper().getLanguage(languageCode);
-        
-        this.date = LocalDate.now();
     }
     
     /**
@@ -100,13 +100,13 @@ public class CreateRecordBean implements Serializable {
     /**
      * @return the date
      */
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
     /**
      * @param date the date to set
      */
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
     /**
@@ -175,13 +175,29 @@ public class CreateRecordBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getLicenseDescriptions();
     }
     
-    private Document generateDCRecordXml() {
-        Document doc = new Document();
-        Namespace namespaceDC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
-        org.jdom2.Namespace asd;
-        Element record = new Element("record", namespaceDC);
-        
-        return doc;
+    protected DCRecordWriter generateDCRecordXml() {
+        DCRecordWriter writer = new DCRecordWriter();
+        writer.addDCMetadata("title", getTitle());
+        writer.addDCMetadata("description", getDescription());
+        writer.addDCMetadata("language", getLanguage().getIsoCode());
+        writer.addDCMetadata("creator", getCreator());
+        writer.addDCMetadata("identifier", createUUID());
+        writer.addDCMetadata("subject", getCollection());
+        writer.addDCMetadata("date", getDate().toString());
+        writer.addDCMetadata("rights", getLicense());
+        writer.addDCMetadata("rights", getAccessCondition());
+
+        return writer;
+    }
+
+    /**
+     * TODO: implement
+     * 
+     * @return
+     */
+    private String createUUID() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
