@@ -124,7 +124,7 @@ public class DCRecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path("/{uiid}/upload")
+    @javax.ws.rs.Path("/{uuid}/upload")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUploadedFiles(@PathParam("uuid") String uuid) {
 
@@ -134,11 +134,11 @@ public class DCRecordResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity("No bean found containing record data").build();
             }
 
-            List<Path> uploadedFiles = new ArrayList<>();
+            List<String> uploadedFiles = new ArrayList<>();
             Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid);
             if (Files.isDirectory(targetDir)) {
                 try (Stream<Path> stream = Files.list(targetDir)) {
-                    uploadedFiles = stream.collect(Collectors.toList());
+                    uploadedFiles = stream.map(path -> path.getFileName().toString()).sorted().collect(Collectors.toList());
                 } catch (IOException e) {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Error reading upload directory: " + e.toString()).build();
                 }

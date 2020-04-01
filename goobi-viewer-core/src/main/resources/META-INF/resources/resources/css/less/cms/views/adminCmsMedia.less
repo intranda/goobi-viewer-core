@@ -16,19 +16,32 @@
 		z-index: 2010;
 	}
 	/* UPLOAD */
-	&__upload {
-		position: relative;
-		margin-bottom: 20px;
-		padding: 50px 20px;
+	&__upload-wrapper {
+		display: flex;
+		margin-bottom: 20px;	
 		border: 2px dashed @middlegray;
 		&.is-dragover {
 			border-color: @blue;
 		    background-color: @neutralgray;
-		}
+		}	
+	}
+	&__upload {
+		flex-grow: 5;
+		position: relative;
+		padding: 50px 20px;
 		&.is-uploading,
 		&.is-success,
 		&.is-error {
 		}
+	}
+	&__list-files {
+		flex-grow: 1;
+		display: flex;
+		justify-content: center;
+		padding: 10px 0;
+		overflow-y: auto;
+		max-height: 180px;
+		color: @btnSuccess;
 	}
 	&__upload-input {
 		text-align: center;

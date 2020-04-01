@@ -1,30 +1,40 @@
 <adminMediaUpload>
-    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
-        <div class="admin-cms-media__upload-input">
-            <p>
-                {opts.msg.uploadText}
-                <br />
-                <small>({opts.msg.allowedFileTypes}: {fileTypes})</small>
-            </p>
-            <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
-            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}">
-        </div>
-        <div class="admin-cms-media__upload-messages">
-            <div class="admin-cms-media__upload-message uploading">
-                <i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading}
-            </div>
-            <div class="admin-cms-media__upload-message success">
-                <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
-            </div>
-            <div class="admin-cms-media__upload-message error">
-                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <span></span>
-            </div>        
-        </div>
-    </div>
-
+	<div class="admin-cms-media__upload-wrapper {isDragover ? 'is-dragover' : ''}">
+	    <div class="admin-cms-media__upload" ref="dropZone">
+	        <div class="admin-cms-media__upload-input">
+	            <p>
+	                {opts.msg.uploadText}
+	                <br />
+	                <small>({opts.msg.allowedFileTypes}: {fileTypes})</small>
+	            </p>
+	            <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
+	            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}">
+	        </div>
+	        <div class="admin-cms-media__upload-messages">
+	            <div class="admin-cms-media__upload-message uploading">
+	                <i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading}
+	            </div>
+	            <div class="admin-cms-media__upload-message success">
+	                <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
+	            </div>
+	            <div class="admin-cms-media__upload-message error">
+	                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <span></span>
+	            </div>        
+	        </div>
+	    </div>
+	    <div class="admin-cms-media__list-files" if="{this.opts.showFiles && this.uploadedFiles.length > 0}">
+	       	<ul>
+	       		<li each="{file in this.uploadedFiles}">
+	       			{file}
+	       		</li>
+	       		
+	       	</ul>
+	    </div>
+	</div>
     <script>
         this.files = [];
         this.displayFiles = [];
+        this.uploadedFiles = []
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {            
@@ -35,6 +45,8 @@
         this.on('mount', function () {
             var dropZone = (this.refs.dropZone);
     
+            this.getUploadedFiles();
+            
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -73,7 +85,11 @@
                     
                     this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
                 }
-    			this.uploadFiles();
+    			this.uploadFiles()
+    			.then( () => {
+    			    this.isDragover = false;
+    			    this.update();
+    			})
                 
             });
         }.bind(this));
@@ -110,7 +126,7 @@
                 uploads.push(Q(this.uploadFile(i)));
             }
             
-            Q.allSettled(uploads).then(function(results) {
+            return Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
                      console.log("settled ", result);
@@ -134,6 +150,7 @@
            		}
             
             }.bind(this))
+            .then( () => this.getUploadedFiles());
         }
     
         fileUploaded(fileInfo) {
@@ -151,6 +168,17 @@
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
                 $('.admin-cms-media__upload-message.error span').html(responseText);
             }
+        }
+        
+        getUploadedFiles() {
+            fetch(this.opts.postUrl, {
+                method: "GET",
+       		})
+       		.then(response => response.json())
+       		.then(json => {
+       		    this.uploadedFiles = json;
+       		    this.update();
+       		})
         }
     
         uploadFile(i) {
