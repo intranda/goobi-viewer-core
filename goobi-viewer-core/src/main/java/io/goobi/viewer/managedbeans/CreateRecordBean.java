@@ -15,25 +15,27 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.LicenseDescription;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.metadata.DCRecordWriter;
+import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.misc.DCRecordWriter;
 
 /**
  * @author florian
@@ -158,10 +160,18 @@ public class CreateRecordBean implements Serializable {
         this.license = license;
     }
     
-    public void saveRecord() {
-        System.out.println("Language is " + language.getGermanName());
-        System.out.println("Date is " + (date != null ? date.toString() : "null")); 
-        System.out.println("License is " + license);
+    public String saveRecord() {
+        DCRecordWriter writer = generateDCRecord();
+        Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
+        try {
+            writer.write(hotfolder);
+            Messages.info(Helper.getTranslation("admin__create_record__write_record__success"));
+            return "pretty:adminCreateRecord";
+        } catch (IOException e) {
+            Messages.error(Helper.getTranslation("admin__create_record__write_record__error"));
+            return "";
+        }
+        
     }
     
     public List<Language> getPossibleLanguages() {
@@ -175,7 +185,12 @@ public class CreateRecordBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getLicenseDescriptions();
     }
     
-    protected DCRecordWriter generateDCRecordXml() {
+    /**
+     * Create a {@link DCRecordWriter} instance containing all metadata of the bean as dc metadata
+     * 
+     * @return the{@link DCRecordWriter}
+     */
+    protected DCRecordWriter generateDCRecord() {
         DCRecordWriter writer = new DCRecordWriter();
         writer.addDCMetadata("title", getTitle());
         writer.addDCMetadata("description", getDescription());
@@ -196,8 +211,23 @@ public class CreateRecordBean implements Serializable {
      * @return
      */
     private String createUUID() {
-        // TODO Auto-generated method stub
-        return null;
+        return UUID.randomUUID().toString();
+    }
+    
+    public static void main(String[] args) throws InterruptedException {
+        String name = "Mein Titel";
+        
+        String source1 = DCRecordWriter.namespaceDC.getURI() + name;
+        String id1 = UUID.nameUUIDFromBytes(source1.getBytes()).toString();
+        
+        Thread.sleep(632);
+        
+        String source2 = DCRecordWriter.namespaceDC.getURI() + name;
+        String id2 = UUID.nameUUIDFromBytes(source2.getBytes()).toString();
+        
+        System.out.println(id1);
+        System.out.println(id2);
+
     }
 
 }

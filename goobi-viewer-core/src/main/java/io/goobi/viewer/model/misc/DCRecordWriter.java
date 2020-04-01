@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.metadata;
+package io.goobi.viewer.model.misc;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,7 +37,7 @@ import org.jdom2.output.XMLOutputter;
  */
 public class DCRecordWriter {
 
-    private static final Namespace namespaceDC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
+    public static final Namespace namespaceDC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
 
     private final Document doc;
     
@@ -64,6 +64,12 @@ public class DCRecordWriter {
         }
     }
     
+    /**
+     * Reads the value of the given metadata from the jdom document
+     * 
+     * @param name
+     * @return
+     */
     public String getMetadataValue(String name) {
         Element ele = doc.getRootElement().getChild(name, namespaceDC);
         if(ele != null) {
@@ -82,6 +88,15 @@ public class DCRecordWriter {
         return this.doc;
     }
     
+    /**
+     * Writes the created jdom document to the given path.
+     * If the path denotes a directory, a new file will be created within the directory
+     * with the filename being the "identifier" metadata value if it exists. Otherwise the "title" metadata value 
+     * or the current timestamp if title doesn't exist either
+     * 
+     * @param path  The path to the file (created if it doesn't exist, overwritten if it does) or the directory which should contain the file
+     * @throws IOException  if the parent directory of the given path doesn't exist, or writing the file fails for some other reason
+     */
     public void write(Path path) throws IOException {
         Path filePath = path;
         if(Files.isDirectory(path)) {
