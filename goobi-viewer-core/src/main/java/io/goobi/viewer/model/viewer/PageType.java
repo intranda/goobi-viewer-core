@@ -65,7 +65,7 @@ public enum PageType {
     adminLicenseType("admin/license"),
     adminRoles("admin/roles"),
     adminUserComments("admin/comments"),
-    adminCreateRecord("admin/record/dc/create"),
+    adminCreateRecord("admin/record/new"),
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
