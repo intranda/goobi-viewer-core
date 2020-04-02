@@ -38,14 +38,35 @@
 				<div id="timematrixCanvas"></div>
 				
 				<div class="clearfix"></div>
+				
+				<timematrix></timematrix>
+				
             </div>
+
+            <script>
+             		var $startHere= $("#timematrixSelectionRangeInput1");
+                 	var $endHere= $("#timematrixSelectionRangeInput2");
+             		riot.mount('timematrix', {
+                		msg: {
+                			timematrixCalculate: "#{msg.timematrixCalculate}",
+            	        	closeWindow: "#{msg.timematrixCloseWindow}",
+            	        	goToWork: "#{msg.timematrixGoToWork}"
+                		},
+                     	startInput: "#timematrixSelectionRangeInput1",
+                     	endInput: "#timematrixSelectionRangeInput2",
+                     	contextPath: "#{request.contextPath}/",
+                     	count: #{configurationBean.timeMatrixHits},
+                     	button: "#setTimematrix"
+                     	});
+            </script>
+            
             <script type="text/javascript">
             $(document).ready(function() {
               	var timematrixConfig = {
 	                contextPath: "#{request.contextPath}/",
 	                rangeInput1: $( "#timematrixSelectionRangeInput1" ),
 	                startDate: $( "#timematrixSelectionRangeInput1" ).val(),
-	                rangeInput1: $( "#timematrixSelectionRangeInput2" ),
+	                rangeInput2: $( "#timematrixSelectionRangeInput2" ),
 		            endDate: $( "#timematrixSelectionRangeInput2" ).val(),
 		            count: #{configurationBean.timeMatrixHits},
 		            $tmCanvas: $( "#timematrixCanvas" ),

@@ -1720,3 +1720,42 @@ this.addAnnotation = function() {
 });
 
 
+riot.tag2('timematrix', '<div class="card"><img each="{image in imageList}" riot-src="{image.mediumimage}" width="100px" height="100px"><a each="{image in imageList}" href="{image.url}">zum Werk</a><h4 each="{image in imageList}" name="{image.title}" riot-value="{image.title}"></h4></div>', '', '', function(opts) {
+
+ this.on( 'mount', function() {
+ 	$(this.opts.button).on("click", this.updateRange)
+ 	this.imageList=[]
+ })
+
+ this.updateRange = function(event){
+	console.log('event', event)
+	this.getTimematrix()
+}.bind(this)
+ this.getTimematrix = function(){
+
+     var apiTarget = this.opts.contextPath;
+     apiTarget += 'rest/records/timematrix/range/';
+     apiTarget += $(this.opts.startInput).val();
+     apiTarget += "/";
+     apiTarget += $(this.opts.endInput).val();
+     apiTarget += '/';
+     apiTarget += this.opts.count;
+     apiTarget += '/';
+     console.log('apiTarget', apiTarget)
+
+     var promise = fetch(apiTarget)
+
+	fetch(apiTarget)
+	.then( function(result) {
+	    return result.json();
+	})
+	.then( function(json) {
+	    console.log("answer", json);
+	    this.imageList=json;
+	    this.update()
+	}.bind(this))
+ }.bind(this)
+
+ console.log('Hello', this.opts);
+
+});
