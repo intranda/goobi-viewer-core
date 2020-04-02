@@ -1,4 +1,4 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDragover ? \'is-dragover\' : \'\'}"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div class="admin-cms-media__list-files" if="{this.opts.showFiles && this.uploadedFiles.length > 0}"><ul><li each="{file in this.uploadedFiles}"> {file} </li></ul></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDragover ? \'is-dragover\' : \'\'}"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><ul><li each="{file in this.uploadedFiles}"> {file} </li></ul><div class="admin-cms-media__list-files__delete_overlay" ref="deleteOverlay"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
         this.uploadedFiles = []
@@ -10,9 +10,17 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
         this.isDragover = false;
 
         this.on('mount', function () {
-            var dropZone = (this.refs.dropZone);
 
-            this.getUploadedFiles();
+            if(this.opts.showFiles) {
+                this.initUploadedFiles();
+            }
+
+            this.initDrop();
+
+        }.bind(this));
+
+        this.initDrop = function() {
+			var dropZone = (this.refs.dropZone);
 
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
@@ -59,7 +67,29 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
     			})
 
             });
-        }.bind(this));
+        }.bind(this)
+
+        this.initUploadedFiles = function() {
+			this.getUploadedFiles();
+
+            var filesZone = (this.refs.filesZone);
+            var deleteOverlay = (this.refs.deleteOverlay);
+
+            filesZone.addEventListener('mouseenter', function (e) {
+                deleteOverlay.classList.add("in");
+            });
+
+            filesZone.addEventListener('mouseleave', function (e) {
+                deleteOverlay.classList.remove("in");
+            });
+
+            deleteOverlay.addEventListener('click', function (e) {
+                if(confirm(this.opts.msg.bulkDeleteConfirm)) {
+                    this.deleteUploadedFiles()
+                    .then( () => this.getUploadedFiles())
+                }
+            }.bind(this));
+        }.bind(this)
 
         this.buttonFilesSelected = function(e) {
             for (var f of e.target.files) {
@@ -96,7 +126,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
             return Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-                     console.log("settled ", result);
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -117,7 +146,11 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
            		}
 
             }.bind(this))
-            .then( () => this.getUploadedFiles());
+            .then( () => {
+                if(this.opts.showFiles) {
+                	return this.getUploadedFiles();
+                }
+            });
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
@@ -138,13 +171,19 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
         }.bind(this)
 
         this.getUploadedFiles = function() {
-            fetch(this.opts.postUrl, {
+            return fetch(this.opts.postUrl, {
                 method: "GET",
        		})
        		.then(response => response.json())
        		.then(json => {
        		    this.uploadedFiles = json;
        		    this.update();
+       		})
+        }.bind(this)
+
+        this.deleteUploadedFiles = function() {
+            return fetch(this.opts.postUrl, {
+                method: "DELETE",
        		})
         }.bind(this)
 
@@ -189,7 +228,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
 
        		})
        		.then( result => {
-       		    console.log("post result ", result);
        		    var defer = Q.defer();
        		    if(result.ok) {
        		    	defer.resolve(result);

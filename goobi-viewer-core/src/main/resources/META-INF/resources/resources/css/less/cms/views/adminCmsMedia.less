@@ -35,13 +35,31 @@
 		}
 	}
 	&__list-files {
-		flex-grow: 1;
-		display: flex;
+		display: none;
 		justify-content: center;
-		padding: 10px 0;
 		overflow-y: auto;
-		max-height: 180px;
 		color: @btnSuccess;
+		position: relative;
+		&.in {
+			display: flex;
+			flex-grow: 1;
+		}
+		&__delete_overlay {
+			position: absolute;
+			display: none;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 100%;
+			color: black;
+			background: rgba(0,0,0,0.3);
+			&.in {
+				display: flex;
+			}
+		}
+		ul {
+			margin: 10px 0;
+		}
 	}
 	&__upload-input {
 		text-align: center;

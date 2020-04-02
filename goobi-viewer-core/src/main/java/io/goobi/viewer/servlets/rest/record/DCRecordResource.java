@@ -48,16 +48,19 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.servlets.rest.MediaItem;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
+ * Upload of resouces for DC record creation.
+ * Files uploaded here are directly written to a subfolder of the viewer hotfolder
+ * 
  * @author florian
  *
  */
@@ -71,6 +74,17 @@ public class DCRecordResource {
     @Context
     protected HttpServletResponse servletResponse;
 
+    /**
+     * Upload a file to the hotfolder
+     * 
+     * @param uuid
+     * @param enabled
+     * @param filename
+     * @param uploadedInputStream
+     * @param fileDetail
+     * @return a json response with a result message
+     * @throws DAOException
+     */
     @POST
     @javax.ws.rs.Path("/{uuid}/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -82,20 +96,20 @@ public class DCRecordResource {
         try {
 
             if (uploadedInputStream == null) {
-                return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
+                return Response.status(Status.NOT_ACCEPTABLE).entity(errorMessage("Upload stream is null")).build();
             }
 
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
             if (bean == null) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("No bean found containing record data").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No bean found containing record data")).build();
             }
 
-            Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid);
+            Path targetDir = getTargetDir(uuid);
             if (!Files.isDirectory(targetDir)) {
                 Files.createDirectory(targetDir);
             }
             if (!Files.isDirectory(targetDir)) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("No target directory for upload available").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No target directory for upload available")).build();
             }
             Path targetFile = targetDir.resolve(filename);
 
@@ -103,7 +117,7 @@ public class DCRecordResource {
                 Files.copy(uploadedInputStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
 
                 if (Files.exists(targetFile) && Files.size(targetFile) > 0) {
-                    return Response.status(Status.OK).entity("Successfully uploaded " + targetFile).build();
+                    return Response.status(Status.OK).entity(message("Successfully uploaded " + targetFile)).build();
                 } else {
                     throw new IOException("Uploaded file doesn't exist or is empty");
                 }
@@ -116,31 +130,79 @@ public class DCRecordResource {
                 } catch (IOException e1) {
                     logger.error("Error deleting failed upload file " + targetFile, e1);
                 }
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage(message)).build();
             }
         } catch (Throwable e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Unknown error: " + e.toString()).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
 
+    /**
+     * Get the appropriate media subfolder for the given uuid in the viewer hotfolder
+     * 
+     * @param uuid
+     * @return  the folder for upload
+     * @throws IOException
+     */
+    private Path getTargetDir(String uuid) throws IOException {
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_media");
+        return targetDir;
+    }
+
+    /**
+     * Return a json object with the filename of the uploaded image denoted by filename if it exists. Otherwise an empty json object
+     * 
+     * @param uuid
+     * @param filename
+     * @return  a json object with the filename of the uploaded image denoted by filename if it exists. Otherwise an empty json object
+     */
+    @GET
+    @javax.ws.rs.Path("/{uuid}/upload/{filename}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUploadedFiles(@PathParam("uuid") String uuid, @PathParam("filename") String filename) {
+        try {
+            CreateRecordBean bean = BeanUtils.getCreateRecordBean();
+            if (bean == null) {
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No bean found containing record data")).build();
+            }
+
+            List<String> uploadedFiles = new ArrayList<>();
+            Path file = getTargetDir(uuid).resolve(filename);
+            if (Files.exists(file)) {
+                MediaItem jsonItem = new MediaItem(file.getFileName().toUri());
+                return Response.status(Status.OK).entity(jsonItem).build();
+            } else {
+                return Response.status(Status.OK).entity("{}").build();
+            }
+        } catch (Throwable e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+        }
+    }
+    
+    /**
+     * Get a filename list of all uploaded files in the media directory of the given uuid
+     * 
+     * @param uuid
+     * @return a filename list of all uploaded files in the media directory of the given uuid
+     */
     @GET
     @javax.ws.rs.Path("/{uuid}/upload")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getUploadedFiles(@PathParam("uuid") String uuid) {
 
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
             if (bean == null) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("No bean found containing record data").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No bean found containing record data")).build();
             }
 
             List<String> uploadedFiles = new ArrayList<>();
-            Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid);
+            Path targetDir = getTargetDir(uuid);
             if (Files.isDirectory(targetDir)) {
                 try (Stream<Path> stream = Files.list(targetDir)) {
                     uploadedFiles = stream.map(path -> path.getFileName().toString()).sorted().collect(Collectors.toList());
                 } catch (IOException e) {
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Error reading upload directory: " + e.toString()).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error reading upload directory: " + e.toString())).build();
                 }
             }
             try {
@@ -150,14 +212,20 @@ public class DCRecordResource {
                 String json = mapper.writeValueAsString(uploadedFiles);
                 return Response.status(Status.OK).entity(json).build();
             } catch (JsonProcessingException e) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Error creating json object: " + e.toString()).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object: " + e.toString())).build();
 
             }
         } catch (Throwable e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Unknown error: " + e.toString()).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
 
+    /**
+     * Delete all files uploaded for the given uuid
+     * 
+     * @param uuid
+     * @return  a 200 response if deletion was successfull, otherwise 500
+     */
     @DELETE
     @javax.ws.rs.Path("/{uuid}/upload")
     @Produces(MediaType.APPLICATION_JSON)
@@ -169,7 +237,7 @@ public class DCRecordResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity("No bean found containing record data").build();
             }
 
-            Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid);
+            Path targetDir = getTargetDir(uuid);
             if (Files.isDirectory(targetDir)) {
                 try (Stream<Path> stream = Files.list(targetDir)) {
                     List<Path> uploadedFiles = stream.collect(Collectors.toList());
@@ -177,13 +245,22 @@ public class DCRecordResource {
                         Files.delete(file);
                     }
                 } catch (IOException e) {
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Error reading upload directory: " + e.toString()).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error reading upload directory: " + e.toString())).build();
                 }
             }
             return Response.status(Status.OK).build();
         } catch (Throwable e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Unknown error: " + e.toString()).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
+    }
+    
+
+    private String errorMessage(String string) {
+       return message(string);
+    }
+    
+    private String message(String string) {
+        return "{message: \"" + string + "\"}";
     }
 
 }

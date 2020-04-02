@@ -22,13 +22,16 @@
 	            </div>        
 	        </div>
 	    </div>
-	    <div class="admin-cms-media__list-files" if="{this.opts.showFiles && this.uploadedFiles.length > 0}">
+	    <div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? 'in' : ''}" ref="filesZone">
 	       	<ul>
 	       		<li each="{file in this.uploadedFiles}">
 	       			{file}
 	       		</li>
 	       		
 	       	</ul>
+	       	<div class="admin-cms-media__list-files__delete_overlay" ref="deleteOverlay">
+	       		<i class="fa fa-trash" aria-hidden="true"></i>
+	       	</div>
 	    </div>
 	</div>
     <script>
@@ -43,9 +46,18 @@
         this.isDragover = false;
     
         this.on('mount', function () {
-            var dropZone = (this.refs.dropZone);
+            
+            if(this.opts.showFiles) {
+                this.initUploadedFiles();
+            }
+
+            this.initDrop();
+            
+        }.bind(this));
+
+        initDrop() {
+			var dropZone = (this.refs.dropZone);
     
-            this.getUploadedFiles();
             
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
@@ -92,8 +104,30 @@
     			})
                 
             });
-        }.bind(this));
+        }
      
+        initUploadedFiles() {
+			this.getUploadedFiles();
+            
+            var filesZone = (this.refs.filesZone);
+            var deleteOverlay = (this.refs.deleteOverlay);
+            
+            filesZone.addEventListener('mouseenter', function (e) {
+                deleteOverlay.classList.add("in");
+            });
+
+            filesZone.addEventListener('mouseleave', function (e) {
+                deleteOverlay.classList.remove("in");
+            });
+            
+            deleteOverlay.addEventListener('click', function (e) {
+                if(confirm(this.opts.msg.bulkDeleteConfirm)) {
+                    this.deleteUploadedFiles()
+                    .then( () => this.getUploadedFiles())
+                }
+            }.bind(this));
+        }
+        
         buttonFilesSelected(e) {
             for (var f of e.target.files) {
             	            	
@@ -129,7 +163,6 @@
             return Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-                     console.log("settled ", result);
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -150,7 +183,11 @@
            		}
             
             }.bind(this))
-            .then( () => this.getUploadedFiles());
+            .then( () => {
+                if(this.opts.showFiles) {                    
+                	return this.getUploadedFiles();
+                }
+            });
         }
     
         fileUploaded(fileInfo) {
@@ -171,13 +208,19 @@
         }
         
         getUploadedFiles() {
-            fetch(this.opts.postUrl, {
+            return fetch(this.opts.postUrl, {
                 method: "GET",
        		})
        		.then(response => response.json())
        		.then(json => {
        		    this.uploadedFiles = json;
        		    this.update();
+       		})
+        }
+        
+        deleteUploadedFiles() {
+            return fetch(this.opts.postUrl, {
+                method: "DELETE",
        		})
         }
     
@@ -222,7 +265,6 @@
                 
        		})
        		.then( result => {
-       		    console.log("post result ", result);
        		    var defer = Q.defer();
        		    if(result.ok) {
        		    	defer.resolve(result);    		        

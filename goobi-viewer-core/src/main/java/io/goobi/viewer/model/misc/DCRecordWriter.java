@@ -17,6 +17,7 @@ package io.goobi.viewer.model.misc;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -46,7 +47,8 @@ public class DCRecordWriter {
      */
     public DCRecordWriter() {
         doc = new Document();
-        Element record = new Element("record", namespaceDC);
+        Element record = new Element("record");
+        record.addNamespaceDeclaration(namespaceDC);
         doc.setRootElement(record);
     }
     
@@ -115,6 +117,19 @@ public class DCRecordWriter {
         try(OutputStream out = Files.newOutputStream(filePath)) {
             xmlOutput.output(doc, out);
         }
+    }
+    
+    
+    public String getAsString() {
+        XMLOutputter xmlOutput = new XMLOutputter();
+        xmlOutput.setFormat(Format.getPrettyFormat());
+        StringWriter writer = new StringWriter();
+        try {
+            xmlOutput.output(doc, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return writer.toString();
     }
     
 }

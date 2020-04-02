@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PreDestroy;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -41,6 +42,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.misc.DCRecordWriter;
 
 /**
+ * Bean for uploading Dublin Core records.
+ * 
  * @author florian
  *
  */
@@ -59,30 +62,30 @@ public class CreateRecordBean implements Serializable {
     private String collection;
     private String accessCondition;
     private String license;
+    
+    /**
+     * If this flag is 'true' at the end of the bean's lifecycle, the images folder will be deleted with all its content
+     */
+    private boolean readyForIndexing = false;
 
     private final Path tempImagesFolder;
     private final String uuid;
 
+    /**
+     * Constructor. Generates a random uuid for the record
+     */
     public CreateRecordBean() {
         String languageCode = BeanUtils.getNavigationHelper().getLocale().getLanguage();
         this.language = "";
 
         this.uuid = createUUID();
 
-        this.tempImagesFolder = createTempImagesDirectory();
+        this.tempImagesFolder = getTempImagesDirectory();
     }
 
-    /**
-     * 
-     */
-    public Path createTempImagesDirectory() {
-        try {
-            return Files.createTempDirectory(this.uuid);
-        } catch (IOException e) {
-            Messages.error(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__error", null,
-                    "Failed to create images temp directory: " + e.getMessage()));
-            return null;
-        }
+    private Path getTempImagesDirectory() {
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_media");
+        return targetDir;
     }
 
     /**
@@ -92,6 +95,10 @@ public class CreateRecordBean implements Serializable {
         return tempImagesFolder;
     }
 
+    /**
+     * 
+     * @return the generated UUID for the current record
+     */
     public String getUuid() {
         return this.uuid;
     }
@@ -208,6 +215,12 @@ public class CreateRecordBean implements Serializable {
         this.license = license;
     }
 
+    /**
+     * Add any uploaded images to the record, write the record as Dublin Core xml to the viewer hotfolder
+     * and set readyForIndexing = true so the images won't be deleted when the user session ends
+     * 
+     * @return  the url of the create record page to allow creating a new record
+     */
     public String saveRecord() {
         DCRecordWriter writer = generateDCRecord();
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
@@ -217,6 +230,7 @@ public class CreateRecordBean implements Serializable {
                 addFiles(writer, mediaFolder);
             }
             writer.write(hotfolder);
+            readyForIndexing = true;
             Messages.info(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__success", null,
                     writer.getMetadataValue("identifier")));
             return "pretty:adminCreateRecord";
@@ -245,6 +259,9 @@ public class CreateRecordBean implements Serializable {
 
     }
 
+    /**
+     * @return  A list of possible languages  to use for the record 
+     */
     public List<Language> getPossibleLanguages() {
         List<Language> languages = DataManager.getInstance().getLanguageHelper().getMajorLanguages();
         Locale locale = BeanUtils.getLocale();
@@ -252,6 +269,9 @@ public class CreateRecordBean implements Serializable {
         return languages;
     }
 
+    /**
+     * @return  A list of possible licenses to use for the record
+     */
     public List<LicenseDescription> getPossibleLicenses() {
         return DataManager.getInstance().getConfiguration().getLicenseDescriptions();
     }
@@ -277,36 +297,30 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * TODO: implement
-     * 
-     * @return
+     * @return  a UUID created by {@link UUID#randomUUID()}
      */
     private String createUUID() {
         return UUID.randomUUID().toString();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        String name = "Mein Titel";
-
-        String source1 = DCRecordWriter.namespaceDC.getURI() + name;
-        String id1 = UUID.nameUUIDFromBytes(source1.getBytes()).toString();
-
-        Thread.sleep(632);
-
-        String source2 = DCRecordWriter.namespaceDC.getURI() + name;
-        String id2 = UUID.nameUUIDFromBytes(source2.getBytes()).toString();
-
-        System.out.println(id1);
-        System.out.println(id2);
-
-    }
-
     /**
-     * Delete the {@link #tempImagesFolder} with all contained files if it still exists
+     * Mark the record as not ready for indexing and delete all associated images
+     * 
+     * @return  the url of the create record page
      */
-    @Override
-    protected void finalize() throws Throwable {
-        if (this.tempImagesFolder != null && Files.exists(tempImagesFolder)) {
+    public String reset() {
+        readyForIndexing = false;
+        destroy();
+        return "pretty:adminCreateRecord";
+    }
+    
+    /**
+     * Delete the {@link #tempImagesFolder} with all contained files if it still exists.
+     * Called when the user session ends
+     */
+    @PreDestroy
+    public void destroy() {
+        if (!readyForIndexing && Files.exists(tempImagesFolder)) {
             try (Stream<Path> stream = Files.list(this.tempImagesFolder)) {
                 List<Path> uploadedFiles = stream.collect(Collectors.toList());
                 for (Path file : uploadedFiles) {
