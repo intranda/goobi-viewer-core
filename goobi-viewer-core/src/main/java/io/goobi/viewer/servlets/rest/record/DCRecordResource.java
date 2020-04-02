@@ -137,17 +137,7 @@ public class DCRecordResource {
         }
     }
 
-    /**
-     * Get the appropriate media subfolder for the given uuid in the viewer hotfolder
-     * 
-     * @param uuid
-     * @return  the folder for upload
-     * @throws IOException
-     */
-    private Path getTargetDir(String uuid) throws IOException {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_media");
-        return targetDir;
-    }
+
 
     /**
      * Return a json object with the filename of the uploaded image denoted by filename if it exists. Otherwise an empty json object
@@ -261,6 +251,18 @@ public class DCRecordResource {
     
     private String message(String string) {
         return "{message: \"" + string + "\"}";
+    }
+    
+    /**
+     * Get the appropriate media subfolder for the given uuid in the viewer hotfolder
+     * 
+     * @param uuid
+     * @return  the folder for upload
+     * @throws IOException
+     */
+    private Path getTargetDir(String uuid) throws IOException {
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_tif");
+        return targetDir;
     }
 
 }

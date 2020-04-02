@@ -84,7 +84,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     private Path getTempImagesDirectory() {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_media");
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_tif");
         return targetDir;
     }
 
