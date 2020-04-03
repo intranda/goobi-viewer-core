@@ -1488,7 +1488,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedMetsFolder() {
-        return getLocalString("indexedMetsFolder");
+        return getLocalString("indexedMetsFolder", "indexed_mets");
     }
 
     /**
@@ -1500,7 +1500,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedLidoFolder() {
-        return getLocalString("indexedLidoFolder");
+        return getLocalString("indexedLidoFolder", "indexed_lido");
     }
 
     /**
@@ -1512,7 +1512,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedDenkxwebFolder() {
-        return getLocalString("indexedDenkxwebFolder");
+        return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
     }
 
     /**
@@ -1524,7 +1524,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedDublinCoreFolder() {
-        return getLocalString("indexedDublinCoreFolder");
+        return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
     }
 
     /**
