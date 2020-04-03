@@ -265,6 +265,13 @@ public class DCRecordResource {
         }
     }
 
+    /**
+     * Delete the file with the given filename in the temp media folder for the given uuid
+     * 
+     * @param uuid
+     * @param filename
+     * @return  A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
+     */
     @DELETE
     @javax.ws.rs.Path("/{uuid}/upload/{filename}")
     @Produces(MediaType.APPLICATION_JSON)
