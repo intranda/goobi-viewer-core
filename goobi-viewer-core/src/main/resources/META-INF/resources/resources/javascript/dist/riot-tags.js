@@ -1720,7 +1720,7 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('timematrix', '<div class="card"><img each="{image in imageList}" riot-src="{image.mediumimage}" width="100px" height="100px"><a each="{image in imageList}" href="{image.url}">zum Werk</a><h4 each="{image in imageList}" name="{image.title}" riot-value="{image.title}"></h4></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div class="imgContent"><img riot-src="{image.mediumimage}"></div><h4>{image.title[0]}</h4><a href="{image.url}">{opts.msg.goToWork}</a></div></div>', '', '', function(opts) {
 
  this.on( 'mount', function() {
  	$(this.opts.button).on("click", this.updateRange)

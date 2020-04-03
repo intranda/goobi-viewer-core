@@ -1,13 +1,17 @@
 <timematrix>
 
-	<div class="card">
-		<img each="{image in imageList}" src="{image.mediumimage}" width="100px" height="100px"> 
+	<div class="timematrix__objects">
+		<div each="{image in imageList}" class="timematrix__content">
+			
+			<div class="imgContent">
+				<img src="{image.mediumimage}"> 
+			</div>
 				
-		<a each="{image in imageList}" href="{image.url}">zum Werk</a>
-	
-		<h4 each="{image in imageList}" name="{image.title}" value="{image.title}"></h4>
+			<h4>{image.title[0]}</h4>
+			
+			<a href="{image.url}">{opts.msg.goToWork}</a>
+		</div> 
 	</div>
-
 	
 
  <script> 

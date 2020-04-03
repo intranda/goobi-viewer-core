@@ -17,14 +17,14 @@
 
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-            <div id="timeMatrix">				
+            <div id="timeMatrix" class="timematrix">				
 				<h2>#{msg.timematrix}</h2>
 
                 <p>#{msg.timematrixDescriptionText}</p>
 
-                <h3 class="timematrix-selection-header">#{msg.timematrixSelectRange}</h3>
+                <h3 class="timematrix__selection-header">#{msg.timematrixSelectRange}</h3>
 
-				<div class="timematrix-selection">
+				<div class="timematrix__selection">
 					<form id="locateTimematrix" method="POST">
 						<input type="hidden" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
 						<input type="hidden" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
