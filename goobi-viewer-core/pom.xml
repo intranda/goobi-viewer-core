@@ -72,7 +72,7 @@
 <!-- 		<contentserver.version>2.0.0-SNAPSHOT</contentserver.version> -->
 		<contentserver.version>1.11.3</contentserver.version>
 		<tei-conversion.version>1.0.1-SNAPSHOT</tei-conversion.version>
-		<iiif-api-model.version>1.6.1</iiif-api-model.version>
+		<iiif-api-model.version>1.6.2</iiif-api-model.version>
 		<normdataimporter.version>1.2.9</normdataimporter.version>
 
 		<!-- other libraries -->

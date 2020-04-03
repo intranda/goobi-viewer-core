@@ -224,7 +224,7 @@ public class CreateRecordBean implements Serializable {
     public String saveRecord() {
         DCRecordWriter writer = generateDCRecord();
         Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
-        Path mediaFolder = hotfolder.resolve(getUuid());
+        Path mediaFolder = hotfolder.resolve(getUuid() + "_tif");
         try {
             if (Files.exists(mediaFolder)) {
                 addFiles(writer, mediaFolder);

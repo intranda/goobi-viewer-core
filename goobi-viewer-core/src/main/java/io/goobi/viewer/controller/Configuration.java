@@ -3962,6 +3962,17 @@ public final class Configuration extends AbstractConfiguration {
     public String getCmsMediaFolder() {
         return getLocalString("cms.mediaFolder", "cms_media");
     }
+    
+    
+    /**
+     * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
+     * 
+     * @return  "temp_media" unless otherwise configured in "tempMediaFolder"
+     */
+    public String getTempMediaFolder() {
+        return getLocalString("tempMediaFolder", "temp_media");
+    }
+
 
     /**
      * <p>

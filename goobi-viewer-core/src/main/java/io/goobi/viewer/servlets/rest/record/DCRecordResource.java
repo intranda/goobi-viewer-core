@@ -159,7 +159,7 @@ public class DCRecordResource {
             List<String> uploadedFiles = new ArrayList<>();
             Path file = getTargetDir(uuid).resolve(filename);
             if (Files.exists(file)) {
-                MediaItem jsonItem = new MediaItem(file.getFileName().toUri());
+                MediaItem jsonItem = getAsMediaItem(file);
                 return Response.status(Status.OK).entity(jsonItem).build();
             } else {
                 return Response.status(Status.OK).entity("{}").build();
@@ -169,6 +169,20 @@ public class DCRecordResource {
         }
     }
     
+    /**
+     * @param file
+     * @return
+     */
+    private MediaItem getAsMediaItem(Path file) {
+        
+//        BeanUtils.get
+        
+         MediaItem item = new MediaItem(file.getFileName().toUri());
+         return item;
+    }
+
+
+
     /**
      * Get a filename list of all uploaded files in the media directory of the given uuid
      * 

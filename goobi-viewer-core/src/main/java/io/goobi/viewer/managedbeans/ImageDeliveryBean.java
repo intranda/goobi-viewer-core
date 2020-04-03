@@ -88,6 +88,7 @@ public class ImageDeliveryBean implements Serializable {
     private String servletPath;
     private String staticImagesURI;
     private String cmsMediaPath;
+    private String tempMediaPath;
     private ImageHandler images;
     private ThumbnailHandler thumbs;
     private PdfHandler pdf;
@@ -125,6 +126,9 @@ public class ImageDeliveryBean implements Serializable {
         this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
         this.cmsMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+        this.tempMediaPath =
+                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getTempMediaFolder();
+
         iiif = new IIIFUrlHandler();
         images = new ImageHandler();
         objects3d = new Object3DHandler(config);
@@ -483,6 +487,39 @@ public class ImageDeliveryBean implements Serializable {
         }
         return false;
     }
+    
+    /**
+     * Tests whether the given url points to a temporary media file - i.e. any file within the configured temp media path
+     *
+     * @param url The url to test
+     * @return true if the url points to a temp media file
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public boolean isTempUrl(String url) throws ViewerConfigurationException {
+        URI uri;
+        try {
+            url = StringTools.decodeUrl(url);
+            uri = PathConverter.toURI(url);
+            Path path = PathConverter.getPath(uri);
+            if (path.isAbsolute()) {
+                path = path.normalize();
+                Path cmsMediaPath = Paths.get(getTempMediaPath());
+                return path.startsWith(cmsMediaPath);
+            }
+        } catch (URISyntaxException e) {
+            logger.trace(e.toString());
+        }
+        return false;
+    }
+    
+    /**
+     * @param imageName
+     * @return
+     * @throws ViewerConfigurationException 
+     */
+    public boolean isPublicUrl(String url) throws ViewerConfigurationException {
+        return isCmsUrl(url) || isTempUrl(url);
+    }
 
     /**
      * Tests whether the given url points to a static image resource within the current theme
@@ -518,6 +555,13 @@ public class ImageDeliveryBean implements Serializable {
             init();
         }
         return cmsMediaPath;
+    }
+    
+    private String getTempMediaPath() throws ViewerConfigurationException {
+        if (tempMediaPath == null) {
+            init();
+        }
+        return tempMediaPath;
     }
 
     /**
@@ -564,5 +608,7 @@ public class ImageDeliveryBean implements Serializable {
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;
     }
+
+
 
 }

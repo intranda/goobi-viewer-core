@@ -80,7 +80,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
                 return;
             } else {
                 //only for actual image requests, no info requests
-                if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
+                if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
                         && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                     filterForAccessConditions(request, pi, imageName);
                 }
