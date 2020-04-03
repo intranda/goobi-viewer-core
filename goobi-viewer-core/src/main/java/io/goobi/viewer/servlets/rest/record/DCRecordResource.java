@@ -169,9 +169,7 @@ public class DCRecordResource {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
-    
-    
-    
+
     /**
      * @param file
      * @return
@@ -181,13 +179,13 @@ public class DCRecordResource {
         String uri = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(file);
         return URI.create(uri);
     }
-    
+
     private String getAsJson(List list) throws JsonProcessingException {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            String json = mapper.writeValueAsString(list);
-            return json;
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        String json = mapper.writeValueAsString(list);
+        return json;
     }
 
     /**
@@ -211,20 +209,21 @@ public class DCRecordResource {
             Path targetDir = getTargetDir(uuid);
             if (Files.isDirectory(targetDir)) {
                 try (Stream<Path> stream = Files.list(targetDir)) {
-                    uploadedFiles = stream.map(this::getIiifUri).sorted( (i1,i2) -> i1.toString().compareTo(i2.toString())).collect(Collectors.toList());
+                    uploadedFiles =
+                            stream.map(this::getIiifUri).sorted((i1, i2) -> i1.toString().compareTo(i2.toString())).collect(Collectors.toList());
                 } catch (IOException e) {
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
                             .entity(errorMessage("Error reading upload directory: " + e.toString()))
                             .build();
                 }
             }
-            try {                
+            try {
                 String json = getAsJson(uploadedFiles);
                 return Response.status(Status.OK).entity(json).build();
-            } catch(JsonProcessingException e) {
+            } catch (JsonProcessingException e) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object: " + e.toString())).build();
             }
-            
+
         } catch (Throwable e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
@@ -266,6 +265,34 @@ public class DCRecordResource {
         }
     }
 
+    @DELETE
+    @javax.ws.rs.Path("/{uuid}/upload/{filename}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteUploadedFile(@PathParam("uuid") String uuid, @PathParam("filename") String filename) {
+        try {
+            CreateRecordBean bean = BeanUtils.getCreateRecordBean();
+            if (bean == null) {
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No bean found containing record data")).build();
+            }
+
+            Path file = getTargetDir(uuid).resolve(filename);
+            if (Files.exists(file)) {
+                try {
+                    Files.delete(file);
+                    return Response.status(Status.OK).build();
+                } catch (IOException e) {
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .build();
+                }
+            } else {
+                return Response.status(Status.NOT_ACCEPTABLE).entity(errorMessage("File doesn't exist")).build();
+            }
+        } catch (Throwable e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+        }
+    }
+
     private String errorMessage(String string) {
         return message(string);
     }
@@ -282,7 +309,9 @@ public class DCRecordResource {
      * @throws IOException
      */
     private Path getTargetDir(String uuid) throws IOException {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome()).resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder()).resolve(uuid + "_tif");
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome())
+                .resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder())
+                .resolve(uuid + "_tif");
         return targetDir;
     }
 

@@ -23,10 +23,11 @@
 	        </div>
 	    </div>
 	    <div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? 'in' : ''}" ref="filesZone">
-	       	<img each="{file in this.uploadedFiles}" src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
-	       			
-	       	<div class="admin-cms-media__list-files__delete_overlay" ref="deleteOverlay">
-	       		<i class="fa fa-trash" aria-hidden="true"></i>
+	       	<div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file">
+		       	<img src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
+		       	<div class="delete_overlay" onclick="{deleteFile}">
+		       		<i class="fa fa-trash" aria-hidden="true"></i>
+		       	</div>
 	       	</div>
 	    </div>
 	</div>
@@ -106,22 +107,22 @@
 			this.getUploadedFiles();
             
             var filesZone = (this.refs.filesZone);
-            var deleteOverlay = (this.refs.deleteOverlay);
+//             var deleteOverlay = (this.refs.deleteOverlay);
             
-            filesZone.addEventListener('mouseenter', function (e) {
-                deleteOverlay.classList.add("in");
-            });
+//             filesZone.addEventListener('mouseenter', function (e) {
+//                 deleteOverlay.classList.add("in");
+//             });
 
-            filesZone.addEventListener('mouseleave', function (e) {
-                deleteOverlay.classList.remove("in");
-            });
+//             filesZone.addEventListener('mouseleave', function (e) {
+//                 deleteOverlay.classList.remove("in");
+//             });
             
-            deleteOverlay.addEventListener('click', function (e) {
-                if(confirm(this.opts.msg.bulkDeleteConfirm)) {
-                    this.deleteUploadedFiles()
-                    .then( () => this.getUploadedFiles())
-                }
-            }.bind(this));
+//             deleteOverlay.addEventListener('click', function (e) {
+//                 if(confirm(this.opts.msg.bulkDeleteConfirm)) {
+//                     this.deleteUploadedFiles()
+//                     .then( () => this.getUploadedFiles())
+//                 }
+//             }.bind(this));
         }
         
         buttonFilesSelected(e) {
@@ -220,6 +221,20 @@
                 method: "DELETE",
        		})
         }
+        
+        deleteUploadedFile(file) {
+            return fetch(this.opts.postUrl + this.getFilename(file), {
+                method: "DELETE",
+       		})
+        }
+        
+        deleteFile(data) {
+            console.log("delete ", this.getFilename(data.item.file));
+            this.deleteUploadedFile(data.item.file)
+            .then( () => {
+                this.getUploadedFiles();
+            })
+        }
     
         uploadFile(i) {
             if (this.files.length <= i) {
@@ -280,7 +295,7 @@
         }
         
         getFilename(url) {
-            let result = url.match(/_tifU002F(.*)\/full/);
+            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
             if(result && result.length > 1) {
                 return result[1];
             } else {
