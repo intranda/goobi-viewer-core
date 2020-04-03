@@ -123,7 +123,7 @@
 		<mockito.version>3.3.3</mockito.version>
 		<mockserver.version>5.10.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
-		<openpdf.version>1.3.13</openpdf.version>
+		<openpdf.version>1.3.14</openpdf.version>
 		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>7.0</primefaces.version>
