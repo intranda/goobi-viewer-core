@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -62,11 +63,6 @@ public class CreateRecordBean implements Serializable {
     private String collection;
     private String accessCondition;
     private String license;
-    
-    /**
-     * If this flag is 'true' at the end of the bean's lifecycle, the images folder will be deleted with all its content
-     */
-    private boolean readyForIndexing = false;
 
     private final Path tempImagesFolder;
     private final String uuid;
@@ -84,7 +80,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     private Path getTempImagesDirectory() {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_tif");
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome()).resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder()).resolve(uuid + "_tif");
         return targetDir;
     }
 
@@ -223,14 +219,14 @@ public class CreateRecordBean implements Serializable {
      */
     public String saveRecord() {
         DCRecordWriter writer = generateDCRecord();
-        Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
-        Path mediaFolder = hotfolder.resolve(getUuid() + "_tif");
+        
         try {
-            if (Files.exists(mediaFolder)) {
-                addFiles(writer, mediaFolder);
+            if (Files.exists(tempImagesFolder)) {
+                addFiles(writer, tempImagesFolder);
             }
+            Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
+            Files.move(tempImagesFolder, hotfolder.resolve(tempImagesFolder.getFileName()));
             writer.write(hotfolder);
-            readyForIndexing = true;
             Messages.info(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__success", null,
                     writer.getMetadataValue("identifier")));
             return "pretty:adminCreateRecord";
@@ -303,13 +299,13 @@ public class CreateRecordBean implements Serializable {
         return UUID.randomUUID().toString();
     }
 
+
     /**
      * Mark the record as not ready for indexing and delete all associated images
      * 
      * @return  the url of the create record page
      */
     public String reset() {
-        readyForIndexing = false;
         destroy();
         return "pretty:adminCreateRecord";
     }
@@ -320,7 +316,7 @@ public class CreateRecordBean implements Serializable {
      */
     @PreDestroy
     public void destroy() {
-        if (!readyForIndexing && Files.exists(tempImagesFolder)) {
+        if (Files.exists(tempImagesFolder)) {
             try (Stream<Path> stream = Files.list(this.tempImagesFolder)) {
                 List<Path> uploadedFiles = stream.collect(Collectors.toList());
                 for (Path file : uploadedFiles) {

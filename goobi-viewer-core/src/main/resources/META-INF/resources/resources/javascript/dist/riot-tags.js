@@ -1,4 +1,4 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDragover ? \'is-dragover\' : \'\'}"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><ul><li each="{file in this.uploadedFiles}"> {file} </li></ul><div class="admin-cms-media__list-files__delete_overlay" ref="deleteOverlay"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><img each="{file in this.uploadedFiles}" riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="admin-cms-media__list-files__delete_overlay" ref="deleteOverlay"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
         this.uploadedFiles = []
@@ -176,6 +176,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
        		})
        		.then(response => response.json())
        		.then(json => {
+       		    console.log("uploaded files ", json);
        		    this.uploadedFiles = json;
        		    this.update();
        		})
@@ -243,7 +244,15 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper {isDr
        		    }
        		    return defer.promise;
        		}));
+        }.bind(this)
 
+        this.getFilename = function(url) {
+            let result = url.match(/_tifU002F(.*)\/full/);
+            if(result && result.length > 1) {
+                return result[1];
+            } else {
+             	return url;
+            }
         }.bind(this)
 });
 

@@ -18,17 +18,18 @@
 	/* UPLOAD */
 	&__upload-wrapper {
 		display: flex;
+		flex-direction: column;
 		margin-bottom: 20px;	
-		border: 2px dashed @middlegray;
-		&.is-dragover {
-			border-color: @blue;
-		    background-color: @neutralgray;
-		}	
 	}
 	&__upload {
 		flex-grow: 5;
 		position: relative;
 		padding: 50px 20px;
+		border: 2px dashed @middlegray;
+		&.is-dragover {
+			border-color: @blue;
+		    background-color: @neutralgray;
+		}	
 		&.is-uploading,
 		&.is-success,
 		&.is-error {
@@ -36,13 +37,14 @@
 	}
 	&__list-files {
 		display: none;
-		justify-content: center;
 		overflow-y: auto;
 		color: @btnSuccess;
 		position: relative;
+		margin: 10px -5px;
 		&.in {
 			display: flex;
 			flex-grow: 1;
+			flex-wrap: wrap;
 		}
 		&__delete_overlay {
 			position: absolute;
@@ -57,8 +59,14 @@
 				display: flex;
 			}
 		}
-		ul {
-			margin: 10px 0;
+		img {
+			width: 120px;
+			height: 120px;
+			margin: 5px;
+		}
+		.fa.fa-trash {
+			color:white;
+			font-size: 90px;
 		}
 	}
 	&__upload-input {

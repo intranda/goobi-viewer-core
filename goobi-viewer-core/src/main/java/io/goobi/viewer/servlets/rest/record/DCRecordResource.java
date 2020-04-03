@@ -17,11 +17,13 @@ package io.goobi.viewer.servlets.rest.record;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,8 +60,7 @@ import io.goobi.viewer.servlets.rest.MediaItem;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * Upload of resouces for DC record creation.
- * Files uploaded here are directly written to a subfolder of the viewer hotfolder
+ * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
  * 
  * @author florian
  *
@@ -89,7 +90,8 @@ public class DCRecordResource {
     @javax.ws.rs.Path("/{uuid}/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadMediaFiles(@PathParam("uuid") String uuid, @DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
+    public Response uploadMediaFiles(@PathParam("uuid") String uuid, @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+            @FormDataParam("filename") String filename,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
             throws DAOException {
 
@@ -106,7 +108,7 @@ public class DCRecordResource {
 
             Path targetDir = getTargetDir(uuid);
             if (!Files.isDirectory(targetDir)) {
-                Files.createDirectory(targetDir);
+                Files.createDirectories(targetDir);
             }
             if (!Files.isDirectory(targetDir)) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No target directory for upload available")).build();
@@ -137,14 +139,12 @@ public class DCRecordResource {
         }
     }
 
-
-
     /**
      * Return a json object with the filename of the uploaded image denoted by filename if it exists. Otherwise an empty json object
      * 
      * @param uuid
      * @param filename
-     * @return  a json object with the filename of the uploaded image denoted by filename if it exists. Otherwise an empty json object
+     * @return a json object with the filename of the uploaded image denoted by filename if it exists. Otherwise an empty json object
      */
     @GET
     @javax.ws.rs.Path("/{uuid}/upload/{filename}")
@@ -156,10 +156,11 @@ public class DCRecordResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No bean found containing record data")).build();
             }
 
-            List<String> uploadedFiles = new ArrayList<>();
             Path file = getTargetDir(uuid).resolve(filename);
             if (Files.exists(file)) {
-                MediaItem jsonItem = getAsMediaItem(file);
+                URI uri = getIiifUri(file);
+                List<URI> uploadedFiles = Collections.singletonList(uri);
+                String jsonItem = getAsJson(uploadedFiles);
                 return Response.status(Status.OK).entity(jsonItem).build();
             } else {
                 return Response.status(Status.OK).entity("{}").build();
@@ -169,19 +170,25 @@ public class DCRecordResource {
         }
     }
     
+    
+    
     /**
      * @param file
      * @return
      */
-    private MediaItem getAsMediaItem(Path file) {
-        
-//        BeanUtils.get
-        
-         MediaItem item = new MediaItem(file.getFileName().toUri());
-         return item;
+    private URI getIiifUri(Path file) {
+
+        String uri = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(file);
+        return URI.create(uri);
     }
-
-
+    
+    private String getAsJson(List list) throws JsonProcessingException {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            String json = mapper.writeValueAsString(list);
+            return json;
+    }
 
     /**
      * Get a filename list of all uploaded files in the media directory of the given uuid
@@ -200,25 +207,24 @@ public class DCRecordResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No bean found containing record data")).build();
             }
 
-            List<String> uploadedFiles = new ArrayList<>();
+            List<URI> uploadedFiles = new ArrayList<>();
             Path targetDir = getTargetDir(uuid);
             if (Files.isDirectory(targetDir)) {
                 try (Stream<Path> stream = Files.list(targetDir)) {
-                    uploadedFiles = stream.map(path -> path.getFileName().toString()).sorted().collect(Collectors.toList());
+                    uploadedFiles = stream.map(this::getIiifUri).sorted( (i1,i2) -> i1.toString().compareTo(i2.toString())).collect(Collectors.toList());
                 } catch (IOException e) {
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error reading upload directory: " + e.toString())).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .build();
                 }
             }
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-                String json = mapper.writeValueAsString(uploadedFiles);
+            try {                
+                String json = getAsJson(uploadedFiles);
                 return Response.status(Status.OK).entity(json).build();
-            } catch (JsonProcessingException e) {
+            } catch(JsonProcessingException e) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object: " + e.toString())).build();
-
             }
+            
         } catch (Throwable e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
@@ -228,7 +234,7 @@ public class DCRecordResource {
      * Delete all files uploaded for the given uuid
      * 
      * @param uuid
-     * @return  a 200 response if deletion was successfull, otherwise 500
+     * @return a 200 response if deletion was successfull, otherwise 500
      */
     @DELETE
     @javax.ws.rs.Path("/{uuid}/upload")
@@ -249,7 +255,9 @@ public class DCRecordResource {
                         Files.delete(file);
                     }
                 } catch (IOException e) {
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error reading upload directory: " + e.toString())).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR)
+                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .build();
                 }
             }
             return Response.status(Status.OK).build();
@@ -257,25 +265,24 @@ public class DCRecordResource {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }
-    
 
     private String errorMessage(String string) {
-       return message(string);
+        return message(string);
     }
-    
+
     private String message(String string) {
         return "{message: \"" + string + "\"}";
     }
-    
+
     /**
      * Get the appropriate media subfolder for the given uuid in the viewer hotfolder
      * 
      * @param uuid
-     * @return  the folder for upload
+     * @return the folder for upload
      * @throws IOException
      */
     private Path getTargetDir(String uuid) throws IOException {
-        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()).resolve(uuid + "_tif");
+        Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome()).resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder()).resolve(uuid + "_tif");
         return targetDir;
     }
 

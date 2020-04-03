@@ -1,6 +1,6 @@
 <adminMediaUpload>
-	<div class="admin-cms-media__upload-wrapper {isDragover ? 'is-dragover' : ''}">
-	    <div class="admin-cms-media__upload" ref="dropZone">
+	<div class="admin-cms-media__upload-wrapper">
+	    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
 	        <div class="admin-cms-media__upload-input">
 	            <p>
 	                {opts.msg.uploadText}
@@ -23,12 +23,8 @@
 	        </div>
 	    </div>
 	    <div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? 'in' : ''}" ref="filesZone">
-	       	<ul>
-	       		<li each="{file in this.uploadedFiles}">
-	       			{file}
-	       		</li>
-	       		
-	       	</ul>
+	       	<img each="{file in this.uploadedFiles}" src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
+	       			
 	       	<div class="admin-cms-media__list-files__delete_overlay" ref="deleteOverlay">
 	       		<i class="fa fa-trash" aria-hidden="true"></i>
 	       	</div>
@@ -213,6 +209,7 @@
        		})
        		.then(response => response.json())
        		.then(json => {
+       		    console.log("uploaded files ", json);
        		    this.uploadedFiles = json;
        		    this.update();
        		})
@@ -280,8 +277,15 @@
        		    }
        		    return defer.promise;
        		}));
-    	
-            
+        }
+        
+        getFilename(url) {
+            let result = url.match(/_tifU002F(.*)\/full/);
+            if(result && result.length > 1) {
+                return result[1];
+            } else {
+             	return url;   
+            }
         }
     </script> 
 </adminMediaUpload>
