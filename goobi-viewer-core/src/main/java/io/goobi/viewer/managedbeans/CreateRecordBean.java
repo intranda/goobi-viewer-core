@@ -79,6 +79,11 @@ public class CreateRecordBean implements Serializable {
         this.tempImagesFolder = getTempImagesDirectory();
     }
 
+    /**
+     * Get the path to a folder named <uuid>_tif within the temp_media directory
+     * 
+     * @return a folder within the viewer temp_media directory
+     */
     private Path getTempImagesDirectory() {
         Path targetDir = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome()).resolve(DataManager.getInstance().getConfiguration().getTempMediaFolder()).resolve(uuid + "_tif");
         return targetDir;
@@ -212,8 +217,8 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Add any uploaded images to the record, write the record as Dublin Core xml to the viewer hotfolder
-     * and set readyForIndexing = true so the images won't be deleted when the user session ends
+     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder 
+     * and write the record as Dublin Core xml to the viewer hotfolder
      * 
      * @return  the url of the create record page to allow creating a new record
      */
