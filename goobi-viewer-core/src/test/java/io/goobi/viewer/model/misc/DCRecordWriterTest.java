@@ -55,7 +55,6 @@ public class DCRecordWriterTest {
         writer.addDCMetadata("identifier", "ID");
         
         String xml = writer.getAsString().replaceAll("[\n\r]+",  "").replaceAll("\\s+", " ");
-        System.out.println(xml);
         Assert.assertEquals(RECORD_REFERENCE, xml);
     }
 
