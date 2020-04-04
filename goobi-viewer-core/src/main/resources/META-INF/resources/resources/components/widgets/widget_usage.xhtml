@@ -72,7 +72,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DENKXWEB'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
-                                    id="lidomets" 
+                                    id="denkxweb"
                                     class="label label-default widget-usage__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_denkxweb}" 
                                     target="_blank" rel="nofollow"> 
@@ -84,7 +84,7 @@
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DUBLINCORE'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
-                                    id="lidomets" 
+                                    id="dublincorexml"
                                     class="label label-default widget-usage__work-download-lido-mets" 
                                     title="#{msg.metadata_dl_dublincore}" 
                                     target="_blank" rel="nofollow"> 
@@ -93,7 +93,7 @@
                             </ui:fragment>
 
                             <!-- MARCXML -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topDocument.sourceDocFormat != 'DUBLINCORE'}">
                                 <a
                                     id="marc"
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
