@@ -398,6 +398,7 @@ public enum PageType {
             case adminCmsOverview:
             case adminCmsSelectTemplate:
             case adminCmsStaticPages:
+	    case adminCreateRecord:
             case adminCrowdsourcingAnnotations:
             case adminCrowdsourcingCampaigns:
             case adminIpRange:
