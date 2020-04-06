@@ -1460,9 +1460,9 @@ public class ActiveDocumentBean implements Serializable {
 
             if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");
-            } else {
-                Messages.error("deleteRecord_failure");
+                return "pretty:index";
             }
+            Messages.error("deleteRecord_failure");
         } finally {
             deleteRecordKeepTrace = null;
         }
