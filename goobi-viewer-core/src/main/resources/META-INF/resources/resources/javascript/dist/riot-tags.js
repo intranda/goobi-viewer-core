@@ -917,6 +917,35 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
         }.bind(this)
 });
 
+riot.tag2('collectionview', '<div if="{this.collection}" class="panel-group" role="tablist"><div each="{collection in this.collection.members}" class="panel"><div class="panel-heading"><div class="panel-thumbnail"><img class="img-responsive" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="panel-title"><a href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a></h4><div class="panel-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div></div>', '', '', function(opts) {
+
+this.collection = undefined;
+
+this.on("mount", () => {
+    console.log("mounting collectionView", this.opts);
+
+    this.fetchCollections()
+    .then( () => this.update());
+})
+
+this.fetchCollections = function() {
+    let url = this.opts.url;
+    if(this.opts.baseCollection) {
+        url += this.opts.baseCollection + "/";
+    }
+    if(this.opts.grouping) {
+        url += "grouping/" + this.opts.grouping + "/";
+    }
+    return fetch(url)
+    .then( result => result.json())
+    .then( json => this.collection = json);
+}.bind(this)
+
+this.getValue = function(element) {
+    return viewerJS.iiif.getValue(element, this.opts.language);
+}.bind(this)
+
+});
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 

@@ -304,6 +304,6 @@ public class SolrConstants {
     /** Field containing a list of dates as year **/
     public static final String YEAR = "YEAR";
     /** Single field containing a date as year for sorting**/
-    public static final String SORTNUM_YEAR = "SORT_YEARPUBLISH";
+    public static final String SORTNUM_YEAR = "SORTNUM_YEAR";
 
 }

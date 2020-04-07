@@ -386,27 +386,29 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @throws ViewerConfigurationException
      */
     private String buildRssUrl() throws ViewerConfigurationException {
-        String query = new StringBuilder().append(field)
+        String query = new StringBuilder()
+                .append("(")
+                .append(field) 
                 .append(':')
                 .append(name)
                 .append(" OR ")
                 .append(field)
                 .append(':')
                 .append(name)
-                .append(".* AND (ISWORK:true OR ISANCHOR:true)")
+                .append(".*) AND (ISWORK:true OR ISANCHOR:true)")
                 .toString();
 
         try {
             return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
                     .append("rss/search/")
                     .append(URLEncoder.encode(query, SearchBean.URL_ENCODING))
-                    .append("/-/-/")
+                    .append("/-/-/-/")
                     .toString();
         } catch (UnsupportedEncodingException e) {
             return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
                     .append("rss/search/")
                     .append(query)
-                    .append("/-/-/")
+                    .append("/-/-/-/")
                     .toString();
         }
     }

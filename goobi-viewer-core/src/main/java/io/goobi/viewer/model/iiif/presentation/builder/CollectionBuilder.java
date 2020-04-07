@@ -124,8 +124,8 @@ public class CollectionBuilder extends AbstractBuilder {
     public Collection generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
         
-//        CollectionView collectionView = getCollectionView(collectionField, groupingField, splittingChar);
-        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
+        CollectionView collectionView = getCollectionView(collectionField, facetField, splittingChar);
+//        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
 
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
             collectionView.setTopVisibleElement(topElement);
