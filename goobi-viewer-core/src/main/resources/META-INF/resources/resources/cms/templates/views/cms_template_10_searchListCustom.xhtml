@@ -49,7 +49,7 @@
                             <div class="tpl-search-list-custom__list-element clearfix">
                                 <div class="col-xs-4 col-sm-2">
                                     <div class="tpl-search-list-custom__list-image">
-                                        <img data-src="#{hit.browseElement.getThumbnailUrl(50, 150)}" alt="#{hit.browseElement.label}" class="viewer-thumbnail"/>
+                                        <img data-src="#{hit.browseElement.getThumbnailUrl(50, 150)}" alt="#{hit.browseElement.label}" data-viewer-thumbnail="thumbnail"/>
                                     </div>
                                 </div>
                                 <div class="col-xs-8 col-sm-10">
@@ -85,7 +85,8 @@
                 </div>
 
                 <!-- paginator -->
-                <viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('queryList01'))}"
+                <viewerComponent:simplePaginator 
+                itemCount="#{cmsBean.getQueryResultCount()}"
                     itemActive="#{cmsPage.listPage}" urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
             </div>
 		</f:view>

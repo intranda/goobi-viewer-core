@@ -546,7 +546,7 @@ public class CMSSidebarElement {
             return SidebarElementType.Category.pageLinks;
         } else if (this.getGeoLocations() != null) {
             return SidebarElementType.Category.geoLocations;
-        }
+        } 
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
 
@@ -799,4 +799,11 @@ public class CMSSidebarElement {
         return this.linkedPages != null && !this.linkedPages.isEmpty();
     }
 
+    
+    /**
+     * @return the simple name of the actual class of the widget. Usually CMSSidebarWidget
+     */
+    public String getWidgetType() {
+        return this.widgetType;
+    }
 }

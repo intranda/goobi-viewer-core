@@ -243,7 +243,7 @@ public class RecordsResource {
 
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
         String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, true, false)).toString();
+                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
         logger.trace("query: {}", query);
 
         int count = params.getCount();
@@ -320,7 +320,7 @@ public class RecordsResource {
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
         String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, true, false)).toString();
+                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
         logger.debug("q: {}", query);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);

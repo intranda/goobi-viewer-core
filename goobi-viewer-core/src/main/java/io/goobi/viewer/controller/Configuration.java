@@ -55,6 +55,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
@@ -137,41 +138,42 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param stopwordsFilePath a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
      * @should load all stopwords
      * @should remove parts starting with pipe
      * @should not add empty stopwords
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
-     * @return a {@link java.util.Set} object.
-     * @throws java.io.FileNotFoundException if any.
-     * @throws java.io.IOException if any.
      */
     protected static Set<String> loadStopwords(String stopwordsFilePath) throws FileNotFoundException, IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             throw new IllegalArgumentException("stopwordsFilePath may not be null or empty");
         }
-        Set<String> ret = new HashSet<>();
 
-        if (StringUtils.isNotEmpty(stopwordsFilePath)) {
-            try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (StringUtils.isNotBlank(line)) {
-                        if (line.charAt(0) != '#') {
-                            int pipeIndex = line.indexOf('|');
-                            if (pipeIndex != -1) {
-                                line = line.substring(0, pipeIndex).trim();
-                            }
-                            if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
-                                ret.add(line);
-                            }
+        if (StringUtils.isEmpty(stopwordsFilePath)) {
+            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
+            return Collections.emptySet();
+        }
+
+        Set<String> ret = new HashSet<>();
+        try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (StringUtils.isNotBlank(line)) {
+                    if (line.charAt(0) != '#') {
+                        int pipeIndex = line.indexOf('|');
+                        if (pipeIndex != -1) {
+                            line = line.substring(0, pipeIndex).trim();
+                        }
+                        if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
+                            ret.add(line);
                         }
                     }
                 }
             }
-        } else {
-            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
         }
 
         return ret;
@@ -1137,6 +1139,11 @@ public final class Configuration extends AbstractConfiguration {
         }
         return urlString;
     }
+    
+    public boolean isUseIIIFApiUrlForCmsMediaUrls() {
+        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
+        return use;
+    }
 
     /**
      * <p>
@@ -1254,8 +1261,29 @@ public final class Configuration extends AbstractConfiguration {
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getAdvancedSearchFields() {
-        return getLocalList("search.advanced.searchFields.field");
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            Collections.emptyList();
+        }
+
+        List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            String field = subElement.getString(".");
+            if (StringUtils.isEmpty(field)) {
+                logger.warn("No advanced search field name defined, skipping.");
+                continue;
+            }
+            String label = subElement.getString("[@label]", null);
+            boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
+            boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+
+            ret.add(new AdvancedSearchFieldConfiguration(field, label, hierarchical, untokenizeForPhraseSearch,
+                    field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
+        }
+
+        return ret;
     }
 
     /**
@@ -1312,23 +1340,11 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return correct value
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isAdvancedSearchFieldHierarchical(String field) {
-        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
-        if (fieldList == null) {
-            return false;
-        }
-
-        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString(".").equals(field)) {
-                return subElement.getBoolean("[@hierarchical]", false);
-            }
-        }
-
-        return false;
+        return isAdvancedSearchFieldHasAttribute(field, "hierarchical");
     }
 
     /**
@@ -1337,10 +1353,45 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return correct value
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
+        return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
+    }
+
+    /**
+     * <p>
+     * isAdvancedSearchFieldHierarchical.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return Label attribute value for the given field name
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldSeparatorLabel(String field) {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return null;
+        }
+
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@label]", "");
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param field Advanced search field name
+     * @param attribute Attribute name
+     * @return
+     */
+    boolean isAdvancedSearchFieldHasAttribute(String field, String attribute) {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
             return false;
@@ -1349,7 +1400,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             if (subElement.getString(".").equals(field)) {
-                return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+                return subElement.getBoolean("[@" + attribute + "]", false);
             }
         }
 
@@ -1437,7 +1488,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedMetsFolder() {
-        return getLocalString("indexedMetsFolder");
+        return getLocalString("indexedMetsFolder", "indexed_mets");
     }
 
     /**
@@ -1449,7 +1500,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedLidoFolder() {
-        return getLocalString("indexedLidoFolder");
+        return getLocalString("indexedLidoFolder", "indexed_lido");
     }
 
     /**
@@ -1461,7 +1512,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedDenkxwebFolder() {
-        return getLocalString("indexedDenkxwebFolder");
+        return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
+    }
+
+    /**
+     * <p>
+     * getIndexedDublinCoreFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedDublinCoreFolder() {
+        return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
     }
 
     /**
@@ -2824,6 +2887,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getMetadataParamNumber() {
+        return getLocalInt("metadata.metadataParamNumber", 10);
+    }
+
+    /**
      * <p>
      * useTiles.
      * </p>
@@ -3890,6 +3962,17 @@ public final class Configuration extends AbstractConfiguration {
     public String getCmsMediaFolder() {
         return getLocalString("cms.mediaFolder", "cms_media");
     }
+    
+    
+    /**
+     * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
+     * 
+     * @return  "temp_media" unless otherwise configured in "tempMediaFolder"
+     */
+    public String getTempMediaFolder() {
+        return getLocalString("tempMediaFolder", "temp_media");
+    }
+
 
     /**
      * <p>
@@ -4476,6 +4559,10 @@ public final class Configuration extends AbstractConfiguration {
 
         return " ";
     }
+    
+    public String getMapBoxToken() {
+        return getLocalString("maps.mapbox.token", "");
+    }
 
     /**
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
@@ -4506,4 +4593,23 @@ public final class Configuration extends AbstractConfiguration {
 
         return defaultConf;
     }
+    
+    public List<LicenseDescription> getLicenseDescriptions() {
+        List<LicenseDescription> licenses = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String url = node.getString("[@url]", "");
+            if(StringUtils.isNotBlank(url)) {
+                String label = node.getString("[@label]", url);
+                String icon = node.getString("[@icon]", "");
+                LicenseDescription license = new LicenseDescription(url);
+                license.setLabel(label);
+                license.setIcon(icon);
+                licenses.add(license);
+            }
+        }
+        return licenses;
+    }
+    
+    
 }

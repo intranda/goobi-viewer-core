@@ -33,7 +33,7 @@ public enum SidebarElementType {
     crowdsourcing("widgetCrowdsourcing"),
     mySearches("widgetMySearches"),
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
-    rssFeed("widgetRssFeed"),
+    rssFeed("widgetRssFeed", Category.fieldQuery),
     user("widgetUser"),
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),

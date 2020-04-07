@@ -17,6 +17,7 @@ package io.goobi.viewer.controller.imaging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -822,11 +823,85 @@ public class ThumbnailHandler {
             if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
-            String imageApiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+            String imageApiUrl = getCMSMediaImageApiUrl();
             String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
             url += "?updated=" + item.getLastModifiedTime();
             return url;
         }).orElse("");
+    }
+    
+    /**
+     * Get the thumbnailUrl for an image file in the file system
+     * 
+     * @param imagePath
+     * @return
+     */
+    public String getThumbnailUrl(Path imagePath) {
+        return getThumbnailUrl(imagePath, thumbWidth, thumbHeight);
+    }
+    
+    /**
+     * Get the square thumbnailUrl for an image file in the file system
+     * 
+     * @param imagePath
+     * @return
+     */
+    public String getSquareThumbnailUrl(Path imagePath) {
+        return getSquareThumbnailUrl(imagePath, thumbWidth);
+    }
+    
+    /**
+     * Get the thumbnailUrl for an image file in the file system
+     * 
+     * @param imagePath
+     * @param width
+     * @param height
+     * @return
+     */
+    public String getThumbnailUrl(Path imagePath, int width, int height) {
+            String size = getSize(width, height);
+            String format = "jpg";
+            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath.toString());
+            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
+                format = formatType.getFileExtension();
+            }
+            String imageApiUrl = getCMSMediaImageApiUrl();
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.FULL_IMAGE, size, "0", "default", format);
+            return url;
+
+    }
+    
+    /**
+     * Get the square thumbnailUrl for an image file in the file system
+     * 
+     * @param imagePath
+     * @param width
+     * @param height
+     * @return
+     */
+    public String getSquareThumbnailUrl(Path imagePath, int width) {
+            String size = getSize(width, width);
+            String format = "jpg";
+            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath.toString());
+            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
+                format = formatType.getFileExtension();
+            }
+            String imageApiUrl = getCMSMediaImageApiUrl();
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imageApiUrl, imagePath.toString(), "-", Region.SQUARE_IMAGE, size, "0", "default", format);
+            return url;
+
+    }
+
+    /**
+     * @return
+     */
+    private String getCMSMediaImageApiUrl() {
+        if(DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
+            return DataManager.getInstance().getConfiguration().getIIIFApiUrl();
+        } else {
+            return DataManager.getInstance().getConfiguration().getRestApiUrl();
+
+        }
     }
 
     /**

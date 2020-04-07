@@ -39,7 +39,7 @@ var viewerJS = ( function( viewer ) {
         language: 'en'
     };
     var _bookmarks = {
-            
+             
             listsNeedUpdate: new Rx.Subject(),
             listsUpdated: new Rx.Subject(),
             bookmarkLists: [],
@@ -75,10 +75,15 @@ var viewerJS = ( function( viewer ) {
                     var page = $button.attr( 'data-page' );
                     
                     let added = this.contained(pi, page, logid);
+                    console.log("set added to " + added + " for ", pi, page)
+                    let $span = $button.find("span");
+                    console.log("update ", $span)
                     if(added) {
                         $button.addClass("added");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("fixTitle");
                     } else {
                         $button.removeClass("added");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("fixTitle");
                     }
                     
                 } );
@@ -127,11 +132,7 @@ var viewerJS = ( function( viewer ) {
                         width: $button.width(),
                         height: $button.height()
                 }
-                var dropdownPosition = {
-                    left: buttonPosition.left + buttonSize.width - dropdownWidth,
-                    top: buttonPosition.top + buttonSize.height
-                }
-  
+
                 var $dropdown = $("<bookmarkList></bookmarkList>");
                 $dropdown.addClass("bookmark-navigation__dropdown");
                 
@@ -149,23 +150,31 @@ var viewerJS = ( function( viewer ) {
                     bookmarks: this,
                 });
                 
-                //handle closing dropdown
+                // handle closing dropdown
                 let toggle = function() {
                     $dropdown.slideToggle( 'fast' );
                     $("body").off("click", toggle);
                 }
+                // bookmark list dropdown toggle 
                 $button.on("click", (event) => {
                     if( (this.config.userLoggedIn && this.getBookmarkListsCount() > 0) || this.getBookmarksCount() > 0) {                        
-                        $dropdown.slideToggle( 'fast');
+                    	$(event.currentTarget).next('.bookmark-navigation__dropdown').slideToggle('fast');
                     }
-                    event.stopPropagation();
                 })
                 $("body").on("click", (event) => {
-                    if($dropdown.is(":visible")) {                        
-                        $dropdown.slideToggle( 'fast');
+                    let $target = $(event.target);
+                    if( $target.closest('[data-bookmark-list-type="dropdown"]').length > 0 ) {
+                        return; // click on bookmarks button. Don't close
+                    }
+                    if( $target.closest('bookmarkList').length > 0 ) {
+                        return; // click on bookmark list. Don't close
+                    }
+                    if ($('.bookmark-navigation__dropdown').is(":visible")) {                        
+                		$('.bookmark-navigation__dropdown').slideUp( 'fast');
                     }
                 })
-                $dropdown.on("click", (event) => event.stopPropagation());
+                
+//                $dropdown.on("click", (event) => event.stopPropagation());
                 
             },
             prepareBookmarksPopup: function() {

@@ -35,6 +35,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -312,6 +313,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getIndexedDublinCoreFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getIndexedDublinCoreFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("indexed_dublincore", DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
+    }
+
+    /**
      * @see Configuration#getMainMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
@@ -353,9 +363,9 @@ public class ConfigurationTest extends AbstractTest {
         List<MetadataParameter> params = metadata.getParams();
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("CURRENTNO", params.get(0).getKey());
-        Assert.assertEquals("Number ", params.get(0).getPrefix());
+        Assert.assertEquals("Number", params.get(0).getPrefix());
         Assert.assertEquals("MD_TITLE", params.get(1).getKey());
-        Assert.assertEquals(": ", params.get(1).getPrefix());
+        Assert.assertEquals(":", params.get(1).getPrefix());
     }
 
     /**
@@ -374,7 +384,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("LABEL", params.get(0).getKey());
         Assert.assertEquals("MD_CREATOR", params.get(1).getKey());
-        Assert.assertEquals(" / ", params.get(1).getPrefix());
+        Assert.assertEquals("/", params.get(1).getPrefix());
     }
 
     /**
@@ -839,7 +849,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSubthemeDiscriminatorField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("discriminatorField_value", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     /**
@@ -1097,6 +1107,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isAddHighwirePressMetaTags_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags());
+    }
+
+    /**
+     * @see Configuration#getMetadataParamNumber()
+     * @verifies return correct value
+     */
+    @Test
+    public void getMetadataParamNumber_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getMetadataParamNumber());
     }
 
     /**
@@ -1492,7 +1511,16 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getAdvancedSearchFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getAdvancedSearchFields().size());
+        List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+        Assert.assertEquals(11, result.size());
+
+        Assert.assertTrue(result.get(0).isHierarchical());
+
+        Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
+
+        Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
+        Assert.assertEquals("-----", result.get(7).getLabel());
+        Assert.assertTrue(result.get(7).isDisabled());
     }
 
     /**
@@ -1513,6 +1541,15 @@ public class ConfigurationTest extends AbstractTest {
     public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC));
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE"));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldSeparatorLabel(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getAdvancedSearchFieldSeparatorLabel_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("-----", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldSeparatorLabel("#SEPARATOR1#"));
     }
 
     /**
@@ -1587,9 +1624,9 @@ public class ConfigurationTest extends AbstractTest {
         List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("DC", result.get(0));
-        Assert.assertEquals("FIELD1", result.get(1));
-        Assert.assertEquals("FIELD3", result.get(2));
-        Assert.assertEquals("FIELD2", result.get(3));
+        Assert.assertEquals("YEAR", result.get(1));
+        Assert.assertEquals("MD_CREATOR", result.get(2));
+        Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
     }
 
     /**
@@ -1617,7 +1654,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(SolrConstants.DC));
-        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD2"));
+        Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("MD_PLACEPUBLISH"));
         Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
     }
 
@@ -1627,7 +1664,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
-        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("YEAR"));
     }
 
     /**
@@ -1636,7 +1673,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("FIELD2");
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("MD_PLACEPUBLISH");
         Assert.assertNotNull(result);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("val1", result.get(0));
@@ -1659,9 +1696,9 @@ public class ConfigurationTest extends AbstractTest {
 
     @Test
     public void getSortOrderTest() {
-        Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("FIELD1"));
-        Assert.assertEquals("default", DataManager.getInstance().getConfiguration().getSortOrder("FIELD2"));
-        Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("FIELD3"));
+        Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("YEAR"));
+        Assert.assertEquals("default", DataManager.getInstance().getConfiguration().getSortOrder("MD_PLACEPUBLISH"));
+        Assert.assertEquals("alphabetical", DataManager.getInstance().getConfiguration().getSortOrder("MD_CREATOR"));
     }
 
     /**
@@ -1697,7 +1734,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getStaticQuerySuffix_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("AND -BOOL_HIDE:true", DataManager.getInstance().getConfiguration().getStaticQuerySuffix());
+        Assert.assertEquals("-BOOL_HIDE:true", DataManager.getInstance().getConfiguration().getStaticQuerySuffix());
     }
 
     /**
@@ -2666,5 +2703,19 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(2.0f == DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
+    }
+
+    @Test
+    public void testReadMapBoxToken() {
+        Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
+    }
+    
+    @Test
+    public void testGetLicenseDescriptions() {
+        List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();
+        Assert.assertEquals(2, licenses.size());
+        Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
+        Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
+        Assert.assertEquals("", licenses.get(0).getIcon());
     }
 }

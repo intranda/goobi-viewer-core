@@ -207,6 +207,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
+     * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes.
+     * Values of imageSizes are interpreted as width
+     * 
      * @param responseObject
      * @param imageSizes
      */
@@ -214,7 +217,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
         List<Dimension> dimensions = new ArrayList<>();
         for (Integer size : imageSizes) {
-            dimensions.add(new Dimension(size, size));
+            float ratio = imageInfo.getHeight()/(float)imageInfo.getWidth();
+            dimensions.add(new Dimension(size, Math.round(size*ratio)));
         }
         if (dimensions.isEmpty()) {
             dimensions.add(new Dimension(imageInfo.getWidth(), imageInfo.getHeight()));

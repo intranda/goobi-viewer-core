@@ -1,11 +1,26 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        this.uploadedFiles = []
+        if(this.opts.fileTypes) {
+            this.fileTypes = this.opts.fileTypes;
+        } else {
+        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        }
         this.isDragover = false;
 
         this.on('mount', function () {
-            var dropZone = (this.refs.dropZone);
+
+            if(this.opts.showFiles) {
+                this.initUploadedFiles();
+            }
+
+            this.initDrop();
+
+        }.bind(this));
+
+        this.initDrop = function() {
+			var dropZone = (this.refs.dropZone);
 
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
@@ -45,10 +60,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
                     this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
                 }
-    			this.uploadFiles();
+    			this.uploadFiles()
+    			.then( () => {
+    			    this.isDragover = false;
+    			    this.update();
+    			})
 
             });
-        }.bind(this));
+        }.bind(this)
+
+        this.initUploadedFiles = function() {
+			this.getUploadedFiles();
+
+            var filesZone = (this.refs.filesZone);
+
+        }.bind(this)
 
         this.buttonFilesSelected = function(e) {
             for (var f of e.target.files) {
@@ -82,14 +108,13 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 uploads.push(Q(this.uploadFile(i)));
             }
 
-            Q.allSettled(uploads).then(function(results) {
+            return Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
-                     }
-                     else {
+                     } else {
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -101,11 +126,16 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                      this.opts.onUploadSuccess();
                  }
 
-            		if (this.opts.onUploadComplete) {
-            			this.opts.onUploadComplete();
-            		}
-            }.bind(this))
+           		if (this.opts.onUploadComplete) {
+           			this.opts.onUploadComplete();
+           		}
 
+            }.bind(this))
+            .then( () => {
+                if(this.opts.showFiles) {
+                	return this.getUploadedFiles();
+                }
+            });
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
@@ -123,6 +153,38 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
                 $('.admin-cms-media__upload-message.error span').html(responseText);
             }
+        }.bind(this)
+
+        this.getUploadedFiles = function() {
+            return fetch(this.opts.postUrl, {
+                method: "GET",
+       		})
+       		.then(response => response.json())
+       		.then(json => {
+       		    console.log("uploaded files ", json);
+       		    this.uploadedFiles = json;
+       		    this.update();
+       		})
+        }.bind(this)
+
+        this.deleteUploadedFiles = function() {
+            return fetch(this.opts.postUrl, {
+                method: "DELETE",
+       		})
+        }.bind(this)
+
+        this.deleteUploadedFile = function(file) {
+            return fetch(this.opts.postUrl + this.getFilename(file), {
+                method: "DELETE",
+       		})
+        }.bind(this)
+
+        this.deleteFile = function(data) {
+            console.log("delete ", this.getFilename(data.item.file));
+            this.deleteUploadedFile(data.item.file)
+            .then( () => {
+                this.getUploadedFiles();
+            })
         }.bind(this)
 
         this.uploadFile = function(i) {
@@ -163,13 +225,38 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             .then( data => fetch(this.opts.postUrl, {
                 method: "POST",
                 body: data,
-       		}));
 
+       		})
+       		.then( result => {
+       		    var defer = Q.defer();
+       		    if(result.ok) {
+       		    	defer.resolve(result);
+       		    } else if(result.body && !result.responseText){
+                   result.body.getReader().read()
+					.then(({ done, value }) => {
+						defer.reject({
+						  responseText:   new TextDecoder("utf-8").decode(value)
+						})
+					});
+       		    } else {
+       		        defer.reject(result);
+       		    }
+       		    return defer.promise;
+       		}));
+        }.bind(this)
+
+        this.getFilename = function(url) {
+            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
+            if(result && result.length > 1) {
+                return result[1];
+            } else {
+             	return url;
+            }
         }.bind(this)
 });
 
 
-riot.tag2('bookmarklist', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-xs-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul><ul if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin"><div class="col-xs-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-xs-7 no-padding"><h4><a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a></h4></div><div class="col-xs-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookshelf-type="delete" onclick="{remove}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions test"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookshelf-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'viewMiradorComparison\')}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
+riot.tag2('bookmarklist', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-xs-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-xs-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-xs-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul><ul if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin"><div class="col-xs-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-xs-7 no-padding"><h4><a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a></h4></div><div class="col-xs-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookshelf-type="delete" onclick="{remove}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookshelf-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'viewMiradorComparison\')}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
 
 
 this.pi = this.opts.data.pi;
@@ -891,7 +978,10 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
             		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( 'fixTitle' ).tooltip( 'show' );
         		}
 
-        		this.controls[0].classList.toggle( 'faded' );
+        		console.log("controls", this.controls);
+        		for (let control of this.controls) {
+        		    control.classList.toggle( 'faded' );
+        		};
 
             	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
             	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;

@@ -61,7 +61,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
         Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
         Assert.assertEquals(
@@ -75,7 +75,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
         Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
         Assert.assertTrue(stub.generateContextObject(null, null)

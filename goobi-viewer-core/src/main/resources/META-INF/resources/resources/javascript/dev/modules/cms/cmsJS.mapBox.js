@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _map = {};
     var _mapEnlarged = {};
     var _features = [];
@@ -92,6 +92,8 @@ var cmsJS = ( function( cms ) {
                     
                     _map.addControl( new mapboxgl.FullscreenControl() );
                     _map.addControl( new mapboxgl.NavigationControl() );
+                    
+                    $("#" + _defaults.mapBoxContainerSelector).closest(".widget").show();
                 } );
                 
                 // add popups

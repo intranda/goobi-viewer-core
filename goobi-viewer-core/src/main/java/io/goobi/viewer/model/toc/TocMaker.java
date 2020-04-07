@@ -721,9 +721,11 @@ public class TocMaker {
                 switch (param.getType()) {
                     case TRANSLATEDFIELD:
                         if (doc.getFirstValue(param.getKey()) != null) {
+                            // Translate index field value, if available
                             value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
                         } else {
-                            value = new MultiLanguageMetadataValue();
+                            // Translate key, if no index field found
+                            value = ViewerResourceBundle.getTranslations(param.getKey().toString());
                         }
                         break;
                     case FIELD:
@@ -763,7 +765,7 @@ public class TocMaker {
                 Set<String> languages = new HashSet<>(value.getLanguages());
 
                 languages.addAll(label.getLanguages());
-                //                if (MetadataParameterType.FIELD.equals(param.getType())) {
+                // Replace master value placeholders in the label object 
                 for (String language : languages) {
                     String langValue = label.getValue(language)
                             .orElse(labelConfig.getMasterValue())
@@ -782,7 +784,10 @@ public class TocMaker {
             }
         }
 
-        // logger.trace("label: {}", label);
+        //        for (String language : label.getLanguages()) {
+        //            logger.trace("label ({}): {}", language, label.getValue(language).get());
+        //        }
+
         return label;
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_browse" version="2020-03-10">
+    <name>cms__template_29__title</name>
+    <description>cms__template_29__description</description>
+    <icon>cms_template_29_browse.png</icon>
+    <html>cms_template_29_browse.xhtml</html>
+    <options>    
+        <appliesToExpandedUrl>true</appliesToExpandedUrl>
+    </options>
+    <content>
+        <item id="text01" order="1" type="HTML" label="cms_template_29_text_label"/>
+        <item id="browseTerms" order="2" type="BROWSETERMS" label="cms_template_29_browseterm_label" />
+    </content>
+</cms_page_template>

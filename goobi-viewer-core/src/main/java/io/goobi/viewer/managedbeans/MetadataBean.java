@@ -17,17 +17,23 @@ package io.goobi.viewer.managedbeans;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -35,6 +41,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.viewer.EventElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -50,9 +57,12 @@ public class MetadataBean {
     @Inject
     private ActiveDocumentBean activeDocumentBean;
 
-    /** Metadata blocks (one per structure element) */
+    /** Metadata blocks for the docstruct hierarchy from the anchor to the current element. */
     private List<MetadataElement> metadataElementList = null;
-    /** Events. */
+
+    /** Metadata blocks for all docstructs that are included within a specific page. */
+    private Map<Integer, List<MetadataElement>> allMetadataElementsforPage = new HashMap<>();
+    /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
     /**
@@ -81,16 +91,17 @@ public class MetadataBean {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String loadMetadata() throws IndexUnreachableException, DAOException {
-        metadataElementList = new ArrayList<>();
         if (activeDocumentBean == null) {
-            activeDocumentBean = new ActiveDocumentBean();
+            return "viewMetadata";
         }
+
         StructElement currentElement = activeDocumentBean.getCurrentElement();
         if (currentElement == null) {
             return "viewMetadata";
         }
 
         logger.trace("loadMetadata for: {}", currentElement.getLabel());
+        metadataElementList = new ArrayList<>();
         try {
             Locale locale = BeanUtils.getLocale();
             MetadataElement metadataElement = new MetadataElement(currentElement, locale, activeDocumentBean.getSelectedRecordLanguage());
@@ -117,8 +128,6 @@ public class MetadataBean {
 
         return "viewMetadata";
     }
-
-    /*********************************** Getter and Setter ***************************************/
 
     /**
      * <p>
@@ -150,6 +159,66 @@ public class MetadataBean {
 
         }
         return metadataElementList;
+    }
+
+    /**
+     * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
+     * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
+     * 
+     * @param order Page number
+     * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should return metadata elements for all contained docstructs
+     */
+    public List<MetadataElement> getAllMetadataElementsForPage(int order) throws IndexUnreachableException, DAOException {
+        if (allMetadataElementsforPage.get(order) != null) {
+            return allMetadataElementsforPage.get(order);
+        }
+        if (activeDocumentBean == null) {
+            return Collections.emptyList();
+        }
+
+        StructElement topElement = activeDocumentBean.getTopDocument();
+        if (topElement == null) {
+            return Collections.emptyList();
+        }
+
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + topElement.getPi() + " +" + SolrConstants.THUMBPAGENO + ":[1 TO " + order + "]";
+        logger.trace("All metadata elements query: {}", query);
+        SolrDocumentList docs;
+        try {
+            docs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.LOGID, "asc")), null);
+            if (docs.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            for (SolrDocument doc : docs) {
+                int thumbPage = (int) doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                int numPages = (int) doc.getFieldValue(SolrConstants.NUMPAGES);
+                if (thumbPage < 1) {
+                    continue;
+                }
+                if (thumbPage == order || thumbPage + numPages - 1 >= order) {
+                    StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
+                    Locale locale = BeanUtils.getLocale();
+                    MetadataElement metadataElement = new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage());
+                    if (allMetadataElementsforPage.get(order) == null) {
+                        allMetadataElementsforPage.put(order, new ArrayList<>(docs.size()));
+                    }
+                    allMetadataElementsforPage.get(order).add(metadataElement);
+                }
+            }
+
+            return allMetadataElementsforPage.get(order);
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+
+        }
+
+        return Collections.emptyList();
     }
 
     /**

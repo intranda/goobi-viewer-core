@@ -12,79 +12,59 @@
 
 	<composite:implementation>
 		<h:panelGroup rendered="#{metadataBean.bottomMetadataElement.hasSidebarMetadata}">
-			<div id="widgetMetadata" class="widget">
-				<h3>#{msg.sidebarBibData}</h3>
 
-				<dl>
-					<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
-						<dd>
-							<h:outputText value="#{msg.description}" escape="false" />
-						</dd>
-					</h:panelGroup>
-
-					<ui:repeat value="#{metadataBean.bottomMetadataElement.sidebarMetadataList}" var="metadata">
-						<dt title="#{msg[metadata.label]}">
-							<h:outputText value="#{msg[metadata.label]}:" escape="false" />
-						</dt>
-
-						<!-- Grouped metadata -->
-						<h:panelGroup rendered="#{metadata.group}">
+				<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}">
+				<div id="widgetMetadata" class="widget">
+					<h3>#{msg.sidebarBibData}</h3>
+					
+					<dl>
+						<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
 							<dd>
-								<ui:repeat value="#{metadata.values}" var="val">
-									<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-										<f:param value="#{val.getParamLabelWithColon(0)}" />
-										<f:param value="#{val.getComboValueShort(0)}" />
-										<f:param value="#{val.getParamLabelWithColon(1)}" />
-										<f:param value="#{val.getComboValueShort(1)}" />
-										<f:param value="#{val.getParamLabelWithColon(2)}" />
-										<f:param value="#{val.getComboValueShort(2)}" />
-										<f:param value="#{val.getParamLabelWithColon(3)}" />
-										<f:param value="#{val.getComboValueShort(3)}" />
-										<f:param value="#{val.getParamLabelWithColon(4)}" />
-										<f:param value="#{val.getComboValueShort(4)}" />
-										<f:param value="#{val.getParamLabelWithColon(5)}" />
-										<f:param value="#{val.getComboValueShort(5)}" />
-										<f:param value="#{val.getParamLabelWithColon(6)}" />
-										<f:param value="#{val.getComboValueShort(6)}" />
-										<f:param value="#{val.getParamLabelWithColon(7)}" />
-										<f:param value="#{val.getComboValueShort(7)}" />
-										<f:param value="#{val.getParamLabelWithColon(8)}" />
-										<f:param value="#{val.getComboValueShort(8)}" />
-										<f:param value="#{val.getParamLabelWithColon(9)}" />
-										<f:param value="#{val.getComboValueShort(9)}" />
-									</h:outputFormat>
-                                    <br />
-                                </ui:repeat>
+								<h:outputText value="#{msg.description}" escape="false" />
 							</dd>
 						</h:panelGroup>
-
-						<!-- Non-grouped metadata -->
-						<h:panelGroup rendered="#{!metadata.group}">
-							<dd>
-								<ui:repeat value="#{metadata.values}" var="val">
-									<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-										<f:param value="#{val.getComboValueShort(0)}" />
-										<f:param value="#{val.getComboValueShort(1)}" />
-										<f:param value="#{val.getComboValueShort(2)}" />
-										<f:param value="#{val.getComboValueShort(3)}" />
-										<f:param value="#{val.getComboValueShort(4)}" />
-										<f:param value="#{val.getComboValueShort(5)}" />
-										<f:param value="#{val.getComboValueShort(6)}" />
-										<f:param value="#{val.getComboValueShort(7)}" />
-										<f:param value="#{val.getComboValueShort(8)}" />
-										<f:param value="#{val.getComboValueShort(9)}" />
-									</h:outputFormat>
-									<br />
-								</ui:repeat>
-							</dd>
-						</h:panelGroup>
-					</ui:repeat>
-				</dl>
-
-				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0 and fn:length(event.sidebarMetadata) > 0}">
+	
+						<ui:repeat value="#{metadataBean.bottomMetadataElement.sidebarMetadataList}" var="metadata">
+							<dt title="#{msg[metadata.label]}">
+								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+							</dt>
+	
+							<!-- Grouped metadata -->
+							<h:panelGroup rendered="#{metadata.group}">
+								<dd>
+									<ui:repeat value="#{metadata.values}" var="val">
+										<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+	                                        <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+	                                            <f:param value="#{val.getParamLabelWithColon(ind)}" />
+	                                            <f:param value="#{val.getComboValueShort(ind)}" />
+	                                        </c:forEach>
+										</h:outputFormat>
+	                                    <br />
+	                                </ui:repeat>
+								</dd>
+							</h:panelGroup>
+	
+							<!-- Non-grouped metadata -->
+							<h:panelGroup rendered="#{!metadata.group}">
+								<dd>
+									<ui:repeat value="#{metadata.values}" var="val">
+										<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+	                                        <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+	                                            <f:param value="#{val.getComboValueShort(ind)}" />
+	                                        </c:forEach>
+										</h:outputFormat>
+										<br />
+									</ui:repeat>
+								</dd>
+							</h:panelGroup>
+						</ui:repeat>
+					</dl>
+				</div>
+				</ui:fragment>
+				
+				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
 					<dl>
 						<c:forEach items="#{metadataBean.events}" var="event">
-						    <h:panelGroup rendered="#{fn:length(event.sidebarMetadata) > 0}">
     							<dt>
     								<h:outputText value="#{msg[event.label]}" escape="false" />
     							</dt>
@@ -97,27 +77,73 @@
     										<dd>
     											<ui:repeat value="#{metadata.values}" var="val">
     												<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                        <f:param value="#{val.getComboValueShort(0)}" />
-                                                        <f:param value="#{val.getComboValueShort(1)}" />
-                                                        <f:param value="#{val.getComboValueShort(2)}" />
-                                                        <f:param value="#{val.getComboValueShort(3)}" />
-                                                        <f:param value="#{val.getComboValueShort(4)}" />
-                                                        <f:param value="#{val.getComboValueShort(5)}" />
-                                                        <f:param value="#{val.getComboValueShort(6)}" />
-                                                        <f:param value="#{val.getComboValueShort(7)}" />
-                                                        <f:param value="#{val.getComboValueShort(8)}" />
-                                                        <f:param value="#{val.getComboValueShort(9)}" />
+                                                        <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                            <f:param value="#{val.getComboValueShort(ind)}" />
+                                                        </c:forEach>
     												</h:outputFormat>
     											</ui:repeat>
     										</dd>
     									</h:panelGroup>
     								</h:panelGroup>
     							</ui:repeat>
-							</h:panelGroup>
 						</c:forEach>
 					</dl>
 				</h:panelGroup>
-			</div>
+				
+				<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
+                    <div class="widget">
+                    <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement">
+                        <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
+                            <ui:repeat value="#{metadataElement.metadataTypes}" var="type">
+                                <ui:fragment rendered="#{metadataElement.hasMetadata()}">
+	                                <h3>#{msg[type.tabName]}</h3>
+	                             </ui:fragment>
+	                        </ui:repeat>  
+	                         
+                            <dl>
+                            	<ui:repeat value="#{metadataElement.metadataList}" var="metadata">
+                                        <dt>#{msg[metadata.label]}:</dt>
+                                            <dd>
+                                                <ui:repeat value="#{metadata.values}" var="val">
+                                                    <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                           <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                               <f:param value="#{val.getComboValueShort(ind)}" />
+                                                           </c:forEach>
+                                                    </h:outputFormat>
+                                                    <br />
+                                                </ui:repeat>
+                                            </dd>
+                            	</ui:repeat>
+                        	</dl>
+                    	</h:panelGroup>
+                	</ui:repeat>
+                	</div>
+                	
+                	<ui:repeat value="#{metadataBean.events}" var="event" varStatus="status">
+                		<div class="widget">
+                		<h3>#{event.label}</h3>
+                        <ui:repeat value="#{event.metadata}" var="metadata">
+                            <h:panelGroup rendered="#{!metadata.blank}">
+                                <dl>
+                                    <dt>#{msg[metadata.label]}:</dt>
+                                    <h:panelGroup>
+                                        <dd>
+                                            <ui:repeat value="#{metadata.values}" var="val">
+                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                    <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                        <f:param value="#{val.getComboValueShort(ind)}" />
+                                                    </c:forEach>
+                                                </h:outputFormat>
+                                                <br />
+                                            </ui:repeat>
+                                        </dd>
+                                    </h:panelGroup>
+                                </dl>
+                            </h:panelGroup>
+                        </ui:repeat>
+                	</div>
+                    </ui:repeat>
+                </ui:fragment>
             
             <script type="text/javascript">
                 var normdataWidgetConfig = {

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,12 +41,9 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.model.search.BrowseElement;
-import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.SearchHit;
-import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
@@ -110,7 +108,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
-        Assert.assertEquals(47, collections.size());
+        Assert.assertEquals(51, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         for (String key : keys) {
@@ -162,7 +160,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     break;
                 // TODO others
                 case ("dcnewspaper"):
-                    Assert.assertEquals(Long.valueOf(20), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(18), collections.get(key));
                     break;
                 case ("dcrelations"):
                     Assert.assertEquals(Long.valueOf(120), collections.get(key));
@@ -538,7 +536,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("val");
-        Assert.assertEquals(" AND fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
+        Assert.assertEquals(" +fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
     }
 
     /**
@@ -606,7 +604,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, true, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, null, true, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -617,7 +615,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, false, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, null, false, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -629,7 +627,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
 
-        String suffix = SearchHelper.getAllSuffixes(false);
+        String suffix = SearchHelper.getAllSuffixes(false, null);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }
@@ -830,15 +828,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
+        // TODO makes this more robust against changes to the index
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:19*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
                 null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
         String[] cellValues0 =
-                new String[] { "Persistent identifier", "PPN563984821", "b18029048", "339304251", "PPN563885807", "557335825", "AC02949962" };
-        String[] cellValues1 = new String[] { "Label", "Abriss der Geschichte des Grossherzogtums Hessen für höhere Lehranstalten",
-                "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
-                "König Löwes Hochzeitsschmaus", "Geographisches Quellenlesebuch der außereuropäischen Erdteile",
-                "[Hexenküche : Faust-Szene] / [Otto Schubert]", "Johannes von Gmunden, der Begründer der Himmelskunde auf deutschem Boden" };
+                new String[] { "Persistent identifier", "PPN563984821", "339304251", "b18029048", "PPN563885807", "557335825", "AC02949962" };
+        String[] cellValues1 =
+                new String[] { "Label", "Abriss der Geschichte des Grossherzogtums Hessen für höhere Lehranstalten", "König Löwes Hochzeitsschmaus",
+                        "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
+                        "Geographisches Quellenlesebuch der außereuropäischen Erdteile",
+                        "[Hexenküche : Faust-Szene] / [Otto Schubert]", "Johannes von Gmunden, der Begründer der Himmelskunde auf deutschem Boden" };
         Assert.assertNotNull(wb);
         Assert.assertEquals(1, wb.getNumberOfSheets());
         SXSSFSheet sheet = wb.getSheetAt(0);
@@ -1080,5 +1080,27 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void normalizeString_shouldPreserveHebrewChars() throws Exception {
         Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
+    }
+
+    /**
+     * Verify that a search for 'DC:dctei' yields 65 results overall, and 4 results within 'FACET_VIEWERSUBTHEME:subtheme1' This also checks that the
+     * queries built by {@link SearchHelper#buildFinalQuery(String, boolean, NavigationHelper)} are valid SOLR queries
+     * 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    @Test
+    public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
+        NavigationHelper nh = new NavigationHelper();
+        String query = "DC:dctei";
+
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
+        Assert.assertEquals(65, docs.size());
+
+        nh.setSubThemeDiscriminatorValue("subtheme1");
+        finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
+        Assert.assertEquals(4, docs.size());
     }
 }

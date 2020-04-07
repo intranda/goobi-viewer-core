@@ -51,6 +51,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;
@@ -75,6 +76,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
@@ -289,7 +291,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 CMSSidebarElement element = getAvailableSidebarElement(ids[i]);
                 if (element != null) {
                     // element.setType(ids[i]);
-                    element.setValue("bds");
+                    //                    element.setValue("bds");
                     element.setOrder(i);
                     //		    element.setId(null);
                     element.setOwnerPage(this);
@@ -983,6 +985,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return item;
     }
 
+    public String getContentItemText(String itemId) throws CmsElementNotFoundException {
+        CMSContentItem item = getContentItem(itemId);
+        if (item != null) {
+            switch (item.getType()) {
+                case TEXT:
+                    return item.getHtmlFragment();
+                case HTML:
+                    String htmlText = item.getHtmlFragment();
+                    String plainText = htmlText.replaceAll("\\<.*?\\>", "");
+                    plainText = StringEscapeUtils.unescapeHtml(plainText);
+                    return plainText;
+                default:
+                    return item.toString();
+            }
+        }
+
+        return "";
+    }
+
     /**
      * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale. Returns the LanguageVersion for the given
      * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
@@ -1532,6 +1553,19 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
+     * @return
+     */
+    public BrowseFunctionality getBrowse() {
+        Optional<CMSContentItem> item =
+                getGlobalContentItems().stream().filter(i -> CMSContentItemType.BROWSETERMS.equals(i.getType())).findFirst();
+        if (item.isPresent()) {
+            return (BrowseFunctionality) item.get().getFunctionality();
+        }
+        logger.warn("Did not find browse functionality in page " + this);
+        return new BrowseFunctionality("");
+    }
+
+    /**
      * <p>
      * hasSearchFunctionality.
      * </p>
@@ -1909,7 +1943,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
             if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
                 for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
-                    ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
+                    ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
                 }
             }
 
@@ -1920,7 +1954,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         List<CMSContentItem> globalContentItems = getGlobalContentItems();
         if (!globalContentItems.isEmpty()) {
             for (CMSContentItem item : globalContentItems) {
-                ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
+                ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
             }
         }
 
@@ -1933,19 +1967,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * 
      * @param item Content item to export
      * @param outputFolderPath Export path
-     * @param namingScheme Naming scheme for export files and folders
+     * @param namingScheme Naming scheme for export folders
+     * @param cmsPageId Parent page ID; used in the text file naming scheme
      * @return exported Files
      * @throws IOException
+     * @should return media files directly
      */
-    private List<File> exportItemText(CMSContentItem item, String outputFolderPath, String namingScheme) throws IOException {
+    static List<File> exportItemFiles(CMSContentItem item, String outputFolderPath, String namingScheme, long cmsPageId) throws IOException {
         if (item.getType() == null) {
             return Collections.emptyList();
         }
         switch (item.getType()) {
             case MEDIA:
+                return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
             case HTML:
             case TEXT:
-                return item.exportHtmlFragment(id, outputFolderPath, namingScheme);
+                return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
             default:
                 return Collections.emptyList();
         }
@@ -1957,22 +1994,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
-
-        if (selectableCategories != null) {
-            try {
-                List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
-                List<CMSCategory> tempCats = new ArrayList<>();
-                for (CMSCategory cat : allCats) {
-                    if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
-                        tempCats.add(cat);
-                    } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
-                        tempCats.add(cat);
-                    }
+        if (selectableCategories == null) {
+            return;
+        }
+        
+        try {
+            List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+            List<CMSCategory> tempCats = new ArrayList<>();
+            for (CMSCategory cat : allCats) {
+                if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+                    tempCats.add(cat);
+                } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+                    tempCats.add(cat);
                 }
-                this.categories = tempCats;
-            } catch (DAOException e) {
-                logger.error(e.toString(), e);
             }
+            this.categories = tempCats;
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
         }
     }
 
@@ -2001,4 +2039,5 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPi() {
         return getRelatedPI();
     }
+
 }

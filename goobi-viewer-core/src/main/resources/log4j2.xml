@@ -18,6 +18,7 @@
 		<Logger name="com.ocpsoft" level="ERROR" additivity="true" />
 		<Logger name="ro.isdc.wro" level="ERROR" additivity="true" />
 		<Logger name="de.intranda" level="DEBUG" additivity="true" />
+		<Logger name="de.intranda.digiverso.ocr" level="INFO" additivity="true" />
 		<Logger name="de.unigoettingen" level="DEBUG" additivity="true" />
 		<Logger
 			name="de.unigoettingen.sub.commons.contentlib.imagelib"

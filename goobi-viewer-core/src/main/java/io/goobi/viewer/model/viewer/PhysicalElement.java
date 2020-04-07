@@ -738,12 +738,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             try {
                 fullText = loadFullText();
             } catch (AccessDeniedException e) {
-                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+                fullText = e.getMessage();
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             } catch (IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
             }
+        }
+
+        if (fullText != null && fullText.length() < 30) {
+            return ViewerResourceBundle.getTranslation(fullText, null);
         }
 
         return fullText;
@@ -834,7 +838,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, searchTerms, rotation, getImageFooterHeight());
+            return ALTOTools.getWordCoords(altoText, searchTerms, rotation);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 

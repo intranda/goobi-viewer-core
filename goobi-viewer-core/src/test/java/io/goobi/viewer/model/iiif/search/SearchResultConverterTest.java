@@ -19,6 +19,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.junit.After;
 import org.junit.Assert;
@@ -162,6 +163,10 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
+
+        Assert.assertNotNull("Converter is null", converter);
+        Assert.assertNotNull("Alto doc is null", doc);
+        Assert.assertTrue("Query regex is Blank", StringUtils.isNotBlank(queryRegex));
 
         AnnotationResultList results = converter.getAnnotationsFromAlto(doc, queryRegex);
         Assert.assertEquals(9, results.hits.size());

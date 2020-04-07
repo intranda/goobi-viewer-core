@@ -380,23 +380,7 @@ public class CMSPageLanguageVersion {
         } else {
             completeContentItemList = getContentItems();
         }
-        sortItems(completeContentItemList);
-    }
-
-    /**
-     * @param completeContentItemList2
-     */
-    private void sortItems(List<CMSContentItem> items) {
-        if (getOwnerPage().getTemplate() != null) {
-            for (CMSContentItem cmsContentItem : items) {
-                for (CMSContentItem templateItem : getOwnerPage().getTemplate().getContentItems()) {
-                    if (templateItem.getItemId().equals(cmsContentItem.getItemId())) {
-                        cmsContentItem.setOrder(templateItem.getOrder());
-                    }
-                }
-            }
-        }
-        Collections.sort(items);
+        Collections.sort(completeContentItemList);
     }
 
     /** {@inheritDoc} */
@@ -424,13 +408,13 @@ public class CMSPageLanguageVersion {
         if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), getLanguage());
+                logger.info("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         } else {
             if (getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), getLanguage());
+                logger.info("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         }

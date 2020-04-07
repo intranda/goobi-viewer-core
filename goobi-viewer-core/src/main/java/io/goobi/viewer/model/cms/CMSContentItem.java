@@ -62,6 +62,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.BookmarksFunktionality;
+import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.QueryListFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
@@ -105,7 +106,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         TAGS,
         METADATA,
         CAMPAIGNOVERVIEW,
-        BOOKMARKLISTS;
+        BOOKMARKLISTS,
+        BROWSETERMS;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -136,6 +138,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                     return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
                 case BOOKMARKLISTS:
                     return new BookmarksFunktionality();
+                case BROWSETERMS:
+                    return new BrowseFunctionality(item.getCollectionField());
                 default:
                     return new TrivialFunctionality();
             }
@@ -155,18 +159,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "item_id")
     private String itemId;
 
-    /** Label to display during page creation */
-    @Column(name = "item_label")
-    private String itemLabel;
-
     /** Content item type. */
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private CMSContentItemType type;
-
-    /** Mandatory items must be filled with actual content in a page. */
-    @Column(name = "mandatory", nullable = false)
-    private boolean mandatory = false;
 
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
@@ -289,8 +285,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Transient
     private int nestedPagesCount = 0;
 
-    @Transient
-    private int order = 0;
 
     /**
      * Noop constructor for javax.persistence
@@ -311,10 +305,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             this.id = blueprint.id;
         }
         this.setItemId(blueprint.itemId);
-        this.setItemLabel(blueprint.itemLabel);
         this.setType(blueprint.type);
-        this.setMandatory(blueprint.mandatory);
-        this.setOrder(blueprint.order);
         this.setHtmlFragment(blueprint.getHtmlFragment());
         this.setElementsPerPage(blueprint.elementsPerPage);
         this.setBaseCollection(blueprint.getBaseCollection());
@@ -455,23 +446,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return the itemLabel
      */
     public String getItemLabel() {
-        if (itemLabel != null && !itemLabel.isEmpty()) {
-            return itemLabel;
-        }
-
-        return itemId;
+        return getItemTemplate().getItemLabel();
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>itemLabel</code>.
-     * </p>
-     *
-     * @param itemLabel the itemLabel to set
-     */
-    public void setItemLabel(String itemLabel) {
-        this.itemLabel = itemLabel;
-    }
 
     /**
      * <p>
@@ -503,19 +480,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return the mandatory
      */
     public boolean isMandatory() {
-        return mandatory;
+        return getItemTemplate().isMandatory();
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>mandatory</code>.
-     * </p>
-     *
-     * @param mandatory the mandatory to set
-     */
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
 
     /**
      * <p>
@@ -923,19 +890,14 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a int.
      */
     public int getOrder() {
-        return order;
+        CMSContentItemTemplate template = getItemTemplate();
+        if(template != null) {            
+            return template.getOrder();
+        } else {
+            return Integer.MAX_VALUE;
+        }
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>order</code>.
-     * </p>
-     *
-     * @param order a int.
-     */
-    public void setOrder(int order) {
-        this.order = order;
-    }
 
     /**
      * <p>
@@ -1105,6 +1067,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return this.collection;
     }
 
+    
+    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+        return initializeCollection(null);
+    }
+    
     /**
      * Creates a collection view object from the item's collection related properties
      *
@@ -1112,11 +1079,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+    public CollectionView initializeCollection(String subThemeDiscriminatorValue) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
-        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getSearchPrefix());
+        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getFilterQuery(subThemeDiscriminatorValue));
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
@@ -1129,6 +1096,22 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
+     * @param subThemeDiscriminatorValue
+     * @return
+     */
+    private String getFilterQuery(String subThemeDiscriminatorValue) {
+        String searchPrefix = getSearchPrefix();
+        if(StringUtils.isNoneBlank(subThemeDiscriminatorValue, searchPrefix)) {
+            String filter = "(" + searchPrefix + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
+            return filter;
+        }else if(StringUtils.isNotBlank(subThemeDiscriminatorValue)) {
+            return DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
+        } else {
+            return searchPrefix;
+        }
+    }
+
+    /**
      * Adds a CollecitonView object for the given field to the map and populates its values.
      *
      * @param collectionField
@@ -1138,7 +1121,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
-
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
                 Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
@@ -1253,8 +1235,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link io.goobi.viewer.model.cms.ContentItemMode} object.
      */
     public ContentItemMode getMode() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
+        return getItemTemplate().getMode();
     }
+
+
 
     /**
      * Message key to display when clicking the inline help button. Taken from contentItem of template
@@ -1262,7 +1246,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link java.lang.String} object.
      */
     public String getInlineHelp() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getInlineHelp();
+        return getItemTemplate().getInlineHelp();
     }
 
     /**
@@ -1273,7 +1257,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return true if the item has a non-empty inline help text. Taken from contentItem of template
      */
     public boolean isHasInlineHelp() {
-        CMSContentItem item = getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        CMSContentItem item = getItemTemplate();
         if (item != null) {
             return item.isHasInlineHelp();
         }
@@ -1538,26 +1522,27 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
-        CMSContentItemTemplate template = getTemplateItem();
+        CMSContentItemTemplate template = getItemTemplate();
         return template.getMediaFilter();
     }
 
+    
     /**
-     * 
+     * @return
      */
-    private CMSContentItemTemplate getTemplateItem() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+    public CMSContentItemTemplate getItemTemplate() {
+        try {            
+            return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        } catch(NullPointerException e) {
+            return null;
+        }
     }
 
     /**
-     * <p>
-     * isPreview.
-     * </p>
-     *
-     * @return a boolean.
+     * @return true if this contentItem should only appear in a preview of this page
      */
     public boolean isPreview() {
-        return getTemplateItem().isPreview();
+        return getItemTemplate().isPreview();
     }
 
     /**

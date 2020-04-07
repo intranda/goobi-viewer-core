@@ -4,9 +4,12 @@
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/(\w+|-)$" trailingSlash="append" />
-
+	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
+	
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
+	
+	
 	
 	<!-- INDEX -->
 	<url-mapping id="index">
@@ -190,6 +193,7 @@
 	<url-mapping id="searchTerm2">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{browseBean.setCurrentStringFilter('-')}</action>
         <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
@@ -199,6 +203,7 @@
 	<url-mapping id="searchTerm3">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>>
@@ -207,6 +212,7 @@
     <url-mapping id="searchTerm4">
         <pattern value="/term/#{field:browseBean.browsingMenuField}/#{filterQuery:browseBean.filterQuery}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
         <view-id value="/searchTermsList.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{browseBean.searchTerms}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
@@ -728,6 +734,11 @@
         <view-id value="/resources/admin/views/adminRole.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminCreateRecord">
+        <pattern value="/admin/record/new/" />
+        <view-id value="/resources/admin/views/adminCreateRecord.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">
@@ -804,6 +815,12 @@
 	</url-mapping>
 	<url-mapping id="cmsOpenPage2">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+	</url-mapping>
+	<url-mapping id="cmsBrowse3">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:browseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

@@ -214,4 +214,19 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @see CMSPage#exportItemFiles(CMSContentItem,String,String)
+     * @verifies return media files directly
+     */
+    @Test
+    public void exportItemFiles_shouldReturnMediaFilesDirectly() throws Exception {
+        CMSMediaItem mediaItem = new CMSMediaItem();
+        mediaItem.setFileName("example.pdf");
+        CMSContentItem item = new CMSContentItem(CMSContentItemType.MEDIA);
+        item.setMediaItem(mediaItem);
+        List<File> result = CMSPage.exportItemFiles(item, "", "", 1);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("example.pdf", result.get(0).getName());
+
+    }
 }

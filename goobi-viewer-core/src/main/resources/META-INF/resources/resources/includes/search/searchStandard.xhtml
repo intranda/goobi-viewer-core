@@ -13,6 +13,8 @@
 
 
     <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+    <ui:param name="title" value="#{title != null ? title : ''}"></ui:param>
+    <ui:param name="renderOnSearchTypeChange" value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}"></ui:param>
 
     <!-- SEARCH STANDARD -->
     <div class="search-standard">
@@ -26,7 +28,10 @@
         <!-- SEARCH STANDRAD TITLE -->
         <div class="search-standard__title">
             <h3>
-                <h:outputText rendered="#{!search.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
+                <h:outputText rendered="#{!search.searchInDcFlag and title == ''}" value="#{msg.searchGlobalDescription}" />
+                <h:panelGroup rendered="#{!search.searchInDcFlag and title != ''}">
+                	#{title}
+                </h:panelGroup>
                 <h:panelGroup rendered="#{search.searchInDcFlag}">
                     <h:outputText value="#{msg.searchIn}: " />
                     <ui:repeat var="facet" value="#{search.facets.getCurrentFacetsForField('DC')}">
@@ -79,7 +84,7 @@
                 <ui:fragment rendered="#{!searchBean.showReducedSearchOptions}">
                     <div class="search-standard__filter-link">
                         <h:commandLink rendered="#{navigationHelper.cmsPage}" value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
-                            <f:ajax render="searchArea" />
+                            <f:ajax render="searchArea #{renderOnSearchTypeChange}" />
                         </h:commandLink>
                         <ui:fragment rendered="#{!navigationHelper.cmsPage}">
                             <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>

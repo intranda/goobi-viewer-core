@@ -112,6 +112,7 @@
                                                 <div class="view-bookmark__item-info">
                                                     <!--  NAME -->
                                                     <h4>#{item.name}</h4>
+                                                    <a href="#{request.contextPath}#{item.url}"></a>
                                                 </div>
                                                 <!--  ACTION -->
                                                 <ui:fragment  rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}">

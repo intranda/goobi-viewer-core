@@ -7,14 +7,21 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<composite:interface />
+	
+	<composite:interface>
+		<composite:attribute name="filters" required="false" default="#{browseBean.availableStringFilters}" />
+		<composite:attribute name="currentStringFilter" required="false" default="#{browseBean.currentStringFilter}" />
+		<composite:attribute name="baseUrl" required="false" default="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{browseBean.filterQuery}/" />
+		<composite:attribute name="rtl" required="false" default="false" />
+	</composite:interface>
 
 	<composite:implementation>
-		<nav id="alphabeticPaginator" class="alphabetic-paginator" role="navigation">
+		<nav id="alphabeticPaginator" class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}" role="navigation">
 			<h:form id="alphabeticPaginatorForm" prependId="false">
 				<ul>
-					<ui:repeat value="#{browseBean.availableStringFilters}" var="filter">
-						<li class="#{browseBean.currentStringFilter == filter ? 'active' : ''}">
-							<a href="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{browseBean.filterQuery}/#{filter}/1/">#{filter}</a>
+					<ui:repeat value="#{cc.attrs.filters}" var="filter">
+						<li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
+							<a href="#{cc.attrs.baseUrl}#{filter}/1/">#{filter}</a>
 						</li>
 					</ui:repeat>
 				</ul>

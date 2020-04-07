@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -168,8 +169,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     // Get a JSON list of all identifiers  and timestamps of records that have an overview page update in the given time frame
                     try {
                         // EXAMPLE: ?action=getlist_overviewpage&from=2015-06-26&until=2016-01-01&first=0&pageSize=100
-                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate);
-                        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate);
+                        String[] templates = { "templateOverviewPage", "templateOverviewPageLegacy" };
+                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate, Arrays.asList(templates));
+                        List<CMSPage> cmsPages = DataManager.getInstance()
+                                .getDao()
+                                .getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate, Arrays.asList(templates));
                         JSONArray jsonArray = convertToJSON(count, cmsPages);
                         response.setContentType("application/json");
                         response.getWriter().write(jsonArray.toString());
@@ -216,23 +220,26 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
                         }
 
+                        if (tempFiles.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                            return;
+                        }
+
                         // Compress to a ZIP
-                        if (!tempFiles.isEmpty()) {
-                            FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
-                            if (Files.isRegularFile(zipFile)) {
-                                String now = DateTools.formatterFilename.print(System.currentTimeMillis());
-                                response.setContentType("application/zip");
-                                response.setHeader("Content-Disposition",
-                                        new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
-                                response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
-                                response.flushBuffer();
-                                OutputStream os = response.getOutputStream();
-                                try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
-                                    byte[] buffer = new byte[1024];
-                                    int bytesRead = 0;
-                                    while ((bytesRead = fis.read(buffer)) != -1) {
-                                        os.write(buffer, 0, bytesRead);
-                                    }
+                        FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
+                        if (Files.isRegularFile(zipFile)) {
+                            String now = DateTools.formatterFilename.print(System.currentTimeMillis());
+                            response.setContentType("application/zip");
+                            response.setHeader("Content-Disposition",
+                                    new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+                            response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
+                            response.flushBuffer();
+                            OutputStream os = response.getOutputStream();
+                            try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead = 0;
+                                while ((bytesRead = fis.read(buffer)) != -1) {
+                                    os.write(buffer, 0, bytesRead);
                                 }
                             }
                         }
@@ -308,7 +315,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 case "getlist_crowdsourcing":
                 case "snoop_cs":
                 case "get_cs": {
-                    String forward = "/csharvest?" + request.getQueryString();
+                    String contextPath = request.getContextPath();
+                    if (contextPath == null || contextPath.equals("/")) {
+                        contextPath = "";
+                    }
+                    String forward = contextPath + "/csharvest?" + request.getQueryString();
                     logger.trace("Redirecting to {}", forward);
                     response.sendRedirect(forward);
                 }

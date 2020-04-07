@@ -32,7 +32,7 @@ public class RssResourceTest extends AbstractTest {
      */
     @Test
     public void createQuery_shouldAddSuffixesIfRequested() throws Exception {
-        Assert.assertEquals("(PI:*) AND -BOOL_HIDE:true -DC:collection1 -DC:collection2", RssResource.createQuery("PI:*", null, null, null, true));
+        Assert.assertEquals("(PI:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", RssResource.createQuery("PI:*", null, null, null, true));
         Assert.assertEquals("(PI:*)", RssResource.createQuery("PI:*", null, null, null, false));
     }
 }

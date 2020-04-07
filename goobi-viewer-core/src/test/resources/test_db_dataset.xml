@@ -161,13 +161,13 @@
     <cms_page_language_versions cms_page_language_version_id="2" owner_page_id="1" language="en" status="FINISHED"
         title="Title 1" menu_title="Menu title 1" />
         
-    <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML" mandatory="true" owner_page_language_version_id="1"
+    <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML"  owner_page_language_version_id="1"
         html_fragment="&lt;b&gt;Hello CMS&lt;/b&gt;" />
-    <cms_content_items cms_content_item_id="2" item_id="C2" type="MEDIA" mandatory="false" owner_page_language_version_id="1"
+    <cms_content_items cms_content_item_id="2" item_id="C2" type="MEDIA" owner_page_language_version_id="1"
         media_item_id="1" />
-    <cms_content_items cms_content_item_id="3" item_id="C3" type="SOLRQUERY" mandatory="false" owner_page_language_version_id="1"
+    <cms_content_items cms_content_item_id="3" item_id="C3" type="SOLRQUERY" owner_page_language_version_id="1"
         solr_query="PI:*" solr_sort_fields="SORT_TITLE,DATECREATED" elements_per_page="20" />
-    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" mandatory="false" owner_page_language_version_id="1" 
+    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" owner_page_language_version_id="1" 
     	elements_per_page="5" />
     
     <cms_page_cms_categories page_id="1" category_id="4" />

@@ -27,6 +27,9 @@ public class CMSContentItemTemplate extends CMSContentItem {
     private String mediaFilter = "";
     private ContentItemMode mode = ContentItemMode.simple;
     private String inlineHelp = null;
+    private String itemLabel = "";
+    private int order = 0;
+    private boolean mandatory = false;
     private boolean preview = false;
 
     /**
@@ -119,5 +122,49 @@ public class CMSContentItemTemplate extends CMSContentItem {
      */
     public void setPreview(boolean preview) {
         this.preview = preview;
+    }
+    
+    /**
+     * @param mandatory the mandatory to set
+     */
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#isMandatory()
+     */
+    @Override
+    public boolean isMandatory() {
+        return this.mandatory;
+    }
+    
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    /**
+     * @return the order
+     */
+    public int getOrder() {
+        return order;
+    }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#setItemLabel(java.lang.String)
+     */
+    public void setItemLabel(String itemLabel) {
+        this.itemLabel = itemLabel;
+    }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#getItemLabel()
+     */
+    @Override
+    public String getItemLabel() {
+        return this.itemLabel;
     }
 }

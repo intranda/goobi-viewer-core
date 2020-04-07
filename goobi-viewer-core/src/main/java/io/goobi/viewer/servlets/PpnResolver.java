@@ -93,7 +93,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
         try {
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, false, false, false));
+                    .search(SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, null, false, false, false));
             if (hits.getNumFound() == 0) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;

@@ -79,6 +79,14 @@ pipeline {
         attachLog: true
       )
     }
+    failure {
+      emailext(
+        subject: '${DEFAULT_SUBJECT}',
+        body: '${DEFAULT_CONTENT}',
+        to: 'andrey.kozhushkov@intranda.com',
+        attachLog: true
+      )
+    }
   }
 }
 /* vim: set ts=2 sw=2 tw=120 et :*/

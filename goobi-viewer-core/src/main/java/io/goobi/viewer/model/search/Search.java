@@ -220,12 +220,14 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
+     * @param aggregateHits
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale)
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
+            boolean aggregateHits)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -241,7 +243,7 @@ public class Search implements Serializable {
         Map<String, String> params = SearchHelper.generateQueryParams();
         List<StructElement> luceneElements = new ArrayList<>();
         QueryResponse resp = null;
-        String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
+        String query = SearchHelper.buildFinalQuery(currentQuery, aggregateHits);
 
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);

@@ -15,6 +15,7 @@
 	
 	<Loggers>
 		<Logger name="io.goobi.viewer" level="ERROR" additivity="true" />
+		<Logger name="de.intranda" level="ERROR" additivity="true" />
 		<Logger name="com.ocpsoft" level="ERROR" additivity="true" />
 		<Logger name="ro.isdc.wro" level="ERROR" additivity="true" />
 		<Logger name="de.unigoettingen" level="DEBUG" additivity="true" />
