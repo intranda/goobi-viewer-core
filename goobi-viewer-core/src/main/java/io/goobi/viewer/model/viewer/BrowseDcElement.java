@@ -19,7 +19,10 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +50,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private boolean showDescription = false;
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
+    /**
+     * A list of metadata values of a specified SORL field contained in any volumes within the collection.
+     * Used to group collections into groups with matching elements in "facetValues"
+     */
+    private List<String> facetValues = new ArrayList<>();
 
     /**
      * <p>
@@ -85,6 +93,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         this.field = blueprint.field;
         this.splittingChar = blueprint.splittingChar;
         this.number = blueprint.number;
+        this.facetValues = blueprint.facetValues;
         this.sortField = blueprint.sortField;
         this.hasSubelements = blueprint.hasSubelements;
         this.showDescription = blueprint.showDescription;
@@ -480,4 +489,19 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
             return null;
         }
     }
+    
+    /**
+     * @return the groupingValues
+     */
+    public List<String> getFacetValues() {
+        return facetValues;
+    }
+    
+    /**
+     * @param groupingValues the groupingValues to set
+     */
+    public void setFacetValues(Collection<String> facetValues) {
+        this.facetValues = new ArrayList<>(facetValues);
+    }
+    
 }

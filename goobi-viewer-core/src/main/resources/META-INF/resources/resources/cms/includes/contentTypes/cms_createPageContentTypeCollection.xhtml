@@ -164,6 +164,30 @@
         </div>
     </div>
     
+                <!-- GROUP BY SOLR FIELD -->
+		    <div class="cms-module__option-group">
+		        <div class="cms-module__option-label">
+		            <label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
+		        </div>
+		        <div class="cms-module__option-control">
+		            <div class="custom-control custom-control--select">
+		                <h:selectOneMenu id="groupByFieldCollection" styleClass="form-control" value="#{contentItem.groupBy}">
+		                    <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+		                    <c:forEach var="field" items="#{cmsBean.possibleGroupFields}">
+		                        <f:selectItem itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" />
+		                    </c:forEach>
+		<!--                     <f:ajax event="change" render="@this" /> -->
+		                </h:selectOneMenu>
+		            </div>
+		            <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
+		        </div>
+		        <div class="cms-module__option-help">
+		            <button type="button" class="btn btn--clean" data-toggle="helptext">
+		                <i class="fa fa-question-circle" aria-hidden="true"></i>
+		            </button>
+		        </div>
+		    </div>
+    
     <!-- CONTENT ITEM MODE EXPANDED -->
     <ui:fragment rendered="#{contentItem.mode == 'expanded'}">
         <!-- BASE LEVELS -->

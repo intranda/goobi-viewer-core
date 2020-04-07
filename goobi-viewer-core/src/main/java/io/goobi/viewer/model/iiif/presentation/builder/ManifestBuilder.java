@@ -114,7 +114,7 @@ public class ManifestBuilder extends AbstractBuilder {
         final AbstractPresentationModelElement manifest;
 
         if (ele.isAnchor()) {
-            manifest = new Collection(getManifestURI(ele.getPi()));
+            manifest = new Collection(getManifestURI(ele.getPi()), ele.getPi());
             manifest.setViewingHint(ViewingHint.multipart);
         } else {
             manifest = new Manifest(getManifestURI(ele.getPi()));
@@ -300,7 +300,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         /*ANCHOR*/
         if (StringUtils.isNotBlank(anchorPI)) {
-            manifest.addWithin(new Collection(getManifestURI(anchorPI)));
+            manifest.addWithin(new Collection(getManifestURI(anchorPI), anchorPI));
         }
 
     }

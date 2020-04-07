@@ -33,6 +33,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 
 /**
@@ -97,7 +98,7 @@ public class CollectionView {
         synchronized (this) {
             try {
                 logger.trace("populateCollectionList");
-                Map<String, Long> dcStrings = dataProvider.getData();
+                Map<String, CollectionResult> dcStrings = dataProvider.getData();
                 logger.trace("Creating browse elements...");
                 completeCollectionList = new ArrayList<>(); // this has to be null and not empty at first; make sure it is initialized after the call to Solr
                 HierarchicalBrowseDcElement lastElement = null;
@@ -105,9 +106,10 @@ public class CollectionView {
                 Collections.sort(list);
                 for (String dcName : list) {
                     String collectionName = dcName.intern();
-                    long collectionSize = dcStrings.get(dcName);
+                    long collectionSize = dcStrings.get(dcName).getCount();
                     HierarchicalBrowseDcElement dc = new HierarchicalBrowseDcElement(collectionName, collectionSize, field,
                             DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, collectionName));
+                    dc.setFacetValues(dcStrings.get(dcName).getFacetValues());
                     dc.setOpensInNewWindow(shouldOpenInOwnWindow(collectionName));
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
@@ -596,7 +598,7 @@ public class CollectionView {
          * @return
          * @throws IndexUnreachableException
          */
-        Map<String, Long> getData() throws IndexUnreachableException;
+        Map<String, CollectionResult> getData() throws IndexUnreachableException;
 
         //        /**
         //         * @return

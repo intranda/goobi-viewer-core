@@ -137,6 +137,7 @@ public class CmsBean implements Serializable {
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
     private List<String> solrSortFields = null;
 
+
     /**
      * <p>
      * init.
@@ -1559,12 +1560,23 @@ public class CmsBean implements Serializable {
         if (searchBean != null) {
             Search search = searchBean.getCurrentSearch();
             if (search != null) {
-                return search.getHits();
+                List<SearchHit> hits = search.getHits();
+                return hits;
             }
         }
 
         return Collections.emptyList();
     }
+    
+//    public Map<String, List<SearchHit>> getGroupedQueryResults() throws IndexUnreachableException, PresentationException, DAOException {
+//        List<SearchHit> hits = getQueryResults();
+//
+//        hits.stream().collect(Collectors.toMap(hit -> hit., arg1));
+//    }
+//    
+//    private List<String> getMetadataValue(SearchHit hit, String solrField) {
+//        return hit.getBrowseElement().ge
+//    }
 
     /**
      * Uses SearchBean to execute a search.
@@ -2349,6 +2361,28 @@ public class CmsBean implements Serializable {
             this.solrSortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
         }
         return this.solrSortFields;
+    }
+    
+    /**
+     * <p>
+     * getPossibleGroupFields.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.apache.solr.client.solrj.SolrServerException if any.
+     * @throws java.io.IOException if any.
+     */
+    public List<String> getPossibleGroupFields() throws SolrServerException, IOException {
+        List<String> fields = new ArrayList<>();
+        fields.add(SolrConstants.SORTNUM_YEAR);
+        fields.add(SolrConstants.DOCSTRCT);
+        fields.add(SolrConstants.DC);
+        fields.add(SolrConstants.PI_ANCHOR);
+        fields.add(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        
+        Collections.sort(fields);
+        
+        return fields;
     }
 
     /**
