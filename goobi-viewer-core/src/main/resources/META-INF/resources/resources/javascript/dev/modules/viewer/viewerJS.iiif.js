@@ -137,6 +137,23 @@ var viewerJS = ( function( viewer ) {
             },
             
             /**
+             * @param collection
+             * @returns the list of tags in the tag service with the given anme
+             */
+            getTags: function(collection, name) {
+                if(collection.service && Array.isArray(collection.service)) {
+                    let tagService = collection.service.filter( service => service['@context'].endsWith('api/context/taglists/context.json')).filter(service => service === undefined || service.name == name);
+                    if(tagService && tagService.length > 0) {
+                        return tagService[0].tags;
+                    }
+                } else if(collection.service && collection.service['@context'].endsWith('api/context/taglists/context.json') && (service === undefined || service.name == name)) {
+                    return collection.service.tags;
+                } else {
+                    return undefined;
+                }
+            },
+            
+            /**
              * Returns the collection's related element with the given label
              * 
              * @param collection

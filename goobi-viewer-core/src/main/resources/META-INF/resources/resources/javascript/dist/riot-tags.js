@@ -917,38 +917,20 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
         }.bind(this)
 });
 
-riot.tag2('collectionlist', '<div if="{this.collections}" class="panel-group" role="tablist"><div each="{collection, index in getChildren(this.collections)}" class="panel"><div class="panel-heading"><div class="panel-thumbnail"><img class="img-responsive" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="panel-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{index}" role="button" data-toggle="collapse" aria-expanded="false">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a></h4><div class="panel-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div><div if="{hasChildren(collection)}" id="collapse-{index}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false"><div class="panel-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="panel-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="panel-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', '', function(opts) {
+riot.tag2('collectionlist', '<div class="panel-group" role="tablist"><div if="{collections}" each="{collection, index in collections}" class="panel"><div class="panel-heading"><div class="panel-thumbnail"><img class="img-responsive" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="panel-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a></h4><div class="panel-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false"><div class="panel-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="panel-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="panel-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', '', function(opts) {
 
-this.collections = undefined;
-this.level = this.opts.level ? this.opts.level : 0;
+this.collections = this.opts.collections;
 
 this.on("mount", () => {
-    console.log("mounting collectionView", this.opts);
-
-    this.fetchCollections()
-    .then( () => this.update())
-    .then( () => this.loadSubCollections())
+    console.log("mounting collectionList", this.opts);
+    this.loadSubCollections();
 })
 
-this.fetchCollections = function() {
-    let url = this.opts.url;
-    if(this.opts.baseCollection) {
-        url += this.opts.baseCollection + "/";
-    }
-    if(this.opts.grouping) {
-        url += "grouping/" + this.opts.grouping + "/";
-    }
-    return fetch(url)
-    .then( result => result.json())
-    .then( json => this.collections = json);
-}.bind(this)
-
 this.loadSubCollections = function() {
-    let list = this.getChildren(this.collections);
     let promises = [];
 
     let subject = new Rx.Subject();
-    list.forEach( child => {
+    this.collections.forEach( child => {
         fetch(child['@id'])
         .then( result => result.json())
         .then(json => {
@@ -981,6 +963,77 @@ this.getChildren = function(collection) {
 });
 
 
+riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="{set[0] != \'\'}">{translator.translate(set[0])}</h3><collectionlist collections="{set[1]}" language="{opts.language}" setindex="{index}"></collectionlist></div>', '', '', function(opts) {
+
+this.collectionSets = [];
+
+this.on("mount", () => {
+    console.log("mounting collectionView", this.opts);
+
+    this.fetchCollections()
+    .then( () => {
+        let keys = this.collectionSets.map(set => set[0]);
+        this.translator = new viewerJS.Translator(keys, this.opts.restapi, this.opts.language);
+    	return this.translator.init();
+    })
+    .then( () => {
+        this.update();
+    })
+})
+
+this.fetchCollections = function() {
+    let url = this.opts.url;
+    if(this.opts.baseCollection) {
+        url += this.opts.baseCollection + "/";
+    }
+    if(this.opts.grouping) {
+        url += "grouping/" + this.opts.grouping + "/";
+    }
+    return fetch(url)
+    .then( result => result.json())
+    .then( json => this.buildSets(json))
+    .then( sets => this.collectionSets = sets);
+}.bind(this)
+
+this.buildSets = function(collection) {
+    let map = new Map();
+    collection.members
+    .filter( member => viewerJS.iiif.isCollection(member))
+    .forEach( member => {
+        let tagList = viewerJS.iiif.getTags(member, "grouping");
+        if(tagList == undefined || tagList.length == 0) {
+            this.addToMap(map, "", member);
+        } else {
+            tagList.forEach(tag => {
+               this.addToMap(map, tag, member);
+            });
+        }
+    })
+    let entries = Array.from(map.entries());
+	entries.sort( (e1,e2) => {
+	   	 let key1 = e1[0];
+	   	 let key2 = e2[0];
+	   	 if(key1 == "" && key2 != "") {
+	   	     return 1;
+	   	 } else if(key2 == "" && key1 != "") {
+	   	     return -1;
+	   	 } else {
+	   	     return key1.localeCompare(key2);
+	   	 }
+	});
+    return entries;
+}.bind(this)
+
+this.addToMap = function(map, key, value) {
+    let list = map.get(key);
+    if(list === undefined) {
+        list = [];
+        map.set(key, list);
+    }
+    list.push(value);
+}.bind(this)
+
+});
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 

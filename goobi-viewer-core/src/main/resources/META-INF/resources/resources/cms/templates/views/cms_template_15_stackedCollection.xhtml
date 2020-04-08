@@ -44,19 +44,20 @@
                 </div>
 				
 				<div class="tpl-stacked-collection__collections">
-					<collectionList 
-					url='#{request.contextPath}/rest/iiif/collections/#{cmsPage.getContentItem("collection").collectionField}/'
+					<collectionView 
+					url='#{configurationBean.restApiUrl}iiif/collections/#{cmsPage.getContentItem("collection").collectionField}/'
+					restapi = "#{configurationBean.restApiUrl}"
 					baseCollection="#{cmsPage.getContentItem('collection').baseCollection}"
 					grouping="#{cmsPage.getContentItem('collection').groupBy}"
 					language="#{navigationHelper.localeString}"
-					></collectionList>
+					></collectionView>
 				</div>
 				
 <!-- 				<div class="tpl-stacked-collection__collections"></div> -->
 				
 				<script type="text/javascript">
 				
-				riot.mount("collectionList");
+				riot.mount("collectionView");
 				
 //                     $.ajax( {
 //                         url: "#{request.contextPath}/rest/iiif/collections/#{cmsPage.getContentItem("collection").collectionField}/#{cmsPage.getContentItem('collection').baseCollection != null ? cmsPage.getContentItem("collection").baseCollection : "-"}",

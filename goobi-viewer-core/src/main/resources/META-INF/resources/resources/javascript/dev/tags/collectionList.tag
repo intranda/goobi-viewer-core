@@ -1,8 +1,7 @@
 <collectionList>
 
-<div if="{this.collections}" class="panel-group" role="tablist">
-
-	<div each="{collection, index in getChildren(this.collections)}" class="panel">
+ <div class="panel-group" role="tablist">
+	<div if="{collections}" each="{collection, index in collections}" class="panel">
 	
 		<div class="panel-heading">
 		
@@ -12,7 +11,7 @@
 			
 			<h4 class="panel-title">
 				<a if="{!hasChildren(collection)}" href="{collection.rendering[0]['@id']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
-				<a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{index}" role="button" data-toggle="collapse" aria-expanded="false">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
+				<a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
 			</h4>
 			
 			<div class="panel-rss">
@@ -23,7 +22,7 @@
 		
 		</div>
 		
-		<div if="{hasChildren(collection)}" id="collapse-{index}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false">
+		<div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false">
 			<div class="panel-body">
 				<ul if="{collection.members && collection.members.length > 0}" class="list">
 					<li each="{child in getChildren(collection)}">
@@ -38,41 +37,23 @@
 		</div>
 	
 	</div>
-
 </div>
+
 
 <script>
 
-this.collections = undefined;
-this.level = this.opts.level ? this.opts.level : 0;
+this.collections = this.opts.collections;
 
 this.on("mount", () => {
-    console.log("mounting collectionView", this.opts);
-    
-    this.fetchCollections()
-    .then( () => this.update())
-    .then( () => this.loadSubCollections())
+    console.log("mounting collectionList", this.opts);
+    this.loadSubCollections();
 })
 
-fetchCollections() {
-    let url = this.opts.url;
-    if(this.opts.baseCollection) {
-        url += this.opts.baseCollection + "/";
-    }
-    if(this.opts.grouping) {
-        url += "grouping/" + this.opts.grouping + "/";
-    }
-    return fetch(url)
-    .then( result => result.json())
-    .then( json => this.collections = json);
-}
-
 loadSubCollections() {
-    let list = this.getChildren(this.collections);
     let promises = [];
     
     let subject = new Rx.Subject();
-    list.forEach( child => {
+    this.collections.forEach( child => {
         fetch(child['@id'])
         .then( result => result.json())
         .then(json => {
