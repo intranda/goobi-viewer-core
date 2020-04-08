@@ -122,7 +122,6 @@ public class ViewManager implements Serializable {
     private Boolean accessPermissionPdf = null;
     private Boolean allowUserComments = null;
     private String persistentUrl = null;
-    private boolean displayImage = false;
     private List<StructElementStub> docHierarchy = null;
     private String mainMimeType = null;
     private Boolean filesOnly = null;
@@ -2081,7 +2080,7 @@ public class ViewManager implements Serializable {
      * isFulltextAvailableForWork.
      * </p>
      *
-     * @return a boolean.
+     * @return true if record has full-text and user has access rights; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2094,6 +2093,49 @@ public class ViewManager implements Serializable {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
+    }
+
+    /**
+     * 
+     * @return true if any of this record's pages has an image and user has access rights; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isRecordHasImages() throws IndexUnreachableException, DAOException {
+        String imageAvailable = topDocument.getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE);
+        if (imageAvailable == null || !Boolean.valueOf(imageAvailable)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_IMAGES,
+                BeanUtils.getRequest());
+    }
+
+    /**
+     * 
+     * @return true if current page has an image and user has access rights; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isPageHasImage() throws IndexUnreachableException, DAOException {
+        if (isBornDigital()) {
+            return false;
+        }
+
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
+            return false;
+        }
+        if (!currentPage.isHasImage()) {
+            return false;
+        }
+        String filename = getFilenameFromPathString(currentPage.getFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES);
     }
 
     /**
@@ -2956,27 +2998,6 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance().getConfiguration().useTilesFullscreen();
     }
 
-    /**
-     * <p>
-     * isDisplayImage.
-     * </p>
-     *
-     * @return the displayImage
-     */
-    public boolean isDisplayImage() {
-        return displayImage;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>displayImage</code>.
-     * </p>
-     *
-     * @param displayImage the displayImage to set
-     */
-    public void setDisplayImage(boolean displayImage) {
-        this.displayImage = displayImage;
-    }
 
     /**
      * <p>

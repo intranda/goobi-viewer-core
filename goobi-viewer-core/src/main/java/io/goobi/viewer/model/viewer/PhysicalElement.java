@@ -126,6 +126,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int width = 0;
     /** Actual image/video height (if available). */
     private int height = 0;
+    /** Whether or not this page has image data. */
+    private boolean hasImage = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
     /** File name of the full-text document in the file system. */
@@ -641,6 +643,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public void setFileIdRoot(String fileIdRoot) {
         this.fileIdRoot = fileIdRoot;
+    }
+
+    /**
+     * @return the hasImage
+     */
+    public boolean isHasImage() {
+        return hasImage;
+    }
+
+    /**
+     * @param hasImage the hasImage to set
+     */
+    public void setHasImage(boolean hasImage) {
+        this.hasImage = hasImage;
     }
 
     /**
