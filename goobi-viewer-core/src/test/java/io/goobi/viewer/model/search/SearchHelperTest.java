@@ -829,27 +829,26 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         // TODO makes this more robust against changes to the index
-        String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:19*";
+        String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
                 null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
         String[] cellValues0 =
-                new String[] { "Persistent identifier", "PPN563984821", "339304251", "b18029048", "PPN563885807", "557335825", "AC02949962" };
+                new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
         String[] cellValues1 =
-                new String[] { "Label", "Abriss der Geschichte des Grossherzogtums Hessen für höhere Lehranstalten", "König Löwes Hochzeitsschmaus",
-                        "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
-                        "Geographisches Quellenlesebuch der außereuropäischen Erdteile",
-                        "[Hexenküche : Faust-Szene] / [Otto Schubert]", "Johannes von Gmunden, der Begründer der Himmelskunde auf deutschem Boden" };
+                new String[] { "Label", "Gedichte",
+                        "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
+                        "Das Stilisieren der Thier- und Menschen-Formen" };
         Assert.assertNotNull(wb);
         Assert.assertEquals(1, wb.getNumberOfSheets());
         SXSSFSheet sheet = wb.getSheetAt(0);
-        Assert.assertEquals(8, sheet.getPhysicalNumberOfRows());
+        Assert.assertEquals(6, sheet.getPhysicalNumberOfRows());
         {
             SXSSFRow row = sheet.getRow(0);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());
             Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
             Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
         }
-        for (int i = 1; i < 6; ++i) {
+        for (int i = 1; i < 4; ++i) {
             SXSSFRow row = sheet.getRow(i);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());
             Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
