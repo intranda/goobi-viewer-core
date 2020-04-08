@@ -93,7 +93,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
             relevantString2 = relevantString2.substring(1);
         }
 
-        // logger.trace("Comparing '{}' to '{}'", relevantString1, relevantString2);
+        // logger.trace("Comparing '{}' to '{}' ({})", relevantString1, relevantString2, locale);
         return comparator.compare(relevantString1, relevantString2);
     }
 }

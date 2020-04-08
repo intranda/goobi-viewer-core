@@ -620,6 +620,20 @@ public class NavigationHelper implements Serializable {
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
 
+        // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
+        if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
+            BrowseBean bb = BeanUtils.getBrowseBean();
+            if (bb != null) {
+                try {
+                    bb.searchTerms();
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (IndexUnreachableException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
         // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
         if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
