@@ -156,6 +156,20 @@ var viewerJS = ( function( viewer ) {
                         return collection.related;
                     }
                 }
+            },
+            
+            /**
+             * Return true if the given element if of type "sc:Collection" or "Collection"
+             * and has no viewingHint "multi-part" (indication that it is an anchor record)
+             */
+            isCollection: function(element) {
+                var type = element['@type'];
+                var viewingHint = element.viewingHint;
+                if( (type == 'sc:Collection' || type == 'Collection') && viewingHint != 'multi-part') {
+                    return true;
+                } else {
+                    return false;
+                }
             }
     }
     
