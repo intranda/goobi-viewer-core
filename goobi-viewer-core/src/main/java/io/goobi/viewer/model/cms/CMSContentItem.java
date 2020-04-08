@@ -336,6 +336,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
         this.setSearchType(blueprint.getSearchType());
         this.setMetadataFields(blueprint.getMetadataFields());
+        this.setGroupBy(blueprint.groupBy);
 
     }
 

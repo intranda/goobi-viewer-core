@@ -70,12 +70,12 @@
         </div>
         <div class="cms-module__option-control">
             <div class="custom-control custom-control--select">
-                <h:selectOneMenu id="groupByField" styleClass="form-control" value="#{contentItem.groupBy}">
+                <h:selectOneMenu id="groupByFieldCollection" styleClass="form-control" value="#{contentItem.groupBy}">
                     <f:selectItem itemValue="" itemLabel="#{msg.select}" />
-                    <c:forEach var="field" items="#{cmsBean.possibleGroupFields}">
-                        <f:selectItem itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" />
-                    </c:forEach>
-<!--                     <f:ajax event="change" render="@this" /> -->
+                    <f:selectItems value="#{cmsBean.possibleGroupFields}" 
+                    	var="field"
+                    	itemValue="#{field}" 
+                    	itemLabel="#{msg[field]} (#{field})" />
                 </h:selectOneMenu>
             </div>
             <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
