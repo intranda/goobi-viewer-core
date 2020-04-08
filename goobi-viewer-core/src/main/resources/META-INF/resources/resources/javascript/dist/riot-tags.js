@@ -1720,7 +1720,7 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div class="imgContent"><img riot-src="{image.mediumimage}"></div><h4>{image.title[0]}</h4><a href="{image.url}">{opts.msg.goToWork}</a></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}"><div class="timematrix__text"><p class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
 
  this.on( 'mount', function() {
  	$(this.opts.button).on("click", this.updateRange)
@@ -1739,7 +1739,7 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
      apiTarget += "/";
      apiTarget += $(this.opts.endInput).val();
      apiTarget += '/';
-     apiTarget += this.opts.count;
+     apiTarget += $(this.opts.count).val();
      apiTarget += '/';
      console.log('apiTarget', apiTarget)
 
@@ -1757,5 +1757,4 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
  }.bind(this)
 
  console.log('Hello', this.opts);
-
 });

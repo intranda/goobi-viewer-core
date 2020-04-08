@@ -3,17 +3,17 @@
 	<div class="timematrix__objects">
 		<div each="{image in imageList}" class="timematrix__content">
 			
-			<div class="imgContent">
-				<img src="{image.mediumimage}"> 
-			</div>
-				
-			<h4>{image.title[0]}</h4>
-			
-			<a href="{image.url}">{opts.msg.goToWork}</a>
+			<div class="timematrix__img">
+				<a href="{image.url}">
+					<img src="{image.mediumimage}"> 
+					<div class="timematrix__text">	
+						<p class="timetext">{image.title[0]}</p>
+					</div>
+				</a>
+			</div>	
 		</div> 
 	</div>
-	
-
+	 
  <script> 
  this.on( 'mount', function() {
  	$(this.opts.button).on("click", this.updateRange)
@@ -33,7 +33,7 @@
      apiTarget += "/";
      apiTarget += $(this.opts.endInput).val();
      apiTarget += '/';
-     apiTarget += this.opts.count;
+     apiTarget += $(this.opts.count).val();
      apiTarget += '/';
      console.log('apiTarget', apiTarget)
      
@@ -51,9 +51,9 @@
 	    this.update()
 	}.bind(this))
  }
-  
+ 
+ 
  console.log('Hello', this.opts);
-	
  </script>
 
 </timematrix>

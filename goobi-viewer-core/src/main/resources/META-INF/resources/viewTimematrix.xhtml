@@ -28,9 +28,20 @@
 					<form id="locateTimematrix" method="POST">
 						<input type="hidden" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
 						<input type="hidden" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
-						<div id="slider-range"></div>
-						<button type="submit" id="setTimematrix" class="btn btn--full">#{msg.timematrixCalculate}</button>
+						<div id="slider-range" onmouseup="mouseUp()"></div>
+						<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrixCalculate}</button>
 					</form>
+					
+					Werke pro Seite <input type="number" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
+					<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
+					
+<!-- 					<form>			 -->
+<!-- 						<select id="hitsSelect" class="hitsPerPage" > -->
+<!-- 							<option value="10">10</option> -->
+<!-- 							<option value="50">50</option> -->
+<!-- 							<option value="100">100</option> -->
+<!-- 						</select> -->
+<!-- 					</form> -->
 				</div>
 				
 				<div class="clearfix"></div>
@@ -41,45 +52,84 @@
 				
 				<timematrix></timematrix>
 				
-            </div>
+            	</div>
 
-            <script>
-             		var $startHere= $("#timematrixSelectionRangeInput1");
-                 	var $endHere= $("#timematrixSelectionRangeInput2");
-             		riot.mount('timematrix', {
-                		msg: {
-                			timematrixCalculate: "#{msg.timematrixCalculate}",
-            	        	closeWindow: "#{msg.timematrixCloseWindow}",
-            	        	goToWork: "#{msg.timematrixGoToWork}"
-                		},
-                     	startInput: "#timematrixSelectionRangeInput1",
-                     	endInput: "#timematrixSelectionRangeInput2",
-                     	contextPath: "#{request.contextPath}/",
-                     	count: #{configurationBean.timeMatrixHits},
-                     	button: "#setTimematrix"
-                     	});
-            </script>
+			<script>
+				$("document").ready(function() {
+				    setTimeout(function() {
+				        $(".setTimematrix").trigger('click');
+				    },10);
+				});
+				
+				function mouseUp() {
+					document.getElementById("setTimematrix").click();
+				}
+			</script>
+			
+			<script>
+			document.getElementById("hitsPerPage").onfocusout = function() {myFunction()};
+			
+			function myFunction() {
+				document.getElementById("setTimematrix").click();
+			}
+			</script>
+
+           	<script>
+           		var $startHere= $("#timematrixSelectionRangeInput1");
+               	var $endHere= $("#timematrixSelectionRangeInput2");
+               	var $count= $(".hitsPerPage");
+           		riot.mount('timematrix', {
+              		msg: {
+              			timematrixCalculate: "#{msg.timematrixCalculate}",
+          	        	closeWindow: "#{msg.timematrixCloseWindow}",
+          	        	goToWork: "#{msg.timematrixGoToWork}"
+              		},
+                   	startInput: "#timematrixSelectionRangeInput1",
+                   	endInput: "#timematrixSelectionRangeInput2",
+                   	contextPath: "#{request.contextPath}/",
+                   	count: $( ".hitsPerPage" ),
+                   	button: ".setTimematrix"
+                   	});
+           	</script>
             
             <script type="text/javascript">
-            $(document).ready(function() {
-              	var timematrixConfig = {
-	                contextPath: "#{request.contextPath}/",
-	                rangeInput1: $( "#timematrixSelectionRangeInput1" ),
-	                startDate: $( "#timematrixSelectionRangeInput1" ).val(),
-	                rangeInput2: $( "#timematrixSelectionRangeInput2" ),
-		            endDate: $( "#timematrixSelectionRangeInput2" ).val(),
-		            count: #{configurationBean.timeMatrixHits},
-		            $tmCanvas: $( "#timematrixCanvas" ),
-		            $tmCanvasPos: $( "#timematrixCanvas" ).position(),
-	                lang: {
-	                	closeWindow: "#{msg.timematrixCloseWindow}",
-	                	goToWork: "#{msg.timematrixGoToWork}"	                  
-	                }              	      
-              	};
-              	
-                viewerJS.timematrix.init( timematrixConfig );            	
-            });
+	            $(document).ready(function() {
+	              	var timematrixConfig = {
+		                contextPath: "#{request.contextPath}/",
+		                rangeInput1: $( "#timematrixSelectionRangeInput1" ),
+		                startDate: $( "#timematrixSelectionRangeInput1" ).val(),
+		                rangeInput2: $( "#timematrixSelectionRangeInput2" ),
+			            endDate: $( "#timematrixSelectionRangeInput2" ).val(),
+			            count: $( ".hitsPerPage" ),
+			            $tmCanvas: $( "#timematrixCanvas" ),
+			            $tmCanvasPos: $( "#timematrixCanvas" ).position(),
+		                lang: {
+		                	closeWindow: "#{msg.timematrixCloseWindow}",
+		                	goToWork: "#{msg.timematrixGoToWork}"	                  
+		                }              	      
+	              	};
+	              	
+	                viewerJS.timematrix.init( timematrixConfig );            	
+	            });
             </script>
+            
+            <script>
+				var input = document.getElementById("hitsPerPage");
+				input.addEventListener("keyup", function(event) {
+				  if (event.keyCode === 13) {
+				   event.preventDefault();
+				   document.getElementById("setTimematrix").click();
+				  }
+				});
+				
+	           $('select').change(function(){
+	            	var val1 = $('select').val();
+	            	$('input').val(val1);
+	            	document.getElementById("setTimematrix").click();
+	            });
+	           
+			</script>
+			   
 		</f:view>
 	</ui:define>
     
