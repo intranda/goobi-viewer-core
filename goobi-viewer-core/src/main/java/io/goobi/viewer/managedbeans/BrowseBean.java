@@ -483,6 +483,25 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * 
+     * @return true if <code>browsingMenuField</code> is set and configured to be translated; false otherwise
+     */
+    public boolean isBrowsingMenuFieldTranslated() {
+        if (StringUtils.isEmpty(browsingMenuField)) {
+            return false;
+        }
+
+        List<BrowsingMenuFieldConfig> bmfcList = DataManager.getInstance().getConfiguration().getBrowsingMenuFields();
+        for (BrowsingMenuFieldConfig bmfc : bmfcList) {
+            if (bmfc.getField().equals(browsingMenuField)) {
+                return bmfc.isTranslate();
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * <p>
      * Setter for the field <code>browsingMenuField</code>.
      * </p>
