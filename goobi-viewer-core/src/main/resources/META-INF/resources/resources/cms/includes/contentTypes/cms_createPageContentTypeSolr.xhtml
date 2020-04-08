@@ -66,11 +66,11 @@
     <!-- GROUP BY SOLR FIELD -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
-            <label for="groupByField">#{msg.cms_itemGroupByField}:</label>
+            <label for="groupByFieldSolr">#{msg.cms_itemGroupByField}:</label>
         </div>
         <div class="cms-module__option-control">
             <div class="custom-control custom-control--select">
-                <h:selectOneMenu id="groupByFieldCollection" styleClass="form-control" value="#{contentItem.groupBy}">
+                <h:selectOneMenu id="groupByFieldSolr" styleClass="form-control" value="#{contentItem.groupBy}">
                     <f:selectItem itemValue="" itemLabel="#{msg.select}" />
                     <f:selectItems value="#{cmsBean.possibleGroupFields}" 
                     	var="field"

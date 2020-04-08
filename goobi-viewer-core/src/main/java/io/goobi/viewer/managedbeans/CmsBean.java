@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1568,15 +1571,44 @@ public class CmsBean implements Serializable {
         return Collections.emptyList();
     }
     
-//    public Map<String, List<SearchHit>> getGroupedQueryResults() throws IndexUnreachableException, PresentationException, DAOException {
-//        List<SearchHit> hits = getQueryResults();
-//
-//        hits.stream().collect(Collectors.toMap(hit -> hit., arg1));
-//    }
-//    
-//    private List<String> getMetadataValue(SearchHit hit, String solrField) {
-//        return hit.getBrowseElement().ge
-//    }
+    public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) throws IndexUnreachableException, PresentationException, DAOException {
+        
+        Map<String, List<SearchHit>> hitMap = new HashMap<>();
+        for (SearchHit searchHit : hits) {
+            List<String> groupingValues = getMetadataValues(searchHit, groupingField);
+            if(groupingValues == null || groupingValues.isEmpty()) {
+                    List<SearchHit> valueHits = hitMap.get("");
+                    if(valueHits == null) {
+                        valueHits = new ArrayList<>();
+                        hitMap.put("", valueHits);
+                    }
+                    valueHits.add(searchHit);
+            } else {                
+                for (String value : groupingValues) {
+                    List<SearchHit> valueHits = hitMap.get(value);
+                    if(valueHits == null) {
+                        valueHits = new ArrayList<>();
+                        hitMap.put(value, valueHits);
+                    }
+                    valueHits.add(searchHit);
+                }
+            }
+        }
+        List<Entry<String, List<SearchHit>>> entryList = new ArrayList<>(hitMap.entrySet());
+        entryList.sort( (e1,e2) -> e1.getKey().compareTo(e2.getKey()));
+        return entryList;
+    }
+    
+    private List<String> getMetadataValues(SearchHit hit, String solrField) {
+        SolrDocument doc = hit.getSolrDoc();
+        if(doc != null) {
+            Collection<Object> values = doc.getFieldValues(solrField);
+            if(values != null) {                 
+                return values.stream().map(SolrSearchIndex::getAsString).collect(Collectors.toList());
+            }
+        } 
+        return null;
+    } 
 
     /**
      * Uses SearchBean to execute a search.
@@ -1595,23 +1627,30 @@ public class CmsBean implements Serializable {
             logger.error("Cannot search: SearchBean is null");
             return "";
         }
+        boolean aggregateHits = DataManager.getInstance().getConfiguration().isAggregateHits();
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
             ((SearchFunctionality) item.getFunctionality()).search();
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
-
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
             //            search.setQuery("+(" + item.getSolrQuery() + ") +(ISWORK:* ISANCHOR:*)");
             search.setQuery(item.getSolrQuery());
-            if (StringUtils.isNotBlank(searchBean.getSortString().replace("-", ""))) {
-                search.setSortString(searchBean.getSortString());
-            } else if (StringUtils.isNotBlank(item.getSolrSortFields())) {
+//            if (StringUtils.isNotBlank(searchBean.getSortString().replace("-", ""))) {
+//                search.setSortString(searchBean.getSortString());
+//            } else 
+                if (StringUtils.isNotBlank(item.getSolrSortFields())) {
                 search.setSortString(item.getSolrSortFields());
                 searchBean.setSortString(item.getSolrSortFields());
             }
+            //Cannot sort by multivalued fields like DC.
+//            if(StringUtils.isNotBlank(item.getGroupBy())) {
+//                String sortString = search.getSortString().replace("-", "");
+//                sortString = item.getGroupBy() + ";" + sortString;
+//                search.setSortString(sortString);
+//            }
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
+            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, aggregateHits, item.isGroupBySelected());
             searchBean.setCurrentSearch(search);
             return null;
         } else if (item == null) {
@@ -1879,7 +1918,7 @@ public class CmsBean implements Serializable {
 
         return null;
     }
-
+    
     /**
      * <p>
      * getLuceneFields.
