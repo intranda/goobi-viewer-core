@@ -139,6 +139,7 @@ public class CmsBean implements Serializable {
     private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
     private List<String> solrSortFields = null;
+    private List<String> solrGroupFields = null;
 
 
     /**
@@ -1632,21 +1633,17 @@ public class CmsBean implements Serializable {
             ((SearchFunctionality) item.getFunctionality()).search();
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
-            //            search.setQuery("+(" + item.getSolrQuery() + ") +(ISWORK:* ISANCHOR:*)");
             search.setQuery(item.getSolrQuery());
-//            if (StringUtils.isNotBlank(searchBean.getSortString().replace("-", ""))) {
-//                search.setSortString(searchBean.getSortString());
-//            } else 
-                if (StringUtils.isNotBlank(item.getSolrSortFields())) {
+            if (StringUtils.isNotBlank(item.getSolrSortFields())) {
                 search.setSortString(item.getSolrSortFields());
                 searchBean.setSortString(item.getSolrSortFields());
             }
-            //Cannot sort by multivalued fields like DC.
-//            if(StringUtils.isNotBlank(item.getGroupBy())) {
-//                String sortString = search.getSortString().replace("-", "");
-//                sortString = item.getGroupBy() + ";" + sortString;
-//                search.setSortString(sortString);
-//            }
+            //NOTE: Cannot sort by multivalued fields like DC.
+            if(StringUtils.isNotBlank(item.getGroupBy())) {
+                String sortString = search.getSortString().replace("-", "");
+                sortString = item.getGroupBy() + ";" + sortString;
+                search.setSortString(sortString);
+            }
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
@@ -2412,16 +2409,20 @@ public class CmsBean implements Serializable {
      * @throws java.io.IOException if any.
      */
     public List<String> getPossibleGroupFields() throws SolrServerException, IOException {
-        List<String> fields = new ArrayList<>();
-        fields.add(SolrConstants.SORTNUM_YEAR);
-        fields.add(SolrConstants.DOCSTRCT);
-        fields.add(SolrConstants.DC);
-        fields.add(SolrConstants.PI_ANCHOR);
-        fields.add(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
         
-        Collections.sort(fields);
+        if (this.solrGroupFields == null) {
+            this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
+            Collections.sort(solrGroupFields);
+        }
+        return this.solrGroupFields;
         
-        return fields;
+//        List<String> fields = new ArrayList<>();
+//        fields.add(SolrConstants.SORTNUM_YEAR);
+//        fields.add(SolrConstants.DOCSTRCT);
+//        fields.add(SolrConstants.DC);
+//        fields.add(SolrConstants.PI_ANCHOR);
+//        fields.add(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+//        return fields;
     }
 
     /**
