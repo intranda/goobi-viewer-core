@@ -4195,9 +4195,9 @@ public final class Configuration extends AbstractConfiguration {
     public String getDefaultBrowseIcon(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
         if (subConfig != null) {
-            return subConfig.getString("defaultBrowseIcon", "");
+            return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
         }
-
+                
         return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 

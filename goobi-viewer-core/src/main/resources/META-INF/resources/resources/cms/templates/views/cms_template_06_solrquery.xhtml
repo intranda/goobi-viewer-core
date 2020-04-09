@@ -80,8 +80,8 @@
 	                    
 	                    <ui:fragment rendered="#{cmsPage.getContentItem('queryList01').isGroupBySelected()}">
 	                    
-	                    	<div class="solr-query-collection__thumbs">
-		                        <ui:repeat var="hitSet" value="#{cmsBean.getGroupedQueryResults(cmsBean.queryResults, cmsPage.getContentItem('queryList01').groupBy)}">
+		                	<ui:repeat var="hitSet" value="#{cmsBean.getGroupedQueryResults(cmsBean.queryResults, cmsPage.getContentItem('queryList01').groupBy)}">
+	                    		<div class="solr-query-collection__thumbs">
 			                        <h3>#{msg[hitSet.key]}</h3>
 			                        <div class="row">
 			                            <ui:repeat var="hit" value="#{hitSet.value}">
@@ -105,8 +105,8 @@
 			                                </div>
 			                            </ui:repeat>
 			                        </div>
-		                        </ui:repeat>
-		                    </div>
+		                    	</div>
+		                	</ui:repeat>
 	                    
 	                    </ui:fragment>
 	                    
