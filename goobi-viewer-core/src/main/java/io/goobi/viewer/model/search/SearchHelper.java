@@ -57,11 +57,12 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.LocaleComparator;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -76,8 +77,8 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.viewer.BrowseTerm;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.termbrowsing.BrowseTerm;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
@@ -148,9 +149,10 @@ public final class SearchHelper {
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
             HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request, false);
+        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request,
+                false);
     }
-    
+
     /**
      * Main search method for flat search.
      *
@@ -173,7 +175,8 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request, boolean keepSolrDoc) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            HttpServletRequest request, boolean keepSolrDoc)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -222,7 +225,7 @@ public final class SearchHelper {
 
             SearchHit hit =
                     SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields, null);
-            if(keepSolrDoc) {                
+            if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
             ret.add(hit);
@@ -232,7 +235,7 @@ public final class SearchHelper {
 
         return ret;
     }
-    
+
     /**
      * Main search method for aggregated search.
      *
@@ -254,7 +257,8 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false);
     }
 
@@ -279,7 +283,8 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale, boolean keepSolrDoc)
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            boolean keepSolrDoc)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp =
@@ -298,7 +303,7 @@ public final class SearchHelper {
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
-            if(keepSolrDoc) {
+            if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
             ret.add(hit);
@@ -341,7 +346,8 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes(HttpServletRequest request, NavigationHelper navigationHelper, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+    public static String getAllSuffixes(HttpServletRequest request, NavigationHelper navigationHelper, boolean addStaticQuerySuffix,
+            boolean addCollectionBlacklistSuffix,
             boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
@@ -538,7 +544,8 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
+    public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery,
+            boolean filterForWhitelist,
             boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, CollectionResult> ret = new HashMap<>();
@@ -577,7 +584,7 @@ public final class SearchHelper {
                 logger.debug("query: {}", sbQuery.toString());
                 List<String> fieldList = new ArrayList<>();
                 fieldList.add(luceneField);
-                if(facetField != null) {
+                if (facetField != null) {
                     fieldList.add(facetField);
                 }
                 SolrDocumentList results =
@@ -601,7 +608,7 @@ public final class SearchHelper {
                                         ret.put(dc, result);
                                     }
                                     result.incrementCount();
-                                    if(StringUtils.isNotBlank(facetField)) {                                        
+                                    if (StringUtils.isNotBlank(facetField)) {
                                         result.addFacetValues(doc.getFieldValues(facetField));
                                     }
                                     dcDoneForThisRecord.add(dc);
@@ -618,7 +625,7 @@ public final class SearchHelper {
                                                 ret.put(parent, result);
                                             }
                                             result.incrementCount();
-                                            if(StringUtils.isNotBlank(facetField)) {                                        
+                                            if (StringUtils.isNotBlank(facetField)) {
                                                 result.addFacetValues(doc.getFieldValues(facetField));
                                             }
                                             dcDoneForThisRecord.add(parent);
@@ -1368,7 +1375,7 @@ public final class SearchHelper {
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
      * a query.
      *
-     * @param bmfc a {@link io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig} object.
+     * @param bmfc a {@link io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig} object.
      * @param startsWith a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
      * @param comparator a {@link java.util.Comparator} object.
@@ -1376,6 +1383,7 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should be thread safe when counting terms
      */
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery,
             Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
@@ -1455,7 +1463,8 @@ public final class SearchHelper {
                         Matcher m = p.matcher(compareTerm);
                         if (m.find()) {
                             if (!usedTerms.containsKey(term)) {
-                                BrowseTerm browseTerm = new BrowseTerm(term, sortTerm);
+                                BrowseTerm browseTerm =
+                                        new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
                                 terms.put(browseTerm, true);
                                 usedTerms.put(term, browseTerm);
                                 usedTermsInCurrentDoc.add(term);
@@ -1471,13 +1480,13 @@ public final class SearchHelper {
             } else {
                 // Without filtering or using alphabetical filtering
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
-                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                        .forEach(doc -> processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms, aggregateHits));
+                //                ((List<SolrDocument>) resp.getResults()).parallelStream()
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, usedTerms, aggregateHits));
 
                 // Sequential processing (doesn't break the sorting done by Solr)
-                //                for (SolrDocument doc : resp.getResults()) {
-                //                    processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms, aggregateHits);
-                //                }
+                for (SolrDocument doc : resp.getResults()) {
+                    processSolrResult(doc, bmfc, startsWith, terms, usedTerms, aggregateHits);
+                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -1503,22 +1512,21 @@ public final class SearchHelper {
      * <code>terms</code> and <code>usedTerms</code> are synchronized.
      *
      * @param doc
-     * @param field
-     * @param sortField
+     * @param bmfc
      * @param startsWith
      * @param terms Set of terms collected so far.
      * @param usedTerms Terms that are already in the terms map.
      * @param aggregateHits
      */
-    private static void processSolrResult(SolrDocument doc, String field, String sortField, String startsWith, Map<BrowseTerm, Boolean> terms,
+    private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith, Map<BrowseTerm, Boolean> terms,
             Map<String, BrowseTerm> usedTerms, boolean aggregateHits) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
-        Collection<Object> termList = doc.getFieldValues(field);
+        Collection<Object> termList = doc.getFieldValues(bmfc.getField());
         if (termList == null) {
             return;
         }
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-        String sortTerm = (String) doc.getFieldValue(sortField);
+        String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
         for (Object o : termList) {
             String term = String.valueOf(o);
@@ -1529,28 +1537,28 @@ public final class SearchHelper {
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
             }
-            //            if (logger.isTraceEnabled() && StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-            //                logger.trace("compareTerm '{}' starts with '{}'", compareTerm, startsWith);
-            //            }
-            if (StringUtils.isEmpty(startsWith) || "-".equals(startsWith) || StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-                if (!usedTerms.containsKey(term)) {
-                    BrowseTerm browseTerm = new BrowseTerm(term, sortTerm);
-                    // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}", term, compareTerm, sortTerm);
-                    terms.put(browseTerm, true);
-                    usedTerms.put(term, browseTerm);
-                    usedTermsInCurrentDoc.add(term);
-                    browseTerm.getPiList().add(pi);
-                } else if (!usedTermsInCurrentDoc.contains(term)) {
-                    // Only add to hit count if the same string is not in the same doc
-                    BrowseTerm browseTerm = usedTerms.get(term);
-                    // If using aggregated search, do not count instances of records that already have been counted
-                    if (aggregateHits && browseTerm.getPiList().contains(pi)) {
-                        continue;
-                    }
-                    browseTerm.addToHitCount(1);
-                    usedTermsInCurrentDoc.add(term);
-                    browseTerm.getPiList().add(pi);
+            if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
+                continue;
+            }
+
+            if (!usedTerms.containsKey(term)) {
+                BrowseTerm browseTerm =
+                        new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
+                // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                terms.put(browseTerm, true);
+                usedTerms.put(term, browseTerm);
+                usedTermsInCurrentDoc.add(term);
+                browseTerm.getPiList().add(pi);
+            } else if (!usedTermsInCurrentDoc.contains(term)) {
+                // Only add to hit count if the same string is not in the same doc
+                BrowseTerm browseTerm = usedTerms.get(term);
+                // If using aggregated search, do not count instances of records that already have been counted
+                if (aggregateHits && browseTerm.getPiList().contains(pi)) {
+                    continue;
                 }
+                browseTerm.addToHitCount(1);
+                usedTermsInCurrentDoc.add(term);
+                browseTerm.getPiList().add(pi);
             }
             sortTerm = null; // only use the sort term for the first term
         }
