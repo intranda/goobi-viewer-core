@@ -48,7 +48,26 @@
     			color: @black;
     			text-decoration: none;
     		}
+	    	i {
+	    		color: #ccc;
+	    		padding-left: 10px;
+	    		&.fa-angle-flip {
+	    			&::before {
+	    				content: "\f106";
+	    			}
+	    		}
+	    	}
+	    	&.collapsed {
+	    		i {
+		    		&.fa-angle-flip {
+		    			&::before {
+		    				content: "\f107";
+		    			}
+		    		}
+	    		}
+	    	}
     	}
+    	
     }
     .panel-rss {
     	width: 10%;

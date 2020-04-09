@@ -11,7 +11,10 @@
 			
 			<h4 class="panel-title">
 				<a if="{!hasChildren(collection)}" href="{collection.rendering[0]['@id']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
-				<a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
+				<a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
+					<span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span>
+					<i class="fa fa-angle-flip" aria-hidden="true"></i>
+				</a>
 			</h4>
 			
 			<div class="panel-rss">

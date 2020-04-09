@@ -1640,7 +1640,7 @@ public class CmsBean implements Serializable {
             }
             //NOTE: Cannot sort by multivalued fields like DC.
             if(StringUtils.isNotBlank(item.getGroupBy())) {
-                String sortString = search.getSortString().replace("-", "");
+                String sortString = search.getSortString() == null ? "" : search.getSortString().replace("-", "");
                 sortString = item.getGroupBy() + ";" + sortString;
                 search.setSortString(sortString);
             }
