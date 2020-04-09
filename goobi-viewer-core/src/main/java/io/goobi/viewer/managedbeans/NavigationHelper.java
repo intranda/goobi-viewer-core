@@ -624,6 +624,7 @@ public class NavigationHelper implements Serializable {
         if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
             BrowseBean bb = BeanUtils.getBrowseBean();
             if (bb != null) {
+                bb.resetTerms();
                 try {
                     bb.searchTerms();
                 } catch (PresentationException e) {

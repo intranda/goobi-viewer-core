@@ -134,7 +134,9 @@ public class BrowseTerm implements Serializable {
      * @param num a int.
      */
     public void addToHitCount(int num) {
-        hitCount += num;
+        synchronized (this) {
+            hitCount += num;
+        }
     }
 
     /**

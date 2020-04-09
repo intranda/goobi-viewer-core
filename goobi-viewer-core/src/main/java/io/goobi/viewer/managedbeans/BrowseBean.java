@@ -241,35 +241,6 @@ public class BrowseBean implements Serializable {
 
     /**
      * <p>
-     * getVisibleDcList.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Deprecated
-    public List<BrowseDcElement> getVisibleDcList() {
-        logger.debug("getVisibleDcList");
-        if (!collections.containsKey(SolrConstants.DC)) {
-            initializeDCCollection();
-        }
-        return new ArrayList<>(collections.get(SolrConstants.DC).getVisibleDcElements());
-    }
-
-    /**
-     * Populates <code>visibledcList</code> with elements to be currently show in the UI. Prior to using this method, <code>dcList</code> must be
-     * sorted and each <code>BrowseDcElement.hasSubElements</code> must be set correctly.
-     *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    @Deprecated
-    public void calculateVisibleDcElements() throws IndexUnreachableException {
-        if (!collections.containsKey(SolrConstants.DC)) {
-            initializeDCCollection();
-        }
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>collectionToExpand</code>.
      * </p>
      *
