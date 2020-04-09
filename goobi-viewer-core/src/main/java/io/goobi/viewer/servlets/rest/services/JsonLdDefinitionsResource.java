@@ -21,6 +21,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.api.services.CollectionExtentDefinition;
+import de.intranda.api.services.TagListDefinition;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -28,10 +30,12 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
  *
  * @author Florian Alpers
  */
-@Path("/api/collections/extent")
+@Path(JsonLdDefinitionsResource.URI_PATH)
 @ViewerRestServiceBinding
-public class CollectionExtentDefinitionResource {
+public class JsonLdDefinitionsResource {
 
+    public static final String URI_PATH = "api/context";
+    
     /**
      * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained
      * works
@@ -39,12 +43,28 @@ public class CollectionExtentDefinitionResource {
      * @return a {@link de.intranda.api.services.CollectionExtentDefinition} object.
      */
     @GET
-    @Path("/context.json")
+    @Path(CollectionExtentDefinition.URI_PATH)
     @Produces({ MediaType.APPLICATION_JSON })
     public CollectionExtentDefinition getCollectionExtentContext() {
 
         return new CollectionExtentDefinition();
 
+    }
+    
+    @GET
+    @Path(TagListDefinition.URI_PATH)
+    @Produces({ MediaType.APPLICATION_JSON })
+    public TagListDefinition getTagListContext() {
+
+        return new TagListDefinition();
+
+    }
+
+    /**
+     * @return
+     */
+    public static String getUrl() {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + URI_PATH;
     }
 
 }
