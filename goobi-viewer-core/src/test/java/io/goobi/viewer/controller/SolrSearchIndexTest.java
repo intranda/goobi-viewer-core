@@ -136,7 +136,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assert.assertNotNull(doc);
         Map<String, List<String>> fieldValueMap = SolrSearchIndex.getFieldValueMap(doc);
-        Assert.assertEquals(47, fieldValueMap.keySet().size());
+        Assert.assertFalse(fieldValueMap.containsKey(SolrConstants.IMAGEURN_OAI));
+        Assert.assertFalse(fieldValueMap.containsKey("PAGEURNS"));
     }
 
     /**

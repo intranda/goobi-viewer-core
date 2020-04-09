@@ -816,10 +816,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                    // case SolrConstants.ALTO:
-                case "WORDCOORDS":
                 case "PAGEURNS":
-                case "ABBYYXML":
                     break;
                 default:
                     List<String> values = getMetadataValues(doc, fieldName);
@@ -845,10 +842,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                    // case SolrConstants.ALTO:
-                case "WORDCOORDS":
                 case "PAGEURNS":
-                case "ABBYYXML":
                     break;
                 default:
                     if (isLanguageCodedField(fieldName)) {
