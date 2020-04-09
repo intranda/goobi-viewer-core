@@ -1,37 +1,63 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-            	xmlns:h="http://xmlns.jcp.org/jsf/html"
-            	xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                template="/resources/themes/#{navigationHelper.theme}/template.html"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageTimeMatrix}" />
-            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.timematrix,1)}" />
-        </f:metadata>
+	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
+			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+		</f:metadata>
+	</ui:define>
+	
+	<ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
+    
 
-    <ui:define name="content">
+	<ui:define name="content">
+    
 		<f:view contentType="text/html" encoding="utf-8">
-            <div id="timeMatrix" class="timematrix">				
-				<h2>#{msg.timematrix}</h2>
+			<div id="templateTimematrix" class="tpl-timeMatrix">
+                <!-- EDIT PAGE -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
+                </ui:fragment>
+                
+                <!-- PAGE UNPUBLISHED -->
+                <h:panelGroup rendered="#{!cmsPage.published}">
+                    <div class="alert alert-warning" role="alert">
+                        #{msg.cms_pagePreviewNotPublished}
+                    </div>
+                </h:panelGroup>
 
-                <p>#{msg.timematrixDescriptionText}</p>
+				<h2>#{cmsPage.title}</h2>                
+				
+                <!-- TEXT -->
+                <div class="tpl-timeMatrix__text">
+                    <ui:include src="#{cmsPage.getContent('text01')}" />
+                </div>
 
-                <h3 class="timematrix__selection-header">#{msg.timematrixSelectRange}</h3>
+				<h3 class="tpl-timematrix__selection-header">#{msg.timematrixSelectRange}</h3>
 
-				<div class="timematrix__selection">
+				<div class="tpl-timematrix__selection">
 					<form id="locateTimematrix" method="POST">
 						<input type="hidden" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
 						<input type="hidden" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
 						<div id="slider-range" onmouseup="mouseUp()"></div>
 						<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrixCalculate}</button>
 					</form>
-					<div class="timematrix__hitsForm">
+					<div class="tpl-timematrix__hitsForm">
 						<label>#{msg.hits}:</label> 
 						<input type="number" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
 						<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
@@ -45,7 +71,7 @@
 				<div class="clearfix"></div>
 				
 				<!-- LOADER -->
-					<span class="timematrix__loader">
+					<span class="tpl-timematrix__loader">
 						<img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Timematrix Loader" />
 					</span>
 				
@@ -64,7 +90,7 @@
 					document.getElementById("setTimematrix").click();
 				}
 				
-				var $loading = $('.timematrix__loader').hide();
+				var $loading = $('.tpl-timematrix__loader').hide();
 				$(document)
 				  .ajaxStart(function () {
 				    $loading.show();
@@ -138,25 +164,11 @@
 	            });
 	           
 			</script>
-			   
 		</f:view>
 	</ui:define>
-    
-	<ui:define name="sidebar">
-		<widgetComponent:widget_browsing />
-        
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
-	</ui:define>
 
-	<ui:define name="rssFeed">
-		<ui:include src="/resources/includes/rssFeed.xhtml" />
-	</ui:define>
-	
-	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
-	</ui:define>
+    <!-- SIDEBAR -->
+	<ui:define name="sidebar">
+		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
+    </ui:define>
 </ui:composition>

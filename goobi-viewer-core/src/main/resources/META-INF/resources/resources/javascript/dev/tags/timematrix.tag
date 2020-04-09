@@ -7,7 +7,7 @@
 				<a href="{image.url}">
 					<img src="{image.mediumimage}"> 
 					<div class="timematrix__text">	
-						<p class="timetext">{image.title[0]}</p>
+						<p name="timetext" class="timetext">{image.title[0]}</p>
 					</div>
 				</a>
 			</div>	
@@ -52,7 +52,9 @@
 	}.bind(this))
  }
  
- 
+	var myDiv = $('.timetext');
+	myDiv.text(myDiv.text().substring(0,100))
+	
  console.log('Hello', this.opts);
  </script>
 
