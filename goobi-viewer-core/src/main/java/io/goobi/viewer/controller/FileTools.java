@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -407,5 +408,23 @@ public class FileTools {
             path = path.replace("/C:", "");
         }
         return path;
+    }
+    
+    /**
+     * 
+     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
+     * if the given path is empty or null
+     * 
+     * @param pathString
+     * @return The filename, or an empty String if it could not be determined
+     */
+
+    public static String getFilenameFromPathString(String pathString) {
+        if (StringUtils.isBlank(pathString)) {
+            return "";
+        }
+
+        Path path = Paths.get(pathString);
+        return path.getFileName().toString();
     }
 }

@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -1595,9 +1596,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/"
                 + BeanUtils.getLocale().getLanguage();
@@ -1614,7 +1615,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
     }
 
@@ -1628,9 +1629,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi() + "/" + filename;
     }
@@ -2112,33 +2113,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * @return true if current page has an image and user has access rights; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public boolean isPageHasImage() throws IndexUnreachableException, DAOException {
-        if (isBornDigital()) {
-            return false;
-        }
-
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage == null) {
-            return false;
-        }
-        if (!currentPage.isHasImage()) {
-            return false;
-        }
-        String filename = getFilenameFromPathString(currentPage.getFileName());
-        if (StringUtils.isBlank(filename)) {
-            return false;
-        }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    /**
      * <p>
      * isTeiAvailableForWork.
      * </p>
@@ -2156,19 +2130,6 @@ public class ViewManager implements Serializable {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
-    }
-
-    /**
-     * <p>
-     * isTeiAvailableForPage.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
-        return isFulltextAvailableForPage();
     }
 
     /**
@@ -2244,29 +2205,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * isAltoAvailableForPage.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage == null) {
-            return false;
-        }
-        String filename = getFilenameFromPathString(currentPage.getAltoFileName());
-        if (StringUtils.isBlank(filename)) {
-            return false;
-        }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-    }
-
-    /**
      * Default fulltext getter (with HTML escaping).
      *
      * @return a {@link java.lang.String} object.
@@ -2276,39 +2214,6 @@ public class ViewManager implements Serializable {
      */
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
-    }
-
-    /**
-     * <p>
-     * isFulltextAvailableForPage.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
-        if (isBornDigital()) {
-            return false;
-        }
-
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage == null) {
-            return false;
-        }
-        if (!currentPage.isFulltextAvailable()) {
-            return false;
-        }
-        String filename = getFilenameFromPathString(currentPage.getFulltextFileName());
-        if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(currentPage.getAltoFileName());
-        }
-        if (StringUtils.isBlank(filename)) {
-            return false;
-        }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -2998,7 +2903,6 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance().getConfiguration().useTilesFullscreen();
     }
 
-
     /**
      * <p>
      * Getter for the field <code>pi</code>.
@@ -3255,24 +3159,6 @@ public class ViewManager implements Serializable {
         Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
         md.populate(getTopDocument(), BeanUtils.getLocale());
         return md;
-    }
-
-    /**
-     * 
-     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
-     * if the given path is empty or null
-     * 
-     * @param pathString
-     * @return The filename, or an empty String if it could not be determined
-     */
-
-    private static String getFilenameFromPathString(String pathString) {
-        if (StringUtils.isBlank(pathString)) {
-            return "";
-        }
-
-        Path path = Paths.get(pathString);
-        return path.getFileName().toString();
     }
 
     /**

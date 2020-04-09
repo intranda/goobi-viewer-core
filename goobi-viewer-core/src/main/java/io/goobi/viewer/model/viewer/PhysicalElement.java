@@ -55,6 +55,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -646,6 +647,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public boolean isDisplayImage() throws IndexUnreachableException, DAOException {
+        if (!hasImage) {
+            return false;
+        }
+        String filename = FileTools.getFilenameFromPathString(getFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES);
+    }
+
+    /**
      * @return the hasImage
      */
     public boolean isHasImage() {
@@ -657,6 +677,31 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public void setHasImage(boolean hasImage) {
         this.hasImage = hasImage;
+    }
+
+    /**
+     * <p>
+     * isFulltextAvailableForPage.
+     * </p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isDisplayFulltext() throws IndexUnreachableException, DAOException {
+        if (!fulltextAvailable) {
+            return false;
+        }
+        String filename = FileTools.getFilenameFromPathString(getFulltextFileName());
+        if (StringUtils.isBlank(filename)) {
+            filename = FileTools.getFilenameFromPathString(getAltoFileName());
+        }
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -680,6 +725,39 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public void setFulltextAvailable(boolean fulltextAvailable) {
         this.fulltextAvailable = fulltextAvailable;
     }
+
+    /**
+     * <p>
+     * isAltoAvailableForPage.
+     * </p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
+        String filename = FileTools.getFilenameFromPathString(getAltoFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+    }
+    
+    /**
+     * <p>
+     * isTeiAvailableForPage.
+     * </p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isTeiAvailable() throws IndexUnreachableException, DAOException {
+        return isDisplayFulltext();
+    }
+
 
     /**
      * <p>
