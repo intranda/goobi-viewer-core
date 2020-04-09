@@ -65,7 +65,7 @@ import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -817,9 +817,11 @@ public final class Configuration extends AbstractConfiguration {
             String field = sub.getString(".");
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
+            boolean translate = sub.getBoolean("[@translate]", false);
             String docstructFilterString = sub.getString("[@docstructFilters]");
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-            BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+            BrowsingMenuFieldConfig bmfc =
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, docstructFilterString, recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 
@@ -1139,7 +1141,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return urlString;
     }
-    
+
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
         return use;
@@ -3962,17 +3964,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getCmsMediaFolder() {
         return getLocalString("cms.mediaFolder", "cms_media");
     }
-    
-    
+
     /**
      * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
      * 
-     * @return  "temp_media" unless otherwise configured in "tempMediaFolder"
+     * @return "temp_media" unless otherwise configured in "tempMediaFolder"
      */
     public String getTempMediaFolder() {
         return getLocalString("tempMediaFolder", "temp_media");
     }
-
 
     /**
      * <p>
@@ -4559,7 +4559,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return " ";
     }
-    
+
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
@@ -4593,13 +4593,13 @@ public final class Configuration extends AbstractConfiguration {
 
         return defaultConf;
     }
-    
+
     public List<LicenseDescription> getLicenseDescriptions() {
         List<LicenseDescription> licenses = new ArrayList<>();
         List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
         for (HierarchicalConfiguration node : licenseNodes) {
             String url = node.getString("[@url]", "");
-            if(StringUtils.isNotBlank(url)) {
+            if (StringUtils.isNotBlank(url)) {
                 String label = node.getString("[@label]", url);
                 String icon = node.getString("[@icon]", "");
                 LicenseDescription license = new LicenseDescription(url);
@@ -4610,6 +4610,5 @@ public final class Configuration extends AbstractConfiguration {
         }
         return licenses;
     }
-    
-    
+
 }

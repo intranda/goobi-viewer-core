@@ -668,14 +668,14 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(docFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
                                 // Only add one instance of NORM_ALTNAME (as there can be dozens)
                                 if ("NORM_ALTNAME".equals(docFieldName)) {
                                     break;
@@ -696,14 +696,14 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
+                                // Translate values for certain fields, keeping the highlighting
                                 if (translateFields != null && translateFields.contains(termsFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(termsFieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
                             }
                         }
                     }
@@ -1048,9 +1048,9 @@ public class SearchHit implements Comparable<SearchHit> {
     public void setSolrDoc(SolrDocument doc) {
         this.solrDoc = doc;
     }
-    
+
     public SolrDocument getSolrDoc() {
-        return  this.solrDoc;
+        return this.solrDoc;
     }
 
     /* (non-Javadoc)

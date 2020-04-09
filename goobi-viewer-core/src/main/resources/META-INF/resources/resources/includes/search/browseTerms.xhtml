@@ -12,7 +12,9 @@
     <ui:param name="baseUrl" value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(browseBean.browsingMenuField).concat('/').concat(browseBean.filterQuery).concat('/')}"></ui:param>
 
 
-	<viewerComponent:alphabeticPaginator baseUrl="#{baseUrl}"/>
+    <ui:fragment rendered="#{!browseBean.browsingMenuFieldTranslated}">
+	    <viewerComponent:alphabeticPaginator baseUrl="#{baseUrl}"/>
+	</ui:fragment>
 
 	<!-- LIST -->
 	<nav id="search_termlistnav" class="search-termlist__list">

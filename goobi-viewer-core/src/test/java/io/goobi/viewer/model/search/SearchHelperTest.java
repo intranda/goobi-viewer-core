@@ -18,6 +18,7 @@ package io.goobi.viewer.model.search;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +48,9 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.termbrowsing.BrowseTerm;
+import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.StringPair;
 
 public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -107,7 +111,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
-        Map<String, CollectionResult> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
+        Map<String, CollectionResult> collections =
+                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
         Assert.assertEquals(51, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
@@ -1101,5 +1106,30 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(4, docs.size());
+    }
+
+    /**
+     * Checks whether counts for each term equal to the value from the last iteration.
+     * 
+     * @see SearchHelper#getFilteredTerms(BrowsingMenuFieldConfig,String,String,Comparator,boolean)
+     * @verifies be thread safe when counting terms
+     */
+    @Test
+    public void getFilteredTerms_shouldBeThreadSafeWhenCountingTerms() throws Exception {
+        int previousSize = -1;
+        Map<String, Long> previousCounts = new HashMap<>();
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, null, false);
+        for (int i = 0; i < 10; ++i) {
+            List<BrowseTerm> terms = SearchHelper.getFilteredTerms(bmfc, null, null, new BrowseTermComparator(Locale.ENGLISH), true);
+            Assert.assertFalse(terms.isEmpty());
+            Assert.assertTrue(previousSize == -1 || terms.size() == previousSize);
+            previousSize = terms.size();
+            for (BrowseTerm term : terms) {
+                if (previousCounts.containsKey(term.getTerm())) {
+                    Assert.assertEquals(Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()));
+                }
+                previousCounts.put(term.getTerm(), term.getHitCount());
+            }
+        }
     }
 }
