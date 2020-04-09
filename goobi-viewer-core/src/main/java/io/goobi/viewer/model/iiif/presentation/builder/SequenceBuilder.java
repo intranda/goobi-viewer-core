@@ -150,7 +150,9 @@ public class SequenceBuilder extends AbstractBuilder {
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
             }
-            sequence.addCanvas(canvas);
+            if(canvas != null) {                
+                sequence.addCanvas(canvas);
+            }
         }
         if (getBuildMode().equals(BuildMode.IIIF)) {
             try {
@@ -160,7 +162,9 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
+        if(sequence.getCanvases() != null) {            
+            addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
+        }
 
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);

@@ -108,6 +108,7 @@ var cmsJS = ( function( cms ) {
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).text( _getValue(member.label, _defaults.displayLanguage) + ' (' + _getContainedWorks( member) + ')' );
             // check if subcollections exist
+            console.log("num child collections of ", member, _getChildCollections( member))
             if ( _getChildCollections( member) > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
                         .attr( 'aria-expanded', 'false' );
@@ -206,7 +207,12 @@ var cmsJS = ( function( cms ) {
      * @returns the number of subcollections of a given iiif collection json element
      */
     function _getChildCollections(collection) {
-        if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
+        if(collection.service && Array.isArray(collection.service)) {
+            let extents = collection.service.filter( service => service['@context'].endsWith('api/context/collection/extent/context.json') );
+            if(extents && extents.length > 0) {
+                return extents[0].children;
+            }
+        } else if(collection.service && collection.service['@context'].endsWith('api/context/collection/extent/context.json')) {
              return collection.service.children;
         } else {
             return 0;
@@ -222,7 +228,12 @@ var cmsJS = ( function( cms ) {
      * @returns the number of contained works of a given iiif collection json element
      */
     function _getContainedWorks(collection) {
-        if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
+        if(collection.service && Array.isArray(collection.service)) {
+            let extents = collection.service.filter( service => service['@context'].endsWith('api/context/collection/extent/context.json') );
+            if(extents && extents.length > 0) {
+                return extents[0].service.containedWorks;
+            }
+        } else if(collection.service && collection.service['@context'].endsWith('api/context/collection/extent/context.json')) {
             return collection.service.containedWorks;
         } else {
             return 0;

@@ -153,6 +153,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private final Map<String, String> exportMetadata = new HashMap<>();
     @JsonIgnore
     private int hitsPopulated = 0;
+    @JsonIgnore
+    private SolrDocument solrDoc = null;
 
     /**
      * Private constructor. Use createSearchHit() from other classes.
@@ -1040,4 +1042,22 @@ public class SearchHit implements Comparable<SearchHit> {
         return sb.toString();
     }
 
+    /**
+     * @param doc
+     */
+    public void setSolrDoc(SolrDocument doc) {
+        this.solrDoc = doc;
+    }
+    
+    public SolrDocument getSolrDoc() {
+        return  this.solrDoc;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getBrowseElement().getLabelShort();
+    }
 }

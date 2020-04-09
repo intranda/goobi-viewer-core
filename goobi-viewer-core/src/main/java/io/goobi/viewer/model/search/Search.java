@@ -209,6 +209,28 @@ public class Search implements Serializable {
         }
         return true;
     }
+    
+    /**
+     * <p>
+     * execute.
+     * </p>
+     *
+     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param hitsPerPage a int.
+     * @param advancedSearchGroupOperator a int.
+     * @param locale Selected locale
+     * @param aggregateHits
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
+            boolean aggregateHits) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, aggregateHits, false);
+    }
+    
 
     /**
      * <p>
@@ -227,7 +249,7 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean aggregateHits)
+            boolean aggregateHits, boolean keepSolrDoc)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -405,11 +427,11 @@ public class Search implements Serializable {
                 }
             }
             useSortFields.addAll(sortFields);
-            List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits()
+            List<SearchHit> hits = aggregateHits
                     ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                            searchTerms, null, BeanUtils.getLocale())
+                            searchTerms, null, BeanUtils.getLocale(), keepSolrDoc)
                     : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                            searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest());
+                            searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc);
             this.hits.addAll(hits);
         }
     }
