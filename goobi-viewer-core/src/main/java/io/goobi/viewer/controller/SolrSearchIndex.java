@@ -1341,7 +1341,6 @@ public final class SolrSearchIndex {
             FieldInfo info = fieldInfoMap.get(name);
             EnumSet<FieldFlag> flags = FieldInfo.parseFlags(info.getSchema());
             if(!flags.contains(FieldFlag.MULTI_VALUED)) {
-                System.out.println("GROUPFIELD " + name + " - " + flags + " - " + info.getDocs() + " - " + info.getType() + " - " + info.getTopTerms());
                 if(info.getDocs() > 0 && (flags.contains(FieldFlag.DOC_VALUES) || name.equals(SolrConstants.DOCSTRCT) || name.equals(SolrConstants.PI_ANCHOR))) {                    
                     list.add(name);
                 }
