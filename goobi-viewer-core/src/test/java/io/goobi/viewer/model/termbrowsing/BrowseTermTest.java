@@ -12,12 +12,12 @@ public class BrowseTermTest {
     @Test
     public void addToHitCount_shouldAddToHitCountCorrectly() throws Exception {
         BrowseTerm browseTerm = new BrowseTerm("foo", null, null);
-        Assert.assertEquals(1, browseTerm.getHitCount());
+        Assert.assertEquals(0, browseTerm.getHitCount());
         
         browseTerm.addToHitCount(1);
-        Assert.assertEquals(2, browseTerm.getHitCount());
+        Assert.assertEquals(1, browseTerm.getHitCount());
         
         browseTerm.addToHitCount(2);
-        Assert.assertEquals(4, browseTerm.getHitCount());
+        Assert.assertEquals(3, browseTerm.getHitCount());
     }
 }

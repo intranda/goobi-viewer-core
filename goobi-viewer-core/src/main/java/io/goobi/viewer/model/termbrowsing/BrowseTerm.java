@@ -141,7 +141,7 @@ public class BrowseTerm implements Serializable {
      */
     public synchronized void addToHitCount(int num) {
         //        hitCount.set(hitCount.get() + num);
-        hitCount += 1;
+        hitCount += num;
     }
 
     /**
