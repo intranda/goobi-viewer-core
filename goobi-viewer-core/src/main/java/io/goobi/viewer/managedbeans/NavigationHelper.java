@@ -271,6 +271,9 @@ public class NavigationHelper implements Serializable {
 
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
+        
+        //after setting page, detemine subtheme
+        setSubThemeDiscriminatorValue();
     }
 
     /**
@@ -910,38 +913,43 @@ public class NavigationHelper implements Serializable {
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
-            // Automatically set the sub-theme discriminator value to the
-            // current record's value, if configured to do so
-            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
-            if (activeDocumentBean != null) {
-                String subThemeDiscriminatorValue = "";
-                if (activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
-                    // If a record is loaded, get the value from the record's value
-                    // in discriminatorField
-
-                    String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
-                    if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
-                        logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
-                        statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
-                    }
-                } else if (isCmsPage()) {
-                    CmsBean cmsBean = BeanUtils.getCmsBean();
-                    if (cmsBean != null && cmsBean.getCurrentPage() != null) {
-                        subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
-                        if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
-                            logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
-                            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
-                            return subThemeDiscriminatorValue;
-                        }
-                    }
-                }
-            }
+            determineCurrentSubThemeDiscriminatorValue();
         }
 
         String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
         //         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
         return ret;
+    }
+
+    /**
+     * Get the subthemeDiscriminator value either from a property of the currently loaded CMS page or the currently loaded document in the
+     * activeDocumentbean if the current page is a docmentPage.
+     * 
+     * @return the subtheme name determined from current cmsPage or current document
+     * 
+     */
+    public String determineCurrentSubThemeDiscriminatorValue() {
+        // Automatically set the sub-theme discriminator value to the
+        // current record's value, if configured to do so
+        String subThemeDiscriminatorValue = "";
+        ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
+        if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
+            // If a record is loaded, get the value from the record's value
+            // in discriminatorField
+            String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+            subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
+        } else if (isCmsPage()) {
+            CmsBean cmsBean = BeanUtils.getCmsBean();
+            if (cmsBean != null && cmsBean.getCurrentPage() != null) {
+                subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+            }
+        }
+        return subThemeDiscriminatorValue;
+    }
+    
+    public void setSubThemeDiscriminatorValue() {
+        String subThemeDiscriminatorValue = determineCurrentSubThemeDiscriminatorValue();
+        setSubThemeDiscriminatorValue(subThemeDiscriminatorValue);
     }
 
     /**
@@ -956,9 +964,10 @@ public class NavigationHelper implements Serializable {
         logger.trace("setSubThemeDiscriminatorValue: {}", subThemeDiscriminatorValue);
         // If a new discriminator value has been selected, the visible
         // collection list must be generated anew
-        if ((subThemeDiscriminatorValue == null && statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) != null)
-                || (subThemeDiscriminatorValue != null && !subThemeDiscriminatorValue.equals(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)))) {
-            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
+        statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
+        System.out.println("SET SUBTHEME TO " + subThemeDiscriminatorValue);
+        if ( (StringUtils.isBlank(subThemeDiscriminatorValue) && StringUtils.isNotBlank(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE))
+                || (StringUtils.isNotBlank(subThemeDiscriminatorValue) && !subThemeDiscriminatorValue.equals(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE))))) {
             BrowseBean browseBean = BeanUtils.getBrowseBean();
             if (browseBean != null) {
                 browseBean.resetAllLists();
@@ -973,8 +982,6 @@ public class NavigationHelper implements Serializable {
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 }
             }
-        } else {
-            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
         }
     }
 
@@ -1392,7 +1399,9 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use dedicated CMS pages instead of xhtml pages for subthemes
      */
+    @Deprecated
     public String getCurrentPartnerUrl() {
         logger.trace("activePartnerId: {}", statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE));
         logger.trace("currentPartnerPage: {}", statusMap.get(KEY_CURRENT_PARTNER_PAGE));
