@@ -610,8 +610,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void normalizeField_shouldNormalizeCorrectly() throws Exception {
-        Assert.assertEquals("MD_FOO", SearchHelper.sortifyField("MD_FOO_UNTOKENIZED"));
-        Assert.assertEquals("MD_FOO", SearchHelper.sortifyField("FACET_FOO"));
+        Assert.assertEquals("MD_FOO", SearchHelper.normalizeField("MD_FOO_UNTOKENIZED"));
     }
     
 
