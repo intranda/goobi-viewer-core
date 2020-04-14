@@ -35,24 +35,29 @@ public class BrowseTerm implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(BrowseTerm.class);
 
+    /** Raw term name. */
     private final String term;
+    /** Optional sorting term. */
     private final String sortTerm;
+    /** Optional translated labels for the term. */
     private final IMetadataValue translations;
+    /** Hit count; initial value is 0. */
+    //    private final AtomicLong hitCount = new AtomicLong(0);
     private long hitCount = 0;
+    /** List of record identifiers already taken into account for including this term. */
     private final Set<String> piList = ConcurrentHashMap.newKeySet();
 
     /**
-     * Constructor that sets <code>hitCount</code> to 1.
+     * Constructor.
      *
-     * @param term a {@link java.lang.String} object.
-     * @param sortTerm a {@link java.lang.String} object.
-     * @param translation
+     * @param term Raw term.
+     * @param sortTerm Optional sorting term.
+     * @param translations Optional label translations.
      */
     public BrowseTerm(String term, String sortTerm, IMetadataValue translations) {
         this.term = term;
         this.sortTerm = sortTerm;
         this.translations = translations;
-        this.hitCount = 1;
     }
 
     /*
@@ -132,11 +137,11 @@ public class BrowseTerm implements Serializable {
      * </p>
      *
      * @param num a int.
+     * @should add to hit count correctly
      */
-    public void addToHitCount(int num) {
-        synchronized (this) {
-            hitCount += num;
-        }
+    public synchronized void addToHitCount(int num) {
+        //        hitCount.set(hitCount.get() + num);
+        hitCount += 1;
     }
 
     /**
@@ -147,6 +152,7 @@ public class BrowseTerm implements Serializable {
      * @return the hitCount
      */
     public long getHitCount() {
+        //        return hitCount.get();
         return hitCount;
     }
 
