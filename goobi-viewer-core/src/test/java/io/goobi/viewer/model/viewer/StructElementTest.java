@@ -65,7 +65,10 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void createStub_shouldCreateStubCorrectly() throws Exception {
-        StructElement element = new StructElement(1578198745608L);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
+        Assert.assertNotEquals(-1, iddoc);
+
+        StructElement element = new StructElement(iddoc);
         StructElementStub stub = element.createStub();
         Assert.assertEquals(element.getLuceneId(), stub.getLuceneId());
         Assert.assertEquals(element.getPi(), stub.getPi());
@@ -86,10 +89,13 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getParent_shouldReturnParentCorrectly() throws Exception {
-        StructElement element = new StructElement(1578198745608L);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
+        Assert.assertNotEquals(-1, iddoc);
+
+        StructElement element = new StructElement(iddoc);
         StructElement parent = element.getParent();
         Assert.assertNotNull(parent);
-        Assert.assertEquals(IDDOC_KLEIUNIV, parent.getLuceneId());
+        Assert.assertEquals(iddocKleiuniv, parent.getLuceneId());
     }
 
     /**
@@ -98,7 +104,10 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void isAnchorChild_shouldReturnTrueIfCurrentRecordIsVolume() throws Exception {
-        StructElement element = new StructElement(1578202335091L);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assert.assertNotEquals(-1, iddoc);
+
+        StructElement element = new StructElement(iddoc);
         Assert.assertTrue(element.isAnchorChild());
     }
 
@@ -108,7 +117,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void isAnchorChild_shouldReturnFalseIfCurrentRecordIsNotVolume() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         Assert.assertFalse(element.isAnchorChild());
     }
 
@@ -118,7 +127,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "rest/image/" + PI_KLEIUNIV + "/00000001.tif/full/!600,800/0/default.jpg",
                 element.getImageUrl(600, 800));
     }
@@ -129,12 +138,15 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getTopStruct_shouldRetrieveTopStructCorrectly() throws Exception {
-        StructElement element = new StructElement(1578198745608L);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
+        Assert.assertNotEquals(-1, iddoc);
+
+        StructElement element = new StructElement(iddoc);
         StructElement topStruct = element.getTopStruct();
+        Assert.assertNotNull(topStruct);
         Assert.assertNotEquals(element, topStruct);
-        Assert.assertEquals(IDDOC_KLEIUNIV, topStruct.getLuceneId());
+        Assert.assertEquals(iddocKleiuniv, topStruct.getLuceneId());
     }
-    
 
     /**
      * @see StructElement#getTopStruct()
@@ -142,10 +154,10 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getTopStruct_shouldReturnSelfIfTopstructOrAnchor() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         StructElement topStruct = element.getTopStruct();
         Assert.assertEquals(element, topStruct);
-        Assert.assertEquals(IDDOC_KLEIUNIV, topStruct.getLuceneId());
+        Assert.assertEquals(iddocKleiuniv, topStruct.getLuceneId());
     }
 
     /**
@@ -155,7 +167,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
     @Test
     public void getFirstVolumeFieldValue_shouldReturnCorrectValue() throws Exception {
         StructElement element = new StructElement(1578150825557L);
-        Assert.assertEquals("1578198744526", element.getFirstVolumeFieldValue(SolrConstants.IDDOC));
+        Assert.assertEquals("306653648_1891", element.getFirstVolumeFieldValue(SolrConstants.PI));
     }
 
     /**
@@ -184,7 +196,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void isHasChildren_shouldReturnTrueIfElementHasChildren() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         Assert.assertTrue(element.isHasChildren());
     }
 
@@ -204,7 +216,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getPi_shouldReturnPiIfTopstruct() throws Exception {
-        StructElement element = new StructElement(IDDOC_KLEIUNIV);
+        StructElement element = new StructElement(iddocKleiuniv);
         Assert.assertEquals(PI_KLEIUNIV, element.getPi());
     }
 
@@ -214,7 +226,10 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getPi_shouldRetrivevePiFromTopstructIfNotTopstruct() throws Exception {
-        StructElement element = new StructElement(1578198745608L);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
+        Assert.assertNotEquals(-1, iddoc);
+
+        StructElement element = new StructElement(iddoc);
         Assert.assertEquals(PI_KLEIUNIV, element.getPi());
     }
 }

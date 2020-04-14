@@ -1,11 +1,26 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        this.uploadedFiles = []
+        if(this.opts.fileTypes) {
+            this.fileTypes = this.opts.fileTypes;
+        } else {
+        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        }
         this.isDragover = false;
 
         this.on('mount', function () {
-            var dropZone = (this.refs.dropZone);
+
+            if(this.opts.showFiles) {
+                this.initUploadedFiles();
+            }
+
+            this.initDrop();
+
+        }.bind(this));
+
+        this.initDrop = function() {
+			var dropZone = (this.refs.dropZone);
 
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
@@ -45,10 +60,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
                     this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
                 }
-    			this.uploadFiles();
+    			this.uploadFiles()
+    			.then( () => {
+    			    this.isDragover = false;
+    			    this.update();
+    			})
 
             });
-        }.bind(this));
+        }.bind(this)
+
+        this.initUploadedFiles = function() {
+			this.getUploadedFiles();
+
+            var filesZone = (this.refs.filesZone);
+
+        }.bind(this)
 
         this.buttonFilesSelected = function(e) {
             for (var f of e.target.files) {
@@ -82,14 +108,13 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 uploads.push(Q(this.uploadFile(i)));
             }
 
-            Q.allSettled(uploads).then(function(results) {
+            return Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
-                     }
-                     else {
+                     } else {
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -101,11 +126,16 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                      this.opts.onUploadSuccess();
                  }
 
-            		if (this.opts.onUploadComplete) {
-            			this.opts.onUploadComplete();
-            		}
-            }.bind(this))
+           		if (this.opts.onUploadComplete) {
+           			this.opts.onUploadComplete();
+           		}
 
+            }.bind(this))
+            .then( () => {
+                if(this.opts.showFiles) {
+                	return this.getUploadedFiles();
+                }
+            });
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
@@ -123,6 +153,38 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
                 $('.admin-cms-media__upload-message.error span').html(responseText);
             }
+        }.bind(this)
+
+        this.getUploadedFiles = function() {
+            return fetch(this.opts.postUrl, {
+                method: "GET",
+       		})
+       		.then(response => response.json())
+       		.then(json => {
+       		    console.log("uploaded files ", json);
+       		    this.uploadedFiles = json;
+       		    this.update();
+       		})
+        }.bind(this)
+
+        this.deleteUploadedFiles = function() {
+            return fetch(this.opts.postUrl, {
+                method: "DELETE",
+       		})
+        }.bind(this)
+
+        this.deleteUploadedFile = function(file) {
+            return fetch(this.opts.postUrl + this.getFilename(file), {
+                method: "DELETE",
+       		})
+        }.bind(this)
+
+        this.deleteFile = function(data) {
+            console.log("delete ", this.getFilename(data.item.file));
+            this.deleteUploadedFile(data.item.file)
+            .then( () => {
+                this.getUploadedFiles();
+            })
         }.bind(this)
 
         this.uploadFile = function(i) {
@@ -163,8 +225,33 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             .then( data => fetch(this.opts.postUrl, {
                 method: "POST",
                 body: data,
-       		}));
 
+       		})
+       		.then( result => {
+       		    var defer = Q.defer();
+       		    if(result.ok) {
+       		    	defer.resolve(result);
+       		    } else if(result.body && !result.responseText){
+                   result.body.getReader().read()
+					.then(({ done, value }) => {
+						defer.reject({
+						  responseText:   new TextDecoder("utf-8").decode(value)
+						})
+					});
+       		    } else {
+       		        defer.reject(result);
+       		    }
+       		    return defer.promise;
+       		}));
+        }.bind(this)
+
+        this.getFilename = function(url) {
+            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
+            if(result && result.length > 1) {
+                return result[1];
+            } else {
+             	return url;
+            }
         }.bind(this)
 });
 
@@ -830,6 +917,123 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
         }.bind(this)
 });
 
+riot.tag2('collectionlist', '<div class="panel-group" role="tablist"><div if="{collections}" each="{collection, index in collections}" class="panel"><div class="panel-heading"><div class="panel-thumbnail"><img if="{collection.thumbnail}" class="img-responsive" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="panel-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="panel-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false"><div class="panel-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="panel-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="panel-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', '', function(opts) {
+
+this.collections = this.opts.collections;
+
+this.on("mount", () => {
+    console.log("mounting collectionList", this.opts);
+    this.loadSubCollections();
+})
+
+this.loadSubCollections = function() {
+    let promises = [];
+
+    let subject = new Rx.Subject();
+    this.collections.forEach( child => {
+        fetch(child['@id'])
+        .then( result => result.json())
+        .then(json => {
+            child.members = json.members;
+            subject.next(child);
+        })
+        .catch( error => {
+           subject.error(error);
+        });
+    });
+
+    subject
+    .pipe(RxOp.debounceTime(100))
+    .subscribe( () => this.update())
+}.bind(this)
+
+this.getValue = function(element) {
+    return viewerJS.iiif.getValue(element, this.opts.language);
+}.bind(this)
+
+this.hasChildren = function(element) {
+    let count = viewerJS.iiif.getChildCollections(element);
+    return count > 0;
+}.bind(this)
+
+this.getChildren = function(collection) {
+    return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+}.bind(this)
+
+});
+
+
+riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="{set[0] != \'\'}">{translator.translate(set[0])}</h3><collectionlist collections="{set[1]}" language="{opts.language}" setindex="{index}"></collectionlist></div>', '', '', function(opts) {
+
+this.collectionSets = [];
+
+this.on("mount", () => {
+    console.log("mounting collectionView", this.opts);
+
+    this.fetchCollections()
+    .then( () => {
+        let keys = this.collectionSets.map(set => set[0]);
+        this.translator = new viewerJS.Translator(keys, this.opts.restapi, this.opts.language);
+    	return this.translator.init();
+    })
+    .then( () => {
+        this.update();
+    })
+})
+
+this.fetchCollections = function() {
+    let url = this.opts.url;
+    if(this.opts.baseCollection) {
+        url += this.opts.baseCollection + "/";
+    }
+    if(this.opts.grouping) {
+        url += "grouping/" + this.opts.grouping + "/";
+    }
+    return fetch(url)
+    .then( result => result.json())
+    .then( json => this.buildSets(json))
+    .then( sets => this.collectionSets = sets);
+}.bind(this)
+
+this.buildSets = function(collection) {
+    let map = new Map();
+    collection.members
+    .filter( member => viewerJS.iiif.isCollection(member))
+    .forEach( member => {
+        let tagList = viewerJS.iiif.getTags(member, "grouping");
+        if(tagList == undefined || tagList.length == 0) {
+            this.addToMap(map, "", member);
+        } else {
+            tagList.forEach(tag => {
+               this.addToMap(map, tag, member);
+            });
+        }
+    })
+    let entries = Array.from(map.entries());
+	entries.sort( (e1,e2) => {
+	   	 let key1 = e1[0];
+	   	 let key2 = e2[0];
+	   	 if(key1 == "" && key2 != "") {
+	   	     return 1;
+	   	 } else if(key2 == "" && key1 != "") {
+	   	     return -1;
+	   	 } else {
+	   	     return key1.localeCompare(key2);
+	   	 }
+	});
+    return entries;
+}.bind(this)
+
+this.addToMap = function(map, key, value) {
+    let list = map.get(key);
+    if(list === undefined) {
+        list = [];
+        map.set(key, list);
+    }
+    list.push(value);
+}.bind(this)
+
+});
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 

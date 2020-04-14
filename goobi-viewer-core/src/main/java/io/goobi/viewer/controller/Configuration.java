@@ -65,7 +65,7 @@ import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -817,9 +817,11 @@ public final class Configuration extends AbstractConfiguration {
             String field = sub.getString(".");
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
+            boolean translate = sub.getBoolean("[@translate]", false);
             String docstructFilterString = sub.getString("[@docstructFilters]");
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-            BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+            BrowsingMenuFieldConfig bmfc =
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, docstructFilterString, recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 
@@ -1139,7 +1141,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return urlString;
     }
-    
+
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
         return use;
@@ -1488,7 +1490,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedMetsFolder() {
-        return getLocalString("indexedMetsFolder");
+        return getLocalString("indexedMetsFolder", "indexed_mets");
     }
 
     /**
@@ -1500,7 +1502,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedLidoFolder() {
-        return getLocalString("indexedLidoFolder");
+        return getLocalString("indexedLidoFolder", "indexed_lido");
     }
 
     /**
@@ -1512,7 +1514,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedDenkxwebFolder() {
-        return getLocalString("indexedDenkxwebFolder");
+        return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
+    }
+
+    /**
+     * <p>
+     * getIndexedDublinCoreFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedDublinCoreFolder() {
+        return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
     }
 
     /**
@@ -3952,6 +3966,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
+     * 
+     * @return "temp_media" unless otherwise configured in "tempMediaFolder"
+     */
+    public String getTempMediaFolder() {
+        return getLocalString("tempMediaFolder", "temp_media");
+    }
+
+    /**
      * <p>
      * getCmsClassifications.
      * </p>
@@ -4172,9 +4195,9 @@ public final class Configuration extends AbstractConfiguration {
     public String getDefaultBrowseIcon(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
         if (subConfig != null) {
-            return subConfig.getString("defaultBrowseIcon", "");
+            return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
         }
-
+                
         return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 
@@ -4536,7 +4559,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return " ";
     }
-    
+
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
@@ -4570,6 +4593,22 @@ public final class Configuration extends AbstractConfiguration {
 
         return defaultConf;
     }
-    
-    
+
+    public List<LicenseDescription> getLicenseDescriptions() {
+        List<LicenseDescription> licenses = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String url = node.getString("[@url]", "");
+            if (StringUtils.isNotBlank(url)) {
+                String label = node.getString("[@label]", url);
+                String icon = node.getString("[@icon]", "");
+                LicenseDescription license = new LicenseDescription(url);
+                license.setLabel(label);
+                license.setIcon(icon);
+                licenses.add(license);
+            }
+        }
+        return licenses;
+    }
+
 }

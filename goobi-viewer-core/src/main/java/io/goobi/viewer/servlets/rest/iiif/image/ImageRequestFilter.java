@@ -103,7 +103,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             }
             //only for actual image requests, no info requests
             boolean isThumb = getIsThumbnail(request, size, region);
-            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
+            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName, isThumb);
                 //                filterForImageSize(requestPath, size);

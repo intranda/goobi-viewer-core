@@ -985,7 +985,7 @@ public class BookmarkResource {
     public Collection createCollection(BookmarkList list) {
         ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()),
                 URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
-        Collection collection = new Collection(getCollectionURI());
+        Collection collection = new Collection(getCollectionURI(), list.getName());
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));
         list.getItems().forEach(item -> {

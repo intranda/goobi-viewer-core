@@ -83,11 +83,11 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -1685,7 +1685,6 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             advancedSearchSelectItems.put(key, ret);
         } else {
-            new BrowsingMenuFieldConfig(field, null, null, null, false);
             String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
 
             List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);

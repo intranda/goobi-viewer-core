@@ -32,8 +32,6 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
-import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -80,9 +78,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotNull(adb.getViewManager());
         Assert.assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
         Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
-        Assert.assertEquals(1578198745589L, adb.getTopDocumentIddoc());
-        Assert.assertEquals(1578198745589L, adb.getViewManager().getTopDocumentIddoc());
-        Assert.assertEquals(1578198745608L, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertEquals(iddocKleiuniv, adb.getTopDocumentIddoc());
+        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         Assert.assertNotNull(adb.getViewManager().getTopDocument());
         Assert.assertEquals(adb.getTopDocument(), adb.getViewManager().getTopDocument());
         Assert.assertNotNull(adb.getViewManager().getCurrentDocument());
@@ -100,15 +98,15 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(1);
         adb.update();
-        Assert.assertEquals(1578198745608L, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         ViewManager oldViewManager = adb.getViewManager();
         Assert.assertTrue(oldViewManager == adb.getViewManager());
 
         adb.setLogid("LOG_0003");
         adb.update();
         Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
-        Assert.assertEquals(1578198745589L, adb.getViewManager().getTopDocumentIddoc());
-        Assert.assertEquals(1578198745610L, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         // Assert.assertEquals("LOG_0003", adb.getViewManager().getLogId());
         Assert.assertFalse(oldViewManager == adb.getViewManager());
     }
@@ -129,7 +127,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             adb.update();
         } catch (IDDOCNotFoundException e) {
         }
-        Assert.assertEquals(1578198745589L, adb.topDocumentIddoc);
+        Assert.assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
@@ -140,7 +138,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        Assert.assertEquals(1578198745589L, adb.topDocumentIddoc);
+        Assert.assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**

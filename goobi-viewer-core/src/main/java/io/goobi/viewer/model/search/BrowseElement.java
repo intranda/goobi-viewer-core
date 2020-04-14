@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,9 +40,9 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -55,8 +55,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
-import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
@@ -517,12 +517,11 @@ public class BrowseElement implements Serializable {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(docFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    // highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                    // "$1" + translatedValue + "$3");
-                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(translatedValue, searchTerms.get(termsFieldName));
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                            "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
@@ -545,12 +544,11 @@ public class BrowseElement implements Serializable {
                         for (String fieldValue : fieldValues) {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
+                                // Translate values for certain fields, keeping the highlighting
                                 if (translateFields != null && translateFields.contains(termsFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    // highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                    // "$1" + translatedValue + "$3");
-                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(translatedValue, searchTerms.get(termsFieldName));
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                            "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));

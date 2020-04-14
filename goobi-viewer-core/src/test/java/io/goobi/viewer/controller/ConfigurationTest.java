@@ -313,6 +313,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getIndexedDublinCoreFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getIndexedDublinCoreFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("indexed_dublincore", DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
+    }
+
+    /**
      * @see Configuration#getMainMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
@@ -2695,9 +2704,18 @@ public class ConfigurationTest extends AbstractTest {
     public void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(2.0f == DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
     }
-    
+
     @Test
     public void testReadMapBoxToken() {
         Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
+    }
+    
+    @Test
+    public void testGetLicenseDescriptions() {
+        List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();
+        Assert.assertEquals(2, licenses.size());
+        Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
+        Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
+        Assert.assertEquals("", licenses.get(0).getIcon());
     }
 }

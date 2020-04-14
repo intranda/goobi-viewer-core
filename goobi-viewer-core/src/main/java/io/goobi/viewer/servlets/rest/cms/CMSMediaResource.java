@@ -19,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,9 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -55,13 +51,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import de.intranda.api.iiif.IIIFUrlResolver;
-import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.content.ImageContent;
-import de.intranda.api.serializer.MetadataSerializer;
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.ConversionTools;
@@ -76,11 +65,10 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
-import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.servlets.rest.MediaItem;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -259,7 +247,7 @@ public class CMSMediaResource {
 
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(filename);
         if (item != null) {
-            MediaItem jsonItem = new MediaItem(item);
+            MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
         } else {
             return Response.status(Status.OK).entity("{}").build();
@@ -327,7 +315,7 @@ public class CMSMediaResource {
                         item.setFileName(mediaFile.getFileName().toString());
                         DataManager.getInstance().getDao().updateCMSMediaItem(item);
                     }
-                    MediaItem jsonItem = new MediaItem(item);
+                    MediaItem jsonItem = new MediaItem(item, servletRequest);
                     return Response.status(Status.OK).entity(jsonItem).build();
                 } else {
                     String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
@@ -420,7 +408,7 @@ public class CMSMediaResource {
         private final List<MediaItem> mediaItems;
 
         public MediaList(List<CMSMediaItem> items) {
-            this.mediaItems = items.stream().map(MediaItem::new).collect(Collectors.toList());
+            this.mediaItems = items.stream().map( item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
         }
 
         /**
@@ -432,62 +420,4 @@ public class CMSMediaResource {
 
     }
 
-    public class MediaItem {
-
-        @JsonSerialize(using = MetadataSerializer.class)
-        private final IMetadataValue label;
-        @JsonSerialize(using = MetadataSerializer.class)
-        private final IMetadataValue description;
-        private final String link;
-        private final ImageContent image;
-        private final List<String> tags;
-
-        public MediaItem(CMSMediaItem source) {
-            this.label = source.getTranslationsForName();
-            this.description = source.getTranslationsForDescription();
-            this.image = new ImageContent(source.getIconURI());
-            if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
-                URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
-                this.image.setService(new ImageInformation(imageInfoURI.toString()));
-            }
-            this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
-            this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
-        }
-
-        /**
-         * @return the label
-         */
-        public IMetadataValue getLabel() {
-            return label;
-        }
-
-        /**
-         * @return the description
-         */
-        public IMetadataValue getDescription() {
-            return description;
-        }
-
-        /**
-         * @return the link
-         */
-        public String getLink() {
-            return link;
-        }
-
-        /**
-         * @return the image
-         */
-        public ImageContent getImage() {
-            return image;
-        }
-
-        /**
-         * @return the tags
-         */
-        public List<String> getTags() {
-            return tags;
-        }
-
-    }
 }

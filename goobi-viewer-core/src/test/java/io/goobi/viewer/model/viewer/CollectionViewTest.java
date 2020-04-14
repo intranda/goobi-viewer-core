@@ -33,6 +33,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
@@ -105,10 +106,10 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         return new BrowseDataProvider() {
 
             @Override
-            public Map<String, Long> getData() {
-                Map<String, Long> map = new HashMap<>();
+            public Map<String, CollectionResult> getData() {
+                Map<String, CollectionResult> map = new HashMap<>();
                 for (String string : collections) {
-                    map.put(string, 1l);
+                    map.put(string, new CollectionResult(string, 1l));
                 }
                 return map;
             }

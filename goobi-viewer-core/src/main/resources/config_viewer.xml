@@ -21,6 +21,8 @@
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
     <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
     <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
+    <!-- indexedDublinCoreFolder: contains indexed DublinCore files (used by the DublinCore resolver) -->
+    <indexedDublinCoreFolder>indexed_dublincore</indexedDublinCoreFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>media</mediaFolder>
@@ -1010,6 +1012,40 @@
 		          
         <!-- metadataParamNumber: Number of possible parameters for metadata elements (for all metadata lists). Default ist 10. -->
         <metadataParamNumber>10</metadataParamNumber>
+        
+		    <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
+	       of available license types when a user is asked to selec a license -->
+		  <licenses>
+		
+		    <!-- Creative Commons Public Domain Tools; icons: https://creativecommons.org/about/downloads/-->
+		    <license label="Creative Commons: CC0 1.0" icon="" url="https://creativecommons.org/publicdomain/zero/1.0/" />
+		    <license label="Creative Commons: Public Domain Mark" icon="" url="http://creativecommons.org/publicdomain/mark/1.0/" />
+		
+		    <!-- Creative Commons Licenses; icons: https://creativecommons.org/about/downloads/ -->
+		    <license label="Creative Commons: CC BY" icon="" url="https://creativecommons.org/licenses/by/4.0/" />
+		    <license label="Creative Commons: CC BY-SA" icon="" url="https://creativecommons.org/licenses/by-sa/4.0/" />
+		    <license label="Creative Commons: CC BY-ND" icon="" url="https://creativecommons.org/licenses/by-nd/4.0/" />
+		    <license label="Creative Commons: CC BY-NC" icon="" url="https://creativecommons.org/licenses/by-nc/4.0/" />
+		    <license label="Creative Commons: CC BY-NC-SA" icon="" url="https://creativecommons.org/licenses/by-nc-sa/4.0/" />
+		    <license label="Creative Commons: CC BY-NC-ND" icon="" url="https://creativecommons.org/licenses/by-nc-nd/4.0/" />
+		
+		    <!-- Rights Statements; icons: https://rightsstatements.org/en/documentation/assets -->
+		    <license label="Rights Statements: IN COPYRIGHT" icon="" url="http://rightsstatements.org/vocab/InC/1.0/" />
+		    <license label="Rights Statements: IN COPYRIGHT - NON-COMMERCIAL USE PERMITTED" icon="" url="http://rightsstatements.org/vocab/InC-NC/1.0/" />
+		    <license label="Rights Statements: IN COPYRIGHT - EDUCATIONAL USE PERMITTED" icon="" url="http://rightsstatements.org/vocab/InC-EDU/1.0/" />
+		    <license label="Rights Statements: IN COPYRIGHT - RIGHTS-HOLDER(S) UNLOCATABLE OR UNIDENTIFIABLE" icon="" url="http://rightsstatements.org/vocab/InC-RUU/1.0/" />
+		    <license label="Rights Statements: IN COPYRIGHT - EU ORPHAN WORK" icon="" url="https://rightsstatements.org/page/InC-OW-EU/1.0/" />
+		
+		    <license label="Rights Statements: NO COPYRIGHT - OTHER KNOWN LEGAL RESTRICTIONS" icon="" url="https://rightsstatements.org/page/NoC-OKLR/1.0/" />
+		    <license label="Rights Statements: NO COPYRIGHT - UNITED STATES" icon="" url="https://rightsstatements.org/page/NoC-US/1.0/" />
+		    <license label="Rights Statements: NO COPYRIGHT - CONTRACTUAL RESTRICTIONS" icon="" url="https://rightsstatements.org/page/NoC-CR/1.0/" />
+		    <license label="Rights Statements: NO COPYRIGHT - NON-COMMERCIAL USE ONLY" icon="" url="https://rightsstatements.org/page/NoC-NC/1.0/" />
+		
+		    <license label="Rights Statements: NO KNOWN COPYRIGHT" icon="" url="https://rightsstatements.org/page/NKC/1.0/" />
+		    <license label="Rights Statements: COPYRIGHT NOT EVALUATED" icon="" url="https://rightsstatements.org/page/CNE/1.0/" />
+		    <license label="Rights Statements: COPYRIGHT UNDETERMINED" icon="" url="https://rightsstatements.org/page/UND/1.0/" />
+		  </licenses>
+        
 	</metadata>
 
 	<!-- Settings for the table of content page -->
