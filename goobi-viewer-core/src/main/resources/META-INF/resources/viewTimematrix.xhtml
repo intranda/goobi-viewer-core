@@ -22,7 +22,13 @@
 
                 <p>#{msg.timematrixDescriptionText}</p>
 
-                <h3 class="timematrix__selection-header">#{msg.timematrixSelectRange}</h3>
+				<div class="timematrix__subarea">
+	                <h3 class="timematrix__selection-header">#{msg.timematrixSelectRange}</h3>
+	               	<!-- LOADER -->
+					<span class="timematrix__loader">
+						<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Timematrix Loader" />
+					</span> 
+				</div>
 
 				<div class="timematrix__selection">
 					<form id="locateTimematrix" method="POST">
@@ -44,15 +50,11 @@
 				
 				<div class="clearfix"></div>
 				
-				<!-- LOADER -->
-					<span class="timematrix__loader">
-						<img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Timematrix Loader" />
-					</span>
-				
 				<timematrix></timematrix>
 				
             	</div>
 
+			<!-- Loads results when the page is reloaded -->
 			<script>			
 				$("document").ready(function() {
 				    setTimeout(function() {
@@ -60,26 +62,19 @@
 				    },10);
 				});
 				
+				<!-- Reloads the results after the slider is released -->
 				function mouseUp() {
 					document.getElementById("setTimematrix").click();
 				}
-				
-				var $loading = $('.timematrix__loader').hide();
-				$(document)
-				  .ajaxStart(function () {
-				    $loading.show();
-				  })
-				  .ajaxStop(function () {
-				    $loading.hide();
-				  });
-			;
 			</script>
 			
 			<script>
+			<!-- Reloads the results after leaving the input field -->
 			document.getElementById("hitsPerPage").onfocusout = function() {myFunction()};
 			
 			function myFunction() {
 				document.getElementById("setTimematrix").click();
+				
 			}
 			</script>
 
@@ -87,6 +82,7 @@
            		var $startHere= $("#timematrixSelectionRangeInput1");
                	var $endHere= $("#timematrixSelectionRangeInput2");
                	var $count= $(".hitsPerPage");
+               	
            		riot.mount('timematrix', {
               		msg: {
               			timematrixCalculate: "#{msg.timematrixCalculate}",
@@ -97,7 +93,8 @@
                    	endInput: "#timematrixSelectionRangeInput2",
                    	contextPath: "#{request.contextPath}/",
                    	count: $( ".hitsPerPage" ),
-                   	button: ".setTimematrix"
+                   	button: ".setTimematrix",
+                   	loading: $('.timematrix__loader'),
                    	});
            	</script>
             
@@ -123,20 +120,14 @@
             </script>
             
             <script>
+            	<!-- Reloads the results after pressing the input field with Enter -->
 				var input = document.getElementById("hitsPerPage");
 				input.addEventListener("keyup", function(event) {
 				  if (event.keyCode === 13) {
 				   event.preventDefault();
 				   document.getElementById("setTimematrix").click();
 				  }
-				});
-				
-	           $('select').change(function(){
-	            	var val1 = $('select').val();
-	            	$('input').val(val1);
-	            	document.getElementById("setTimematrix").click();
-	            });
-	           
+				});	           
 			</script>
 			   
 		</f:view>

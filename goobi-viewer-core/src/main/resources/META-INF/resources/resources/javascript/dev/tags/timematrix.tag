@@ -41,6 +41,7 @@
      var promise = fetch(apiTarget)
      
      // render thumbnails
+    opts.loading.show()
 	fetch(apiTarget)
 	.then( function(result) {
 	    return result.json(); 
@@ -49,6 +50,7 @@
 	    console.log("answer", json);
 	    this.imageList=json;
 	    this.update()
+	    opts.loading.hide()
 	}.bind(this))
  }
  

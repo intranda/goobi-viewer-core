@@ -1745,6 +1745,7 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 
      var promise = fetch(apiTarget)
 
+    opts.loading.show()
 	fetch(apiTarget)
 	.then( function(result) {
 	    return result.json();
@@ -1753,6 +1754,7 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 	    console.log("answer", json);
 	    this.imageList=json;
 	    this.update()
+	    opts.loading.hide()
 	}.bind(this))
  }.bind(this)
 

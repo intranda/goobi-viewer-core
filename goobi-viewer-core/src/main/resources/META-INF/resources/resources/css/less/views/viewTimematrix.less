@@ -6,7 +6,26 @@
     h2 {}
     p {}
     h3 {}
-    &__selection-header {}
+    &__subarea {
+    	display: flex;
+    }
+    &__selection-header {
+    	flex: 0 0 50%;
+    	max-width: 50%;
+    }
+    &__loader {
+    	flex: 0 0 50%;
+    	max-width: 100%;
+    	justify-content: right;
+		display: grid;
+    	img {
+    		width: 60%;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+    		margin-bottom: 1.5rem;
+    	}
+    }
     &__selection {
 	    padding: 5.2rem 5rem 1rem 3.9rem;
 	    border: 1px solid #d5d5d5;
@@ -78,15 +97,6 @@
     		display: none;
     	}
     }
-    &__loader {
-    	width: 100%;
-    	img {
-			display: block;
-			margin-left: auto;
-			margin-right: auto;
-    		margin-bottom: 1.5rem;
-    	}
-    }
     &__hitsForm {
     	flex: 0 0 100%;
 		display: flex;
@@ -98,6 +108,10 @@
 		}
 		input {
 			margin-right: -3rem;
+			width: 6rem;
+			text-align: center;
+			border: 0px inset #d5d5d5;
+			border: 1px solid #d5d5d5;
 		}
 	}
     &__objects {
@@ -206,8 +220,10 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.timematrix__content {
-		max-width: 20%;
+	.timematrix {
+		&__content {
+			max-width: 20%;
+		}
 	}
 }
 
