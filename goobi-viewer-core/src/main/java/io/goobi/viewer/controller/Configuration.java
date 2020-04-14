@@ -1326,14 +1326,25 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDisplayAdditionalMetadataTranslateFields.
+     * Returns a list of additional metadata fields thats are configured to have their values translated. Field names are normalized (i.e. things like
+     * _UNTOKENIZED are removed).
      * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        if (fields.isEmpty()) {
+            return fields;
+        }
+
+        List<String> ret = new ArrayList<>(fields.size());
+        for (String field : fields) {
+            ret.add(SearchHelper.normalizeField(field));
+        }
+
+        return ret;
     }
 
     /**
@@ -4197,7 +4208,7 @@ public final class Configuration extends AbstractConfiguration {
         if (subConfig != null) {
             return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
         }
-                
+
         return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 

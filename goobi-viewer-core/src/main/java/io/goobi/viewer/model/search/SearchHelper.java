@@ -57,7 +57,6 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -1767,8 +1766,20 @@ public final class SearchHelper {
     /**
      * 
      * @param fieldName
+     * @return
+     */
+    public static String normalizeField(String fieldName) {
+        return adaptField(fieldName, null);
+    }
+
+    /**
+     * 
+     * @param fieldName
      * @param prefix
      * @return modified field name
+     * @should apply prefix correctly
+     * @should not apply prefix to regular fields if empty
+     * @should remove untokenized correctly
      */
     static String adaptField(String fieldName, String prefix) {
         if (fieldName == null) {
@@ -1785,8 +1796,14 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
             default:
-                if (fieldName.startsWith("MD_")) {
-                    fieldName = fieldName.replace("MD_", prefix);
+                if (StringUtils.isNotEmpty(prefix)) {
+                    if (fieldName.startsWith("MD_")) {
+                        fieldName = fieldName.replace("MD_", prefix);
+                    } else if (fieldName.startsWith("MD2_")) {
+                        fieldName = fieldName.replace("MD2_", prefix);
+                    } else if (fieldName.startsWith("BOOL_")) {
+                        fieldName = fieldName.replace("BOOL_", prefix);
+                    }
                 }
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
                 return fieldName;

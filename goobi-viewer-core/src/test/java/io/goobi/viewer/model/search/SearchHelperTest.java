@@ -602,6 +602,46 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
         Assert.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
     }
+    
+
+    /**
+     * @see SearchHelper#normalizeField(String)
+     * @verifies normalize correctly
+     */
+    @Test
+    public void normalizeField_shouldNormalizeCorrectly() throws Exception {
+        Assert.assertEquals("MD_FOO", SearchHelper.sortifyField("MD_FOO_UNTOKENIZED"));
+        Assert.assertEquals("MD_FOO", SearchHelper.sortifyField("FACET_FOO"));
+    }
+    
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies apply prefix correctly
+     */
+    @Test
+    public void adaptField_shouldApplyPrefixCorrectly() throws Exception {
+        Assert.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies not apply prefix to regular fields if empty
+     */
+    @Test
+    public void adaptField_shouldNotApplyPrefixToRegularFieldsIfEmpty() throws Exception {
+        Assert.assertEquals("MD_FOO", SearchHelper.adaptField("MD_FOO", ""));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies remove untokenized correctly
+     */
+    @Test
+    public void adaptField_shouldRemoveUntokenizedCorrectly() throws Exception {
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO_UNTOKENIZED", "SORT_"));
+    }
 
     /**
      * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)

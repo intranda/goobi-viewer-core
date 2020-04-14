@@ -518,7 +518,8 @@ public class BrowseElement implements Serializable {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
                                     String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
@@ -545,7 +546,8 @@ public class BrowseElement implements Serializable {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
                                     String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");

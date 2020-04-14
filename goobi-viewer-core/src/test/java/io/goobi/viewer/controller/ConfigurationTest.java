@@ -2414,9 +2414,10 @@ public class ConfigurationTest extends AbstractTest {
     public void getDisplayAdditionalMetadataTranslateFields_shouldReturnCorrectValues() throws Exception {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields();
         Assert.assertNotNull(results);
-        Assert.assertEquals(2, results.size());
+        Assert.assertEquals(3, results.size());
         Assert.assertEquals(SolrConstants.DC, results.get(0));
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
+        Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
 
     /**
