@@ -30,7 +30,6 @@
     	flex: 0 0 50%;
     	max-width: 100%;
     	justify-content: right;
-		display: grid;
     	img {
     		width: 60%;
 			display: block;
@@ -146,6 +145,7 @@
 	&__img {
 			height: 15rem;
 			overflow: hidden;
+			background: transparent url("/viewer/resources/images/infinity_loader.gif") 50% 30% no-repeat;
 			img {
 				width: 100%;
 			}
@@ -174,7 +174,7 @@
 		    text-overflow: ellipsis;
 		    line-height: 2rem;
 		    font-size: 1em;
-		    padding: 0 .5rem;
+		    padding: .5rem;
 		    width: 100%;
 		    top: 0;
 		    margin-top: auto;
@@ -214,7 +214,6 @@
 		}
 	}
 }
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
@@ -222,26 +221,20 @@
 @media screen and (max-width: @mediumBreakpoint) {
 	.timematrix {
 		&__content {
-			flex: 0 0 calc(25% - 1rem); 
+			flex: 0 0 calc(25% - 1rem);
+			max-width: calc(25% - 1rem);
 		}
-		&__img {
-			height: 10rem;
-		}
+		&__img {}
 	}
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.timematrix {
-		&__content {
-			flex: 0 0 calc(33.33% - 1rem);
-		}
-	}
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.timematrix__content {
-		max-width: 45%;
+		flex: 0 0 calc(50% - 1rem);
+		max-width: calc(50% - 1rem);
 	}
 }

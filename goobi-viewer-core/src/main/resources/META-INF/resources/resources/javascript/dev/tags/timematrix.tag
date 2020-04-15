@@ -2,14 +2,9 @@
 
 	<div class="timematrix__objects">
 		<div each="{image in imageList}" class="timematrix__content">
-			
 			<div class="timematrix__img">
 				<a href="{image.url}">
-					<!-- LOADER -->
-					<span class="timematrix__loaderImg">
-						<img src="{opts.loaderImg}" />
-					</span> 
-					<img src="{image.mediumimage}"> 
+					<img src="{image.mediumimage}" class="timematrix__image"> 
 					<div class="timematrix__text">	
 						<p name="timetext" class="timetext">{image.title[0]}</p>
 					</div>
@@ -55,5 +50,4 @@
 			}.bind(this))
 		 }
 	</script>
-
 </timematrix>
