@@ -15,7 +15,7 @@
     <ui:define name="metadata">
 	    <f:metadata> 
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
 
@@ -43,24 +43,37 @@
                     <ui:include src="#{cmsPage.getContent('text')}" />
                 </div>
 				
-				<div class="tpl-stacked-collection__collections"></div>
+				<div class="tpl-stacked-collection__collections">
+					<collectionView 
+					url='#{configurationBean.restApiUrl}iiif/collections/#{cmsPage.getContentItem("collection").collectionField}/'
+					restapi = "#{configurationBean.restApiUrl}"
+					baseCollection="#{cmsPage.getContentItem('collection').baseCollection}"
+					grouping="#{cmsPage.getContentItem('collection').groupBy}"
+					language="#{navigationHelper.localeString}"
+					></collectionView>
+				</div>
+				
+<!-- 				<div class="tpl-stacked-collection__collections"></div> -->
 				
 				<script type="text/javascript">
-                    $.ajax( {
-                        url: "#{request.contextPath}/rest/iiif/collections/#{cmsPage.getContentItem("collection").collectionField}/#{cmsPage.getContentItem('collection').baseCollection != null ? cmsPage.getContentItem("collection").baseCollection : "-"}",
-                        type: "GET",
-                        datatype: "JSON"
-                    } ).then( function( data ) {
-                        var stackedCollectionConfig = {
-                            collectionDefaultThumb: "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/collections/collection_tiled_default.jpg",
-                            displayLanguage: "#{navigationHelper.localeString}",
-                            msg: {
-                                noSubCollectionText: "#{msg.cms_noSubCollectionText}"
-                            }
-                        };
+				
+				riot.mount("collectionView");
+				
+//                     $.ajax( {
+//                         url: "#{request.contextPath}/rest/iiif/collections/#{cmsPage.getContentItem("collection").collectionField}/#{cmsPage.getContentItem('collection').baseCollection != null ? cmsPage.getContentItem("collection").baseCollection : "-"}",
+//                         type: "GET",
+//                         datatype: "JSON"
+//                     } ).then( function( data ) {
+//                         var stackedCollectionConfig = {
+//                             collectionDefaultThumb: "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/collections/collection_tiled_default.jpg",
+//                             displayLanguage: "#{navigationHelper.localeString}",
+//                             msg: {
+//                                 noSubCollectionText: "#{msg.cms_noSubCollectionText}"
+//                             }
+//                         };
                             
-                        cmsJS.stackedCollection.init( stackedCollectionConfig, data );
-                    } );
+//                         cmsJS.stackedCollection.init( stackedCollectionConfig, data );
+//                     } );
                 </script>
 			</div>
 		</f:view>

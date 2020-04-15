@@ -66,7 +66,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.initializeView = function(createNewAnnotation, onAddAnnotation, onUpdateAnnotation, focus) {
-        console.log("initialize view");
         if(createNewAnnotation) {
             this.createAnnotation = function(anno) {
                 let annotation = createNewAnnotation(anno);

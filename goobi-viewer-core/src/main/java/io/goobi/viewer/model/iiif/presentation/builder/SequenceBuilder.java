@@ -77,7 +77,9 @@ import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
- * <p>SequenceBuilder class.</p>
+ * <p>
+ * SequenceBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -90,7 +92,9 @@ public class SequenceBuilder extends AbstractBuilder {
     private PageType preferredView = PageType.viewObject;
 
     /**
-     * <p>Constructor for SequenceBuilder.</p>
+     * <p>
+     * Constructor for SequenceBuilder.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
@@ -99,7 +103,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Constructor for SequenceBuilder.</p>
+     * <p>
+     * Constructor for SequenceBuilder.
+     * </p>
      *
      * @param servletUri a {@link java.net.URI} object.
      * @param requestURI a {@link java.net.URI} object.
@@ -144,7 +150,9 @@ public class SequenceBuilder extends AbstractBuilder {
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
             }
-            sequence.addCanvas(canvas);
+            if(canvas != null) {                
+                sequence.addCanvas(canvas);
+            }
         }
         if (getBuildMode().equals(BuildMode.IIIF)) {
             try {
@@ -154,7 +162,9 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
+        if(sequence.getCanvases() != null) {            
+            addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
+        }
 
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
@@ -164,7 +174,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>addSeeAlsos.</p>
+     * <p>
+     * addSeeAlsos.
+     * </p>
      *
      * @param canvas a {@link de.intranda.api.iiif.presentation.Canvas} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -253,7 +265,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>merge.</p>
+     * <p>
+     * merge.
+     * </p>
      *
      * @param annotationMap a {@link java.util.Map} object.
      * @param content a {@link java.util.Map} object.
@@ -270,7 +284,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>getPage.</p>
+     * <p>
+     * getPage.
+     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param order a int.
@@ -284,7 +300,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>generateCanvas.</p>
+     * <p>
+     * generateCanvas.
+     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -354,7 +372,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>addOtherContent.</p>
+     * <p>
+     * addOtherContent.
+     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -542,7 +562,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>buildMode</code>.</p>
+     * <p>
+     * Getter for the field <code>buildMode</code>.
+     * </p>
      *
      * @return the buildMode
      */
@@ -551,7 +573,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>buildMode</code>.</p>
+     * <p>
+     * Setter for the field <code>buildMode</code>.
+     * </p>
      *
      * @param buildMode the buildMode to set
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
@@ -562,7 +586,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>preferredView</code>.</p>
+     * <p>
+     * Getter for the field <code>preferredView</code>.
+     * </p>
      *
      * @return the preferredView
      */
@@ -571,7 +597,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>preferredView</code>.</p>
+     * <p>
+     * Setter for the field <code>preferredView</code>.
+     * </p>
      *
      * @param preferredView the preferredView to set
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.

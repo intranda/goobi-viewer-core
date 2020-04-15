@@ -19,7 +19,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
- * <p>CMSMediaItemMetadata class.</p>
+ * <p>
+ * CMSMediaItemMetadata class.
+ * </p>
  */
 @Embeddable
 public class CMSMediaItemMetadata {
@@ -37,9 +39,9 @@ public class CMSMediaItemMetadata {
      * default constructor
      */
     public CMSMediaItemMetadata() {
-        
+
     }
-    
+
     /**
      * copy constructor
      *
@@ -91,7 +93,9 @@ public class CMSMediaItemMetadata {
     }
 
     /**
-     * <p>Getter for the field <code>language</code>.</p>
+     * <p>
+     * Getter for the field <code>language</code>.
+     * </p>
      *
      * @return the language
      */
@@ -100,7 +104,9 @@ public class CMSMediaItemMetadata {
     }
 
     /**
-     * <p>Setter for the field <code>language</code>.</p>
+     * <p>
+     * Setter for the field <code>language</code>.
+     * </p>
      *
      * @param language the language to set
      */
@@ -109,7 +115,9 @@ public class CMSMediaItemMetadata {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -118,7 +126,9 @@ public class CMSMediaItemMetadata {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -127,7 +137,9 @@ public class CMSMediaItemMetadata {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -136,7 +148,9 @@ public class CMSMediaItemMetadata {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */

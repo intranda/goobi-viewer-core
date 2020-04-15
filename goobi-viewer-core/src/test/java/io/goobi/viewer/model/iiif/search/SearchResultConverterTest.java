@@ -19,6 +19,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.junit.After;
 import org.junit.Assert;
@@ -40,20 +41,21 @@ import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
  * @author florian
  *
  */
-public class SearchResultConverterTest extends AbstractSolrEnabledTest{
+public class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
     String text = "A bird in the hand is worth\ntwo in the bush.";
     SearchResultConverter converter;
     String pi = "12345";
     int pageNo = 1;
     String restUrl;
-    
+
     Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
     AltoDocument doc;
-    
+
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -67,24 +69,26 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertCommentToHit(java.lang.String, java.lang.String, io.goobi.viewer.model.annotation.Comment)}.
+     * Test method for
+     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertCommentToHit(java.lang.String, java.lang.String, io.goobi.viewer.model.annotation.Comment)}.
      */
     @Test
     public void testConvertCommentToHit() {
         Comment comment = new Comment(pi, pageNo, null, text, null);
         comment.setId(1l);
-        
+
         String query = "in";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
-        
+
         SearchHit hit = converter.convertCommentToHit(queryRegex, pi, comment);
-        
+
         Assert.assertNotNull(hit);
         Assert.assertEquals(restUrl + "webannotation/comments/12345/1/1/", hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
@@ -97,7 +101,8 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertUGCToHit(java.lang.String, org.apache.solr.common.SolrDocument)}.
+     * Test method for
+     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertUGCToHit(java.lang.String, org.apache.solr.common.SolrDocument)}.
      */
     @Test
     public void testConvertUGCToHit() {
@@ -122,7 +127,8 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertMetadataToHit(java.lang.String, java.lang.String, org.apache.solr.common.SolrDocument)}.
+     * Test method for
+     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#convertMetadataToHit(java.lang.String, java.lang.String, org.apache.solr.common.SolrDocument)}.
      */
     @Test
     public void testConvertMetadataToHit() {
@@ -132,11 +138,11 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
         doc.setField(SolrConstants.PI, pi);
         doc.setField(SolrConstants.THUMBPAGENO, pageNo);
         doc.setField(SolrConstants.IDDOC, 123456789);
-        
+
         String query = "in";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
         SearchHit hit = converter.convertMetadataToHit(queryRegex, SolrConstants.TITLE, doc);
-        
+
         Assert.assertNotNull(hit);
         Assert.assertEquals(restUrl + "iiif/manifests/12345/METADATA/12345/MD_TITLE/", hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
@@ -149,17 +155,22 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromAlto(de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument, java.lang.String)}.
+     * Test method for
+     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromAlto(de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument, java.lang.String)}.
      */
     @Test
     public void testGetAnnotationsFromAlto() {
-        
+
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
-        
+
+        Assert.assertNotNull("Converter is null", converter);
+        Assert.assertNotNull("Alto doc is null", doc);
+        Assert.assertTrue("Query regex is Blank", StringUtils.isNotBlank(queryRegex));
+
         AnnotationResultList results = converter.getAnnotationsFromAlto(doc, queryRegex);
         Assert.assertEquals(9, results.hits.size());
-        
+
         SearchHit hit1 = results.hits.get(0);
         Assert.assertEquals("Hollywood!", hit1.getMatch());
         Assert.assertEquals(restUrl + "iiif/manifests/12345/list/1/ALTO/Word_14", hit1.getAnnotations().get(0).getId().toString());
@@ -167,14 +178,15 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromFulltext(java.lang.String, java.lang.String, java.lang.Integer, java.lang.String, long, int, int)}.
+     * Test method for
+     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromFulltext(java.lang.String, java.lang.String, java.lang.Integer, java.lang.String, long, int, int)}.
      */
     @Test
     public void testGetAnnotationsFromFulltext() {
-        
+
         String query = "in";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
-        
+
         AnnotationResultList results = converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, 0, 0, 1000);
         Assert.assertEquals(1, results.hits.size());
         Assert.assertEquals(2, results.hits.get(0).getSelectors().size());

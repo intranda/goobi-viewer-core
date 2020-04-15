@@ -38,11 +38,11 @@ import io.goobi.viewer.model.security.authentication.LoginResult;
 public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     LocalAuthenticationProvider provider;
-    
+
     String userActive_nickname = "nick 1";
     String userActive_email = "1@users.org";
     String userActive_pwHash = "abcdef1";
-    
+
     String userSuspended_nickname = "nick 3";
     String userSuspended_email = "3@users.org";
     String userSuspended_pwHash = "abcdef3";
@@ -71,28 +71,28 @@ public class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest
 
     @Test
     public void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future =  provider.login(userActive_email, userActive_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userActive_email, userActive_pwHash);
         Assert.assertTrue(future.get().getUser().isPresent());
         Assert.assertTrue(future.get().getUser().get().isActive());
         Assert.assertFalse(future.get().getUser().get().isSuspended());
     }
-    
+
     @Test
     public void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future =  provider.login(userActive_email, userSuspended_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userActive_email, userSuspended_pwHash);
         Assert.assertTrue(future.get().getUser().isPresent());
         Assert.assertTrue(future.get().isRefused());
     }
-    
+
     @Test
     public void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future =  provider.login(userActive_email + "test", userActive_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userActive_email + "test", userActive_pwHash);
         Assert.assertFalse(future.get().getUser().isPresent());
     }
-    
+
     @Test
     public void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future =  provider.login(userSuspended_email, userSuspended_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userSuspended_email, userSuspended_pwHash);
         Assert.assertTrue(future.get().getUser().isPresent());
         Assert.assertTrue(future.get().getUser().get().isSuspended());
     }

@@ -24,84 +24,92 @@ import java.util.Locale;
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
 
-	private Locale locale;
-	
-	/**
-	 * <p>Constructor for TranslatedSelectable.</p>
-	 *
-	 * @param value a T object.
-	 * @param selected a boolean.
-	 * @param defaultLocale a {@link java.util.Locale} object.
-	 */
-	public TranslatedSelectable(T value, boolean selected, Locale defaultLocale) {
-		super(value, selected);
-		this.locale = defaultLocale;
-		
-	}
-	
-	/**
-	 * <p>Getter for the field <code>locale</code>.</p>
-	 *
-	 * @return the locale
-	 */
-	public Locale getLocale() {
-		return locale;
-	}
-	
-	/**
-	 * <p>Setter for the field <code>locale</code>.</p>
-	 *
-	 * @param locale the locale to set
-	 */
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
-	
-	/**
-	 * <p>getLanguage.</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getLanguage() {
-		return locale.getLanguage();
-	}
-	
-	/**
-	 * <p>setLanguage.</p>
-	 *
-	 * @param language a {@link java.lang.String} object.
-	 */
-	public void setLanguage(String language) {
-		this.locale = Locale.forLanguageTag(language);
-	}
-	
-	
+    private Locale locale;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public int compareTo(Selectable<T> other) {
-		return super.compareTo(other);
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object obj) {
-		if(obj == null) {
-			return false;
-		} else if( obj == this) {
-			return true;
-		} else if(obj.getClass() == this.getClass()) {
-			TranslatedSelectable other = (TranslatedSelectable)obj;
-			return this.getValue().equals(other.getValue());
-		} else {
-			return false;
-		}
-	}
+    /**
+     * <p>
+     * Constructor for TranslatedSelectable.
+     * </p>
+     *
+     * @param value a T object.
+     * @param selected a boolean.
+     * @param defaultLocale a {@link java.util.Locale} object.
+     */
+    public TranslatedSelectable(T value, boolean selected, Locale defaultLocale) {
+        super(value, selected);
+        this.locale = defaultLocale;
+
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>locale</code>.
+     * </p>
+     *
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return locale;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>locale</code>.
+     * </p>
+     *
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    /**
+     * <p>
+     * getLanguage.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLanguage() {
+        return locale.getLanguage();
+    }
+
+    /**
+     * <p>
+     * setLanguage.
+     * </p>
+     *
+     * @param language a {@link java.lang.String} object.
+     */
+    public void setLanguage(String language) {
+        this.locale = Locale.forLanguageTag(language);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(Selectable<T> other) {
+        return super.compareTo(other);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj == this) {
+            return true;
+        } else if (obj.getClass() == this.getClass()) {
+            TranslatedSelectable other = (TranslatedSelectable) obj;
+            return this.getValue().equals(other.getValue());
+        } else {
+            return false;
+        }
+    }
 
 }

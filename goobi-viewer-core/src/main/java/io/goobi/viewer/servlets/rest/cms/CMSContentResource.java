@@ -76,7 +76,9 @@ public class CMSContentResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>getContentHtml.</p>
+     * <p>
+     * getContentHtml.
+     * </p>
      *
      * @param pageId a {@link java.lang.Long} object.
      * @param language a {@link java.lang.String} object.
@@ -99,7 +101,9 @@ public class CMSContentResource {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @param pageId a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
@@ -116,7 +120,9 @@ public class CMSContentResource {
     }
 
     /**
-     * <p>getSidebarElementHtml.</p>
+     * <p>
+     * getSidebarElementHtml.
+     * </p>
      *
      * @param elementId a {@link java.lang.Long} object.
      * @return a {@link java.lang.String} object.
@@ -133,7 +139,9 @@ public class CMSContentResource {
     }
 
     /**
-     * <p>wrap.</p>
+     * <p>
+     * wrap.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @param escapeHtml a boolean.
@@ -274,7 +282,9 @@ public class CMSContentResource {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
      * @return a {@link java.lang.String} object.
@@ -294,7 +304,9 @@ public class CMSContentResource {
     }
 
     /**
-     * <p>getContentUrl.</p>
+     * <p>
+     * getContentUrl.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      * @return a {@link java.lang.String} object.
@@ -320,7 +332,9 @@ public class CMSContentResource {
     }
 
     /**
-     * <p>getSidebarElementUrl.</p>
+     * <p>
+     * getSidebarElementUrl.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
      * @return a {@link java.lang.String} object.

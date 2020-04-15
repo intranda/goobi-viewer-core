@@ -30,7 +30,7 @@ import io.goobi.viewer.controller.FileTools;
 
 public class FileToolsTest {
 
-    private File tempDir = new File("build/temp");
+    private File tempDir = new File("target/temp");
 
     @After
     public void tearDown() throws Exception {
@@ -91,7 +91,7 @@ public class FileToolsTest {
     public void compressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         File file = new File("notfound.txt");
         Assert.assertFalse(file.exists());
-        FileTools.compressGzipFile(file, new File("build/test.tar.gz"));
+        FileTools.compressGzipFile(file, new File("target/test.tar.gz"));
     }
 
     /**
@@ -102,7 +102,7 @@ public class FileToolsTest {
     public void decompressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
         File gzipFile = new File("notfound.tar.gz");
         Assert.assertFalse(gzipFile.exists());
-        FileTools.decompressGzipFile(gzipFile, new File("build/target.bla"));
+        FileTools.decompressGzipFile(gzipFile, new File("target/target.bla"));
     }
 
     /**

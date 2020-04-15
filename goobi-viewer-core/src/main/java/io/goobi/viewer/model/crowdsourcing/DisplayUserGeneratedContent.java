@@ -89,7 +89,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
@@ -98,7 +100,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      */
@@ -107,7 +111,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -116,7 +122,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>type</code>.</p>
+     * <p>
+     * Setter for the field <code>type</code>.
+     * </p>
      *
      * @param type the type to set
      */
@@ -125,7 +133,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -134,7 +144,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -143,7 +155,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>page</code>.</p>
+     * <p>
+     * Getter for the field <code>page</code>.
+     * </p>
      *
      * @return the page
      */
@@ -152,7 +166,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>page</code>.</p>
+     * <p>
+     * Setter for the field <code>page</code>.
+     * </p>
      *
      * @param page the page to set
      */
@@ -161,7 +177,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -170,7 +188,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>label</code>.</p>
+     * <p>
+     * Setter for the field <code>label</code>.
+     * </p>
      *
      * @param label the label to set
      */
@@ -188,7 +208,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>updatedBy</code>.</p>
+     * <p>
+     * Getter for the field <code>updatedBy</code>.
+     * </p>
      *
      * @return the updatedBy
      */
@@ -197,7 +219,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>updatedBy</code>.</p>
+     * <p>
+     * Setter for the field <code>updatedBy</code>.
+     * </p>
      *
      * @param updatedBy the updatedBy to set
      */
@@ -206,7 +230,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @return the dateUpdated
      */
@@ -215,7 +241,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>getDateUpdatedAsString.</p>
+     * <p>
+     * getDateUpdatedAsString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -228,7 +256,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>getTimeUpdatedAsString.</p>
+     * <p>
+     * getTimeUpdatedAsString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -241,7 +271,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -250,7 +282,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>areaString</code>.</p>
+     * <p>
+     * Getter for the field <code>areaString</code>.
+     * </p>
      *
      * @return the areaString
      */
@@ -259,7 +293,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>areaString</code>.</p>
+     * <p>
+     * Setter for the field <code>areaString</code>.
+     * </p>
      *
      * @param areaString the areaString to set
      */
@@ -268,7 +304,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>hasArea.</p>
+     * <p>
+     * hasArea.
+     * </p>
      *
      * @return a boolean.
      */
@@ -277,7 +315,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>mayHaveArea.</p>
+     * <p>
+     * mayHaveArea.
+     * </p>
      *
      * @return a boolean.
      */
@@ -286,7 +326,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>convertToIntArray.</p>
+     * <p>
+     * convertToIntArray.
+     * </p>
      *
      * @param coordinates an array of {@link double} objects.
      * @return an array of {@link int} objects.
@@ -301,7 +343,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>convertToDoubleArray.</p>
+     * <p>
+     * convertToDoubleArray.
+     * </p>
      *
      * @param coordinates an array of {@link int} objects.
      * @return an array of {@link double} objects.
@@ -316,7 +360,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Getter for the field <code>displayCoordinates</code>.</p>
+     * <p>
+     * Getter for the field <code>displayCoordinates</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -325,7 +371,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>Setter for the field <code>displayCoordinates</code>.</p>
+     * <p>
+     * Setter for the field <code>displayCoordinates</code>.
+     * </p>
      *
      * @param displayCoordinates a {@link java.lang.String} object.
      */
@@ -337,7 +385,9 @@ public class DisplayUserGeneratedContent {
      * @see io.goobi.viewer.model.crowdsourcing.AbstractCrowdsourcingUpdate#getDisplayPage()
      */
     /**
-     * <p>getDisplayPage.</p>
+     * <p>
+     * getDisplayPage.
+     * </p>
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -357,7 +407,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>isEmpty.</p>
+     * <p>
+     * isEmpty.
+     * </p>
      *
      * @return a boolean.
      */
@@ -366,7 +418,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>getTypeAsString.</p>
+     * <p>
+     * getTypeAsString.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -375,7 +429,9 @@ public class DisplayUserGeneratedContent {
     }
 
     /**
-     * <p>buildFromSolrDoc.</p>
+     * <p>
+     * buildFromSolrDoc.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return UserGeneratedContent generated from the given Solr document

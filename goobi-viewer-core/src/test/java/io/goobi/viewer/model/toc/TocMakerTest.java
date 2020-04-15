@@ -57,57 +57,52 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies generate volume TOC correctly with siblings correctly
+     * @verifies generate volume TOC with siblings correctly
      */
     @Test
-    public void generateToc_shouldGenerateVolumeTOCCorrectlyWithSiblingsCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("ZDB026544598_0001");
+    public void generateToc_shouldGenerateVolumeTOCWithSiblingsCorrectly() throws Exception {
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, true, MimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-        Assert.assertEquals(302, tocElements.get(TOC.DEFAULT_GROUP).size()); // 1 anchor + 290 elements of volume ZDB026544598_0001 + 11 sibling volume top elements
+        Assert.assertEquals(111, tocElements.get(TOC.DEFAULT_GROUP).size()); // 1 anchor + 104 elements of volume 306653648_1891 + 6 sibling volume top elements
         // Anchor first
-        Assert.assertEquals("ZDB026544598", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
+        Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
         // First volume (complete tree)
-        for (int i = 1; i <= 290; ++i) {
+        for (int i = 1; i <= 104; ++i) {
             TOCElement element = tocElements.get(TOC.DEFAULT_GROUP).get(i);
-            Assert.assertEquals("ZDB026544598_0001", element.getTopStructPi());
+            Assert.assertEquals("306653648_1891", element.getTopStructPi());
         }
         // Sibling volumes (just topstruct)
-        Assert.assertEquals("ZDB026544598_0002", tocElements.get(TOC.DEFAULT_GROUP).get(291).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0003", tocElements.get(TOC.DEFAULT_GROUP).get(292).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0004", tocElements.get(TOC.DEFAULT_GROUP).get(293).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0005", tocElements.get(TOC.DEFAULT_GROUP).get(294).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0006", tocElements.get(TOC.DEFAULT_GROUP).get(295).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0007", tocElements.get(TOC.DEFAULT_GROUP).get(296).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0008", tocElements.get(TOC.DEFAULT_GROUP).get(297).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0009", tocElements.get(TOC.DEFAULT_GROUP).get(298).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0010", tocElements.get(TOC.DEFAULT_GROUP).get(299).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0011", tocElements.get(TOC.DEFAULT_GROUP).get(300).getTopStructPi());
-        Assert.assertEquals("ZDB026544598_0012", tocElements.get(TOC.DEFAULT_GROUP).get(301).getTopStructPi());
+        Assert.assertEquals("306653648_1892", tocElements.get(TOC.DEFAULT_GROUP).get(105).getTopStructPi());
+        Assert.assertEquals("306653648_1893", tocElements.get(TOC.DEFAULT_GROUP).get(106).getTopStructPi());
+        Assert.assertEquals("306653648_1894", tocElements.get(TOC.DEFAULT_GROUP).get(107).getTopStructPi());
+        Assert.assertEquals("306653648_1897", tocElements.get(TOC.DEFAULT_GROUP).get(108).getTopStructPi());
+        Assert.assertEquals("306653648_1898", tocElements.get(TOC.DEFAULT_GROUP).get(109).getTopStructPi());
+        Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(110).getTopStructPi());
     }
 
     /**
      * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
-     * @verifies generate volume TOC correctly without siblings correctly
+     * @verifies generate volume TOC without siblings correctly
      */
     @Test
-    public void generateToc_shouldGenerateVolumeTOCCorrectlyWithoutSiblingsCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("ZDB026544598_0001");
+    public void generateToc_shouldGenerateVolumeTOCWithoutSiblingsCorrectly() throws Exception {
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, false, MimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-        Assert.assertEquals(291, tocElements.get(TOC.DEFAULT_GROUP).size()); // 1 anchor + 290 elements of volume ZDB026544598_0001
+        Assert.assertEquals(105, tocElements.get(TOC.DEFAULT_GROUP).size()); // 1 anchor + 104 elements of volume ZDB026544598_0001
         // Anchor first
-        Assert.assertEquals("ZDB026544598", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
+        Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
         // First volume (complete tree)
-        for (int i = 1; i <= 290; ++i) {
+        for (int i = 1; i <= 104; ++i) {
             TOCElement element = tocElements.get(TOC.DEFAULT_GROUP).get(i);
-            Assert.assertEquals("ZDB026544598_0001", element.getTopStructPi());
+            Assert.assertEquals("306653648_1891", element.getTopStructPi());
         }
     }
 
@@ -117,18 +112,18 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateToc_shouldGenerateAnchorTOCCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("ZDB026544598");
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
         TOC toc = new TOC();
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-        Assert.assertEquals(13, tocElements.get(TOC.DEFAULT_GROUP).size());
-        Assert.assertEquals(12, toc.getTotalTocSize());
-        Assert.assertEquals("ZDB026544598", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
+        Assert.assertEquals(8, tocElements.get(TOC.DEFAULT_GROUP).size());
+        Assert.assertEquals(7, toc.getTotalTocSize()); // 7 volumes
+        Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
         for (int i = 1; i < tocElements.get(TOC.DEFAULT_GROUP).size(); ++i) {
-            Assert.assertEquals(i < 10 ? "ZDB026544598_000" + i : "ZDB026544598_00" + i, tocElements.get(TOC.DEFAULT_GROUP).get(i).getTopStructPi());
+            Assert.assertTrue(tocElements.get(TOC.DEFAULT_GROUP).get(i).getTopStructPi().startsWith("306653648_189"));
         }
     }
 
@@ -138,48 +133,43 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateToc_shouldPaginateAnchorTOCCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("ZDB026544598");
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
         TOC toc = new TOC();
         {
             // Page 1
-            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 1, 5);
+            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 1, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-            Assert.assertEquals(6, tocElements.get(TOC.DEFAULT_GROUP).size());
-            Assert.assertEquals(12, toc.getTotalTocSize());
-            Assert.assertEquals("ZDB026544598", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
-            for (int i = 1; i < tocElements.get(TOC.DEFAULT_GROUP).size(); ++i) {
-                Assert.assertEquals("ZDB026544598_000" + i, tocElements.get(TOC.DEFAULT_GROUP).get(i).getTopStructPi());
-            }
+            Assert.assertEquals(4, tocElements.get(TOC.DEFAULT_GROUP).size());
+            Assert.assertEquals(7, toc.getTotalTocSize());
+            Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
+            Assert.assertEquals("306653648_1891", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
+            Assert.assertEquals("306653648_1892", tocElements.get(TOC.DEFAULT_GROUP).get(2).getTopStructPi());
+            Assert.assertEquals("306653648_1893", tocElements.get(TOC.DEFAULT_GROUP).get(3).getTopStructPi());
         }
         {
             // Page 2
-            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 2, 5);
+            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 2, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-            Assert.assertEquals(6, tocElements.get(TOC.DEFAULT_GROUP).size());
-            Assert.assertEquals(12, toc.getTotalTocSize());
-            Assert.assertEquals("ZDB026544598", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
-            for (int i = 1; i < tocElements.get(TOC.DEFAULT_GROUP).size(); ++i) {
-                int volumeNumber = 5 + i;
-                Assert.assertEquals(volumeNumber < 10 ? "ZDB026544598_000" + volumeNumber : "ZDB026544598_00" + volumeNumber,
-                        tocElements.get(TOC.DEFAULT_GROUP).get(i).getTopStructPi());
-            }
+            Assert.assertEquals(4, tocElements.get(TOC.DEFAULT_GROUP).size());
+            Assert.assertEquals(7, toc.getTotalTocSize());
+            Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
+            Assert.assertEquals("306653648_1894", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
+            Assert.assertEquals("306653648_1897", tocElements.get(TOC.DEFAULT_GROUP).get(2).getTopStructPi());
+            Assert.assertEquals("306653648_1898", tocElements.get(TOC.DEFAULT_GROUP).get(3).getTopStructPi());
         }
         {
             // Page 3
-            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 3, 5);
+            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 3, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
-            Assert.assertEquals(3, tocElements.get(TOC.DEFAULT_GROUP).size());
-            Assert.assertEquals(12, toc.getTotalTocSize());
-            Assert.assertEquals("ZDB026544598", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
-            for (int i = 1; i < tocElements.get(TOC.DEFAULT_GROUP).size(); ++i) {
-                int volumeNumber = 10 + i;
-                Assert.assertEquals("ZDB026544598_00" + volumeNumber, tocElements.get(TOC.DEFAULT_GROUP).get(i).getTopStructPi());
-            }
+            Assert.assertEquals(2, tocElements.get(TOC.DEFAULT_GROUP).size());
+            Assert.assertEquals(7, toc.getTotalTocSize());
+            Assert.assertEquals("306653648", tocElements.get(TOC.DEFAULT_GROUP).get(0).getTopStructPi());
+            Assert.assertEquals("306653648_1899", tocElements.get(TOC.DEFAULT_GROUP).get(1).getTopStructPi());
         }
     }
 
@@ -198,7 +188,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void generateToc_shouldThrowIllegalArgumentExceptionIfTocIsNull() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("ZDB026544598_0001");
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assert.assertTrue(iddoc > 0);
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(null, new StructElement(iddoc), true, MimeType.IMAGE.getName(), 1, -1);
     }
@@ -213,14 +203,16 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
             SolrDocument doc = new SolrDocument();
             doc.setField(SolrConstants.LABEL, "label");
             doc.setField("MD_CREATOR", "creator");
-            Assert.assertEquals("label / creator", TocMaker.buildLabel(doc, null).getValue().orElse(""));
+            String label = TocMaker.buildLabel(doc, null).getValue().orElse("");
+            //System.out.println("Toc label : " + label);
+            Assert.assertEquals("label/creator", label);
         }
         {
             SolrDocument doc = new SolrDocument();
             //            doc.setField(SolrConstants.DOCSTRCT, "PeriodicalVolume");
             doc.setField(SolrConstants.CURRENTNO, "1");
             doc.setField("MD_TITLE", "title");
-            Assert.assertEquals("Number 1: title", TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse(""));
+            Assert.assertEquals("Number1:title", TocMaker.buildLabel(doc, "PeriodicalVolume").getValue().orElse(""));
         }
     }
 }

@@ -32,16 +32,18 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode;
 
 /**
- * <p>CMSSidebarManager class.</p>
+ * <p>
+ * CMSSidebarManager class.
+ * </p>
  */
 public final class CMSSidebarManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarManager.class);
 
     @Deprecated
-    private static final String[] ALLOWED_HTML_TAGS = { "<p>", "<ul>", "<ol>", "<li>", "<a>", "<h3>", "<h4>", "<h5>", "<h6>", "<i>", "<strong>",
-        "<address>", "<abbr>", "<dl>", "<dt>", "<dd>", "<img>", "<span>", "<table>", "<tr>", "<th>", "<td>", "<thead>", "<tbody>", "<br>",
-        "<br />", "<style>", "<div>" };
+    private static final String[] ALLOWED_HTML_TAGS =
+            { "<p>", "<ul>", "<ol>", "<li>", "<a>", "<h3>", "<h4>", "<h5>", "<h6>", "<i>", "<strong>", "<address>", "<abbr>", "<dl>", "<dt>", "<dd>",
+                    "<img>", "<span>", "<table>", "<tr>", "<th>", "<td>", "<thead>", "<tbody>", "<br>", "<br />", "<style>", "<div>" };
     private static final String[] DISALLOWED_HTML_TAGS = { "<script>" };
 
     private static final String[] HTML_REPLACEMENTS = { "<br\\s?>:=:<br />" };
@@ -64,7 +66,9 @@ public final class CMSSidebarManager {
     }
 
     /**
-     * <p>getInstance.</p>
+     * <p>
+     * getInstance.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CMSSidebarManager} object.
      */
@@ -98,12 +102,14 @@ public final class CMSSidebarManager {
             sb.append(tag);
         }
         allowedHtmlTagsForDisplay = sb.toString();
-        
+
         disallowedHtmlTagsForDisplay = StringUtils.join(disallowedHtmlTags, ", ");
     }
 
     /**
-     * <p>getAvailableSidebarElements.</p>
+     * <p>
+     * getAvailableSidebarElements.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -118,7 +124,9 @@ public final class CMSSidebarManager {
     }
 
     /**
-     * <p>getDefaultSidebarElements.</p>
+     * <p>
+     * getDefaultSidebarElements.
+     * </p>
      *
      * @return the sorted list of
      */
@@ -129,9 +137,7 @@ public final class CMSSidebarManager {
         for (SidebarElementType e : elements) {
             CMSSidebarElement element = e.createSidebarElement();
             element.setOrder(order++);
-            element.setWidgetMode(DataManager.getInstance()
-                .getConfiguration()
-                .isFoldout(e.getLabel()) ? WidgetMode.FOLDOUT : WidgetMode.STANDARD);
+            element.setWidgetMode(DataManager.getInstance().getConfiguration().isFoldout(e.getLabel()) ? WidgetMode.FOLDOUT : WidgetMode.STANDARD);
             result.add(element);
         }
         return result;
@@ -146,7 +152,7 @@ public final class CMSSidebarManager {
     public Set<String> getAllowedHtmlTags() {
         return allowedHtmlTags;
     }
-    
+
     /**
      * Returns the HTML tags in DISALLOWED_HTML_TAGS as a <code>HashSet</code> for fast <code>contains()</code> calls.
      *
@@ -157,7 +163,9 @@ public final class CMSSidebarManager {
     }
 
     /**
-     * <p>Getter for the field <code>htmlReplacements</code>.</p>
+     * <p>
+     * Getter for the field <code>htmlReplacements</code>.
+     * </p>
      *
      * @return a {@link java.util.Map} object.
      */
@@ -166,7 +174,9 @@ public final class CMSSidebarManager {
     }
 
     /**
-     * <p>Getter for the field <code>allowedHtmlTagsForDisplay</code>.</p>
+     * <p>
+     * Getter for the field <code>allowedHtmlTagsForDisplay</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -176,12 +186,14 @@ public final class CMSSidebarManager {
     }
 
     /**
-     * <p>Getter for the field <code>disallowedHtmlTagsForDisplay</code>.</p>
+     * <p>
+     * Getter for the field <code>disallowedHtmlTagsForDisplay</code>.
+     * </p>
      *
      * @return the disallowedHtmlTagsForDisplay
      */
     public String getDisallowedHtmlTagsForDisplay() {
         return disallowedHtmlTagsForDisplay;
     }
-    
+
 }

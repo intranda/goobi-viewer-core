@@ -16,9 +16,7 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -35,8 +33,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 
-import com.google.common.io.CharStreams;
+import io.goobi.viewer.controller.Helper;
+
+//import com.google.common.io.CharStreams;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -208,9 +209,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
             HttpEntity e = new StringEntity(requestEntity);
             post.setEntity(e);
             try (CloseableHttpResponse httpResponse = client.execute(post)) {
-                try (InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
-                    String jsonResponse = CharStreams.toString(reader);
-                    return jsonResponse;
+                try (StringWriter writer = new StringWriter()) {
+                    //                    IOUtils.copy(httpResponse.getEntity().getContent(), writer, Helper.DEFAULT_ENCODING);
+                    //                    return writer.toString();
+                    return EntityUtils.toString(httpResponse.getEntity(), Helper.DEFAULT_ENCODING);
                 }
             }
         } catch (IOException e) {
@@ -236,10 +238,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
             RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setSocketTimeout(1000).setConnectTimeout(1000).build();
             get.setConfig(config);
             try (CloseableHttpResponse httpResponse = client.execute(get)) {
-                try (InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
-                    String jsonResponse = CharStreams.toString(reader);
-                    return jsonResponse;
-                }
+                return EntityUtils.toString(httpResponse.getEntity(), Helper.DEFAULT_ENCODING);
             }
         } catch (IOException e) {
             throw new WebApplicationException("Error getting url " + url, e);

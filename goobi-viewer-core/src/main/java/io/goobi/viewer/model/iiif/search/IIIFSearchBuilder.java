@@ -91,11 +91,13 @@ public class IIIFSearchBuilder {
         this.query = query;
         this.pi = pi;
         this.converter = new SearchResultConverter(URI.create(this.requestURI),
-                URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), pi, 0);
+                URI.create(DataManager.getInstance().getConfiguration().getIIIFApiUrl()), pi, 0);
     }
 
     /**
-     * <p>Getter for the field <code>query</code>.</p>
+     * <p>
+     * Getter for the field <code>query</code>.
+     * </p>
      *
      * @return the query
      */
@@ -104,7 +106,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -113,7 +117,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>motivation</code>.</p>
+     * <p>
+     * Setter for the field <code>motivation</code>.
+     * </p>
      *
      * @param motivation the motivation to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -127,7 +133,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>motivation</code>.</p>
+     * <p>
+     * Getter for the field <code>motivation</code>.
+     * </p>
      *
      * @return the motivation
      */
@@ -136,7 +144,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>user</code>.</p>
+     * <p>
+     * Setter for the field <code>user</code>.
+     * </p>
      *
      * @param user the user to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -147,7 +157,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>user</code>.</p>
+     * <p>
+     * Getter for the field <code>user</code>.
+     * </p>
      *
      * @return the user
      */
@@ -156,7 +168,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>date</code>.</p>
+     * <p>
+     * Setter for the field <code>date</code>.
+     * </p>
      *
      * @param date the date to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -167,7 +181,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>date</code>.</p>
+     * <p>
+     * Getter for the field <code>date</code>.
+     * </p>
      *
      * @return the date
      */
@@ -176,7 +192,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>min</code>.</p>
+     * <p>
+     * Getter for the field <code>min</code>.
+     * </p>
      *
      * @return the min
      */
@@ -185,7 +203,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>min</code>.</p>
+     * <p>
+     * Setter for the field <code>min</code>.
+     * </p>
      *
      * @param min the min to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -196,7 +216,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>page</code>.</p>
+     * <p>
+     * Setter for the field <code>page</code>.
+     * </p>
      *
      * @param page the page to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -209,7 +231,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>page</code>.</p>
+     * <p>
+     * Getter for the field <code>page</code>.
+     * </p>
      *
      * @return the page
      */
@@ -218,7 +242,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>hitsPerPage</code>.</p>
+     * <p>
+     * Getter for the field <code>hitsPerPage</code>.
+     * </p>
      *
      * @return the hitsPerPage
      */
@@ -227,7 +253,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>hitsPerPage</code>.</p>
+     * <p>
+     * Setter for the field <code>hitsPerPage</code>.
+     * </p>
      *
      * @param hitsPerPage the hitsPerPage to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -255,8 +283,9 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Creates a {@link de.intranda.api.iiif.search.SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}. The answer may contain more than
-     * {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than {@link #getHitsPerPage()} hits per motivation.
+     * Creates a {@link de.intranda.api.iiif.search.SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}. The
+     * answer may contain more than {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than {@link #getHitsPerPage()}
+     * hits per motivation.
      *
      * @return the search result
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -417,17 +446,18 @@ public class IIIFSearchBuilder {
                     .getSearchIndex()
                     .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(),
                             converter.getPresentationBuilder().getSolrFieldList());
+            long hitIndex = 0;
             for (SolrDocument doc : docList) {
                 Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
                     if (fieldNameMatches(fieldName, displayFields)) {
+                        hitIndex++;
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
                         String containesWordRegex = AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getQueryRegex(query));
                         if (fieldValue.matches(containesWordRegex)) {
-                            if (firstHitIndex < results.numHits && firstHitIndex + hitsPerPage >= results.numHits) {
+                            if (hitIndex >= firstHitIndex && hitIndex < firstHitIndex + hitsPerPage) {
                                 SearchHit hit = converter.convertMetadataToHit(AbstractSearchParser.getQueryRegex(query), fieldName, doc);
                                 results.add(hit);
-                                results.annotations.addAll(hit.getAnnotations());
                             }
                         }
                     }
@@ -577,7 +607,7 @@ public class IIIFSearchBuilder {
      */
     private boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
         for (String configuredField : configuredFields) {
-            if (configuredField.contains("*")) {
+            if (configuredField.contains("*") && !fieldName.endsWith("_UNTOKENIZED")) {
                 String fieldRegex = AbstractSearchParser.getQueryRegex(configuredField);
                 if (fieldName.matches(fieldRegex)) {
                     return true;

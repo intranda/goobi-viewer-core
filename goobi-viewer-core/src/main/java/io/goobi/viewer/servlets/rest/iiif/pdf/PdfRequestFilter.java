@@ -42,7 +42,9 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 
 /**
- * <p>PdfRequestFilter class.</p>
+ * <p>
+ * PdfRequestFilter class.
+ * </p>
  */
 @Provider
 @ContentServerPdfBinding

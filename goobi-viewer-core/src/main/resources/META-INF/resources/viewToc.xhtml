@@ -89,7 +89,8 @@
                                                         <div class="toc__mv-element-img text-center">
                                                             
                                                             <h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{tocElement.label}" />
+                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}" 
+                                                                data-viewer-thumbnail="thumbnail"/>
                                                             </h:outputLink>
                                                         </div>
                                                     </div>
@@ -132,7 +133,8 @@
     													<!-- MV IMAGE -->
     													<div class="toc__mv-element-img text-center">
     														<h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-    															<img data-src="#{tocElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{tocElement.label}" />
+    															<img data-src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
+    															data-viewer-thumbnail="thumbnail" />
     														</h:outputLink>
     													</div>
     												</div>
@@ -223,7 +225,7 @@
 																	<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																		<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 																			<li>
-																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.pdfDownload}"> 
+																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}"> 
 																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																				</a>
 																			</li>
@@ -237,7 +239,7 @@
 																					data-title="#{tocElement.label}" 
 																					data-id="#{tocElement.logId}" 
 																					data-pi="#{tocElement.topStructPi}" 
-																					title="#{msg.pdfDownload}"> 
+																					title="#{msg.label__pdf_download}"> 
 																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																				</a>
 																			</li>
@@ -261,7 +263,7 @@
 										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
 											<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
 												<div class="row">
-													<div class="col-xs-12 col-sm-9 col-md-10">
+													<div class="col-xs-12 col-sm-8 col-md-9">
 														<!-- TITLE -->
 														<div class="toc__list-full-title">
 															<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
@@ -272,9 +274,9 @@
 															</h:outputLink>
 														</div>
 													</div>
-													<div class="col-xs-12 col-sm-3 col-md-2">
+													<div class="col-xs-12 col-sm-4 col-md-3">
 														<!-- NUMBER -->
-														<div class="toc__list-full-number text-right">
+														<div class="toc__list-full-number text-right"> 
 															<ul>
 																<h:panelGroup rendered="#{tocElement.label != null}">
 																	<li>
@@ -289,7 +291,7 @@
 																<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																	<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 																		<li>
-																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.pdfDownload}">
+																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
 																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																			</a>
 																		</li>
@@ -303,7 +305,7 @@
 																				data-title="#{tocElement.label}" 
 																				data-id="#{tocElement.logId}" 
 																				data-pi="#{tocElement.topStructPi}" 
-																				title="#{msg.pdfDownload}"> 
+																				title="#{msg.label__pdf_download}"> 
 																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																			</a>
 																		</li>

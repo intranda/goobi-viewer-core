@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -34,13 +38,19 @@ import org.slf4j.LoggerFactory;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * Each instance of this class represents a structure element. This class extends <code>StructElementStub</code> and contains additional
@@ -69,6 +79,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupMemberships = new HashMap<>();
     /** Labels of the groups to which this record belongs. */
     private final Map<String, String> groupLabels = new HashMap<>();
+    /** Metadata describing the polygon that contains this docstruct within a page. */
+    private List<ShapeMetadata> shapeMetadata;
+    private StructElement topStruct = null;
+    /** True if this record has a right-to-left reading direction. */
+    private boolean rtl = false;
 
     /**
      * Empty constructor for unit tests.
@@ -77,7 +92,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Constructor for StructElement.</p>
+     * <p>
+     * Constructor for StructElement.
+     * </p>
      *
      * @param luceneId {@link java.lang.Long}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -88,7 +105,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Constructor for StructElement.</p>
+     * <p>
+     * Constructor for StructElement.
+     * </p>
      *
      * @param luceneId a long.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -100,7 +119,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Constructor for StructElement.</p>
+     * <p>
+     * Constructor for StructElement.
+     * </p>
      *
      * @param luceneId a long.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -144,10 +165,19 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docToMerge.getFieldValue(SolrConstants.ISWORK) != null) {
                 doc.addField(SolrConstants.ISWORK, docToMerge.getFieldValue(SolrConstants.ISWORK));
             }
+            if (docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL) != null) {
+                doc.addField(SolrConstants.BOOL_DIRECTION_RTL, docToMerge.getFieldValue(SolrConstants.BOOL_DIRECTION_RTL));
+            }
         }
         init(doc);
     }
 
+    /**
+     * Initializes class properties from the given doc.
+     * 
+     * @param doc SolrDocument
+     * @throws IndexUnreachableException
+     */
     private final void init(SolrDocument doc) throws IndexUnreachableException {
         try {
             if (doc == null) {
@@ -212,7 +242,23 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
                 }
             }
-
+            rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
+            // Load shape metadata
+            // TODO use indicator field in doc to avoid this extra search for non-shape elements
+            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            if (iddoc != null) {
+                SolrDocumentList shapeDocs =
+                        MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name());
+                if (!shapeDocs.isEmpty()) {
+                    this.shapeMetadata = new ArrayList<>(shapeDocs.size());
+                    for (SolrDocument shapeDoc : shapeDocs) {
+                        String label = getLabel();// (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
+                        String shape = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
+                        String coords = SolrSearchIndex.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(), getImageNumber(), this.logid));
+                    }
+                }
+            }
         } catch (PresentationException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -240,7 +286,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isHasParentOrChildren.</p>
+     * <p>
+     * isHasParentOrChildren.
+     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -251,7 +299,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isHasParent.</p>
+     * <p>
+     * isHasParent.
+     * </p>
      *
      * @return a boolean.
      */
@@ -303,31 +353,40 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true).
+     * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true). If the element itself is an anchor, itself
+     * will be returned. If no topStruct element is found because no metadata {@link SolrConstants#IDDOC_TOPSTRUCT} is found or because it could not
+     * be resolved, null is returned
      *
      * @should retrieve top struct correctly
+     * @should return self if topstruct or anchor
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
-        StructElement topStruct = this;
-        if (!work) {
+        if (work || anchor) {
+            this.topStruct = this;
+            return this;
+        }
+
+        if (this.topStruct == null) {
             String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
             try {
                 if (topstructIddoc != null) {
-                    topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                    this.topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
                 }
             } catch (NumberFormatException e) {
                 logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
             }
         }
 
-        return topStruct;
+        return this.topStruct;
     }
 
     /**
-     * <p>isGroupMember.</p>
+     * <p>
+     * isGroupMember.
+     * </p>
      *
      * @return a boolean.
      */
@@ -336,7 +395,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isGroup.</p>
+     * <p>
+     * isGroup.
+     * </p>
      *
      * @return a boolean.
      */
@@ -382,7 +443,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isExists.</p>
+     * <p>
+     * isExists.
+     * </p>
      *
      * @return the exists
      */
@@ -391,7 +454,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isDeleted.</p>
+     * <p>
+     * isDeleted.
+     * </p>
      *
      * @return a boolean.
      */
@@ -402,15 +467,28 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * {@inheritDoc}
      *
-     * Returns the identifier of the record to which this struct element belongs.
+     * @returns the identifier of the record to which this struct element belongs.
+     * @should return pi if topstruct
+     * @should retriveve pi from topstruct if not topstruct
+     * 
      */
     @Override
     public String getPi() {
         if (pi != null && !pi.equals("null")) {
             return pi;
+        } else if (getMetadataValue(SolrConstants.PI_TOPSTRUCT) != null) {
+            pi = getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+            return pi;
+        } else if (!work && !anchor) {
+            try {
+                return Optional.ofNullable(this.getTopStruct()).map(StructElement::getPi).orElse(null);
+            } catch (PresentationException | IndexUnreachableException e) {
+                return null;
+            }
         }
 
-        return getMetadataValue(SolrConstants.PI_TOPSTRUCT);
+        return null;
+
     }
 
     /** {@inheritDoc} */
@@ -427,7 +505,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getImageUrl.</p>
+     * <p>
+     * getImageUrl.
+     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -445,7 +525,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>generateEventElements.</p>
+     * <p>
+     * generateEventElements.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.util.List} object.
@@ -479,7 +561,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isAnchorChild.</p>
+     * <p>
+     * isAnchorChild.
+     * </p>
      *
      * @should return true if current record is volume
      * @should return false if current record is not volume
@@ -495,7 +579,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getCollection.</p>
+     * <p>
+     * getCollection.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -504,7 +590,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getCollections.</p>
+     * <p>
+     * getCollections.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -513,7 +601,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>isFulltextAvailable.</p>
+     * <p>
+     * isFulltextAvailable.
+     * </p>
      *
      * @return the fulltextAvailable
      */
@@ -523,7 +613,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Setter for the field <code>fulltextAvailable</code>.</p>
+     * <p>
+     * Setter for the field <code>fulltextAvailable</code>.
+     * </p>
      *
      * @param fulltextAvailable the fulltextAvailable to set
      */
@@ -567,7 +659,41 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getTitle.</p>
+     *
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
+        return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
+        return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+    }
+
+    /**
+     * 
+     * @param privilege Privilege name to check
+     * @return true if current user has the privilege for this record; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request);
+    }
+
+    /**
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -603,7 +729,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Getter for the field <code>ancestors</code>.</p>
+     * <p>
+     * Getter for the field <code>ancestors</code>.
+     * </p>
      *
      * @return the ancestors
      */
@@ -612,7 +740,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>Getter for the field <code>groupMemberships</code>.</p>
+     * <p>
+     * Getter for the field <code>groupMemberships</code>.
+     * </p>
      *
      * @return the groupMemberships
      */
@@ -621,7 +751,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getDisplayLabel.</p>
+     * <p>
+     * getDisplayLabel.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -638,7 +770,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getMultiLanguageDisplayLabel.</p>
+     * <p>
+     * getMultiLanguageDisplayLabel.
+     * </p>
      *
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
@@ -664,7 +798,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getFirstVolumeFieldValue.</p>
+     * <p>
+     * getFirstVolumeFieldValue.
+     * </p>
      *
      * @should return correct value
      * @should return null if StructElement not anchor
@@ -682,7 +818,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             SolrDocument docParent = DataManager.getInstance()
                     .getSearchIndex()
                     .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(),
-                            Collections.singletonList(field));
+                            Collections.singletonList(field), Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")));
             if (docParent == null) {
                 logger.warn("Anchor (PI: {}) has no child element: Cannot determine appropriate value", pi);
             } else {
@@ -694,7 +830,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getFirstVolume.</p>
+     * <p>
+     * getFirstVolume.
+     * </p>
      *
      * @should return correct value
      * @should return null if StructElement not anchor
@@ -727,7 +865,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>getFirstPageFieldValue.</p>
+     * <p>
+     * getFirstPageFieldValue.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -749,10 +889,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             try {
                 int thumbPageNo = Integer.parseInt(getMetadataValue(SolrConstants.THUMBPAGENO));
                 String topStructId = getMetadataValue(SolrConstants.PI_TOPSTRUCT);
-                String query = new StringBuilder("DOCTYPE:PAGE AND ").append(SolrConstants.PI_TOPSTRUCT)
+                String query = new StringBuilder().append('+')
+                        .append(SolrConstants.DOCTYPE)
+                        .append(':')
+                        .append(DocType.PAGE.name())
+                        .append(" +")
+                        .append(SolrConstants.PI_TOPSTRUCT)
                         .append(':')
                         .append(topStructId)
-                        .append(" AND ORDER: " + thumbPageNo)
+                        .append(" +")
+                        .append(SolrConstants.ORDER)
+                        .append(':')
+                        .append(thumbPageNo)
                         .toString();
                 SolrDocumentList pages = DataManager.getInstance().getSearchIndex().search(query, 1, null, null);
                 if (!pages.isEmpty()) {
@@ -775,4 +923,115 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return true;
     }
 
+    /**
+     * @return the shapeMetadata
+     */
+    public List<ShapeMetadata> getShapeMetadata() {
+        return shapeMetadata;
+    }
+
+    public boolean hasShapeMetadata() {
+        return shapeMetadata != null && !shapeMetadata.isEmpty();
+    }
+
+    /**
+     * @param shapeMetadata the shapeMetadata to set
+     */
+    public void setShapeMetadata(List<ShapeMetadata> shapeMetadata) {
+        this.shapeMetadata = shapeMetadata;
+    }
+
+    /**
+     * @return the rtl
+     */
+    public boolean isRtl() {
+        return rtl;
+    }
+
+    /**
+     * @param rtl the rtl to set
+     */
+    public void setRtl(boolean rtl) {
+        this.rtl = rtl;
+    }
+
+    /**
+     * Shape metadata for docstructs that represent only a portion of a page (or several pages).
+     */
+    public class ShapeMetadata implements Serializable {
+
+        private static final long serialVersionUID = -4043298882984117424L;
+
+        /** Display label */
+        private final String label;
+        /** Type of shape (currently only RECT) */
+        private final String shape;
+        /** Shape coordinates */
+        private final String coords;
+        private final String logId;
+        private final String structPi;
+        private final int pageNo;
+
+        /**
+         * Constructor.
+         * 
+         * @param label
+         * @param shape
+         * @param coords
+         */
+        public ShapeMetadata(String label, String shape, String coords, String pi, int pageNo, String logId) {
+            this.label = label;
+            this.shape = shape;
+            this.coords = coords;
+            this.logId = logId;
+            this.structPi = pi;
+            this.pageNo = pageNo;
+        }
+
+        /**
+         * @return the label
+         */
+        public String getLabel() {
+            return label;
+        }
+
+        /**
+         * @return the shape
+         */
+        public String getShape() {
+            return shape;
+        }
+
+        /**
+         * @return the coords
+         */
+        public String getCoords() {
+            return coords;
+        }
+
+        /**
+         * @return the url
+         */
+        public String getUrl() {
+            PageType pageType =
+                    Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(PageType.viewImage);
+            return getUrl(pageType);
+        }
+
+        public String getUrl(PageType pageType) {
+            StringBuilder sbUrl = new StringBuilder();
+            sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                    .append('/')
+                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType));
+            return sbUrl.toString();
+        }
+
+        /**
+         * @return the logId
+         */
+        public String getLogId() {
+            return logId;
+        }
+
+    }
 }

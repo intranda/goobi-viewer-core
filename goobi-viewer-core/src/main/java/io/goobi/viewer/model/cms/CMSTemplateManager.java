@@ -49,7 +49,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>CMSTemplateManager class.</p>
+ * <p>
+ * CMSTemplateManager class.
+ * </p>
  */
 public final class CMSTemplateManager {
 
@@ -80,12 +82,14 @@ public final class CMSTemplateManager {
     private Optional<Path> themeFolderPath = Optional.empty();
 
     /**
-     * <p>Getter for the field <code>instance</code>.</p>
+     * <p>
+     * Getter for the field <code>instance</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CMSTemplateManager} object.
      */
     public static CMSTemplateManager getInstance() {
-//                        instance = null;
+        //                        instance = null;
         CMSTemplateManager ctm = instance;
         if (ctm == null) {
             synchronized (lock) {
@@ -106,7 +110,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>Getter for the field <code>instance</code>.</p>
+     * <p>
+     * Getter for the field <code>instance</code>.
+     * </p>
      *
      * @param templateFolderPath a {@link java.lang.String} object.
      * @param themeRootPath a {@link java.lang.String} object.
@@ -197,7 +203,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>toURI.</p>
+     * <p>
+     * toURI.
+     * </p>
      *
      * @param url a {@link java.net.URL} object.
      * @return a {@link java.nio.file.Path} object.
@@ -211,7 +219,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>Getter for the field <code>coreTemplateFolderUrl</code>.</p>
+     * <p>
+     * Getter for the field <code>coreTemplateFolderUrl</code>.
+     * </p>
      *
      * @param filesystemPath a {@link java.lang.String} object.
      * @param servletContext a {@link javax.servlet.ServletContext} object.
@@ -315,7 +325,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>updateTemplates.</p>
+     * <p>
+     * updateTemplates.
+     * </p>
      *
      * @param corePath a {@link java.util.Optional} object.
      * @param themePath a {@link java.util.Optional} object.
@@ -349,7 +361,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>Getter for the field <code>templates</code>.</p>
+     * <p>
+     * Getter for the field <code>templates</code>.
+     * </p>
      *
      * @return a {@link java.util.Collection} object.
      */
@@ -358,7 +372,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getTemplate.</p>
+     * <p>
+     * getTemplate.
+     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
@@ -395,7 +411,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>Getter for the field <code>themeFolderPath</code>.</p>
+     * <p>
+     * Getter for the field <code>themeFolderPath</code>.
+     * </p>
      *
      * @return the themeFolderPath
      */
@@ -404,7 +422,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>Getter for the field <code>coreFolderPath</code>.</p>
+     * <p>
+     * Getter for the field <code>coreFolderPath</code>.
+     * </p>
      *
      * @return the coreFolderPath
      */
@@ -413,7 +433,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getCoreViewFolderPath.</p>
+     * <p>
+     * getCoreViewFolderPath.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -422,7 +444,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getThemeViewFolderPath.</p>
+     * <p>
+     * getThemeViewFolderPath.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -431,7 +455,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getCoreIconFolderPath.</p>
+     * <p>
+     * getCoreIconFolderPath.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -440,7 +466,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getThemeIconFolderPath.</p>
+     * <p>
+     * getThemeIconFolderPath.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -449,7 +477,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getTemplateViewUrl.</p>
+     * <p>
+     * getTemplateViewUrl.
+     * </p>
      *
      * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
      * @return a {@link java.lang.String} object.
@@ -464,7 +494,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getTemplateViewUrl.</p>
+     * <p>
+     * getTemplateViewUrl.
+     * </p>
      *
      * @param templateId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -475,7 +507,9 @@ public final class CMSTemplateManager {
     }
 
     /**
-     * <p>getTemplateIconUrl.</p>
+     * <p>
+     * getTemplateIconUrl.
+     * </p>
      *
      * @param templateId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -485,12 +519,14 @@ public final class CMSTemplateManager {
             CMSPageTemplate template = getTemplate(templateId);
             return getTemplateIconUrl(template);
         }
-        
+
         return "";
     }
 
     /**
-     * <p>getTemplateIconUrl.</p>
+     * <p>
+     * getTemplateIconUrl.
+     * </p>
      *
      * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
      * @return a {@link java.lang.String} object.

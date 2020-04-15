@@ -63,7 +63,9 @@ public class IndexingResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for IndexingResource.</p>
+     * <p>
+     * Constructor for IndexingResource.
+     * </p>
      */
     public IndexingResource() {
     }
@@ -78,7 +80,9 @@ public class IndexingResource {
     }
 
     /**
-     * <p>deleteRecord.</p>
+     * <p>
+     * deleteRecord.
+     * </p>
      *
      * @param params a {@link io.goobi.viewer.servlets.rest.utils.IndexingRequestParameters} object.
      * @return Short summary of files created

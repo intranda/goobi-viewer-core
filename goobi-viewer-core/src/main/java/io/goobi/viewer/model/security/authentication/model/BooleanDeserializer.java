@@ -23,7 +23,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
- * <p>BooleanDeserializer class.</p>
+ * <p>
+ * BooleanDeserializer class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -32,20 +34,19 @@ public class BooleanDeserializer extends JsonDeserializer<Boolean> {
     private static final String TRUE = "Y";
     private static final String FALSE = "N";
 
-
     /**
      * {@inheritDoc}
      *
-     * Returns {@link Boolean#TRUE} if and only if the next value read by the {@link JsonParser parser} is the String "Y" or "y".
-     * Returns {@link Boolean#FALSE} if and only if the next value read by the {@link JsonParser parser} is the String "N" or "n".
-     * Otherwise return null. Usually this happens if the value is encoded with "U" for unknown
+     * Returns {@link Boolean#TRUE} if and only if the next value read by the {@link JsonParser parser} is the String "Y" or "y". Returns
+     * {@link Boolean#FALSE} if and only if the next value read by the {@link JsonParser parser} is the String "N" or "n". Otherwise return null.
+     * Usually this happens if the value is encoded with "U" for unknown
      */
     @Override
     public Boolean deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
         String value = parser.readValueAs(String.class);
-        if(TRUE.equalsIgnoreCase(value)) {
+        if (TRUE.equalsIgnoreCase(value)) {
             return Boolean.TRUE;
-        } else if(FALSE.equalsIgnoreCase(value)){
+        } else if (FALSE.equalsIgnoreCase(value)) {
             return Boolean.FALSE;
         } else {
             return null;

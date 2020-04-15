@@ -1,36 +1,61 @@
 <adminMediaUpload>
-    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
-        <div class="admin-cms-media__upload-input">
-            <p>
-                {opts.msg.uploadText}
-                <br />
-                <small>({opts.msg.allowedFileTypes}: {fileTypes})</small>
-            </p>
-            <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
-            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}">
-        </div>
-        <div class="admin-cms-media__upload-messages">
-            <div class="admin-cms-media__upload-message uploading">
-                <i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading}
-            </div>
-            <div class="admin-cms-media__upload-message success">
-                <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
-            </div>
-            <div class="admin-cms-media__upload-message error">
-                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <span></span>
-            </div>        
-        </div>
-    </div>
-
+	<div class="admin-cms-media__upload-wrapper">
+	    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
+	        <div class="admin-cms-media__upload-input">
+	            <p>
+	                {opts.msg.uploadText}
+	                <br />
+	                <small>({opts.msg.allowedFileTypes}: {fileTypes})</small>
+	            </p>
+	            <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
+	            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}">
+	        </div>
+	        <div class="admin-cms-media__upload-messages">
+	            <div class="admin-cms-media__upload-message uploading">
+	                <i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading}
+	            </div>
+	            <div class="admin-cms-media__upload-message success">
+	                <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
+	            </div>
+	            <div class="admin-cms-media__upload-message error">
+	                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <span></span>
+	            </div>        
+	        </div>
+	    </div>
+	    <div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? 'in' : ''}" ref="filesZone">
+	       	<div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file">
+		       	<img src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
+		       	<div class="delete_overlay" onclick="{deleteFile}">
+		       		<i class="fa fa-trash" aria-hidden="true"></i>
+		       	</div>
+	       	</div>
+	    </div>
+	</div>
     <script>
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        this.uploadedFiles = []
+        if(this.opts.fileTypes) {
+            this.fileTypes = this.opts.fileTypes;
+        } else {            
+        	this.fileTypes = 'jpg, png, docx, doc, pdf, rtf, html, xhtml, xml';
+        }
         this.isDragover = false;
     
         this.on('mount', function () {
-            var dropZone = (this.refs.dropZone);
+            
+            if(this.opts.showFiles) {
+                this.initUploadedFiles();
+            }
+
+            this.initDrop();
+            
+        }.bind(this));
+
+        initDrop() {
+			var dropZone = (this.refs.dropZone);
     
+            
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -69,11 +94,37 @@
                     
                     this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
                 }
-    			this.uploadFiles();
+    			this.uploadFiles()
+    			.then( () => {
+    			    this.isDragover = false;
+    			    this.update();
+    			})
                 
             });
-        }.bind(this));
+        }
      
+        initUploadedFiles() {
+			this.getUploadedFiles();
+            
+            var filesZone = (this.refs.filesZone);
+//             var deleteOverlay = (this.refs.deleteOverlay);
+            
+//             filesZone.addEventListener('mouseenter', function (e) {
+//                 deleteOverlay.classList.add("in");
+//             });
+
+//             filesZone.addEventListener('mouseleave', function (e) {
+//                 deleteOverlay.classList.remove("in");
+//             });
+            
+//             deleteOverlay.addEventListener('click', function (e) {
+//                 if(confirm(this.opts.msg.bulkDeleteConfirm)) {
+//                     this.deleteUploadedFiles()
+//                     .then( () => this.getUploadedFiles())
+//                 }
+//             }.bind(this));
+        }
+        
         buttonFilesSelected(e) {
             for (var f of e.target.files) {
             	            	
@@ -106,15 +157,13 @@
                 uploads.push(Q(this.uploadFile(i)));
             }
             
-            Q.allSettled(uploads).then(function(results) {
+            return Q.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
                      if (result.state === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
-                     } 
-                     else {
-                         console.log("result ", result);
+                     } else {
                          var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
@@ -126,15 +175,19 @@
                      this.opts.onUploadSuccess();
                  }
                  
-            		if (this.opts.onUploadComplete) {
-            			this.opts.onUploadComplete();
-            		}
-            }.bind(this))
+           		if (this.opts.onUploadComplete) {
+           			this.opts.onUploadComplete();
+           		}
             
+            }.bind(this))
+            .then( () => {
+                if(this.opts.showFiles) {                    
+                	return this.getUploadedFiles();
+                }
+            });
         }
     
         fileUploaded(fileInfo) {
-            console.log("file uploaded")
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
         	
@@ -149,6 +202,38 @@
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
                 $('.admin-cms-media__upload-message.error span').html(responseText);
             }
+        }
+        
+        getUploadedFiles() {
+            return fetch(this.opts.postUrl, {
+                method: "GET",
+       		})
+       		.then(response => response.json())
+       		.then(json => {
+       		    console.log("uploaded files ", json);
+       		    this.uploadedFiles = json;
+       		    this.update();
+       		})
+        }
+        
+        deleteUploadedFiles() {
+            return fetch(this.opts.postUrl, {
+                method: "DELETE",
+       		})
+        }
+        
+        deleteUploadedFile(file) {
+            return fetch(this.opts.postUrl + this.getFilename(file), {
+                method: "DELETE",
+       		})
+        }
+        
+        deleteFile(data) {
+            console.log("delete ", this.getFilename(data.item.file));
+            this.deleteUploadedFile(data.item.file)
+            .then( () => {
+                this.getUploadedFiles();
+            })
         }
     
         uploadFile(i) {
@@ -170,7 +255,6 @@
             })
             .then(r => r.json())
             .then( json => { 
-                console.log("json response ", json);
                 return json.image != undefined
             })
             .then(exists => {
@@ -190,9 +274,33 @@
             .then( data => fetch(this.opts.postUrl, {
                 method: "POST",
                 body: data,
+                
+       		})
+       		.then( result => {
+       		    var defer = Q.defer();
+       		    if(result.ok) {
+       		    	defer.resolve(result);    		        
+       		    } else if(result.body && !result.responseText){
+                   result.body.getReader().read()
+					.then(({ done, value }) => {
+						defer.reject({
+						  responseText:   new TextDecoder("utf-8").decode(value)
+						})
+					});
+       		    } else {
+       		        defer.reject(result);
+       		    }
+       		    return defer.promise;
        		}));
-    	
-            
+        }
+        
+        getFilename(url) {
+            let result = url.match(/_tifU002F(.*)\/(?:full|square)/);
+            if(result && result.length > 1) {
+                return result[1];
+            } else {
+             	return url;   
+            }
         }
     </script> 
 </adminMediaUpload>

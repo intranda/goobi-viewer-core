@@ -38,7 +38,9 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>FacetItem class.</p>
+ * <p>
+ * FacetItem class.
+ * </p>
  */
 public class FacetItem implements Comparable<FacetItem>, Serializable {
 
@@ -388,7 +390,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>field</code>.</p>
+     * <p>
+     * Getter for the field <code>field</code>.
+     * </p>
      *
      * @return the field
      */
@@ -397,7 +401,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>field</code>.</p>
+     * <p>
+     * Setter for the field <code>field</code>.
+     * </p>
      *
      * @param field the field to set
      */
@@ -406,7 +412,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>getFullValue.</p>
+     * <p>
+     * getFullValue.
+     * </p>
      *
      * @return Range of value - value2; just value if value2 empty
      * @should build full value correctly
@@ -421,7 +429,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * <p>
+     * Getter for the field <code>value</code>.
+     * </p>
      *
      * @return the value
      */
@@ -430,7 +440,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>value</code>.</p>
+     * <p>
+     * Setter for the field <code>value</code>.
+     * </p>
      *
      * @param value the value to set
      */
@@ -439,7 +451,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>value2</code>.</p>
+     * <p>
+     * Getter for the field <code>value2</code>.
+     * </p>
      *
      * @return the value2
      */
@@ -448,7 +462,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>value2</code>.</p>
+     * <p>
+     * Setter for the field <code>value2</code>.
+     * </p>
      *
      * @param value2 the value2 to set
      */
@@ -457,7 +473,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>link</code>.</p>
+     * <p>
+     * Getter for the field <code>link</code>.
+     * </p>
      *
      * @return the link
      */
@@ -466,7 +484,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>link</code>.</p>
+     * <p>
+     * Setter for the field <code>link</code>.
+     * </p>
      *
      * @param link the link to set
      */
@@ -476,7 +496,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -485,7 +507,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>label</code>.</p>
+     * <p>
+     * Setter for the field <code>label</code>.
+     * </p>
      *
      * @param label the label to set
      */
@@ -494,7 +518,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>translatedLabel</code>.</p>
+     * <p>
+     * Getter for the field <code>translatedLabel</code>.
+     * </p>
      *
      * @return the translatedLabel
      */
@@ -503,7 +529,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>translatedLabel</code>.</p>
+     * <p>
+     * Setter for the field <code>translatedLabel</code>.
+     * </p>
      *
      * @param translatedLabel the translatedLabel to set
      */
@@ -512,7 +540,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>count</code>.</p>
+     * <p>
+     * Getter for the field <code>count</code>.
+     * </p>
      *
      * @return the count
      */
@@ -521,7 +551,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>count</code>.</p>
+     * <p>
+     * Setter for the field <code>count</code>.
+     * </p>
      *
      * @param count the count to set
      */
@@ -530,7 +562,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * <p>isHierarchial.</p>
+     * <p>
+     * isHierarchial.
+     * </p>
      *
      * @return the hierarchial
      */

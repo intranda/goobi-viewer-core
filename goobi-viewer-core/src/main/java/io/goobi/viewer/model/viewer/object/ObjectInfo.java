@@ -20,34 +20,38 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-
 /**
- * <p>ObjectInfo class.</p>
+ * <p>
+ * ObjectInfo class.
+ * </p>
  *
  * @author Florian Alpers
  */
 public class ObjectInfo {
- 
-    
+
     private ObjectFormat format;
     private URI uri;
-    private List<URI> resources;    
+    private List<URI> resources;
     private Point3D center = new Point3D(0, 0, 0);
     private Point3D rotation = new Point3D(0, 0, 0);
-    
+
     /**
-     * <p>Constructor for ObjectInfo.</p>
+     * <p>
+     * Constructor for ObjectInfo.
+     * </p>
      *
      * @param uri a {@link java.net.URI} object.
      */
     public ObjectInfo(URI uri) {
         this.uri = uri;
         this.format = ObjectFormat.getByFileExtension(uri.toString().substring(uri.toString().lastIndexOf("/")));
-        
+
     }
-    
+
     /**
-     * <p>Constructor for ObjectInfo.</p>
+     * <p>
+     * Constructor for ObjectInfo.
+     * </p>
      *
      * @param uri a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
@@ -59,87 +63,113 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>Getter for the field <code>format</code>.</p>
+     * <p>
+     * Getter for the field <code>format</code>.
+     * </p>
      *
      * @return the type
      */
     public ObjectFormat getFormat() {
         return format;
     }
+
     /**
-     * <p>Setter for the field <code>format</code>.</p>
+     * <p>
+     * Setter for the field <code>format</code>.
+     * </p>
      *
      * @param format a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
      */
     public void setFormat(ObjectFormat format) {
         this.format = format;
     }
+
     /**
-     * <p>Getter for the field <code>uri</code>.</p>
+     * <p>
+     * Getter for the field <code>uri</code>.
+     * </p>
      *
      * @return the uri
      */
     public URI getUri() {
         return uri;
     }
+
     /**
-     * <p>Setter for the field <code>uri</code>.</p>
+     * <p>
+     * Setter for the field <code>uri</code>.
+     * </p>
      *
      * @param uri the uri to set
      */
     public void setUri(URI uri) {
         this.uri = uri;
     }
+
     /**
-     * <p>Getter for the field <code>center</code>.</p>
+     * <p>
+     * Getter for the field <code>center</code>.
+     * </p>
      *
      * @return the center
      */
     public Point3D getCenter() {
         return center;
     }
+
     /**
-     * <p>Setter for the field <code>center</code>.</p>
+     * <p>
+     * Setter for the field <code>center</code>.
+     * </p>
      *
      * @param center the center to set
      */
     public void setCenter(Point3D center) {
         this.center = center;
     }
+
     /**
-     * <p>Getter for the field <code>rotation</code>.</p>
+     * <p>
+     * Getter for the field <code>rotation</code>.
+     * </p>
      *
      * @return the rotation
      */
     public Point3D getRotation() {
         return rotation;
     }
+
     /**
-     * <p>Setter for the field <code>rotation</code>.</p>
+     * <p>
+     * Setter for the field <code>rotation</code>.
+     * </p>
      *
      * @param rotation the rotation to set
      */
     public void setRotation(Point3D rotation) {
         this.rotation = rotation;
     }
-    
+
     /**
-     * <p>Getter for the field <code>resources</code>.</p>
+     * <p>
+     * Getter for the field <code>resources</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
     public List<URI> getResources() {
         return resources;
     }
-    
+
     /**
-     * <p>Setter for the field <code>resources</code>.</p>
+     * <p>
+     * Setter for the field <code>resources</code>.
+     * </p>
      *
      * @param resources a {@link java.util.List} object.
      */
     public void setResources(List<URI> resources) {
         this.resources = resources;
     }
-    
 
 }

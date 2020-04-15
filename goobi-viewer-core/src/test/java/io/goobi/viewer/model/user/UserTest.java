@@ -51,10 +51,10 @@ public class UserTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserIsSuperuser() throws Exception {
-        User user = new User();        
+        User user = new User();
         user.setSuperuser(true);
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("restricted")), IPrivilegeHolder.PRIV_LIST,
-                "PPN123"));
+        Assert.assertTrue(
+                user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("restricted")), IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
     /**
@@ -65,9 +65,8 @@ public class UserTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserHasLicense() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assert.assertNotNull(user);
-        List<String> licenceTypes = Arrays.asList(new String[]{"license type 1 name", "license type 3 name"});
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes),
-                IPrivilegeHolder.PRIV_LIST, "PPN123"));
+        List<String> licenceTypes = Arrays.asList(new String[] { "license type 1 name", "license type 3 name" });
+        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes), IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
     /**

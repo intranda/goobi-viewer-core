@@ -96,10 +96,10 @@ public class TranskribusUtilsTest extends AbstractDatabaseEnabledTest {
     //        TranskribusSession session = TranskribusUtils.login(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, ConfigurationHelper.getInstance()
     //                .getTranskribusUserName(), ConfigurationHelper.getInstance().getTranskribusPassword());
     //        try {
-    //            TranskribusJob job = TranskribusUtils.ingestRecordToCollections(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session, "PPN517154005",
+    //            TranskribusJob job = TranskribusUtils.ingestRecordToCollections(TranskribusUtils.TRANSRIBUS_REST_TESTING_URL, session, PI_KLEIUNIV,
     //                    "http://viewer-demo01.intranda.com/viewer/metsresolver?id=PPN517154005", "475", "475");
     //            Assert.assertNotNull(job);
-    //            Assert.assertEquals("PPN517154005", job.getPi());
+    //            Assert.assertEquals(PI_KLEIUNIV, job.getPi());
     //            Assert.assertNotNull(job.getJobId());
     //            Assert.assertNotNull(job.getDateCreated());
     //            Assert.assertNotNull(job.getStatus());

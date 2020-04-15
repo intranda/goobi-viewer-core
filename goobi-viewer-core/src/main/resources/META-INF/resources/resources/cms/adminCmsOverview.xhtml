@@ -124,7 +124,7 @@
                                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                                         </h:outputLink>
                                                     </h:panelGroup>
-                                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(page)}">
+                                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
                                                         <h:commandLink styleClass="btn btn--icon" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
                                                             <f:passThroughAttribute name="data-toggle" value="modal" />
                                                             <f:passThroughAttribute name="data-target" value="#deletePageModal" />

@@ -1,4 +1,5 @@
 package io.goobi.viewer;
+
 /**
  * This file is part of the Goobi viewer Connector - OAI-PMH and SRU interfaces for digital objects.
  *
@@ -15,7 +16,6 @@ package io.goobi.viewer;
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import org.junit.BeforeClass;
 
 import io.goobi.viewer.controller.Configuration;
@@ -29,7 +29,7 @@ public abstract class AbstractTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         System.setProperty("log4j.configurationFile", "src/test/resources/log4j2.test.xml");
-        
+
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
 }

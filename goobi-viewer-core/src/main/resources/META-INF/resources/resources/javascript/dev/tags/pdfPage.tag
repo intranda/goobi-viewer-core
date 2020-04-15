@@ -8,7 +8,6 @@
 
 <script>
 	this.on('mount', function () {
-		console.log("load page ", this.opts.pageno, this.opts.page);
 
            this.container = document.getElementById( "page_" + this.opts.pageno );
            this.canvas = document.getElementById( "pdf-canvas_" + this.opts.pageno );
@@ -33,7 +32,6 @@
         this.canvas.height = this.viewport.height;
         this.canvas.width = this.viewport.width;
         
-        console.log( "render ", this.opts.page, context, this.viewport );
         
         this.opts.page.render( {
             canvasContext: context,

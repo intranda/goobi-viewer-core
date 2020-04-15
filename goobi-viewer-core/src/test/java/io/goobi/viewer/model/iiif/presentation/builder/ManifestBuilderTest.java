@@ -70,52 +70,51 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         super.setUp();
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
     }
-    
-    
-    public static final String PI = "PPN517154005";
-    
+
+    public static final String PI = PI_KLEIUNIV;
+
     @Test
-    public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException, ContentNotFoundException, IOException {
+    public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException,
+            ContentNotFoundException, IOException {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
-        
-        
+
         ManifestBuilder builder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
         SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
         StructureBuilder structureBuilder = new StructureBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-        
+
         SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
         for (SolrDocument solrDocument : allDocs) {
             String pi = SolrSearchIndex.getSingleFieldStringValue(solrDocument, "PI");
         }
-        
+
         List<StructElement> docs = builder.getDocumentWithChildren(PI);
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + PI);
         }
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = builder.generateManifest(mainDoc);
-        ((Manifest)manifest).setContext(IIIFPresentationResponseFilter.CONTEXT);
+        ((Manifest) manifest).setContext(IIIFPresentationResponseFilter.CONTEXT);
         sequenceBuilder.addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
 
-            String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
-            if (StringUtils.isNotBlank(topLogId)) {
-                List<Range> ranges = structureBuilder.generateStructure(docs, PI, false);
-                ranges.forEach(range -> {
-                    ((Manifest) manifest).addStructure(range);
-                });
-            }
-    
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            ObjectWriter writer = mapper.writer().forType(Manifest.class);
-            String json = writer.writeValueAsString(manifest);
-            Assert.assertTrue(StringUtils.isNotBlank(json));
-//            File jsonFile = new File("C:\\opt\\digiverso\\viewer\\manifest.json");
-//            FileUtils.write(jsonFile, json);
-            
+        String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
+        if (StringUtils.isNotBlank(topLogId)) {
+            List<Range> ranges = structureBuilder.generateStructure(docs, PI, false);
+            ranges.forEach(range -> {
+                ((Manifest) manifest).addStructure(range);
+            });
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        ObjectWriter writer = mapper.writer().forType(Manifest.class);
+        String json = writer.writeValueAsString(manifest);
+        Assert.assertTrue(StringUtils.isNotBlank(json));
+        //            File jsonFile = new File("C:\\opt\\digiverso\\viewer\\manifest.json");
+        //            FileUtils.write(jsonFile, json);
+
     }
-    
+
     @Test
     public void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
         Range range = new Range("http://viewer/manifest/1/ranges/1");

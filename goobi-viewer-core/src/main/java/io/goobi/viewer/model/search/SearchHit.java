@@ -153,6 +153,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private final Map<String, String> exportMetadata = new HashMap<>();
     @JsonIgnore
     private int hitsPopulated = 0;
+    @JsonIgnore
+    private SolrDocument solrDoc = null;
 
     /**
      * Private constructor. Use createSearchHit() from other classes.
@@ -171,7 +173,14 @@ public class SearchHit implements Comparable<SearchHit> {
         if (browseElement != null) {
             if (searchTerms != null) {
                 addLabelHighlighting();
-                //                browseElement.setLabelShort(browseElement.getLabel());
+            } else {
+                String label = browseElement.getLabel(locale);
+                // Escape HTML tags
+                label = StringEscapeUtils.escapeHtml4(label);
+
+                IMetadataValue labelShort = new MultiLanguageMetadataValue();
+                labelShort.setValue(label, locale);
+                browseElement.setLabelShort(labelShort);
             }
             this.url = browseElement.getUrl();
         } else {
@@ -189,7 +198,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>createSearchHit.</p>
+     * <p>
+     * createSearchHit.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
@@ -212,8 +223,9 @@ public class SearchHit implements Comparable<SearchHit> {
             Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
             Set<String> translateAdditionalFields, HitType overrideType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true);
+        List<String> fulltextFragments =
+                (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
+                        DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
@@ -468,7 +480,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>populateChildren.</p>
+     * <p>
+     * populateChildren.
+     * </p>
      *
      * @param number a int.
      * @param locale a {@link java.util.Locale} object.
@@ -484,7 +498,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>populateChildren.</p>
+     * <p>
+     * populateChildren.
+     * </p>
      *
      * @param number a int.
      * @param locale a {@link java.util.Locale} object.
@@ -607,7 +623,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>populateFoundMetadata.</p>
+     * <p>
+     * populateFoundMetadata.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ignoreFields Fields to be skipped
@@ -650,14 +668,15 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(docFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
                                 // Only add one instance of NORM_ALTNAME (as there can be dozens)
                                 if ("NORM_ALTNAME".equals(docFieldName)) {
                                     break;
@@ -678,14 +697,15 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(termsFieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
                             }
                         }
                     }
@@ -747,7 +767,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -756,7 +778,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>translatedType</code>.</p>
+     * <p>
+     * Getter for the field <code>translatedType</code>.
+     * </p>
      *
      * @return the translatedType
      */
@@ -765,7 +789,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>browseElement</code>.</p>
+     * <p>
+     * Getter for the field <code>browseElement</code>.
+     * </p>
      *
      * @return the browseElement
      */
@@ -774,7 +800,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>childDocs</code>.</p>
+     * <p>
+     * Getter for the field <code>childDocs</code>.
+     * </p>
      *
      * @return the childDocs
      */
@@ -783,7 +811,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>hitsPopulated</code>.</p>
+     * <p>
+     * Getter for the field <code>hitsPopulated</code>.
+     * </p>
      *
      * @return the hitsPopulated
      */
@@ -792,7 +822,9 @@ public class SearchHit implements Comparable<SearchHit> {
     };
 
     /**
-     * <p>Setter for the field <code>childDocs</code>.</p>
+     * <p>
+     * Setter for the field <code>childDocs</code>.
+     * </p>
      *
      * @param childDocs the childDocs to set
      */
@@ -819,7 +851,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>ugcDocIddocs</code>.</p>
+     * <p>
+     * Getter for the field <code>ugcDocIddocs</code>.
+     * </p>
      *
      * @return the ugcDocIddocs
      */
@@ -828,7 +862,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>children</code>.</p>
+     * <p>
+     * Getter for the field <code>children</code>.
+     * </p>
      *
      * @return the children
      */
@@ -837,7 +873,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>hitTypeCounts</code>.</p>
+     * <p>
+     * Getter for the field <code>hitTypeCounts</code>.
+     * </p>
      *
      * @return the hitTypeCounts
      */
@@ -846,7 +884,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>isHasHitCount.</p>
+     * <p>
+     * isHasHitCount.
+     * </p>
      *
      * @return a boolean.
      */
@@ -861,7 +901,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>getCmsPageHitCount.</p>
+     * <p>
+     * getCmsPageHitCount.
+     * </p>
      *
      * @return a int.
      */
@@ -874,7 +916,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>getDocstructHitCount.</p>
+     * <p>
+     * getDocstructHitCount.
+     * </p>
      *
      * @return a int.
      */
@@ -887,7 +931,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>getPageHitCount.</p>
+     * <p>
+     * getPageHitCount.
+     * </p>
      *
      * @return a int.
      */
@@ -900,7 +946,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>getMetadataHitCount.</p>
+     * <p>
+     * getMetadataHitCount.
+     * </p>
      *
      * @return a int.
      */
@@ -913,7 +961,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>getEventHitCount.</p>
+     * <p>
+     * getEventHitCount.
+     * </p>
      *
      * @return a int.
      */
@@ -926,7 +976,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>getUgcHitCount.</p>
+     * <p>
+     * getUgcHitCount.
+     * </p>
      *
      * @return a int.
      */
@@ -939,7 +991,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>foundMetadata</code>.</p>
+     * <p>
+     * Getter for the field <code>foundMetadata</code>.
+     * </p>
      *
      * @return the foundMetadata
      */
@@ -948,7 +1002,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>url</code>.</p>
+     * <p>
+     * Getter for the field <code>url</code>.
+     * </p>
      *
      * @return the url
      */
@@ -957,7 +1013,9 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>Getter for the field <code>exportMetadata</code>.</p>
+     * <p>
+     * Getter for the field <code>exportMetadata</code>.
+     * </p>
      *
      * @return the exportMetadata
      */
@@ -986,4 +1044,22 @@ public class SearchHit implements Comparable<SearchHit> {
         return sb.toString();
     }
 
+    /**
+     * @param doc
+     */
+    public void setSolrDoc(SolrDocument doc) {
+        this.solrDoc = doc;
+    }
+
+    public SolrDocument getSolrDoc() {
+        return this.solrDoc;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getBrowseElement().getLabelShort();
+    }
 }

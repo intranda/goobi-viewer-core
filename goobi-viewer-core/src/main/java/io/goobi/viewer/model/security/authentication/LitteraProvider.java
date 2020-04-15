@@ -38,13 +38,11 @@ import io.goobi.viewer.model.security.authentication.model.LitteraAuthentication
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * External authentication provider for the LITTERA reader authentication api (www.littera.eu).
- * This provider requests requests authentication from the configured url and an 'id' and 'pw' provided as query parameters.
- * The response is a text/xml document containing a root element <Response> with an attribute "authenticationSuccessful"
- * which is either true or false depending on the validity of the passed query params.
- * If the authentication is successful, an existing viewer user is newly created is required with the nickname of the login id and
- * an email of {id}@nomail.com.
- * The user may still be suspended, given admin rights ect. as any other viewer user
+ * External authentication provider for the LITTERA reader authentication api (www.littera.eu). This provider requests requests authentication from
+ * the configured url and an 'id' and 'pw' provided as query parameters. The response is a text/xml document containing a root element <Response> with
+ * an attribute "authenticationSuccessful" which is either true or false depending on the validity of the passed query params. If the authentication
+ * is successful, an existing viewer user is newly created is required with the nickname of the login id and an email of {id}@nomail.com. The user may
+ * still be suspended, given admin rights ect. as any other viewer user
  *
  * @author Florian Alpers
  */
@@ -57,9 +55,11 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     protected static final String TYPE_USER_PASSWORD = "userPassword";
     private static final String QUERY_PARAMETER_ID = "id";
     private static final String QUERY_PARAMETER_PW = "pw";
-    
+
     /**
-     * <p>Constructor for LitteraProvider.</p>
+     * <p>
+     * Constructor for LitteraProvider.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -87,39 +87,41 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
         try {
-        	LitteraAuthenticationResponse response = get(new URI(getUrl()), loginName, password);
+            LitteraAuthenticationResponse response = get(new URI(getUrl()), loginName, password);
             Optional<User> user = getUser(loginName, response);
             LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !response.isAuthenticationSuccessful());
             return CompletableFuture.completedFuture(result);
         } catch (URISyntaxException e) {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new AuthenticationProviderException("Error requesting authorisation for user " + loginName, e);
         }
     }
 
-	/**
-	 * <p>get.</p>
-	 *
-	 * @param url a {@link java.net.URI} object.
-	 * @param username a {@link java.lang.String} object.
-	 * @param password a {@link java.lang.String} object.
-	 * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
-	 * @throws java.io.IOException if any.
-	 */
-	protected LitteraAuthenticationResponse get(URI url, String username, String password) throws IOException{
-            url = UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
-            String xml = get(url);
-            LitteraAuthenticationResponse response = deserialize(xml);
-            return response;
+    /**
+     * <p>
+     * get.
+     * </p>
+     *
+     * @param url a {@link java.net.URI} object.
+     * @param username a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
+     * @throws java.io.IOException if any.
+     */
+    protected LitteraAuthenticationResponse get(URI url, String username, String password) throws IOException {
+        url = UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
+        String xml = get(url);
+        LitteraAuthenticationResponse response = deserialize(xml);
+        return response;
     }
 
     /**
      * @param xml
      * @return
-     * @throws IOException 
-     * @throws JsonMappingException 
-     * @throws JsonParseException 
+     * @throws IOException
+     * @throws JsonMappingException
+     * @throws JsonParseException
      */
     private static LitteraAuthenticationResponse deserialize(String xml) throws IOException {
         XmlMapper mapper = new XmlMapper();
@@ -141,44 +143,44 @@ public class LitteraProvider extends HttpAuthenticationProvider {
 
         User user = null;
         try {
-        user = DataManager.getInstance().getDao().getUserByNickname(loginName);
-        if (user != null) {
-            logger.debug("Found user {} via vuFind username '{}'.", user.getId(), loginName);
-        }
-        // If not found, try email
-        if (user == null) {
-            user = DataManager.getInstance().getDao().getUserByEmail(loginName);
+            user = DataManager.getInstance().getDao().getUserByNickname(loginName);
             if (user != null) {
                 logger.debug("Found user {} via vuFind username '{}'.", user.getId(), loginName);
             }
-        }
-        
-        // If still not found, create a new user
-        if (user == null) {
-            user = new User();
-            user.setNickName(loginName);
-            user.setActive(true);
-            user.setEmail(DEFAULT_EMAIL.replace("{username}",loginName));
-            logger.debug("Created new user with nickname " + loginName);
-        }
-        
-        // Add to bean and persist
-        if (user.getId() == null) {
-            if (!DataManager.getInstance().getDao().addUser(user)) {
-                throw new AuthenticationProviderException("Could not add user to DB.");
+            // If not found, try email
+            if (user == null) {
+                user = DataManager.getInstance().getDao().getUserByEmail(loginName);
+                if (user != null) {
+                    logger.debug("Found user {} via vuFind username '{}'.", user.getId(), loginName);
+                }
             }
-        } else {
-            if (!DataManager.getInstance().getDao().updateUser(user)) {
-                throw new AuthenticationProviderException("Could not update user in DB.");
+
+            // If still not found, create a new user
+            if (user == null) {
+                user = new User();
+                user.setNickName(loginName);
+                user.setActive(true);
+                user.setEmail(DEFAULT_EMAIL.replace("{username}", loginName));
+                logger.debug("Created new user with nickname " + loginName);
             }
-        }
-        
-        } catch(DAOException  e) {
+
+            // Add to bean and persist
+            if (user.getId() == null) {
+                if (!DataManager.getInstance().getDao().addUser(user)) {
+                    throw new AuthenticationProviderException("Could not add user to DB.");
+                }
+            } else {
+                if (!DataManager.getInstance().getDao().updateUser(user)) {
+                    throw new AuthenticationProviderException("Could not update user in DB.");
+                }
+            }
+
+        } catch (DAOException e) {
             throw new AuthenticationProviderException(e);
         }
         return Optional.ofNullable(user);
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
      */

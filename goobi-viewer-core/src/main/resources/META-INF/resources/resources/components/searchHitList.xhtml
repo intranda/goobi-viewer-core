@@ -2,6 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:h="http://xmlns.jcp.org/jsf/html">
@@ -12,7 +13,8 @@
         <!-- THIS COMPONENT MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
         <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
-
+        <ui:param name="rootUrl" value="#{rootUrl != null ? rootUrl : search.currentSearchUrlRoot.concat('/')}"></ui:param>
+        
         <!-- SEARCH LIST HITS -->
         <div class="search-list__hits">
             <!-- SEARCH LIST SORTING -->
@@ -28,12 +30,12 @@
                                     <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
                                     <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                         <option
-                                            value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
+                                            value="#{rootUrl}-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
                                             data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
                                             <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
                                         </option>
                                         <option
-                                            value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
+                                            value="#{rootUrl}-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
                                             data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
                                             <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
                                         </option>
@@ -98,16 +100,9 @@
                                                     <ui:repeat var="val" value="#{browseElementMetadata.values}">
                                                         <h:outputFormat value="#{msg[val.masterValue]}" escape="false" rendered="#{!browseElementMetadata.blank}"
                                                             styleClass="search-list__hit-text-value">
-                                                            <f:param value="#{val.getComboValueShort(0)}" />
-                                                            <f:param value="#{val.getComboValueShort(1)}" />
-                                                            <f:param value="#{val.getComboValueShort(2)}" />
-                                                            <f:param value="#{val.getComboValueShort(3)}" />
-                                                            <f:param value="#{val.getComboValueShort(4)}" />
-                                                            <f:param value="#{val.getComboValueShort(5)}" />
-                                                            <f:param value="#{val.getComboValueShort(6)}" />
-                                                            <f:param value="#{val.getComboValueShort(7)}" />
-                                                            <f:param value="#{val.getComboValueShort(8)}" />
-                                                            <f:param value="#{val.getComboValueShort(9)}" />
+                                                            <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                                <f:param value="#{val.getComboValueShort(ind)}" />
+                                                            </c:forEach>
                                                         </h:outputFormat>
                                                     </ui:repeat>
                                                 </div>
@@ -136,7 +131,7 @@
                                         <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" styleClass="remember-scroll-position"
                                             rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
                                             <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
-                                            <img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" class="viewer-thumbnail" />
+                                            <img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" data-viewer-thumbnail="thumbnail" />
                                         </h:outputLink>
 
                                         <!-- SINGLEVOLUME WITHOUT IMAGE -->
@@ -144,14 +139,14 @@
                                             rendered="#{hit.browseElement.thumbnailUrl == null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
                                             <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
                                             <img src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png" alt="#{hit.browseElement.label}"
-                                                class="viewer-thumbnail" />
+                                                data-viewer-thumbnail="thumbnail" />
                                         </h:outputLink>
 
                                         <!-- MULTIVOLUME -->
                                         <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}" styleClass="remember-scroll-position">
                                             <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
-                                            <img src="#{hit.browseElement.thumbnailUrl}"
-                                                class="viewer-thumbnail #{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
+                                            <img data-src="#{hit.browseElement.thumbnailUrl}" data-viewer-thumbnail="thumbnail"
+                                                class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
                                             <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
                                                 <div class="stacked-thumbnail-before"></div>
                                                 <div class="stacked-thumbnail-after"></div>
@@ -161,7 +156,7 @@
                                         <!-- ADD TO BOOKMARKS -->
                                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                                             <button type="button" class="btn btn--icon" data-bookmark-list-type="add" data-pi="#{hit.browseElement.pi}" data-page="#{hit.browseElement.imageNo}">
-                                                <span title="#{msg.bookmarkList_addToBookmarkList}" data-toggle="tooltip" data-placement="bottom">
+                                                <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
                                                     <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
                                                     <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
                                                 </span>

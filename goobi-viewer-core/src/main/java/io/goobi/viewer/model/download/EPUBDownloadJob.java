@@ -42,7 +42,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 
 /**
- * <p>EPUBDownloadJob class.</p>
+ * <p>
+ * EPUBDownloadJob class.
+ * </p>
  */
 @Entity
 @DiscriminatorValue(EPUBDownloadJob.TYPE)
@@ -56,14 +58,18 @@ public class EPUBDownloadJob extends DownloadJob {
     private static final Logger logger = LoggerFactory.getLogger(EPUBDownloadJob.class);
 
     /**
-     * <p>Constructor for EPUBDownloadJob.</p>
+     * <p>
+     * Constructor for EPUBDownloadJob.
+     * </p>
      */
     public EPUBDownloadJob() {
         type = TYPE;
     }
 
     /**
-     * <p>Constructor for EPUBDownloadJob.</p>
+     * <p>
+     * Constructor for EPUBDownloadJob.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param logid a {@link java.lang.String} object.
@@ -147,7 +153,9 @@ public class EPUBDownloadJob extends DownloadJob {
     }
 
     /**
-     * <p>getEpubSizeFromTaskManager.</p>
+     * <p>
+     * getEpubSizeFromTaskManager.
+     * </p>
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a long.
@@ -171,7 +179,9 @@ public class EPUBDownloadJob extends DownloadJob {
     }
 
     /**
-     * <p>getEPUBJobsInQueue.</p>
+     * <p>
+     * getEPUBJobsInQueue.
+     * </p>
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a int.
@@ -204,7 +214,9 @@ public class EPUBDownloadJob extends DownloadJob {
     }
 
     /**
-     * <p>triggerCreation.</p>
+     * <p>
+     * triggerCreation.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param downloadIdentifier a {@link java.lang.String} object.

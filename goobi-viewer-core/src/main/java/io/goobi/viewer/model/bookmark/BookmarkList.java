@@ -58,7 +58,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>BookmarkList class.</p>
+ * <p>
+ * BookmarkList class.
+ * </p>
  */
 @Entity
 @Table(name = "bookshelves")
@@ -257,7 +259,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>isMayView.</p>
+     * <p>
+     * isMayView.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -287,7 +291,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>isMayEdit.</p>
+     * <p>
+     * isMayEdit.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -313,7 +319,9 @@ public class BookmarkList implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -322,7 +330,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -331,7 +341,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * <p>
+     * Getter for the field <code>name</code>.
+     * </p>
      *
      * @return the name
      */
@@ -340,7 +352,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name the name to set
      */
@@ -353,7 +367,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>description</code>.</p>
+     * <p>
+     * Getter for the field <code>description</code>.
+     * </p>
      *
      * @return the description
      */
@@ -362,7 +378,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description the description to set
      */
@@ -371,7 +389,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>hasDescription.</p>
+     * <p>
+     * hasDescription.
+     * </p>
      *
      * @return a boolean.
      */
@@ -380,7 +400,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>owner</code>.</p>
+     * <p>
+     * Getter for the field <code>owner</code>.
+     * </p>
      *
      * @return the owner
      */
@@ -389,7 +411,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>owner</code>.</p>
+     * <p>
+     * Setter for the field <code>owner</code>.
+     * </p>
      *
      * @param owner the owner to set
      */
@@ -398,7 +422,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>isIsPublic.</p>
+     * <p>
+     * isIsPublic.
+     * </p>
      *
      * @return the isPublic
      */
@@ -407,7 +433,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>getPublicString.</p>
+     * <p>
+     * getPublicString.
+     * </p>
      *
      * @return the isPublic Value as a String <br>
      *         surrounded with ()
@@ -424,7 +452,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>isPublic</code>.</p>
+     * <p>
+     * Setter for the field <code>isPublic</code>.
+     * </p>
      *
      * @param isPublic the isPublic to set
      */
@@ -433,7 +463,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>shareKey</code>.</p>
+     * <p>
+     * Getter for the field <code>shareKey</code>.
+     * </p>
      *
      * @return the shareKey
      */
@@ -442,12 +474,18 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>shareKey</code>.</p>
+     * <p>
+     * Setter for the field <code>shareKey</code>.
+     * </p>
      *
      * @param shareKey the shareKey to set
      */
     public void setShareKey(String shareKey) {
         this.shareKey = shareKey;
+    }
+
+    public boolean hasShareKey() {
+        return this.shareKey != null;
     }
 
     /**
@@ -465,7 +503,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>getNumItems.</p>
+     * <p>
+     * getNumItems.
+     * </p>
      *
      * @return Number of items
      */
@@ -474,7 +514,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>items</code>.</p>
+     * <p>
+     * Getter for the field <code>items</code>.
+     * </p>
      *
      * @return the items
      */
@@ -483,7 +525,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>items</code>.</p>
+     * <p>
+     * Setter for the field <code>items</code>.
+     * </p>
      *
      * @param items the items to set
      */
@@ -492,7 +536,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>groupShares</code>.</p>
+     * <p>
+     * Getter for the field <code>groupShares</code>.
+     * </p>
      *
      * @return the groupShares
      */
@@ -504,7 +550,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>groupShares</code>.</p>
+     * <p>
+     * Setter for the field <code>groupShares</code>.
+     * </p>
      *
      * @param groupShares the groupShares to set
      */
@@ -513,7 +561,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>getOwnerName.</p>
+     * <p>
+     * getOwnerName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -525,7 +575,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>getMiradorJsonObject.</p>
+     * <p>
+     * getMiradorJsonObject.
+     * </p>
      *
      * @param applicationRoot a {@link java.lang.String} object.
      * @should generate JSON object correctly
@@ -551,7 +603,7 @@ public class BookmarkList implements Serializable {
         //        int row = 1;
         //        int col = 1;
         for (Bookmark bi : items) {
-            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("iiif/manifests/")
+            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
                     .append(bi.getPi())
                     .append("/manifest")
                     .toString();
@@ -584,7 +636,9 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>getFilterQuery.</p>
+     * <p>
+     * getFilterQuery.
+     * </p>
      *
      * @should construct query correctly
      * @return a {@link java.lang.String} object.
@@ -604,23 +658,29 @@ public class BookmarkList implements Serializable {
     }
 
     /**
-     * <p>getIIIFCollectionURI.</p>
+     * <p>
+     * getIIIFCollectionURI.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getIIIFCollectionURI() {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "bookmarks/key/" + getShareKey() + "/";
     }
-    
+
     /**
      * 
      * @return the URL encoded name
      */
     public String getEscapedName() {
-        if(name != null) {
-                return StringEscapeUtils.escapeHtml4(name);
+        if (name != null) {
+            return StringEscapeUtils.escapeHtml4(name);
         } else {
             return "";
         }
+    }
+
+    public boolean isOwnedBy(User user) {
+        return user != null && user.equals(this.owner);
     }
 }

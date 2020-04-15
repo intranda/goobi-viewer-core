@@ -28,30 +28,18 @@ import org.junit.Test;
 
 import io.goobi.viewer.model.cms.tilegrid.SemiRandomOrderComparator;
 
-
 /**
  * @author Florian Alpers
  *
  */
 public class SemiRandomOrderComparatorTest {
-    
+
     private static final int testRuns = 100;
-    
-    private static final SortTestObject[] testArray = {
-            new SortTestObject("A", 4), 
-            new SortTestObject("B", 5),
-            new SortTestObject("C", 0),
-            new SortTestObject("D", 3),
-            new SortTestObject("E", 7),
-            new SortTestObject("F", 9),
-            new SortTestObject("G", 6),
-            new SortTestObject("H", 0),
-            new SortTestObject("I", 9),
-            new SortTestObject("J", 2),
-            new SortTestObject("K", 0),
-            new SortTestObject("L", 5),
-            new SortTestObject("M", 5),
-            new SortTestObject("N", 1)};
+
+    private static final SortTestObject[] testArray = { new SortTestObject("A", 4), new SortTestObject("B", 5), new SortTestObject("C", 0),
+            new SortTestObject("D", 3), new SortTestObject("E", 7), new SortTestObject("F", 9), new SortTestObject("G", 6),
+            new SortTestObject("H", 0), new SortTestObject("I", 9), new SortTestObject("J", 2), new SortTestObject("K", 0),
+            new SortTestObject("L", 5), new SortTestObject("M", 5), new SortTestObject("N", 1) };
 
     /**
      * @throws java.lang.Exception
@@ -69,26 +57,21 @@ public class SemiRandomOrderComparatorTest {
 
     @Test
     public void test() {
-        
+
         List<List<SortTestObject>> resultList = new ArrayList<>();
-        
-        for (int i = 0; i < testRuns; i++) {            
-            List<SortTestObject> sortedList = Arrays.stream(testArray)
-                    .sorted(new SemiRandomOrderComparator<>(o -> o.number))
-                    .collect(Collectors.toList());
+
+        for (int i = 0; i < testRuns; i++) {
+            List<SortTestObject> sortedList =
+                    Arrays.stream(testArray).sorted(new SemiRandomOrderComparator<>(o -> o.number)).collect(Collectors.toList());
             resultList.add(sortedList);
         }
-        for (List<SortTestObject> list : resultList) {            
+        for (List<SortTestObject> list : resultList) {
             Assert.assertTrue(isOrdered(list));
         }
-        Assert.assertFalse(allEqual(resultList.stream()
-                .map( list -> list.stream()
-                        .map(l -> l.name)
-                        .collect(Collectors.joining()))
-                .collect(Collectors.toList())
-                     ));
+        Assert.assertFalse(
+                allEqual(resultList.stream().map(list -> list.stream().map(l -> l.name).collect(Collectors.joining())).collect(Collectors.toList())));
     }
-    
+
     /**
      * @param collect
      * @return
@@ -96,7 +79,7 @@ public class SemiRandomOrderComparatorTest {
     private boolean allEqual(List<String> strings) {
         for (String s1 : strings) {
             for (String s2 : strings) {
-                if(!s1.equals(s2)) {
+                if (!s1.equals(s2)) {
                     return false;
                 }
             }
@@ -111,20 +94,20 @@ public class SemiRandomOrderComparatorTest {
     private boolean isOrdered(List<SortTestObject> list) {
         int lastValue = -1;
         for (SortTestObject o : list) {
-            if(o.number > 0) {
-                if(lastValue == 0 || lastValue > o.number) {
+            if (o.number > 0) {
+                if (lastValue == 0 || lastValue > o.number) {
                     return false;
                 }
             }
             lastValue = o.number;
-        } 
+        }
         return true;
     }
 
     private static class SortTestObject {
         public String name;
         public Integer number;
-        
+
         /**
          * 
          */
@@ -132,7 +115,7 @@ public class SemiRandomOrderComparatorTest {
             this.name = name;
             this.number = number;
         }
-        
+
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
@@ -141,7 +124,7 @@ public class SemiRandomOrderComparatorTest {
             return name + " -> " + number.toString() + "\t";
         }
     }
-    
+
     @Test
     public void testComparatorContract() {
         Random picker = new Random(System.nanoTime());
@@ -150,37 +133,37 @@ public class SemiRandomOrderComparatorTest {
         for (int i = 0; i < testRuns; i++) {
             SortTestObject o1 = testArray[picker.nextInt(testArray.length)];
             SortTestObject o2 = testArray[picker.nextInt(testArray.length)];
-            
+
             SemiRandomOrderComparator<SortTestObject> comparator = new SemiRandomOrderComparator<>(o -> o.number);
-            
+
             int resA = comparator.compare(o1, o2);
             int resB = comparator.compare(o2, o1);
-            
+
             Assert.assertEquals("Contract violated for " + o1 + ", " + o2, -Math.signum(resA), Math.signum(resB), 0.0);
         }
-        
+
         //Transitivity
         for (int i = 0; i < testRuns; i++) {
             SortTestObject o1 = testArray[picker.nextInt(testArray.length)];
             SortTestObject o2 = testArray[picker.nextInt(testArray.length)];
             SortTestObject o3 = testArray[picker.nextInt(testArray.length)];
-            
+
             SemiRandomOrderComparator<SortTestObject> comparator = new SemiRandomOrderComparator<>(o -> o.number);
-            
+
             int resA = comparator.compare(o1, o2);
             int resB = comparator.compare(o2, o3);
             int resC = comparator.compare(o1, o3);
-            
-            if(resA > 0 && resB > 0) {
+
+            if (resA > 0 && resB > 0) {
                 Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, 1.0, Math.signum(resC), 0.0);
             } else if (resA < 0 && resB < 0) {
                 Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, -1.0, Math.signum(resC), 0.0);
-            } else if(resA == 0) {
+            } else if (resA == 0) {
                 Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, Math.signum(resB), Math.signum(resC), 0.0);
-            } else if(resB == 0) {
+            } else if (resB == 0) {
                 Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, Math.signum(resA), Math.signum(resC), 0.0);
             }
-            
+
         }
     }
 

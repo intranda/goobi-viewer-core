@@ -58,7 +58,9 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 
 /**
- * <p>ImageInformationFilter class.</p>
+ * <p>
+ * ImageInformationFilter class.
+ * </p>
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -104,7 +106,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 List<ImageTile> tileSizes;
                 tileSizes = getTileSizesFromConfig();
                 setTileSizes((ImageInformation) responseObject, tileSizes);
-                setMaxImageSizes((ImageInformation) responseObject);         
+                setMaxImageSizes((ImageInformation) responseObject);
                 //This adds 200 or more ms to the request time. So we ignore this unless it is actually requested
                 //				setWatermark((ImageInformation) responseObject);
             } catch (ViewerConfigurationException e) {
@@ -154,7 +156,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * <p>getStructElement.</p>
+     * <p>
+     * getStructElement.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
@@ -203,6 +207,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
+     * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes.
+     * Values of imageSizes are interpreted as width
+     * 
      * @param responseObject
      * @param imageSizes
      */
@@ -210,7 +217,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
         List<Dimension> dimensions = new ArrayList<>();
         for (Integer size : imageSizes) {
-            dimensions.add(new Dimension(size, size));
+            float ratio = imageInfo.getHeight()/(float)imageInfo.getWidth();
+            dimensions.add(new Dimension(size, Math.round(size*ratio)));
         }
         if (dimensions.isEmpty()) {
             dimensions.add(new Dimension(imageInfo.getWidth(), imageInfo.getHeight()));
@@ -232,7 +240,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 int size = Integer.parseInt(string);
                 sizes.add(size);
             } catch (NullPointerException | NumberFormatException e) {
-//                logger.warn("Cannot parse " + string + " as int");
+                //                logger.warn("Cannot parse " + string + " as int");
             }
         }
         return sizes;

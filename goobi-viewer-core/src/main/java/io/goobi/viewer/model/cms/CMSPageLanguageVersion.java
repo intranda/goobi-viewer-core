@@ -91,14 +91,18 @@ public class CMSPageLanguageVersion {
     private List<CMSContentItem> completeContentItemList = null;
 
     /**
-     * <p>Constructor for CMSPageLanguageVersion.</p>
+     * <p>
+     * Constructor for CMSPageLanguageVersion.
+     * </p>
      */
     public CMSPageLanguageVersion() {
 
     }
 
     /**
-     * <p>Constructor for CMSPageLanguageVersion.</p>
+     * <p>
+     * Constructor for CMSPageLanguageVersion.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      */
@@ -107,7 +111,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Constructor for CMSPageLanguageVersion.</p>
+     * <p>
+     * Constructor for CMSPageLanguageVersion.
+     * </p>
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
      * @param ownerPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
@@ -132,7 +138,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -141,7 +149,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -150,7 +160,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>ownerPage</code>.</p>
+     * <p>
+     * Getter for the field <code>ownerPage</code>.
+     * </p>
      *
      * @return the ownerPage
      */
@@ -159,7 +171,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>ownerPage</code>.</p>
+     * <p>
+     * Setter for the field <code>ownerPage</code>.
+     * </p>
      *
      * @param ownerPage the ownerPage to set
      */
@@ -168,7 +182,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>language</code>.</p>
+     * <p>
+     * Getter for the field <code>language</code>.
+     * </p>
      *
      * @return the language
      */
@@ -177,7 +193,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>language</code>.</p>
+     * <p>
+     * Setter for the field <code>language</code>.
+     * </p>
      *
      * @param language the language to set
      */
@@ -186,7 +204,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>status</code>.</p>
+     * <p>
+     * Getter for the field <code>status</code>.
+     * </p>
      *
      * @return the status
      */
@@ -195,7 +215,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>status</code>.</p>
+     * <p>
+     * Setter for the field <code>status</code>.
+     * </p>
      *
      * @param status the status to set
      */
@@ -204,7 +226,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>title</code>.</p>
+     * <p>
+     * Getter for the field <code>title</code>.
+     * </p>
      *
      * @return the title
      */
@@ -213,7 +237,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>title</code>.</p>
+     * <p>
+     * Setter for the field <code>title</code>.
+     * </p>
      *
      * @param title the title to set
      */
@@ -222,7 +248,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>menuTitle</code>.</p>
+     * <p>
+     * Getter for the field <code>menuTitle</code>.
+     * </p>
      *
      * @return the menuTitle
      */
@@ -231,7 +259,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>getMenuTitleOrTitle.</p>
+     * <p>
+     * getMenuTitleOrTitle.
+     * </p>
      *
      * @return the menuTitle or the title if no menu title exists
      */
@@ -240,7 +270,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>menuTitle</code>.</p>
+     * <p>
+     * Setter for the field <code>menuTitle</code>.
+     * </p>
      *
      * @param menuTitle the menuTitle to set
      */
@@ -249,7 +281,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>contentItems</code>.</p>
+     * <p>
+     * Getter for the field <code>contentItems</code>.
+     * </p>
      *
      * @return the contentItems
      */
@@ -259,7 +293,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Setter for the field <code>contentItems</code>.</p>
+     * <p>
+     * Setter for the field <code>contentItems</code>.
+     * </p>
      *
      * @param contentItems the contentItems to set
      */
@@ -268,7 +304,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>getContentItem.</p>
+     * <p>
+     * getContentItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
@@ -286,7 +324,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>Getter for the field <code>completeContentItemList</code>.</p>
+     * <p>
+     * Getter for the field <code>completeContentItemList</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -298,7 +338,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>hasContentItem.</p>
+     * <p>
+     * hasContentItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a boolean.
@@ -338,23 +380,7 @@ public class CMSPageLanguageVersion {
         } else {
             completeContentItemList = getContentItems();
         }
-        sortItems(completeContentItemList);
-    }
-
-    /**
-     * @param completeContentItemList2
-     */
-    private void sortItems(List<CMSContentItem> items) {
-        if (getOwnerPage().getTemplate() != null) {
-            for (CMSContentItem cmsContentItem : items) {
-                for (CMSContentItem templateItem : getOwnerPage().getTemplate().getContentItems()) {
-                    if (templateItem.getItemId().equals(cmsContentItem.getItemId())) {
-                        cmsContentItem.setOrder(templateItem.getOrder());
-                    }
-                }
-            }
-        }
-        Collections.sort(items);
+        Collections.sort(completeContentItemList);
     }
 
     /** {@inheritDoc} */
@@ -382,13 +408,13 @@ public class CMSPageLanguageVersion {
         if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), getLanguage());
+                logger.info("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         } else {
             if (getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
-                logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), getLanguage());
+                logger.info("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());
                 return true;
             }
         }
@@ -397,7 +423,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>addContentItem.</p>
+     * <p>
+     * addContentItem.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */
@@ -421,7 +449,9 @@ public class CMSPageLanguageVersion {
     }
 
     /**
-     * <p>removeContentItem.</p>
+     * <p>
+     * removeContentItem.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      */

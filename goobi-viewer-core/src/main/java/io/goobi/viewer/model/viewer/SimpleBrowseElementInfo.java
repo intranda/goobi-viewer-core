@@ -30,7 +30,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * <p>SimpleBrowseElementInfo class.</p>
+ * <p>
+ * SimpleBrowseElementInfo class.
+ * </p>
  */
 public class SimpleBrowseElementInfo implements BrowseElementInfo {
 
@@ -42,7 +44,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     private String collectionName;
 
     /**
-     * <p>Constructor for SimpleBrowseElementInfo.</p>
+     * <p>
+     * Constructor for SimpleBrowseElementInfo.
+     * </p>
      *
      * @param collectionName a {@link java.lang.String} object.
      */
@@ -51,7 +55,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     /**
-     * <p>Constructor for SimpleBrowseElementInfo.</p>
+     * <p>
+     * Constructor for SimpleBrowseElementInfo.
+     * </p>
      *
      * @param collectionName a {@link java.lang.String} object.
      * @param linkURI a {@link java.net.URI} object.
@@ -70,7 +76,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     /**
-     * <p>Setter for the field <code>description</code>.</p>
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
      *
      * @param description a {@link java.lang.String} object.
      */
@@ -83,7 +91,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     public URI getLinkURI(HttpServletRequest request) {
         return linkURI;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public URI getLinkURI() {
@@ -91,7 +99,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     /**
-     * <p>Setter for the field <code>linkURI</code>.</p>
+     * <p>
+     * Setter for the field <code>linkURI</code>.
+     * </p>
      *
      * @param linkURI a {@link java.net.URI} object.
      */
@@ -109,7 +119,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     /**
-     * <p>Setter for the field <code>iconURI</code>.</p>
+     * <p>
+     * Setter for the field <code>iconURI</code>.
+     * </p>
      *
      * @param iconURI a {@link java.net.URI} object.
      */
@@ -130,7 +142,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     /**
-     * <p>createIconURI.</p>
+     * <p>
+     * createIconURI.
+     * </p>
      *
      * @param collectionName a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.

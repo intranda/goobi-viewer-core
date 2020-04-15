@@ -50,7 +50,9 @@ import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>DownloadResource class.</p>
+ * <p>
+ * DownloadResource class.
+ * </p>
  */
 @ViewerRestServiceBinding
 @Path("/download")
@@ -64,10 +66,10 @@ public class DownloadResource {
     /**
      * Get information about a specific downloadJob
      *
-     * @param type  The jobtype, either pdf or epub
-     * @param pi    The PI of the underlying record
+     * @param type The jobtype, either pdf or epub
+     * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
-     * @return  A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
+     * @return A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -77,7 +79,7 @@ public class DownloadResource {
     @AuthenticationBinding
     public DownloadJob getDownloadInfo(@PathParam("type") String type, @PathParam("pi") String pi, @PathParam("logId") String logId)
             throws DAOException, ContentNotFoundException {
-        if(StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
+        if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(type, pi, logId);
@@ -87,13 +89,13 @@ public class DownloadResource {
             throw new ContentNotFoundException("No download job found for type " + type + ", PI " + pi + " and LogId " + logId);
         }
     }
-    
+
     /**
      * Get information about a specific downloadJob
      *
-     * @param type  The jobtype, either pdf or epub
-     * @param identifier    The job idenfier
-     * @return  A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
+     * @param type The jobtype, either pdf or epub
+     * @param identifier The job idenfier
+     * @return A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -110,12 +112,12 @@ public class DownloadResource {
             throw new ContentNotFoundException("No " + type + " download job found for identifier " + identifier);
         }
     }
-    
+
     /**
      * Get information about all download jobs of a type
      *
-     * @param type  The jobtype, either pdf or epub
-     * @return  An array of json representations of all {@link io.goobi.viewer.model.download.DownloadJob}s of the given type
+     * @param type The jobtype, either pdf or epub
+     * @return An array of json representations of all {@link io.goobi.viewer.model.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -136,10 +138,10 @@ public class DownloadResource {
     /**
      * Remove a download job from the database
      *
-     * @param type  The jobtype, either pdf or epub
-     * @param pi    The PI of the underlying record
+     * @param type The jobtype, either pdf or epub
+     * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
-     * @return  A json object containing the job identifier and wether the job could be deleted
+     * @return A json object containing the job identifier and wether the job could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -149,7 +151,7 @@ public class DownloadResource {
     @AuthenticationBinding
     public String deleteDownloadJob(@PathParam("type") String type, @PathParam("pi") String pi, @PathParam("logId") String logId)
             throws DAOException, ContentLibException {
-        if(StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
+        if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(type, pi, logId);
@@ -163,13 +165,13 @@ public class DownloadResource {
             throw new ContentNotFoundException("No download job found for type " + type + ", PI " + pi + " and LogId " + logId);
         }
     }
-    
+
     /**
      * Remove a download job from the database
      *
-     * @param type  The jobtype, either pdf or epub
-     * @param identifier    The job idenfier
-     * @return  A json object containing the job identifier and wether the job could be deleted
+     * @param type The jobtype, either pdf or epub
+     * @param identifier The job idenfier
+     * @return A json object containing the job identifier and wether the job could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -194,8 +196,8 @@ public class DownloadResource {
     /**
      * Remove all jobs of a type from the database
      *
-     * @param type  The jobtype, either pdf or epub
-     * @return  An array of json objects containing the job identifiers and wether the jobs could be deleted
+     * @param type The jobtype, either pdf or epub
+     * @return An array of json objects containing the job identifiers and wether the jobs could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -213,7 +215,7 @@ public class DownloadResource {
         if (!downloadJobs.isEmpty()) {
             List<String> results = new ArrayList<>();
             for (DownloadJob job : downloadJobs) {
-                if(DataManager.getInstance().getDao().deleteDownloadJob(job)) {
+                if (DataManager.getInstance().getDao().deleteDownloadJob(job)) {
                     results.add("{job: \"" + job.getIdentifier() + "\", deleted: true}");
                 } else {
                     results.add("{job: \"" + job.getIdentifier() + "\", deleted: false}");
@@ -226,7 +228,9 @@ public class DownloadResource {
     }
 
     /**
-     * <p>redirectToDownloadPage.</p>
+     * <p>
+     * redirectToDownloadPage.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.

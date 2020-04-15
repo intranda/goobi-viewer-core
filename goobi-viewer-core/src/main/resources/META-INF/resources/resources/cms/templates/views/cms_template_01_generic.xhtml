@@ -15,7 +15,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
 		</f:metadata>
 	</ui:define>
 	
@@ -120,7 +120,8 @@
 											<!-- IMAGE -->
 											<div class="solr-query-collection__image">
 												<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
-													<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{hit.browseElement.label}" />
+													<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive" alt="#{hit.browseElement.label}"
+													data-viewer-thumbnail="thumbnail" />
 												</h:outputLink>
 											</div>
 	
@@ -137,7 +138,8 @@
 						</div>
 	
 						<!-- paginator -->
-						<viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount()}" itemActive="#{cmsPage.listPage}"
+						<viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount()}"
+						itemActive="#{cmsPage.listPage}"
 							urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
 					</div>
 				</h:panelGroup>

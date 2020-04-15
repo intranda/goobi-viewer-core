@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _map = {};
     var _mapEnlarged = {};
     var _features = [];
@@ -34,7 +34,7 @@ var cmsJS = ( function( cms ) {
     var _defaults = {
         appUrl: '',
         locations: '',
-        mapboxAccessToken: 'pk.eyJ1IjoibGlydW1nYnYiLCJhIjoiY2lobjRzamkyMDBnM3U5bTR4cHp0NDdyeCJ9.AjNCRBlBb57j-dziFxf58A',
+        mapboxAccessToken: '',
         mapBoxContainerSelector: 'widgetGeoLocationsMap',
         mapBoxContainerEnlargedSelector: 'widgetGeoLocationsMapEnlarged',
         mapBoxStyle: 'mapbox://styles/lirumgbv/cii024wxn009aiolzgy2zlycj',
@@ -92,6 +92,8 @@ var cmsJS = ( function( cms ) {
                     
                     _map.addControl( new mapboxgl.FullscreenControl() );
                     _map.addControl( new mapboxgl.NavigationControl() );
+                    
+                    $("#" + _defaults.mapBoxContainerSelector).closest(".widget").show();
                 } );
                 
                 // add popups

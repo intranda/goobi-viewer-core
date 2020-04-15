@@ -19,18 +19,23 @@
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
     </div>
 
-	<popup id="share-image-area-popup">
+	<popover id="share-image-area-popup">
 
 		<div>
-		<a data-copy="image-region-page"
+		<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}" data-clipboard-text="image-region-page"
 			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_page}</a>
 		</div>
 		<div>
-			<a data-copy="image-region-image"
+			<a data-copy="image-region-image" data-copy-done="#{msg.copyUrlDone}" data-clipboard-text="image-region-image"
 			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_image}</a>
 		</div>
 
-	</popup>
+	</popover> 
+	
+	<popover id="imageFilterPopover">
+		<imageFilters/>
+	</popover>
+
 
 	<!-- OPEN SEADRAGON -->
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
@@ -41,8 +46,7 @@
   		      		    
     	var imageMap = $( "#imageMap" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
-        var accessDeniedImagePath = "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/access_denied.png";
-        var accessDeniedImageWrapper = $( "<div />" ).addClass( "view-object__access-denied" ).html( '<img src="' + accessDeniedImagePath + '" />' );
+        var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         var page = "#{navigationHelper.currentPage}";
 
         var configViewer = {
@@ -102,6 +106,47 @@
         	}
         };
         
+        var imageFilterConfig = {
+	        filters : {
+	            brightness: {
+	                label: "#{msg.label__image_filter_brightness}"
+	            },
+	            contrast: {
+	                label: "#{msg.label__image_filter_contrast}"
+	            },
+	            saturate: {
+	                label: "#{msg.label__image_filter_saturate}"
+	            },
+	            grayscale: {
+	                label: "#{msg.label__image_filter_grayscale}"
+	            },
+	            threshold: {
+	                label: "#{msg.label__image_filter_bitonal}"
+	            },
+	            blur: {
+	                label: "#{msg.label__image_filter_blur}",
+	                visible: false
+	            },
+	            sharpen: {
+	                label: "#{msg.label__image_filter_sharpen}"
+	            },
+	            invert: {
+	                label: "#{msg.label__image_filter_invert}"
+	            },
+	            hue: {
+	                label: "#{msg.label__image_filter_rotate}"
+	            }
+	        },
+	        messages: {
+	            clearAll: "#{msg.action__reset_all_image_filters}"
+	        }
+        };
+        
+        var pageAreaConfig = {
+                areas : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson},
+                currentLogId : "#{activeDocumentBean.logid}"
+        }
+        
         // check for fullscreen and change container height 
         if ( $( '#fullscreen' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
@@ -124,11 +169,12 @@
         }
 
        	// desktop object view
+       	console.log("access ", access, accessDeniedMessage);
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
     	     initImageFragmentLinks();
-           	 initImageAreaSelect(image);
+           	 initImageFragmentSelect(image);
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
@@ -142,7 +188,7 @@
            	} );
         } 
        	else {
-       		imageMap.append( accessDeniedImageWrapper );
+       		imageMap.append( accessDeniedMessage );
        	}
 
        	// mobile overlay
@@ -150,10 +196,10 @@
        		$( "#imageContainerMobileOverlay" ).show();
        	}
        	
-        var areaSelect, event;
+        var fragmentSelect, event;
        	if(viewImage) {
-            function selectImageArea(button) {
-                 if(areaSelect) {
+            function selectImageFragment(button) {
+                 if(fragmentSelect) {
                     if(!$(button).hasClass("active")) {
                 	    $(button).tooltip("hide");
 	       		        $(button).popover({
@@ -166,54 +212,46 @@
 		       		            $("body").one("click.dismiss-popover", function() {
 		       		         	$(button).popover("hide");
 		    	      		    $(button).removeClass("active");
-		    	       		 	areaSelect.stopSelect();
+		    	       		 	fragmentSelect.stopSelect();
 	       		        	})
 	       		        }, 0);
 		                $(button).addClass("active");
-		                areaSelect.startSelect().then( area => openShareAreaPopup(area, button) )   
+		                fragmentSelect.startSelect().then( area => openShareFragmentPopup(area, button) )   
 		                viewImage.viewer.addOnceHandler( 'canvas-drag-end', (e) => {
 		                    event = e.originalEvent;
 		                });
                 	}
                 }
             }
-       		function openShareAreaPopup(area, button) {
-       		    if(areaSelect) {
+       		function openShareFragmentPopup(area, button) {
+       		    if(fragmentSelect) {
        		     	$(button).popover("hide");
 	      		    $(button).removeClass("active");
-	       		 	areaSelect.stopSelect();
+	       		 	fragmentSelect.stopSelect();
 	       		 	var areaString = viewImage.getAreaString(area);
-	       		 	var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + areaString;
+	       		 	var pageUrl = window.location.origin + window.location.pathname +  window.location.search + "#xywh=" + areaString;
 	       		 	var imageUrl = viewImage.getRegionUrl(area);
-	       		 	let popup = new viewerJS.Popup(event, $("#share-image-area-popup"), {
-	       		        left: "left",
-	       		        bottom: "top",
-	       		        offset: {
-	       		            top:-5,
-	       		            left: 5
+	       		 	let popover =  viewerJS.popovers.fromEvent("canvas", event, "#share-image-area-popup", {
+	       		        onClose: () => {
+		       		 	    if(fragmentSelect) {
+		       		     	    fragmentSelect.remove(0);
+		       		     	}
+	       		        },
+	       		        onShow: () => {
+			       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl).tooltip();
+			       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl).tooltip();
 	       		        }
-	       		        
-	       		    })
-	       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl);
-	       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl);
-	       		 	popup.onClose.subscribe( () => {
-	       		 	    if(areaSelect) {
-	       		     	    areaSelect.remove(0);
-	       		     	}
-	       		 	})
-	       		    $("[data-copy]").one("click", function(event) {
-	       		        popup.close();
-	       		    })
-	       		    
+	       		    });
+
 		       		$("body").off("click.dismiss-popover");
 		       		initImageFragmentLinks(areaString);
        		    }
        		}
-			function initImageAreaSelect(image) {
+			function initImageFragmentSelect(image) {
            		// init area select
            		try { 
 					let styles = viewerJS.helper.getCss("image-fragment", ['borderTopColor', 'borderTopWidth', 'background-color']);
-	           		var areaSelectConfig = {
+	           		var fragmentSelectConfig = {
 	           		     removeOldAreas : true,
 	                     drawStyle : {
 	                         borderColor: styles["borderTopColor"],
@@ -221,7 +259,7 @@
 	                         fillColor: styles["background-color"],
 	                     }
 	           		};
-	           		areaSelect = new ImageView.Tools.AreaSelect(image, areaSelectConfig);
+	           		fragmentSelect = new ImageView.Tools.AreaSelect(image, fragmentSelectConfig);
            		} catch(error) {
            		    console.error("Error initializing area select: ", error);
            		}
@@ -240,9 +278,133 @@
 	       		 	$wrapper.show();
 			    }
 			}
-			
        	}
        	
+		if(viewImage) {	
+		    
+		    //init image filter tools
+       	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
+       	 	    let originClean = viewImage.isOriginClean();
+       	 	    if(originClean) {
+       	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
+       	 	    	$(".image-controls__option.image-filter button i").tooltip("disable");
+       	 	        $(".image-controls__option.image-filter button")
+       	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
+       	 	        .tooltip('fixTitle');
+       	 	        
+					riot.mount("imageFilters", {
+					    image: viewImage,
+					    config: imageFilterConfig
+				    });
+       	 	    }
+       	 	});
+       	 	
+		    //init page areas
+       	 	function drawPageAreas(config, imageView) {
+				let styles = viewerJS.helper.getCss("page-area", ['borderTopColor', 'borderTopWidth', 'background-color']);
+				let style = {
+				        borderWidth: styles["borderTopWidth"],
+				        borderColor: styles["borderTopColor"],
+				        fillColor: styles["background-color"]
+				}
+				let activeStyles = viewerJS.helper.getCss("page-area focus", ['borderTopColor', 'borderTopWidth', 'background-color']);
+				let activeStyle = {
+				        borderWidth: parseInt(activeStyles["borderTopWidth"]),
+				        borderColor: activeStyles["borderTopColor"],
+				        fillColor: activeStyles["background-color"]
+				}
+				
+        	    imageView.viewer.addHandler("canvas-press", () => {
+        	        imageView.dragging = false;
+        	    })
+        	    imageView.viewer.addHandler("canvas-drag", () => {
+        	        imageView.dragging = true;
+        	    })
+				
+				let activeArea = config.areas.find(a => a.logId === config.currentLogId);
+				if(activeArea) {
+				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
+		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, rect, true);
+					shadow.start();
+				    drawArea(activeArea, imageView, true);
+	        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
+	        	    $(document).scrollTop(parseInt(scrollPosition));
+	        	    window.sessionStorage.removeItem("scrollPosition");
+				} else {
+			        config.areas.forEach( (area, index) => drawArea(area, imageView))				    
+				}
+
+		    }
+		    function drawArea(area, imageView, clickToLeave) {
+		        let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+	            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+	        	let $area = $("#pageAreaFrame_" + area.logId);
+	        	let $label = $("#pageAreaLabel_" + area.logId);
+	            let overlay = new ImageView.Overlay({
+	                rect: rect,
+	                viewer: imageView.viewer,
+	                rotateWithImage: true,
+	                element: $area.get(0),
+	                label: $label.get(0)
+	            });
+	        	overlay.draw();
+	        	if(clickToLeave) {
+	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
+	        	     imageView.viewer.addHandler("canvas-release", () => {
+	        	        console.log("canvas-release");
+	        	        if(!imageView.dragging) {		        	            
+		        	        let $target = $(event.target);
+		        	        if($target.filter($area).length == 0) {
+			        	    	window.location.href = area.url.replace("/" + area.logId, "");
+		        	        }
+	        	        }
+	        	    })
+	        	} else {
+		        	$area.on("click", () => {
+		        	    if(!imageView.dragging) {		        	        
+			        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
+			        	    window.location.href = area.url;
+		        	    }
+		        	})
+	        	}
+	        	$area.hover(
+	        		() => $label.addClass("hover"),
+	        		() => $label.removeClass("hover")
+	        	);
+
+		    }
+		    
+		    
+		    viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
+       	 	    let originClean = viewImage.isOriginClean();
+       	 	    if(originClean) {
+       	    		drawPageAreas(pageAreaConfig, viewImage);
+       	 	    }
+		    })
+		    
+		} else {
+		    console.error("viewImage is not defined");
+		}
+		       	
       	//]]>
     </script>
+    
+    <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
+    	<ui:fragment rendered="#{se.hasShapeMetadata()}">
+    	<div id="pageAreaFrame_#{se.logid}" class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}">
+    	</div>
+    	<div id="pageAreaLabel_#{se.logid}" class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">
+		    <svg viewBox="0 0 100 100">
+				  <foreignObject width="100%" height="100%">
+				  <div class="page-area-label-text"
+				  	title="#{se.label}">
+					#{se.label}
+				  </div>
+				  </foreignObject>
+			</svg> 
+    	</div>
+    	</ui:fragment>
+	</ui:repeat>
+
 </ui:composition>

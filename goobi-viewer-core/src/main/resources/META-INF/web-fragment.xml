@@ -149,6 +149,15 @@
         <servlet-name>MetsResolver</servlet-name>
         <url-pattern>/lidoresolver</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MetsResolver</servlet-name>
+        <url-pattern>/denkxwebresolver</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MetsResolver</servlet-name>
+	<url-pattern>/dublincoreresolver</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>OAuthServlet</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.openid.OAuthServlet</servlet-class>

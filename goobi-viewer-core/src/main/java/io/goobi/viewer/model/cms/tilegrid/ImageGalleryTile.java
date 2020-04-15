@@ -30,14 +30,18 @@ import io.goobi.viewer.model.cms.CMSCategory;
 public interface ImageGalleryTile {
 
     /**
-     * <p>getPriority.</p>
+     * <p>
+     * getPriority.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile.Priority} object.
      */
     public Priority getPriority();
 
     /**
-     * <p>getName.</p>
+     * <p>
+     * getName.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -45,14 +49,18 @@ public interface ImageGalleryTile {
     public String getName(String language);
 
     /**
-     * <p>getIconURI.</p>
+     * <p>
+     * getIconURI.
+     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
     public URI getIconURI();
-    
+
     /**
-     * <p>getIconURI.</p>
+     * <p>
+     * getIconURI.
+     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -61,7 +69,9 @@ public interface ImageGalleryTile {
     public URI getIconURI(int width, int height);
 
     /**
-     * <p>getLinkURI.</p>
+     * <p>
+     * getLinkURI.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.net.URI} object.
@@ -69,7 +79,9 @@ public interface ImageGalleryTile {
     public URI getLinkURI(HttpServletRequest request);
 
     /**
-     * <p>getDescription.</p>
+     * <p>
+     * getDescription.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -77,21 +89,27 @@ public interface ImageGalleryTile {
     public String getDescription(String language);
 
     /**
-     * <p>isImportant.</p>
+     * <p>
+     * isImportant.
+     * </p>
      *
      * @return a boolean.
      */
     public boolean isImportant();
 
     /**
-     * <p>getCategories.</p>
+     * <p>
+     * getCategories.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
     public List<CMSCategory> getCategories();
 
     /**
-     * <p>getDisplayOrder.</p>
+     * <p>
+     * getDisplayOrder.
+     * </p>
      *
      * @return a int.
      */

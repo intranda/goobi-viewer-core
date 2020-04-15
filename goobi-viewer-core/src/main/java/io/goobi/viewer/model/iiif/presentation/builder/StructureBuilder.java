@@ -51,7 +51,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>StructureBuilder class.</p>
+ * <p>
+ * StructureBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -64,7 +66,9 @@ public class StructureBuilder extends AbstractBuilder {
     public static final String BASE_RANGE_LABEL = "CONTENT";
 
     /**
-     * <p>Constructor for StructureBuilder.</p>
+     * <p>
+     * Constructor for StructureBuilder.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
@@ -73,7 +77,9 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Constructor for StructureBuilder.</p>
+     * <p>
+     * Constructor for StructureBuilder.
+     * </p>
      *
      * @param servletUri a {@link java.net.URI} object.
      * @param requestURI a {@link java.net.URI} object.
@@ -115,12 +121,12 @@ public class StructureBuilder extends AbstractBuilder {
                     IMetadataValue label = structElement.getMultiLanguageDisplayLabel();
                     range.setLabel(label);
                     String parentId = idMap.get(structElement.getMetadataValue(SolrConstants.IDDOC_PARENT));
-                    if(StringUtils.isNotBlank(parentId)) {                        
+                    if (StringUtils.isNotBlank(parentId)) {
                         range.addWithin(new Range(getRangeURI(pi, parentId)));
                     }
                     populatePages(structElement, pi, range);
                     populate(structElement, pi, range);
-                }                
+                }
                 populateChildren(elements, structElement.getLuceneId(), pi, range);
                 ranges.add(range);
             }
@@ -137,12 +143,13 @@ public class StructureBuilder extends AbstractBuilder {
      * @param range
      */
     private void populateChildren(List<StructElement> elements, long parentIddoc, String pi, Range range) {
-        elements.stream().filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
-        .map(element -> element.getLogid())
-        .forEach(logId -> {
-                range.addRange(new Range(getRangeURI(pi, logId)));
-        });
-        
+        elements.stream()
+                .filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
+                .map(element -> element.getLogid())
+                .forEach(logId -> {
+                    range.addRange(new Range(getRangeURI(pi, logId)));
+                });
+
     }
 
     /**
@@ -166,7 +173,7 @@ public class StructureBuilder extends AbstractBuilder {
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 range.setThumbnail(thumb);
-                if(IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {   
+                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
                     URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl));
                     thumb.setService(new ImageInformation(imageInfoURI.toString()));
                 }
@@ -177,7 +184,7 @@ public class StructureBuilder extends AbstractBuilder {
 
         /*VIEWER*/
         try {
-        	String url = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, ele.getImageNumber(), ele.getLogid(), PageType.viewObject);
+            String url = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, ele.getImageNumber(), ele.getLogid(), PageType.viewObject);
             LinkingContent viewerPage = new LinkingContent(new URI(url));
             viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
             range.addRendering(viewerPage);
@@ -196,12 +203,12 @@ public class StructureBuilder extends AbstractBuilder {
             logger.error("Unable to retrieve pdf download url for {}", ele);
         }
 
-
     }
 
-
     /**
-     * <p>populatePages.</p>
+     * <p>
+     * populatePages.
+     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
@@ -212,9 +219,9 @@ public class StructureBuilder extends AbstractBuilder {
     public void populatePages(StructElement doc, String pi, Range range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();
         int numPages = 1;
-        try {            
+        try {
             numPages = Integer.parseInt(doc.getMetadataValue(SolrConstants.NUMPAGES));
-        } catch(NullPointerException | NumberFormatException e) {
+        } catch (NullPointerException | NumberFormatException e) {
             //can't determine number of pages. Ignore
         }
         if (startPageNo > 0) {
@@ -227,7 +234,9 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>getDescendents.</p>
+     * <p>
+     * getDescendents.
+     * </p>
      *
      * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
      * @return a {@link java.util.List} object.

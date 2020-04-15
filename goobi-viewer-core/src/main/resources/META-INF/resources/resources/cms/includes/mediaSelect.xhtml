@@ -99,7 +99,7 @@
                             action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, true)}" 
                             value="#{msg.cms_selectMediaItem_agree}"
                             class="btn btn--full" role="button">
-                            <f:ajax render="mediaSelectPanel #{mediaDisplayPanel}" onevent="cmsJS.media.checkMediaSelectModal( false )" />
+                            <f:ajax execute="@form" render="mediaSelectPanel #{mediaDisplayPanel}" onevent="cmsJS.media.checkMediaSelectModal( false )" />
                         </h:commandLink>
                     </div>
                 </h:form>

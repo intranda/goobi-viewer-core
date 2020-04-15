@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>CalendarRow class.</p>
+ * <p>
+ * CalendarRow class.
+ * </p>
  */
 public class CalendarRow implements Serializable {
 
@@ -31,7 +33,9 @@ public class CalendarRow implements Serializable {
     private boolean selected = false;
 
     /**
-     * <p>Getter for the field <code>itemList</code>.</p>
+     * <p>
+     * Getter for the field <code>itemList</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -40,7 +44,9 @@ public class CalendarRow implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>itemList</code>.</p>
+     * <p>
+     * Setter for the field <code>itemList</code>.
+     * </p>
      *
      * @param itemList a {@link java.util.List} object.
      */
@@ -49,7 +55,9 @@ public class CalendarRow implements Serializable {
     }
 
     /**
-     * <p>addItem.</p>
+     * <p>
+     * addItem.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.calendar.ICalendarItem} object.
      */
@@ -58,7 +66,9 @@ public class CalendarRow implements Serializable {
     }
 
     /**
-     * <p>isSelected.</p>
+     * <p>
+     * isSelected.
+     * </p>
      *
      * @return a boolean.
      */
@@ -67,7 +77,9 @@ public class CalendarRow implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>selected</code>.</p>
+     * <p>
+     * Setter for the field <code>selected</code>.
+     * </p>
      *
      * @param selected a boolean.
      */

@@ -26,10 +26,10 @@
  * Werken zu starten muss dies mit initSearchQuery(plotId, inputId, buttonId)
  * initialisiert werden
  * 
- * @version 3.2.0
+ * @version 3.2.0 
  */
-
-var Statistics = ( function() {
+ 
+var Statistics = ( function() { 
     'use strict';
     
     var _debug = false;
@@ -43,7 +43,7 @@ var Statistics = ( function() {
     Statistics.initMouseover = function( document, window ) {
         $( document ).mousemove( function( ev ) {
             
-            if ( Statistics.chartLabel != null ) {
+            if ( Statistics.chartLabel != null ) { 
                 
                 var top = window.pageYOffset || document.documentElement.scrollTop;
                 var left = window.pageXOffset || document.documentElement.scrollLeft;

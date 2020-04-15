@@ -18,14 +18,18 @@ package io.goobi.viewer.model.iiif.search.parser;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <p>Abstract AbstractSearchParser class.</p>
+ * <p>
+ * Abstract AbstractSearchParser class.
+ * </p>
  *
  * @author florian
  */
 public abstract class AbstractSearchParser {
 
     /**
-     * <p>getPrecedingText.</p>
+     * <p>
+     * getPrecedingText.
+     * </p>
      *
      * @param text a {@link java.lang.String} object.
      * @param hitStartIndex a int.
@@ -34,12 +38,12 @@ public abstract class AbstractSearchParser {
      */
     public static String getPrecedingText(String text, int hitStartIndex, int maxLength) {
         String before = "";
-        int index = hitStartIndex-1;
-        while(index > -1 && before.length() < maxLength) {
+        int index = hitStartIndex - 1;
+        while (index > -1 && before.length() < maxLength) {
             String c = Character.toString(text.charAt(index));
             before = c + before;
             index--;
-            while(index > -1 && !StringUtils.isWhitespace(c)) {
+            while (index > -1 && !StringUtils.isWhitespace(c)) {
                 c = Character.toString(text.charAt(index));
                 before = c + before;
                 index--;
@@ -47,9 +51,11 @@ public abstract class AbstractSearchParser {
         }
         return before;
     }
-    
+
     /**
-     * <p>getSucceedingText.</p>
+     * <p>
+     * getSucceedingText.
+     * </p>
      *
      * @param text a {@link java.lang.String} object.
      * @param hitEndIndex a int.
@@ -59,11 +65,11 @@ public abstract class AbstractSearchParser {
     public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
         String after = "";
         int index = hitEndIndex;
-        while(index < text.length() && after.length() < maxLength) {
+        while (index < text.length() && after.length() < maxLength) {
             String c = Character.toString(text.charAt(index));
             after = after + c;
             index++;
-            while(index < text.length() && !StringUtils.isWhitespace(c)) {
+            while (index < text.length() && !StringUtils.isWhitespace(c)) {
                 c = Character.toString(text.charAt(index));
                 after = after + c;
                 index++;
@@ -71,10 +77,11 @@ public abstract class AbstractSearchParser {
         }
         return after;
     }
-    
-    
+
     /**
-     * <p>getSingleWordRegex.</p>
+     * <p>
+     * getSingleWordRegex.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a regex matching a single word matching the given query regex (ignoring case)
@@ -85,7 +92,9 @@ public abstract class AbstractSearchParser {
     }
 
     /**
-     * <p>getContainedWordRegex.</p>
+     * <p>
+     * getContainedWordRegex.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a regex matching any text containing the given query regex as single word
@@ -94,9 +103,11 @@ public abstract class AbstractSearchParser {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
         return "(?i)[\\w\\W]*(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?:$|\\s+|[.:,;!?\\(\\)])[\\w\\W]*";
     }
-    
+
     /**
-     * <p>getQueryRegex.</p>
+     * <p>
+     * getQueryRegex.
+     * </p>
      *
      * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
      * @param query a {@link java.lang.String} object.
@@ -119,6 +130,5 @@ public abstract class AbstractSearchParser {
         String queryRegex = query + "[\\w\\d-]*";
         return "(?i)" + queryRegex;
     }
-    
-    
+
 }

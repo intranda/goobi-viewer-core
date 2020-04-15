@@ -25,7 +25,9 @@ public class IndexingRequestParameters {
     private boolean createTraceDocument = false;
 
     /**
-     * <p>Getter for the field <code>pi</code>.</p>
+     * <p>
+     * Getter for the field <code>pi</code>.
+     * </p>
      *
      * @return the pi
      */
@@ -34,7 +36,9 @@ public class IndexingRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>pi</code>.</p>
+     * <p>
+     * Setter for the field <code>pi</code>.
+     * </p>
      *
      * @param pi the pi to set
      */
@@ -43,7 +47,9 @@ public class IndexingRequestParameters {
     }
 
     /**
-     * <p>isCreateTraceDocument.</p>
+     * <p>
+     * isCreateTraceDocument.
+     * </p>
      *
      * @return the createTraceDocument
      */
@@ -52,7 +58,9 @@ public class IndexingRequestParameters {
     }
 
     /**
-     * <p>Setter for the field <code>createTraceDocument</code>.</p>
+     * <p>
+     * Setter for the field <code>createTraceDocument</code>.
+     * </p>
      *
      * @param createTraceDocument the createTraceDocument to set
      */

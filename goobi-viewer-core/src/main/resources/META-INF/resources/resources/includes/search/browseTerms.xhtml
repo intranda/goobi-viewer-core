@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <ui:param name="termList" value="#{termList != null ? termList : browseBean.browseTermListEscaped}"></ui:param>
+    <ui:param name="baseUrl" value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(browseBean.browsingMenuField).concat('/').concat(browseBean.filterQuery).concat('/')}"></ui:param>
+
+
+    <ui:fragment rendered="#{!browseBean.browsingMenuFieldTranslated}">
+	    <viewerComponent:alphabeticPaginator baseUrl="#{baseUrl}"/>
+	</ui:fragment>
+
+	<!-- LIST -->
+	<nav id="search_termlistnav" class="search-termlist__list">
+		<ul>
+			<c:forEach items="#{termList}" var="term"
+				varStatus="status">
+				<!-- newSearch5 pattern link -->
+				<li><h:outputLink
+						value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}&#58;&quot;#{term}&quot;/1/-/#{browseBean.filterQuery}/"
+						title="#{browseBean.browseTermList[status.count-1]}">
+						<h:outputText value="#{browseBean.browseTermList[status.count-1]}"
+							escape="true" />
+						<span>(#{browseBean.browseTermHitCountList[status.count-1]})</span>
+					</h:outputLink></li>
+			</c:forEach>
+		</ul>
+	</nav>
+
+	<div class="clearfix"></div>
+
+	<viewerComponent:simplePaginator itemCount="#{browseBean.lastPage}"
+		itemActive="#{browseBean.currentPage}"
+		urlPrefix="#{baseUrl}#{browseBean.currentStringFilter}/" />
+
+</ui:composition>

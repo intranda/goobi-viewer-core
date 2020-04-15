@@ -47,7 +47,9 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
 /**
- * <p>ImageInformationRequestFilter class.</p>
+ * <p>
+ * ImageInformationRequestFilter class.
+ * </p>
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -78,7 +80,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
                 return;
             } else {
                 //only for actual image requests, no info requests
-                if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
+                if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isPublicUrl(imageName)
                         && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                     filterForAccessConditions(request, pi, imageName);
                 }
@@ -98,7 +100,9 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>forwardToCanonicalUrl.</p>
+     * <p>
+     * forwardToCanonicalUrl.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param imageName a {@link java.lang.String} object.
@@ -131,8 +135,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName)
-            throws ServiceNotAllowedException {
+    private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName) throws ServiceNotAllowedException {
         logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
 
         boolean access = false;
@@ -148,6 +151,5 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
         }
     }
-
 
 }

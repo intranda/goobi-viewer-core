@@ -16,7 +16,9 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>UserPasswordAuthenticationRequest class.</p>
+ * <p>
+ * UserPasswordAuthenticationRequest class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -24,15 +26,19 @@ public class UserPasswordAuthenticationRequest {
 
     protected String username;
     protected String password;
-    
+
     /**
-     * <p>Constructor for XServiceAuthenticationRequest.</p>
+     * <p>
+     * Constructor for XServiceAuthenticationRequest.
+     * </p>
      */
     public UserPasswordAuthenticationRequest() {
     }
-    
+
     /**
-     * <p>Constructor for XServiceAuthenticationRequest.</p>
+     * <p>
+     * Constructor for XServiceAuthenticationRequest.
+     * </p>
      *
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
@@ -42,41 +48,51 @@ public class UserPasswordAuthenticationRequest {
         this.username = username;
         this.password = password;
     }
+
     /**
-     * <p>Getter for the field <code>username</code>.</p>
+     * <p>
+     * Getter for the field <code>username</code>.
+     * </p>
      *
      * @return the username
      */
     public String getUsername() {
         return username;
     }
+
     /**
-     * <p>Getter for the field <code>password</code>.</p>
+     * <p>
+     * Getter for the field <code>password</code>.
+     * </p>
      *
      * @return the password
      */
     public String getPassword() {
         return password;
     }
-    
+
     /**
-     * <p>Setter for the field <code>username</code>.</p>
+     * <p>
+     * Setter for the field <code>username</code>.
+     * </p>
      *
      * @param username the username to set
      */
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     /**
-     * <p>Setter for the field <code>password</code>.</p>
+     * <p>
+     * Setter for the field <code>password</code>.
+     * </p>
      *
      * @param password the password to set
      */
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -85,5 +101,5 @@ public class UserPasswordAuthenticationRequest {
     public String toString() {
         return "username: " + username + ", password: " + password;
     }
-    
+
 }

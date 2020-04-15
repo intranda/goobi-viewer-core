@@ -19,7 +19,7 @@
 //
 // Styleguide Components.button
 .btn {
-	color: @btnDefault;
+	color: @btnDefault; 
 	border-radius: 0;
 	background-color: transparent;
 	&:hover,
@@ -31,9 +31,11 @@
 	&.active:focus, 
 	&.focus, 
 	&:active.focus {
-		color: inherit;
 		outline: none;
 		box-shadow: none;
+		.fa {
+			color: inherit; 
+		}
 	}
 }
 

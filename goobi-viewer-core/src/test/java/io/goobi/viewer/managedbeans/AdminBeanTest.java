@@ -60,7 +60,7 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
         AdminBean bean = new AdminBean();
         bean.init();
-        
+
         Assert.assertEquals(3, bean.getAllUsers().size());
         List<User> result = bean.getAllUsersExcept(Collections.singleton(user));
         Assert.assertEquals(2, result.size());

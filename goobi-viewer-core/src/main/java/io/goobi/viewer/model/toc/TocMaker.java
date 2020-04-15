@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -44,8 +44,8 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -56,14 +56,16 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.StructElementStub;
 
 /**
- * <p>TocMaker class.</p>
+ * <p>
+ * TocMaker class.
+ * </p>
  */
 public class TocMaker {
 
@@ -109,7 +111,7 @@ public class TocMaker {
         if (ancestorFields != null) {
             ret.addAll(ancestorFields);
         }
-        
+
         return new ArrayList<>(ret);
     }
 
@@ -122,8 +124,8 @@ public class TocMaker {
      * @param mimeType Mime type determines the target URL of the TOC element.
      * @param tocCurrentPage Current page of a paginated TOC.
      * @param hitsPerPage Hits per page of a paginated TOC.
-     * @should generate volume TOC correctly with siblings correctly
-     * @should generate volume TOC correctly without siblings correctly
+     * @should generate volume TOC with siblings correctly
+     * @should generate volume TOC without siblings correctly
      * @should generate anchor TOC correctly
      * @should paginate anchor TOC correctly
      * @should throw IllegalArgumentException if structElement is null
@@ -149,7 +151,7 @@ public class TocMaker {
         ret.put(TOC.DEFAULT_GROUP, new ArrayList<TOCElement>());
 
         // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
-        boolean sourceFormatPdfAllowed = StructElementStub.SOURCE_DOC_FORMAT_METS.equals(structElement.getSourceDocFormat());
+        boolean sourceFormatPdfAllowed = SolrConstants._METS.equals(structElement.getSourceDocFormat());
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
@@ -303,10 +305,8 @@ public class TocMaker {
         String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(new StringBuilder("(").append(SolrConstants.ISWORK)
-                        .append(":true OR ")
-                        .append(SolrConstants.ISANCHOR)
-                        .append(":true) AND ")
+                .search(new StringBuilder().append(SearchHelper.ALL_RECORDS_QUERY)
+                        .append(" AND ")
                         .append(groupIdField)
                         .append(':')
                         .append(groupIdValue)
@@ -673,7 +673,9 @@ public class TocMaker {
     }
 
     /**
-     * <p>getFirstFieldValue.</p>
+     * <p>
+     * getFirstFieldValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param footerIdField a {@link java.lang.String} object.
@@ -716,12 +718,24 @@ public class TocMaker {
             for (MetadataParameter param : labelConfig.getParams()) {
                 // logger.trace("param key: {}", param.getKey());
                 IMetadataValue value;
-                if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
-                    value = createMultiLanguageValue(doc, param.getKey());
-                } else {
-                    value = new SimpleMetadataValue();
-                    value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
-                    // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                switch (param.getType()) {
+                    case TRANSLATEDFIELD:
+                        if (doc.getFirstValue(param.getKey()) != null) {
+                            // Translate index field value, if available
+                            value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
+                        } else {
+                            // Translate key, if no index field found
+                            value = ViewerResourceBundle.getTranslations(param.getKey().toString());
+                        }
+                        break;
+                    case FIELD:
+                        value = createMultiLanguageValue(doc, param.getKey());
+                        break;
+                    default:
+                        value = new SimpleMetadataValue();
+                        value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, param.getKey()));
+                        // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                        break;
                 }
                 // Special case: If LABEL is missing, use MD_TITLE. If MD_TITLE is missing, use DOCSTRCT.
                 if (StringUtils.isEmpty(value.toString()) && SolrConstants.LABEL.equals(param.getKey())) {
@@ -751,51 +765,36 @@ public class TocMaker {
                 Set<String> languages = new HashSet<>(value.getLanguages());
 
                 languages.addAll(label.getLanguages());
-                //                if (MetadataParameterType.FIELD.equals(param.getType())) {
+                // Replace master value placeholders in the label object 
                 for (String language : languages) {
                     String langValue = label.getValue(language)
                             .orElse(labelConfig.getMasterValue())
                             .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
                     label.setValue(langValue, language);
                 }
-                //                } else {
-                //                    for (String language : languages) {
-                //                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
-                //                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
-                //                        //                        String langValue =
-                //                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
-                //                        label.setValue(langValue, language);
-                //                    }
-                //                }
             }
         } else {
-            // Old style layout
+            // Fallback if no template found
             label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LABEL));
             if (StringUtils.isEmpty(label.toString())) {
                 label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
                 if (StringUtils.isEmpty(label.toString())) {
                     label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT));
-                } else if (DataManager.getInstance().getConfiguration().isTocAlwaysDisplayDocstruct()) {
-                    label.setValue(
-                            new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))
-                                    .append(": ")
-                                    .append(label.getValue())
-                                    .toString());
                 }
-            } else if (DataManager.getInstance().getConfiguration().isTocAlwaysDisplayDocstruct()) {
-                label.setValue(new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))
-                        .append(": ")
-                        .append(label.getValue())
-                        .toString());
             }
         }
 
-        // logger.trace("label: {}", label);
+        //        for (String language : label.getLanguages()) {
+        //            logger.trace("label ({}): {}", language, label.getValue(language).get());
+        //        }
+
         return label;
     }
 
     /**
-     * <p>createMultiLanguageValue.</p>
+     * <p>
+     * createMultiLanguageValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.

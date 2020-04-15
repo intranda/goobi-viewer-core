@@ -25,7 +25,7 @@
 					title="{msg('action__search_in_bookmarks')}"> 
 					<i class="fa fa-search" aria-hidden="true"></i>
 				</a>
-				<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('bookmarkList_openMirador')}"> 
+				<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('viewMiradorComparison')}"> 
 					<i class="fa fa-th" aria-hidden="true"></i>
 				</a>
 			</div>
@@ -63,7 +63,7 @@
 	</li>
 </ul>
 
-<div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions test">
+<div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions">
 
 
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">
@@ -94,7 +94,7 @@
 
 	<div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador">
 		<a href="{miradorUrl(bookmarkList)}" target="_blank"> 
-			<span>{msg('bookmarkList_openMirador')}</span> 
+			<span>{msg('viewMiradorComparison')}</span> 
 			<i class="fa fa-th" aria-hidden="true"></i>
 		</a>
 	</div>
@@ -123,7 +123,7 @@ getBookmarkLists() {
 }
 
 updateLists() {
-    this.opts.bookmarks.listsNeedUpdate.onNext();
+    this.opts.bookmarks.listsNeedUpdate.next();
 }
 
 onListUpdate() {

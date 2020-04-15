@@ -28,7 +28,9 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
- * <p>DefaultURLBuilder class.</p>
+ * <p>
+ * DefaultURLBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -89,7 +91,9 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>getPageType.</p>
+     * <p>
+     * getPageType.
+     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.search.BrowseElement} object.
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
@@ -106,7 +110,9 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>buildSearchUrl.</p>
+     * <p>
+     * buildSearchUrl.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param fieldValue a {@link java.lang.String} object.

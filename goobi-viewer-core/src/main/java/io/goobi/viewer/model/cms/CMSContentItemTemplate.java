@@ -18,20 +18,24 @@ package io.goobi.viewer.model.cms;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A contentItem to be used in a CMSPage template. Stores a value for
- * content item mode
+ * A contentItem to be used in a CMSPage template. Stores a value for content item mode
  *
  * @author Florian Alpers
  */
 public class CMSContentItemTemplate extends CMSContentItem {
-	
-	private String mediaFilter = "";
+
+    private String mediaFilter = "";
     private ContentItemMode mode = ContentItemMode.simple;
     private String inlineHelp = null;
+    private String itemLabel = "";
+    private int order = 0;
+    private boolean mandatory = false;
     private boolean preview = false;
-    
+
     /**
-     * <p>Constructor for CMSContentItemTemplate.</p>
+     * <p>
+     * Constructor for CMSContentItemTemplate.
+     * </p>
      *
      * @param type a CMSContentItemType object.
      */
@@ -40,26 +44,28 @@ public class CMSContentItemTemplate extends CMSContentItem {
     }
 
     /**
-     * <p>Setter for the field <code>mode</code>.</p>
+     * <p>
+     * Setter for the field <code>mode</code>.
+     * </p>
      *
      * @param mode the mode to set
      */
     public void setMode(ContentItemMode mode) {
         this.mode = mode;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public ContentItemMode getMode() {
         return mode;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean isHasInlineHelp() {
         return StringUtils.isNotBlank(inlineHelp);
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -69,9 +75,11 @@ public class CMSContentItemTemplate extends CMSContentItem {
     public String getInlineHelp() {
         return this.inlineHelp;
     }
-    
+
     /**
-     * <p>Setter for the field <code>inlineHelp</code>.</p>
+     * <p>
+     * Setter for the field <code>inlineHelp</code>.
+     * </p>
      *
      * @param inlineHelp the inlineHelp to set
      */
@@ -82,34 +90,81 @@ public class CMSContentItemTemplate extends CMSContentItem {
     /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
-    	return mediaFilter;
+        return mediaFilter;
     }
 
-	/**
-	 * <p>Setter for the field <code>mediaFilter</code>.</p>
-	 *
-	 * @param mediaFilter the mediaFilter to set
-	 */
-	public void setMediaFilter(String mediaFilter) {
-		this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
-	}
-	
-	/* (non-Javadoc)
-	 * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public boolean isPreview() {
-	    return this.preview;
-	}
-	
     /**
-     * <p>Setter for the field <code>preview</code>.</p>
+     * <p>
+     * Setter for the field <code>mediaFilter</code>.
+     * </p>
+     *
+     * @param mediaFilter the mediaFilter to set
+     */
+    public void setMediaFilter(String mediaFilter) {
+        this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPreview() {
+        return this.preview;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>preview</code>.
+     * </p>
      *
      * @param preview the preview to set
      */
     public void setPreview(boolean preview) {
         this.preview = preview;
     }
+    
+    /**
+     * @param mandatory the mandatory to set
+     */
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#isMandatory()
+     */
+    @Override
+    public boolean isMandatory() {
+        return this.mandatory;
+    }
+    
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
+        this.order = order;
+    }
+    
+    /**
+     * @return the order
+     */
+    public int getOrder() {
+        return order;
+    }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#setItemLabel(java.lang.String)
+     */
+    public void setItemLabel(String itemLabel) {
+        this.itemLabel = itemLabel;
+    }
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSContentItem#getItemLabel()
+     */
+    @Override
+    public String getItemLabel() {
+        return this.itemLabel;
+    }
 }
-

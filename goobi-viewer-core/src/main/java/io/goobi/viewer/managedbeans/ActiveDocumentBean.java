@@ -49,6 +49,7 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
@@ -181,7 +182,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setBookshelfBean(BookmarkBean bookshelfBean) {
         this.bookmarkBean = bookshelfBean;
     }
-    
+
     /**
      * Required setter for ManagedProperty injection
      *
@@ -222,7 +223,11 @@ public class ActiveDocumentBean implements Serializable {
     public ViewManager getViewManager() {
         if (viewManager == null) {
             try {
-                update();
+                try {
+                    update();
+                } catch (IDDOCNotFoundException e) {
+                    reload(lastReceivedIdentifier);
+                }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
@@ -230,6 +235,24 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return viewManager;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
+            DAOException, ViewerConfigurationException {
+        logger.trace("reload({})", pi);
+        reset();
+        setPersistentIdentifier(pi);
+        return open();
     }
 
     /**
@@ -244,9 +267,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.RecordDeletedException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IDDOCNotFoundException
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
-            ViewerConfigurationException {
+            ViewerConfigurationException, IDDOCNotFoundException {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -353,8 +377,8 @@ public class ActiveDocumentBean implements Serializable {
                 viewManager.setDoublePageMode(doublePageMode);
                 StructElement structElement = viewManager.getCurrentDocument();
                 if (!structElement.isExists()) {
-                    logger.trace("StructElement {} is not marked as existing.", structElement.getLuceneId());
-                    throw new RecordNotFoundException(lastReceivedIdentifier);
+                    logger.trace("StructElement {} is not marked as existing. Record will be reloaded", structElement.getLuceneId());
+                    throw new IDDOCNotFoundException(lastReceivedIdentifier + " - " + structElement.getLuceneId());
                 }
                 if (structElement.isAnchor()) {
                     anchor = true;
@@ -380,6 +404,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (imageToShow != viewManager.getCurrentImageNo() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
                     mayChangeHitIndex = true;
                 }
+
                 viewManager.setCurrentImageNo(imageToShow);
                 viewManager.updateDropdownSelected();
 
@@ -450,9 +475,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws PresentationException
      */
     public String open()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+            PresentationException {
         synchronized (this) {
             logger.trace("open()");
             try {
@@ -486,6 +513,8 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
                 Messages.error(e.getMessage());
+            } catch (IDDOCNotFoundException e) {
+                return reload(lastReceivedIdentifier);
             }
 
             return "";
@@ -503,9 +532,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws PresentationException
      */
     public String openFulltext()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+            PresentationException {
         open();
         return "viewFulltext";
     }
@@ -1267,19 +1298,26 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        TOC toc = getToc();
-        //        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
-        //            String label = viewManager.getTopDocument()
-        //                    .getLabel(selectedRecordLanguage);
-        //            if (StringUtils.isNotEmpty(label)) {
-        //                return label;
-        //            }
-        //        }
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+        if (navigationHelper != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
+            TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
-                String label = toc.getLabel(viewManager.getPi(), language);
+                String label = null;
+                String labelTemplate = "_DEFAULT";
+                if (getViewManager() != null) {
+                    labelTemplate = getViewManager().getTopDocument().getDocStructType();
+                }
+                if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
+                        && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
+                    String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
+                    String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
+                    prefix = Helper.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
+                    suffix = Helper.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
+                    label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
+                } else {
+                    label = toc.getLabel(viewManager.getPi(), language);
+                }
                 if (label != null) {
                     return label;
                 }
@@ -1422,9 +1460,9 @@ public class ActiveDocumentBean implements Serializable {
 
             if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");
-            } else {
-                Messages.error("deleteRecord_failure");
+                return "pretty:index";
             }
+            Messages.error("deleteRecord_failure");
         } finally {
             deleteRecordKeepTrace = null;
         }
@@ -1545,7 +1583,7 @@ public class ActiveDocumentBean implements Serializable {
                     return false;
                 }
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Error checking PDF resources: {}", e.getMessage());
+                logger.error("Error checking EPUB resources: {}", e.getMessage());
                 return false;
             }
 
@@ -1623,7 +1661,7 @@ public class ActiveDocumentBean implements Serializable {
             ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
-            writer.createDocument(os, getToc().getTocElements());
+            writer.createPdfDocument(os, getToc().getTocElements());
             fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
         } catch (IndexOutOfBoundsException e) {
             logger.error("No toc to generate");

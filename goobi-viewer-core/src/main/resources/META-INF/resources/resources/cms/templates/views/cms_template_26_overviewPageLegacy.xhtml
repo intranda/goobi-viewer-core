@@ -15,7 +15,7 @@
     <ui:define name="metadata">
 	    <f:metadata> 
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsPage.menuTitle, false, false, true)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
+			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />            
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
@@ -68,26 +68,10 @@
                                                     <ui:repeat value="#{metadata.values}" var="val">
                                                         <span class="tpl-overviewpage-legacy__overview-metadata-value">
                                                             <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                                <f:param value="#{val.getParamLabelWithColon(0)}" />
-                                                                <f:param value="#{val.getComboValueShort(0)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(1)}" />
-                                                                <f:param value="#{val.getComboValueShort(1)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(2)}" />
-                                                                <f:param value="#{val.getComboValueShort(2)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(3)}" />
-                                                                <f:param value="#{val.getComboValueShort(3)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(4)}" />
-                                                                <f:param value="#{val.getComboValueShort(4)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(5)}" />
-                                                                <f:param value="#{val.getComboValueShort(5)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(6)}" />
-                                                                <f:param value="#{val.getComboValueShort(6)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(7)}" />
-                                                                <f:param value="#{val.getComboValueShort(7)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(8)}" />
-                                                                <f:param value="#{val.getComboValueShort(8)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(9)}" />
-                                                                <f:param value="#{val.getComboValueShort(9)}" />
+                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
+                                                                    <f:param value="#{val.getComboValueShort(ind)}" />
+                                                                </c:forEach>
                                                             </h:outputFormat>
                                                         </span>
 
@@ -100,16 +84,9 @@
                                                     <ui:repeat value="#{metadata.values}" var="val">
                                                         <span class="tpl-overviewpage-legacy__overview-metadata-value">
                                                             <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                                <f:param value="#{val.getComboValueShort(0)}" />
-                                                                <f:param value="#{val.getComboValueShort(1)}" />
-                                                                <f:param value="#{val.getComboValueShort(2)}" />
-                                                                <f:param value="#{val.getComboValueShort(3)}" />
-                                                                <f:param value="#{val.getComboValueShort(4)}" />
-                                                                <f:param value="#{val.getComboValueShort(5)}" />
-                                                                <f:param value="#{val.getComboValueShort(6)}" />
-                                                                <f:param value="#{val.getComboValueShort(7)}" />
-                                                                <f:param value="#{val.getComboValueShort(8)}" />
-                                                                <f:param value="#{val.getComboValueShort(9)}" />
+                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                                    <f:param value="#{val.getComboValueShort(ind)}" />
+                                                                </c:forEach>
                                                             </h:outputFormat>
                                                         </span>
 

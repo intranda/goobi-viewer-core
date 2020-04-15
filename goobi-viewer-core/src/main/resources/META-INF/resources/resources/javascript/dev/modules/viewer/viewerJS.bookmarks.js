@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     var _debug = false;
     var _messageKeys = ['bookmarkList_reset', 'bookmarkList_delete', 'bookmarkList_session_mail_sendList', 
         'action__search_in_bookmarks', 'bookmarkList_resetConfirm', 'bookmarkList_noItemsAvailable', 
-        'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'bookmarkList_openMirador',
+        'bookmarkList_selectBookmarkList', 'bookmarkList_addNewBookmarkList', 'viewMiradorComparison',
         'bookmarkList_type_label', 'bookmarkList_typeRecord', 'bookmarkList_typePage'];
     var _defaults = {
         root: '',
@@ -39,7 +39,7 @@ var viewerJS = ( function( viewer ) {
         language: 'en'
     };
     var _bookmarks = {
-            
+             
             listsNeedUpdate: new Rx.Subject(),
             listsUpdated: new Rx.Subject(),
             bookmarkLists: [],
@@ -75,10 +75,15 @@ var viewerJS = ( function( viewer ) {
                     var page = $button.attr( 'data-page' );
                     
                     let added = this.contained(pi, page, logid);
+                    console.log("set added to " + added + " for ", pi, page)
+                    let $span = $button.find("span");
+                    console.log("update ", $span)
                     if(added) {
                         $button.addClass("added");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("fixTitle");
                     } else {
                         $button.removeClass("added");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("fixTitle");
                     }
                     
                 } );
@@ -127,11 +132,7 @@ var viewerJS = ( function( viewer ) {
                         width: $button.width(),
                         height: $button.height()
                 }
-                var dropdownPosition = {
-                    left: buttonPosition.left + buttonSize.width - dropdownWidth,
-                    top: buttonPosition.top + buttonSize.height
-                }
-  
+
                 var $dropdown = $("<bookmarkList></bookmarkList>");
                 $dropdown.addClass("bookmark-navigation__dropdown");
                 
@@ -149,23 +150,31 @@ var viewerJS = ( function( viewer ) {
                     bookmarks: this,
                 });
                 
-                //handle closing dropdown
+                // handle closing dropdown
                 let toggle = function() {
                     $dropdown.slideToggle( 'fast' );
                     $("body").off("click", toggle);
                 }
+                // bookmark list dropdown toggle 
                 $button.on("click", (event) => {
                     if( (this.config.userLoggedIn && this.getBookmarkListsCount() > 0) || this.getBookmarksCount() > 0) {                        
-                        $dropdown.slideToggle( 'fast');
+                    	$(event.currentTarget).next('.bookmark-navigation__dropdown').slideToggle('fast');
                     }
-                    event.stopPropagation();
                 })
                 $("body").on("click", (event) => {
-                    if($dropdown.is(":visible")) {                        
-                        $dropdown.slideToggle( 'fast');
+                    let $target = $(event.target);
+                    if( $target.closest('[data-bookmark-list-type="dropdown"]').length > 0 ) {
+                        return; // click on bookmarks button. Don't close
+                    }
+                    if( $target.closest('bookmarkList').length > 0 ) {
+                        return; // click on bookmark list. Don't close
+                    }
+                    if ($('.bookmark-navigation__dropdown').is(":visible")) {                        
+                		$('.bookmark-navigation__dropdown').slideUp( 'fast');
                     }
                 })
-                $dropdown.on("click", (event) => event.stopPropagation());
+                
+//                $dropdown.on("click", (event) => event.stopPropagation());
                 
             },
             prepareBookmarksPopup: function() {
@@ -184,10 +193,10 @@ var viewerJS = ( function( viewer ) {
                         setTimeout(() => this.renderBookmarksPopup( currPi, currLogid, currPage, currBtn ), 0);
                     } else if(this.contained(currPi, currPage, currLogid)){
                         this.removeFromBookmarkList(undefined, currPi, undefined, undefined, false )
-                        .then( () => this.listsNeedUpdate.onNext());
+                        .then( () => this.listsNeedUpdate.next());
                     } else {
                         this.addToBookmarkList(undefined, currPi, undefined, undefined, false )
-                        .then( () => this.listsNeedUpdate.onNext());
+                        .then( () => this.listsNeedUpdate.next());
                     }
                 }.bind(this) );  
             },
@@ -238,7 +247,7 @@ var viewerJS = ( function( viewer ) {
             updateLists: function() {
                 this.loadBookmarkLists()
                 .then(lists => this.bookmarkLists = lists)
-                .then(() => this.listsUpdated.onNext(this.bookmarkLists));
+                .then(() => this.listsUpdated.next(this.bookmarkLists));
             },
 
 

@@ -28,7 +28,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.goobi.viewer.model.misc.Translation;
 
 /**
- * <p>TranslationListSerializer class.</p>
+ * <p>
+ * TranslationListSerializer class.
+ * </p>
  *
  * @author florian
  */
@@ -40,12 +42,12 @@ public class TranslationListSerializer extends JsonSerializer<List<Translation>>
     /** {@inheritDoc} */
     @Override
     public void serialize(List<Translation> translations, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        
+
         Map<String, List<Translation>> groupedTranslations = groupByLabel(translations);
-        
-        if(!groupedTranslations.isEmpty()) {            
+
+        if (!groupedTranslations.isEmpty()) {
             gen.writeStartObject();
-            for (String tag : groupedTranslations.keySet()) {                
+            for (String tag : groupedTranslations.keySet()) {
                 gen.writeObjectFieldStart(tag);
                 for (Translation translation : groupedTranslations.get(tag)) {
                     gen.writeArrayFieldStart(translation.getLanguage());
@@ -58,27 +60,23 @@ public class TranslationListSerializer extends JsonSerializer<List<Translation>>
         } else {
             gen.writeNull();
         }
-        
-        
+
     }
-    
+
     private Map<String, List<Translation>> groupByLabel(List<Translation> translations) {
         Map<String, List<Translation>> map = new HashMap<>();
         for (Translation translation : translations) {
             String tag = translation.getTag();
             List<Translation> tagList;
-            if(!map.containsKey(tag)) {
+            if (!map.containsKey(tag)) {
                 tagList = new ArrayList<>();
                 map.put(tag, tagList);
-            }
-            else {
+            } else {
                 tagList = map.get(tag);
             }
             tagList.add(translation);
         }
         return map;
     }
-
-
 
 }

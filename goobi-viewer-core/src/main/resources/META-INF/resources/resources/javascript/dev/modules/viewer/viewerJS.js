@@ -21,6 +21,11 @@
  * @module viewerJS
  * @requires jQuery
  */
+
+//Shorter definitions for RxJs modules
+var Rx = rxjs;
+var RxOp = rxjs.operators;
+
 var viewerJS = (function () {
     'use strict';
 
@@ -51,7 +56,7 @@ var viewerJS = (function () {
         }
 
         $.extend(true, _defaults, config);
-
+        console.log("init ", _defaults);
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
 
@@ -75,7 +80,10 @@ var viewerJS = (function () {
         // init user login
         viewerJS.userLogin.init();
         
+        viewerJS.popovers.init();
         
+	    viewerJS.userDropdown.init();
+       
         // init bookmarks if enabled
         if ( bookmarksEnabled ) {
             viewerJS.bookmarks.init( {

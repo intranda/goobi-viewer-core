@@ -27,6 +27,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -452,9 +453,88 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
-        List<String> fields = SearchBean.getAdvancedSearchAllowedFields("en");
-        Assert.assertTrue(fields.contains("MD_FOO_LANG_EN"));
-        Assert.assertFalse(fields.contains("MD_FOO_LANG_DE"));
-        Assert.assertFalse(fields.contains("MD_FOO_LANG_ES"));
+        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en");
+        boolean en = false;
+        boolean de = false;
+        boolean es = false;
+        for (AdvancedSearchFieldConfiguration field : fields) {
+            switch (field.getField()) {
+                case "MD_FOO_LANG_EN":
+                    en = true;
+                    break;
+                case "MD_FOO_LANG_DE":
+                    de = true;
+                    break;
+                case "MD_FOO_LANG_ES":
+                    es = true;
+                    break;
+            }
+        }
+        Assert.assertTrue(en);
+        Assert.assertFalse(de);
+        Assert.assertFalse(es);
+    }
+
+    /**
+     * @see SearchBean#findCurrentHitIndex(String,int,boolean)
+     * @verifies set currentHitIndex to minus one if no search hits
+     */
+    @Test
+    public void findCurrentHitIndex_shouldSetCurrentHitIndexToMinusOneIfNoSearchHits() throws Exception {
+        SearchBean sb = new SearchBean();
+
+        sb.findCurrentHitIndex("PPN123", 1, true);
+        Assert.assertEquals(-1, sb.getCurrentHitIndex());
+
+        sb.setCurrentSearch(new Search());
+        Assert.assertEquals(0, sb.getCurrentSearch().getHitsCount());
+        sb.findCurrentHitIndex("PPN123", 1, true);
+        Assert.assertEquals(-1, sb.getCurrentHitIndex());
+    }
+
+    /**
+     * @see SearchBean#findCurrentHitIndex(String,int,boolean)
+     * @verifies set currentHitIndex correctly
+     */
+    @Test
+    public void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setCurrentSearch(new Search());
+        sb.getCurrentSearch().setPage(1);
+        sb.getCurrentSearch().setQuery("DC:dcimage* AND NOT IDDOC_PARENT:*");
+        sb.getCurrentSearch().setSortString("SORT_TITLE");
+        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true);
+        Assert.assertEquals(21, sb.getCurrentSearch().getHitsCount());
+
+        sb.findCurrentHitIndex("PPN9462", 1, true);
+        Assert.assertEquals(0, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("133563847", 1, true);
+        Assert.assertEquals(1, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("213369540", 1, true);
+        Assert.assertEquals(2, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("34115495", 1, true);
+        Assert.assertEquals(3, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("605302278", 1, true);
+        Assert.assertEquals(4, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("2014203", 1, true);
+        Assert.assertEquals(5, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
+        Assert.assertEquals(6, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("808996762", 1, true);
+        Assert.assertEquals(7, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("02008011811811", 1, true);
+        Assert.assertEquals(8, sb.getCurrentHitIndex());
+
+        sb.findCurrentHitIndex("iiif_test_image", 1, true);
+        Assert.assertEquals(9, sb.getCurrentHitIndex());
+
     }
 }

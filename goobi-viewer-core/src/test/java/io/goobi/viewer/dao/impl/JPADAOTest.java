@@ -1534,12 +1534,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate())
+                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                                Arrays.asList("template_simple", "template_two"))
                         .size());
+        // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate())
+                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                                Collections.singletonList("wrong_tempalte"))
+                        .size());
+        // Wrong date range
+        Assert.assertEquals(0,
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate(),
+                                Collections.singletonList("template_simple"))
                         .size());
     }
 
@@ -1567,11 +1577,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate()));
+                        .getCMSPageWithRelatedPiCount(new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                                Arrays.asList("template_simple", "template_two")));
+        // Wrong template
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate()));
+                        .getCMSPageWithRelatedPiCount(new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate(),
+                                Collections.singletonList("wrong_template")));
+        // Wrong date range
+        Assert.assertEquals(0,
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPageWithRelatedPiCount(new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate(),
+                                Collections.singletonList("template_simple")));
     }
 
     /**
@@ -1630,7 +1649,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         item.setOwnerPageLanguageVersion(version);
         item.setItemId("I1");
         item.setType(CMSContentItemType.SOLRQUERY);
-        item.setMandatory(true);
         item.setElementsPerPage(3);
         item.setSolrQuery("PI:PPN517154005");
         item.setSolrSortFields("SORT_TITLE,DATECREATED");
@@ -1661,7 +1679,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, page.getLanguageVersions().get(0).getContentItems().size());
         Assert.assertEquals(item.getItemId(), page.getLanguageVersions().get(0).getContentItems().get(0).getItemId());
         Assert.assertEquals(item.getType(), page.getLanguageVersions().get(0).getContentItems().get(0).getType());
-        Assert.assertEquals(item.isMandatory(), page.getLanguageVersions().get(0).getContentItems().get(0).isMandatory());
         Assert.assertEquals(item.getElementsPerPage(), page.getLanguageVersions().get(0).getContentItems().get(0).getElementsPerPage());
         Assert.assertEquals(item.getSolrQuery(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrQuery());
         Assert.assertEquals(item.getSolrSortFields(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrSortFields());

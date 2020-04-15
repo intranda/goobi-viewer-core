@@ -64,7 +64,9 @@ import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>BookmarkResource class.</p>
+ * <p>
+ * BookmarkResource class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -80,7 +82,9 @@ public class BookmarkResource {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>Constructor for BookmarkResource.</p>
+     * <p>
+     * Constructor for BookmarkResource.
+     * </p>
      */
     public BookmarkResource() {
         this.testing = false;
@@ -88,7 +92,9 @@ public class BookmarkResource {
     }
 
     /**
-     * <p>Constructor for BookmarkResource.</p>
+     * <p>
+     * Constructor for BookmarkResource.
+     * </p>
      *
      * @param userBean a {@link io.goobi.viewer.managedbeans.UserBean} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
@@ -430,22 +436,22 @@ public class BookmarkResource {
             throw new RestApiException("User has no access to bookmark list " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
     }
-    
+
     /**
      * @param shareKey
      * @return
-     * @throws DAOException             If an error occured talking to the database
-     * @throws RestApiException         If no user session exists or if the user has no access to the requested list
+     * @throws DAOException If an error occured talking to the database
+     * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
      */
     public BookmarkList getSharedBookmarkList(String shareKey) throws DAOException, RestApiException, ContentNotFoundException {
         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
-        
-        if(bookmarkList == null) {
+
+        if (bookmarkList == null) {
             throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);
         }
-        if (bookmarkList.isIsPublic()) {
-            logger.trace("Serving public bookmark list " + bookmarkList.getId());
+        if (bookmarkList.hasShareKey()) {
+            logger.trace("Serving shared bookmark list " + bookmarkList.getId());
             return bookmarkList;
         }
         User user = getUser();
@@ -460,7 +466,8 @@ public class BookmarkResource {
             logger.trace("Serving bookmark list " + bookmarkList.getId() + " shared to user " + user);
             return bookmarkList;
         } else {
-            throw new RestApiException("User has no access to bookmark list " + bookmarkList.getId() + " - request refused", HttpServletResponse.SC_FORBIDDEN);
+            throw new RestApiException("User has no access to bookmark list " + bookmarkList.getId() + " - request refused",
+                    HttpServletResponse.SC_FORBIDDEN);
         }
     }
 
@@ -743,16 +750,16 @@ public class BookmarkResource {
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
     }
-    
+
     @GET
     @Path("/mirador/shared/{key}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getSharedBookmarkListForMirador(@PathParam("key") String key)
             throws DAOException, PresentationException, ContentNotFoundException, ViewerConfigurationException, IndexUnreachableException {
-        try {            
+        try {
             BookmarkList bookmarkList = getSharedBookmarkList(key);
             return bookmarkList.getMiradorJsonObject(servletRequest.getContextPath());
-        } catch ( ContentNotFoundException | RestApiException e) {
+        } catch (ContentNotFoundException | RestApiException e) {
             throw new ContentNotFoundException("No matching bookmark list found");
         }
     }
@@ -824,7 +831,9 @@ public class BookmarkResource {
     }
 
     /**
-     * <p>getPageOrder.</p>
+     * <p>
+     * getPageOrder.
+     * </p>
      *
      * @param pageString a {@link java.lang.String} object.
      * @return a {@link java.lang.Integer} object.
@@ -899,7 +908,9 @@ public class BookmarkResource {
     }
 
     /**
-     * <p>isInGroup.</p>
+     * <p>
+     * isInGroup.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
@@ -913,9 +924,11 @@ public class BookmarkResource {
             return false;
         }
     }
-    
+
     /**
-     * <p>getAsCollection.</p>
+     * <p>
+     * getAsCollection.
+     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
@@ -927,7 +940,7 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @IIIFPresentationBinding
     public Collection getAsCollection(@PathParam("id") Long id) throws DAOException, RestApiException {
-        
+
         User user = getUser();
         if (user == null) {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
@@ -939,9 +952,11 @@ public class BookmarkResource {
 
         throw new RestApiException("No bookmark list with id '" + id + "' found for user " + user, HttpServletResponse.SC_NOT_FOUND);
     }
-    
+
     /**
-     * <p>getAsCollection.</p>
+     * <p>
+     * getAsCollection.
+     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
@@ -953,12 +968,12 @@ public class BookmarkResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @IIIFPresentationBinding
     public Collection getAsCollection(@PathParam("sharedKey") String sharedKey) throws ContentNotFoundException, DAOException {
-        
+
         try {
             BookmarkList list = getSharedBookmarkList(sharedKey);
             Collection collection = createCollection(list);
             return collection;
-        } catch ( ContentNotFoundException | RestApiException e) {
+        } catch (ContentNotFoundException | RestApiException e) {
             throw new ContentNotFoundException("No matching bookmark list found");
         }
     }
@@ -968,8 +983,9 @@ public class BookmarkResource {
      * @return
      */
     public Collection createCollection(BookmarkList list) {
-        ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
-        Collection collection = new Collection(getCollectionURI());
+        ManifestBuilder builder = new ManifestBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()),
+                URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+        Collection collection = new Collection(getCollectionURI(), list.getName());
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));
         list.getItems().forEach(item -> {
@@ -987,7 +1003,9 @@ public class BookmarkResource {
     }
 
     /**
-     * <p>getCollectionURI.</p>
+     * <p>
+     * getCollectionURI.
+     * </p>
      *
      * @return a {@link java.net.URI} object.
      */

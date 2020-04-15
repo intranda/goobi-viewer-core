@@ -23,14 +23,18 @@ import java.util.Date;
 public interface Harvestable {
 
     /**
-     * <p>getPi.</p>
+     * <p>
+     * getPi.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getPi();
 
     /**
-     * <p>getDateUpdated.</p>
+     * <p>
+     * getDateUpdated.
+     * </p>
      *
      * @return a {@link java.util.Date} object.
      */

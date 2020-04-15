@@ -52,6 +52,15 @@
                 </h:form>
             </div>
         </h:panelGroup>
+        
+        <ui:fragment rendered="#{configurationBean.aggregateSearchHits}">
+	        <div class="search-list__toggle-thumbs">
+	       		<button type="button" class="btn btn--icon" data-title-inactive="#{msg.action__show_subhits_thumbnails}" data-title-active="#{msg.action__hide_subhits_thumbnails}" data-toggle="tooltip" data-placement="top" data-trigger="hover"
+	       			data-action="toggle-thumbs">
+	                <i class="fa fa-image" aria-hidden="true"></i>
+	            </button>
+	        </div>
+        </ui:fragment>
 
         <!-- SEARCHLIST VIEWS -->
         <div class="search-list__views">

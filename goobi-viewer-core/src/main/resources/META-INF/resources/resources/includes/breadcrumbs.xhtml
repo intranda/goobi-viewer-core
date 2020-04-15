@@ -20,7 +20,7 @@
     					<li class="breadcrumbs__starttext">
     						<span>#{msg.breadcrumbStartText}:</span>
     					</li>
-    					<ui:repeat value="#{navigationHelper.breadcrumbs}" var="breadcrumb" varStatus="status">
+    					<ui:repeat value="#{breadcrumbBean.breadcrumbs}" var="breadcrumb" varStatus="status">
                             <h:panelGroup rendered="#{!status.last and breadcrumb.link}">
     							<li class="breadcrumbs__crumb">
     								<a href="#{breadcrumb.url}">

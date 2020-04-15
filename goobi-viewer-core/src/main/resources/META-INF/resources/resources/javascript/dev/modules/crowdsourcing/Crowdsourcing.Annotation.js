@@ -23,7 +23,7 @@
  */
 var Crowdsourcing = ( function(crowdsourcing) {
     'use strict';
-
+ 
 
     crowdsourcing.Annotation = function(anno) {
         let temp = crowdsourcing.deepCopy(anno ? anno : {});            

@@ -51,6 +51,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;
@@ -75,6 +76,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.misc.Harvestable;
@@ -83,7 +85,9 @@ import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 import io.goobi.viewer.servlets.rest.dao.TileGridResource;
 
 /**
- * <p>CMSPage class.</p>
+ * <p>
+ * CMSPage class.
+ * </p>
  */
 @Entity
 @Table(name = "cms_pages")
@@ -194,7 +198,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     private String staticPageName;
 
     /**
-     * <p>Constructor for CMSPage.</p>
+     * <p>
+     * Constructor for CMSPage.
+     * </p>
      */
     public CMSPage() {
     }
@@ -266,7 +272,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>saveSidebarElements.</p>
+     * <p>
+     * saveSidebarElements.
+     * </p>
      *
      * @return a boolean.
      */
@@ -283,7 +291,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 CMSSidebarElement element = getAvailableSidebarElement(ids[i]);
                 if (element != null) {
                     // element.setType(ids[i]);
-                    element.setValue("bds");
+                    //                    element.setValue("bds");
                     element.setOrder(i);
                     //		    element.setId(null);
                     element.setOwnerPage(this);
@@ -299,7 +307,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>resetItemData.</p>
+     * <p>
+     * resetItemData.
+     * </p>
      */
     public void resetItemData() {
         logger.trace("Resetting item data");
@@ -329,7 +339,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>unusedSidebarElements</code>.</p>
+     * <p>
+     * Getter for the field <code>unusedSidebarElements</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -360,7 +372,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>addSidebarElement.</p>
+     * <p>
+     * addSidebarElement.
+     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
      */
@@ -371,7 +385,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -380,7 +396,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -389,7 +407,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>templateId</code>.</p>
+     * <p>
+     * Getter for the field <code>templateId</code>.
+     * </p>
      *
      * @return the templateId
      */
@@ -398,7 +418,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>templateId</code>.</p>
+     * <p>
+     * Setter for the field <code>templateId</code>.
+     * </p>
      *
      * @param templateId the templateId to set
      */
@@ -407,7 +429,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @return the dateCreated
      */
@@ -416,7 +440,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -431,7 +457,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -440,7 +468,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>isPublished.</p>
+     * <p>
+     * isPublished.
+     * </p>
      *
      * @return the published
      */
@@ -449,7 +479,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>published</code>.</p>
+     * <p>
+     * Setter for the field <code>published</code>.
+     * </p>
      *
      * @param published the published to set
      */
@@ -458,7 +490,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>isUseDefaultSidebar.</p>
+     * <p>
+     * isUseDefaultSidebar.
+     * </p>
      *
      * @return the useDefaultSidebar
      */
@@ -467,7 +501,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>useDefaultSidebar</code>.</p>
+     * <p>
+     * Setter for the field <code>useDefaultSidebar</code>.
+     * </p>
      *
      * @param useDefaultSidebar the useDefaultSidebar to set
      */
@@ -476,7 +512,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>languageVersions</code>.</p>
+     * <p>
+     * Getter for the field <code>languageVersions</code>.
+     * </p>
      *
      * @return the languageVersions
      */
@@ -485,7 +523,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>languageVersions</code>.</p>
+     * <p>
+     * Setter for the field <code>languageVersions</code>.
+     * </p>
      *
      * @param languageVersions the languageVersions to set
      */
@@ -494,7 +534,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarElements</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarElements</code>.
+     * </p>
      *
      * @return the sidebarElements
      */
@@ -503,7 +545,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>sidebarElements</code>.</p>
+     * <p>
+     * Setter for the field <code>sidebarElements</code>.
+     * </p>
      *
      * @param sidebarElements the sidebarElements to set
      */
@@ -514,7 +558,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>categories</code>.</p>
+     * <p>
+     * Getter for the field <code>categories</code>.
+     * </p>
      *
      * @return the classifications
      */
@@ -523,7 +569,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>categories</code>.</p>
+     * <p>
+     * Setter for the field <code>categories</code>.
+     * </p>
      *
      * @param categories a {@link java.util.List} object.
      */
@@ -532,7 +580,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>addCategory.</p>
+     * <p>
+     * addCategory.
+     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
@@ -543,7 +593,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>removeCategory.</p>
+     * <p>
+     * removeCategory.
+     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
@@ -552,7 +604,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarElementString</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarElementString</code>.
+     * </p>
      *
      * @return the sidebarElementString
      */
@@ -561,7 +615,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>sidebarElementString</code>.</p>
+     * <p>
+     * Setter for the field <code>sidebarElementString</code>.
+     * </p>
      *
      * @param sidebarElementString the sidebarElementString to set
      */
@@ -571,7 +627,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>isLanguageComplete.</p>
+     * <p>
+     * isLanguageComplete.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
@@ -589,7 +647,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getContentItem.</p>
+     * <p>
+     * getContentItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
@@ -602,7 +662,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getDefaultLanguage.</p>
+     * <p>
+     * getDefaultLanguage.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
      * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
@@ -618,7 +680,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getLanguageVersion.</p>
+     * <p>
+     * getLanguageVersion.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
@@ -630,7 +694,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getLanguageVersion.</p>
+     * <p>
+     * getLanguageVersion.
+     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
@@ -656,7 +722,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getTitle.</p>
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -675,7 +743,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getTitle.</p>
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.lang.String} object.
@@ -689,7 +759,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMenuTitle.</p>
+     * <p>
+     * getMenuTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -708,7 +780,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMenuTitle.</p>
+     * <p>
+     * getMenuTitle.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.lang.String} object.
@@ -722,7 +796,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMenuTitleOrTitle.</p>
+     * <p>
+     * getMenuTitleOrTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -741,7 +817,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMenuTitleOrTitle.</p>
+     * <p>
+     * getMenuTitleOrTitle.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.lang.String} object.
@@ -755,7 +833,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>pageSorting</code>.</p>
+     * <p>
+     * Getter for the field <code>pageSorting</code>.
+     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
@@ -764,7 +844,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>pageSorting</code>.</p>
+     * <p>
+     * Setter for the field <code>pageSorting</code>.
+     * </p>
      *
      * @param pageSorting a {@link java.lang.Long} object.
      */
@@ -773,7 +855,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>subThemeDiscriminatorValue</code>.</p>
+     * <p>
+     * Getter for the field <code>subThemeDiscriminatorValue</code>.
+     * </p>
      *
      * @return the subThemeDiscriminatorValue
      */
@@ -782,7 +866,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>subThemeDiscriminatorValue</code>.</p>
+     * <p>
+     * Setter for the field <code>subThemeDiscriminatorValue</code>.
+     * </p>
      *
      * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
      */
@@ -791,7 +877,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMediaName.</p>
+     * <p>
+     * getMediaName.
+     * </p>
      *
      * @param contentId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -802,7 +890,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMediaDescription.</p>
+     * <p>
+     * getMediaDescription.
+     * </p>
      *
      * @param contentId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -813,7 +903,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMediaMetadata.</p>
+     * <p>
+     * getMediaMetadata.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
@@ -833,7 +925,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMedia.</p>
+     * <p>
+     * getMedia.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return The media item associated with the contentItem with the given itemId. May return null if no such item exists
@@ -852,7 +946,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getContentItemIfExists.</p>
+     * <p>
+     * getContentItemIfExists.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
@@ -887,6 +983,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
 
         return item;
+    }
+
+    public String getContentItemText(String itemId) throws CmsElementNotFoundException {
+        CMSContentItem item = getContentItem(itemId);
+        if (item != null) {
+            switch (item.getType()) {
+                case TEXT:
+                    return item.getHtmlFragment();
+                case HTML:
+                    String htmlText = item.getHtmlFragment();
+                    String plainText = htmlText.replaceAll("\\<.*?\\>", "");
+                    plainText = StringEscapeUtils.unescapeHtml(plainText);
+                    return plainText;
+                default:
+                    return item.toString();
+            }
+        }
+
+        return "";
     }
 
     /**
@@ -955,7 +1070,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @return the pretty url to this page (using alternative url if set)
      */
@@ -973,7 +1090,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>hasContent.</p>
+     * <p>
+     * hasContent.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return true if content item with the given item ID has content matching its type; false otherwisee
@@ -999,7 +1118,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getContent.</p>
+     * <p>
+     * getContent.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1009,7 +1130,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getPreviewContent.</p>
+     * <p>
+     * getPreviewContent.
+     * </p>
      *
      * @return the first TEXT or HTML contentItem with preview="true"
      */
@@ -1023,7 +1146,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMediaItem.</p>
+     * <p>
+     * getMediaItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
@@ -1033,7 +1158,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getMediaItem.</p>
+     * <p>
+     * getMediaItem.
+     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -1127,7 +1254,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getGlobalContentItems.</p>
+     * <p>
+     * getGlobalContentItems.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1143,7 +1272,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getContentItems.</p>
+     * <p>
+     * getContentItems.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1159,7 +1290,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getContentItems.</p>
+     * <p>
+     * getContentItems.
+     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.util.List} object.
@@ -1183,7 +1316,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getTemplate.</p>
+     * <p>
+     * getTemplate.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
      */
@@ -1213,7 +1348,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>persistentUrl</code>.</p>
+     * <p>
+     * Getter for the field <code>persistentUrl</code>.
+     * </p>
      *
      * @return the persistentUrl
      */
@@ -1222,7 +1359,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>persistentUrl</code>.</p>
+     * <p>
+     * Setter for the field <code>persistentUrl</code>.
+     * </p>
      *
      * @param persistentUrl the persistentUrl to set
      */
@@ -1233,7 +1372,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>resetEditorItemVisibility.</p>
+     * <p>
+     * resetEditorItemVisibility.
+     * </p>
      */
     public void resetEditorItemVisibility() {
         if (getGlobalContentItems() != null) {
@@ -1259,7 +1400,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>staticPageName</code>.</p>
+     * <p>
+     * Getter for the field <code>staticPageName</code>.
+     * </p>
      *
      * @return the staticPageName
      */
@@ -1269,7 +1412,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>staticPageName</code>.</p>
+     * <p>
+     * Setter for the field <code>staticPageName</code>.
+     * </p>
      *
      * @param staticPageName the staticPageName to set
      */
@@ -1279,7 +1424,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getTileGridUrl.</p>
+     * <p>
+     * getTileGridUrl.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1309,7 +1456,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getRelativeUrlPath.</p>
+     * <p>
+     * getRelativeUrlPath.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1318,7 +1467,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getRelativeUrlPath.</p>
+     * <p>
+     * getRelativeUrlPath.
+     * </p>
      *
      * @param pretty a boolean.
      * @return a {@link java.lang.String} object.
@@ -1366,7 +1517,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>hasContentItem.</p>
+     * <p>
+     * hasContentItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      * @return a boolean.
@@ -1400,19 +1553,37 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>hasSearchFunctionality.</p>
+     * @return
+     */
+    public BrowseFunctionality getBrowse() {
+        Optional<CMSContentItem> item =
+                getGlobalContentItems().stream().filter(i -> CMSContentItemType.BROWSETERMS.equals(i.getType())).findFirst();
+        if (item.isPresent()) {
+            return (BrowseFunctionality) item.get().getFunctionality();
+        }
+        logger.warn("Did not find browse functionality in page " + this);
+        return new BrowseFunctionality("");
+    }
+
+    /**
+     * <p>
+     * hasSearchFunctionality.
+     * </p>
      *
      * @return a boolean.
      */
     public boolean hasSearchFunctionality() {
-        Optional<CMSContentItem> searchItem =
-                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
+        Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
+                .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()) || CMSContentItemType.SOLRQUERY.equals(item.getType()))
+                .findFirst();
         return searchItem.isPresent();
 
     }
 
     /**
-     * <p>isHasSidebarElements.</p>
+     * <p>
+     * isHasSidebarElements.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1424,7 +1595,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>addLanguageVersion.</p>
+     * <p>
+     * addLanguageVersion.
+     * </p>
      *
      * @param version a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
      */
@@ -1434,7 +1607,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>parentPageId</code>.</p>
+     * <p>
+     * Setter for the field <code>parentPageId</code>.
+     * </p>
      *
      * @param parentPageId the parentPageId to set
      */
@@ -1443,7 +1618,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>parentPageId</code>.</p>
+     * <p>
+     * Getter for the field <code>parentPageId</code>.
+     * </p>
      *
      * @return the parentPageId
      */
@@ -1452,7 +1629,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>validityStatus</code>.</p>
+     * <p>
+     * Getter for the field <code>validityStatus</code>.
+     * </p>
      *
      * @return the validityStatus
      */
@@ -1461,7 +1640,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>validityStatus</code>.</p>
+     * <p>
+     * Setter for the field <code>validityStatus</code>.
+     * </p>
      *
      * @param validityStatus the validityStatus to set
      */
@@ -1470,7 +1651,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>isMayContainUrlParameters.</p>
+     * <p>
+     * isMayContainUrlParameters.
+     * </p>
      *
      * @return the mayContainUrlParameters
      */
@@ -1479,7 +1662,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>mayContainUrlParameters</code>.</p>
+     * <p>
+     * Setter for the field <code>mayContainUrlParameters</code>.
+     * </p>
      *
      * @param mayContainUrlParameters the mayContainUrlParameters to set
      */
@@ -1504,7 +1689,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     //    }
 
     /**
-     * <p>Getter for the field <code>relatedPI</code>.</p>
+     * <p>
+     * Getter for the field <code>relatedPI</code>.
+     * </p>
      *
      * @return the relatedPI
      */
@@ -1513,7 +1700,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>relatedPI</code>.</p>
+     * <p>
+     * Setter for the field <code>relatedPI</code>.
+     * </p>
      *
      * @param relatedPI the relatedPI to set
      */
@@ -1522,7 +1711,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>getCollection.</p>
+     * <p>
+     * getCollection.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1593,7 +1784,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * Adds {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s for all given {@link java.util.Locale}s for which no language versions already exist
+     * Adds {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s for all given {@link java.util.Locale}s for which no language versions already
+     * exist
      *
      * @param locales a {@link java.util.List} object.
      */
@@ -1616,7 +1808,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Getter for the field <code>wrapperElementClass</code>.</p>
+     * <p>
+     * Getter for the field <code>wrapperElementClass</code>.
+     * </p>
      *
      * @return the {@link #wrapperElementClass}
      */
@@ -1625,7 +1819,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>Setter for the field <code>wrapperElementClass</code>.</p>
+     * <p>
+     * Setter for the field <code>wrapperElementClass</code>.
+     * </p>
      *
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */
@@ -1634,7 +1830,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * <p>removeContentItem.</p>
+     * <p>
+     * removeContentItem.
+     * </p>
      *
      * @param itemId a {@link java.lang.String} object.
      */
@@ -1745,7 +1943,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
             if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
                 for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
-                    ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
+                    ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
                 }
             }
 
@@ -1756,7 +1954,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         List<CMSContentItem> globalContentItems = getGlobalContentItems();
         if (!globalContentItems.isEmpty()) {
             for (CMSContentItem item : globalContentItems) {
-                ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
+                ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
             }
         }
 
@@ -1769,19 +1967,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * 
      * @param item Content item to export
      * @param outputFolderPath Export path
-     * @param namingScheme Naming scheme for export files and folders
+     * @param namingScheme Naming scheme for export folders
+     * @param cmsPageId Parent page ID; used in the text file naming scheme
      * @return exported Files
      * @throws IOException
+     * @should return media files directly
      */
-    private List<File> exportItemText(CMSContentItem item, String outputFolderPath, String namingScheme) throws IOException {
+    static List<File> exportItemFiles(CMSContentItem item, String outputFolderPath, String namingScheme, long cmsPageId) throws IOException {
         if (item.getType() == null) {
             return Collections.emptyList();
         }
         switch (item.getType()) {
             case MEDIA:
+                return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
             case HTML:
             case TEXT:
-                return item.exportHtmlFragment(id, outputFolderPath, namingScheme);
+                return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
             default:
                 return Collections.emptyList();
         }
@@ -1793,27 +1994,30 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
-
-        if (selectableCategories != null) {
-            try {
-                List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
-                List<CMSCategory> tempCats = new ArrayList<>();
-                for (CMSCategory cat : allCats) {
-                    if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
-                        tempCats.add(cat);
-                    } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
-                        tempCats.add(cat);
-                    }
+        if (selectableCategories == null) {
+            return;
+        }
+        
+        try {
+            List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+            List<CMSCategory> tempCats = new ArrayList<>();
+            for (CMSCategory cat : allCats) {
+                if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+                    tempCats.add(cat);
+                } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+                    tempCats.add(cat);
                 }
-                this.categories = tempCats;
-            } catch (DAOException e) {
-                logger.error(e.toString(), e);
             }
+            this.categories = tempCats;
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
         }
     }
 
     /**
-     * <p>Getter for the field <code>selectableCategories</code>.</p>
+     * <p>
+     * Getter for the field <code>selectableCategories</code>.
+     * </p>
      *
      * @return the selectableCategories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1835,4 +2039,5 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPi() {
         return getRelatedPI();
     }
+
 }

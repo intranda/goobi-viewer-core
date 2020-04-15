@@ -7,18 +7,18 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-      
+
           <!-- METADATA -->
 	    <ui:define name="metadata">
 	        <f:metadata>
 	        	<f:viewParam name="from" value="#{userBean.redirectUrl}" />
 	        </f:metadata>
 	    </ui:define>
-      
+
       <h:head profile="http://dublincore.org/documents/dcq-html/">
 
 		<ui:insert name="head" />
-	
+
 		<meta charset="utf-8" />
 		<meta name="description" content="" />
 		<meta name="generator" content="Goobi viewer" />
@@ -37,47 +37,37 @@
 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.structure.min.css" />
 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/font-awesome.min.css" />
 		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css" />
-	
+
 		<!-- CUSTOM CSS -->
 		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css" />
-	    
+
 	    <!-- SUBTHEME CSS -->
 	    <h:panelGroup rendered="#{navigationHelper.subthemeSelected}">
 	        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css" />
 	    </h:panelGroup>
-	    
-    <!-- JAVASCRIPT -->   
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/bs/bootstrap.min.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/tinymce/tinymce.min.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/datatables.min.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqueryUi/1.12.1/jquery-ui.min.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqueryUi/1.11.0/jquery.ui.touch-punch.min.js"></script> -->
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rx.lite.min.js"></script>
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/q-promises/q.min.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/clipboard/clipboard.min.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/pdfjs/pdf.js"></script> -->
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/riot/riot.min.js"></script> -->
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/browsersupport.min.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewer.min.js"></script>
-<!--     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/riot-tags.js"></script> -->
-	    
+
+	    <!-- JAVASCRIPT -->
+	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rxjs.umd.min.js"></script>
+	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/browsersupport.min.js"></script>
+	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewer.min.js"></script>
+
 	    <!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
 	    <h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
 	    <h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
 
 	</h:head>
-      
+
     <h:body id="login-body">
-    
+
    		<!-- MESSAGES -->
 		<div class="messages">
 			<h:messages infoClass="alert alert-success" errorClass="alert alert-danger" />
 		</div>
-    
+
     	<ui:include src="/resources/includes/user/userLogin.xhtml" />
-    	
+
     	<script>
     		viewerJS.userLogin.init();
-		</script>    	
+		</script>
     </h:body>
 </html>

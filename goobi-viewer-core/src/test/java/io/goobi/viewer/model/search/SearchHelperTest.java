@@ -18,6 +18,7 @@ package io.goobi.viewer.model.search;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,15 +42,15 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.model.search.BrowseElement;
-import io.goobi.viewer.model.search.FacetItem;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.SearchHit;
-import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.termbrowsing.BrowseTerm;
+import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.StringPair;
 
 public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -109,59 +111,64 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
-        Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
-        Assert.assertEquals(32, collections.size());
+        Map<String, CollectionResult> collections =
+                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
+        Assert.assertEquals(51, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         for (String key : keys) {
             switch (key) {
-                case ("a"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dc3d"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
                     break;
-                case ("a.b"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dcaccesscondition"):
+                    Assert.assertEquals(Long.valueOf(5), collections.get(key).getCount());
                     break;
-                case ("a.b.c"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dcaccesscondition.fulltextlocked"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
                     break;
-                case ("a.b.c.d"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dcaccesscondition.movingwall"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key).getCount());
                     break;
-                case ("alle"):
-                    Assert.assertEquals(Long.valueOf(32), collections.get(key));
+                case ("dcaccesscondition.pdflocked"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
                     break;
-                case ("mehrbaendigeswerk"):
-                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                case ("dcannotations"):
+                    Assert.assertEquals(Long.valueOf(15), collections.get(key).getCount());
                     break;
-                case ("monographie"):
-                    Assert.assertEquals(Long.valueOf(5), collections.get(key));
+                case ("dcannotations.generated"):
+                    Assert.assertEquals(Long.valueOf(15), collections.get(key).getCount());
                     break;
-                case ("multimedia"):
-                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                case ("dcannotations.geocoordinates"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key).getCount());
                     break;
-                case ("ocr"):
-                    Assert.assertEquals(Long.valueOf(7), collections.get(key));
+                case ("dcauthoritydata"):
+                    Assert.assertEquals(Long.valueOf(12), collections.get(key).getCount());
                     break;
-                case ("ocr.antiqua"):
-                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                case ("dcauthoritydata.gnd"):
+                    Assert.assertEquals(Long.valueOf(5), collections.get(key).getCount());
                     break;
-                case ("ocr.fraktur"):
-                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                case ("dcauthoritydata.provenance"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key).getCount());
                     break;
-                case ("paedagogik"):
-                    Assert.assertEquals(Long.valueOf(13), collections.get(key));
+                case ("dcauthoritydata.viaf"):
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key).getCount());
                     break;
-                case ("sonstiges"):
-                    Assert.assertEquals(Long.valueOf(11), collections.get(key));
+                case ("dcboarndigital"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
                     break;
-                case ("sonstiges.langestoc"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dcconvolute"):
+                    Assert.assertEquals(Long.valueOf(6), collections.get(key).getCount());
                     break;
-                case ("sonstiges.querformat"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                case ("dcdownload"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key).getCount());
                     break;
-                case ("zeitschrift"):
-                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                // TODO others
+                case ("dcnewspaper"):
+                    Assert.assertEquals(Long.valueOf(18), collections.get(key).getCount());
+                    break;
+                case ("dcrelations"):
+                    Assert.assertEquals(Long.valueOf(120), collections.get(key).getCount());
                     break;
                 default:
                     //                    Assert.fail("Unknown collection name: " + key);
@@ -534,7 +541,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("val");
-        Assert.assertEquals(" AND fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
+        Assert.assertEquals(" +fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
     }
 
     /**
@@ -595,6 +602,45 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
         Assert.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
     }
+    
+
+    /**
+     * @see SearchHelper#normalizeField(String)
+     * @verifies normalize correctly
+     */
+    @Test
+    public void normalizeField_shouldNormalizeCorrectly() throws Exception {
+        Assert.assertEquals("MD_FOO", SearchHelper.normalizeField("MD_FOO_UNTOKENIZED"));
+    }
+    
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies apply prefix correctly
+     */
+    @Test
+    public void adaptField_shouldApplyPrefixCorrectly() throws Exception {
+        Assert.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies not apply prefix to regular fields if empty
+     */
+    @Test
+    public void adaptField_shouldNotApplyPrefixToRegularFieldsIfEmpty() throws Exception {
+        Assert.assertEquals("MD_FOO", SearchHelper.adaptField("MD_FOO", ""));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies remove untokenized correctly
+     */
+    @Test
+    public void adaptField_shouldRemoveUntokenizedCorrectly() throws Exception {
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO_UNTOKENIZED", "SORT_"));
+    }
 
     /**
      * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
@@ -602,7 +648,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, true, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, null, true, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -613,7 +659,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, false, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, null, false, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
@@ -625,7 +671,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
 
-        String suffix = SearchHelper.getAllSuffixes(false);
+        String suffix = SearchHelper.getAllSuffixes(false, null);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }
@@ -826,14 +872,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
-        String query = "DOCSTRCT:Monograph AND MD_YEARPUBLISH:19*";
-        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query + " AND NOT(DC:forbidden)", query,
-                Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null, null, new HashMap<String, Set<String>>(), Locale.ENGLISH,
-                false, null);
-        String[] cellValues0 = new String[] { "Persistent identifier", "PPN728566745", "b18029048", "AC01054587", "1592397" };
-        String[] cellValues1 = new String[] { "Label", "Vaterländische Handels- und Verkehrsgeographie",
-                "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
-                "Oberösterreich im Weltkrieg", "Fama y obras póstumas" };
+        // TODO makes this more robust against changes to the index
+        String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
+        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
+                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
+        String[] cellValues0 =
+                new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
+        String[] cellValues1 =
+                new String[] { "Label", "Gedichte",
+                        "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
+                        "Das Stilisieren der Thier- und Menschen-Formen" };
         Assert.assertNotNull(wb);
         Assert.assertEquals(1, wb.getNumberOfSheets());
         SXSSFSheet sheet = wb.getSheetAt(0);
@@ -844,7 +892,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
             Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
         }
-        for (int i = 1; i < 6; ++i) {
+        for (int i = 1; i < 4; ++i) {
             SXSSFRow row = sheet.getRow(i);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());
             Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
@@ -1000,7 +1048,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void prepareQuery_shouldPrepareEmptyQueriesCorrectly() throws Exception {
         Assert.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup",
                 SearchHelper.prepareQuery(null, "(ISWORK:true OR ISANCHOR:true) AND BLA:blup"));
-        Assert.assertEquals("(ISWORK:true OR ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
+        Assert.assertEquals("+(ISWORK:true ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
     }
 
     /**
@@ -1048,5 +1096,79 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
         Assert.assertEquals("-a", SearchHelper.cleanUpSearchTerm("-a"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve digits
+     */
+    @Test
+    public void normalizeString_shouldPreserveDigits() throws Exception {
+        Assert.assertEquals("1 2 3", SearchHelper.normalizeString("1*2*3"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve latin chars
+     */
+    @Test
+    public void normalizeString_shouldPreserveLatinChars() throws Exception {
+        Assert.assertEquals("f o obar", SearchHelper.normalizeString("F*O*Obar"));
+    }
+
+    /**
+     * @see SearchHelper#normalizeString(String)
+     * @verifies preserve hebrew chars
+     */
+    @Test
+    public void normalizeString_shouldPreserveHebrewChars() throws Exception {
+        Assert.assertEquals("דעה", SearchHelper.normalizeString("דעה"));
+    }
+
+    /**
+     * Verify that a search for 'DC:dctei' yields 65 results overall, and 4 results within 'FACET_VIEWERSUBTHEME:subtheme1' This also checks that the
+     * queries built by {@link SearchHelper#buildFinalQuery(String, boolean, NavigationHelper)} are valid SOLR queries
+     * 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    @Test
+    public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
+        NavigationHelper nh = new NavigationHelper();
+        String query = "DC:dctei";
+
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
+        Assert.assertEquals(65, docs.size());
+
+        nh.setSubThemeDiscriminatorValue("subtheme1");
+        finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
+        Assert.assertEquals(4, docs.size());
+    }
+
+    /**
+     * Checks whether counts for each term equal to the value from the last iteration.
+     * 
+     * @see SearchHelper#getFilteredTerms(BrowsingMenuFieldConfig,String,String,Comparator,boolean)
+     * @verifies be thread safe when counting terms
+     */
+    @Test
+    public void getFilteredTerms_shouldBeThreadSafeWhenCountingTerms() throws Exception {
+        int previousSize = -1;
+        Map<String, Long> previousCounts = new HashMap<>();
+        BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, null, false);
+        for (int i = 0; i < 100; ++i) {
+            List<BrowseTerm> terms = SearchHelper.getFilteredTerms(bmfc, null, null, new BrowseTermComparator(Locale.ENGLISH), true);
+            Assert.assertFalse(terms.isEmpty());
+            Assert.assertTrue(previousSize == -1 || terms.size() == previousSize);
+            previousSize = terms.size();
+            for (BrowseTerm term : terms) {
+                if (previousCounts.containsKey(term.getTerm())) {
+                    Assert.assertEquals(Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()));
+                }
+                previousCounts.put(term.getTerm(), term.getHitCount());
+            }
+        }
     }
 }

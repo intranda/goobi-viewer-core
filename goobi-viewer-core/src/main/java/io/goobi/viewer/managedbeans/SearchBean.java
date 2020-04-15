@@ -71,6 +71,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.Search;
@@ -82,11 +83,11 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -111,7 +112,9 @@ public class SearchBean implements SearchInterface, Serializable {
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
-    UserBean userBean;
+    private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private UserBean userBean;
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPage();
@@ -168,7 +171,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      */
     @PostConstruct
     public void init() {
@@ -185,7 +190,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>clearSearchItemLists.</p>
+     * <p>
+     * clearSearchItemLists.
+     * </p>
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -202,8 +209,8 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
-        if (navigationHelper != null) {
-            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        if (breadcrumbBean != null) {
+            breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
         }
         resetSearchResults();
         executeSearch();
@@ -281,15 +288,17 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>searchAdvanced.</p>
+     * <p>
+     * searchAdvanced.
+     * </p>
      *
      * @param resetParameters a boolean.
      * @return a {@link java.lang.String} object.
      */
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
-        if (navigationHelper != null) {
-            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        if (breadcrumbBean != null) {
+            breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
         }
         resetSearchResults();
         if (resetParameters) {
@@ -533,31 +542,31 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (StringUtils.isEmpty(queryItem.getValue())) {
                         continue;
                     }
-                    
+
                     String key = getBookmarkListSharedKey();
                     String name = getBookmarkListName();
 
-                    if(StringUtils.isNotBlank(key)) {
+                    if (StringUtils.isNotBlank(key)) {
                         try {
                             BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
                             if (bookmarkList != null) {
                                 queryItem.setValue(bookmarkList.getName());
                                 itemQuery = bookmarkList.getFilterQuery();
                             }
-                        } catch(DAOException e) {
+                        } catch (DAOException e) {
                             logger.error(e.toString(), e);
                         }
-                    }else if(StringUtils.isNotBlank(name) && !"session".equals(name)) {
-                            try {
-                                BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
-                                if (bookmarkList != null) {
-                                    queryItem.setValue(bookmarkList.getName());
-                                    itemQuery = bookmarkList.getFilterQuery();
-                                }
-                            } catch(DAOException e) {
-                                logger.error(e.toString(), e);
+                    } else if (StringUtils.isNotBlank(name) && !"session".equals(name)) {
+                        try {
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
+                            if (bookmarkList != null) {
+                                queryItem.setValue(bookmarkList.getName());
+                                itemQuery = bookmarkList.getFilterQuery();
                             }
-                                
+                        } catch (DAOException e) {
+                            logger.error(e.toString(), e);
+                        }
+
                     } else if (userBean.isLoggedIn()) {
                         // User bookmark list
                         try {
@@ -570,7 +579,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                     } else {
                         // Session bookmark list
-                        Optional<BookmarkList> obs = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                        Optional<BookmarkList> obs =
+                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
                         }
@@ -579,7 +589,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         // Skip empty bookmark list
                         continue;
                     }
-                    
+
                 } else {
                     // Generate item query
                     itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
@@ -663,7 +673,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>executeSearch.</p>
+     * <p>
+     * executeSearch.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -674,7 +686,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("executeSearch; searchString: {}", searchString);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
-//        String currentQuery = SearchHelper.prepareQuery(searchString);
+        //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
         if (StringUtils.isEmpty(sortString)) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
@@ -698,7 +710,8 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
-        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale());
+        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale(),
+                DataManager.getInstance().getConfiguration().isAggregateHits());
     }
 
     /** {@inheritDoc} */
@@ -746,7 +759,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetActiveSearchType.</p>
+     * <p>
+     * resetActiveSearchType.
+     * </p>
      */
     public void resetActiveSearchType() {
         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
@@ -1165,56 +1180,58 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
+        if (advancedQueryGroups.isEmpty()) {
+            return;
+        }
+
         if (!facets.getCurrentFacets().isEmpty()) {
-            if (!advancedQueryGroups.isEmpty()) {
-                SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
-                if (!queryGroup.getQueryItems().isEmpty()) {
-                    int index = 0;
-                    for (FacetItem facetItem : facets.getCurrentFacets()) {
-                        if (!facetItem.isHierarchial()) {
-                            continue;
-                        }
-                        if (index < queryGroup.getQueryItems().size()) {
-                            // Fill existing search query items
-                            SearchQueryItem item = queryGroup.getQueryItems().get(index);
-                            while (!item.isHierarchical() && StringUtils.isNotEmpty(item.getValue())
-                                    && index + 1 < queryGroup.getQueryItems().size()) {
-                                // Skip items that already have values
-                                ++index;
-                                item = queryGroup.getQueryItems().get(index);
-                            }
-                            item.setField(facetItem.getField());
-                            item.setOperator(SearchItemOperator.IS);
-                            item.setValue(facetItem.getValue());
-                        } else {
-                            // If no search field is set up for collection search, add new field containing the currently selected collection
-                            SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
-                            item.setField(facetItem.getField());
-                            item.setOperator(SearchItemOperator.IS);
-                            item.setValue(facetItem.getValue());
-                            queryGroup.getQueryItems().add(item);
-                        }
-                        ++index;
+            SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
+            if (!queryGroup.getQueryItems().isEmpty()) {
+                int index = 0;
+                for (FacetItem facetItem : facets.getCurrentFacets()) {
+                    if (!facetItem.isHierarchial()) {
+                        continue;
                     }
-                    // If additional query items are configured for collections but are no longer in use, reset them
                     if (index < queryGroup.getQueryItems().size()) {
-                        for (int i = index; i < queryGroup.getQueryItems().size(); ++i) {
-                            SearchQueryItem item = queryGroup.getQueryItems().get(i);
-                            if (item.isHierarchical()) {
-                                item.reset();
-                                logger.trace("Reset advanced query item {}", i);
-                            }
+                        // Fill existing search query items
+                        SearchQueryItem item = queryGroup.getQueryItems().get(index);
+                        while (!item.isHierarchical() && StringUtils.isNotEmpty(item.getValue())
+                                && index + 1 < queryGroup.getQueryItems().size()) {
+                            // Skip items that already have values
+                            ++index;
+                            item = queryGroup.getQueryItems().get(index);
+                        }
+                        item.setField(facetItem.getField());
+                        item.setOperator(SearchItemOperator.IS);
+                        item.setValue(facetItem.getValue());
+                    } else {
+                        // If no search field is set up for collection search, add new field containing the currently selected collection
+                        SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
+                        item.setField(facetItem.getField());
+                        item.setOperator(SearchItemOperator.IS);
+                        item.setValue(facetItem.getValue());
+                        queryGroup.getQueryItems().add(item);
+                    }
+                    ++index;
+                }
+                // If additional query items are configured for collections but are no longer in use, reset them
+                if (index < queryGroup.getQueryItems().size()) {
+                    for (int i = index; i < queryGroup.getQueryItems().size(); ++i) {
+                        SearchQueryItem item = queryGroup.getQueryItems().get(i);
+                        if (item.isHierarchical()) {
+                            item.reset();
+                            logger.trace("Reset advanced query item {}", i);
                         }
                     }
-                    // If all items are full, add a new one for user query
-                    // if (currentHierarchicalFacets.size() ==
-                    // queryGroup.getQueryItems().size()) {
-                    // queryGroup.getQueryItems().add(new
-                    // SearchQueryItem(BeanUtils.getLocale()));
-                    // }
                 }
+                // If all items are full, add a new one for user query
+                // if (currentHierarchicalFacets.size() ==
+                // queryGroup.getQueryItems().size()) {
+                // queryGroup.getQueryItems().add(new
+                // SearchQueryItem(BeanUtils.getLocale()));
+                // }
             }
-        } else if (!advancedQueryGroups.isEmpty()) {
+        } else {
             SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
             for (SearchQueryItem item : queryGroup.getQueryItems()) {
                 if (item.isHierarchical()) {
@@ -1226,7 +1243,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>removeFacetAction.</p>
+     * <p>
+     * removeFacetAction.
+     * </p>
      *
      * @param facetQuery a {@link java.lang.String} object.
      * @should remove facet correctly
@@ -1262,7 +1281,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentPage</code>.</p>
+     * <p>
+     * Setter for the field <code>currentPage</code>.
+     * </p>
      *
      * @param currentPage the currentPage to set
      */
@@ -1284,7 +1305,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>setHitsCount.</p>
+     * <p>
+     * setHitsCount.
+     * </p>
      *
      * @param hitsCount the hitsCount to set
      */
@@ -1295,7 +1318,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>searchTerms</code>.</p>
+     * <p>
+     * Getter for the field <code>searchTerms</code>.
+     * </p>
      *
      * @return the searchTerms
      */
@@ -1304,7 +1329,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentHitIndex</code>.</p>
+     * <p>
+     * Getter for the field <code>currentHitIndex</code>.
+     * </p>
      *
      * @return the currentHitIndex
      */
@@ -1313,7 +1340,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getCurrentHitIndexDisplay.</p>
+     * <p>
+     * getCurrentHitIndexDisplay.
+     * </p>
      *
      * @return a int.
      */
@@ -1322,7 +1351,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>increaseCurrentHitIndex.</p>
+     * <p>
+     * increaseCurrentHitIndex.
+     * </p>
      *
      * @should increase index correctly
      * @should decrease index correctly
@@ -1353,7 +1384,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hitIndexOperand</code>.</p>
+     * <p>
+     * Getter for the field <code>hitIndexOperand</code>.
+     * </p>
      *
      * @return the hitIndexOperand
      */
@@ -1362,7 +1395,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hitIndexOperand</code>.</p>
+     * <p>
+     * Setter for the field <code>hitIndexOperand</code>.
+     * </p>
      *
      * @param hitIndexOperand the hitIndexOperand to set
      */
@@ -1377,25 +1412,28 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param pi Record identifier of the loaded record.
      * @param page Page number of he loaded record.
      * @param aggregateHits If true, only the identifier has to match, page number is ignored.
+     * @should set currentHitIndex to minus one if no search hits
+     * @should set currentHitIndex correctly
      */
     public void findCurrentHitIndex(String pi, int page, boolean aggregateHits) {
         logger.trace("findCurrentHitIndex: {}/{}", pi, page);
-        currentHitIndex = 0;
-        if (currentSearch != null && !currentSearch.getHits().isEmpty()) {
-            for (SearchHit hit : currentSearch.getHits()) {
-                BrowseElement be = hit.getBrowseElement();
-                logger.trace("BrowseElement: {}/{}", be.getPi(), be.getImageNo());
-                if (be.getPi().equals(pi) && (aggregateHits || be.getImageNo() == page)) {
-                    logger.trace("currentPage: {}", currentPage);
-                    currentHitIndex += (currentPage - 1) * hitsPerPage;
-                    logger.trace("currentHitIndex: {}", currentHitIndex);
-                    return;
-                }
-                currentHitIndex++;
-            }
+        if (currentSearch == null || currentSearch.getHits().isEmpty()) {
+            currentHitIndex = -1;
+            return;
         }
 
-        currentHitIndex = -1;
+        currentHitIndex = 0;
+        for (SearchHit hit : currentSearch.getHits()) {
+            BrowseElement be = hit.getBrowseElement();
+            logger.trace("BrowseElement: {}/{}", be.getPi(), be.getImageNo());
+            if (be.getPi().equals(pi) && (aggregateHits || be.getImageNo() == page)) {
+                logger.trace("currentPage: {}", currentPage);
+                currentHitIndex += (currentPage - 1) * hitsPerPage;
+                logger.trace("currentHitIndex: {}", currentHitIndex);
+                return;
+            }
+            currentHitIndex++;
+        }
     }
 
     /**
@@ -1409,18 +1447,20 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getNextElement: {}", currentHitIndex);
-        if (currentHitIndex > -1 && currentSearch != null) {
-            if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-                return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
-                        facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
-            }
-            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+        if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
+            return null;
+        }
+
+        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
+            //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex + 1, currentSearch.getSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
                     BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
-
-        return null;
+        //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
+        return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
     }
 
     /**
@@ -1434,16 +1474,20 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPreviousElement: {}", currentHitIndex);
-        if (currentHitIndex > -1 && currentSearch != null) {
-            if (currentHitIndex > 0) {
-                return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
-                        facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
-            } else if (currentSearch.getHitsCount() > 0) {
-                return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
-                        facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
-            }
+        if (currentHitIndex <= -1 || currentSearch == null || currentSearch.getHits().isEmpty()) {
+            return null;
+        }
+
+        if (currentHitIndex > 0) {
+            //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex - 1, currentSearch.getSortFields(),
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
+        } else if (currentSearch.getHitsCount() > 0) {
+            //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
+            return SearchHelper.getBrowseElement(searchString, currentHitIndex, currentSearch.getSortFields(),
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), SearchHelper.generateQueryParams(), searchTerms,
+                    BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
 
         return null;
@@ -1489,7 +1533,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetSearchFilter.</p>
+     * <p>
+     * resetSearchFilter.
+     * </p>
      */
     public void resetSearchFilter() {
         currentSearchFilter = null;
@@ -1502,14 +1548,18 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetCurrentHitIndex.</p>
+     * <p>
+     * resetCurrentHitIndex.
+     * </p>
      */
     public void resetCurrentHitIndex() {
         currentHitIndex = -1;
     }
 
     /**
-     * <p>isSortingEnabled.</p>
+     * <p>
+     * isSortingEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1518,7 +1568,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>advancedQueryGroups</code>.</p>
+     * <p>
+     * Getter for the field <code>advancedQueryGroups</code>.
+     * </p>
      *
      * @return the advancedQueryGroups
      */
@@ -1528,7 +1580,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>addNewAdvancedQueryGroup.</p>
+     * <p>
+     * addNewAdvancedQueryGroup.
+     * </p>
      *
      * @should add group correctly
      * @return a boolean.
@@ -1539,7 +1593,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>removeAdvancedQueryGroup.</p>
+     * <p>
+     * removeAdvancedQueryGroup.
+     * </p>
      *
      * @param group a {@link io.goobi.viewer.model.search.SearchQueryGroup} object.
      * @should remove group correctly
@@ -1575,69 +1631,71 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         String key = new StringBuilder(language).append('_').append(field).toString();
         List<StringPair> ret = advancedSearchSelectItems.get(key);
-        if (ret == null) {
-            ret = new ArrayList<>();
-            logger.trace("Generating drop-down values for {}", field);
-            if (SolrConstants.BOOKMARKS.equals(field)) {
-                if (userBean != null && userBean.isLoggedIn()) {
-                    // User bookshelves
-                    List<BookmarkList> bookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(userBean.getUser());
-                    if (!bookmarkLists.isEmpty()) {
-                        for (BookmarkList bookmarkList : bookmarkLists) {
-                            if (!bookmarkList.getItems().isEmpty()) {
-                                ret.add(new StringPair(bookmarkList.getName(), bookmarkList.getName()));
-                            }
-                        }
-                    }
-                } else {
-                    // Session bookmark list
-                    Optional<BookmarkList> bookmarkList = DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
-                    if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
-                        ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
-                    }
-                }
-                //public bookmark lists
-                List<BookmarkList> publicBookmarkLists = DataManager.getInstance().getDao().getPublicBookmarkLists();
-                if (!publicBookmarkLists.isEmpty()) {
-                    for (BookmarkList bookmarkList : publicBookmarkLists) {
-                        StringPair pair = new StringPair(bookmarkList.getName(), bookmarkList.getName());
-                        if (!bookmarkList.getItems().isEmpty() && !ret.contains(pair)) {
-                            ret.add(pair);
-                        }
-                    }
-                }
-            } else if (hierarchical) {
-                BrowseBean browseBean = BeanUtils.getBrowseBean();
-                if (browseBean == null) {
-                    browseBean = new BrowseBean();
-                }
-                // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
-                int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
-                List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
-                StringBuilder sbItemLabel = new StringBuilder();
-                for (BrowseDcElement dc : elementList) {
-                    for (int i = 0; i < dc.getLevel(); ++i) {
-                        sbItemLabel.append("- ");
-                    }
-                    sbItemLabel.append(Helper.getTranslation(dc.getName(), null));
-                    ret.add(new StringPair(dc.getName(), sbItemLabel.toString()));
-                    sbItemLabel.setLength(0);
-                }
-                advancedSearchSelectItems.put(key, ret);
-            } else {
-                new BrowsingMenuFieldConfig(field, null, null, null, false);
-                String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
-
-                List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);
-                for (String value : values) {
-                    ret.add(new StringPair(value, Helper.getTranslation(value, null)));
-                }
-
-                Collections.sort(ret);
-                advancedSearchSelectItems.put(key, ret);
-            }
-            logger.trace("Generated {} values", ret.size());
+        if (ret != null) {
+            return ret;
         }
+
+        ret = new ArrayList<>();
+        logger.trace("Generating drop-down values for {}", field);
+        if (SolrConstants.BOOKMARKS.equals(field)) {
+            if (userBean != null && userBean.isLoggedIn()) {
+                // User bookshelves
+                List<BookmarkList> bookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(userBean.getUser());
+                if (!bookmarkLists.isEmpty()) {
+                    for (BookmarkList bookmarkList : bookmarkLists) {
+                        if (!bookmarkList.getItems().isEmpty()) {
+                            ret.add(new StringPair(bookmarkList.getName(), bookmarkList.getName()));
+                        }
+                    }
+                }
+            } else {
+                // Session bookmark list
+                Optional<BookmarkList> bookmarkList =
+                        DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
+                    ret.add(new StringPair(bookmarkList.get().getName(), bookmarkList.get().getName()));
+                }
+            }
+            // public bookmark lists
+            List<BookmarkList> publicBookmarkLists = DataManager.getInstance().getDao().getPublicBookmarkLists();
+            if (!publicBookmarkLists.isEmpty()) {
+                for (BookmarkList bookmarkList : publicBookmarkLists) {
+                    StringPair pair = new StringPair(bookmarkList.getName(), bookmarkList.getName());
+                    if (!bookmarkList.getItems().isEmpty() && !ret.contains(pair)) {
+                        ret.add(pair);
+                    }
+                }
+            }
+        } else if (hierarchical) {
+            BrowseBean browseBean = BeanUtils.getBrowseBean();
+            if (browseBean == null) {
+                browseBean = new BrowseBean();
+            }
+            // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
+            int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
+            List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
+            StringBuilder sbItemLabel = new StringBuilder();
+            for (BrowseDcElement dc : elementList) {
+                for (int i = 0; i < dc.getLevel(); ++i) {
+                    sbItemLabel.append("- ");
+                }
+                sbItemLabel.append(Helper.getTranslation(dc.getName(), null));
+                ret.add(new StringPair(dc.getName(), sbItemLabel.toString()));
+                sbItemLabel.setLength(0);
+            }
+            advancedSearchSelectItems.put(key, ret);
+        } else {
+            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
+
+            List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);
+            for (String value : values) {
+                ret.add(new StringPair(value, Helper.getTranslation(value, null)));
+            }
+
+            Collections.sort(ret);
+            advancedSearchSelectItems.put(key, ret);
+        }
+        logger.trace("Generated {} values", ret.size());
 
         return ret;
     }
@@ -1681,7 +1739,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>advancedSearchGroupOperator</code>.</p>
+     * <p>
+     * Getter for the field <code>advancedSearchGroupOperator</code>.
+     * </p>
      *
      * @return the advancedSearchGroupOperator
      */
@@ -1690,7 +1750,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>advancedSearchGroupOperator</code>.</p>
+     * <p>
+     * Setter for the field <code>advancedSearchGroupOperator</code>.
+     * </p>
      *
      * @param advancedSearchGroupOperator the advancedSearchGroupOperator to set
      */
@@ -1699,11 +1761,13 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getAdvancedSearchAllowedFields.</p>
+     * <p>
+     * getAdvancedSearchAllowedFields.
+     * </p>
      *
      * @return List of allowed advanced search fields
      */
-    public List<String> getAdvancedSearchAllowedFields() {
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
         return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString());
     }
 
@@ -1715,18 +1779,18 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
      */
-    public static List<String> getAdvancedSearchAllowedFields(String language) {
-        List<String> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
+    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(String language) {
+        List<AdvancedSearchFieldConfiguration> fields = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         if (fields == null) {
-            fields = new ArrayList<>();
+            return Collections.emptyList();
         }
 
         // Omit other languages
         if (!fields.isEmpty() && StringUtils.isNotEmpty(language)) {
-            List<String> toRemove = new ArrayList<>();
+            List<AdvancedSearchFieldConfiguration> toRemove = new ArrayList<>();
             language = language.toUpperCase();
-            for (String field : fields) {
-                if (field.contains(SolrConstants._LANG_) && !field.endsWith(language)) {
+            for (AdvancedSearchFieldConfiguration field : fields) {
+                if (field.getField().contains(SolrConstants._LANG_) && !field.getField().endsWith(language)) {
                     toRemove.add(field);
                 }
             }
@@ -1735,13 +1799,15 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
 
-        fields.add(0, SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+        fields.add(0, new AdvancedSearchFieldConfiguration(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, null, false, false, false));
 
         return fields;
     }
 
     /**
-     * <p>Getter for the field <code>searchInCurrentItemString</code>.</p>
+     * <p>
+     * Getter for the field <code>searchInCurrentItemString</code>.
+     * </p>
      *
      * @return the searchInCurrentItemString
      */
@@ -1750,7 +1816,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>searchInCurrentItemString</code>.</p>
+     * <p>
+     * Setter for the field <code>searchInCurrentItemString</code>.
+     * </p>
      *
      * @param searchInCurrentItemString the searchInCurrentItemString to set
      */
@@ -1761,7 +1829,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentSearch</code>.</p>
+     * <p>
+     * Getter for the field <code>currentSearch</code>.
+     * </p>
      *
      * @return the currentSearch
      */
@@ -1770,7 +1840,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentSearch</code>.</p>
+     * <p>
+     * Setter for the field <code>currentSearch</code>.
+     * </p>
      *
      * @param currentSearch the currentSearch to set
      */
@@ -1780,7 +1852,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>saveSearchAction.</p>
+     * <p>
+     * saveSearchAction.
+     * </p>
      *
      * @should add all values correctly
      * @return a {@link java.lang.String} object.
@@ -1830,7 +1904,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getRssUrl.</p>
+     * <p>
+     * getRssUrl.
+     * </p>
      *
      * @return URL to the RSS feed for the current search
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1866,7 +1942,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>isSearchSavingEnabled.</p>
+     * <p>
+     * isSearchSavingEnabled.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1875,7 +1953,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>executeSavedSearchAction.</p>
+     * <p>
+     * executeSavedSearchAction.
+     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
      * @return a {@link java.lang.String} object.
@@ -1899,7 +1979,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>exportSearchAsExcelAction.</p>
+     * <p>
+     * exportSearchAsExcelAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2030,7 +2112,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>hitsPerPage</code>.</p>
+     * <p>
+     * Getter for the field <code>hitsPerPage</code>.
+     * </p>
      *
      * @return the hitsPerPage
      */
@@ -2039,7 +2123,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hitsPerPage</code>.</p>
+     * <p>
+     * Setter for the field <code>hitsPerPage</code>.
+     * </p>
      *
      * @param hitsPerPage the hitsPerPage to set
      */
@@ -2048,14 +2134,18 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>resetHitsPerPage.</p>
+     * <p>
+     * resetHitsPerPage.
+     * </p>
      */
     public void resetHitsPerPage() {
         setHitsPerPage(DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
     }
 
     /**
-     * <p>Getter for the field <code>advancedSearchQueryInfo</code>.</p>
+     * <p>
+     * Getter for the field <code>advancedSearchQueryInfo</code>.
+     * </p>
      *
      * @return the advancedSearchQueryInfo
      */
@@ -2077,7 +2167,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>isDownloadReady.</p>
+     * <p>
+     * isDownloadReady.
+     * </p>
      *
      * @return a {@link java.util.concurrent.Future} object.
      */
@@ -2092,14 +2184,16 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getTotalNumberOfVolumes.</p>
+     * <p>
+     * getTotalNumberOfVolumes.
+     * </p>
      *
      * @return a long.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
-        String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
+        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, DataManager.getInstance().getConfiguration().isAggregateHits());
         return DataManager.getInstance().getSearchIndex().count(query);
     }
 
@@ -2133,7 +2227,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getStructElement.</p>
+     * <p>
+     * getStructElement.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -2159,7 +2255,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>getCurrentSearchUrlPart.</p>
+     * <p>
+     * getCurrentSearchUrlPart.
+     * </p>
      *
      * @return Parameter string for pretty:search5 URLs.
      */
@@ -2177,7 +2275,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>updateFacetItem.</p>
+     * <p>
+     * updateFacetItem.
+     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param hierarchical a boolean.
@@ -2240,12 +2340,8 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<FacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
-        sbQuery.append('(')
-                .append(SolrConstants.ISWORK)
-                .append(":true OR ")
-                .append(SolrConstants.ISANCHOR)
-                .append(":true)")
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true, true));
+        sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, true));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {
@@ -2258,34 +2354,33 @@ public class SearchBean implements SearchInterface, Serializable {
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field), Collections.singletonList(SolrConstants.IDDOC));
-        // TODO Filter with the docstruct whitelist?
-        if (resp != null && resp.getFacetField(field) != null && resp.getFacetField(field).getValues() != null) {
-            Map<String, Long> result =
-                    resp.getFacetField(field).getValues().stream().filter(count -> count.getName().charAt(0) != 1).sorted((count1, count2) -> {
-                        int compValue;
-                        if (count1.getName().matches("\\d+") && count2.getName().matches("\\d+")) {
-                            compValue = Long.compare(Long.parseLong(count1.getName()), Long.parseLong(count2.getName()));
-                        } else {
-                            compValue = count1.getName().compareToIgnoreCase(count2.getName());
-                        }
-                        if (Boolean.TRUE.equals(reverseOrder)) {
-                            compValue *= -1;
-                        }
-                        return compValue;
-                    })
-                            .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field).getValues().size())
-                            .collect(Collectors.toMap(Count::getName, Count::getCount));
-            List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
-            Locale locale = null;
-            NavigationHelper nh = BeanUtils.getNavigationHelper();
-            if (nh != null) {
-                locale = nh.getLocale();
-            }
-
-            return FacetItem.generateFacetItems(field, result, true, reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
+        if (resp == null || resp.getFacetField(field) == null || resp.getFacetField(field).getValues() == null) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList();
+        Map<String, Long> result =
+                resp.getFacetField(field).getValues().stream().filter(count -> count.getName().charAt(0) != 1).sorted((count1, count2) -> {
+                    int compValue;
+                    if (count1.getName().matches("\\d+") && count2.getName().matches("\\d+")) {
+                        compValue = Long.compare(Long.parseLong(count1.getName()), Long.parseLong(count2.getName()));
+                    } else {
+                        compValue = count1.getName().compareToIgnoreCase(count2.getName());
+                    }
+                    if (Boolean.TRUE.equals(reverseOrder)) {
+                        compValue *= -1;
+                    }
+                    return compValue;
+                })
+                        .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field).getValues().size())
+                        .collect(Collectors.toMap(Count::getName, Count::getCount));
+        List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
+        Locale locale = null;
+        NavigationHelper nh = BeanUtils.getNavigationHelper();
+        if (nh != null) {
+            locale = nh.getLocale();
+        }
+
+        return FacetItem.generateFacetItems(field, result, true, reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
     }
 
     /* (non-Javadoc)
@@ -2307,7 +2402,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>isShowReducedSearchOptions.</p>
+     * <p>
+     * isShowReducedSearchOptions.
+     * </p>
      *
      * @return the showReducedSearchOptions
      */
@@ -2316,32 +2413,40 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>showReducedSearchOptions</code>.</p>
+     * <p>
+     * Setter for the field <code>showReducedSearchOptions</code>.
+     * </p>
      *
      * @param showReducedSearchOptions the showReducedSearchOptions to set
      */
     public void setShowReducedSearchOptions(boolean showReducedSearchOptions) {
         this.showReducedSearchOptions = showReducedSearchOptions;
     }
-    
+
     /**
-     * <p>setFirstQueryItemValue.</p>
+     * <p>
+     * setFirstQueryItemValue.
+     * </p>
      *
      * @param value a {@link java.lang.String} object.
      */
     public void setFirstQueryItemValue(String value) {
         this.advancedQueryGroups.get(0).getQueryItems().get(0).setValue(value);
     }
-    
+
     /**
-     * <p>getFirstQueryItemValue.</p>
+     * <p>
+     * getFirstQueryItemValue.
+     * </p>
      */
     public void getFirstQueryItemValue() {
         this.advancedQueryGroups.get(0).getQueryItems().get(0).getValue();
     }
-    
+
     /**
-     * <p>setBookmarkListName.</p>
+     * <p>
+     * setBookmarkListName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -2352,22 +2457,29 @@ public class SearchBean implements SearchInterface, Serializable {
         item.setOperator(SearchItemOperator.IS);
 
     }
-    
+
     /**
-     * <p>getBookmarkListName.</p>
+     * <p>
+     * getBookmarkListName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListName() {
-        String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
-        .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
-        .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
-        .findFirst().map(SearchQueryItem::getValue).orElse("");
+        String value = this.advancedQueryGroups.stream()
+                .flatMap(group -> group.getQueryItems().stream())
+                .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
+                .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
+                .findFirst()
+                .map(SearchQueryItem::getValue)
+                .orElse("");
         return value;
     }
-    
+
     /**
-     * <p>setBookmarkListName.</p>
+     * <p>
+     * setBookmarkListName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -2378,16 +2490,22 @@ public class SearchBean implements SearchInterface, Serializable {
         item.setOperator(SearchItemOperator.IS);
 
     }
-    
+
     /**
-     * <p>getBookmarkListName.</p>
+     * <p>
+     * getBookmarkListName.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListSharedKey() {
-        String value = this.advancedQueryGroups.stream().flatMap(group -> group.getQueryItems().stream())
-        .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
-        .filter(item -> item.getValue() != null && item.getValue().startsWith("KEY::")).findFirst().map(SearchQueryItem::getValue).orElse("");
+        String value = this.advancedQueryGroups.stream()
+                .flatMap(group -> group.getQueryItems().stream())
+                .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
+                .filter(item -> item.getValue() != null && item.getValue().startsWith("KEY::"))
+                .findFirst()
+                .map(SearchQueryItem::getValue)
+                .orElse("");
         return value.replace("KEY::", "");
     }
 

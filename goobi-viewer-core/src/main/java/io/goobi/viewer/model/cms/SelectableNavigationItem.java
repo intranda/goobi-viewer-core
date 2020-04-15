@@ -17,25 +17,28 @@ package io.goobi.viewer.model.cms;
 
 /**
  *
- * A {@link io.goobi.viewer.model.cms.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems to be used in the navigation menu
+ * A {@link io.goobi.viewer.model.cms.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems to be used
+ * in the navigation menu
  *
  * @author Florian Alpers
  */
 public class SelectableNavigationItem extends CMSNavigationItem {
 
     private boolean selected = false;
-    
-    
-    
+
     /**
-     * <p>Constructor for SelectableNavigationItem.</p>
+     * <p>
+     * Constructor for SelectableNavigationItem.
+     * </p>
      */
     public SelectableNavigationItem() {
         super();
     }
 
     /**
-     * <p>Constructor for SelectableNavigationItem.</p>
+     * <p>
+     * Constructor for SelectableNavigationItem.
+     * </p>
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
@@ -44,7 +47,9 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>Constructor for SelectableNavigationItem.</p>
+     * <p>
+     * Constructor for SelectableNavigationItem.
+     * </p>
      *
      * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
      */
@@ -53,7 +58,9 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>Constructor for SelectableNavigationItem.</p>
+     * <p>
+     * Constructor for SelectableNavigationItem.
+     * </p>
      *
      * @param targetUrl a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -63,16 +70,20 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>Setter for the field <code>selected</code>.</p>
+     * <p>
+     * Setter for the field <code>selected</code>.
+     * </p>
      *
      * @param selected the selected to set
      */
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
-    
+
     /**
-     * <p>isSelected.</p>
+     * <p>
+     * isSelected.
+     * </p>
      *
      * @return the selected
      */

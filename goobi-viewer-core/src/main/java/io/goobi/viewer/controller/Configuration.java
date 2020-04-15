@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -54,6 +53,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
@@ -64,7 +66,7 @@ import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.authentication.SAMLProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -137,41 +139,42 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param stopwordsFilePath a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
      * @should load all stopwords
      * @should remove parts starting with pipe
      * @should not add empty stopwords
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
-     * @return a {@link java.util.Set} object.
-     * @throws java.io.FileNotFoundException if any.
-     * @throws java.io.IOException if any.
      */
     protected static Set<String> loadStopwords(String stopwordsFilePath) throws FileNotFoundException, IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             throw new IllegalArgumentException("stopwordsFilePath may not be null or empty");
         }
-        Set<String> ret = new HashSet<>();
 
-        if (StringUtils.isNotEmpty(stopwordsFilePath)) {
-            try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (StringUtils.isNotBlank(line)) {
-                        if (line.charAt(0) != '#') {
-                            int pipeIndex = line.indexOf('|');
-                            if (pipeIndex != -1) {
-                                line = line.substring(0, pipeIndex).trim();
-                            }
-                            if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
-                                ret.add(line);
-                            }
+        if (StringUtils.isEmpty(stopwordsFilePath)) {
+            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
+            return Collections.emptySet();
+        }
+
+        Set<String> ret = new HashSet<>();
+        try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (StringUtils.isNotBlank(line)) {
+                    if (line.charAt(0) != '#') {
+                        int pipeIndex = line.indexOf('|');
+                        if (pipeIndex != -1) {
+                            line = line.substring(0, pipeIndex).trim();
+                        }
+                        if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
+                            ret.add(line);
                         }
                     }
                 }
             }
-        } else {
-            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
         }
 
         return ret;
@@ -350,7 +353,7 @@ public final class Configuration extends AbstractConfiguration {
                     boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
                     boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                     paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyMap()));
+                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyList()));
                 }
             }
             ret.add(new Metadata(label, masterValue, type, paramList, group));
@@ -492,7 +495,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return the resulting {@link Metadata} instance
      * @should load replace rules correctly
      */
-    // TODO
     static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
         if (sub == null) {
             throw new IllegalArgumentException("sub may not be null");
@@ -517,16 +519,17 @@ public final class Configuration extends AbstractConfiguration {
                 String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                 String search = sub2.getString("[@search]", "").replace("_SPACE_", " ");
-                String replace = sub2.getString("[@replace]", "").replace("_SPACE_", " ");
                 boolean addUrl = sub2.getBoolean("[@url]", false);
                 boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
                 boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                Map<Object, String> replaceRules = new LinkedHashMap<>();
+                List<MetadataReplaceRule> replaceRules = Collections.emptyList();
                 List<HierarchicalConfiguration> replaceRuleElements = sub2.configurationsAt("replace");
                 if (replaceRuleElements != null) {
                     // Replacement rules can be applied to a character, a string or a regex
+                    replaceRules = new ArrayList<>(replaceRuleElements.size());
                     for (Iterator<HierarchicalConfiguration> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
                         HierarchicalConfiguration sub3 = it3.next();
+                        String condition = sub3.getString("[@conditions]");
                         Character character = null;
                         try {
                             int charIndex = sub3.getInt("[@char]");
@@ -548,11 +551,11 @@ public final class Configuration extends AbstractConfiguration {
                             replaceWith = "";
                         }
                         if (character != null) {
-                            replaceRules.put(character, replaceWith);
+                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, condition, MetadataReplaceRuleType.CHAR));
                         } else if (string != null) {
-                            replaceRules.put(string, replaceWith);
+                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, condition, MetadataReplaceRuleType.STRING));
                         } else if (regex != null) {
-                            replaceRules.put("REGEX:" + regex, replaceWith);
+                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, condition, MetadataReplaceRuleType.REGEX));
                         }
                     }
                 }
@@ -749,7 +752,7 @@ public final class Configuration extends AbstractConfiguration {
                                         ? eleParam.getAttribute("topstructOnly").getBooleanValue() : false;
 
                                 paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyMap()));
+                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyList()));
                             }
                         }
                         ret.add(new Metadata(label, masterValue, type, paramList, group, number));
@@ -815,9 +818,11 @@ public final class Configuration extends AbstractConfiguration {
             String field = sub.getString(".");
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
+            boolean translate = sub.getBoolean("[@translate]", false);
             String docstructFilterString = sub.getString("[@docstructFilters]");
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-            BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+            BrowsingMenuFieldConfig bmfc =
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, docstructFilterString, recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 
@@ -1130,6 +1135,19 @@ public final class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
+    public String getIIIFApiUrl() {
+        String urlString = getLocalString("urls.iiif", getRestApiUrl());
+        if (!urlString.endsWith("/")) {
+            urlString += "/";
+        }
+        return urlString;
+    }
+
+    public boolean isUseIIIFApiUrlForCmsMediaUrls() {
+        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
+        return use;
+    }
+
     /**
      * <p>
      * getContentServerRealUrl.
@@ -1246,8 +1264,29 @@ public final class Configuration extends AbstractConfiguration {
      * @should return all values
      * @return a {@link java.util.List} object.
      */
-    public List<String> getAdvancedSearchFields() {
-        return getLocalList("search.advanced.searchFields.field");
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields() {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            Collections.emptyList();
+        }
+
+        List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            String field = subElement.getString(".");
+            if (StringUtils.isEmpty(field)) {
+                logger.warn("No advanced search field name defined, skipping.");
+                continue;
+            }
+            String label = subElement.getString("[@label]", null);
+            boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
+            boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+
+            ret.add(new AdvancedSearchFieldConfiguration(field, label, hierarchical, untokenizeForPhraseSearch,
+                    field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#'));
+        }
+
+        return ret;
     }
 
     /**
@@ -1288,14 +1327,25 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDisplayAdditionalMetadataTranslateFields.
+     * Returns a list of additional metadata fields thats are configured to have their values translated. Field names are normalized (i.e. things like
+     * _UNTOKENIZED are removed).
      * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        if (fields.isEmpty()) {
+            return fields;
+        }
+
+        List<String> ret = new ArrayList<>(fields.size());
+        for (String field : fields) {
+            ret.add(SearchHelper.normalizeField(field));
+        }
+
+        return ret;
     }
 
     /**
@@ -1304,23 +1354,11 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return correct value
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isAdvancedSearchFieldHierarchical(String field) {
-        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
-        if (fieldList == null) {
-            return false;
-        }
-
-        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString(".").equals(field)) {
-                return subElement.getBoolean("[@hierarchical]", false);
-            }
-        }
-
-        return false;
+        return isAdvancedSearchFieldHasAttribute(field, "hierarchical");
     }
 
     /**
@@ -1329,10 +1367,45 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return correct value
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
+        return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
+    }
+
+    /**
+     * <p>
+     * isAdvancedSearchFieldHierarchical.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @return Label attribute value for the given field name
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldSeparatorLabel(String field) {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return null;
+        }
+
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@label]", "");
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param field Advanced search field name
+     * @param attribute Attribute name
+     * @return
+     */
+    boolean isAdvancedSearchFieldHasAttribute(String field, String attribute) {
         List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
         if (fieldList == null) {
             return false;
@@ -1341,7 +1414,7 @@ public final class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
             HierarchicalConfiguration subElement = it.next();
             if (subElement.getString(".").equals(field)) {
-                return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+                return subElement.getBoolean("[@" + attribute + "]", false);
             }
         }
 
@@ -1429,7 +1502,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedMetsFolder() {
-        return getLocalString("indexedMetsFolder");
+        return getLocalString("indexedMetsFolder", "indexed_mets");
     }
 
     /**
@@ -1441,7 +1514,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedLidoFolder() {
-        return getLocalString("indexedLidoFolder");
+        return getLocalString("indexedLidoFolder", "indexed_lido");
     }
 
     /**
@@ -1453,7 +1526,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedDenkxwebFolder() {
-        return getLocalString("indexedDenkxwebFolder");
+        return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
+    }
+
+    /**
+     * <p>
+     * getIndexedDublinCoreFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedDublinCoreFolder() {
+        return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
     }
 
     /**
@@ -2822,6 +2907,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getMetadataParamNumber() {
+        return getLocalInt("metadata.metadataParamNumber", 10);
+    }
+
+    /**
      * <p>
      * useTiles.
      * </p>
@@ -3243,18 +3337,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isUseViewerLocaleAsRecordLanguage() {
         return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
-    }
-
-    /**
-     * <p>
-     * isTocAlwaysDisplayDocstruct.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isTocAlwaysDisplayDocstruct() {
-        return getLocalBoolean("toc.alwaysDisplayDocstruct", false);
     }
 
     /**
@@ -3902,6 +3984,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
+     * 
+     * @return "temp_media" unless otherwise configured in "tempMediaFolder"
+     */
+    public String getTempMediaFolder() {
+        return getLocalString("tempMediaFolder", "temp_media");
+    }
+
+    /**
      * <p>
      * getCmsClassifications.
      * </p>
@@ -4122,7 +4213,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getDefaultBrowseIcon(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
         if (subConfig != null) {
-            return subConfig.getString("defaultBrowseIcon", "");
+            return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
         }
 
         return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
@@ -4455,6 +4546,87 @@ public final class Configuration extends AbstractConfiguration {
 
     public boolean isDisplaySocialMediaShareLinks() {
         return getLocalBoolean("webGuiDisplay.displaySocialMediaShareLinks", false);
+    }
+
+    public boolean isDisplayAnchorLabelInTitleBar(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if (subConf != null) {
+            return subConf.getBoolean("displayAnchorTitle", false);
+        }
+
+        return false;
+    }
+
+    public String getAnchorLabelInTitleBarPrefix(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if (subConf != null) {
+            return subConf.getString("displayAnchorTitle[@prefix]", "");
+        }
+
+        return "";
+    }
+
+    public String getAnchorLabelInTitleBarSuffix(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        HierarchicalConfiguration subConf = getMatchingConfig(templateList, template);
+        if (subConf != null) {
+            return subConf.getString("displayAnchorTitle[@suffix]", " ");
+        }
+
+        return " ";
+    }
+
+    public String getMapBoxToken() {
+        return getLocalString("maps.mapbox.token", "");
+    }
+
+    /**
+     * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
+     * return null;
+     * 
+     * @param templateList
+     * @param template
+     * @return
+     */
+    private static HierarchicalConfiguration getMatchingConfig(List<HierarchicalConfiguration> templateList, String name) {
+        if (name == null || templateList == null) {
+            return null;
+        }
+
+        HierarchicalConfiguration conf = null;
+        HierarchicalConfiguration defaultConf = null;
+        for (HierarchicalConfiguration subConf : templateList) {
+            if (name.equalsIgnoreCase(subConf.getString("[@name]"))) {
+                conf = subConf;
+                break;
+            } else if ("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
+                defaultConf = subConf;
+            }
+        }
+        if (conf != null) {
+            return conf;
+        }
+
+        return defaultConf;
+    }
+
+    public List<LicenseDescription> getLicenseDescriptions() {
+        List<LicenseDescription> licenses = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String url = node.getString("[@url]", "");
+            if (StringUtils.isNotBlank(url)) {
+                String label = node.getString("[@label]", url);
+                String icon = node.getString("[@icon]", "");
+                LicenseDescription license = new LicenseDescription(url);
+                license.setLabel(label);
+                license.setIcon(icon);
+                licenses.add(license);
+            }
+        }
+        return licenses;
     }
 
 }

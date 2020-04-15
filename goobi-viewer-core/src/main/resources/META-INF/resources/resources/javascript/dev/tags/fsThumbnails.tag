@@ -43,7 +43,10 @@
         		}
         		
         		// hide image controls
-        		this.controls[0].classList.toggle( 'faded' );
+        		console.log("controls", this.controls);
+        		for (let control of this.controls) {
+        		    control.classList.toggle( 'faded' );
+        		};
         		
         		// set element widths
             	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;

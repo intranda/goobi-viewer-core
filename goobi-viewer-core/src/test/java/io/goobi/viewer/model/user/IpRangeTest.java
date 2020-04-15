@@ -32,9 +32,9 @@ import io.goobi.viewer.model.security.user.IpRange;
 public class IpRangeTest extends AbstractDatabaseEnabledTest {
 
     /**
-    * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
-    * @verifies return true if condition is open access
-    */
+     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
+     * @verifies return true if condition is open access
+     */
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
         IpRange ipRange = new IpRange();
@@ -43,22 +43,21 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-    * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
-    * @verifies return true if ip range has license
-    */
+     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
+     * @verifies return true if ip range has license
+     */
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfIpRangeHasLicense() throws Exception {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assert.assertNotNull(ipRange);
-        List<String> licences = Arrays.asList(new String[]{"license type 3 name", "license type 1 name"});
-        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences), null,
-                IPrivilegeHolder.PRIV_LIST, "PPN123"));
+        List<String> licences = Arrays.asList(new String[] { "license type 3 name", "license type 1 name" });
+        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences), null, IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
     /**
-    * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
-    * @verifies return false if ip range has no license
-    */
+     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
+     * @verifies return false if ip range has no license
+     */
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnFalseIfIpRangeHasNoLicense() throws Exception {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
@@ -68,13 +67,12 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-    * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
-    * @verifies return true if condition list empty
-    */
+     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
+     * @verifies return true if condition list empty
+     */
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         IpRange ipRange = new IpRange();
-        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0), null,
-                "restricted", "PPN123"));
+        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0), null, "restricted", "PPN123"));
     }
 }

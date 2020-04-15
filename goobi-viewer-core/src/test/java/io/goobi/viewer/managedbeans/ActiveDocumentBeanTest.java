@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -73,15 +72,15 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void update_shouldCreateViewManagerCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
-        adb.setPersistentIdentifier("PPN517154005");
-        adb.setImageToShow(0); // TODO an updated index will always have a as the first image number
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow(1);
         adb.update();
         Assert.assertNotNull(adb.getViewManager());
-        Assert.assertEquals("PPN517154005", adb.getPersistentIdentifier());
-        Assert.assertEquals("PPN517154005", adb.getViewManager().getPi());
-        Assert.assertEquals(1387459019047L, adb.getTopDocumentIddoc());
-        Assert.assertEquals(1387459019047L, adb.getViewManager().getTopDocumentIddoc());
-        Assert.assertEquals(1387459019067L, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
+        Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
+        Assert.assertEquals(iddocKleiuniv, adb.getTopDocumentIddoc());
+        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         Assert.assertNotNull(adb.getViewManager().getTopDocument());
         Assert.assertEquals(adb.getTopDocument(), adb.getViewManager().getTopDocument());
         Assert.assertNotNull(adb.getViewManager().getCurrentDocument());
@@ -96,19 +95,19 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
-        adb.setPersistentIdentifier("PPN517154005");
-        adb.setImageToShow(0); // TODO an updated index will always have a as the first image number
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        adb.setImageToShow(1);
         adb.update();
-        Assert.assertEquals(1387459019067L, adb.getViewManager().getCurrentDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
         ViewManager oldViewManager = adb.getViewManager();
         Assert.assertTrue(oldViewManager == adb.getViewManager());
 
-        adb.setLogid("LOG_0005");
+        adb.setLogid("LOG_0003");
         adb.update();
-        Assert.assertEquals("PPN517154005", adb.getViewManager().getPi());
-        Assert.assertEquals(1387459019047L, adb.getViewManager().getTopDocumentIddoc());
-        Assert.assertEquals(1387459019070L, adb.getViewManager().getCurrentDocumentIddoc());
-        //        Assert.assertEquals("LOG_0005", adb.getViewManager().getLogId());
+        Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
+        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopDocumentIddoc());
+        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentDocumentIddoc());
+        // Assert.assertEquals("LOG_0003", adb.getViewManager().getLogId());
         Assert.assertFalse(oldViewManager == adb.getViewManager());
     }
 
@@ -119,13 +118,16 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
-        adb.setPersistentIdentifier("PPN517154005");
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(1);
         adb.update();
 
         adb.setLogid("LOG_0005");
-        adb.update();
-        Assert.assertEquals(1387459019047L, adb.topDocumentIddoc);
+        try {
+            adb.update();
+        } catch (IDDOCNotFoundException e) {
+        }
+        Assert.assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
@@ -135,8 +137,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
-        adb.setPersistentIdentifier("PPN517154005");
-        Assert.assertEquals(1387459019047L, adb.topDocumentIddoc);
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        Assert.assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
@@ -147,7 +149,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
-        adb.setPersistentIdentifier("PPN517154005");
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(10);
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getNextPageUrl(3));
@@ -161,7 +163,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
-        adb.setPersistentIdentifier("PPN517154005");
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(15);
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getNextPageUrl(3));
@@ -175,7 +177,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
-        adb.setPersistentIdentifier("PPN517154005");
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(10);
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/7/", adb.getPreviousPageUrl(3));
@@ -189,11 +191,14 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
-        adb.setPersistentIdentifier("PPN517154005");
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(2);
-        adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getFirstPageOrder() + "/", adb.getPreviousPageUrl(
-                4));
+        try {
+            adb.update();
+        } catch (IDDOCNotFoundException e) {
+        }
+        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getFirstPageOrder() + "/",
+                adb.getPreviousPageUrl(4));
     }
 
     /**
@@ -204,7 +209,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getUrl_shouldConstructUrlCorrectly() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setNavigationHelper(navigationHelper);
-        adb.setPersistentIdentifier("PPN517154005");
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow(1);
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl(12));

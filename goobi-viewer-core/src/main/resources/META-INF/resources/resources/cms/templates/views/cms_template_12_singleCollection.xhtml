@@ -17,7 +17,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
@@ -62,12 +62,15 @@
                     <ui:include src="/resources/includes/search/searchListOptions.xhtml" />
 
                     <!-- SEARCH LIST COMPONENT -->
-                    <viewerComponent:searchHitList />
+                    <viewerComponent:searchHitList>
+                    	<ui:param name="rootUrl" value="#{cmsBean.getUrl(cmsPage)}"></ui:param>
+                    </viewerComponent:searchHitList>
                 </div>
 
                 <!-- PAGINATOR -->
-                <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cmsPage.pageUrl}-/"
-                    urlSuffix="#{searchBean.facets.currentFacetString}/#{searchBean.facets.currentFacetString}/" />
+                <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" 
+                itemActive="#{searchBean.currentPage}" urlPrefix="#{cmsPage.pageUrl}-/-/"
+                    urlSuffix="#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/" />
             </div>
 
             <script type="text/javascript">                

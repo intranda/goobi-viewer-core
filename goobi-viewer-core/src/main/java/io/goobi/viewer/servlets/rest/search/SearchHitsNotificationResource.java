@@ -49,7 +49,9 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.security.AuthenticationBinding;
 
 /**
- * <p>SearchHitsNotificationResource class.</p>
+ * <p>
+ * SearchHitsNotificationResource class.
+ * </p>
  */
 @Path(SearchHitsNotificationResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
@@ -66,7 +68,9 @@ public class SearchHitsNotificationResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>sendNewHitsNotifications.</p>
+     * <p>
+     * sendNewHitsNotifications.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -96,7 +100,7 @@ public class SearchHitsNotificationResource {
                 facets.setCurrentFacetString(search.getFacetString());
                 String oldSortString = search.getSortString();
                 search.setSortString('!' + SolrConstants.DATECREATED);
-                search.execute(facets, null, 100, 0, null);
+                search.execute(facets, null, 100, 0, null, DataManager.getInstance().getConfiguration().isAggregateHits());
                 // TODO what if there're >100 new hits?
                 if (search.getHitsCount() > search.getLastHitsCount()) {
                     List<SearchHit> newHits = search.getHits().subList(0, (int) (search.getHitsCount() - search.getLastHitsCount()));

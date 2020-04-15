@@ -24,44 +24,43 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 
 /**
- * Sets a default value for all {@link io.goobi.viewer.model.cms.CMSSidebarElement#widgetType} which governs the exact class to be used for entities from that table
+ * Sets a default value for all {@link io.goobi.viewer.model.cms.CMSSidebarElement#widgetType} which governs the exact class to be used for entities
+ * from that table
  *
  * @author florian
  */
-public class SidebarWidgetTypeUpdate implements IModelUpdate{
+public class SidebarWidgetTypeUpdate implements IModelUpdate {
 
-	/* (non-Javadoc)
-	 * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-	 */
-	/** {@inheritDoc} */
-	@Override
-	public boolean update(IDAO dao) throws DAOException {
-		return createDiscriminatorRow(dao);
-	}
-	
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
+     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean update(IDAO dao) throws DAOException {
+        return createDiscriminatorRow(dao);
+    }
 
+    /**
+     * @throws DAOException
+     * 
+     */
+    private boolean createDiscriminatorRow(IDAO dao) throws DAOException {
+        dao.startTransaction();
+        try {
+            Query q1 = dao.createQuery("SELECT element.type FROM CMSSidebarElement element WHERE element.widgetType IS NOT NULL");
+            List results = q1.getResultList();
+            if (results == null || results.isEmpty()) {
+                Query q = dao.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
+                        + "' WHERE element.widgetType IS NULL");
+                q.executeUpdate();
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            dao.commitTransaction();
+        }
 
-	/**
-	 * @throws DAOException
-	 * 
-	 */
-	private boolean createDiscriminatorRow(IDAO dao) throws DAOException {
-		dao.startTransaction();
-		try {
-			Query q1 = dao.createQuery("SELECT element.type FROM CMSSidebarElement element WHERE element.widgetType IS NOT NULL");
-			List results = q1.getResultList();
-			if(results == null  || results.isEmpty()) {
-				Query q = dao.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '"
-						+ CMSSidebarElement.class.getSimpleName() + "' WHERE element.widgetType IS NULL");				
-				q.executeUpdate();
-				return true;
-			} else {
-				return false;
-			}
-		} finally {
-			dao.commitTransaction();
-		}
-
-	}
+    }
 
 }

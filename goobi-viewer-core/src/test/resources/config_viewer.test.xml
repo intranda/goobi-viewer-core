@@ -21,6 +21,8 @@
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
     <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
     <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
+    <!-- indexedDublinCoreFolder: contains indexed DublinCore files (used by the DublinCore resolver) -->
+    <indexedDublinCoreFolder>indexed_dublincore</indexedDublinCoreFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>media</mediaFolder>
@@ -72,7 +74,7 @@
 		<taskManager>taskmanager_url/</taskManager>
 
 		<!-- solr: URL to the Solr index core -->
-		<solr>solr_value/</solr>
+		<solr>https://viewer.goobi.io/solr/collection1</solr>
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
@@ -86,9 +88,9 @@
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
 
-		<rest>http://localhost:8080/viewer/rest/</rest>
+		<rest>https://viewer.goobi.io/rest/</rest>
 
-		<download>http://localhost:8080/viewer/download/</download>
+		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
 	<user>
@@ -325,7 +327,7 @@
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="true" mainTheme="mainTheme_value"
-			discriminatorField="discriminatorField_value" autoSwitch="true"
+			discriminatorField="FACET_VIEWERSUBTHEME" autoSwitch="true"
 			addFilterQuery="true" filterQueryVisible="true">
             <!-- rootPath: If the theme is localed externally, the CMS template loading
                  mechanism needs the root path of the theme. The path must be defined down
@@ -382,9 +384,9 @@
 		</sorting>
 		<drillDown>
 			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
-			<field sortOrder="numerical">FIELD1</field>
-			<hierarchicalField sortOrder="numerical">FIELD3</hierarchicalField>
-			<field initialElementNumber="16" priorityValues="val1;val2;val3">FIELD2</field>
+			<field sortOrder="numerical">YEAR</field>
+			<hierarchicalField sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
+			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
@@ -395,7 +397,7 @@
 			<!-- advancedSearchDefaultItemNumber: number of advanced search items 
 				to be rendered by default. Default is 2. -->
 			<defaultItemNumber>3</defaultItemNumber>
-			<!-- advancedSearchFields: index fields to be used in avanced search -->
+			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
 				<field hierarchical="true">DC</field>
 				<field untokenizeForPhraseSearch="true">MD_TITLE</field>
@@ -404,6 +406,7 @@
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
+				<field label="-----">#SEPARATOR1#</field>
 				<field>MD_FOO_LANG_EN</field>
 				<field>MD_FOO_LANG_DE</field>
 				<field>MD_FOO_LANG_ES</field>
@@ -457,10 +460,11 @@
 				translated value rather than raw. -->
 			<translateField>DC</translateField>
 			<translateField>DOCSTRCT</translateField>
+			<translateField>MD_LANGUAGE_UNTOKENIZED</translateField>
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
-		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
         <docstrctWhitelistFilterQuery>ISWORK:true OR ISANCHOR:true</docstrctWhitelistFilterQuery>
@@ -727,15 +731,20 @@
 
 		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
 		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
+		
+        <!-- metadataParamNumber: Number of possible parameters for metadata elements (for all metadata lists). Default ist 10. -->
+        <metadataParamNumber>5</metadataParamNumber>
+        
+        <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
+	    	of available license types when a user is asked to selec a license -->
+        <licenses>
+			<license label="CC0 1.0" icon="" url="https://creativecommons.org/publicdomain/zero/1.0/" />
+    		<license label="In Copyright" icon="" url="http://rightsstatements.org/vocab/InC/1.0/" />
+		</licenses>
+        
 	</metadata>
 
 	<toc>
-		<!-- DEPRECATED: Use <labelConfig> instead. If true, TOC element labels 
-			will always have their docstruct as a prefix, unless the label is just the 
-			docstruct (default is false) -->
-		<alwaysDisplayDocstruct>true</alwaysDisplayDocstruct>
-
-
 		<!-- multiVolumeThumbnailsWidth|Height: size settings for multivolume TOC 
 			thumbnails -->
 		<multiVolumeThumbnailsWidth>12</multiVolumeThumbnailsWidth>
@@ -762,17 +771,17 @@
 
 		<!-- labelConfig: Layout configuration for the label of TOC elements. The 
 			configuration is analogous to a metadata template. -->
-		<labelConfig>
+		<labelConfig xml:space="preserve">
 			<template name="_DEFAULT">
 				<metadata label="" value="{LABEL}{MD_CREATOR}">
 					<param type="field" key="LABEL" />
-					<param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
+					<param xml:space="preserve" type="field" key="MD_CREATOR" prefix=" / " />
 				</metadata>
 			</template>
 			<template name="PeriodicalVolume">
 				<metadata label="" value="{CURRENTNO}{MD_TITLE}">
-					<param type="field" key="CURRENTNO" prefix="Number_SPACE_" />
-					<param type="field" key="MD_TITLE" prefix=":_SPACE_" />
+					<param type="field" key="CURRENTNO" prefix="Number " />
+					<param type="field" key="MD_TITLE" prefix=": " />
 				</metadata>
 			</template>
 		</labelConfig>
@@ -1128,6 +1137,12 @@
            <userName>@goobi</userName>
        </twitter>
     </embedding>
+
+	<maps>
+	  <mapbox>
+	    <token>some.token</token>
+	  </mapbox>
+	</maps>
 
 </config>
 

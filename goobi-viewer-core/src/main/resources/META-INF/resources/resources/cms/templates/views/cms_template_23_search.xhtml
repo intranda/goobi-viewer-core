@@ -14,7 +14,7 @@
     <ui:define name="metadata">
 	    <f:metadata> 
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
+			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />            
         </f:metadata>
     </ui:define>
     
@@ -43,11 +43,13 @@
 					<h2>#{cmsPage.title}</h2>
 					
 					<!-- TEXT -->
-                    <ui:fragment rendered="#{cmsPage.hasContent('text')}">
-                        <div class="tpl-search__text">
-    	                    <ui:include src="#{cmsPage.getContent('text')}" />
-    					</div>
-                    </ui:fragment>
+					<h:panelGroup id="cmsTextContent">
+                        <ui:fragment rendered="#{cmsPage.hasContent('text') and searchBean.activeSearchType != 0}">
+                        	<div class="tpl-search__text">
+	    	                    <ui:include src="#{cmsPage.getContent('text')}" />
+                        	</div>
+    					</ui:fragment>
+					</h:panelGroup>
                     
                     <!-- SEARCH LIST OPTIONS -->
                     <ui:fragment rendered="#{cmsPage.getContentItem('search').functionality.searchPerformed}">
@@ -59,6 +61,8 @@
                         <ui:fragment rendered="#{searchBean.activeSearchType == 0}">
                             <ui:include src="/resources/includes/search/searchStandard.xhtml">
                                 <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}" />
+                                <ui:param name="title" value="#{cmsPage.getContentItemText('text')}"/>
+                                <ui:param name="renderOnSearchTypeChange" value="cmsTextContent"/>
                             </ui:include>
                         </ui:fragment>
 

@@ -47,6 +47,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -65,8 +66,12 @@ import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.toc.TOC;
+import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -85,7 +90,9 @@ public class RecordsResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>Constructor for RecordsResource.</p>
+     * <p>
+     * Constructor for RecordsResource.
+     * </p>
      */
     public RecordsResource() {
     }
@@ -206,7 +213,9 @@ public class RecordsResource {
     }
 
     /**
-     * <p>getRecordsForQuery.</p>
+     * <p>
+     * getRecordsForQuery.
+     * </p>
      *
      * @return JSON array
      * @param params a {@link io.goobi.viewer.servlets.rest.content.RecordsRequestParameters} object.
@@ -234,7 +243,7 @@ public class RecordsResource {
 
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
         String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, true, false)).toString();
+                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
         logger.trace("query: {}", query);
 
         int count = params.getCount();
@@ -311,7 +320,7 @@ public class RecordsResource {
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
         String query =
-                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, true, false)).toString();
+                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, null, true, true, false)).toString();
         logger.debug("q: {}", query);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);
@@ -320,21 +329,23 @@ public class RecordsResource {
     }
 
     /**
-     * <p>getRISAsFile.</p>
+     * <p>
+     * getRISAsFile.
+     * </p>
      *
      * @param iddoc a long.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
+     * @throws ContentLibException
      */
     @GET
     @Path("/ris/file/{iddoc}")
     @Produces({ MediaType.TEXT_PLAIN })
     public StreamingOutput getRISAsFile(@PathParam("iddoc") long iddoc)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, IOException {
+            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
         StructElement se = new StructElement(iddoc);
 
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
@@ -345,16 +356,28 @@ public class RecordsResource {
         }
 
         String ris = MetadataTools.generateRIS(se);
+        if (ris == null) {
+            throw new ContentNotFoundException("Resource not found");
+        }
 
         java.nio.file.Path tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), fileName);
-        Files.write(tempFile, ris.getBytes());
+        try {
+            Files.write(tempFile, ris.getBytes());
+        } catch (IOException e) {
+            if (Files.exists(tempFile)) {
+                FileUtils.deleteQuietly(tempFile.toFile());
+            }
+            throw new ContentLibException("Could not create RIS file " + tempFile.toAbsolutePath().toString());
+        }
 
         return (out) -> {
             try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
                 FileTools.copyStream(out, in);
-            } finally {
                 out.flush();
                 out.close();
+            } catch (IOException e) {
+                logger.trace(e.getMessage(), e);
+            } finally {
                 if (Files.exists(tempFile)) {
                     FileUtils.deleteQuietly(tempFile.toFile());
                 }
@@ -363,7 +386,9 @@ public class RecordsResource {
     }
 
     /**
-     * <p>getRISAsText.</p>
+     * <p>
+     * getRISAsText.
+     * </p>
      *
      * @param iddoc a long.
      * @return a {@link java.lang.String} object.
@@ -385,6 +410,37 @@ public class RecordsResource {
         }
 
         return MetadataTools.generateRIS(se);
+    }
+
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    @GET
+    @Path("/toc/{pi}")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String getTOCAsText(@PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
+        setResponseHeader("");
+
+        // TODO Check PRIV_VIEW_METADATA once merged
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+            throw new ContentNotFoundException("Resource not found");
+        }
+
+        ViewManager viewManager = ViewManager.createViewManager(pi);
+        TOC toc = new TOC();
+        toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
+        TocWriter writer = new TocWriter("", viewManager.getTopDocument().getLabel().toUpperCase());
+        writer.setLevelIndent(5);
+
+        return writer.getAsText(toc.getTocElements());
     }
 
     /**

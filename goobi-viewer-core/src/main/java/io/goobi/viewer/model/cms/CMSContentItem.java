@@ -62,6 +62,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.BookmarksFunktionality;
+import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.QueryListFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
@@ -69,6 +70,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.TocFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.TrivialFunctionality;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
@@ -105,7 +107,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         TAGS,
         METADATA,
         CAMPAIGNOVERVIEW,
-        BOOKMARKLISTS;
+        BOOKMARKLISTS,
+        BROWSETERMS;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -136,6 +139,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                     return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
                 case BOOKMARKLISTS:
                     return new BookmarksFunktionality();
+                case BROWSETERMS:
+                    return new BrowseFunctionality(item.getCollectionField());
                 default:
                     return new TrivialFunctionality();
             }
@@ -155,18 +160,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "item_id")
     private String itemId;
 
-    /** Label to display during page creation */
-    @Column(name = "item_label")
-    private String itemLabel;
-
     /** Content item type. */
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private CMSContentItemType type;
-
-    /** Mandatory items must be filled with actual content in a page. */
-    @Column(name = "mandatory", nullable = false)
-    private boolean mandatory = false;
 
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
@@ -234,6 +231,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @Column(name = "glossary")
     private String glossaryName;
+    
+    /**
+     * Name of SOLR field by which to group results of a search or collection
+     */
+    @Column(name = "group_by")
+    private String groupBy = "";
 
     /**
      * For TileGrid
@@ -289,8 +292,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Transient
     private int nestedPagesCount = 0;
 
-    @Transient
-    private int order = 0;
 
     /**
      * Noop constructor for javax.persistence
@@ -311,10 +312,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             this.id = blueprint.id;
         }
         this.setItemId(blueprint.itemId);
-        this.setItemLabel(blueprint.itemLabel);
         this.setType(blueprint.type);
-        this.setMandatory(blueprint.mandatory);
-        this.setOrder(blueprint.order);
         this.setHtmlFragment(blueprint.getHtmlFragment());
         this.setElementsPerPage(blueprint.elementsPerPage);
         this.setBaseCollection(blueprint.getBaseCollection());
@@ -338,11 +336,14 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
         this.setSearchType(blueprint.getSearchType());
         this.setMetadataFields(blueprint.getMetadataFields());
+        this.setGroupBy(blueprint.groupBy);
 
     }
 
     /**
-     * <p>Getter for the field <code>functionality</code>.</p>
+     * <p>
+     * Getter for the field <code>functionality</code>.
+     * </p>
      *
      * @return the functionality
      */
@@ -354,7 +355,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Constructor for CMSContentItem.</p>
+     * <p>
+     * Constructor for CMSContentItem.
+     * </p>
      *
      * @param type a {@link io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType} object.
      */
@@ -390,6 +393,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * {@inheritDoc}
      *
      * Returns a copy of this object's configuration. Use this to create content item instances of template items for pages.
+     * 
      * @should clone item correctly
      */
     @Override
@@ -399,7 +403,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -408,7 +414,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -417,7 +425,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>itemId</code>.</p>
+     * <p>
+     * Getter for the field <code>itemId</code>.
+     * </p>
      *
      * @return the itemId
      */
@@ -426,7 +436,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>itemId</code>.</p>
+     * <p>
+     * Setter for the field <code>itemId</code>.
+     * </p>
      *
      * @param itemId the itemId to set
      */
@@ -435,29 +447,21 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>itemLabel</code>.</p>
+     * <p>
+     * Getter for the field <code>itemLabel</code>.
+     * </p>
      *
      * @return the itemLabel
      */
     public String getItemLabel() {
-        if (itemLabel != null && !itemLabel.isEmpty()) {
-            return itemLabel;
-        }
-
-        return itemId;
+        return getItemTemplate().getItemLabel();
     }
 
-    /**
-     * <p>Setter for the field <code>itemLabel</code>.</p>
-     *
-     * @param itemLabel the itemLabel to set
-     */
-    public void setItemLabel(String itemLabel) {
-        this.itemLabel = itemLabel;
-    }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -466,7 +470,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>type</code>.</p>
+     * <p>
+     * Setter for the field <code>type</code>.
+     * </p>
      *
      * @param type the type to set
      */
@@ -475,25 +481,21 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>isMandatory.</p>
+     * <p>
+     * isMandatory.
+     * </p>
      *
      * @return the mandatory
      */
     public boolean isMandatory() {
-        return mandatory;
+        return getItemTemplate().isMandatory();
     }
 
-    /**
-     * <p>Setter for the field <code>mandatory</code>.</p>
-     *
-     * @param mandatory the mandatory to set
-     */
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
 
     /**
-     * <p>Getter for the field <code>ownerPageLanguageVersion</code>.</p>
+     * <p>
+     * Getter for the field <code>ownerPageLanguageVersion</code>.
+     * </p>
      *
      * @return the ownerPageLanguageVersion
      */
@@ -502,7 +504,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>ownerPageLanguageVersion</code>.</p>
+     * <p>
+     * Setter for the field <code>ownerPageLanguageVersion</code>.
+     * </p>
      *
      * @param ownerPageLanguageVersion the ownerPageLanguageVersion to set
      */
@@ -511,7 +515,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>elementsPerPage</code>.</p>
+     * <p>
+     * Getter for the field <code>elementsPerPage</code>.
+     * </p>
      *
      * @return the elementsPerPage
      */
@@ -520,7 +526,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>elementsPerPage</code>.</p>
+     * <p>
+     * Setter for the field <code>elementsPerPage</code>.
+     * </p>
      *
      * @param elementsPerPage the elementsPerPage to set
      */
@@ -529,7 +537,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>htmlFragment</code>.</p>
+     * <p>
+     * Getter for the field <code>htmlFragment</code>.
+     * </p>
      *
      * @return the htmlFragment
      */
@@ -538,7 +548,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>htmlFragment</code>.</p>
+     * <p>
+     * Setter for the field <code>htmlFragment</code>.
+     * </p>
      *
      * @param htmlFragment the htmlFragment to set
      */
@@ -549,7 +561,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>solrQuery</code>.</p>
+     * <p>
+     * Getter for the field <code>solrQuery</code>.
+     * </p>
      *
      * @return the solrQuery
      */
@@ -561,7 +575,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>solrQuery</code>.</p>
+     * <p>
+     * Setter for the field <code>solrQuery</code>.
+     * </p>
      *
      * @param solrQuery the solrQuery to set
      */
@@ -570,7 +586,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>solrSortFields</code>.</p>
+     * <p>
+     * Getter for the field <code>solrSortFields</code>.
+     * </p>
      *
      * @return the solrSortFields
      */
@@ -582,7 +600,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>solrSortFields</code>.</p>
+     * <p>
+     * Setter for the field <code>solrSortFields</code>.
+     * </p>
      *
      * @param solrSortFields the solrSortFields to set
      */
@@ -617,7 +637,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>mediaItemWrapper</code>.</p>
+     * <p>
+     * Setter for the field <code>mediaItemWrapper</code>.
+     * </p>
      *
      * @param mediaItemWrapper the mediaItemWrapper to set
      */
@@ -631,7 +653,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>categories</code>.</p>
+     * <p>
+     * Getter for the field <code>categories</code>.
+     * </p>
      *
      * @return the pageClassification
      */
@@ -640,7 +664,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>categories</code>.</p>
+     * <p>
+     * Setter for the field <code>categories</code>.
+     * </p>
      *
      * @param categories a {@link java.util.List} object.
      */
@@ -649,7 +675,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>addCategory.</p>
+     * <p>
+     * addCategory.
+     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
@@ -660,7 +688,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>removeCategory.</p>
+     * <p>
+     * removeCategory.
+     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
@@ -669,7 +699,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getSortedCategories.</p>
+     * <p>
+     * getSortedCategories.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -696,7 +728,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getListPage.</p>
+     * <p>
+     * getListPage.
+     * </p>
      *
      * @return a int.
      */
@@ -705,7 +739,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>setListPage.</p>
+     * <p>
+     * setListPage.
+     * </p>
      *
      * @param listPage a int.
      */
@@ -714,7 +750,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getListOffset.</p>
+     * <p>
+     * getListOffset.
+     * </p>
      *
      * @return a int.
      */
@@ -723,7 +761,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>isVisible.</p>
+     * <p>
+     * isVisible.
+     * </p>
      *
      * @return a boolean.
      */
@@ -732,7 +772,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>visible</code>.</p>
+     * <p>
+     * Setter for the field <code>visible</code>.
+     * </p>
      *
      * @param visible a boolean.
      */
@@ -741,7 +783,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>nestedPages</code>.</p>
+     * <p>
+     * Getter for the field <code>nestedPages</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -754,7 +798,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getNestedPagesShuffled.</p>
+     * <p>
+     * getNestedPagesShuffled.
+     * </p>
      *
      * @return nestedPages in a random order
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -766,7 +812,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>nestedPages</code>.</p>
+     * <p>
+     * Getter for the field <code>nestedPages</code>.
+     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return a {@link java.util.List} object.
@@ -783,7 +831,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>resetData.</p>
+     * <p>
+     * resetData.
+     * </p>
      */
     public void resetData() {
         nestedPages = null;
@@ -819,7 +869,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>nestedPagesCount</code>.</p>
+     * <p>
+     * Getter for the field <code>nestedPagesCount</code>.
+     * </p>
      *
      * @return a int.
      */
@@ -828,7 +880,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>nestedPagesCount</code>.</p>
+     * <p>
+     * Setter for the field <code>nestedPagesCount</code>.
+     * </p>
      *
      * @param nestedPages a int.
      */
@@ -837,25 +891,26 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>order</code>.</p>
+     * <p>
+     * Getter for the field <code>order</code>.
+     * </p>
      *
      * @return a int.
      */
     public int getOrder() {
-        return order;
+        CMSContentItemTemplate template = getItemTemplate();
+        if(template != null) {            
+            return template.getOrder();
+        } else {
+            return Integer.MAX_VALUE;
+        }
     }
 
-    /**
-     * <p>Setter for the field <code>order</code>.</p>
-     *
-     * @param order a int.
-     */
-    public void setOrder(int order) {
-        this.order = order;
-    }
 
     /**
-     * <p>Getter for the field <code>collectionField</code>.</p>
+     * <p>
+     * Getter for the field <code>collectionField</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -864,7 +919,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>collectionField</code>.</p>
+     * <p>
+     * Setter for the field <code>collectionField</code>.
+     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      */
@@ -874,7 +931,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>collectionBaseLevels</code>.</p>
+     * <p>
+     * Getter for the field <code>collectionBaseLevels</code>.
+     * </p>
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -883,7 +942,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>collectionBaseLevels</code>.</p>
+     * <p>
+     * Setter for the field <code>collectionBaseLevels</code>.
+     * </p>
      *
      * @param collectionBaseLevels a {@link java.lang.Integer} object.
      */
@@ -893,7 +954,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>isCollectionOpenExpanded.</p>
+     * <p>
+     * isCollectionOpenExpanded.
+     * </p>
      *
      * @return a boolean.
      */
@@ -902,7 +965,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>collectionOpenExpanded</code>.</p>
+     * <p>
+     * Setter for the field <code>collectionOpenExpanded</code>.
+     * </p>
      *
      * @param collectionOpenExpanded a boolean.
      */
@@ -912,7 +977,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>isCollectionDisplayParents.</p>
+     * <p>
+     * isCollectionDisplayParents.
+     * </p>
      *
      * @return the collectionDisplayParents
      */
@@ -921,7 +988,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>collectionDisplayParents</code>.</p>
+     * <p>
+     * Setter for the field <code>collectionDisplayParents</code>.
+     * </p>
      *
      * @param collectionDisplayParents the collectionDisplayParents to set
      */
@@ -930,7 +999,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>baseCollection</code>.</p>
+     * <p>
+     * Getter for the field <code>baseCollection</code>.
+     * </p>
      *
      * @return the baseCollection
      */
@@ -939,7 +1010,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>baseCollection</code>.</p>
+     * <p>
+     * Setter for the field <code>baseCollection</code>.
+     * </p>
      *
      * @param baseCollection the baseCollection to set
      */
@@ -958,7 +1031,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+        Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list.add(0, "");
@@ -976,7 +1049,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+        Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
@@ -1002,6 +1075,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return this.collection;
     }
 
+    
+    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+        return initializeCollection(null);
+    }
+    
     /**
      * Creates a collection view object from the item's collection related properties
      *
@@ -1009,11 +1087,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+    public CollectionView initializeCollection(String subThemeDiscriminatorValue) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
-        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getSearchPrefix());
+        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getFilterQuery(subThemeDiscriminatorValue));
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
@@ -1026,6 +1104,22 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
+     * @param subThemeDiscriminatorValue
+     * @return
+     */
+    private String getFilterQuery(String subThemeDiscriminatorValue) {
+        String searchPrefix = getSearchPrefix();
+        if(StringUtils.isNoneBlank(subThemeDiscriminatorValue, searchPrefix)) {
+            String filter = "(" + searchPrefix + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
+            return filter;
+        }else if(StringUtils.isNotBlank(subThemeDiscriminatorValue)) {
+            return DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
+        } else {
+            return searchPrefix;
+        }
+    }
+
+    /**
      * Adds a CollecitonView object for the given field to the map and populates its values.
      *
      * @param collectionField
@@ -1035,10 +1129,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
-
             @Override
-            public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
+            public Map<String, CollectionResult> getData() throws IndexUnreachableException {
+                Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
@@ -1047,7 +1140,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>numberOfImportantTiles</code>.</p>
+     * <p>
+     * Setter for the field <code>numberOfImportantTiles</code>.
+     * </p>
      *
      * @param numberOfImportantTiles the numberOfImportantTiles to set
      */
@@ -1056,7 +1151,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>numberOfImportantTiles</code>.</p>
+     * <p>
+     * Getter for the field <code>numberOfImportantTiles</code>.
+     * </p>
      *
      * @return the numberOfImportantTiles
      */
@@ -1065,7 +1162,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>numberOfTiles</code>.</p>
+     * <p>
+     * Getter for the field <code>numberOfTiles</code>.
+     * </p>
      *
      * @return the numberOfTiles
      */
@@ -1074,7 +1173,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>numberOfTiles</code>.</p>
+     * <p>
+     * Setter for the field <code>numberOfTiles</code>.
+     * </p>
      *
      * @param numberOfTiles the numberOfTiles to set
      */
@@ -1083,7 +1184,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>tocPI</code>.</p>
+     * <p>
+     * Getter for the field <code>tocPI</code>.
+     * </p>
      *
      * @return the piPeriodical
      */
@@ -1092,7 +1195,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>tocPI</code>.</p>
+     * <p>
+     * Setter for the field <code>tocPI</code>.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      */
@@ -1102,7 +1207,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>searchPrefix</code>.</p>
+     * <p>
+     * Getter for the field <code>searchPrefix</code>.
+     * </p>
      *
      * @return the searchPrefix
      */
@@ -1111,7 +1218,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>searchPrefix</code>.</p>
+     * <p>
+     * Setter for the field <code>searchPrefix</code>.
+     * </p>
      *
      * @param searchPrefix the searchPrefix to set
      */
@@ -1134,8 +1243,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link io.goobi.viewer.model.cms.ContentItemMode} object.
      */
     public ContentItemMode getMode() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
+        return getItemTemplate().getMode();
     }
+
+
 
     /**
      * Message key to display when clicking the inline help button. Taken from contentItem of template
@@ -1143,16 +1254,18 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return a {@link java.lang.String} object.
      */
     public String getInlineHelp() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getInlineHelp();
+        return getItemTemplate().getInlineHelp();
     }
 
     /**
-     * <p>isHasInlineHelp.</p>
+     * <p>
+     * isHasInlineHelp.
+     * </p>
      *
      * @return true if the item has a non-empty inline help text. Taken from contentItem of template
      */
     public boolean isHasInlineHelp() {
-        CMSContentItem item = getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        CMSContentItem item = getItemTemplate();
         if (item != null) {
             return item.isHasInlineHelp();
         }
@@ -1160,7 +1273,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>component</code>.</p>
+     * <p>
+     * Getter for the field <code>component</code>.
+     * </p>
      *
      * @return the component
      */
@@ -1169,7 +1284,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>component</code>.</p>
+     * <p>
+     * Setter for the field <code>component</code>.
+     * </p>
      *
      * @param component the component to set
      */
@@ -1178,7 +1295,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>glossaryName</code>.</p>
+     * <p>
+     * Getter for the field <code>glossaryName</code>.
+     * </p>
      *
      * @return the glossaryName
      */
@@ -1187,7 +1306,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>glossaryName</code>.</p>
+     * <p>
+     * Setter for the field <code>glossaryName</code>.
+     * </p>
      *
      * @param glossaryName the glossaryName to set
      */
@@ -1196,7 +1317,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getGlossary.</p>
+     * <p>
+     * getGlossary.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
@@ -1209,7 +1332,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>ignoreCollections</code>.</p>
+     * <p>
+     * Getter for the field <code>ignoreCollections</code>.
+     * </p>
      *
      * @return the ignoreCollections
      */
@@ -1218,7 +1343,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>ignoreCollections</code>.</p>
+     * <p>
+     * Setter for the field <code>ignoreCollections</code>.
+     * </p>
      *
      * @param ignoreCollections the ignoreCollections to set
      */
@@ -1227,7 +1354,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getIgnoreCollectionsAsList.</p>
+     * <p>
+     * getIgnoreCollectionsAsList.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1244,7 +1373,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>setIgnoreCollectionsAsList.</p>
+     * <p>
+     * setIgnoreCollectionsAsList.
+     * </p>
      *
      * @param toIgnore a {@link java.util.List} object.
      */
@@ -1258,7 +1389,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>metadataFields</code>.</p>
+     * <p>
+     * Getter for the field <code>metadataFields</code>.
+     * </p>
      *
      * @return the metadataFields
      */
@@ -1267,7 +1400,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>metadataFields</code>.</p>
+     * <p>
+     * Setter for the field <code>metadataFields</code>.
+     * </p>
      *
      * @param metadataFields the metadataFields to set
      */
@@ -1276,7 +1411,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>getMetadataFieldsAsList.</p>
+     * <p>
+     * getMetadataFieldsAsList.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -1289,7 +1426,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>setMetadataFieldsAsList.</p>
+     * <p>
+     * setMetadataFieldsAsList.
+     * </p>
      *
      * @param fields a {@link java.util.List} object.
      */
@@ -1319,7 +1458,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>isDisplayEmptySearchResults.</p>
+     * <p>
+     * isDisplayEmptySearchResults.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1328,7 +1469,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>displayEmptySearchResults</code>.</p>
+     * <p>
+     * Setter for the field <code>displayEmptySearchResults</code>.
+     * </p>
      *
      * @param displayEmptySearchResults the displayEmptySearchResults to set
      */
@@ -1337,7 +1480,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>searchType</code>.</p>
+     * <p>
+     * Getter for the field <code>searchType</code>.
+     * </p>
      *
      * @return the searchType
      */
@@ -1346,7 +1491,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Setter for the field <code>searchType</code>.</p>
+     * <p>
+     * Setter for the field <code>searchType</code>.
+     * </p>
      *
      * @param searchType the searchType to set
      */
@@ -1355,7 +1502,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>setAdvancedSearch.</p>
+     * <p>
+     * setAdvancedSearch.
+     * </p>
      *
      * @param advanced a boolean.
      */
@@ -1368,7 +1517,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>isAdvancedSearch.</p>
+     * <p>
+     * isAdvancedSearch.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1379,24 +1530,27 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
-        CMSContentItemTemplate template = getTemplateItem();
+        CMSContentItemTemplate template = getItemTemplate();
         return template.getMediaFilter();
     }
 
+    
     /**
-     * 
+     * @return
      */
-    private CMSContentItemTemplate getTemplateItem() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+    public CMSContentItemTemplate getItemTemplate() {
+        try {            
+            return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        } catch(NullPointerException e) {
+            return null;
+        }
     }
 
     /**
-     * <p>isPreview.</p>
-     *
-     * @return a boolean.
+     * @return true if this contentItem should only appear in a preview of this page
      */
     public boolean isPreview() {
-        return getTemplateItem().isPreview();
+        return getItemTemplate().isPreview();
     }
 
     /**
@@ -1425,7 +1579,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * <p>Getter for the field <code>selectableCategories</code>.</p>
+     * <p>
+     * Getter for the field <code>selectableCategories</code>.
+     * </p>
      *
      * @return the selectableCategories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1504,6 +1660,28 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Override
     public boolean hasMediaItem() {
         return this.mediaItem != null;
+    }
+    
+    /**
+     * @param groupBy the {@link #groupBy} to set
+     */
+    public void setGroupBy(String groupBy) {
+        this.groupBy = groupBy;
+    }
+    
+    /**
+     * @return the {@link #groupBy}
+     */
+    public String getGroupBy() {
+        return groupBy;
+    }
+    
+    /**
+     * 
+     * @return true if {@link #groupBy} is not blank an grouping should therefore be done
+     */
+    public boolean isGroupBySelected() {
+        return StringUtils.isNotBlank(this.groupBy);
     }
 
 }

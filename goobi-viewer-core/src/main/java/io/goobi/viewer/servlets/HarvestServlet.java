@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +52,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.misc.Harvestable;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
 
 /**
  * Servlet for harvesting crowdsourcing data and overview pages.
@@ -65,7 +65,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     // private HttpClient httpClient;
 
     /**
-     * <p>Constructor for HarvestServlet.</p>
+     * <p>
+     * Constructor for HarvestServlet.
+     * </p>
      *
      * @see HttpServlet#HttpServlet()
      */
@@ -167,9 +169,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     // Get a JSON list of all identifiers  and timestamps of records that have an overview page update in the given time frame
                     try {
                         // EXAMPLE: ?action=getlist_overviewpage&from=2015-06-26&until=2016-01-01&first=0&pageSize=100
-                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate);
-                        List<CMSPage> cmsPages =
-                                DataManager.getInstance().getDao().getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate);
+                        String[] templates = { "templateOverviewPage", "templateOverviewPageLegacy" };
+                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate, Arrays.asList(templates));
+                        List<CMSPage> cmsPages = DataManager.getInstance()
+                                .getDao()
+                                .getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate, Arrays.asList(templates));
                         JSONArray jsonArray = convertToJSON(count, cmsPages);
                         response.setContentType("application/json");
                         response.getWriter().write(jsonArray.toString());
@@ -202,9 +206,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), String.valueOf(Thread.currentThread().getId()));
                     try {
                         // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        List<CMSPage> pages = DataManager.getInstance()
-                                .getDao()
-                                .getCMSPagesForRecord(identifier,null);
+                        List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPagesForRecord(identifier, null);
                         if (pages.isEmpty()) {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
                             return;
@@ -218,23 +220,26 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
                         }
 
+                        if (tempFiles.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                            return;
+                        }
+
                         // Compress to a ZIP
-                        if (!tempFiles.isEmpty()) {
-                            FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
-                            if (Files.isRegularFile(zipFile)) {
-                                String now = DateTools.formatterFilename.print(System.currentTimeMillis());
-                                response.setContentType("application/zip");
-                                response.setHeader("Content-Disposition",
-                                        new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
-                                response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
-                                response.flushBuffer();
-                                OutputStream os = response.getOutputStream();
-                                try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
-                                    byte[] buffer = new byte[1024];
-                                    int bytesRead = 0;
-                                    while ((bytesRead = fis.read(buffer)) != -1) {
-                                        os.write(buffer, 0, bytesRead);
-                                    }
+                        FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
+                        if (Files.isRegularFile(zipFile)) {
+                            String now = DateTools.formatterFilename.print(System.currentTimeMillis());
+                            response.setContentType("application/zip");
+                            response.setHeader("Content-Disposition",
+                                    new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+                            response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
+                            response.flushBuffer();
+                            OutputStream os = response.getOutputStream();
+                            try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead = 0;
+                                while ((bytesRead = fis.read(buffer)) != -1) {
+                                    os.write(buffer, 0, bytesRead);
                                 }
                             }
                         }
@@ -310,7 +315,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 case "getlist_crowdsourcing":
                 case "snoop_cs":
                 case "get_cs": {
-                    String forward = "/csharvest?" + request.getQueryString();
+                    String contextPath = request.getContextPath();
+                    if (contextPath == null || contextPath.equals("/")) {
+                        contextPath = "";
+                    }
+                    String forward = contextPath + "/csharvest?" + request.getQueryString();
                     logger.trace("Redirecting to {}", forward);
                     response.sendRedirect(forward);
                 }
@@ -333,7 +342,9 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>convertToJSON.</p>
+     * <p>
+     * convertToJSON.
+     * </p>
      *
      * @param totalCount a long.
      * @param objects a {@link java.util.List} object.

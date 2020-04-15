@@ -6,6 +6,12 @@
 /* BLOCK */
 .numeric-paginator {
     margin: 15px 0;
+    &.-ltr {
+           direction: ltr;     
+    }
+    &.-rtl {
+           direction: rtl;     
+    }
 	/* ELEMENT */
 	ul {
 		display: flex;
@@ -15,7 +21,7 @@
 	li {
 		min-width: 32px;
 		height: 32px;
-		margin: 0 3px 5px 0;
+		margin: 15px 3px 5px 0;
 		border: 1px solid @middlegray;
 	}
 	a, span {

@@ -60,7 +60,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>ManifestBuilder class.</p>
+ * <p>
+ * ManifestBuilder class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -71,7 +73,9 @@ public class ManifestBuilder extends AbstractBuilder {
     private BuildMode buildMode = BuildMode.IIIF;
 
     /**
-     * <p>Constructor for ManifestBuilder.</p>
+     * <p>
+     * Constructor for ManifestBuilder.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
@@ -80,7 +84,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Constructor for ManifestBuilder.</p>
+     * <p>
+     * Constructor for ManifestBuilder.
+     * </p>
      *
      * @param servletUri a {@link java.net.URI} object.
      * @param requestURI a {@link java.net.URI} object.
@@ -90,7 +96,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>generateManifest.</p>
+     * <p>
+     * generateManifest.
+     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
@@ -106,7 +114,7 @@ public class ManifestBuilder extends AbstractBuilder {
         final AbstractPresentationModelElement manifest;
 
         if (ele.isAnchor()) {
-            manifest = new Collection(getManifestURI(ele.getPi()));
+            manifest = new Collection(getManifestURI(ele.getPi()), ele.getPi());
             manifest.setViewingHint(ViewingHint.multipart);
         } else {
             manifest = new Manifest(getManifestURI(ele.getPi()));
@@ -122,9 +130,10 @@ public class ManifestBuilder extends AbstractBuilder {
         return manifest;
     }
 
-
     /**
-     * <p>populate.</p>
+     * <p>
+     * populate.
+     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
@@ -138,7 +147,7 @@ public class ManifestBuilder extends AbstractBuilder {
         manifest.setAttribution(getAttribution());
         manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
         getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
-        
+
         addMetadata(manifest, ele);
 
         try {
@@ -146,7 +155,7 @@ public class ManifestBuilder extends AbstractBuilder {
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 manifest.setThumbnail(thumb);
-                if(IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
                     String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
                     thumb.setService(new ImageInformation(imageInfoURI));
                 }
@@ -180,7 +189,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 }
             }
 
-            if(ele.isLidoRecord()) {
+            if (ele.isLidoRecord()) {
                 /*LIDO*/
                 try {
                     LinkingContent resolver = new LinkingContent(new URI(getLidoResolverUrl(ele)));
@@ -190,7 +199,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 } catch (URISyntaxException e) {
                     logger.error("Unable to retrieve lido resolver url for {}", ele);
                 }
-            } else {                
+            } else {
                 /*METS/MODS*/
                 try {
                     LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
@@ -201,7 +210,6 @@ public class ManifestBuilder extends AbstractBuilder {
                     logger.error("Unable to retrieve mets resolver url for {}", ele);
                 }
             }
-            
 
             /*VIEWER*/
             try {
@@ -214,23 +222,27 @@ public class ManifestBuilder extends AbstractBuilder {
 
             /*CMS pages*/
             try {
-                DataManager.getInstance().getDao().getCMSPagesForRecord(ele.getPi(), null).stream().filter(page -> page.isPublished()).forEach(page -> {
-                    try {
-                        LinkingContent cmsPage = new LinkingContent(new URI(getServletURI() + page.getUrl()));
-//                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
-//                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
-//                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));
-                        cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
-                        cmsPage.setFormat(Format.TEXT_HTML);
-                        manifest.addRelated(cmsPage);
-                    } catch (URISyntaxException e) {
-                        logger.error("Unable to retrieve viewer url for {}", ele);
-                    }                
-                });  
-            } catch(Throwable e) {
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPagesForRecord(ele.getPi(), null)
+                        .stream()
+                        .filter(page -> page.isPublished())
+                        .forEach(page -> {
+                            try {
+                                LinkingContent cmsPage = new LinkingContent(new URI(getServletURI() + page.getUrl()));
+                                //                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
+                                //                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
+                                //                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));
+                                cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
+                                cmsPage.setFormat(Format.TEXT_HTML);
+                                manifest.addRelated(cmsPage);
+                            } catch (URISyntaxException e) {
+                                logger.error("Unable to retrieve viewer url for {}", ele);
+                            }
+                        });
+            } catch (Throwable e) {
                 logger.warn(e.toString());
             }
-            
 
             if (manifest instanceof Manifest) {
                 /*PDF*/
@@ -249,7 +261,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>addVolumes.</p>
+     * <p>
+     * addVolumes.
+     * </p>
      *
      * @param anchor a {@link de.intranda.api.iiif.presentation.Collection} object.
      * @param volumes a {@link java.util.List} object.
@@ -270,7 +284,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>addAnchor.</p>
+     * <p>
+     * addAnchor.
+     * </p>
      *
      * @param manifest a {@link de.intranda.api.iiif.presentation.Manifest} object.
      * @param anchorPI a {@link java.lang.String} object.
@@ -284,7 +300,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         /*ANCHOR*/
         if (StringUtils.isNotBlank(anchorPI)) {
-            manifest.addWithin(new Collection(getManifestURI(anchorPI)));
+            manifest.addWithin(new Collection(getManifestURI(anchorPI), anchorPI));
         }
 
     }
@@ -345,7 +361,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Getter for the field <code>buildMode</code>.</p>
+     * <p>
+     * Getter for the field <code>buildMode</code>.
+     * </p>
      *
      * @return the buildMode
      */
@@ -354,7 +372,9 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>Setter for the field <code>buildMode</code>.</p>
+     * <p>
+     * Setter for the field <code>buildMode</code>.
+     * </p>
      *
      * @param buildMode the buildMode to set
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.

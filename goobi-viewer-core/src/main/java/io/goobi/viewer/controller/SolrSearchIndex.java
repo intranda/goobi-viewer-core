@@ -18,9 +18,11 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.luke.FieldFlag;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -68,7 +71,9 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.Tag;
 
 /**
- * <p>SolrSearchIndex class.</p>
+ * <p>
+ * SolrSearchIndex class.
+ * </p>
  */
 public final class SolrSearchIndex {
 
@@ -92,7 +97,9 @@ public final class SolrSearchIndex {
     private SolrServer server;
 
     /**
-     * <p>Constructor for SolrSearchIndex.</p>
+     * <p>
+     * Constructor for SolrSearchIndex.
+     * </p>
      *
      * @param server a {@link org.apache.solr.client.solrj.SolrServer} object.
      */
@@ -119,7 +126,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getNewHttpSolrServer.</p>
+     * <p>
+     * getNewHttpSolrServer.
+     * </p>
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
@@ -139,7 +148,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>testQuery.</p>
+     * <p>
+     * testQuery.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
@@ -247,7 +258,7 @@ public final class SolrSearchIndex {
             throw new PresentationException(e.getMessage());
         } catch (RemoteSolrException e) {
             if (isQuerySyntaxError(e)) {
-                logger.error("{}; Query: {}", e.getMessage(), solrQuery.getQuery());
+                logger.error("{}; Query: {}", e.getMessage(), solrQuery.getQuery(), e);
                 throw new PresentationException("Bad query.");
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
@@ -267,7 +278,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
@@ -288,7 +301,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
@@ -307,7 +322,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>search.</p>
+     * <p>
+     * search.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param rows a int.
@@ -351,7 +368,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>count.</p>
+     * <p>
+     * count.
+     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a long.
@@ -420,7 +439,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getDocumentByIddoc.</p>
+     * <p>
+     * getDocumentByIddoc.
+     * </p>
      *
      * @param iddoc a {@link java.lang.String} object.
      * @should return correct doc
@@ -441,7 +462,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getDocumentByPI.</p>
+     * <p>
+     * getDocumentByPI.
+     * </p>
      *
      * @should return correct doc
      * @param pi a {@link java.lang.String} object.
@@ -469,7 +492,6 @@ public final class SolrSearchIndex {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    @SuppressWarnings("unchecked")
     public List<Tag> generateFilteredTagCloud(String fieldName, String querySuffix) throws IndexUnreachableException {
         List<Tag> tags = new ArrayList<>();
 
@@ -512,7 +534,7 @@ public final class SolrSearchIndex {
 
             // Cutoff
             float topTermCutoff = 0.02F;
-            Collections.sort(termlist, new ReverseComparator(new TermWeightComparator(frequencyMap)));
+            Collections.sort(termlist, new ReverseComparator<>(new TermWeightComparator(frequencyMap)));
             float topFreq = -1.0F;
             for (String term : termlist) {
                 if (topFreq < 0.0F) {
@@ -572,7 +594,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getIdentifierFromIddoc.</p>
+     * <p>
+     * getIdentifierFromIddoc.
+     * </p>
      *
      * @should retrieve correct identifier
      * @param iddoc a long.
@@ -679,7 +703,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldValue.</p>
+     * <p>
+     * getSingleFieldValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -698,7 +724,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldStringValue.</p>
+     * <p>
+     * getSingleFieldStringValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -712,7 +740,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldIntegerValue.</p>
+     * <p>
+     * getSingleFieldIntegerValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -724,7 +754,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getSingleFieldBooleanValue.</p>
+     * <p>
+     * getSingleFieldBooleanValue.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -784,10 +816,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                    // case SolrConstants.ALTO:
-                case "WORDCOORDS":
                 case "PAGEURNS":
-                case "ABBYYXML":
                     break;
                 default:
                     List<String> values = getMetadataValues(doc, fieldName);
@@ -813,10 +842,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                    // case SolrConstants.ALTO:
-                case "WORDCOORDS":
                 case "PAGEURNS":
-                case "ABBYYXML":
                     break;
                 default:
                     if (isLanguageCodedField(fieldName)) {
@@ -832,7 +858,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getMultiLanguageMetadata.</p>
+     * <p>
+     * getMultiLanguageMetadata.
+     * </p>
      *
      * @param mdValues a {@link java.util.Map} object.
      * @return a {@link java.util.List} object.
@@ -909,10 +937,20 @@ public final class SolrSearchIndex {
     String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
         if (!dataRepositoryNames.containsKey(pi)) {
             String dataRepositoryName = findDataRepository(pi);
-            dataRepositoryNames.put(pi, dataRepositoryName);
+            updateDataRepositoryNames(pi, dataRepositoryName);
         }
 
         return dataRepositoryNames.get(pi);
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param dataRepositoryName
+     * @should update value correctly
+     */
+    public void updateDataRepositoryNames(String pi, String dataRepositoryName) {
+        dataRepositoryNames.put(pi, dataRepositoryName);
     }
 
     /**
@@ -986,7 +1024,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>checkSolrSchemaName.</p>
+     * <p>
+     * checkSolrSchemaName.
+     * </p>
      *
      * @return an array of {@link java.lang.String} objects.
      */
@@ -1196,7 +1236,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getAsInt.</p>
+     * <p>
+     * getAsInt.
+     * </p>
      *
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.Integer} object.
@@ -1216,7 +1258,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>isQuerySyntaxError.</p>
+     * <p>
+     * isQuerySyntaxError.
+     * </p>
      *
      * @param e a {@link java.lang.Exception} object.
      * @return a boolean.
@@ -1227,7 +1271,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getAllFieldNames.</p>
+     * <p>
+     * getAllFieldNames.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
@@ -1252,9 +1298,11 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getAllSortFieldNames.</p>
+     * <p>
+     * getAllSortFieldNames.
+     * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all SOLR fields starting with "SORT_".
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
@@ -1266,7 +1314,6 @@ public final class SolrSearchIndex {
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
-            FieldInfo info = fieldInfoMap.get(name);
             if (name.startsWith("SORT_")) {
                 list.add(name);
             }
@@ -1274,9 +1321,40 @@ public final class SolrSearchIndex {
 
         return list;
     }
+    
+    /**
+     * 
+     * @return A list of all SOLR fields without the multivalues flag
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    public List<String> getAllGroupFieldNames() throws SolrServerException, IOException {
+        LukeRequest lukeRequest = new LukeRequest();
+        lukeRequest.setNumTerms(0);
+        LukeResponse lukeResponse = lukeRequest.process(server);
+        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+
+        List<String> keys = new ArrayList<>(fieldInfoMap.keySet());
+        Collections.sort(keys);
+        List<String> list = new ArrayList<>();
+        for (String name : keys) {
+            FieldInfo info = fieldInfoMap.get(name);
+            EnumSet<FieldFlag> flags = FieldInfo.parseFlags(info.getSchema());
+            if(!flags.contains(FieldFlag.MULTI_VALUED)) {
+                if(info.getDocs() > 0 && (flags.contains(FieldFlag.DOC_VALUES) || name.equals(SolrConstants.DOCSTRCT) || name.equals(SolrConstants.PI_ANCHOR))) {                    
+                    list.add(name);
+                }
+            }
+        }
+
+        return list;
+    }
+
 
     /**
-     * <p>getMetadataValuesForLanguage.</p>
+     * <p>
+     * getMetadataValuesForLanguage.
+     * </p>
      *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
@@ -1284,29 +1362,37 @@ public final class SolrSearchIndex {
      *         no language information are listed as language {@code _DEFAULT}
      */
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
-        Map<String, List<String>> map = new HashMap<>();
-        if (doc != null) {
-            List<String> fieldNames =
-                    doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
-            for (String languageField : fieldNames) {
-                String locale = null;
-                if (languageField.startsWith(key + "_LANG_")) {
-                    locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
-                } else {
-                    locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
-                }
-                Collection<Object> languageValues = doc.getFieldValues(languageField);
-                if (languageValues != null) {
-                    List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
-                    map.put(locale, values);
-                }
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (key == null) {
+            throw new IllegalArgumentException("key may not be null");
+        }
+
+        List<String> fieldNames =
+                doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+        Map<String, List<String>> map = new HashMap<>(fieldNames.size());
+        for (String languageField : fieldNames) {
+            String locale = null;
+            if (languageField.startsWith(key + "_LANG_")) {
+                locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
+            } else {
+                locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
+            }
+            Collection<Object> languageValues = doc.getFieldValues(languageField);
+            if (languageValues != null) {
+                List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                map.put(locale, values);
             }
         }
+
         return map;
     }
 
     /**
-     * <p>getMetadataValuesForLanguage.</p>
+     * <p>
+     * getMetadataValuesForLanguage.
+     * </p>
      *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
@@ -1339,7 +1425,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getDisplayUserGeneratedContentsForPage.</p>
+     * <p>
+     * getDisplayUserGeneratedContentsForPage.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -1412,7 +1500,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -1430,7 +1520,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -1449,7 +1541,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>getTranslations.</p>
+     * <p>
+     * getTranslations.
+     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -1469,7 +1563,9 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * <p>isHasImages.</p>
+     * <p>
+     * isHasImages.
+     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @should return correct value for page docs
@@ -1490,5 +1586,23 @@ public final class SolrSearchIndex {
         }
 
         return fileExtension != null && fileExtension.toLowerCase().matches("(tiff?|jpe?g|png|jp2|gif)");
+    }
+
+    /**
+     * 
+     * @param conditions
+     * @return
+     */
+    public static String getProcessedConditions(String conditions) {
+        if (conditions == null) {
+            return null;
+        }
+
+        if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
+            // Hack for getting the current year as a number for non-date Solr fields
+            conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+        }
+
+        return conditions.trim();
     }
 }

@@ -76,7 +76,9 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
- * <p>ManifestResource class.</p>
+ * <p>
+ * ManifestResource class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -185,7 +187,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>autoCompleteInManifest.</p>
+     * <p>
+     * autoCompleteInManifest.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -458,43 +462,48 @@ public class ManifestResource extends AbstractResource {
     public AnnotationList getOtherContent(@PathParam("pi") String pi, @PathParam("physPageNo") int physPageNo, @PathParam("type") String typeName)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException,
             ContentNotFoundException, IllegalRequestException {
-        AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
-        if (type != null) {
+        try {
+            AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
             StructElement doc = getManifestBuilder().getDocument(pi);
             PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);
             Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
-            Map<AnnotationType, AnnotationList> annotations;
-            if (AnnotationType.COMMENT.equals(type)) {
-                annotations = new HashMap<>();
-                List<AnnotationList> comments = getSequenceBuilder().addComments(Collections.singletonMap(physPageNo, canvas), pi, true);
-                if (!comments.isEmpty()) {
-                    annotations.put(AnnotationType.COMMENT, comments.get(0));
+            if (canvas != null) {
+                Map<AnnotationType, AnnotationList> annotations;
+                if (AnnotationType.COMMENT.equals(type)) {
+                    annotations = new HashMap<>();
+                    List<AnnotationList> comments = getSequenceBuilder().addComments(Collections.singletonMap(physPageNo, canvas), pi, true);
+                    if (!comments.isEmpty()) {
+                        annotations.put(AnnotationType.COMMENT, comments.get(0));
+                    }
+                } else if (AnnotationType.CROWDSOURCING.equals(type)) {
+                    annotations = new HashMap<>();
+                    Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
+                    getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
+                            getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap);
+                    AnnotationList annoList = null;
+                    if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
+                        annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
+                    }
+                    if (annoList != null) {
+                        annotations.put(AnnotationType.CROWDSOURCING, annoList);
+                    }
+                } else {
+                    annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, true);
                 }
-            } else if (AnnotationType.CROWDSOURCING.equals(type)) {
-                annotations = new HashMap<>();
-                Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
-                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
-                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap);
-                AnnotationList annoList = null;
-                if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
-                    annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
+                if (annotations.get(type) != null) {
+                    AnnotationList al = annotations.get(type);
+                    Layer layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
+                    layer.setLabel(ViewerResourceBundle.getTranslations(type.name()));
+                    al.addWithin(layer);
+                    return al;
                 }
-                if (annoList != null) {
-                    annotations.put(AnnotationType.CROWDSOURCING, annoList);
-                }
-            } else {
-                annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, true);
             }
-            if (annotations.get(type) != null) {
-                AnnotationList al = annotations.get(type);
-                Layer layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
-                layer.setLabel(ViewerResourceBundle.getTranslations(type.name()));
-                al.addWithin(layer);
-                return al;
-            }
-            throw new ContentNotFoundException("No otherContent found for " + pi + "/" + physPageNo + "/" + type);
+            AnnotationList emptyList = new AnnotationList(getSequenceBuilder().getAnnotationListURI(pi, physPageNo, type));
+            return emptyList;
+            //            throw new ContentNotFoundException("No otherContent found for " + pi + "/" + physPageNo + "/" + type);
+        } catch(IllegalArgumentException e) {            
+            throw new IllegalRequestException("No valid annotation type: " + typeName);
         }
-        throw new IllegalRequestException("No valid annotation type: " + typeName);
     }
 
     /**
@@ -518,34 +527,34 @@ public class ManifestResource extends AbstractResource {
     public AnnotationList getOtherContent(@PathParam("pi") String pi, @PathParam("type") String typeName)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException,
             ContentNotFoundException, IllegalRequestException, IOException {
-        AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
-        Layer layer;
-        if (AnnotationType.TEI.equals(type)) {
-            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
-                    (id, lang) -> ContentResource.getTEIURI(id, lang));
-        } else if (AnnotationType.CMDI.equals(type)) {
-            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
-                    (id, lang) -> ContentResource.getCMDIURI(id, lang));
-        }
-        if (AnnotationType.CROWDSOURCING.equals(type)) {
-            List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi, false).get(null);
-            if (workAnnotations == null) {
-                workAnnotations = new ArrayList<>();
+        try {
+            AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
+            Layer layer;
+            if (AnnotationType.TEI.equals(type)) {
+                layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
+                        (id, lang) -> ContentResource.getTEIURI(id, lang));
+            } else if (AnnotationType.CMDI.equals(type)) {
+                layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
+                        (id, lang) -> ContentResource.getCMDIURI(id, lang));
             }
-            AnnotationList annoList = new AnnotationList(getLayerBuilder().getAnnotationListURI(pi, type));
-            workAnnotations.forEach(annoList::addResource);
-            layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
-            layer.addOtherContent(annoList);
-        } else {
-            throw new IllegalRequestException("No global annotations for type: " + typeName);
+            if (AnnotationType.CROWDSOURCING.equals(type)) {
+                List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi, false).get(null);
+                if (workAnnotations == null) {
+                    workAnnotations = new ArrayList<>();
+                }
+                AnnotationList annoList = new AnnotationList(getLayerBuilder().getAnnotationListURI(pi, type));
+                workAnnotations.forEach(annoList::addResource);
+                layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
+                layer.addOtherContent(annoList);
+                layer.setLabel(ViewerResourceBundle.getTranslations(type.name()));
+                annoList.addWithin(layer);
+                return annoList;
+            }
+            AnnotationList emptyList = new AnnotationList(getSequenceBuilder().getAnnotationListURI(pi, type));
+            return emptyList;
+        } catch(IllegalArgumentException e) {            
+            throw new IllegalRequestException("No valid annotation type: " + typeName);
         }
-        Optional<AnnotationList> annoList = layer.getOtherContent().stream().findFirst();
-        if (annoList.isPresent()) {
-            layer.setLabel(ViewerResourceBundle.getTranslations(type.name()));
-            annoList.get().addWithin(layer);
-            return annoList.get();
-        }
-        throw new ContentNotFoundException("No annotations found for " + pi + "/" + type);
     }
 
     /**
@@ -598,7 +607,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>manifestBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>manifestBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder} object.
      */
@@ -610,7 +621,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>sequenceBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>sequenceBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder} object.
      */
@@ -622,7 +635,9 @@ public class ManifestResource extends AbstractResource {
     }
 
     /**
-     * <p>Getter for the field <code>layerBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>layerBuilder</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder} object.
      */

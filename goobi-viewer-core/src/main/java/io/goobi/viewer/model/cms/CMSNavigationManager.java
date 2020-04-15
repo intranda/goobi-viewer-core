@@ -34,7 +34,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>CMSNavigationManager class.</p>
+ * <p>
+ * CMSNavigationManager class.
+ * </p>
  */
 public class CMSNavigationManager {
 
@@ -50,7 +52,9 @@ public class CMSNavigationManager {
     //    }
 
     /**
-     * <p>Constructor for CMSNavigationManager.</p>
+     * <p>
+     * Constructor for CMSNavigationManager.
+     * </p>
      *
      * @param associatedTheme a {@link java.lang.String} object.
      */
@@ -64,7 +68,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>loadItems.</p>
+     * <p>
+     * loadItems.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -102,7 +108,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>addCMSPageItems.</p>
+     * <p>
+     * addCMSPageItems.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -132,7 +140,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>addAvailableItem.</p>
+     * <p>
+     * addAvailableItem.
+     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.SelectableNavigationItem} object.
      */
@@ -143,7 +153,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>Getter for the field <code>availableItems</code>.</p>
+     * <p>
+     * Getter for the field <code>availableItems</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -152,8 +164,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * Add all items from {@link #availableItems} to {@link #visibleItems} for which {@link io.goobi.viewer.model.cms.SelectableNavigationItem#isSelected()} is true. Afterwards
-     * sets {@link io.goobi.viewer.model.cms.SelectableNavigationItem#isSelected()} to fals for all {@link #availableItems}
+     * Add all items from {@link #availableItems} to {@link #visibleItems} for which
+     * {@link io.goobi.viewer.model.cms.SelectableNavigationItem#isSelected()} is true. Afterwards sets
+     * {@link io.goobi.viewer.model.cms.SelectableNavigationItem#isSelected()} to fals for all {@link #availableItems}
      */
     public void addSelectedItemsToMenu() {
         getAvailableItems().stream()
@@ -164,7 +177,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>loadVisibleItems.</p>
+     * <p>
+     * loadVisibleItems.
+     * </p>
      *
      * @return the sublist of available menu items matching the navigationMenuItem-list from the database (in label and url)
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -194,7 +209,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>loadItemsFromDatabase.</p>
+     * <p>
+     * loadItemsFromDatabase.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -212,7 +229,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>Getter for the field <code>visibleItems</code>.</p>
+     * <p>
+     * Getter for the field <code>visibleItems</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -294,7 +313,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>addVisibleItem.</p>
+     * <p>
+     * addVisibleItem.
+     * </p>
      *
      * @param navigationItem a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
@@ -310,7 +331,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>reload.</p>
+     * <p>
+     * reload.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -319,7 +342,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>getItem.</p>
+     * <p>
+     * getItem.
+     * </p>
      *
      * @param id the item's {@link io.goobi.viewer.model.cms.CMSNavigationItem#getSortingListId()}
      * @return The first matching item from all visible items as optional. Empty optional if no matching item was found
@@ -329,7 +354,9 @@ public class CMSNavigationManager {
     }
 
     /**
-     * <p>Getter for the field <code>associatedTheme</code>.</p>
+     * <p>
+     * Getter for the field <code>associatedTheme</code>.
+     * </p>
      *
      * @return the associatedTheme
      */

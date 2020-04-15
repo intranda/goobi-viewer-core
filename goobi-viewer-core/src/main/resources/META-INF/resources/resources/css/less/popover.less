@@ -1,0 +1,66 @@
+/* ==============================================================
+   Styling for popovers
+   ==============================================================*/
+
+popover {
+	display: none;
+}
+.popover popover {
+	display: block;
+}
+
+.popover {
+	z-index: 2020;
+	.popover-title-custom {
+		padding: 8px 14px;
+		margin: 0;
+		font-size: 14px;
+		background-color: #f7f7f7;
+		border-bottom: 1px solid #ebebeb;
+		border-radius: 5px 5px 0 0;
+	}
+	.popover-content {
+	}
+}
+
+imageFilters {
+	.imagefilters{
+		&__filter {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			min-width: 220px;
+			margin-bottom: 15px;
+			&:last-child {
+				margin-bottom: 5px;
+			}
+		}
+		&__options {
+			padding: 10px 5px;
+			button {
+				width: 100%;
+				color: #fff;
+				&:hover {
+					color: #fff;
+				}
+			}
+		} 
+		&__label {
+			flex-basis: 40%;
+			&-long {
+				flex-basis: 80%;
+			}
+		}
+		&__checkbox {
+			margin: 0;
+			
+		}
+		&__slider {
+			flex-basis: 60%;
+			flex-grow: 1;
+			&[disabled] {
+				color: lightgray;
+			}
+		}
+	}
+}

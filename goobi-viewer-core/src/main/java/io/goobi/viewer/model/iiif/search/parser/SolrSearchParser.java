@@ -28,48 +28,56 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>SolrSearchParser class.</p>
+ * <p>
+ * SolrSearchParser class.
+ * </p>
  *
  * @author florian
  */
-public class SolrSearchParser extends AbstractSearchParser{
+public class SolrSearchParser extends AbstractSearchParser {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchParser.class);
-    
-    private static final List<String> PAGEFIELDLIST =
-            Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
-    
-    private Map<Integer, Dimension> pageSizes = new HashMap<Integer, Dimension>();
-    
+
+    private static final List<String> PAGEFIELDLIST = Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
+
+    private Map<Integer, Dimension> pageSizes = new HashMap<>();
+
     /**
-     * <p>getPageSize.</p>
+     * <p>
+     * getPageSize.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a {@link java.lang.Integer} object.
      * @return a {@link java.awt.Dimension} object.
      */
     public Dimension getPageSize(String pi, Integer pageNo) {
-        if(!pageSizes.containsKey(pageNo)) {
-            
-            String query = "+PI_TOPSTRUCT:" + pi + " ";
-            query += "+DOCTYPE:PAGE ";
-            query += "+ORDER:" + pageNo;
+        if (!pageSizes.containsKey(pageNo)) {
+            String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi;
+            query += " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE;
+            query += " +" + SolrConstants.ORDER + ":" + pageNo;
             try {
                 SolrDocument pageDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, PAGEFIELDLIST);
-                Integer width = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
-                Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.HEIGHT))).orElse(0);
-                pageSizes.put(pageNo, new Dimension(width, height));
+                if (pageDoc != null) {
+                    Integer width = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
+                    Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.HEIGHT))).orElse(0);
+                    pageSizes.put(pageNo, new Dimension(width, height));
+                }
             } catch (PresentationException | IndexUnreachableException | NullPointerException e) {
-               logger.error(e.toString(), e);
-               return new Dimension(0, 0);
+                logger.error(e.toString(), e);
             }
-        } 
-        return pageSizes.get(pageNo);
+        }
+
+        if (pageSizes.get(pageNo) != null) {
+            return pageSizes.get(pageNo);
+        }
+        return new Dimension(0, 0);
     }
-    
+
 }

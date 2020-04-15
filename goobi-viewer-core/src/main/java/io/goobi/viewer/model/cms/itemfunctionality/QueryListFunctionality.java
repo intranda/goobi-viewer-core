@@ -18,7 +18,9 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>QueryListFunctionality class.</p>
+ * <p>
+ * QueryListFunctionality class.
+ * </p>
  *
  * @author Florian Alpers
  */

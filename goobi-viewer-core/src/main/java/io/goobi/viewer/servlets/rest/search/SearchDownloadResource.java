@@ -53,7 +53,9 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * <p>SearchDownloadResource class.</p>
+ * <p>
+ * SearchDownloadResource class.
+ * </p>
  */
 @Path("/download/search")
 @ViewerRestServiceBinding
@@ -65,7 +67,9 @@ public class SearchDownloadResource {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>waitForDownloadStatus.</p>
+     * <p>
+     * waitForDownloadStatus.
+     * </p>
      *
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @return a boolean.
@@ -100,7 +104,9 @@ public class SearchDownloadResource {
     }
 
     /**
-     * <p>downloadAsExcel.</p>
+     * <p>
+     * downloadAsExcel.
+     * </p>
      *
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.

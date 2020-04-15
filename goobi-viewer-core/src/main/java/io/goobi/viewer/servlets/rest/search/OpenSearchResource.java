@@ -35,7 +35,9 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * <p>OpenSearchResource class.</p>
+ * <p>
+ * OpenSearchResource class.
+ * </p>
  */
 @Path("/opensearch")
 @ViewerRestServiceBinding
@@ -47,7 +49,9 @@ public class OpenSearchResource {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>getXml.</p>
+     * <p>
+     * getXml.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

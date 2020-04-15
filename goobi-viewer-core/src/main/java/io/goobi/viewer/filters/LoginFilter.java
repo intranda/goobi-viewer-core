@@ -137,6 +137,7 @@ public class LoginFilter implements Filter {
      * @should return false for bookmarks session uris
      * @should return false for bookmarks share key uris
      * @should return false for bookmarks send list uris
+     * @should return false for user account activation uris
      */
     public static boolean isRestrictedUri(String uri) {
         if (uri == null) {
@@ -152,16 +153,20 @@ public class LoginFilter implements Filter {
             case "/mysearches/":
                 return true;
             default:
+                // Allow activation URLs
+                if (uri.startsWith("/user/activate/")) {
+                    return false;
+                }
                 // any URIs starting with /user/ are supposed to be only accessible to logged in users
                 if (uri.startsWith("/user/")) {
                     return true;
                 }
-                
+
                 //any URIs leading to campaign annotation/review
-                if(uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) {
+                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) {
                     return true;
                 }
-                
+
                 //make an exception for session bookmarks search list or share key
                 if (uri.contains("bookmarks/search/") || uri.contains("bookmarks/session/") || uri.contains("bookmarks/key/")
                         || uri.contains("bookmarks/send/") || uri.contains("bookmarks/search/session")) {

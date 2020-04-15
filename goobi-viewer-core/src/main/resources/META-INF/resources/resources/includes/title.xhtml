@@ -1,4 +1,5 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
             	xmlns:f="http://xmlns.jcp.org/jsf/core"
             	xmlns:h="http://xmlns.jcp.org/jsf/html"
             	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -73,38 +74,15 @@
 									<ui:repeat value="#{metadata.values}" var="val">
 										<span class="title-value"> 
 											<h:outputFormat rendered="#{!metadata.group}" value="#{msg[val.masterValue]}" escape="false">
-												<f:param value="#{val.getComboValueShort(0)}" />
-												<f:param value="#{val.getComboValueShort(1)}" />
-												<f:param value="#{val.getComboValueShort(2)}" />
-												<f:param value="#{val.getComboValueShort(3)}" />
-												<f:param value="#{val.getComboValueShort(4)}" />
-												<f:param value="#{val.getComboValueShort(5)}" />
-												<f:param value="#{val.getComboValueShort(6)}" />
-												<f:param value="#{val.getComboValueShort(7)}" />
-												<f:param value="#{val.getComboValueShort(8)}" />
-												<f:param value="#{val.getComboValueShort(9)}" />
+                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                    <f:param value="#{val.getComboValueShort(ind)}" />
+                                                </c:forEach>
 											</h:outputFormat> 
 											<h:outputFormat rendered="#{metadata.group}" value="#{msg[val.masterValue]}" escape="false">
-												<f:param value="#{val.getParamLabelWithColon(0)}" />
-												<f:param value="#{val.getComboValueShort(0)}" />
-												<f:param value="#{val.getParamLabelWithColon(1)}" />
-												<f:param value="#{val.getComboValueShort(1)}" />
-												<f:param value="#{val.getParamLabelWithColon(2)}" />
-												<f:param value="#{val.getComboValueShort(2)}" />
-												<f:param value="#{val.getParamLabelWithColon(3)}" />
-												<f:param value="#{val.getComboValueShort(3)}" />
-												<f:param value="#{val.getParamLabelWithColon(4)}" />
-												<f:param value="#{val.getComboValueShort(4)}" />
-												<f:param value="#{val.getParamLabelWithColon(5)}" />
-												<f:param value="#{val.getComboValueShort(5)}" />
-												<f:param value="#{val.getParamLabelWithColon(6)}" />
-												<f:param value="#{val.getComboValueShort(6)}" />
-												<f:param value="#{val.getParamLabelWithColon(7)}" />
-												<f:param value="#{val.getComboValueShort(7)}" />
-												<f:param value="#{val.getParamLabelWithColon(8)}" />
-												<f:param value="#{val.getComboValueShort(8)}" />
-												<f:param value="#{val.getParamLabelWithColon(9)}" />
-												<f:param value="#{val.getComboValueShort(9)}" />
+                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
+                                                    <f:param value="#{val.getComboValueShort(ind)}" />
+                                                </c:forEach>
 											</h:outputFormat>
 										</span>
 									</ui:repeat>

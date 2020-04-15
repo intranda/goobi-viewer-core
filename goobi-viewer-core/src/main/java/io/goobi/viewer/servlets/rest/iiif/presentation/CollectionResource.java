@@ -34,6 +34,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
+import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -70,9 +71,37 @@ public class CollectionResource extends AbstractResource {
     public Collection getCollections(@PathParam("collectionField") String collectionField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, null,
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
+        return collection;
+
+    }
+    
+    /**
+     * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
+     * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
+     * to set the language for all metadata values
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    @GET
+    @Path("/{collectionField}/grouping/{groupingField}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public Collection getCollectionsWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("groupingField") final String groupingField)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        
+        getCollectionBuilder().addTagListService(collection, collectionField, groupingField, "grouping");
+        
         return collection;
 
     }
@@ -97,15 +126,47 @@ public class CollectionResource extends AbstractResource {
     public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement,
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         return collection;
 
     }
+    
+    /**
+     * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
+     * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
+     * member-collections Requires passing a language to set the language for all metadata values
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable grouping by client
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    @GET
+    @Path("/{collectionField}/{topElement}/grouping/{groupingField}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public Collection getCollectionWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement, @PathParam("groupingField") final String facetField)
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+
+        getCollectionBuilder().addTagListService(collection, collectionField, facetField, "grouping");
+        
+        return collection;
+
+    }
 
     /**
-     * <p>Getter for the field <code>collectionBuilder</code>.</p>
+     * <p>
+     * Getter for the field <code>collectionBuilder</code>.
+     * </p>
      *
      * @return the manifestBuilder
      */

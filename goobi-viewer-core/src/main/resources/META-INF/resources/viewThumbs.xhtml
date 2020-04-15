@@ -43,7 +43,13 @@
                 <ui:param name="purl" value="true" />
             </ui:include>
 
-            <div class="view-thumbs__thumbnails">
+            <h:panelGroup layout="block">
+                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                    <f:attribute name="styleClass" value="view-thumbs__thumbnails -ltr"/>
+                </c:if>
+                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                    <f:attribute name="styleClass" value="view-thumbs__thumbnails -rtl"/>
+                </c:if>
                 <ui:repeat var="image" value="#{activeDocumentBean.viewManager.imagesSection}">
                     <!-- THUMBNAIL -->
                     <div class="view-thumbs__thumbnail">
@@ -51,7 +57,10 @@
                         <figure class="view-thumbs__thumbnail-image">
                             <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
 <!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
-                                <img class="viewer-thumbnail" src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" />
+                                <img src="#{image.thumbnailUrl}" 
+                                alt="#{image.order}:#{image.orderLabel}" 
+                                title="#{image.order}:#{image.orderLabel}" 
+                                data-viewer-thumbnail="thumbnail"/>
                             </a>
                             
                             <figcaption>
@@ -68,7 +77,7 @@
                         </figure>
                     </div>
                 </ui:repeat>
-            </div>
+            </h:panelGroup>
             
             <!-- PAGINATOR -->
             <viewerComponent:simplePaginator 

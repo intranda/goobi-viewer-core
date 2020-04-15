@@ -40,7 +40,9 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * <p>SearchResultResource class.</p>
+ * <p>
+ * SearchResultResource class.
+ * </p>
  */
 @Path("/search")
 @ViewerRestServiceBinding
@@ -52,7 +54,9 @@ public class SearchResultResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>getTagsForPageJson.</p>
+     * <p>
+     * getTagsForPageJson.
+     * </p>
      *
      * @param hitId a {@link java.lang.String} object.
      * @param numChildren a int.
@@ -66,8 +70,8 @@ public class SearchResultResource {
     @GET
     @Path("/hit/{id}/{numChildren}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren) throws DAOException,
-            PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
+    public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren)
+            throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
         SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -87,8 +91,8 @@ public class SearchResultResource {
                         searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale, servletRequest);
                     }
                     Collections.sort(searchHit.getChildren());
-                    SearchHitChildList searchHitChildren = new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit
-                            .isHasMoreChildren());
+                    SearchHitChildList searchHitChildren =
+                            new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
                     return searchHitChildren;
                 }
             }

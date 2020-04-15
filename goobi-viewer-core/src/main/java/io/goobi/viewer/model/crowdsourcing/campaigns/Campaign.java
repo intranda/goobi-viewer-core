@@ -267,7 +267,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getCampaignVisibilityValues.</p>
+     * <p>
+     * getCampaignVisibilityValues.
+     * </p>
      *
      * @return available values of the CampaignVisibility enum
      */
@@ -277,7 +279,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getNumRecords.</p>
+     * <p>
+     * getNumRecords.
+     * </p>
      *
      * @return total number of records encompassed by the configured solrQuery
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -292,7 +296,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getNumRecordsForStatus.</p>
+     * <p>
+     * getNumRecordsForStatus.
+     * </p>
      *
      * @param status a {@link java.lang.String} object.
      * @return number of records with the given status
@@ -314,7 +320,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getNumRecordsToAnnotate.</p>
+     * <p>
+     * getNumRecordsToAnnotate.
+     * </p>
      *
      * @return Number of records whose status is neither REVIEW nor FINISHED
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -405,7 +413,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getDaysLeftAsString.</p>
+     * <p>
+     * getDaysLeftAsString.
+     * </p>
      *
      * @return number of days left as string; infinity symbol if no dateEnd
      */
@@ -418,7 +428,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>isHasStarted.</p>
+     * <p>
+     * isHasStarted.
+     * </p>
      *
      * @return true if dateStart lies after now; false otherwise
      * @should return true if dateStart null
@@ -438,7 +450,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>isHasEnded.</p>
+     * <p>
+     * isHasEnded.
+     * </p>
      *
      * @return true if dateEnd lies before now; false otherwise
      * @should return false if dateEnd null
@@ -496,7 +510,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>setTitle.</p>
+     * <p>
+     * setTitle.
+     * </p>
      *
      * @param title a {@link java.lang.String} object.
      * @should set value correctly
@@ -517,7 +533,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getMenuTitleOrElseTitle.</p>
+     * <p>
+     * getMenuTitleOrElseTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -530,7 +548,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getMenuTitleOrElseTitle.</p>
+     * <p>
+     * getMenuTitleOrElseTitle.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @param useFallback a boolean.
@@ -545,7 +565,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>setMenuTitle.</p>
+     * <p>
+     * setMenuTitle.
+     * </p>
      *
      * @should set value correctly
      * @param menuTitle a {@link java.lang.String} object.
@@ -566,7 +588,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>setDescription.</p>
+     * <p>
+     * setDescription.
+     * </p>
      *
      * @should set value correctly
      * @param description a {@link java.lang.String} object.
@@ -576,7 +600,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getTitle.</p>
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -586,7 +612,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getTitle.</p>
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return the title of the given language or if it doesn't exist the title of the default language
@@ -597,7 +625,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getDescription.</p>
+     * <p>
+     * getDescription.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -607,7 +637,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getDescription.</p>
+     * <p>
+     * getDescription.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @param useFallback a boolean.
@@ -618,7 +650,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getMenuTitle.</p>
+     * <p>
+     * getMenuTitle.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -628,7 +662,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getMenuTitle.</p>
+     * <p>
+     * getMenuTitle.
+     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @param useFallback a boolean.
@@ -639,7 +675,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @return the id
      */
@@ -649,7 +687,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>id</code>.</p>
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
@@ -665,7 +705,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getIdAsURI.</p>
+     * <p>
+     * getIdAsURI.
+     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
@@ -675,7 +717,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
      *
      * @param id the id to set
      */
@@ -684,7 +728,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @return the dateCreated
      */
@@ -693,7 +739,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>dateCreated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateCreated</code>.
+     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -702,7 +750,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Getter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @return the dateUpdated
      */
@@ -711,7 +761,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>dateUpdated</code>.</p>
+     * <p>
+     * Setter for the field <code>dateUpdated</code>.
+     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -720,7 +772,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>visibility</code>.</p>
+     * <p>
+     * Getter for the field <code>visibility</code>.
+     * </p>
      *
      * @return the visibility
      */
@@ -729,7 +783,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>visibility</code>.</p>
+     * <p>
+     * Setter for the field <code>visibility</code>.
+     * </p>
      *
      * @param visibility the visibility to set
      */
@@ -738,7 +794,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>dateStart</code>.</p>
+     * <p>
+     * Getter for the field <code>dateStart</code>.
+     * </p>
      *
      * @return the dateStart
      */
@@ -747,7 +805,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>dateStart</code>.</p>
+     * <p>
+     * Setter for the field <code>dateStart</code>.
+     * </p>
      *
      * @param dateStart the dateStart to set
      */
@@ -756,7 +816,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getDateStartString.</p>
+     * <p>
+     * getDateStartString.
+     * </p>
      *
      * @return formatted ISO string representation of stateStart
      */
@@ -769,7 +831,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>setDateStartString.</p>
+     * <p>
+     * setDateStartString.
+     * </p>
      *
      * @param dateStartString a {@link java.lang.String} object.
      * @should parse string correctly
@@ -784,7 +848,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>dateEnd</code>.</p>
+     * <p>
+     * Getter for the field <code>dateEnd</code>.
+     * </p>
      *
      * @return the dateEnd
      */
@@ -793,7 +859,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>dateEnd</code>.</p>
+     * <p>
+     * Setter for the field <code>dateEnd</code>.
+     * </p>
      *
      * @param dateEnd the dateEnd to set
      */
@@ -802,7 +870,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getDateEndString.</p>
+     * <p>
+     * getDateEndString.
+     * </p>
      *
      * @return formatted ISO string representation of dateEnd
      */
@@ -815,7 +885,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>setDateEndString.</p>
+     * <p>
+     * setDateEndString.
+     * </p>
      *
      * @param dateEndString a {@link java.lang.String} object.
      * @should parse string correctly
@@ -829,7 +901,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>contentItem</code>.</p>
+     * <p>
+     * Getter for the field <code>contentItem</code>.
+     * </p>
      *
      * @return the contentItem
      */
@@ -838,7 +912,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>solrQuery</code>.</p>
+     * <p>
+     * Getter for the field <code>solrQuery</code>.
+     * </p>
      *
      * @return the solrQuery
      */
@@ -847,7 +923,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>solrQuery</code>.</p>
+     * <p>
+     * Setter for the field <code>solrQuery</code>.
+     * </p>
      *
      * @param solrQuery the solrQuery to set
      */
@@ -857,7 +935,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>permalink</code>.</p>
+     * <p>
+     * Getter for the field <code>permalink</code>.
+     * </p>
      *
      * @return the permalink
      */
@@ -866,7 +946,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>permalink</code>.</p>
+     * <p>
+     * Setter for the field <code>permalink</code>.
+     * </p>
      *
      * @param permalink the permalink to set
      */
@@ -875,7 +957,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>breadcrumbParentCmsPageId</code>.</p>
+     * <p>
+     * Getter for the field <code>breadcrumbParentCmsPageId</code>.
+     * </p>
      *
      * @return the breadcrumbParentCmsPageId
      */
@@ -884,7 +968,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>breadcrumbParentCmsPageId</code>.</p>
+     * <p>
+     * Setter for the field <code>breadcrumbParentCmsPageId</code>.
+     * </p>
      *
      * @param breadcrumbParentCmsPageId the breadcrumbParentCmsPageId to set
      */
@@ -893,7 +979,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>translations</code>.</p>
+     * <p>
+     * Getter for the field <code>translations</code>.
+     * </p>
      *
      * @return the translations
      */
@@ -902,7 +990,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>translations</code>.</p>
+     * <p>
+     * Setter for the field <code>translations</code>.
+     * </p>
      *
      * @param translations the translations to set
      */
@@ -911,7 +1001,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>questions</code>.</p>
+     * <p>
+     * Getter for the field <code>questions</code>.
+     * </p>
      *
      * @return the questions
      */
@@ -920,7 +1012,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>questions</code>.</p>
+     * <p>
+     * Setter for the field <code>questions</code>.
+     * </p>
      *
      * @param questions the questions to set
      */
@@ -929,7 +1023,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>statistics</code>.</p>
+     * <p>
+     * Getter for the field <code>statistics</code>.
+     * </p>
      *
      * @return the statistics
      */
@@ -938,7 +1034,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>statistics</code>.</p>
+     * <p>
+     * Setter for the field <code>statistics</code>.
+     * </p>
      *
      * @param statistics the statistics to set
      */
@@ -947,7 +1045,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Getter for the field <code>selectedLocale</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedLocale</code>.
+     * </p>
      *
      * @return the selectedLocale
      */
@@ -956,7 +1056,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>selectedLocale</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedLocale</code>.
+     * </p>
      *
      * @param selectedLocale the selectedLocale to set
      */
@@ -965,7 +1067,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>isDirty.</p>
+     * <p>
+     * isDirty.
+     * </p>
      *
      * @return the dirty
      */
@@ -974,7 +1078,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>Setter for the field <code>dirty</code>.</p>
+     * <p>
+     * Setter for the field <code>dirty</code>.
+     * </p>
      *
      * @param dirty the dirty to set
      */
@@ -1031,8 +1137,10 @@ public class Campaign implements CMSMediaHolder {
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if
      *         <ul>
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW REVIEW} and the user is not contained in the annotaters list</li> or
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is not contained in the reviewers list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#REVIEW REVIEW} and
+     *         the user is not contained in the annotaters list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus#ANNOTATE ANNOTATE}
+     *         and the user is not contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
      *         <li>The user is null</li>
      * @param pi a {@link java.lang.String} object.
@@ -1121,7 +1229,9 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * <p>getRecordStatus.</p>
+     * <p>
+     * getRecordStatus.
+     * </p>
      *
      * @return record status for the given pi
      * @param pi a {@link java.lang.String} object.

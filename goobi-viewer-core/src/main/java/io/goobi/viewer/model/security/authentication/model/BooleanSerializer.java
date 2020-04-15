@@ -23,7 +23,9 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * <p>BooleanSerializer class.</p>
+ * <p>
+ * BooleanSerializer class.
+ * </p>
  *
  * @author Florian Alpers
  */
@@ -33,7 +35,6 @@ public class BooleanSerializer extends JsonSerializer<Boolean> {
     private static final String FALSE = "N";
     private static final String UNKNOWN = "U";
 
- 
     /** {@inheritDoc} */
     @Override
     public void serialize(Boolean value, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {

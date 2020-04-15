@@ -30,7 +30,7 @@ import io.goobi.viewer.controller.XmlTools;
 
 public class XmlToolsTest {
 
-    private File tempDir = new File("build/temp");
+    private File tempDir = new File("target/temp");
 
     @After
     public void tearDown() throws Exception {
@@ -98,7 +98,7 @@ public class XmlToolsTest {
     public void writeXmlFile_shouldThrowFileNotFoundExceptionIfFileIsDirectory() throws Exception {
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
-        XmlTools.writeXmlFile(doc, "build");
+        XmlTools.writeXmlFile(doc, "target");
     }
 
     /**

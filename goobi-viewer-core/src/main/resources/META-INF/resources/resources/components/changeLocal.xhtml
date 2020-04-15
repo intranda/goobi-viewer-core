@@ -30,8 +30,6 @@
                                     <h:outputText value="#{msg['changeLocal_' += lang]}"
                                         rendered="#{cc.attrs.showLabels == true}" />
                                     <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
-                                    <!-- Renders everything within the body element. References h:panelGroup in themes. -->
-<!--                                     <f:ajax render="subBody" /> -->
                                 </h:commandLink>
                             </li>
                         </ui:repeat>
@@ -47,11 +45,9 @@
 							<li>
 								<h:commandLink rendered="#{cc.attrs.showGerman == true}" styleClass="flag #{navigationHelper.localeString == 'de'?'activeLang_de':''} leftFlag ">
 									<h:outputText value="#{msg.changeLocal_de}" rendered="#{cc.attrs.showLabels == true}" />
-									<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" alt="Flag Icon" />
+									<h:panelGroup rendered="#{cc.attrs.showFlags == true}"><img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" alt="Flag Icon" />
                                 	</h:panelGroup>
 									<f:setPropertyActionListener target="#{navigationHelper.localeString}" value="de" />
-									<!-- Renders everything within the body element. References h:panelGroup in themes. -->
 								</h:commandLink>
 							</li>
 						</h:panelGroup>
@@ -59,11 +55,9 @@
 							<li>	
 								<h:commandLink rendered="#{cc.attrs.showEnglish == true}" styleClass="flag middleFlag #{navigationHelper.localeString == 'en'?'activeLang_en':''}">
 									<h:outputText value="#{msg.changeLocal_en}" rendered="#{cc.attrs.showLabels == true}" />
-									<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" alt="Flag Icon" />
+									<h:panelGroup rendered="#{cc.attrs.showFlags == true}"><img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" alt="Flag Icon" />
                                 	</h:panelGroup>
 									<f:setPropertyActionListener target="#{navigationHelper.localeString}" value="en" />
-									<!-- Renders everything within the body element. References h:panelGroup in themes. -->
 								</h:commandLink>
 							</li>
 						</h:panelGroup>
@@ -82,8 +76,6 @@
 								</h:panelGroup>
                                 <h:outputText value="#{msg[cc.attrs.singleLanguage]}" rendered="#{cc.attrs.showLabels == true}" />
                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{cc.attrs.singleLanguage}" />
-                                <!-- Renders everything within the body element. References h:panelGroup in themes. -->
-                                <f:ajax render="subBody" />
                             </h:commandLink>
                         </li>
                     </ul>

@@ -86,13 +86,12 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testGetManifest() throws ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException,
             URISyntaxException, DAOException {
-        IPresentationModelElement manifest = resource.getManifest("PPN517154005");
+        IPresentationModelElement manifest = resource.getManifest(PI_KLEIUNIV);
         Assert.assertTrue(manifest instanceof Manifest);
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
+     * Test method for {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
      * 
      * @throws DAOException
      * @throws URISyntaxException
@@ -104,7 +103,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testGetRange() throws ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException,
             URISyntaxException, DAOException {
-        Range range = resource.getRange("PPN517154005", "LOG_0003");
+        Range range = resource.getRange(PI_KLEIUNIV, "LOG_0003");
         Assert.assertTrue(range instanceof Range);
     }
 
@@ -121,7 +120,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testGetCanvas() throws ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException,
             URISyntaxException, DAOException {
-        Canvas canvas = resource.getCanvas("PPN517154005", 1);
+        Canvas canvas = resource.getCanvas(PI_KLEIUNIV, 1);
         Assert.assertTrue(canvas instanceof Canvas);
     }
 
@@ -141,7 +140,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testGetOtherContent() throws ViewerConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException,
             IndexUnreachableException, URISyntaxException, DAOException {
         try {
-            AnnotationList annoList = resource.getOtherContent("PPN517154005", 1, AnnotationType.FULLTEXT.name());
+            AnnotationList annoList = resource.getOtherContent(PI_KLEIUNIV, 1, AnnotationType.FULLTEXT.name());
             Assert.assertTrue(annoList instanceof AnnotationList);
         } catch (ContentNotFoundException e) {
             //may be thrown if no fulltext content exists. Do not fail test
@@ -149,8 +148,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
+     * Test method for {@link io.goobi.viewer.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
      * 
      * @throws IOException
      * @throws DAOException
@@ -164,7 +162,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testGetLayer() throws ViewerConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException,
             IndexUnreachableException, URISyntaxException, DAOException, IOException {
-        Layer layer = resource.getLayer("PPN517154005", AnnotationType.FULLTEXT.name());
+        Layer layer = resource.getLayer(PI_KLEIUNIV, AnnotationType.FULLTEXT.name());
         Assert.assertTrue(layer instanceof Layer);
     }
 

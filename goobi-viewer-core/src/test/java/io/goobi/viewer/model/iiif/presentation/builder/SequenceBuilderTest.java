@@ -52,7 +52,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    public static final String PI = "PPN517154005";
+    public static final String PI = PI_KLEIUNIV;
     public static final int ORDER = 1;
 
     @Test
@@ -84,8 +84,6 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         ObjectWriter writer = mapper.writer().forType(AnnotationList.class);
         String json = writer.writeValueAsString(fulltext);
         Assert.assertTrue(StringUtils.isNotBlank(json));
-        File jsonFile = new File("C:\\opt\\digiverso\\viewer\\annolist.json");
-        FileUtils.write(jsonFile, json, "UTF-8");
     }
 
 }

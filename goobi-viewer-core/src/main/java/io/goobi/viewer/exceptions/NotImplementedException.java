@@ -16,62 +16,74 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>NotImplementedException class.</p>
+ * <p>
+ * NotImplementedException class.
+ * </p>
  *
  * @author florian
  */
 public class NotImplementedException extends Exception {
 
-	/**
-	 * <p>Constructor for NotImplementedException.</p>
-	 */
-	public NotImplementedException() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for NotImplementedException.
+     * </p>
+     */
+    public NotImplementedException() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for NotImplementedException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.String} object.
-	 * @param arg1 a {@link java.lang.Throwable} object.
-	 * @param arg2 a boolean.
-	 * @param arg3 a boolean.
-	 */
-	public NotImplementedException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
-		super(arg0, arg1, arg2, arg3);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for NotImplementedException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     * @param arg1 a {@link java.lang.Throwable} object.
+     * @param arg2 a boolean.
+     * @param arg3 a boolean.
+     */
+    public NotImplementedException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
+        super(arg0, arg1, arg2, arg3);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for NotImplementedException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.String} object.
-	 * @param arg1 a {@link java.lang.Throwable} object.
-	 */
-	public NotImplementedException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for NotImplementedException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     * @param arg1 a {@link java.lang.Throwable} object.
+     */
+    public NotImplementedException(String arg0, Throwable arg1) {
+        super(arg0, arg1);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for NotImplementedException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.String} object.
-	 */
-	public NotImplementedException(String arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for NotImplementedException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     */
+    public NotImplementedException(String arg0) {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * <p>Constructor for NotImplementedException.</p>
-	 *
-	 * @param arg0 a {@link java.lang.Throwable} object.
-	 */
-	public NotImplementedException(Throwable arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * <p>
+     * Constructor for NotImplementedException.
+     * </p>
+     *
+     * @param arg0 a {@link java.lang.Throwable} object.
+     */
+    public NotImplementedException(Throwable arg0) {
+        super(arg0);
+        // TODO Auto-generated constructor stub
+    }
 
 }

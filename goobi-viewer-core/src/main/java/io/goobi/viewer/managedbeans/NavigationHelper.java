@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
-import com.ocpsoft.pretty.faces.config.mapping.QueryParameter;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.Version;
@@ -57,12 +56,9 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordDeletedException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -147,7 +143,7 @@ public class NavigationHelper implements Serializable {
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
     }
-    
+
     /**
      * Required setter for ManagedProperty injection
      *
@@ -624,6 +620,21 @@ public class NavigationHelper implements Serializable {
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
 
+        // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
+        if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
+            BrowseBean bb = BeanUtils.getBrowseBean();
+            if (bb != null) {
+                bb.resetTerms();
+                try {
+                    bb.searchTerms();
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (IndexUnreachableException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
         // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
         if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -839,7 +850,6 @@ public class NavigationHelper implements Serializable {
      *
      * @return the activePartnerId
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should return value correctly
      */
     @Deprecated
     public String getActivePartnerId() {
@@ -853,8 +863,6 @@ public class NavigationHelper implements Serializable {
      *
      * @param activePartnerId the activePartnerId to set
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should reset current partner page
-     * @should set value correctly
      */
     @Deprecated
     public void setActivePartnerId(String activePartnerId) {
@@ -872,7 +880,6 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * @should reset value correctly
      */
     @Deprecated
     public void resetActivePartnerId() {
@@ -908,7 +915,7 @@ public class NavigationHelper implements Serializable {
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
             if (activeDocumentBean != null) {
                 String subThemeDiscriminatorValue = "";
-                if (activeDocumentBean.getViewManager() != null && getCurrentPagerType().isDocumentPage()) {
+                if (activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
                     // If a record is loaded, get the value from the record's value
                     // in discriminatorField
 
@@ -1002,10 +1009,10 @@ public class NavigationHelper implements Serializable {
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
         //        resetCurrentPage();
         theme = DataManager.getInstance().getConfiguration().getTheme();
+        setCmsPage(false);
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
         }
-        setCmsPage(false);
     }
 
     /**
@@ -1342,68 +1349,6 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
-     * not the main link.
-     *
-     * @return the List of flattened breadcrumb links
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public List<LabeledLink> getBreadcrumbs() {
-        return breadcrumbBean.getBreadcrumbs();
-    }
-
-    /**
-     * Returns the bottom breadcrumb. Used to return to the previous page from the errorGeneral page.
-     *
-     * @return a {@link io.goobi.viewer.model.viewer.LabeledLink} object.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public LabeledLink getLastBreadcrumb() {
-        return breadcrumbBean.getLastBreadcrumb();
-    }
-
-    /**
-     * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
-     *
-     * @param cmsPage The CMS page from which to create a breadcrumb
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws RecordNotFoundException
-     * @throws RecordDeletedException
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException, RecordNotFoundException, IndexUnreachableException, ViewerConfigurationException, RecordDeletedException {
-        breadcrumbBean.updateBreadcrumbs(cmsPage);
-    }
-
-    /**
-     * Attaches a new link to the breadcrumb list at the appropriate position (depending on the link's weight).
-     *
-     * @param newLink The breadcrumb link to add.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     * 
-     */
-    @Deprecated
-    public void updateBreadcrumbs(LabeledLink newLink) {
-        breadcrumbBean.updateBreadcrumbs(newLink);
-    }
-
-    /**
-     * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
-     *
-     * @param facetString a {@link java.lang.String} object.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void updateBreadcrumbsForSearchHits(String facetString) {
-        breadcrumbBean.updateBreadcrumbsForSearchHits(facetString);
-    }
-
-    /**
      * Adds a link to the breadcrumbs using the current PrettyURL. Can be called from XHTML.
      *
      * @param linkName a {@link java.lang.String} object.
@@ -1431,24 +1376,6 @@ public class NavigationHelper implements Serializable {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         breadcrumbBean.updateBreadcrumbs(newLink);
-    }
-
-    /**
-     * <p>
-     * addCollectionHierarchyToBreadcrumb.
-     * </p>
-     *
-     * @param collection Full collection string containing all levels
-     * @param field Solr field
-     * @param splittingChar a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
-            throws PresentationException, DAOException {
-         breadcrumbBean.addCollectionHierarchyToBreadcrumb(collection, field, splittingChar);
     }
 
     /**
@@ -1690,13 +1617,11 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentPagerType.
-     * </p>
+     * Get the {@link PageType} for the page name from {@link NavigationHelper#getCurrentPage()}
      *
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
-    public PageType getCurrentPagerType() {
+    public PageType getCurrentPageType() {
         return PageType.getByName(getCurrentPage());
     }
 
@@ -1751,26 +1676,27 @@ public class NavigationHelper implements Serializable {
         }
         return previousUrl;
     }
-    
+
     public String getExitUrl() {
-        return getExitUrl(getCurrentPagerType());
+        return getExitUrl(getCurrentPageType());
     }
-    
+
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);
-        if(StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
+        if (StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
             return resolvePrettyUrl(exitView);
-        } else if(StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
+        } else if (StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
             return getPreviousViewUrl();
         } else {
             return exitView;
         }
     }
-    
+
     public String resolvePrettyUrl(String prettyId, Object... parameters) {
-        
-        if(parameters == null || parameters.length == 0) {            
-            List<PathParameter> pathParams = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
+
+        if (parameters == null || parameters.length == 0) {
+            List<PathParameter> pathParams =
+                    PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
             parameters = new Object[pathParams.size()];
             int index = 0;
             for (PathParameter param : pathParams) {

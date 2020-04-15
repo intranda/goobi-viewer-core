@@ -23,7 +23,9 @@ package io.goobi.viewer.exceptions;
 public class CmsElementNotFoundException extends PresentationException {
 
     /**
-     * <p>Constructor for CmsElementNotFoundException.</p>
+     * <p>
+     * Constructor for CmsElementNotFoundException.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.
@@ -34,7 +36,9 @@ public class CmsElementNotFoundException extends PresentationException {
     }
 
     /**
-     * <p>Constructor for CmsElementNotFoundException.</p>
+     * <p>
+     * Constructor for CmsElementNotFoundException.
+     * </p>
      *
      * @param string a {@link java.lang.String} object.
      */

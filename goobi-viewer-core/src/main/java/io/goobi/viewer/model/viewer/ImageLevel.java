@@ -18,7 +18,9 @@ package io.goobi.viewer.model.viewer;
 import java.awt.Dimension;
 
 /**
- * <p>ImageLevel class.</p>
+ * <p>
+ * ImageLevel class.
+ * </p>
  */
 public class ImageLevel implements Comparable<ImageLevel> {
 
@@ -27,7 +29,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     private int rotation;
 
     /**
-     * <p>Constructor for ImageLevel.</p>
+     * <p>
+     * Constructor for ImageLevel.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @param size a {@link java.awt.Dimension} object.
@@ -40,7 +44,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>Constructor for ImageLevel.</p>
+     * <p>
+     * Constructor for ImageLevel.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @param width a int.
@@ -54,7 +60,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>Constructor for ImageLevel.</p>
+     * <p>
+     * Constructor for ImageLevel.
+     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @param size a {@link java.awt.Dimension} object.
@@ -68,7 +76,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>Getter for the field <code>url</code>.</p>
+     * <p>
+     * Getter for the field <code>url</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -77,7 +87,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>Getter for the field <code>size</code>.</p>
+     * <p>
+     * Getter for the field <code>size</code>.
+     * </p>
      *
      * @return a {@link java.awt.Dimension} object.
      */
@@ -89,7 +101,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>getWidth.</p>
+     * <p>
+     * getWidth.
+     * </p>
      *
      * @return a int.
      */
@@ -98,7 +112,9 @@ public class ImageLevel implements Comparable<ImageLevel> {
     }
 
     /**
-     * <p>getHeight.</p>
+     * <p>
+     * getHeight.
+     * </p>
      *
      * @return a int.
      */

@@ -19,19 +19,21 @@ import io.goobi.viewer.model.cms.CMSSidebarElement.WidgetMode;
 import io.goobi.viewer.model.misc.GeoLocationInfo;
 
 /**
- * <p>SidebarElementType class.</p>
+ * <p>
+ * SidebarElementType class.
+ * </p>
  */
 public enum SidebarElementType {
 
     searchField("widgetSearchField", Category.search),
     searchDrillDown("widgetSearchDrillDown"),
-//    chronology("widgetChronology"),
+    //    chronology("widgetChronology"),
     browsing("widgetBrowsing"),
     bookshelves("widgetBookshelfList"),
     crowdsourcing("widgetCrowdsourcing"),
     mySearches("widgetMySearches"),
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
-    rssFeed("widgetRssFeed"),
+    rssFeed("widgetRssFeed", Category.fieldQuery),
     user("widgetUser"),
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),
@@ -52,7 +54,9 @@ public enum SidebarElementType {
     }
 
     /**
-     * <p>Getter for the field <code>label</code>.</p>
+     * <p>
+     * Getter for the field <code>label</code>.
+     * </p>
      *
      * @return the label
      */
@@ -61,7 +65,9 @@ public enum SidebarElementType {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.
+     * </p>
      *
      * @return the type
      */
@@ -70,7 +76,9 @@ public enum SidebarElementType {
     }
 
     /**
-     * <p>createSidebarElement.</p>
+     * <p>
+     * createSidebarElement.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CMSSidebarElement} object.
      */
@@ -105,7 +113,8 @@ public enum SidebarElementType {
         standard,
         custom,
         fieldQuery,
-        pageLinks, 
-        geoLocations, search;
+        pageLinks,
+        geoLocations,
+        search;
     }
 }
