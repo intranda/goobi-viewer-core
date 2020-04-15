@@ -104,7 +104,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                             query = new StringBuilder().append('(')
                                     .append(queryParameter[0])
                                     .append(')')
-                                    .append(SearchHelper.getAllSuffixes(true))
+                                    .append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()))
                                     .toString();
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());

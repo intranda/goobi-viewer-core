@@ -24,11 +24,6 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	<url-mapping id="index1">
-		<pattern value="/index/#{subThemeDiscriminatorValue:navigationHelper.subThemeDiscriminatorValue}/" />
-		<view-id value="/index.xhtml" />
-		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-	</url-mapping>
 	
 	<!-- PRIVACY -->
 	<url-mapping id="privacy">
