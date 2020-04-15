@@ -63,6 +63,7 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LitteraProvider;
 import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.authentication.SAMLProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
@@ -1110,7 +1111,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getContentRestApiUrl() {
-        return getRestApiUrl() + "content/";
+        return getIIIFApiUrl() + "content/";
 
     }
 
@@ -1326,14 +1327,25 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDisplayAdditionalMetadataTranslateFields.
+     * Returns a list of additional metadata fields thats are configured to have their values translated. Field names are normalized (i.e. things like
+     * _UNTOKENIZED are removed).
      * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        if (fields.isEmpty()) {
+            return fields;
+        }
+
+        List<String> ret = new ArrayList<>(fields.size());
+        for (String field : fields) {
+            ret.add(SearchHelper.normalizeField(field));
+        }
+
+        return ret;
     }
 
     /**
@@ -1772,11 +1784,17 @@ public final class Configuration extends AbstractConfiguration {
             boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@show]", true);
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
+            String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
+            String relyingPartyIdentifier =
+                    myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
+                    case "saml":
+                        providers.add(new SAMLProvider(name, idpMetadataUrl, relyingPartyIdentifier, timeoutMillis));
+                        break;
                     case "openid":
                         providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
                         break;
@@ -4197,7 +4215,7 @@ public final class Configuration extends AbstractConfiguration {
         if (subConfig != null) {
             return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
         }
-                
+
         return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 

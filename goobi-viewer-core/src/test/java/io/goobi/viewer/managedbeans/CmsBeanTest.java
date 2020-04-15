@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.After;
@@ -127,52 +128,55 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         staticPage = staticPages.get(0);
         Assert.assertNull(staticPage.getCmsPageOptional().orElse(null));
     }
-    
+
     @Test
     public void testGetGroupedQueryResults() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         CmsBean bean = new CmsBean();
-        
+
         String groupField = "GROUPING";
         String value1 = "VALUE1";
         String value2 = "VALUE2";
         String value3 = "VALUE3";
-        
+
         List<SearchHit> results = new ArrayList<>();
         results.add(createSearchHit(groupField, value1, value2));
         results.add(createSearchHit(groupField, value1, value2));
         results.add(createSearchHit(groupField, value1, value3));
-        
+
         List<Entry<String, List<SearchHit>>> hitMap = bean.getGroupedQueryResults(results, groupField);
         Assert.assertEquals(3, hitMap.size());
         Assert.assertEquals(3, hitMap.get(0).getValue().size());
         Assert.assertEquals(2, hitMap.get(1).getValue().size());
         Assert.assertEquals(1, hitMap.get(2).getValue().size());
-        
+
         //Test for no valid grouping field
         hitMap = bean.getGroupedQueryResults(results, "bla");
         Assert.assertEquals(1, hitMap.size());
         Assert.assertEquals(3, hitMap.get(0).getValue().size());
     }
 
-    private SearchHit createSearchHit(String field, String...values)
+    /**
+     * 
+     * @param field Metadata field name
+     * @param values Metadata field values
+     * @return A mock SearchHit
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    private static SearchHit createSearchHit(String field, String... values)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         SolrDocument doc = new SolrDocument();
         String iddoc = Long.toString(System.nanoTime());
         doc.addField(field, Arrays.asList(values));
         doc.addField(SolrConstants.IDDOC, iddoc);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, UUID.randomUUID());
+        doc.addField("LABEL", doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.GERMAN, "", null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         hit.setSolrDoc(doc);
         return hit;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
 }

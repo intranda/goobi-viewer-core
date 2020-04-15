@@ -231,13 +231,21 @@
                 </div>
     
                 <!-- USER LOGIN BODY LOGIN OPEN ID -->
-                <ui:fragment rendered="#{userBean.hasProvidersOfType('openId')}">
+                <ui:fragment rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
                 <div id="userLoginOpenId" class="user-login__body-login-open-id">                    
                     <h4><span>#{msg.login__login_with_other_provider}</span></h4>
                     
                     <h:form id="userLoginOpenIdForm">
                         <ul>
                             <ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
+                                <li class="user-login__body-login-open-id-provider #{provider.name}">
+                                    <h:commandLink action="#{userBean.login(provider)}">
+                                        #{provider.name}
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.login__login_with} #{provider.name}" />
+                                    </h:commandLink>
+                                </li>
+                            </ui:repeat>
+                            <ui:repeat var="provider" value="#{userBean.getProvidersOfType('saml')}">
                                 <li class="user-login__body-login-open-id-provider #{provider.name}">
                                     <h:commandLink action="#{userBean.login(provider)}">
                                         #{provider.name}

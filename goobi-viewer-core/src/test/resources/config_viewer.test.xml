@@ -460,6 +460,7 @@
 				translated value rather than raw. -->
 			<translateField>DC</translateField>
 			<translateField>DOCSTRCT</translateField>
+			<translateField>MD_LANGUAGE_UNTOKENIZED</translateField>
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->

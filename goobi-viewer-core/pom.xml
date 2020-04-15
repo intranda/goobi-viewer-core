@@ -139,8 +139,8 @@
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
-		<!-- This needs to be added explicitly because otherwise Solr will use
-		an older version that's incompatible -->
+		<!-- This needs to be added explicitly because otherwise Solr will use 
+			an older version that's incompatible -->
 		<xerces.version>2.12.0</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 	</properties>
@@ -510,7 +510,7 @@
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>${json-simple.version}</version>
-                </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
@@ -720,6 +720,11 @@
 			<artifactId>xmlParserAPIs</artifactId>
 			<version>${xmlParserAPIs.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.coveo</groupId>
+			<artifactId>saml-client</artifactId>
+			<version>3.0.2</version>
+		</dependency>
 	</dependencies>
 
 
@@ -780,7 +785,7 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
-					<!--compilerArgument>-Xlint:unchecked</compilerArgument-->
+					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -870,7 +875,7 @@
 					<dependency>
 						<groupId>org.apache.maven.wagon</groupId>
 						<artifactId>wagon-webdav-jackrabbit</artifactId>
-						<!-- Updating to 3.3.4 results in errors during mvn site:deploy-->
+						<!-- Updating to 3.3.4 results in errors during mvn site:deploy -->
 						<version>2.6</version>
 					</dependency>
 				</dependencies>
@@ -920,9 +925,9 @@
 	<reporting>
 		<plugins>
 			<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-project-info-reports-plugin</artifactId>
-			<version>3.0.0</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
 				<reportSets>
 					<reportSet>
 						<reports>
