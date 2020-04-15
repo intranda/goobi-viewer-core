@@ -77,6 +77,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
@@ -112,6 +113,9 @@ public class ViewManager implements Serializable {
     private IPageLoader pageLoader;
     private PhysicalElement representativePage;
 
+    /** Table of contents object. */
+    private TOC toc;
+
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
@@ -137,6 +141,7 @@ public class ViewManager implements Serializable {
     private Long pagesWithFulltext = null;
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
+    private Boolean metadataViewOnly = null;
 
     /**
      * <p>
@@ -151,9 +156,11 @@ public class ViewManager implements Serializable {
      * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws ViewerConfigurationException
+     * @throws DAOException
      */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType,
-            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
+            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
@@ -185,7 +192,6 @@ public class ViewManager implements Serializable {
         }
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
-
     }
 
     /**
@@ -1871,6 +1877,167 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Convenience method that checks whether only the metadata view link is displayed for this record (i.e. criteria for all other links are not
+     * met).
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException {
+        if (metadataViewOnly == null) {
+            // Check whether this mode is enabled first to avoid all the other checks
+            if (!DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+
+            // Display object view criteria
+            if (isDisplayObjectViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayCalendarViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayTocViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayThumbnailViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayFulltextViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayExternalFulltextLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayNerViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayExternalResolverLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+
+            metadataViewOnly = true;
+        }
+
+        return metadataViewOnly;
+    }
+
+    /**
+     * 
+     * @return true if object view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isDisplayObjectViewLink() throws IndexUnreachableException, DAOException {
+        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible() && isHasPages() && !isFilesOnly();
+    }
+
+    /**
+     * 
+     * @return true if calendar view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible() && calendarView != null && calendarView.isDisplay();
+    }
+
+    /**
+     * 
+     * @return true if TOC view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarTocVisible() && !isFilesOnly() && topDocument != null
+                && !topDocument.isLidoRecord() && toc != null
+                && (toc.isHasChildren() || DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
+    }
+
+    /**
+     * 
+     * @return true if thumbnail view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()
+                && pageLoader != null && pageLoader.getNumPages() > 1 && !isFilesOnly();
+    }
+
+    /**
+     * 
+     * @return true if metadata view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayMetadataViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible() && topDocument != null && !topDocument.isGroup();
+    }
+
+    /**
+     * 
+     * @return true if full-text view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
+                && !isFilesOnly();
+    }
+
+    /**
+     * 
+     * @return true if external full-text link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayExternalFulltextLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return topDocument != null
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null;
+    }
+
+    /**
+     * 
+     * @return true if NER view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayNerViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return topDocument != null && topDocument.isNerAvailable();
+    }
+
+    /**
+     * 
+     * @return true if NER view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayExternalResolverLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return topDocument != null
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALRESOLVER") != null;
+    }
+
+    /**
      * <p>
      * getOaiMarcUrl.
      * </p>
@@ -2164,6 +2331,20 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * @return the toc
+     */
+    public TOC getToc() {
+        return toc;
+    }
+
+    /**
+     * @param toc the toc to set
+     */
+    public void setToc(TOC toc) {
+        this.toc = toc;
+    }
+
+    /**
      * <p>
      * isAltoAvailableForWork.
      * </p>
@@ -2259,7 +2440,7 @@ public class ViewManager implements Serializable {
         if (currentImg != null) {
             return currentImg.getFulltextMimeType();
         }
-        
+
         return null;
     }
 
@@ -3270,8 +3451,11 @@ public class ViewManager implements Serializable {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
      */
-    public static ViewManager createViewManager(String pi) throws PresentationException, IndexUnreachableException {
+    public static ViewManager createViewManager(String pi)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
