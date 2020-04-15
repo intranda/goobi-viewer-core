@@ -602,7 +602,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
         Assert.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
     }
-    
 
     /**
      * @see SearchHelper#normalizeField(String)
@@ -612,7 +611,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void normalizeField_shouldNormalizeCorrectly() throws Exception {
         Assert.assertEquals("MD_FOO", SearchHelper.normalizeField("MD_FOO_UNTOKENIZED"));
     }
-    
 
     /**
      * @see SearchHelper#adaptField(String,String)
@@ -1165,7 +1163,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             previousSize = terms.size();
             for (BrowseTerm term : terms) {
                 if (previousCounts.containsKey(term.getTerm())) {
-                    Assert.assertEquals(Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()));
+                    Assert.assertEquals(term.getTerm() + " -  expected: " + previousCounts.get(term.getTerm()) + ", found: " + term.getHitCount(),
+                            Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()));
                 }
                 previousCounts.put(term.getTerm(), term.getHitCount());
             }
