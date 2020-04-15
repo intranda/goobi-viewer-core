@@ -1925,14 +1925,12 @@ this.addAnnotation = function() {
 
 
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}"><div class="timematrix__text"><p name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
-
  this.on( 'mount', function() {
  	$(this.opts.button).on("click", this.updateRange)
  	this.imageList=[]
  })
 
  this.updateRange = function(event){
-	console.log('event', event)
 	this.getTimematrix()
 }.bind(this)
  this.getTimematrix = function(){
@@ -1945,7 +1943,6 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
      apiTarget += '/';
      apiTarget += $(this.opts.count).val();
      apiTarget += '/';
-     console.log('apiTarget', apiTarget)
 
      var promise = fetch(apiTarget)
 
@@ -1955,15 +1952,9 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 	    return result.json();
 	})
 	.then( function(json) {
-	    console.log("answer", json);
 	    this.imageList=json;
 	    this.update()
 	    opts.loading.hide()
 	}.bind(this))
  }.bind(this)
-
-	var myDiv = $('.timetext');
-	myDiv.text(myDiv.text().substring(0,100))
-
- console.log('Hello', this.opts);
 });
