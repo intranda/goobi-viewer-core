@@ -65,7 +65,7 @@
                     <!-- HEADER -->
                     <header class="search-list__hit-header">
                         <div class="row">
-                            <div class="col-xs-12 col-sm#{hit.browseElement.hasImages ? '10' : '12'}">
+                            <div class="col-xs-12 col-sm-#{hit.browseElement.showThumbnail ? '10' : '12'}">
                                 <!-- TITLE -->
                                 <div class="search-list__hit-title">
                                     <h4>
@@ -129,8 +129,8 @@
                                     </div>
                                 </h:panelGroup>
                             </div>
-                            <ui:fragment rendered="{hit.browseElement.hasImages}">
-                            <div class="col-xs-12 col-sm-2">
+                            <ui:fragment rendered="#{hit.browseElement.showThumbnail}">
+                                <div class="col-xs-12 col-sm-2">
                                 <!-- THUMBNAIL -->
                                 <figure class="search-list__hit-thumbnail">
                                     <!-- SINGLEVOLUME -->
@@ -165,7 +165,7 @@
                                         </button>
                                     </ui:fragment>
                                 </figure>
-                            </div>
+                                </div>
                             </ui:fragment>
                         </div>
                     </header>

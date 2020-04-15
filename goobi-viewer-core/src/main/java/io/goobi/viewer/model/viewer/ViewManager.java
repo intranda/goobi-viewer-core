@@ -2103,8 +2103,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isRecordHasImages() throws IndexUnreachableException, DAOException {
-        String imageAvailable = topDocument.getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE);
-        if (imageAvailable == null || !Boolean.valueOf(imageAvailable)) {
+        if (topDocument == null || !topDocument.isHasImages()) {
             return false;
         }
 
@@ -2250,20 +2249,20 @@ public class ViewManager implements Serializable {
     /**
      * 
      * 
-     * @return  the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if neccessary
+     * @return the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if neccessary
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
     public String getFulltextMimeType() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentImg = getCurrentPage();
-        if(currentImg != null) {
+        if (currentImg != null) {
             return currentImg.getFulltextMimeType();
-        } else {
-            return null;
         }
+        
+        return null;
     }
-    
+
     /**
      * <p>
      * getCurrentRotate.
