@@ -1924,37 +1924,37 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}"><div class="timematrix__text"><p name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
- this.on( 'mount', function() {
- 	$(this.opts.button).on("click", this.updateRange)
- 	this.imageList=[]
- })
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div class="timematrix__img"><a href="{image.url}"><span class="timematrix__loaderImg"><img riot-src="{opts.loaderImg}"></span><img riot-src="{image.mediumimage}"><div class="timematrix__text"><p name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
+		 this.on( 'mount', function() {
+		 	$(this.opts.button).on("click", this.updateRange)
+		 	this.imageList=[]
+		 })
 
- this.updateRange = function(event){
-	this.getTimematrix()
-}.bind(this)
- this.getTimematrix = function(){
+		 this.updateRange = function(event){
+			this.getTimematrix()
+		}.bind(this)
+		 this.getTimematrix = function(){
 
-     var apiTarget = this.opts.contextPath;
-     apiTarget += 'rest/records/timematrix/range/';
-     apiTarget += $(this.opts.startInput).val();
-     apiTarget += "/";
-     apiTarget += $(this.opts.endInput).val();
-     apiTarget += '/';
-     apiTarget += $(this.opts.count).val();
-     apiTarget += '/';
+		     var apiTarget = this.opts.contextPath;
+		     apiTarget += 'rest/records/timematrix/range/';
+		     apiTarget += $(this.opts.startInput).val();
+		     apiTarget += "/";
+		     apiTarget += $(this.opts.endInput).val();
+		     apiTarget += '/';
+		     apiTarget += $(this.opts.count).val();
+		     apiTarget += '/';
 
-     var promise = fetch(apiTarget)
+		     var promise = fetch(apiTarget)
 
-    opts.loading.show()
-	fetch(apiTarget)
-	.then( function(result) {
-	    return result.json();
-	})
-	.then( function(json) {
-	    this.imageList=json;
-	    this.update()
-	    opts.loading.hide()
-	}.bind(this))
- }.bind(this)
+		    opts.loading.show()
+			fetch(apiTarget)
+			.then( function(result) {
+			    return result.json();
+			})
+			.then( function(json) {
+			    this.imageList=json;
+			    this.update()
+			    opts.loading.hide()
+			}.bind(this))
+		 }.bind(this)
 });
