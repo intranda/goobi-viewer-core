@@ -25,6 +25,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URLConnection;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,6 +48,9 @@ import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+
+import de.unigoettingen.sub.commons.util.PathConverter;
+import de.unigoettingen.sub.commons.util.StreamUtils;
 
 /**
  * File I/O utilities.
@@ -152,6 +158,17 @@ public class FileTools {
                 return cm.getName();
             }
         }
+
+        return null;
+    }
+    
+    public static String getCharset(String input) throws IOException {
+        CharsetDetector cd = new CharsetDetector();
+            cd.setText(input.getBytes());
+            CharsetMatch cm = cd.detect();
+            if (cm != null) {
+                return cm.getName();
+            }
 
         return null;
     }
@@ -407,5 +424,73 @@ public class FileTools {
             path = path.replace("/C:", "");
         }
         return path;
+    }
+    
+    public static String probeContentType(URI uri) throws IOException {
+        String type = URLConnection.guessContentTypeFromName(uri.toString());
+        if("text/plain".equals(type)) {            
+            if(!uri.isAbsolute() || uri.getScheme().equals("file")) {
+                Path path = PathConverter.getPath(uri);
+                try(InputStream in = Files.newInputStream(path)) {
+                    type = URLConnection.guessContentTypeFromStream(in);
+                    if(type == null) {
+                        String content = IOUtils.toString(in);
+                        type = probeContentType(content);
+                    }
+                }
+            } else if(uri.isAbsolute() && uri.getScheme().matches("https?")) {
+                HttpURLConnection con = (HttpURLConnection)uri.toURL().openConnection();
+                try {                    
+                    con.connect();
+                    try(InputStream in = con.getInputStream()) {
+                        type = URLConnection.guessContentTypeFromStream(in);
+                        if(type == null) {
+                            type = "text/plain";
+                        }
+                    }
+                } finally {
+                    con.disconnect();
+                }
+            }
+        } else if(StringUtils.isBlank(type) && uri.isAbsolute() && uri.getScheme().matches("https?")) {
+            HttpURLConnection con = (HttpURLConnection)uri.toURL().openConnection();
+            type = con.getContentType();
+            if(type != null && type.contains(";")) {
+                type = type.substring(0, type.indexOf(";"));
+            }
+        }
+        return type;
+    }
+    
+    /**
+     * Guess the content type of the given text, using {@link URLConnection#guessContentTypeFromName(String)}
+     * If no content type could be determined, 'text/plain' is assumed
+     * 
+     * @param content
+     * @param charset
+     * @return
+     */
+    public static String probeContentType(String content) {
+        try(InputStream in = IOUtils.toInputStream(content, getCharset(content))) {
+            String type = URLConnection.guessContentTypeFromStream(in);
+            if(type == null) {
+                type = "text/plain";
+            }
+            return type;
+        } catch (IOException e) {
+           logger.error("Error reading text to stream", e);
+           return null;
+        }
+    }
+
+    /**
+     * @param file1
+     * @return  
+     * @throws IOException 
+     */
+    public static String getCharset(Path file) throws IOException {
+        try(InputStream in = Files.newInputStream(file)) {
+            return getCharset(in);
+        }
     }
 }

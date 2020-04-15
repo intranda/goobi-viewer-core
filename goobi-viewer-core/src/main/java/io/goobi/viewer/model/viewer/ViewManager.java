@@ -2300,6 +2300,15 @@ public class ViewManager implements Serializable {
         return currentFulltext;
     }
 
+    public String getFulltextMimeType() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
+        PhysicalElement currentImg = getCurrentPage();
+        if(currentImg != null) {
+            return currentImg.getFulltextMimeType();
+        } else {
+            return null;
+        }
+    }
+    
     /**
      * <p>
      * getCurrentRotate.
