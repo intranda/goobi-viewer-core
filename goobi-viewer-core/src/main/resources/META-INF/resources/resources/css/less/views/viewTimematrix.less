@@ -114,30 +114,21 @@
 			border: 1px solid #d5d5d5;
 		}
 	}
-    &__objects {
-    	display: flex;
-    	flex-wrap: wrap;
-    	margin-left: -.5rem;
-    }
+	
+	&__objects {
+	    display: flex;
+	    flex-wrap: wrap;
+	    margin: -0.5rem;
+	}
+
 	&__content {
-		border: 1px solid @middlegray;
-		max-width: 15%;
-		margin: .5rem;
-		text-align: center;
-		background-color: @white;
-		position: relative;
-		text-align: center;
-		button {
-			border: none;
-			outline: 0;
-			padding: 12px;
-			color: white;
-			background-color: #000;
-			text-align: center;
-			cursor: pointer;
-			width: 100%;
-			font-size: 18px;
-		}
+	    border: 1px solid #ccc;
+	    margin: .5rem;
+	    background-color: #fff;
+	    position: relative;
+	    text-align: center;
+	    flex: 0 0 calc(16.6666% - 1rem);
+	    max-width: calc(16.6666% - 1rem);
 	}
 	&__img {
 			height: 15rem;
@@ -147,7 +138,7 @@
 			}
 	}
 	&__text {
-		display: none;
+		opacity: 0;
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -159,21 +150,21 @@
 		transition: all .3s ease-in;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		display: flex;
 		&:hover {
-			display: block;
 			opacity: 1;
 		}
-		p {
-			position: absolute;
-			margin-bottom: 1rem;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			bottom: 0;
-			height: 3.7em;
-			line-height: 1.2em;
-			font-size: 1em;
-			padding: 0 .5rem;
-			width: 100%;
+		 p {
+		    position: relative;
+		    margin-bottom: 2rem;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    line-height: 2rem;
+		    font-size: 1em;
+		    padding: 0 .5rem;
+		    width: 100%;
+		    top: 0;
+		    margin-top: auto;
 		}
 		a {
 			color: @white;
@@ -216,13 +207,19 @@
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.timematrix {
+		&__content {
+			flex: 0 0 calc(25% - 1rem); 
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.timematrix {
 		&__content {
-			max-width: 20%;
+			flex: 0 0 calc(33.33% - 1rem);
 		}
 	}
 }

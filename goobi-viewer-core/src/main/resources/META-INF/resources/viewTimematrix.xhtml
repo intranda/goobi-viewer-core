@@ -54,8 +54,8 @@
 				
             	</div>
 
-			<!-- Loads results when the page is reloaded -->
-			<script>			
+			<script>
+				<!-- Loads results when the page is reloaded -->
 				$("document").ready(function() {
 				    setTimeout(function() {
 				        $(".setTimematrix").trigger('click');
@@ -66,16 +66,23 @@
 				function mouseUp() {
 					document.getElementById("setTimematrix").click();
 				}
-			</script>
-			
-			<script>
-			<!-- Reloads the results after leaving the input field -->
-			document.getElementById("hitsPerPage").onfocusout = function() {myFunction()};
-			
-			function myFunction() {
-				document.getElementById("setTimematrix").click();
 				
-			}
+				<!-- Reloads the results after leaving the input field -->
+				document.getElementById("hitsPerPage").onfocusout = function() {myFunction()};
+				
+				function myFunction() {
+					document.getElementById("setTimematrix").click();
+					
+				}
+				
+            	<!-- Reloads the results after pressing the input field with Enter -->
+				var input = document.getElementById("hitsPerPage");
+				input.addEventListener("keyup", function(event) {
+				  if (event.keyCode === 13) {
+				   event.preventDefault();
+				   document.getElementById("setTimematrix").click();
+				  }
+				});	 
 			</script>
 
            	<script>
@@ -118,17 +125,6 @@
 	                viewerJS.timematrix.init( timematrixConfig );            	
 	            });
             </script>
-            
-            <script>
-            	<!-- Reloads the results after pressing the input field with Enter -->
-				var input = document.getElementById("hitsPerPage");
-				input.addEventListener("keyup", function(event) {
-				  if (event.keyCode === 13) {
-				   event.preventDefault();
-				   document.getElementById("setTimematrix").click();
-				  }
-				});	           
-			</script>
 			   
 		</f:view>
 	</ui:define>

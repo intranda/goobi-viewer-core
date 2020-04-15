@@ -14,14 +14,13 @@
 		</div> 
 	</div>
 	 
- <script> 
+ <script>
  this.on( 'mount', function() {
  	$(this.opts.button).on("click", this.updateRange)
  	this.imageList=[]
  })
  
  updateRange(event){
-	console.log('event', event)
 	this.getTimematrix()
 }
  getTimematrix(){
@@ -35,7 +34,6 @@
      apiTarget += '/';
      apiTarget += $(this.opts.count).val();
      apiTarget += '/';
-     console.log('apiTarget', apiTarget)
      
      // get data from api
      var promise = fetch(apiTarget)
@@ -47,17 +45,11 @@
 	    return result.json(); 
 	})
 	.then( function(json) {
-	    console.log("answer", json);
 	    this.imageList=json;
 	    this.update()
 	    opts.loading.hide()
 	}.bind(this))
  }
- 
-	var myDiv = $('.timetext');
-	myDiv.text(myDiv.text().substring(0,100))
-	
- console.log('Hello', this.opts);
- </script>
+	</script>
 
 </timematrix>
