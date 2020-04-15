@@ -426,6 +426,16 @@ public class FileTools {
         return path;
     }
     
+    /**
+     * Guess the content type (mimeType) of the resource found at the given uri. 
+     * Content type if primarily guessed from the file extension of the last url path part. 
+     * If that type is 'text/plain' further analysis is done using the actual content to determine if the actual type is html or xml
+     * If the type could not be determined from the file extension, the url response header is probed to return its 'Content-type'
+     * 
+     * @param uri   uri of the resource. May be a file uri, a relative uri (then assumed to be a relative file path) or a http(s) uri
+     * @return  The most likely mimeType of the resource found at the given uri
+     * @throws IOException
+     */
     public static String probeContentType(URI uri) throws IOException {
         String type = URLConnection.guessContentTypeFromName(uri.toString());
         if("text/plain".equals(type)) {            
@@ -467,7 +477,6 @@ public class FileTools {
      * If no content type could be determined, 'text/plain' is assumed
      * 
      * @param content
-     * @param charset
      * @return
      */
     public static String probeContentType(String content) {

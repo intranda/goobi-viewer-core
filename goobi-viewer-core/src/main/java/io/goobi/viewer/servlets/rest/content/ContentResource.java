@@ -118,7 +118,6 @@ public class ContentResource {
      * API method for retrieving any type of content by its relative path within its data repository.
      *
      * @param pi Record identifier
-     * @param dataRepository Absolute path of the data repository
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      * @param contentFolder a {@link java.lang.String} object.

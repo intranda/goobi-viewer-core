@@ -757,6 +757,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return fullText;
     }
     
+    /**
+     * 
+     * @return  The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
+     * @throws ViewerConfigurationException
+     */
     public String getFulltextMimeType() throws ViewerConfigurationException {
         if(textContentType == null) {
             getFullText();

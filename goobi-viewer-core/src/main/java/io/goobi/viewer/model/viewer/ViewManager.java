@@ -2300,6 +2300,14 @@ public class ViewManager implements Serializable {
         return currentFulltext;
     }
 
+    /**
+     * 
+     * 
+     * @return  the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if neccessary
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
     public String getFulltextMimeType() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentImg = getCurrentPage();
         if(currentImg != null) {
