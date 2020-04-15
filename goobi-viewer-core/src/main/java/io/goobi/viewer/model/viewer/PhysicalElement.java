@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -55,6 +56,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -152,6 +154,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private String previousCommentText;
     /** List of <code>StructElement</code>s contained on this page. */
     private List<StructElement> containedStructElements;
+    /** Content type of loaded fulltext **/
+    private String textContentType = null;
 
     /**
      * <p>
@@ -752,6 +756,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return fullText;
     }
+    
+    /**
+     * 
+     * @return  The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
+     * @throws ViewerConfigurationException
+     */
+    public String getFulltextMimeType() throws ViewerConfigurationException {
+        if(textContentType == null) {
+            getFullText();
+        }
+        return textContentType;
+    }
 
     /**
      * <p>
@@ -786,7 +802,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("Loading full-text for page {}", fulltextFileName);
         String url = Helper.buildFullTextUrl(fulltextFileName);
         try {
-            return Helper.getWebContentGET(url);
+            String text = Helper.getWebContentGET(url);
+            textContentType = FileTools.probeContentType(text);
+            return text;
         } catch (HTTPException e) {
             logger.error("Could not retrieve file from {}", url);
             logger.error(e.getMessage());
@@ -874,6 +892,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("ALTO URL: {}", url);
         try {
             altoText = Helper.getWebContentGET(url);
+            //Text from alto is always plain text
+            textContentType = "text/plain";
             if (altoText != null) {
                 wordCoordsFormat = CoordsFormat.ALTO;
             }

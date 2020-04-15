@@ -12,9 +12,19 @@
 
     <!-- VIEW TEXT -->
     <div id="fulltext-box" class="view-fulltext__box">
-        <pre>
-            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false" rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
-            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
-        </pre>
+                
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType == 'text/plain'}">        
+	        <pre>
+	            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false" rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
+	            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
+	        </pre>
+        </ui:fragment>
+        
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType != 'text/plain'}">        
+	        <div>
+	            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false" rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
+	            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
+	        </div>
+        </ui:fragment>
     </div>
 </ui:composition>
