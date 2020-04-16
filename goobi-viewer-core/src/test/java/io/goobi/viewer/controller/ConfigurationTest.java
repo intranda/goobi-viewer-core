@@ -853,15 +853,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see ConfigurationHelper#isSubthemeAutoSwitch()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeAutoSwitch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
-    }
-
-    /**
      * @see Configuration#isSubthemeAddFilterQuery()
      * @verifies return correct value
      */
@@ -1352,14 +1343,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 
-    /**
-     * @see Configuration#isSubthemesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemesEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSubthemesEnabled());
-    }
 
     /**
      * @see Configuration#isUrnDoRedirect()

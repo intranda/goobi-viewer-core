@@ -471,7 +471,7 @@ public final class SearchHelper {
             }
             sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
-        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
+        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), BeanUtils.getNavigationHelper()));
         sbQuery.append(" AND (")
                 .append(luceneField)
                 .append(":")
@@ -561,7 +561,7 @@ public final class SearchHelper {
                 }
                 sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
             }
-            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
+            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), BeanUtils.getNavigationHelper()));
             Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
                 String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -702,7 +702,7 @@ public final class SearchHelper {
     public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
-        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
+        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
         return DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
@@ -780,7 +780,7 @@ public final class SearchHelper {
                     logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
             }
-            sbQuery.append(getAllSuffixes(true));
+            sbQuery.append(getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
             logger.debug("Autocomplete query: {}", sbQuery.toString());
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
@@ -2176,7 +2176,7 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
-        String suffixes = getAllSuffixes(true, nh);
+        String suffixes = getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), nh);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }

@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -3483,18 +3484,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSubthemesEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSubthemesEnabled() {
-        return getLocalBoolean("viewer.theme[@subTheme]", false);
-    }
-
-    /**
-     * <p>
      * getSubthemeMainTheme.
      * </p>
      *
@@ -3518,19 +3507,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSubthemeDiscriminatorField() {
-        return getLocalString("viewer.theme[@discriminatorField]");
-    }
-
-    /**
-     * <p>
-     * isSubthemeAutoSwitch.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSubthemeAutoSwitch() {
-        return getLocalBoolean("viewer.theme[@autoSwitch]", false);
+        return getLocalString("viewer.theme[@discriminatorField]", "");
     }
 
     /**
@@ -3539,7 +3516,9 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if search should generally be filtered by {@link NavigationHelper#getSubThemeDiscriminatorValue()}
+     * 
+     * @deprecated  should always return false since search filtering should be done via dedicated cms search pages
      */
     public boolean isSubthemeAddFilterQuery() {
         return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
@@ -3552,6 +3531,8 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a boolean.
+     * 
+     * @deprecated  should always return false since search filtering should be done via dedicated cms search pages
      */
     public boolean isSubthemeFilterQueryVisible() {
         return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
