@@ -19,7 +19,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and configurationBean.sidebarMetadataLinkVisible}">
+	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly}">
 		<div id="widgetViews" class="widget">
 			<h:form id="widgetViewsForm">
 				<h3>#{msg.view}</h3>
@@ -73,15 +73,10 @@
 							class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
 							<h:outputLink
 								value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText
-									rendered="#{!activeDocumentBean.viewManager.metadataViewOnly and !activeDocumentBean.viewManager.topDocument.lidoRecord}"
+								<h:outputText rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.bibData}" />
-								<h:outputText
-									rendered="#{!activeDocumentBean.viewManager.metadataViewOnly and activeDocumentBean.viewManager.topDocument.lidoRecord}"
+								<h:outputText rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.metadata}" />
-                                <h:outputText
-                                    rendered="#{activeDocumentBean.viewManager.metadataViewOnly}"
-                                    value="#{activeDocumentBean.viewManager.topDocument.label}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
