@@ -43,6 +43,7 @@ import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -286,6 +287,11 @@ public class BeanUtils {
     public static BookmarkBean getBookmarkBean() {
         return (BookmarkBean) getBeanByName("bookmarkBean", BookmarkBean.class);
     }
+    
+    public static CreateRecordBean getCreateRecordBean() {
+        return (CreateRecordBean) getBeanByName("createRecordBean", CreateRecordBean.class);
+    }
+
 
     /**
      * <p>

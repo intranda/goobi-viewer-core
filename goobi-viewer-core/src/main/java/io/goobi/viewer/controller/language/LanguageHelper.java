@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.controller.language;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -23,6 +26,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +59,37 @@ public class LanguageHelper {
         config.setReloadingStrategy(new FileChangedReloadingStrategy());
         config.setExpressionEngine(new XPathExpressionEngine());
     }
+    
+    public List<Language> getAllLanguages() {
+        List<Language> languages = new ArrayList<>();
+        List<HierarchicalConfiguration> nodes = config.configurationsAt("language");
+        for (HierarchicalConfiguration node : nodes) {
+            String code = node.getString("iso_639-2");
+            if(StringUtils.isNotBlank(code)) {
+                Language language = createLanguage(node);
+                if(!languages.contains(language)) {                    
+                    languages.add(language);
+                }
+            }
+        }
+        return languages;
+    }
+    
+    
+    public List<Language> getMajorLanguages() {
+        List<Language> languages = new ArrayList<>();
+        List<HierarchicalConfiguration> nodes = config.configurationsAt("language");
+        for (HierarchicalConfiguration node : nodes) {
+            String code = node.getString("iso_639-1", "").replaceAll("\\W+", "");
+            if(!code.isEmpty()) {
+                Language language = createLanguage(node);
+                if(!languages.contains(language)) {                    
+                    languages.add(language);
+                }
+            }
+        }
+        return languages;
+    }
 
     /**
      * Gets the language data for the given iso-code 639-1 or 639-2B
@@ -85,6 +120,16 @@ public class LanguageHelper {
         if (languageConfig == null) {
             throw new IllegalArgumentException("No matching language found for " + isoCode);
         }
+        Language language = createLanguage(languageConfig);
+
+        return language;
+    }
+
+    /**
+     * @param languageConfig
+     * @return
+     */
+    public Language createLanguage(HierarchicalConfiguration languageConfig) {
         Language language = new Language();
         language.setIsoCode_639_2B(languageConfig.getString("iso_639-2", languageConfig.getString("iso_639-2B")));
         language.setIsoCode_639_2T(languageConfig.getString("iso_639-2T"));
@@ -92,7 +137,6 @@ public class LanguageHelper {
         language.setEnglishName(languageConfig.getString("eng"));
         language.setGermanName(languageConfig.getString("ger"));
         language.setFrenchName(languageConfig.getString("fre"));
-
         return language;
     }
 

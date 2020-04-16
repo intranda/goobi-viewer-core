@@ -39,7 +39,7 @@ var viewerJS = ( function( viewer ) {
         language: 'en'
     };
     var _bookmarks = {
-            
+             
             listsNeedUpdate: new Rx.Subject(),
             listsUpdated: new Rx.Subject(),
             bookmarkLists: [],
@@ -132,11 +132,7 @@ var viewerJS = ( function( viewer ) {
                         width: $button.width(),
                         height: $button.height()
                 }
-                var dropdownPosition = {
-                    left: buttonPosition.left + buttonSize.width - dropdownWidth,
-                    top: buttonPosition.top + buttonSize.height
-                }
-  
+
                 var $dropdown = $("<bookmarkList></bookmarkList>");
                 $dropdown.addClass("bookmark-navigation__dropdown");
                 
@@ -154,28 +150,30 @@ var viewerJS = ( function( viewer ) {
                     bookmarks: this,
                 });
                 
-                //handle closing dropdown
+                // handle closing dropdown
                 let toggle = function() {
                     $dropdown.slideToggle( 'fast' );
                     $("body").off("click", toggle);
                 }
+                // bookmark list dropdown toggle 
                 $button.on("click", (event) => {
                     if( (this.config.userLoggedIn && this.getBookmarkListsCount() > 0) || this.getBookmarksCount() > 0) {                        
-                        $dropdown.slideToggle( 'fast');
+                    	$(event.currentTarget).next('.bookmark-navigation__dropdown').slideToggle('fast');
                     }
                 })
                 $("body").on("click", (event) => {
                     let $target = $(event.target);
                     if( $target.closest('[data-bookmark-list-type="dropdown"]').length > 0 ) {
-                        return; //click on bookmarks button. Don't close
+                        return; // click on bookmarks button. Don't close
                     }
                     if( $target.closest('bookmarkList').length > 0 ) {
-                        return; //click on bookmark list. Don't close
+                        return; // click on bookmark list. Don't close
                     }
-                    if($dropdown.is(":visible")) {                        
-                        $dropdown.slideToggle( 'fast');
+                    if ($('.bookmark-navigation__dropdown').is(":visible")) {                        
+                		$('.bookmark-navigation__dropdown').slideUp( 'fast');
                     }
                 })
+                
 //                $dropdown.on("click", (event) => event.stopPropagation());
                 
             },

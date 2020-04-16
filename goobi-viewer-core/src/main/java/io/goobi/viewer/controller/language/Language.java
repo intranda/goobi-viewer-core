@@ -15,12 +15,14 @@
  */
 package io.goobi.viewer.controller.language;
 
+import java.util.Locale;
+
 /**
  * <p>
  * Language class.
  * </p>
  */
-public class Language {
+public class Language implements Comparable<Language> {
 
     /**
      * language code according to iso 639-2/B (based on English names)
@@ -212,6 +214,40 @@ public class Language {
      */
     public void setGermanName(String germanName) {
         this.germanName = germanName;
+    }
+
+    public String getName(Locale locale) {
+        switch (locale.getLanguage()) {
+            case "ger":
+            case "de":
+                return getGermanName();
+            case "fr":
+            case "fra":
+                return getFrenchName();
+            default:
+                return getEnglishName();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Language other) {
+        return this.getIsoCode().compareTo(other.getIsoCode());
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            Language other = (Language) obj;
+            return this.getIsoCode().equals(other.getIsoCode());
+        }
+
+        return false;
     }
 
 }

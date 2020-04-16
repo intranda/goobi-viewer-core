@@ -121,9 +121,17 @@ var cmsJS = ( function( cms ) {
             $( 'body' ).off('click.helptext').on( 'click.helptext', '[data-toggle="helptext"]', function() {
             	$( this ).toggleClass( 'in' );
             	
-            	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control, .cms-module__option-dropdown' );
-            	$input.toggleClass( 'in' );
-            	$input.find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
+            	let forId = $(this).attr("for");
+            	let $input;
+            	if(forId) {
+            	    $input = $("#" + forId);
+            	    $input.toggleClass( 'in' );
+            	} else {
+            	    $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control, .cms-module__option-dropdown' );            	    
+            	    $input.toggleClass( 'in' );
+            	    $input.find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
+            	}
+            	
             } );
             
             // toggle add new item accordeon

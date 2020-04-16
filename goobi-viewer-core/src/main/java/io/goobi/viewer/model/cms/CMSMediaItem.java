@@ -56,7 +56,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -75,28 +74,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
 
-    /** Constant <code>CONTENT_TYPE_DOCX="application/vnd.openxmlformats-officedo"{trunked}</code> */
-    @Deprecated
-    public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    /** Constant <code>CONTENT_TYPE_DOC="application/msword"</code> */
-    public static final String CONTENT_TYPE_DOC = "application/msword";
-    /** Constant <code>CONTENT_TYPE_RTF="application/rtf"</code> */
-    @Deprecated
-    public static final String CONTENT_TYPE_RTF = "application/rtf";
-    /** Constant <code>CONTENT_TYPE_RTF2="application/x-rtf"</code> */
-    @Deprecated
-    public static final String CONTENT_TYPE_RTF2 = "application/x-rtf";
-    /** Constant <code>CONTENT_TYPE_RTF3="text/rtf"</code> */
-    @Deprecated
-    public static final String CONTENT_TYPE_RTF3 = "text/rtf";
-    /** Constant <code>CONTENT_TYPE_RTF4="text/richtext"</code> */
-    @Deprecated
-    public static final String CONTENT_TYPE_RTF4 = "text/richtext";
     /** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
     public static final String CONTENT_TYPE_XML = "text/xml";
-    /** Constant <code>CONTENT_TYPE_HTML="text/html"</code> */
-    @Deprecated
-    public static final String CONTENT_TYPE_HTML = "text/html";
     /** Constant <code>CONTENT_TYPE_SVG="image/svg+xml"</code> */
     public static final String CONTENT_TYPE_SVG = "image/svg+xml";
     /** Constant <code>CONTENT_TYPE_PDF="application/pdf"</code> */
@@ -205,26 +184,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
     }
 
     /**
-     * Perform any necessary post-upload processing (e.g. format conversions).
-     *
-     * @param mediaFile a {@link java.nio.file.Path} object.
-     */
-    public void processMediaFile(Path mediaFile) {
-        if (mediaFile == null) {
-            return;
-        }
-
-        if (CONTENT_TYPE_DOCX.equals(getContentType())) {
-            try {
-                // TODO convert to TEI
-                String tei = TEITools.convertDocxToTei(mediaFile);
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    /**
      * Determines this media item's file's content type via the extension.
      *
      * @return Content type string
@@ -236,18 +195,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
-            case "doc":
-                return CONTENT_TYPE_DOC;
-            case "docx":
-                return CONTENT_TYPE_DOCX;
-            case "htm":
-            case "html":
-            case "xhtml":
-                return CONTENT_TYPE_HTML;
             case "xml":
                 return CONTENT_TYPE_XML;
-            case "rtf":
-                return CONTENT_TYPE_RTF;
             case "jpg":
             case "jpeg":
             case "png":
@@ -271,11 +220,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
      */
     public boolean isHasExportableText() {
         switch (getContentType()) {
-            case CMSMediaItem.CONTENT_TYPE_DOC:
-            case CMSMediaItem.CONTENT_TYPE_DOCX:
-            case CMSMediaItem.CONTENT_TYPE_RTF:
-            case CMSMediaItem.CONTENT_TYPE_HTML:
-                return true;
             default:
                 return false;
         }
@@ -541,6 +485,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
      *
      * @return a {@link java.net.URI} object.
      */
+    @Override
     public URI getLinkURI() {
         return getLinkURI(BeanUtils.getRequest());
     }

@@ -577,7 +577,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (ViewerResourceBundle.getAllLocales() != null) {
             for (Locale locale : getAllLocales()) {
                 String translation = ViewerResourceBundle.getTranslation(key, locale, false);
-                if (key != null && !key.equals(translation) && StringUtils.isNotBlank(translation)) {
+                if (key != null && StringUtils.isNotBlank(translation)) {
                     translations.put(locale.getLanguage(), translation);
                 }
             }

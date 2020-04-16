@@ -63,7 +63,7 @@
 	</li>
 </ul>
 
-<div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions test">
+<div if="{!opts.bookmarks.config.userLoggedIn}" each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions">
 
 
 	<div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset">

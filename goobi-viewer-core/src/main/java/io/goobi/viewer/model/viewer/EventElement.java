@@ -307,7 +307,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @return a boolean.
      */
-    public boolean hasMetadata() {
+    public boolean isHasMetadata() {
         if (metadata != null) {
             return metadata.stream().anyMatch(md -> !md.isBlank());
         }
@@ -322,7 +322,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      *
      * @return a boolean.
      */
-    public boolean hasSidebarMetadata() {
+    public boolean isHasSidebarMetadata() {
         if (sidebarMetadata != null) {
             return sidebarMetadata.stream().anyMatch(md -> !md.isBlank());
         }

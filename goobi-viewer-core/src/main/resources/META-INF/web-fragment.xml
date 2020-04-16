@@ -153,6 +153,11 @@
         <servlet-name>MetsResolver</servlet-name>
         <url-pattern>/denkxwebresolver</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MetsResolver</servlet-name>
+	<url-pattern>/dublincoreresolver</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>OAuthServlet</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.openid.OAuthServlet</servlet-class>
@@ -161,6 +166,15 @@
         <servlet-name>OAuthServlet</servlet-name>
         <url-pattern>/oauth</url-pattern>
         <url-pattern>/oauth/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>SAMLAssertionServlet</servlet-name>
+        <servlet-class>io.goobi.viewer.servlets.saml.SAMLAssertionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SAMLAssertionServlet</servlet-name>
+        <url-pattern>/saml</url-pattern>
+        <url-pattern>/saml/</url-pattern>
     </servlet-mapping>
     <servlet>
         <display-name>DFGViewerImage</display-name>

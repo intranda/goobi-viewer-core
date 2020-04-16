@@ -64,7 +64,7 @@ public class SingleWorkCollectionRedirect {
         try {
             String url = SearchHelper.getFirstWorkUrlWithFieldValue(field, value, true, true,
                     DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field), Locale.getDefault());
-            URI uri = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest) + url);
+            URI uri = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest) + (url == null ? "" : url));
             HttpServletResponse httpResponse = response;
             httpResponse.sendRedirect(uri.toString());
             return Response.ok().build();

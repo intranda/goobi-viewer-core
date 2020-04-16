@@ -19,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,9 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -55,16 +51,8 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import de.intranda.api.iiif.IIIFUrlResolver;
-import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.presentation.content.ImageContent;
-import de.intranda.api.serializer.MetadataSerializer;
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.controller.ConversionTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.Helper;
@@ -76,11 +64,10 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
-import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.servlets.rest.MediaItem;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -171,12 +158,10 @@ public class CMSMediaResource {
                         }
                     }
                 };
-            } else {
-                throw new ContentNotFoundException("File " + path + " not found in file system");
             }
-        } else {
-            throw new ContentNotFoundException("No pdf item with id " + id + " found");
+            throw new ContentNotFoundException("File " + path + " not found in file system");
         }
+        throw new ContentNotFoundException("No pdf item with id " + id + " found");
 
     }
 
@@ -207,30 +192,10 @@ public class CMSMediaResource {
         java.nio.file.Path filePath = Paths.get(sbUri.toString());
         if (Files.isRegularFile(filePath)) {
             switch (item.getContentType()) {
-                case CMSMediaItem.CONTENT_TYPE_HTML:
                 case CMSMediaItem.CONTENT_TYPE_XML:
                     try {
                         String encoding = "windows-1252";
                         String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
-                        return StringTools.renameIncompatibleCSSClasses(ret);
-                    } catch (FileNotFoundException e) {
-                        logger.debug(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
-                case CMSMediaItem.CONTENT_TYPE_DOCX:
-                    try {
-                        String ret = ConversionTools.convertDocxToHtml(filePath);
-                        return StringTools.renameIncompatibleCSSClasses(ret);
-                    } catch (FileNotFoundException e) {
-                        logger.debug(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                case CMSMediaItem.CONTENT_TYPE_RTF:
-                    try {
-                        String ret = ConversionTools.convertFileToHtml(filePath);
                         return StringTools.renameIncompatibleCSSClasses(ret);
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());
@@ -259,12 +224,10 @@ public class CMSMediaResource {
 
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(filename);
         if (item != null) {
-            MediaItem jsonItem = new MediaItem(item);
+            MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
-        } else {
-            return Response.status(Status.OK).entity("{}").build();
-
         }
+        return Response.status(Status.OK).entity("{}").build();
     }
 
     /**
@@ -327,16 +290,14 @@ public class CMSMediaResource {
                         item.setFileName(mediaFile.getFileName().toString());
                         DataManager.getInstance().getDao().updateCMSMediaItem(item);
                     }
-                    MediaItem jsonItem = new MediaItem(item);
+                    MediaItem jsonItem = new MediaItem(item, servletRequest);
                     return Response.status(Status.OK).entity(jsonItem).build();
-                } else {
-                    String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                    if (Files.exists(mediaFile)) {
-                        Files.delete(mediaFile);
-                    }
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
-
                 }
+                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+                if (Files.exists(mediaFile)) {
+                    Files.delete(mediaFile);
+                }
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             } catch (AccessDeniedException e) {
                 return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
             } catch (FileAlreadyExistsException e) {
@@ -361,15 +322,14 @@ public class CMSMediaResource {
      * @throws DAOException
      * @throws AccessDeniedException if the user is not allowed to use any categories whatsoever
      */
-    private Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
+    private static Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
 
         if (!user.hasPrivilegeForAllCategories()) {
             List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
             if (!allowedCategories.isEmpty()) {
                 return Optional.of(allowedCategories.get(0));
-            } else {
-                throw new AccessDeniedException("The user " + user + " has no rights to any categories and may therefore not upload any media files");
             }
+            throw new AccessDeniedException("The user " + user + " has no rights to any categories and may therefore not upload any media files");
         }
         return Optional.empty();
     }
@@ -400,7 +360,7 @@ public class CMSMediaResource {
      * @param session
      * @return
      */
-    private Optional<User> getUser() {
+    private static Optional<User> getUser() {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean == null) {
             logger.trace("Unable to get user: No UserBean found in session store.");
@@ -420,7 +380,7 @@ public class CMSMediaResource {
         private final List<MediaItem> mediaItems;
 
         public MediaList(List<CMSMediaItem> items) {
-            this.mediaItems = items.stream().map(MediaItem::new).collect(Collectors.toList());
+            this.mediaItems = items.stream().map( item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
         }
 
         /**
@@ -432,62 +392,4 @@ public class CMSMediaResource {
 
     }
 
-    public class MediaItem {
-
-        @JsonSerialize(using = MetadataSerializer.class)
-        private final IMetadataValue label;
-        @JsonSerialize(using = MetadataSerializer.class)
-        private final IMetadataValue description;
-        private final String link;
-        private final ImageContent image;
-        private final List<String> tags;
-
-        public MediaItem(CMSMediaItem source) {
-            this.label = source.getTranslationsForName();
-            this.description = source.getTranslationsForDescription();
-            this.image = new ImageContent(source.getIconURI());
-            if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
-                URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
-                this.image.setService(new ImageInformation(imageInfoURI.toString()));
-            }
-            this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
-            this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
-        }
-
-        /**
-         * @return the label
-         */
-        public IMetadataValue getLabel() {
-            return label;
-        }
-
-        /**
-         * @return the description
-         */
-        public IMetadataValue getDescription() {
-            return description;
-        }
-
-        /**
-         * @return the link
-         */
-        public String getLink() {
-            return link;
-        }
-
-        /**
-         * @return the image
-         */
-        public ImageContent getImage() {
-            return image;
-        }
-
-        /**
-         * @return the tags
-         */
-        public List<String> getTags() {
-            return tags;
-        }
-
-    }
 }

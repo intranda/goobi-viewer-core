@@ -50,6 +50,7 @@ import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.Version;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringTools;
@@ -92,6 +93,7 @@ public class NavigationHelper implements Serializable {
     /** Constant <code>KEY_PREFERRED_VIEW="preferredView"</code> */
     protected static final String KEY_PREFERRED_VIEW = "preferredView";
     /** Constant <code>KEY_CURRENT_PARTNER_PAGE="preferredView"</code> */
+    @Deprecated
     protected static final String KEY_CURRENT_PARTNER_PAGE = "preferredView";
     /** Constant <code>KEY_SELECTED_NEWS_ARTICLE="selectedNewsArticle"</code> */
     protected static final String KEY_SELECTED_NEWS_ARTICLE = "selectedNewsArticle";
@@ -271,6 +273,9 @@ public class NavigationHelper implements Serializable {
 
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
+
+        //after setting page, detemine subtheme
+        setSubThemeDiscriminatorValue();
     }
 
     /**
@@ -301,6 +306,7 @@ public class NavigationHelper implements Serializable {
      *
      * @param currentPartnerPage a {@link java.lang.String} object.
      * @should set value correctly
+     * @deprecated  replaced by subTheme mechanism
      */
     public void setCurrentPartnerPage(String currentPartnerPage) {
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, currentPartnerPage);
@@ -314,6 +320,7 @@ public class NavigationHelper implements Serializable {
      *
      * @should return value correctly
      * @return a {@link java.lang.String} object.
+     * @deprecated  replaced by subTheme mechanism
      */
     public String getCurrentPartnerPage() {
         return statusMap.get(KEY_CURRENT_PARTNER_PAGE);
@@ -620,6 +627,21 @@ public class NavigationHelper implements Serializable {
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
 
+        // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
+        if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
+            BrowseBean bb = BeanUtils.getBrowseBean();
+            if (bb != null) {
+                bb.resetTerms();
+                try {
+                    bb.searchTerms();
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (IndexUnreachableException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
         // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
         if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -861,21 +883,6 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
-     * resetActivePartnerId.
-     * </p>
-     *
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void resetActivePartnerId() {
-        if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
-            logger.trace("resetActivePartnerId");
-            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, "");
-        }
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>theme</code>.
      * </p>
      *
@@ -894,39 +901,43 @@ public class NavigationHelper implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
-        if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
-            // Automatically set the sub-theme discriminator value to the
-            // current record's value, if configured to do so
-            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
-            if (activeDocumentBean != null) {
-                String subThemeDiscriminatorValue = "";
-                if (activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
-                    // If a record is loaded, get the value from the record's value
-                    // in discriminatorField
-
-                    String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
-                    if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
-                        logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
-                        statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
-                    }
-                } else if (isCmsPage()) {
-                    CmsBean cmsBean = BeanUtils.getCmsBean();
-                    if (cmsBean != null && cmsBean.getCurrentPage() != null) {
-                        subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
-                        if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
-                            logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
-                            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
-                            return subThemeDiscriminatorValue;
-                        }
-                    }
-                }
-            }
-        }
 
         String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
         //         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
         return ret;
+    }
+
+    /**
+     * Get the subthemeDiscriminator value either from a property of the currently loaded CMS page or the currently loaded document in the
+     * activeDocumentbean if the current page is a docmentPage.
+     * 
+     * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank, always return an empty string
+     * 
+     */
+    public String determineCurrentSubThemeDiscriminatorValue() {
+        // Automatically set the sub-theme discriminator value to the
+        // current record's value, if configured to do so
+        String subThemeDiscriminatorValue = "";
+        String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        if (StringUtils.isNotBlank(discriminatorField)) {
+            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
+            if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
+                // If a record is loaded, get the value from the record's value
+                // in discriminatorField
+                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
+            } else if (isCmsPage()) {
+                CmsBean cmsBean = BeanUtils.getCmsBean();
+                if (cmsBean != null && cmsBean.getCurrentPage() != null) {
+                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+                }
+            }
+        }
+        return subThemeDiscriminatorValue;
+    }
+
+    public void setSubThemeDiscriminatorValue() {
+        String subThemeDiscriminatorValue = determineCurrentSubThemeDiscriminatorValue();
+        setSubThemeDiscriminatorValue(subThemeDiscriminatorValue);
     }
 
     /**
@@ -941,9 +952,10 @@ public class NavigationHelper implements Serializable {
         logger.trace("setSubThemeDiscriminatorValue: {}", subThemeDiscriminatorValue);
         // If a new discriminator value has been selected, the visible
         // collection list must be generated anew
-        if ((subThemeDiscriminatorValue == null && statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) != null)
-                || (subThemeDiscriminatorValue != null && !subThemeDiscriminatorValue.equals(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)))) {
-            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
+        String previousSubThemeDiscriminatorValue = statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE);
+        statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
+        if ((StringUtils.isBlank(subThemeDiscriminatorValue) && StringUtils.isNotBlank(previousSubThemeDiscriminatorValue)
+                || (StringUtils.isNotBlank(subThemeDiscriminatorValue) && !subThemeDiscriminatorValue.equals(previousSubThemeDiscriminatorValue)))) {
             BrowseBean browseBean = BeanUtils.getBrowseBean();
             if (browseBean != null) {
                 browseBean.resetAllLists();
@@ -958,30 +970,7 @@ public class NavigationHelper implements Serializable {
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 }
             }
-        } else {
-            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
         }
-    }
-
-    /**
-     * <p>
-     * changeTheme.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public void changeTheme() throws IndexUnreachableException {
-        if (DataManager.getInstance().getConfiguration().isSubthemesEnabled()) {
-            String discriminatorValue = getSubThemeDiscriminatorValue();
-            if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
-                logger.trace("Using discriminator value: {}", discriminatorValue);
-                theme = DataManager.getInstance().getConfiguration().getTheme();
-            } else {
-                theme = DataManager.getInstance().getConfiguration().getTheme();
-                logger.trace("Using default theme");
-            }
-        }
-        logger.debug("theme: {}", theme);
     }
 
     /**
@@ -995,9 +984,7 @@ public class NavigationHelper implements Serializable {
         //        resetCurrentPage();
         theme = DataManager.getInstance().getConfiguration().getTheme();
         setCmsPage(false);
-        if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
-            setSubThemeDiscriminatorValue(null);
-        }
+        setSubThemeDiscriminatorValue("");
     }
 
     /**
@@ -1377,7 +1364,9 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use dedicated CMS pages instead of xhtml pages for subthemes
      */
+    @Deprecated
     public String getCurrentPartnerUrl() {
         logger.trace("activePartnerId: {}", statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE));
         logger.trace("currentPartnerPage: {}", statusMap.get(KEY_CURRENT_PARTNER_PAGE));
@@ -1763,13 +1752,11 @@ public class NavigationHelper implements Serializable {
      * isSubthemeSelected.
      * </p>
      *
-     * @return a boolean.
+     * @return true exactly if {@link #getSubThemeDiscriminatorValue()} is not blank
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isSubthemeSelected() throws IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().isSubthemesEnabled()
-                || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()
-                        && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
+        return StringUtils.isNotBlank(getSubThemeDiscriminatorValue());
     }
 
     /**

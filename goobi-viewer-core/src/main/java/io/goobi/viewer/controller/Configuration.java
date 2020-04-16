@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -63,9 +64,10 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LitteraProvider;
 import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.authentication.SAMLProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -817,9 +819,11 @@ public final class Configuration extends AbstractConfiguration {
             String field = sub.getString(".");
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
+            boolean translate = sub.getBoolean("[@translate]", false);
             String docstructFilterString = sub.getString("[@docstructFilters]");
             boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-            BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+            BrowsingMenuFieldConfig bmfc =
+                    new BrowsingMenuFieldConfig(field, sortField, filterQuery, translate, docstructFilterString, recordsAndAnchorsOnly);
             ret.add(bmfc);
         }
 
@@ -1108,7 +1112,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getContentRestApiUrl() {
-        return getRestApiUrl() + "content/";
+        return getIIIFApiUrl() + "content/";
 
     }
 
@@ -1139,7 +1143,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return urlString;
     }
-    
+
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
         return use;
@@ -1324,14 +1328,25 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDisplayAdditionalMetadataTranslateFields.
+     * Returns a list of additional metadata fields thats are configured to have their values translated. Field names are normalized (i.e. things like
+     * _UNTOKENIZED are removed).
      * </p>
      *
      * @return List of configured fields; empty list if none found.
      * @should return correct values
      */
     public List<String> getDisplayAdditionalMetadataTranslateFields() {
-        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        List<String> fields = getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+        if (fields.isEmpty()) {
+            return fields;
+        }
+
+        List<String> ret = new ArrayList<>(fields.size());
+        for (String field : fields) {
+            ret.add(SearchHelper.normalizeField(field));
+        }
+
+        return ret;
     }
 
     /**
@@ -1488,7 +1503,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedMetsFolder() {
-        return getLocalString("indexedMetsFolder");
+        return getLocalString("indexedMetsFolder", "indexed_mets");
     }
 
     /**
@@ -1500,7 +1515,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedLidoFolder() {
-        return getLocalString("indexedLidoFolder");
+        return getLocalString("indexedLidoFolder", "indexed_lido");
     }
 
     /**
@@ -1512,7 +1527,19 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getIndexedDenkxwebFolder() {
-        return getLocalString("indexedDenkxwebFolder");
+        return getLocalString("indexedDenkxwebFolder", "indexed_denkxweb");
+    }
+
+    /**
+     * <p>
+     * getIndexedDublinCoreFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedDublinCoreFolder() {
+        return getLocalString("indexedDublinCoreFolder", "indexed_dublincore");
     }
 
     /**
@@ -1758,11 +1785,17 @@ public final class Configuration extends AbstractConfiguration {
             boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@show]", true);
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
+            String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
+            String relyingPartyIdentifier =
+                    myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
+                    case "saml":
+                        providers.add(new SAMLProvider(name, idpMetadataUrl, relyingPartyIdentifier, timeoutMillis));
+                        break;
                     case "openid":
                         providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
                         break;
@@ -3439,18 +3472,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSubthemesEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSubthemesEnabled() {
-        return getLocalBoolean("viewer.theme[@subTheme]", false);
-    }
-
-    /**
-     * <p>
      * getSubthemeMainTheme.
      * </p>
      *
@@ -3474,19 +3495,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSubthemeDiscriminatorField() {
-        return getLocalString("viewer.theme[@discriminatorField]");
-    }
-
-    /**
-     * <p>
-     * isSubthemeAutoSwitch.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSubthemeAutoSwitch() {
-        return getLocalBoolean("viewer.theme[@autoSwitch]", false);
+        return getLocalString("viewer.theme[@discriminatorField]", "");
     }
 
     /**
@@ -3495,7 +3504,9 @@ public final class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @should return correct value
-     * @return a boolean.
+     * @return true if search should generally be filtered by {@link NavigationHelper#getSubThemeDiscriminatorValue()}
+     * 
+     * @deprecated  should always return false since search filtering should be done via dedicated cms search pages
      */
     public boolean isSubthemeAddFilterQuery() {
         return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
@@ -3508,6 +3519,8 @@ public final class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a boolean.
+     * 
+     * @deprecated  should always return false since search filtering should be done via dedicated cms search pages
      */
     public boolean isSubthemeFilterQueryVisible() {
         return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
@@ -3952,6 +3965,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
+     * 
+     * @return "temp_media" unless otherwise configured in "tempMediaFolder"
+     */
+    public String getTempMediaFolder() {
+        return getLocalString("tempMediaFolder", "temp_media");
+    }
+
+    /**
      * <p>
      * getCmsClassifications.
      * </p>
@@ -4172,7 +4194,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getDefaultBrowseIcon(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
         if (subConfig != null) {
-            return subConfig.getString("defaultBrowseIcon", "");
+            return subConfig.getString("defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
         }
 
         return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
@@ -4536,7 +4558,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return " ";
     }
-    
+
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
@@ -4570,6 +4592,22 @@ public final class Configuration extends AbstractConfiguration {
 
         return defaultConf;
     }
-    
-    
+
+    public List<LicenseDescription> getLicenseDescriptions() {
+        List<LicenseDescription> licenses = new ArrayList<>();
+        List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
+        for (HierarchicalConfiguration node : licenseNodes) {
+            String url = node.getString("[@url]", "");
+            if (StringUtils.isNotBlank(url)) {
+                String label = node.getString("[@label]", url);
+                String icon = node.getString("[@icon]", "");
+                LicenseDescription license = new LicenseDescription(url);
+                license.setLabel(label);
+                license.setIcon(icon);
+                licenses.add(license);
+            }
+        }
+        return licenses;
+    }
+
 }

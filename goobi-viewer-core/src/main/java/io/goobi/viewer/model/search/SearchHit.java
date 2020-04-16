@@ -153,6 +153,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private final Map<String, String> exportMetadata = new HashMap<>();
     @JsonIgnore
     private int hitsPopulated = 0;
+    @JsonIgnore
+    private SolrDocument solrDoc = null;
 
     /**
      * Private constructor. Use createSearchHit() from other classes.
@@ -666,14 +668,15 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(docFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), highlightedValue));
                                 // Only add one instance of NORM_ALTNAME (as there can be dozens)
                                 if ("NORM_ALTNAME".equals(docFieldName)) {
                                     break;
@@ -694,14 +697,15 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(termsFieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
                             }
                         }
                     }
@@ -1040,4 +1044,22 @@ public class SearchHit implements Comparable<SearchHit> {
         return sb.toString();
     }
 
+    /**
+     * @param doc
+     */
+    public void setSolrDoc(SolrDocument doc) {
+        this.solrDoc = doc;
+    }
+
+    public SolrDocument getSolrDoc() {
+        return this.solrDoc;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getBrowseElement().getLabelShort();
+    }
 }

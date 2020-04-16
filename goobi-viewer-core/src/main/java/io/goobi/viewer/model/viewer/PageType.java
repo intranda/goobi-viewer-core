@@ -65,6 +65,7 @@ public enum PageType {
     adminLicenseType("admin/license"),
     adminRoles("admin/roles"),
     adminUserComments("admin/comments"),
+    adminCreateRecord("admin/record/new"),
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
@@ -397,6 +398,7 @@ public enum PageType {
             case adminCmsOverview:
             case adminCmsSelectTemplate:
             case adminCmsStaticPages:
+	    case adminCreateRecord:
             case adminCrowdsourcingAnnotations:
             case adminCrowdsourcingCampaigns:
             case adminIpRange:

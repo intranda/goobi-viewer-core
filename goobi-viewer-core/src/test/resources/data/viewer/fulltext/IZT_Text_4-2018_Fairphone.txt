@@ -1,0 +1,1338 @@
+IZT-Text 4-2018
+
+Fairphone
+
+Fallstudie
+
+IZT-Text 4-2018
+
+Fairphone
+Fallstudie
+
+Autoren
+Jakob Zwiers, Siegfried Behrendt und Edgar Göll
+Berlin, 2018
+
+Der vorliegende Beitrag entstand im Forschungsprojekt „Evolution2Green - Transformationspfade zu einer Green Economy:
+den Pfadwechsel gestalten“. Das Projekt wurde von adelphi gemeinsam mit dem IZT - Institut für Zukunftsstudien und Technologiebewertung und dem Borderstep Institut im Rahmen des vom deutschen Bundesministerium für Bildung und Forschung (BMBF) geförderten Schwerpunktprogramms "Nachhaltiges Wirtschaften" der Sozial-Ökologischen Forschung
+durchgeführt (SÖF; Förderkennzeichen FKZ 01UT1407).
+
+© 2018 IZT - Bibliografische Information der Deutschen Bibliothek
+Die deutsche Bibliothek verzeichnet diese Publikation in der Deutschen Nationalbibliografie.
+Detaillierte bibliografische Daten sind im Internet über http://dnb.ddb.de abrufbar.
+ISBN 978-3-941374-38-6
+Herausgeber:
+IZT - Institut für Zukunftsstudien und Technologiebewertung gemeinnützige GmbH,
+Schopenhauerstr. 26, 14129 Berlin
+Tel.: 030-803088-0, Fax: 030-803088-88, E-Mail: info@izt.de
+Abbildung Titel: ©Adobe Stock / Winai Tepsuttinun #86595078 und ©Fairphone (CC BY -NC-SA)
+
+Inhaltsverzeichnis
+Abbildungsverzeichnis .......................................................................................................... 4
+Tabellenverzeichnis .............................................................................................................. 4
+Abkürzungsverzeichnis ......................................................................................................... 5
+Die Fallstudie im Überblick ................................................................................................... 6
+1
+
+Auswahl der Fallstudie.................................................................................................... 7
+
+2 Fairphone ....................................................................................................................... 9
+2.1 Problem und Rahmenbedingungen .......................................................................................... 9
+2.2 Veränderungsidee ................................................................................................................... 14
+2.3 Transformationsprozess .......................................................................................................... 15
+2.4 Change Agents und andere Promotoren ................................................................................ 21
+2.5 Zeitaspekte .............................................................................................................................. 25
+2.6 Tabellarische Zusammenfassung ............................................................................................ 26
+3
+
+Resumée zentraler Erfolgsfaktoren ............................................................................... 30
+
+Anhang .............................................................................................................................. 32
+Literaturverzeichnis ............................................................................................................ 34
+
+3
+
+ABBILDUNGSVERZEICHNIS
+
+Abbildungsverzeichnis
+Abbildung 1: Technologiemetalle.................................................................................................. 11
+Abbildung 2: Fairphone's ambitions for design............................................................................. 18
+Abbildung 3: Kostentransparenz des Fairphone 1 ........................................................................ 32
+Abbildung 4: Kostentransparenz des Fairphone 2 ........................................................................ 33
+
+Tabellenverzeichnis
+Tabelle 1: Umweltauswirkungen beim Bergbau ........................................................................... 12
+Tabelle 2: Erfolgsfaktoren der Transformation und Relevanz ...................................................... 26
+
+4
+
+ABKÜRZUNGSVERZEICHNIS
+
+Abkürzungsverzeichnis
+BGR
+
+Bundesanstalt für Geowissenschaften und Rohstoffe
+
+CFlTI
+
+Conflict-Free Tin Initiative
+
+CTC
+
+Certified Trading Chains
+
+EICC
+
+Electronic Industry Citizenship Coalition
+
+GeSI
+
+Global e-sustainability Initiative
+
+ICGLR
+
+International Conference on the Great Lakes Region
+
+JAC
+
+Joint Audit Cooperation
+
+IKT
+
+Informations- und Kommunikationstechnik
+
+ITRI
+
+Gremium der Internationalen Zinnindustrie
+
+ITU
+
+International Telecommunication Union
+
+SDGs
+
+Sustainable Development Goals
+
+UNEP
+
+United Nations Environment Programme
+
+5
+
+DIE FALLSTUDIE IM ÜBERBLICK
+
+Die Fallstudie im Überblick
+Steckbrief
+Titel der Fallstudie
+
+Fairphone
+
+Kurzbeschreibung
+
+Die vorliegende Fallstudie untersucht das Unternehmen Fairphone als Schrittmacher für eine Transformation des Elektronikmarktes, insbesondere im Bereich
+der Mobiltelefone, hin zu einer Green Economy.
+
+Thematische Eignung
+
+Der gesteigerte Konsum von Elektronikgütern, insbesondere von Mobiltelefonen, führt nicht nur zu einer
+Zunahme des Ressourcenverbrauchs, sondern erzeugt
+eine signifikante Menge an Elektronikmüll. Fairphone
+stellt sich mit einem fair produzierten, emissionsreduzierten, ressourceneffizienten, reparatur- und recyclingfähigen Smartphone dieser Entwicklung entgegen.
+Als Sozialunternehmen entwickelt es ein neues Geschäftsmodell für ein nachhaltiges, grünes Wirtschaften.
+
+Geografische Bezugsebene
+
+Deutschland, Österreich, Schweiz, Niederlande
+
+Umsetzungs- bzw. Diffusionsstadium
+
+Nischenaktivität
+
+Geschwindigkeit
+
+Mittlere Geschwindigkeit
+
+Transformationsstrategie
+(Effizienz, Konsistenz, Suffizienz)
+
+Suffizienz, Effizienz, Konsistenz
+
+Erfolgsfaktoren
+
+Gruppe von sehr aktiven Treibern
+aktive Einbindung, Teilhabe und Befähigung der KonsumentInnen (Community)
+Multi-Stakeholder-Ansatz für Partizipation an gesamter
+Wertschöpfungskette
+Weiterentwicklung des Produkts hinsichtlich Modularität, Leistungsfähigkeit, Design
+Professionalisierung, Institutionalisierung
+strategische Allianzen
+Transparenz als Unternehmenskultur/-politik
+Experimentieren mit neuem Geschäftsmodell
+Erschließung von Sekundärrohstoffquellen
+
+Pfadabhängigkeiten und Hindernisse
+
+Komplexe globale Wertschöpfungsketten mit fehlender
+Transparenz und beschränkter Kontrollierbarkeit, fehlende Kreislaufsysteme, Dominanz einer Konsum- bzw.
+Wegwerfkultur
+
+6
+
+1 AUSWAHL DER FALLSTUDIE
+
+1
+
+Auswahl der Fallstudie
+
+Die Zielsetzung der Fallstudien im Projekt Evolution2Green besteht darin, konkrete Fälle und ihre Hintergründe zu beleuchten, in denen wesentliche Pfadabhängigkeiten, die den Pfadwechsel zur Green
+Economy behindern, überwunden werden.
+In Industrienationen sowie in Schwellenländern lässt sich vermehrt ein „ressourcenintensiver“ Lebensstil ausmachen, der in einem zunehmenden Maße „elektronikintensiv“ wird. In nahezu allen Lebensbereichen besitzen und nutzen immer mehr Menschen eine zunehmende Anzahl an elektr(on)ischen
+Apparaten und Geräten, die in immer kürzer werdenden Abständen nicht mehr genutzt, entsorgt oder
+ausgetauscht werden. Besonders bei Fernsehern, Tablet-PCs, Laptops, Spielekonsolen und Smartphones ist eine kürzer werdende Nutzungsdauer zu konstatieren.1 Elektronikgeräte stellen in – auf Konsum
+ausgerichteten – Gesellschaften zwar nur einen Anteil im Rahmen eines globalen Gesamtkonsums dar,
+sind jedoch gerade für Nachhaltigkeitsfragen gewichtig, weil diese neben ihrer weiten und zunehmenden Verbreitung zusätzlich komplexer und somit ressourcenintensiver werden. Diese enorme Beschleunigung führt zu einem „schnellen stofflichen Durchlauf von Rohstoffen über Produkte zu Abfällen“ (Dießenbacher/Reller 2016: 272f.). Wegen der schnellen Verbrauchszirkulation wird in diesem
+Zusammenhang auch der Begriff der „Wegwerfgesellschaft“ verwendet, der auf die immensen Mengen an sich eignendem Abfall verweist. Das zunehmende Elektronikaufkommen in allen Lebensbereichen sowie das – gleichzeitig die Kurzlebigkeit von IKT-Geräten befördernde – dynamische Marktwachstum im Bereich der Informations- und Kommunikationstechnologien gehen einher mit einem
+steigenden Ressourcenverbrauch, was letztendlich mehr Elektronikmüll zur Folge hat (Behrendt 2015:
+47).
+Die Herstellung von Mobiltelefonen ist gleichzeitig energie- und ressourcenintensiv. U.a. werden hierbei toxische Elemente wie Kupfer, Nickel, Chrom und Blei verwendet. Ihre Entsorgung verläuft oft ungenügend reguliert und unsachgemäß. Besonders hoch sind die negativen Umweltauswirkungen in
+den Produktions- und Entsorgungsstätten (Hütz-Adams 2012: 16). Zudem handelt es sich bei den verwendeten Rohstoffen auch um kritische, deren Verfügbarkeit von vielen Faktoren abhängt und damit
+Preis- und Versorgungsrisiken verursachen dürften.
+Aufgrund der sehr negativen sozialen wie ökologischen Auswirkungen des Ressourcenabbaus andernorts für die hiesige Elektronikbranche sowie die steigende Menge an schwer recycelbaren, zum Teil
+toxischen Elektronikmüll entsteht zunehmend ein Interesse für die Langlebigkeit und Wiederverwendung von elektronischen Produkten seitens KonsumentInnen und Produzenten. Besonders trifft dies
+auf Smartphones zu, welche zu einem Massenkonsumgut geworden sind. Allein in Deutschland gibt es
+rund 49 Millionen Smartphonenutzerinnen und –nutzer (statista 2018a). Der weltweite Absatz von
+Smartphones steigt jährlich an: Waren es 2010 noch 300 Millionen Geräte, so belief sich die Anzahl der
+verkauften Geräte im Jahr 2013 auf eine Milliarde. 2016 betrug der Smartphone-Absatz mehr als 1,4
+Milliarden Geräte (https://de.statista.com/themen/581/smartphones/, zuletzt geprüft am
+16.07.2017). Im Jahr 2012 kamen auf hundert Personen 127 Mobiltelefone in den Industriestaaten
+und 95 in den Ländern des Globalen Südens. Die Anzahl der Smartphone-NutzerInnen weltweit für das
+Jahr 2017 wird auf 2,32 Milliarden geschätzt (statista 2018b). In den letzten Jahren (Stand 2016) wurden weltweit im Durchschnitt 1,7 Milliarden neuer Mobiltelefone verkauft. Dass ein Mobiltelefon
+–––
+1
+
+Vgl. hierzu auch die Studie Einfluss der Nutzungsdauer von Produkten auf ihre Umweltwirkung (Prakash et al. 2016) vom
+Umweltbundesamt, in der auch die Ursachen von Obsoleszenz, inbesondere von Elektronikgeräten, beschrieben werden.
+
+7
+
+1 AUSWAHL DER FALLSTUDIE
+
+durchschnittlich alle 18 Monate durch ein neues ersetzt wird – selbst wenn es technisch noch funktionstüchtig ist –, dürfte aufgrund dieser Zahlen nicht sonderlich überraschen (van der Velden 2016:
+151). Beachtlich ist dies aber, wenn bedacht wird, dass nach der Liberalisierung des Telekommunikationsmarktes Anfang der 1990er-Jahre die durchschnittliche Nutzungsdauer von Telefonen von einst
+zwölf Jahren auf acht Jahre zurückgegangen ist und heute zwischen ein bis zwei Jahren liegt (Behrendt
+2015: 47).
+Das Unternehmen Fairphone kann weder den immensen Absatz noch den intensiven Konsum von Mobiltelefonen aufhalten. Es bietet jedoch mit seinem gleichnamigen Smartphone eine Alternative an,
+mit der aufgezeigt wird, dass die Elektronik- und insbesondere die Mobiltelefon-Branche nach Prinzipien der Nachhaltigkeit gestaltet werden kann. Durch modulare und deshalb langlebigere und besser
+reparierbare Geräte sowie transparente Produktionsbedingungen wird aufgezeigt, dass ein ökologisch
+und auch sozial nachhaltigeres Wirtschaften in diesen Bereichen schrittweise erreichbar ist (Schischke
+et al. 2016: 4f). Im Folgenden werden daher das Unternehmen wie das Produkt Fairphone vertiefend
+erläutert.
+
+8
+
+2 FAIRPHONE
+
+2
+
+Fairphone
+
+2.1
+
+Problem und Rahmenbedingungen
+
+Auch wenn zur Gewöhnung geworden sind Smartphones keine gewöhnlichen Alltagsgegenstände: Für
+eine weltweit wachsende Anzahl an Menschen ist die tägliche Nutzung von Smartphones so selbstverständlich wie notwendig für die Organisation ihres Lebens. Gemeinsam ist ihnen mit anderen breitenwirksamen Informations- und Kommunikationstechnologien in der Geschichte (wie etwa dem Telefon
+oder dem Computer) die Eigenschaft, in dem Sinne paradox zu sein, dass mit ihrer Verbreitung zugleich
+ungeahnte Ermöglichungsbedingungen, aber mit diesen auch neue Abhängigkeitsstrukturen entstehen.
+Seit 2007, dem Erscheinungsjahr von Apples erstem iPhone, hat das Smartphone – im ko-evolutionären Zusammenspiel mit der Internetisierung und Digitalisierung – die Welt vermutlich mehr verändert
+als irgendein anderes technisches Gerät innerhalb eines solch kurzen Zeitraums. Kulturell ist das Smartphone äußerst prägend hinsichtlich der sich verändernden Weisen, wie Menschen kommunizieren,
+Informationen austauschen, konsumieren, arbeiten und ihren Alltag organisieren. Vom Aufkommen
+erschwinglicher Mobiltelefone und der Entstehung eines flächendeckenden Mobilfunknetzes in den
+1990er Jahren dauert es nicht lange, bis bereits im Jahr 2014 die Mehrzahl der Smartphonenutzer sich
+kaum noch ein Leben ohne Smartphone vorstellen kann (Dießenbacher/ Reller 2016: 271f.). Ein wichtiger Indikator für den Stellenwert des Smartphones im Alltag ist sicherlich die Häufigkeit, in der NutzerInnen zu ihrem Gerät greifen. Kaum können die Hände von dem kleinen täglichen Begleiter gelassen
+werden, weil dieser „dezentral“ eine permanente Vernetzung, neue Konsummuster oder generell eine
+Erleichterung des täglichen Lebens mittels der Verwendung von Apps ermöglicht. Gerade durch die
+Handlichkeit des Smartphones und die Entwicklung von „Wireless“-Internetzugängen verspricht es den
+KonsumentInnen mobiler zu sein und somit flexibler und selbstermächtigter im Alltag zu agieren.
+Kommunikator, Entertainer, Navigator, Organisator zugleich: Durch seine Multifunktionalität ist das
+Smartphone ein Allrounder, der in nahezu jeder Lebenslage einen Zweck zu erfüllen verspricht. Neben
+der Befriedigung noch ungeahnter, höchst individualisierter, digitaler Bedürfnisse ermöglicht es eine
+ganze Reihe von Diensten, in deren Kontext eine ganze (App)Branche entstand, mit welcher wiederrum neue digitale Geschäftsmodelle und eine Vielzahl an Start-Ups aufkommen.2 Indiz wären hier zum
+Beispiel die millionenfach heruntergeladenen Apps im Apple App Store oder auf Google Play. Die Entstehung und die Expansion des digitalen Marktes und die Erfolgsgeschichte des Smartphones bedingen
+sich wechselseitig nach wie vor in einem nicht zu unterschätzenden Maße. Des Weiteren ist das Smartphone ein wichtiger Faktor der Digitalisierung und eine wichtige Komponente in einem sich ausweitenden Netzwerk von Smart Devices im Rahmen von cyber-physischen Systemen, einem sogenannten
+Internet der Dinge, sowie einem Internet der Dienste. Smartphones stellen schließlich bereits gegenwärtig die Möglichkeiten sowie die Bedingungen einer digitalen Lebensführung bereit.
+–––
+2
+
+In diesem Zusammenhang sei auf die Durchsetzung der eigentlich schon älteren Idee des Car-Sharings zu verweisen. Die
+Geschäftsmodelle von Start-Ups wie DriveNow oder Car2Go basieren auf der Verwendung von Smartphones seitens der
+NutzerInnen (Ortung naheliegender Fahrzeuge und deren Aktivierung). Weiterhin wäre allgemein zu eruieren, inwiefern
+die gegenwärtig entstehenden Formate im Rahmen einer „Sharing Economy“ besonders durch die von Seiten des Smartphones begünstigte Digitalisierung überhaupt erst ermöglicht wurden.
+
+9
+
+2 FAIRPHONE
+
+Bedenklich ist dabei das Verhältnis der Software- und Hardwareentwicklung: Die Leistungssteigerung
+der Hardware ermöglicht neue Softwareanwendungen, welche wiederum den Druck auf die Hardware-Entwicklung erhöhen. Die Folge dieser Bewegung ist eine durch Software bedingte Obsoleszenz
+von Smartphones (van der Velden 2014: 5).
+Außerdem scheinen Smartphones als Lifestyle- sowie Statusobjekte den allgemeinen Modegesetzen
+verpflichtet zu sein (Dießenbacher/ Reller 2016: 272). Stellvertretend lässt sich an ihnen eine allgemeine Entwicklung in der Elektronikbranche nachvollziehen: die immer kürzer werdende Frequenz von
+Innovationen, welche die psychologische Obsoleszenz fördern und verkürzte Produktlebenszyklen von
+elektronischen Geräten zur Folge haben. Anhand dieser Entwicklung kann nun aufgezeigt werden, dass
+nicht nur das Smartphone einen Einfluss auf den Lebensstil jedes Einzelnen ausübt, sondern wie die
+individuelle Smartphone-Nutzung weitreichende soziale wie ökologische Auswirkungen mit sich
+bringt. Denn die Herstellung und die Entsorgung von Elektronikgütern sind voraussetzungsvoll wie folgenreich zugleich und sind dem/der KonsumentIn nicht unbedingt gewahr. Im Akt des Konsumierens
+entzieht sich der Gegenstand Smartphone „als“ Gegenstand der Wahrnehmung und wird spätestens
+erst bei seinem Ausfall als Bedingung des eigenen Lebensalltags bewusst. Dem Smartphone, welches
+also selbst eine Ermöglichungsbedingung der modernen Lebensweise darstellt, ist selbst eine materielle Fundierung hintergründig. NutzerInnen ist die Fülle an stofflichen und sozialen Beziehungen oftmals völlig unbekannt. Ein Smartphone wird unter hohen Sozial- wie Umweltkosten sehr energie- wie
+ressourcenaufwändig produziert und benötigt eine sachgerechte Entsorgung. Soll es nachhaltig produziert werden ist es absolut notwendig, die komplexe Wertschöpfungskette zu differenzieren und
+den gesamten Produktlebenszyklus systemisch zu betrachten.
+Trotz seiner handlichen Größe benötigt ein Smartphone eine Vielzahl an Ressourcen für seine Herstellung. Wie allgemein für die Technikgeschichte so kann auch insbesondere in der Entwicklungsgeschichte von Mobiltelefonen, die zugleich eine Geschichte erhöhter Ressourcenintensität ist, eine zunehmende Materialvielfalt konstatiert werden, die in jedem einzelnen Gerät verarbeitet wird. Sinnbildlich mit Schmidt-Bleek gesprochen wird ein Smartphone so bereits in seiner Herstellung mit einem
+überaus gewichtigen ökologischen Rucksack ausgestattet. Die Anzahl der Elemente aus dem Periodensystem, die bei der Produktion eines Mobiltelefons zum Einsatz kommen, nimmt beständig zu (siehe
+Abb.1).
+
+10
+
+2 FAIRPHONE
+
+Abbildung 1: Technologiemetalle
+Quelle: Graedel 2006, National Research Council, US, 2007, S.38
+
+Das generelle Problem bei dieser Entwicklung besteht darin, dass eine Gesellschaft, deren Ökonomie
+in zentralen Bereichen auf ressourcenintensiven Technologien beruht, sich zugleich von diesen abhängig macht. Eine simple (Zu-)Rückentwicklung ist dann sehr unwahrscheinlich. Ein besonders in der aktuellen Debatte um eine zunehmende, den Alltag immer durchdringendere Digitalisierung noch vernachlässigtes Problem ist die dauerhafte, zukünftige wie nachhaltige Befriedigung einer gesteigerten
+Energie- wie Ressourcennachfrage. Konzepte wie Smart Cities und das Internet der Dinge basieren
+wesentlich auf – für den Privathaushalt immer erschwinglichen und „smart“ werdenden – Elektronikgeräten, die aufgrund ihrer singulären Multifunktionalität verdichtete sowie miniaturisierte Ressourcenkomplexe implizieren (Behrendt 2015: 49).
+Allein in den letzten 30 Jahren, in denen besonders vielzählige IKT-Geräte entstanden, wurden insgesamt 80% der in der Menschheitsgeschichte gewonnenen Menge an Platingruppenmetallen, Seltenen
+Erden, Gallium, Indium und Rhenium abgebaut. Enthielt ein Mikroprozessor in den 1980er-Jahren noch
+zwölf Elemente, sind es heute über sechzig. Zwar stecken in Mobiltelefonen lediglich nur wenige Milligramm an Gold, Silber und Palladium. Die weltweite Masse verkaufter Mobiltelefone ergibt jedoch
+eine große Menge an Rohstoffen (Behrendt 2015: 47).
+Ein Mobiltelefon benötigt eine Vielzahl an Funktionsmaterialien. Zwar ist die Materialzusammensetzung eines Mobiltelefons unterschiedlich, es besteht jedoch „chemischen Elementen und zu etwa 50%
+aus Kunststoffen wie Polyphenylensulfid (PPS), Polycarbonate/ Acrylnitril-Butadien-Styrol (ABS-PC)
+und Epoxidharz; außerdem aus Flammschutzmittel, Glas und Keramik“ (Dießenbacher/ Reller 2016:
+276f.). Zu etwa 40% besteht ein durchschnittliches Smartphone aus Metallen (van der Velden 2016:
+156). Eine solche Vielzahl an Ressourcen benötigt gleichsam eine Vielzahl an Orten, an denen diese
+
+11
+
+2 FAIRPHONE
+
+extrahiert werden können, womit strukturell eine sehr komplexe und vor allem globale Wertschöpfungskette entsteht. So beziehen „Markenhersteller in der Regel von hunderten Zulieferern, die selbst
+wiederum von etlichen Zulieferern versorgt werden“ (Dießenbacher/ Reller 2016: 276).
+Für die technische Funktionalität eines einzigen Mobiltelefons sind etwa 30 Metalle (vor allem Kupfer
+und Eisen, aber auch Aluminium, Nickel, Zinn, Palladium, Coltan, Tantal, Indium, Wolfram, Silber und
+Gold) wichtig3 (Dießenbacher/ Reller 2016: 277; Walker 2015: 1). Für die Herstellung von Smartphones
+werden daher in Minen – zumeist in afrikanischen, asiatischen und südamerikanischen Ländern – metallische Rohstoffe abgebaut. Diese Mineralien zu extrahieren und zu verarbeiten verbraucht nicht nur
+Energie, erzeugt CO2-Emissionen und trägt zur Wasser- wie zur Bodenverschmutzung bei, sondern
+birgt auch toxische Gefahren für die Umwelt sowie für die Gesundheit (z.B. der MinenarbeiterInnen;
+vgl. van der Velden 2016: 156). Des Weiteren trägt der Bergbau je nach Gewinnungsstadium zu Umweltveränderungen und zu Umweltverschmutzung gerade in den umliegenden Gebieten bei (siehe Tabelle 1).
+Das Ende des Produktlebenszyklus eines Smartphones ist höchstens bei einzelnen seiner RohstoffKomponenten zirkulär gestaltet. Das Problem ist grundsätzlich, dass die extrahierten Rohstoffe in
+elektronischen Geräten für eine Wiederverwendung ungenutzt bleiben. Bei Mobiltelefonen liegt dies
+oft daran, dass eine Mehrzahl alter Geräte in den Schubladen ihrer NutzerInnen immobilisiert4 oder
+unsachgemäß entsorgt werden, sodass diese auf der Müllhalde oder gar beim illegalen „Hinterhof“Recycling in Schwellenländern landen, was dort schwere negative ökologische Auswirkungen hat. Toxisch wirkende Metalle, chemische Stoffe und Plastik verteilen sich in der Biosphäre und sind dann
+nicht mehr rückholbar (vgl. Dießenbacher/ Reller 2016: 280f.; Velmurugan 2017: 193, 204). Durch die
+nicht sachgemäße Entsorgung von elektronischen Geräten besteht daher ein hohes Dissipationsrisiko
+(Feinverteilung) der verbauten Metalle und anderer Stoffe. In einer längeren Zukunftsperspektive lässt
+sich Dissipation als eine „Umschichtung der Sphären“ begreifen. Denn die ehemals in der Geosphäre
+gebündelten Mineralien werden in der Techno- und Biosphäre verteilt (vgl. Dießenbacher/ Reller 2016:
+277f.). Auch wenn nur geringe Mengen an Wertstoffen in einzelnen Geräten vorzufinden sind, so ist
+es jedoch die immense Stückzahl, die besonders Mobiltelefone und ihren massenhaften Bedarf an
+Technologiemetallen5 zu einem relevanten Dissipationsfaktor macht.
+
+Tabelle 1: Umweltauswirkungen beim Bergbau
+Gewinnungsstadium
+
+Mögliche Umweltauswirkungen
+
+Gewinnung
+
+Zerstörung von Habitaten, menschlichen Siedlungen und anderen Landschaftselementen (Tagebau)
+
+des
+
+Absenkungsphänomene (Untertagebau)
+
+–––
+3
+
+Je nach Funktion können bestimmte Teile mit anderen substituiert werden. Beispielsweise kann Tantal, welches durch die
+Bedingungen seines Abbaus als eine „Konfliktressource“ medial problematisiert wurde und in der Mikroelektronik für sehr
+kleine Kondensatoren mit hoher Kapazität verwendet wird, durch das Mischoxid Bariumtitanat (BaTiO3) ersetzt werden
+(Dießenbacher/ Reller 2016: 277).
+
+4
+
+Eine Umfrage des Hightechverbands Bitkom ergab, dass 84% der Bundesbürger mindestens ein altes Gerät zuhause aufbewahren. Knapp 50% haben bereits einmal ein Mobiltelefon entsorgt (bitkom 2015).
+
+5
+
+„Technologiemetalle, auch wirtschaftsstrategische oder Funktionsmetalle genannt, umfassen die Gruppe der Edel- und Sondermetalle, die aufgrund ihrer Eigenschaften für viele technologische Anwendungen relevant sind, vor allem auch in den
+modernen Energietechnologien“ (Dießenbacher/ Reller 2016: 277).
+
+12
+
+2 FAIRPHONE
+
+Erzes
+
+Zunahme der Erosion
+Verschlammung von Seen und Fließgewässern
+Erzeugung von Abraum bei hohem Energieaufwand
+Versauerung von Seen, Fließgewässern und Grundwasser (wenn Erz oder Abraum
+Schwefelverbindungen enthält) sowie Kontaminationen durch Schwermetalle
+
+Anreicherung
+des
+Erzes
+
+Erzeugung von Erzabraum
+Kontaminationen (Erzabfälle enthalten oft Rückstände der zur Anreicherung verwendeten Chemikalien)
+Versauerung von Seen, Fließgewässern und Grundwasser
+Luftverschmutzung (die Emissionen können Schwefeldioxid, Arsen, Blei, Cadmium
+und andere toxische Stoffe enthalten)
+
+Verhüttung
+
+Erzeugung von toxischen Schlacken
+Hoher Energieaufwand (die meiste von der Bergbauindustrie verbrauchte Energie
+geht in die Verhüttung)
+
+Quelle: Dießenbacher/ Reller 2016, S. 280
+
+Am Ende des Produktlebenszyklus fehlt also ein systematisch angelegter Wertschöpfungskreislauf,
+durch den Smartphones in einer Nachnutzungsphase als Sekundärrohstoffquelle erschlossen werden.6
+Eine solche Erschließung ist besonders interessant, weil Metalle die Eigenschaft haben, unendlich oft
+wiederverwertet werden zu können. Durch hochwertiges Recycling könnten so Versorgungsengpässe
+europäischer Länder und somit ein Rohstoffimportrisiko reduziert werden. Beim „Urban Mining“ beispielsweise können mit einer mindestens 50 prozentigen Energie-Einsparung gegenüber dem konventionellen Bergbau sowie einer höheren Rückgewinnungsrate Rohstoffe aus alten Mobiltelefonen bezogen werden (van der Velden 2016: 157). Ein Grund für das ungenutzte Potential von Sekundärrohstoffen besteht derzeit noch darin, dass es keine getrennte Erfassung eines großen Teils der Altgeräte
+gibt. Schätzungseise werden weltweit nur etwa 1% und 2,5 bis 5% aller Mobiltelefone in industrialisierten Ländern in Edelmetallraffinerien zur Wiedergewinnung von Edel- und Sondermetallen genutzt
+(Dießenbacher/Reller 2016: 277f.; van der Velden 2016: 157). In Deutschland wurden 2007 fünfmal
+mehr Handys über den Restmüll entsorgt als in der getrennten Erfassung in Kommunen oder durch
+den Hersteller gesammelt. Die Goldausbeute liegt hierbei lediglich bei 25%. Palladium und Sondermetalle gehen komplett verloren (Dießenbacher/ Reller 2016: 277f.).
+Entlang des gesamten Wertschöpfungsprozesses bzw. des gesamten Lebenszyklusses eines Smartphones, der in die vier Phasen a) Ressourcenextraktion, b) Produktion/Fabrikation, c) Nutzung und d) Produktlebensende (Entsorgung, (Wieder-)Verwertung/-Verwendung) eingeteilt werden kann, können
+negative, soziale wie ökologische Effekte entstehen. Um diesen Effekten zu entgegnen muss ein Elektronikprodukt wie das Smartphone, soll es nachhaltig gestaltet sein, konzeptionell demnach notwendig
+–––
+6
+
+Dass durch die systematische Erschließung von nicht mehr genutzten Mobiltelefonen eine Menge Rohstoffe erschlossen
+werden können, zeigt sich exemplarisch am Rohstoff Gold: „Die Gold-Konzentration in einer Tonne gebrauchter Handys ist
+etwa 50mal so hoch wie die einer Tonne Golderz aus einer südafrikanischen Mine“ (Dießenbacher/ Reller 2016: 278).
+
+13
+
+2 FAIRPHONE
+
+in einem global verstreuten, breiten stofflich-technisch-sozial-ökologischen Zusammenhang verstanden werden. Das Sozialunternehmen Fairphone ist ein Smartphone-Hersteller, der es sich zur Aufgabe
+gemacht hat, ein faires wie nachhaltiges Smartphone zu produzieren. Dabei vollzieht Fairphone die
+gesamte Biographie seines Produktes7 nach und reagiert damit auf Defizite in der Vornutzungs-, in der
+Nutzung-, wie in der Nachnutzungsphase eines Smartphones mit Maßnahmen, die im Folgenden erläutert werden (Schischke 2016: 21; van der Velden 2014: 6).
+
+2.2
+
+Veränderungsidee
+
+Die Idee sowie das Ziel von Fairphone ist es, nicht nur Aufmerksamkeit für die weitreichenden Folgen
+der Herstellung und Entsorgung von Elektronikgütern, insbesondere von Smartphones zu erzeugen,
+sondern zugleich in der Mobiltelefon-Branche direkt wirtschaftlich mitzuwirken, indem mit einem eigenen Smartphone eine nachhaltige Alternative angeboten wird. Ein weiterer Zweck von Fairphone
+besteht deshalb darin, vorbildhaft einen sozial-ökologischen Gestaltungsraum im Bereich der Wirtschaft und insbesondere dem der Elektronikbranche aufzuzeigen: „The Fairphone project is about designing an alternative vision of technology, of working towards a fair and sustainable future in today's
+unsustainable economic system“ (van der Velden 2014: 11). Aufgrund der sehr komplexen globalen
+Wertschöpfungsketten verfolgt Fairphone damit ein äußerst ambitioniertes Anliegen.
+Bereits mit seinem Namen hebt das Unternehmen Fairphone mit seinem gleichnamigen Produkt eine
+Wertehaltung hervor, die als Grundprinzip sein wirtschaftliches Handeln ausrichtet. Denn das Fairphone soll ein „faires“ Produkt sein, das zunächst nicht vordergründig auf Profit abzielt, sondern sich
+für verbesserte Arbeitsbedingungen und Umweltschutz einsetzt. Fairphone kann daher der FairtradeBranche zugeordnet werden, die sich weltweit mit einem Umsatz von etwa fünf Milliarden Euro (Stand
+2012) mittlerweile als ein gewichtiger Wirtschaftszweig etabliert hat (Dießenbacher/ Reller 2016:
+269).8 Besonders am Fairphone ist, dass es in den Bereich „fairer“ Elektronik fällt. Speziell in der Mobilfunk-Branche sind „faire“ Kennzeichnungen noch eher untypisch. Dies kann unter anderem darauf
+zurückgeführt werden, dass die Herstellung von Smartphones in überaus komplexen, globalen Wertschöpfungsprozessen vollzogen wird, in denen Verantwortlichkeiten im hohen Grade verteilt, nicht
+genügend standardisiert und transparent, daher eher selten vollends nachvollziehbar und so wenig
+kontrollierbar sind. Fairphone will dies ändern. Dafür bietet das Unternehmen ein Smartphone auf
+dem Mobiltelefon-Markt an, welches durch sein modulares Design die Lebensdauer eines Smartphones zu verlängern intendiert, indem dieses einfacher zu reparieren und zu recyceln, und somit letztlich
+auch energie- und ressourceneffizienter ist. Neue Impluse bietet das Fairphone jedoch nicht nur durch
+das nachhaltige, auf Langlebigkeit des Produktes ausgelegte Design seines Smartphones, sondern
+ebenso durch das Experimentieren mit einem neuen Geschäftsmodell, das sich wesentlich an den Prinzipen der Transparenz und Partizipation ausrichtet.
+
+–––
+7
+
+Vgl. hierzu die veröffentliche Karte der Lieferketten, mit welcher die Entstehung des Fairphones nachverfolgt werden kann.
+Verfügbar unter https://www.fairphone.com/en/how-we-work/mapping-phone-made/, zuletzt geprüft am 18.07.2017.
+
+8
+
+Klärenderweise muss hier festgehalten werden, dass das Fairphone als ganzes Gerät selbst keine „Fairtrade-Marke“ trägt.
+Lediglich das Gold wird „fair“ bezogen (vgl. van der Velden 2016: 157). Die Zuordnung wurde hier aufgrund der ideologischen Gemeinsamkeit der Grundwerte vorgenommen.
+
+14
+
+2 FAIRPHONE
+
+2.3
+
+Transformationsprozess
+
+In Form und Design den Geräten marktdominierender Smartphone-Hersteller nicht unähnlich, unterscheidet sich das Fairphone von diesen jedoch nicht nur hinsichtlich seiner technischen Details, sondern auch in symbolischer wie ethischer Hinsicht. Diese Differenz wird bereits mit der Selbstbeschreibung betont, in der das Fairphone verstanden werden soll als „a seriously cool smartphone putting
+social values first“.9 Fairphone begann jedoch nicht als Smartphone-Hersteller, sondern aus der Zusammenarbeit von ActionAid Niederlande, Schrijf-Schrijf und der niederländischen Waag Society heraus – einem „Institute for art, science and technology“, das kreative Technologien für soziale Innovationen entwickelt. 2010 wurde zunächst eine Aufklärungskampagne namens „Fairphone“ initiiert, mit
+der der sozio-politische Zusammenhang von sogenannten „Konfliktmineralien“ bzw. „-stoffen“ in den
+Wertschöpfungsketten von elektronischen Produkten in die öffentliche Wahrnehmung hineingetragen
+werden sollte10 (Dießenbacher/Reller 2016: 286; Leonhardt/ DUH 2015: 2; SÜDWIND 2012: 3;
+Schischke 2016: 9; van der Velden 2014: 5f.). Als „Konfliktstoffe“ oder „Konfliktressourcen“ werden
+„Ressourcen bezeichnet, die aus Konfliktregionen stammen und deren Handel zur Finanzierung gewaltsamer Konflikte beiträgt“ (Dießenbacher/ Reller 2016: 270).11 Der Begriff „Konfliktmineral“ (conflict mineral), welcher durch geologische Prozesse gebildete Elemente oder chemische Verbindungen
+(z.B. Erze oder Mineralien wie Diamanten) adressiert, spezifiziert demnach den Begriff der „Konfliktressource“ (Dießenbacher/ Reller 2016: 282).
+Durch seine Kritik an den sozial-ökologischen Auswirkungen der Herstellungsbedingungen in der Elektronik-Branche lenkt Fairphone die Aufmerksamkeit auf die Verstrickungen von Stoff- und Sozialgeschichte. Beide entwickeln sich in der Geschichte materieller Kultur im Verhältnis zueinander. Fairphone informiert in seiner Unternehmenspraxis einerseits die VerbraucherInnen über diese Bedingungen. Gleichzeitig fordert das Unternehmen eine höhere Rohstofftransparenz sowie eine nachhaltigere
+Produktionsweise seitens der Industrie, ebenso wie eine schärfere Regulierung von den Regierungen
+ein. Zertifizierungsinitiativen und Nachverfolgungssysteme können die Transformation der Herstellungsbedingungen der Elektronikbranche unterstützen.
+Das Engagement an der Debatte zu den Herstellungsbedingungen von elektronischen Produkten führt
+die Kampagnenführer sodann zu der Entscheidung, selbst Hersteller eines „fairen“ Smartphones zu
+werden. Bas van Abel gründet 2013 das Sozialunternehmen Fairphone mit dem Ziel, Smartphones mit
+konfliktfreien Rohstoffen unter fairen Arbeitsbedingungen herzustellen. Zugestanden mutet dieser
+Schritt zunächst paradox an. Denn wie kann ein Unternehmen zugleich den ressourcenintensiven Lebensstil in westlich geprägten Ländern hinterfragen und als Lösung ein weiteres elektronisches Produkt auf dem Markt bringen? Für Abel war dies der entscheidende Schritt von der Generierung von
+Aufmerksamkeit für ein systemisches Problem mittels Kampagnen hin zu einem direkten Mitwirken an
+–––
+9
+
+https://waag.org/sites/waag/files/public/Publicaties/fairphone.pdf, zuletzt geprüft am 16.07.2017.
+
+10
+
+Die sozio-politische Bedeutung von metallischen Rohstoffen für die Kommunikations- und Unterhaltungselektronik fand besonders mit dem Begriff „Bluthandys“ einen markanten Ausdruck (Dießenbacher/ Reller 2016: 270).
+
+11
+
+Einen wesentlichen Anlass zur Problematisierung von Konfliktmineralien bildete vor allem die Finanzierung von bewaffneten
+Gruppen im Zweiten Kongo-Krieg (1998-2003) durch den Abbau und Handel mit Coltan und anderen für Elektronikgeräte
+benötigten Erze. Coltan beispielsweise ist ein Erz, das zur Gewinnung des Metalls Tantal gebraucht wird, welches wiederum
+für kleinere Kondensatoren mit großer Kapazität verwendet wird. Diese Kondensatoren stellen wiederum einen wichtigen
+Bestandteil in Mikroelektronik und somit in Smartphones dar (Dießenbacher/ Reller 2016: 270). Im Jahr 2008 wurde der
+Anteil der Demokratischen Republik Kongo an der weltweiten Mineralienproduktion allein bei Zinn zwischen 6-8%, bei
+Tantal zwischen 15-20%, bei Wolfram zwischen 2-4% und bei Gold unter 1% geschätzt (Airike et al. 2016: 643).
+
+15
+
+2 FAIRPHONE
+
+systemimmanenten Veränderungsprozessen in der Ökonomie selbst: „Wir haben ein kommerzielles
+Modell gewählt, um die kommerzielle Welt zu ändern“ (van Abel zit. nach Dießenbacher/Reller 2016:
+286). Mit einem Blick auf die Selbstbeschreibung des Unternehmens wird deutlich, dass dem Unternehmen nicht primär am Verkauf von Smartphones gelegen ist, sondern an der paradigmatischen
+Wende der Herstellungs- und Gebrauchsweisen dieser Geräte.
+Actually, Fairphone is not about the phone itself. We decided to focus on phones, because they are a ubiquitous product that nearly everyone owns or uses. The Fairphone
+itself serves to start a conversation about opening up supply chains and a storytelling
+object to help consumers gain more awareness about the social and environmental impacts of the electronics they purchase
+(Fairphone zit nach. Dießenbacher/Reller 2016: 286).
+Für seine Gründung 2013 erhielt Fairphone von der Waag Society und anderen Geldgebern eine Anschubfinanzierung. Diese wurde mit einem Crowdfunding ergänzt (Bergeman 2015: 4). Das Unternehmen brachte sein Produkt jedoch nicht auf gängigem Wege auf dem Markt, sondern zunächst eher
+„unter die Leute“. Im Internet wurden im Frühjahr 2013 Bestellungen für ein faires Smartphone aufgenommen. Weder sein Design noch seine Leistungsfähigkeit waren zu diesem Zeitpunkt bekannt. Mit
+diesem Vertrauensvorschuss wurden dann im Januar 2014 25.000 Modelle des ersten Fairphones an
+die ersten KundenIinnen ausgeliefert (Dießenbacher/Reller 2016: 287). Obwohl mit Gründung das eigentliche Produkt noch ungewiss war, betonte Fairphone von Beginn an die Transparenz, die Prozesshaftigkeit und die eigentliche Herausforderung der Herstellung eines nachhaltigen Smartphones, der
+sich nur sukzessive und in einem offenen Prozess für Veränderungen angenähert werden kann.
+Zwischen Dezember 2013 und Februar 2015 wurden von Fairphone 60.000 Smartphones der ersten
+Generation ausgeliefert (Walker 2015: 2). Bereits im Frühjahr 2014 verkündete Fairphone, 35.000
+Exemplare der zweiten Generation, des Fairphone 2, zu produzieren (vgl. Dießenbacher/Reller 2016:
+287). Anhand der Produktveränderungen von Fairphone 1 zu Fairphone 2 lässt sich ein Wechsel innerhalb des Unternehmens Fairphone ausmachen, der an seinem Nachhaltigkeitsverständnis nachvollzogen werden kann. Galt das Fairphone erster Generation mit einem Verkaufspreis von 325,- € als ein
+Mittelklasse-Handy, so soll das Fairphone der zweiten Generation mit 525,- € ein nachhaltiges HighEnd-Gerät sein, was sich im Preis wiederspiegelt (Walker 2015: 2). Ging es bei der Herstellung des
+Fairphone 1 mit Referenz auf die Debatte um Konfliktressourcen noch eher darum, vordergründig verbesserte Arbeitsbedingungen entlang einer als sozial „fair“ gestalteten Wertschöpfungskette zu erzielen, so wird beim Fairphone 2 mit seiner modularen Bauweise vor allem die Langlebigkeit des Produkts
+betont (van der Velden 2014: 6f.). Als Indikator hierfür kann ein semantischer Wechsel in den Selbstbeschreibungen festgehalten werden. Wurde das Fairphone zunächst als ein „smartphone putting
+social values first“12 dargestellt, so gilt das Fairphone 2 als „the modular phone that’s built to last“.13
+Es wäre sicherlich verkürzt zu konstatieren, dass sich zwischen dem Fairphone der ersten und der zweiten Generation ein radikaler Wandel von einem Verständnis sozialer hinzu einer ökologischen Nachhaltigkeit vollzog. Die Verbesserung von Arbeitsbedingungen stellt unverändert ein starkes Anliegen
+
+–––
+12
+
+https://waag.org/sites/waag/files/public/Publicaties/fairphone.pdf, zuletzt geprüft am 16.07.2017.
+
+13
+
+Verfügbar unter https://www.fairphone.com/en/, zuletzt geprüft am 16.07.2017.
+
+16
+
+2 FAIRPHONE
+
+von Fairphone dar. Fairphone bringt diese beiden Aspekte auf seiner Online-Startseite wie folgt einvernehmlich zusammen: „We’ve created the world’s first ethical, modular smartphone. You shouldn’t
+have to choose between a great phone and a fair supply chain“ (ebd.). Das Design des Fairphone 2
+geht daher nicht mit einer Entweder-Oder-Entscheidung zwischen sozialen und ökologischen Belangen
+einher. Es ist vielmehr mit einer Erweiterung des Nachhaltigkeitsbegriffes verbunden, mit welcher Fairphone sich neue unternehmerische Gestaltungsräume eröffnet. Diese finden sich auch in den von der
+UN verabschiedeten Sustainable Development Goals (SDGs) wieder.
+Im Folgenden werden drei wesentliche Prinzipen erläutert, mit denen Fairphone nicht nur sein Verständnis von Nachhaltigkeit konstituiert, sondern welche zugleich Wege für ein nachhaltiges Wirtschaften und zu einer Green Economy aufzeigen. Diese Prinzipien sind: Transparenz, Langlebigkeit
+(durch Modularität, Reparier- wie Recyclingsfähigkeit) und Partizipation.
+Sicherlich den Umständen seiner Entstehung zu verdanken, als „Fairphone“ noch im politischen Aufklärungsgeiste der Projektname einer Aufmerksamkeitskampagne war, bleibt das Prinzip der Transparenz bis heute erhalten. Auch wenn mit der Gründung eines Unternehmens die politische Strategie
+wechselte, charakterisiert Transparenz die gesamte Arbeitsweise des Unternehmens. Ziel ist es, mit
+der Offenlegung aller Prozesse KundInnen bestmöglich über das Produkt und seine Entstehung zu informieren und sie so zu besseren Konsum-Entscheidungen zu befähigen.
+Transparency is how we work. We want to close the gap between people and their products. Information is empowering which is why we share our story – every step of the
+way. By knowing exactly where stuff comes from and how it’s made, you can make
+informed decisions about what you buy.14
+Da Transparenz als allumfassender Wert die gesamten Abläufe des Unternehmens durchwirkt, bemüht
+sich Fairphone in unterschiedlichen Formaten eine vollkommene Einsicht in den Wertschöpfungsprozess zu gewähren (Leonhardt 2014: 2; Schischke 2016: 22). Zum einen werden die Arbeitsbedingungen
+der MinenarbeiterInnen in den Abbaugebieten, oder der Arbeiterinnen und Arbeitern in den Herstellungsbetrieben, offengelegt. Zum anderen können die Stoffströme entlang einer digitalen Lieferkette
+nachvollzogen werden.15 Ebenfalls veröffentlicht Fairphone eine Liste seiner Zulieferer (Fairphone
+2016). Diese visuelle Form der Ressourcentransparenz wird durch Zertifizierungen und entwickelte
+Nachverfolgungssysteme gewährleistet. Ebenfalls werden Informationen über die Auswahlverfahren
+der Produktionspartner sowie über die Gehälter veröffentlicht (van der Velden 2014: 7). Des Weiteren
+wird die Kostenaufschlüsselung des Fairphone erster wie zweiter Generation online bereitgestellt
+(siehe Abb. 3 und Abb. 4 im Anhang) (Walker 2015: 6).
+Transparenz besteht nicht nur hinsichtlich der technischen Daten, sondern auch der Software. Im Sinne
+von Open Source ist es möglich, neben dem auf Google basierenden Android-Betriebssystem Fairphone OS zu verwenden. Hiermit kann die Fairphone-Community ihr eigenes Betriebssystem programmieren.16 Dieser Community wird ebenfalls ein Blog auf der Internetseite von Fairphone für weitere
+Informationen angeboten, über den das Unternehmen – zugänglich und erreichbar für Fragen – eine
+–––
+14
+
+Verfügbar unter https://www.fairphone.com/en/how-we-work/, zuletzt geprüft am 18.07.2017.
+
+15
+
+Eine interaktive Karte der Lieferkette des Fairphone 2 ist verfügbar unter https://www.fairphone.com/en/how-wework/mapping-phone-made/, zuletzt geprüft am 18.07.2017.
+
+16
+
+Vgl. hierzu https://www.fairphone.com/en/2015/09/23/opening-up-fairphone-to-the-community-open-source-fairphone2/, zuletzt geprüft am 18.07.2017.
+
+17
+
+2 FAIRPHONE
+
+offene Kommunikationskultur betreibt.17 Neben dem Blog will Fairphone mit verschiedenen SocialMedia-Plattformen, Events18 und einem gesondert bereitgestellten Forum19 die Interaktion in der Fairphone-Community verstärken.20 Zuletzt ist Fairphone kein anonymes Unternehmen, dessen Mitarbeiter – wie es vielleicht bei größeren Unternehmen oftmals anmutet – so unbekannt wie austauschbar
+erscheinen, was jedoch vermutlich auch noch mit der Größe des Unternehmens selbst zusammenhängen dürfte.21
+Die von Fairphone praktizierte Transparenz zeigt vorbildhaft ein Potential für die Gestaltung einer
+Transformation hin zu einer Green Economy auf. Denn werden wirtschaftliche Prozesse öffentlich
+sichtbar gemacht, so werden sie zugleich geöffnet für neue Einsichten, da in ihrer Offenlegung eine
+grundsätzliche Bedingung dafür besteht, Probleme erkennen und verorten zu können. Unzweifelhaft
+stellt Transparenz letztlich einen Wert dar, an dem neue Formate kollaborativen Wirtschaftens sich
+Grund wie Orientierung zu geben vermögen, wie es Fairphone schließlich mit seinen Partnerschaften
+und der Teilnahme an verschiedenen Initiativen vorführt (siehe Kap. 3.4).
+Die Transparenz auf der Ebene der Unternehmensprozesse von Fairphone findet sich auch auf der
+Produktebene wieder. Dies lässt sich bereits den Bestrebungen für das Design entnehmen (siehe Abb.
+2). Alle Interessengruppen (stakeholder) sollen am Designprozess Beteiligung finden – von den NutzerInnen über die Zulieferer bis hin zu den FabrikarbeiterInnen. Neben dem weiter unten ausgiebiger
+thematisierten Aspekt der Partizipation, der sich
+aus dem Prinzip der Transparenz ergibt sowie dieses noch einmal verstärkt manifestiert, geht es Fairphone beim Design seines Smartphones in zweiter
+Generation vor allem um eine erweiterte Langlebigkeit.22 Zum einen soll dies erreicht werden, indem
+sich die Lebensspanne aufgrund der verbesserten
+Robustheit verlängert. Die Lebenserwartung des
+Fairphone 2 wird zwischen zwei und fünf Jahre geschätzt (van der Velden 2016: 157, 160).
+Doch so sehr auch die technische Fehleranfälligkeit
+im Design zu mindern versucht wird, so können
+Abbildung 2: Fairphone's ambitions for design
+wohl kaum alle Nutzungs- und somit RisikoszenaDesignambitionen von Fairphone
+rien antizipiert werden. Ein Weg, um möglichen
+Quelle: van der Velden 2016, S. 157
+Dysfunktionalitäten vorzubeugen und die Lebensdauer zu verlängern ist es jedoch, die Reparaturfähigkeit eines Gerätes zu verbessern, damit dieses
+Abbildung 1: Fairphone's ambitions for design
+
+Designambitionen von Fairphone
+–––
+17
+
+Vgl. hierzu https://www.fairphone.com/en/blog/, zuletzt geprüft am 18.07.2017.
+
+18
+
+Vgl. hierzu https://www.fairphone.com/en/community/events/, zuletzt geprüft am 18.07.2017.
+
+19
+
+Vgl. hierzu https://forum.fairphone.com/, zuletzt geprüft am 18.07.2017.
+
+20
+
+Vgl. hierzu https://www.fairphone.com/en/community/, zuletzt geprüft am 18.07.2017.
+
+21
+
+Vgl. hierzu https://www.fairphone.com/en/team/, zuletzt geprüft am 18.07.2017.
+
+22
+
+https://www.fairphone.com/en/our-goals/design/, zuletzt geprüft am 18.07.2017.
+
+18
+
+2 FAIRPHONE
+
+nicht in Gänze ausgetauscht bzw. entsorgt werden muss. Der Schlüssel für solch ein präventives Design23 ist „Modularität“ (Schischke 2016: 13ff.). Ein modulares Design eines elektronischen Produktes
+erlaubt es, einzelne Komponenten auszutauschen bzw. diese im Falle einer (Selbst)Reparatur einfacher
+zugänglich zu machen (Schischke 2016: 17; Walker 2015: 5). Das Fairphone 2 war bei seinem Erscheinen das erste modulare Mobiltelefon auf dem Markt.24 Im Gegensatz zum iPhone, dessen Komponenten miteinander verklebt sind, oder für dessen Öffnung spezielles Werkzeug erforderlich ist, möchte
+das modulare Design Reparaturen prinzipiell ermöglichen – und dies ohne dafür spezielles Wissen und
+Werkzeug vorauszusetzen. Um einer Software bedingten Obsoleszenz vorzubeugen, wurden Hard- wie
+Software „open source“ konzipiert und erlauben es Anderen, das Betriebssystem zu „rooten“ (ohne
+Garantieverlust), weiterzuentwickeln und die Hardware zu erweitern (Schischke 2016: 16; van der Velden 2016: 157, 160). So werden auch Upgrades möglich. Mit der Devise „Reparieren statt Wegwerfen“
+nimmt Fairphone im Smartphone-Bereich eine Vorreiterrolle ein und möchte mit Aufmunterungen wie
+„Yes, you can repair it yourself“ eine Kultur der Selbstbastler stärken. Diese können über Fairphone
+Ersatzteile zu sehr moderaten Preisen beziehen.25 Für Einsteiger und Unbeholfene stellt Fairphone (unter anderem in Partnerschaft mit iFixit.com) kostenlos Anleitungen für die Reparatur und den Austausch, für die Software-Installation und für Updates zur Verfügung.26 Bei weiteren Unsicherheiten
+kann jederzeit auch ein ausgedehnter Support in Anspruch genommen werden.27
+Das Fairphone 2 ist jedoch nicht nur ein nachhaltiges Smartphone, weil Fairphone sehr günstige Bedingungen für seine Reparatur fördert. Fairphone setzt sich ebenfalls für verbesserte Bedingungen im
+Recycling ein.28 Zunächst geschieht dies, indem Fairphone mit bestimmten „Verhinderungsstrategien“
+die Entsorgungsproblematik gar nicht erst entstehen lässt: Wer ein Fairphone bestellt, der wird dieses
+– wenn nicht ausdrücklich anders gewünscht – ohne Ladegeräte und sonstige Kabel erhalten. Üblicherweise liegen diese bei einem Versand von Smartphones bei, was unter anderem daran liegt, dass die
+Kabel produktspezifisch konzipiert sind. Fairphone hingegen verwendet standardisierte Stecker, die
+KundInnen oftmals bereits besitzen. Auch die Verpackung ist reduziert und nachhaltig gestaltet. Die
+Rückscheibe des Fairphones dient zugleich als Schutzumhüllung, womit kein zusätzlicher Schutz notwendig wird und Material gespart werden kann. Das Plastikgehäuse besteht zudem aus 65% recyceltem Plastik (van der Velden 2016: 157f.). Durch die Dual-SIM-Funktion wird verhindert, dass eine Person sich zwei Mobiltelefone zulegen muss, um für berufliche sowie für freizeitliche Kontakte zugleich
+erreichbar sein zu können (Schischke et al. 2016: 14; van der Velden 2014: 9). Des Weiteren unterstützt
+–––
+23
+
+Die im Folgenden ausgeführte Modularität als strategisches Prinzip für ein nachhaltiges Design wird besonders mit dem
+Hintergrund bedeutsam, dass etwa 80% der Umwelteinflüsse eines Produktes in der Designphase determiniert werden,
+weil in dieser Phase Merkmale und Kosten eines Produkts festgelegt werden. Design stellt also nicht nur einen ökonomischen Kostenfaktor, sondern ebenso ein wesentliches Moment für Umwelteinflüsse dar. Besonders Ansätze, die den gesamten Lebenszyklus in ihre Konzepte integrieren, lassen Design zu einem bedeutsamen Regulativ werden (van der Velden
+2016: 152).
+
+24
+
+Kurz verwiesen sei hier auf den gescheiterten Versuch von Google, ebenfalls ein auf Modularität aufbauendes Mobiltelefon,
+das Google Ara, zu vertreiben. Ein Grund seines Scheitern könnte sein, dass die Funktion der Modularität von Google Ara
+lediglich auf die Individualisieurng des Gerätes abzielte und weniger auf ein nachhaltiges Design. Vgl. https://www.golem.de/news/project-ara-google-bestaetigt-das-ende-des-modularen-smartphones-1609-123080.html, zuletzt geprüft
+am 19.07.2017.
+
+25
+
+https://shop.fairphone.com/en/spare-parts/, zuletzt geprüft am 18.07.2017.
+
+26
+
+https://support.fairphone.com/hc/en-us/articles/115001846846-How-to-replace-a-Fairphone-2-module, zuletzt geprüft
+am 18.07.2017.
+
+27
+
+https://support.fairphone.com/hc/en-us, zuletzt geprüft am 18.07.2017.
+
+28
+
+https://www.fairphone.com/en/our-goals/recycling/, zuletzt geprüft am 18.07.2017.
+
+19
+
+2 FAIRPHONE
+
+Fairphone KonsumentInnen darin, ihre Smartphones sachgerecht zu recyceln.29 Mit dem Motto „Reuse
+and recycling starts with you!“ und einem beigefügten Erklärvideo werden KonsumentInnen auf der
+Fairphone-Seite aufgefordert, sich an einem speziellen Recycling-Programm zu beteiligen (Schischke
+2016: 21).30 In einer Partnerschaft mit Closing the Loop31 sammelt Fairphone alte Mobiltelefone in
+Ghana, Nigeria, Kamerun, Ruanda und Uganda ein, um sie (zurück) nach Belgien zum Recycling zu schiffen (Walker 2015: 5). Es wird versucht, die im Sinne des Urban-Mining-Konzepts recycelten Materialien, welche aus diesen Geräten gewonnen werden, in der Produktion des Fairphone 2 zu integrieren
+(van der Velden 2016: 158f.).
+Auch wenn Unternehmungen dieser Art richtungsweisend sind, so können sie zwar das Problem nicht
+lösen, dass ein Großteil alter Mobiltelefone – es werden etwa 83 Millionen Handys in deutschen Schubladen vermutet – nicht an den Hersteller zurückgehen, um deren verbaute Rohstoffe rückgewinnen zu
+können. Jedoch können sie weiterhin sukzessive mehr Aufmerksamkeit auf dieses Problem lenken, um
+letztlich der Notwendigkeit gesetzlicher Anreize zuzuspielen. Beispielsweise könnte ein verpflichtendes Pfandsystem für Mobiltelefone und Elektronikprodukte aufgebaut werden.32 Mit einem solchem
+Pfandsystem könnten Unternehmen in der Recyclingbranche Kalkulationen über die zukünftigen Kapazitäten für die Verarbeitung an Elektronikschrott anstellen. Hierdurch kann ein Investitionsanreiz für
+den Bau neuer Anlagen geschaffen werden, mit denen ein großer Teil der für Mobiltelefone relevanten
+Metalle wiedergewonnen werden könnte, für die es bisher noch kein Recycling gibt.
+Das Fehlen notwendiger Anlagen begünstigt im negativen Sinne wiederum die Exporte des in Deutschland anfallenden Elektroschrotts. Für die Export empfangenden Regionen wird angenommen, dass
+dort nur ein kleiner Teil der enthaltenden Metalle wiedergewonnen werden kann und sich die Wiedergewinnung ökologisch verheerend auswirkt (Hütz-Adams 2012: 27).
+Wie in den vorangehenden Abschnitten bereits hervorgehoben wurde, so liegt Fairphone viel daran,
+eine neue Konsumkultur zu etablieren, in der KonsumentInnen zur Mitwirkung und Beteiligung animiert und ermächtigt werden sollen. Dies beginnt beim Design-Prozess, der nicht von wenigen Kreativen vollzogen wird, sondern bei dem alle am Prozess beteiligten Stakeholder (im Sinne eines MultiStakeholder-Ansatzes) zu adressieren sind, um ihnen Partizipation zu ermöglichen. Beim Fairphone 1
+wurde so eine diverse, fachübergreifende Gruppe zusammengebracht, die sich unter anderem aus AktivistInnen, Nicht-Regierungsorganisationen, aus FabrikarbeiterInnen, FabrikbesitzerInnen, BergbauarbeiterInnen, ProgramiererInnen, (Graphik-)DesignerInnen, RechtsexpertInnen, MaterialexpertInnen, Investoren und Telefonanbietern zusammensetzte – nicht zu vergessen die Unterstützerinnen
+und Unterstützer, die im Voraus bezahlt haben, um die erste Generation des Fairphones überhaupt
+
+–––
+29
+
+https://support.fairphone.com/hc/en-us/articles/115002665143-How-can-I-recycle-my-phone-,
+18.07.2017.
+
+zuletzt
+
+geprüft
+
+am
+
+30
+
+https://www.fairphone.com/en/recycling-program/, zuletzt geprüft am 18.07.2017.
+
+31
+
+http://www.closingtheloop.eu/, zuletzt geprüft am 18.07.2017.
+
+32
+
+Ein Pfandsystem würde – ähnlich wie beim Flaschenpfand – einen monetären Anreiz für KonsumentInnen bieten und eine
+Lösung für die Klärung des Besitzverhältnisses bedeuten, die KonsumentInnen beim Kauf eines Smartphones erwerben.
+Denn mit dem Smartphone werden nicht nur seine Funktionen, sondern zugleich auch die sich in diesem befindlichen
+Rohstoffe erworben. Bei einem Einsenden alter Geräte würden sie sodann für den Ressourcenwert ihres Altgeräts ausgezahlt werden.
+
+20
+
+2 FAIRPHONE
+
+produzieren zu können (van der Velden 2014: 7).33 In diesem Sinne kann Fairphone mit seinem „Participatory Design“ verstanden werden „as a case to rethink design as politics“ (van der Velden 2014: 1).
+Diese Art des Designs ist radikal, weil es grundlegend die Weise verändert, wie Produkte „nachhaltig“
+entwickelt, produziert und konsumiert werden. Möglichst viele Menschen darauf aufmerksam zu machen, dass sie erstens selbst IT-NutzerInnen sind, wie sie zweitens mit elektronischen Produkten umgehen, um sie sodann drittens an der Veränderung des allgemeinen Konsumverhaltens partizipieren
+zu lassen - für diesen Weg stellt Fairphone einen paradigmatischen Fall mit „prototypische[m] Wert“
+dar (van der Velden 2014: 2).
+Trotz der attraktiven Potentiale, die in den aufeinander verweisenden und sich gegenseitig bedingenden Prinzipien der Transparenz, Langlebigkeit und Partizipation liegen, kann Fairphone rein formell
+nicht als „a vehicle for change“ genügen, wenn es nicht auch zugleich a „seriously cool smartphone“
+produziert. Denn neben seinen politischen Bestrebungen und innovativen Organisationsstrukturen
+bleibt Fairphone doch wesentlich ein Hersteller von Smartphones, die wie jedes andere Smartphone
+notwendig bestimmte Erwartungen erfüllen müssen, um als Produkt auf dem Markt überhaupt von
+der Käuferschaft akzeptiert zu werden. Am häufigsten wird beim Fairphone das „klobige“ Design und
+die im Vergleich zu anderen Smartphones der gleichen Preisklasse, mindere Leistungsfähigkeit bemängelt. Das kritische Moment von Fairphone ist nach wie vor die Aufgabe, neben dem politischen Engagement ein Produkt anzubieten, das zukünftig und somit „nachhaltig“ auf dem Smartphone-Markt bestehen wird.
+
+2.4
+
+Change Agents und andere Promotoren
+
+Die Bekanntheit des Unternehmens Fairphone wird wohl vor allem durch seine Vorreiterrolle in einer
+kaum als nachhaltig zu charakterisierenden Elektronikbranche verständlich. Durch die geschickte Einbindung der Produktvermarktung in eine sehr medienpräsente, politische Öffentlichkeitsarbeit, durch
+eine transparente Kommunikationskultur, sowie die Verbindung zu zivilgesellschaftlichen Initiativen
+und politischen Organisationen, ist es Fairphone mit seinem Smartphone gelungen, zum wohl wichtigsten, weil medienwirksamsten Change Agent einer Transformation der Elektronikbranche hin zu einer Green Economy zu werden. Mit seinen Bemühungen wurde das Unternehmen somit Initiator, Motivator und Inspirator – ein Impulsgeber für die Möglichkeit, mit den nachhaltigen Prinzipien der Transparenz, Langlebigkeit und Partizipation einem sozial-ökologischen Wirtschaften nachzugehen. Und
+auch wenn es fraglich ist, ob die Aktivitäten von Fairphone weltweit auf Resonanz stoßen, so beeinflusst das Unternehmen mindestens die europäische Debatte über Smartphones.
+Doch selbst wenn Fairphone durch seine ideelle Wirkung selbst zum besten Change Agent seiner eigenen Sache wird, ist es als Unternehmen auf andere Change Agents angewiesen, um perspektivisch
+bestehen zu können. Neben der ständigen Suche nach neuen Investoren und Finanzierungsmodellen
+sind es Vernetzungen, Kollaborationen und Partnerschaften, die schon sehr vielseitig bestehen, jedoch
+noch verstärkt angestrebt werden müssen.
+Der wohl wichtigste Change Agent für eine nachhaltige Elektronikindustrie (zumindest im Bereich der
+Mobiltelefone), um den sich Fairphone seit Beginn mit einer offenen Kommunikationskultur um eine
+–––
+33
+
+Verwiesen sei hier auch auf das „Open Design Bootcamp“, das Fairphone in Amsterdam vom 30. Mai bis zum 01. Juni 2013
+durchführte (Fairphone/ Waag Society 2013).
+
+21
+
+2 FAIRPHONE
+
+feste „Partnerschaft“ bemüht, sind wohl die KonsumentInnen selbst. Wie bereits (im Kap. 3.3) beschrieben geht es Fairphone maßgeblich darum, eine veränderte Erwartungshaltung seitens der KonsumentInnen gegenüber Elektronikprodukten zu etablieren, was sich bis auf die Ebene des Designs
+niederschlägt. Im Sinne einer partizipativen Teilhabe sollen die KundInnen zu Kollaborateuren am Produkt Fairphone und seinem Wertschöpfungsprozess werden, indem sie ihr Smartphone crowd-funden,
+rooten, reparieren, upgraden und somit mitgestalten und designen.
+Das Fairphone erfüllt daher nicht nur die Bedürfnisse seiner KonsumentInnen, sondern fordert zu einer
+bestimmten (Konsum)Haltung auf, indem es seine KundInnen ermächtigt, über ihr erworbenes Produkt in einem weiteren Sinne zu verfügen. KonsumentInnen werden somit zu KritikerInnen, zu SelbstbastlerInnen, zu Helfenden usw. Kurz: Sie werden zu ProsumentInnen, die ihre Geräte reparieren oder
+sich in der (Online-)Community einbringen. Auch wenn Fairphone mit der Bereitstellung von Reparaturanleitungen und Installationshilfen versucht Hemmnisse abzubauen und Einladungen zum Ausprobieren ausspricht, so bleibt die Nutzung des Fairphones für einige sicherlich mit zu vielen Anstrengungen verbunden. Das Fairphone ist somit voraussetzungsvoll: Es verlangt einen anderen Konsumenten:
+den Prosumenten, der sich in einer engagierten Beziehung zu dem von ihm erworbenen Produkt befindet und sich mit diesem identifiziert. Dieses Konsummuster widerspricht damit der gängigen Verbrauchlogik einer beschleunigten Konsum- bzw. Wegwerfgesellschaft.
+Legitimerweise muss also die Frage gestellt werden: Wer kauft und nutzt eigentlich das Fairphone?
+Insbesondere, da es gegenüber anderen Smartphones, die im gleichen Preissegment angeboten werden, an Leistungsfähigkeit und Anfälligkeit nicht mithalten kann? Der Großteil der Fairphone-KundInnen ist wohl eine „Bekennungstäterschaft“, die eher ein vertieftes sozio-politisches Interesse an Nachhaltigkeitsthemen aufweisen und als eher verantwortungsvolle VerbraucherInnen agieren, die mit ihrem Konsum eine – insbesondere symbolische – Selbstwirksamkeit geltend machen. Neben den Prinzipien der Fairness und Nachhaltigkeit schätzen diese KonsumentInnen auch die Freiheit, autonomer
+über ihr Gerät verfügen zu können. Durchschnittliche VerbraucherInnen könnten beim Kauf eines
+Smartphones hingegen eher weniger an sozio-ökologischen Aspekten interessiert sein. Die Wahl der
+Marke ist hier eher durchzogen von Lifestyle-Überlegungen hinsichtlich des Image und des Designs,
+wobei technische Anforderungen vordergründig zu Nachhaltigskeitsüberlegungen in eine Entscheidung hineinspielen. Nicht zuletzt fehlt es den meisten NutzerInnen schlichtweg an genügend Wissen
+über den sozio-ökologischen Aufwand, mit dem Mobiltelefone produziert werden (Hütz-Adams 2012:
+26).
+Neben der besonderen Adressierung der KonsumentInnen bemüht sich Fairphone um Partnerschaften
+und Kollaborationen entlang der Wertschöpfungskette. Beispielsweise hat sich Fairphone der von Motorola angestoßenen Initiative Conflict-Free Tin Initiative (CFTI) und Solutions for Hope (für konfliktfreies Tantal) angeschlossen, um die Situation im Kongo zu verändern (Dießenbacher/ Reller 2016:
+282).
+Ein wichtiger, für Fairphone partnerschaftlicher Akteur ist die Reparaturplattform iFixit, auf der die
+Raparturanleitungen für das Fairphone erstellt und frei zugänglich sind.34 Auf der Software-Ebene sind
+mögliche alternative Betriebssystemlösungen wie das auf Linux basierende Ubuntu zu nennen, mit
+dem NutzerInnen ihr Smartphone modifizieren können. Open-Source-Ansätze wie Ubuntu Touch, Sailfish OS oder auch Jolla stellen wichtige Change Agents dar, die einen anderen, kollektiven Umgang mit
+–––
+34
+
+https://de.ifixit.com/Device/Fairphone, zuletzt geprüft am 19.07.2017.
+
+22
+
+2 FAIRPHONE
+
+Software-Produkten befördern. Fairphone gibt an, mit alternativen Betriebssystemansätzen – das Unternehmen nennt hier offiziell auch Jolla35 - vertiefend eine Zusammenarbeit anzustreben (Schischke
+2016: 19). Fairphone wird üblicherweise mit Android als Betriebssystem ausgeliefert, kann aber – ohne
+dass die Garantie verfällt – gerootet werden.
+Weitere Partnerschaften finden sich im Bereich der Vertriebsstrukturen. Zunächst konnte das Fairphone lediglich direkt über den Hersteller bezogen werden. Mittlerweile können die Smartphones
+auch über Mobiltelefonverträge erworben werden.
+Im deutschsprachigen Raum sind die Anbieter, die das Fairphone vertreiben: Swisscom36, mobilcomdebitel, 1&1, T-Mobile Austria. Neben diesen Anbietern ist die Erschließung von Händlern im E-Commerce-Bereich ein ebenso wichtiger Distributionsfaktor. Hier wären zu nennen: fairmondo.de, Avocado Store, memolife.de, Greenstars, www.vireo-store.de.37
+Eine weitere Kollaboration von Fairphone besteht mit dem 3D Hubs Network, über das von KundInnen
+designte, lokal produzierte Schutzhüllen und Zusatzprodukte angeboten werden.38 Die Kollaboration
+steht bisher an ihrem Anfang, es wäre allerdings denkbar, dass Fairphone in Kombination mit der Entwicklung des 3D-Druckers und von dezentralen Fertigungsprozessen (3D Hubs, FabLabs etc.) ein neues
+Geschäftsmodell entwickelt kann. Ohnehin sind bezogen auf das Verständnis des Geschäftsmodells
+von Fairphone die vielzähligen Akteure zu nennen, die ihre ökonomischen Prozesse nach Modellen der
+Sozialwirtschaft bzw. des Social Entrepreneurships gestalten und mit einem neuen, eher sozio-ökologisch orientierten Unternehmergeist eine neue ökonomische Kultur bilden, aus deren Kreisen ebenfalls Fairphone aufgekommen ist.39 Denn es geht diesen Akteuren nicht mehr einfach nur darum, Unternehmen politisch für ihr Handeln zur Verantwortung zu ziehen, sondern selbst durch ein eigenes
+unternehmerisches Handeln eine neue Form politischer Praxis zu erkunden und soziale und ökologische Probleme zu lösen (Lin-Hi/Blumberg 2014, Schneidewind 2016).
+Die globale Medienberichterstattung sowie die Arbeit internationaler NGO-Kampagnen zum Thema
+„Konfliktmineralien“ haben deutliche Resonanzen in Politik und Wirtschaft bewirkt. Seither gibt es
+verschiedene Ansätze, den Minensektor im Ostkongo, eine Region, die gerade aufgrund ihres Ressourcenreichtums zum Schauplatz kriegerischer Konflikte wurde, durch internationale Akteure zu kontrollieren. 2008 übertrug die Group of Experts der UN an Käufer kongolesischer Mineralien die Verantwortung, dass bewaffnete Gruppen nicht vom Handel profitieren. Die damit betonte Sorgfaltspflicht (due
+diligence) stellt so nun eine Herausforderung für alle beteiligten Akteure dar und führte zu diversen
+Selbstregulierungs-Initiativen, wie z.B. dem Gremium der Internationalen Zinnindustrie (ITRI).
+
+–––
+35
+
+https://jolla.com/, zuletzt geprüft am 20.07.2017.
+
+36
+
+Die Swisscom ist insofern in diesem Zusammenhang interessant, als das Unternehmen als einziger Schweizer Telekomanbieter Mitglied der Telekom-Initiative JAC (Joint Aufit Cooperation) ist, die sich für sichere und faire Arbeitsbedingungen sowie
+für die Nachhaltigkeit in der Produkt-Lieferkette einsetzt. Vgl. hierzu https://utopia.de/fairphone-swisscom-schweiz16020/, zuletzt geprüft am 19.07.2017.
+
+37
+
+Vgl. hierzu https://utopia.de/fairphone-bestellen-kaufen-3480/, zuletzt geprüft am 19.07.2017.
+
+38
+
+https://www.3dhubs.com/fairphone, zuletzt geprüft am 19.07.2017.
+
+39
+
+Wie in der kurzen Diskussion um den Nachhaltigkeitsbegriff von Fairphone weiter oben schon angeklungen, wäre an anderer
+Stelle der mögliche Einfluss von neuen Geschäftsmodellen im Sinne des Social Entrepreneurship auf eine Transformation
+hin zu einer Green Economy zu untersuchen. Die Frage wäre zu eruieren, inwiefern neue ökonomische Praktiken überhaupt
+die Bedingung für einen Wandel hinzu einer Green Economy stellen.
+
+23
+
+2 FAIRPHONE
+
+Als wohl maßgeblichster politisch-regulativer Eingriff lässt sich die am 21.07.2010 verabschiedete USFinanzmarktreform „Dodd-Frank Wall Street Reform and Consumer Protection Act“, kurz: Dodd-Frank
+Act verstehen, die weit über den Finanzsektor hinausreicht und aufgrund des in diesem Gesetz angelegten Handlungsdrucks zu gravierenden Veränderungen in der gesamten Elektronikindustrie führt.
+Denn der Dodd-Frank Act verpflichtet alle in den USA börsennotierten Unternehmen darüber Rechenschaft abzulegen, wenn die als „Konfliktmineralien“ definierten Rohstoffe Tantal, Zinn, Gold und Wolfram bei der Herstellung ihrer Produkte verwendet wurden. Dies dient dem Nachweis, dass durch die
+Produktion indirekt keine Milizen finanziert wurden. Des Weiteren verlangt der Dodd-Frank Act die
+Offenlegung von Zahlungen, welche die Unternehmen an die Regierungsstellen tätigen, in denen diese
+Rohstoffe abbauen (Dießenbacher/ Reller 2016: 284; Hütz-Adams 2012: 19f.).
+Das Gesetz, das aufgrund der Veröffentlichung der Ergebnisse auch den Beinamen „Name-and-ShameRegulation“ trägt, ist besonders durch seine Reichweite wirkungsstark. Denn es umfasst auch sämtliche Zulieferer börsennotierter US-Unternehmen, wie vor allem auch den Smartphone-Hersteller
+Apple. Durch seine weitreichenden Konsequenzen hat das Gesetz auch besonderen Vorbildcharakter
+für Europa. Die EU-Kommission legte am 05.03.2014 einen Verordnungsentwurf zu Konfliktmineralien vor. Darin war wurde ein Vorschlag einer freiwilligen Selbstzertifizierung von Importeuren von
+Zinn, Tantal, Wolfram und Gold formuliert, um die Sorgfaltspflichten gemäß den OECD-Leitlinien zur
+Überwachung und Regelung der Ein- und Verkäufe der Ressourcen einzuhalten. Besonders für diese
+Fallstudie hervorzuheben ist allerdings, dass Betriebe von der Selbstzertifizierung ausgenommen sind,
+die benannte Ressourcen indirekt über Produkte importieren, wie beispielsweise Mobiltelefone (Dießenbacher/ Reller 2016: 284). Am 17.05.2017 schließlich wurde eine verpflichtende EU-Verordnung
+(2017/821) zu Konfliktmineralien beschlossen. Die Sorgfaltspflicht soll ab dem 21. Januar 2021 in Geltung treten.
+Neben den politischen Maßnahmen sind noch die Zertifizierungssysteme der Bundesanstalt für Geowissenschaften und Rohstoffe (BGR) zu erwähnen – einer Fachbehörde des Bundesministeriums für
+Wirtschaft und Technologie, die unter anderem die Interessen der importabhängigen deutschen Wirtschaft im Bereich der Hightech-Metalle vertritt. Schon seit 2006 ist das BGR an diversen Pilotprojekten
+zur Zertifizierung von high value metals wie Tantal, Zinn, Wolfram und Gold beteiligt. Die BGR beteiligt
+sich ebenfalls an dem Aufbau eines Systems zertifizierter Handelsketten (Certified Trading Chains,
+CTC), beispielsweise durch die Kennzeichnung von Erz-Säcken und die Dokumentierung des Wegs zur
+Schmelze. Ebenso könnten durch chemische Nachweise physische Warenströme verfolgt werden (Dießenbacher/ Reller 2016: 285; Hütz-Adams 2012: 21f.).
+Weitere übergreifende Ansätze in der Industrie, die das unternehmerische Handeln von Fairphone
+rahmen, bilden die GeSI und die EICC. 2001 gründete sich als ein Zusammenschluss von internationalen Herstellern von Informations- und Telekommunikationstechnologie die Global e-sustainability Initiative (GeSI). Ihr Ziel ist die Förderung einer nachhaltigen Entwicklung des Sektors, d.h. auch der Wertschöpfungskette von Mobiltelefonen. Die EICC kooperiert u.a. auch mit dem Umweltprogramm der
+Vereinten Nationen (UNEP) und der International Telecommunication Union (ITU). Die Electronic Industry Citizenship Coalition (EICC) wurde 2004 zur Verbesserung der sozialen, ökonomischen und ökologischen Bedingungen bei der Produktion von elektronischen Geräten gegründet. Ein wesentlicher
+Verdienst besteht darin, einen Verhaltenskodex für die gesamte Wertschöpfungskette erarbeitet zu
+haben (Hütz-Adams 2012: 23). Unternehmensverbindende Industriekollaborationen wie GeSI oder
+EICC sind wichtige Treiber für eine koordinierte, nachhaltige Wirtschaftspraxis.
+
+24
+
+2 FAIRPHONE
+
+Die Vielzahl an Verflechtungen und Rahmungen ist ein besonderes Merkmal von Fairphone. Des Weiteren ist auf die vielen Preise hinzuweisen, die das Unternehmen in seinem Bestreben für ein sozioökologisches, grünes Wirtschaften akzeptieren, bestärken und vor allem medial präsent machen. Unter den vielen Auszeichnungen40 befindet sich auch der Preis des Blauen Engel und der Deutsche Umweltpreis, mit denen Fairphone für eine emissionsfreie und recyclinggerechte Herstellung ausgezeichnet wurde (DUH 2016). Die Auszeichnungen stärken nicht zuletzt die Seriosität von Fairphone als einem innovativen Smartphone-Hersteller in einem am Beginn seiner Ausdifferenzierung stehenden
+Markt, wie er abschließend kurz beleuchtet werden soll.
+Als anerkannter Innovator besetzt Fairphone längst nicht mehr allein den Markt nachhaltiger Smartphones. In Deutschland hat sich das Unternehmen Shiftphone dazugesellt, welches im Verhältnis zum
+Fairphone zwar weniger leistungsstarke, jedoch günstigere Smartphones mit einem eleganteren Design anbietet.41 Aus Finnland kommt Puzzle-Phone, welches ebenso mit einem modularen Design
+wirbt, wodurch es „made to last“ konzipiert wurde, weil es als „upgradable, sustainable, incredible“
+beworben wird.42 Entfernt könnte ebenso das Yotaphone mit seinem sehr energiesparsamen „E-Paper-Display“ dazugezählt werden.43 Die Ausdifferenzierung des nachhaltigen Smartphone-Marktes
+kennzeichnet eine gewisse Akzeptanz des Themas und zeigt ein ökonomisches Potential dieses Teilmarktes aus, indem verschiedene Produktstrategien und Geschäftsmodelle ausprobiert werden.
+
+2.5
+
+Zeitaspekte
+
+Durch die maßgeblich von Fairphone mitgeführte Debatte um Konfliktrohstoffe und um mögliche Lösungsstrategien in Kombination mit der Verabschiedung des Dodd-Frank Acts ergibt sich ein besonderes Zeitfenster für Veränderungen nicht nur des Smartphone-Marktes, sondern der Elektronikindustrie
+allgemein. Das Problem dieser derzeitigen Konstellation besteht nun darin, dass das an die Elektronikindustrie herangetragene Bewertungsprinzip nur auf die Dualität „konfliktfrei/nicht konfliktfrei“ verkürzt wird, obwohl die gesamte Vor- wie Nachnutzungsphase eines Smartphones sich über weitaus
+mehr Problembereiche erstreckt (Dießenbacher/ Reller 2016: 288). Denn „konfliktfrei“ bzw. „frei von
+Konfliktmineralien“ bedeutet ja nicht, dass auch die bei der Produktion wie Entsorgung von Smartphones aufkommenden ökologischen Probleme (beispielsweise hinsichtlich des Energie- und Ressourcenverbrauchs, der Umweltverschmutzung oder der CO2-Emission) erfasst werden. Neben den direkten
+Umweltbelastungen wird mit dem genannten monothematischen Bewertungsansatz auch nicht das
+grundsätzliche Konsumverhalten in Bezug auf Elektrogeräte problematisiert. Zwar können KonsumentInnen durch die Beachtung von Zertifizierungen zumindest mit einem ethisch-„konfliktfreien“ Gewissen weiterhin Smartphones und andere elektronische Geräte in immer kürzeren Abständen erwerben,
+aus der Perspektive des Ressourcenverbrauchs ist dies jedoch keineswegs nachhaltig (Dießenbacher/
+Reller 2016: 288). Mit dem Modularitäts-Prinzip reagiert Fairphone seit seinem Smartphone zweiter
+Generation auf den Problemdruck, der aus einem wachsenden Verkauf immer neu hergestellter
+Smartphones und anderer kleinerer Elektronikprodukte erwächst.
+–––
+40
+
+Eine Auflistung der Auszeichnungen findet sich unter https://www.fairphone.com/en/about/about-us/, zuletzt geprüft am
+19.07.2017.
+
+41
+
+https://www.shiftphones.com/, zuletzt geprüft am 19.07.2017.
+
+42
+
+http://www.puzzlephone.com/, zuletzt geprüft am 19.07.2017.
+
+43
+
+https://yotaphone.com/de-de/, zuletzt geprüft am 19.07.2017.
+
+25
+
+2 FAIRPHONE
+
+Durch das modulare Design seines Smartphones zeigt Fairphone wegweisend einen neuen Handlungsund Gestaltungsraum für die Smartphone-Branche auf, deren Grenzen es erst noch auszuloten gilt.
+Zeitnah wird es zunächst wichtig sein, VerbraucherInnen darüber zu informieren, dass ihre Smartphones wichtige Ressourcenlager sind, die wertvolle metallische Rohstoffe enthalten, die wieder einem
+Produktionsprozess zugeführt werden können. Gleichzeitig muss sich dafür jedoch auch eine ressourceneffiziente wie schonende Kreislaufwirtschaft für elektronische Geräte etablieren (Dießenbacher/
+Reller 2016: 288).
+Allgemein steht die von Fairphone seit seiner Gründung angestoßene Transformation des Smartphone-Marktes hin zu mehr Nachhaltigkeit jedoch noch in einem Anfangsstadium. Allgemein bleibt
+noch abzuwarten, ob die von Fairphone geschaffenen Potentiale hinsichtlich Langlebigkeit, Reparierbarkeit und Recyclingfähigkeit auch weiterhin genutzt werden (Schischke et al. 2016: 8).
+
+2.6
+
+Tabellarische Zusammenfassung
+
+Der MoC-Ansatz stellt eine der grundlegenden Analyseperspektiven des E2G-Projekts dar. Diese Analyse entstand aufbauend auf den Erkenntnissen des theoriegeleiteten Inputpapers „Models of Change
+(MoC) als Analyseansatz“ (Kahlenborn et al. 2016). Die folgende Tabelle fasst die Ergebnisse der Fallstudie aus der Perspektive des Ansatzes zusammen.
+
+Tabelle 2: Erfolgsfaktoren der Transformation und Relevanz
+Analysekriterien / Erfolgsfaktoren
+
+Zusammenfassung
+
+Relevanz
+
+Landschaftsmerkmale und Rahmenbedingungen
+
+Problemlage
+
+Die Problemlage besteht in der intensivierten Rohstoffextraktion und einer Zunahme von Elektronikmüll im Zuge
+eines gesteigerten Konsums von Elektronikgütern. Smartphones stellen neben Laptops, Tablets und Flachbildschirmen ein paradigmatisches Produkt in dieser Entwicklung
+dar, da ihnen aufgrund ihres zentralen Werts für die alltäglichen Lebens-, Kommunikations-, Konsum- und Arbeitsweisen ein signifikantes Gewicht in der Gestaltung
+globaler Wertschöpfungsketten zuzusprechen ist.
+
+sehr hoch
+
+Pfadabhängigkeiten
+und Hindernisse
+
+Dominanz einer Konsumkultur, hohe Innovationsfrequenz
+im Elektronik-Bereich; Smartphone als wichtiger wirtschaftlicher Faktor im Zuge der Digitalisierung (neue Geschäftsmodelle, neue Lebens-, Kommunikationsweisen
+etc.); komplexe, globale Wertschöpfungsketten; kostenintensive Produktentwicklung, fehlende global angelegte
+Recyclingssysteme zur Sekundärrohstoffgewinnung
+
+hoch
+
+Wesentliche
+Rahmenbedingungen
+
+Schaffung von Transparenz und Partizipation entlang
+der gesamten Wertschöpfungskette zur besseren
+Kontrolle und Gestaltung dieser nach sozio-ökologischen Prinzipien, Weiterentwicklung des Modulari-
+
+hoch
+
+26
+
+2 FAIRPHONE
+
+tätskonzepts; weiterhin Durchführung von Kampagnen seitens der Zivilgesellschaft sowie Regulierungsmaßnahmen seitens der Politik; Fortschritte in der
+Produktentwicklung, insbesondere hinsichtlich der
+technischen Leistungsfähigkeit, Robustheit und des
+(ästhetischen) Produktdesigns
+Erfolgsfaktoren
+Veränderungsidee
+
+Umsetzungslösung
+
+Intensivierung und Förderung eines ressourceneffizienten
+Ökodesigns und erhöhte Ressourcentransparenz im Bereich Elektronik, z.B. Prämierung von nachhaltigen Elektronikprodukten im Bereich Mobilfunk-Geräte; Verstärkung des Diskurses über den Zusammenhang von Herstellung und Entsorgung von elektronischen Informationswie Unterhaltungsgeräten und ihren sozial-ökologischen
+Auswirkungen; Initiativen zur Ressourcentransparenz; internationale Förderung der lokalen Abbau- und Herstellungsbedingungen, neue Partizipationsformen
+
+hoch
+
+Strategien
+und Instrumentenmix
+
+Weiterentwicklung des Produkts Fairphone, weitere Professionalisierung und Vernetzung mit anderen Unternehmen, Handel, Zivilgesellschaft und Politik, in den jeweilig
+beteiligten Ländern; Differenzierung des Marktes für sozial-ökologische, nachhaltige Elektronik-Produkte, kollaboratives Wirtschaften
+
+hoch
+
+Umgang
+mit Zielkonflikten
+
+Grundlegendes Problem: Fairphone kann unter gegebenen Bedingungen nur begrenzt „fair“ sein; Abwägung,
+welches Verhältnis zwischen Sozialem und Ökologischen
+dem Nachhaltigkeitsverständnis zugrunde liegt. Des Weiteren: Massenprodukten vs. On-Demand. Wie viele
+Smartphones sollen produziert werden? Das AngebotsNachfrage-Verhältnis müsste für eine Skalierung noch einmal geprüft werden. Daran schließt sich die Frage an, ob
+es einen gewissen Skalierungsdruck gibt, um das Unternehmen zu erhalten und das Produkt samt seiner Idee zu
+verbreiten, jedoch ab einem gewissen Grad der Expansion
+die Nachhaltigkeitseffekte neu gemessen werden müssen.
+
+mittel
+
+Institutionalisierung
+
+Etablierung von Kreislaufsystemen, weiterer Aufbau von
+Netzwerken und medialer Präsenz; Kooperation mit lokalen Herstellern und Händlern.
+
+hoch
+
+Nischenaktivitäten
+
+Fairphone ist noch als eine Nischenaktivität zu charakterisieren. Das Finanzierungsmodell von Fairphone basiert
+bisher u.a. noch auf dem Crowdfunding-Prinzip. Die verkauften Smartphones sind gemessen am gesamten Marktvolumen eher marginal und bisher in nur wenigen Ländern bzw. durch länderspezifische Verträge mit Telekommunikationsanbietern erhältlich. Fairphone hat zwar
+durch seine Kampagnen eine erhöhte mediale Präsenz, jedoch sprechen diese eher ein bestimmtes, eher an Nachhaltigkeit und Politik interessiertes soziales Milieu an. Das
+
+sehr hoch
+
+Veränderungsprozesse
+
+27
+
+2 FAIRPHONE
+
+Fairphone ist weiterhin kein Massenprodukt, weil es bisher nicht vermag, aufgrund seiner nachstehenden Leistungsfähigkeit und seines als weniger elegant wahrgenommenen Designs, keine breite Käuferschicht anzusprechen.
+Eine erhöhte Transparenz als Bedingung einer weitreichenderen Beteiligung der Gestaltung des Wertschöpfungsprozesses wird von Fairphone seit der Gründung angestrebt, z.B. im Designprozess.
+
+Beteiligungsprozesse
+
+KonsumentIn: Umstellung des individuellen Konsumverhaltens von Smartphones, Reparatur-Möglichkeit des eigenen Geräts; Kommentierung des Fairphone-Blogs; generell: erhöhte Bereitschaft seitens der KundInnen gefordert bzw. gewünscht.
+
+mittel
+
+Beteiligung der ArbeiterInnen entlang der Wertschöpfungskette.
+Beteiligung anderer Unternehmen, NGOs, der Politik.
+Co-Benefits
+
+Langlebigkeit von elektronischen Produkten; Möglichkeit
+für neue Geschäftsmodelle und -strategien
+
+mittel
+
+Veränderungskultur
+und Wissensbasis
+
+Das Wissen um die Herstellungs- und Entsorgungsprozesse ist noch eher gering in öffentlicher Wahrnehmung, Fairphone ist noch eher in bestimmten
+Fachkreisen und soziokulturellen Milieus anzutreffen.
+Diese sind jedoch medial sehr aktiv und präsent, informiert und vernetzt. Es wird allgemein ein sehr positives Image des Produktes erzeugt.
+
+mittel
+
+Reflexivität,
+Erfolgskontrolle und Lernprozesse im
+Transformationsprozess
+
+Die Reflexivität des Unternehmens und des Produktes ist
+als sehr hoch einzuschätzen. Dies lässt sich einerseits sicherlich auf den Entstehungskontext zurückführen. Aus
+einer Aufmerksamkeits-Kampagne heraus entstanden,
+um auf den sozio-politischen Zusammenhang beim Abbau
+von metallischen Mineralien und seinen sozio-ökologischen Auswirkungen kritisch hinzuweisen, war die Gründung eines Unternehmens, das selbst Smartphones herstellt und vertreibt, eine sehr bewusste Entscheidung, um
+eine wirtschaftliche Wirkmächtigkeit zu erzielen und so
+als Sozialunternehmen neue politische Spielräume als
+Wirtschaftsakteur selbst zu bespielen. Transparenz stellt
+letztlich das oberste Prinzip der Unternehmenspolitik dar.
+Alle Zahlen und Prozesse werden daher nicht unternehmensimmanent kontrolliert, sondern aufgrund ihrer öffentlichen Zugänglichkeit zur Debatte gestellt. Auf der
+Produktebene lässt sich eine Entwicklung von Fairphone 1
+hin zu Fairphone 2 konstatieren, in dessen modularem Design sich ein erweiterter Nachhaltigkeitsbegriff manifestiert. Das Unternehmen verändert sich mit der Gestaltung
+seines Produktes, was auch seine politische Idee erweitert.
+
+sehr hoch
+
+Ressourcenausstattung
+
+Die Ressourcen beim Fairphone 1 waren gering
+dfunding-Verfahren, Anfangsfinanzierung).
+
+mittel
+
+(Crow-
+
+28
+
+2 FAIRPHONE
+
+Beschränkte Finanzen zur Weiterentwicklung des Fairphone 2. Jedoch erhöhte mediale Präsenz und Suche nach
+weiteren Investoren. Das Unternehmen konnte mit dem
+Einnahmen des FP1 wachsen.
+Akteure
+
+Change Agents/Promotoren
+
+Fairphone, Waag Society, KonsumentInnen, Shiftphone,
+iFixIt, Dodd-Frank Act, Zertifizierungssysteme der BGR,
+Vertrieb/Anbieter: Mobilcom-Debitel, Avocado Store, memolife.de, Greenstars, www.vireo-store.de, T-Mobile Austria, Swisscom, fairmondo.de, 1&1
+
+hoch
+
+Akteure und Koalitionen,
+die für eine Transformation
+eintreten
+
+Befürwortet wird eine Transformation der Elektronikbranche und eines grünen wie fairen Smartphones von bestimmten sozialen Milieus, deren Lebensstil sich an Nachhaltigkeitsprinzipien orientiert, sowie Unternehmen in
+der Elektronikbranche, die eine Nachhaltigkeitsstrategie
+in ihrem Unternehmensmodell integriert haben.
+
+hoch
+
+Akteure und Koalitionen,
+die einer Transformation
+skeptisch gegenüberstehen
+
+Skeptisch sind KonsumentInnen, die von der Preishöhe,
+der Leistungsfähigkeit und dem Design des Fairphone
+nicht überzeugt sind. Des Weiteren könnten sich BefürworterInnen abwenden, die das Gefühl haben, dass Fairphone mit seiner Bemühung um eine ökologische Produktverbesserung die Strategien nach einer sozial-fairen
+Produktionsweise vernachlässigt. Des Weiteren ist es ein
+Hemmnis, von Produzenten und Händlern entlang der
+Wertschöpfungskette die gleiche Transparenz zu fordern,
+die Fairphone verfolgt.
+
+hoch
+
+Zeitaspekte
+Wesentlicher Auslöser war die Gründung des Sozialunternehmens Fairphone als Folge einer AufmerksamkeitsKampagne über „Konfliktressourcen“.
+Auslöser
+Fensternutzung
+
+und
+
+Prozessgeschwindigkeit
+und -rhythmus
+
+Fairphone selbst, in Verbund mit einer DIY-Kultur, öffnet
+mit seiner medialen Präsenz durch seine Kampagnen und
+Initiativen ein Fenster für eine nachhaltige Umgestaltung
+des Mobiltelefonmarktes.
+Das Sozialunternehmen Fairphone gründete sich 2013
+und lieferte die ersten Smartphones Anfang 2014 aus. Bereits zwei Jahre später erschien das Fairphone 2. Allgemein befindet sich das Unternehmen noch in einer expansiven Phase des Wachstums und der Vernetzung.
+
+hoch
+
+hoch
+
+29
+
+3 RESUMÉE ZENTRALER ERFOLGSFAKTOREN
+
+3
+
+Resumée zentraler Erfolgsfaktoren
+
+Für die Entwicklung und Erfolge des Fairphones sind mehrere Voraussetzungen und zentrale Faktoren
+anzuführen.
+Zuvörderst ist hier eine kleine Gruppe von sehr motivierten und aktiven Change Agents zu erwähnen,
+die der bisherigen problematischen Fehlentwicklung eine Alternative entgegensetzen wollten, und die
+jeweils eine wichtige Rolle für die Verwirklichung der Alternatividee gespielt haben. Hierzu gehören
+vor allem die Waag Society, die Persönlichkeit Bas van Abel, sowie das Fairphone-Team. Sie erkannten
+nicht nur die Notwendigkeit und Dringlichkeit, die Herstellung eines umwelt- und sozialverträglichen
+Smartphones selbst in die Hand zu nehmen, sondern verfügten auch über, bzw. schufen Zugänge zu
+dafür erforderlichen weiterführenden und unterstützenden Akteuren.
+Hierzu gehört auch der Ansatz, durch die Ermöglichung einer aktiven Einbindung, Teilhabe und Befähigung der KonsumentInnen weitere Unterstützung und Resonanz zu erhalten. Mit diesem aktiven
+Community-Building wurde auch die mediale Aufmerksamkeit erhöht und wirkte ebenfalls förderlich.
+Durch den von vornherein praktizierten Multi-Stakeholder-Ansatz wurde für kontinuierliche Partizipation im Verlauf der gesamten Wertschöpfungskette gesorgt. Damit verbunden war auch ein hoher
+Grad an Transparenz, was als konstitutiver Aspekt der Unternehmenskultur bzw. Unternehmenspolitik
+angesehen wurde und wird.
+Als eine kritische Masse an KnowHow und Resonanz/ Interesse erreicht worden war, konnte ein weiterer Schritt hin zu einer Professionalisierung und zu einer Institutionalisierung vollzogen werden: von
+einer Kampagne zu einem beispielhaften Unternehmen, mit welchem die proklamierten und vorgeschlagenen Praxisschritte exemplarisch und unmittelbar umgesetzt werden konnten nach dem Motto:
+„Es geht!“
+Vermutlich durch den derart organisierten bzw. sich ergeben habenden „kontinuierlichen Verbesserungsprozesses“ konnte eine Weiterentwicklung des Produktes vorgenommen werden (von Fairphone
+1 zu Fairphone 2). Die dabei verwirklichten Qualitätsmerkmale waren: Modularität, Design, Leistungsfähigkeit – womit weitere Gesichtspunkte von Nachhaltigkeit einbezogen wurden.
+Ein weiterer wichtiger Faktor war der Aufbau von strategischen Allianzen, beispielsweise in der Form
+von und mit wirtschaftlichen Initiativen, politischen Organisationen oder Unternehmen im Feld (z.B.
+iFixit.com), sowie mit weiteren Providern und Servicepartnern. Hier wurde von Smartphone eine ganze
+Wertschöpfungskette und eine ganze neue Teilbranche (bzw. Nische) geschaffen. Angesichts der Begrenztheit einiger wichtiger Rohstoffe für Smartphones und der damit absehbaren Engpässe wurde
+schließlich die Erschließung von Altgeräten als Sekundärrohstoffquelle vorgenommen (Urban Mining).
+Damit zusammenhängend wurde und wird von Fairphone mit neuen Geschäftsmodellen experimentiert.
+Am Beispiel Fairphone zeigt sich, dass einem möglichen Pfadwechsel zunächst das Nicht-Wissen von
+komplexen Zusammenhängen globaler Wertschöpfungskette seitens der Smartphone-NutzerInnen
+entgegen steht, sowie der Unwille oder das Unvermögen der Konstrukteure und Unternehmen, sich
+den vielfältigen Negativwirkungen ihres Handelns zu stellen und nach Alternativen zu suchen. Allgemein sind die Dominanz einer Konsumkultur bzw. einer Wegwerfgesellschaft, schnelle technologische
+Innovationen und das Erscheinen von Elektronikprodukten in dichten Modefrequenzen systemische
+
+30
+
+3 RESUMÉE ZENTRALER ERFOLGSFAKTOREN
+
+Hindernisse für einen spürbaren Wandel auch im Produktbereich Smartphones. Für eine bessere Etablierung eines nachhaltigen Smartphone-Marktes bedarf es einer weiteren Differenzierung, um mehr
+KonsumentInnen erreichen zu können und das Thema „nachhaltiges Smartphone“ verstärkt in die öffentliche Aufmerksamkeit zu bringen und somit andere, nachhaltigere Konsum-Entscheidungen anzustoßen.
+Für einen Pfadwechsel muss perspektivisch der Schritt aus einer bereits erfolgreich geschaffenen Nische in den Mainstream gelingen. Die verstärkte Etablierung eines modularen Designs von Elektronikprodukten, der Ausbau einer Reparaturkultur sowie die Erschließung von Smartphones als Sekundarrohstofflager wären für diesen Schritt wesentliche Momente. Allgemein sind alle drei Basisstrategien
+(Suffizienz, Effizienz, Konsistenz) vertiefend zur Geltung zu bringen und zu beachten, wie sie bereits in
+dem – auf den gesamten Wertschöpfungsprozess ausgelegten – Geschäftsmodell von Fairphone adressiert werden.
+
+31
+
+ANHANG
+
+Anhang
+
+Abbildung 3: Kostentransparenz des Fairphone 1
+Quelle: https://www.fairphone.com/en/2013/09/12/costbreakdown/,
+
+zuletzt geprüft am 18.07.2017.
+
+32
+
+ANHANG
+
+Abbildung 4: Kostentransparenz des Fairphone 2
+Quelle: https://www.fairphone.com/de/2015/09/09/cost-breakdown-of-the-fairphone-2/, zuletzt geprüft am
+18.07.2017.
+
+33
+
+LITERATURVERZEICHNIS
+
+Literaturverzeichnis
+Airike, Peppi-Emilia; Rotter, Julia P.; Mark-Herbert, Cecilia (2016): Corporate motives for multi stakeholder collaboration – corporate social responsibiltiy in the electronics supply chains. In: Journal
+of Cleaner Production 131, S. 639-648.
+Behrendt, Siegfried (2015): Wie die digitale Medienwelt die Umwelt stresst. In: tv diskurs 74, 4, 19.
+Jg., S. 46-49.
+Bergeman, Stephanie; González-Kreisberg, Gabriel; Lehmann, Zelda; Sreehari, Annapurna; Stinson,
+Callie (2015): Fairphone and the Social Entrepreneurship Model. The Fletcher School. Tufts University. Verfügbar unter http://fletcher.tufts.edu/~/media/Fletcher/MIB/pdfs/B236%20Student%20Case%20Studies/Fairphone%20Case.pdf, zuletzt geprüft am 12.01.2018.
+bitkom (01.04.2015): Pressemitteilung, 100 Millionen Alt-Handys liegen ungenutzt zu Hause. Verfügbar unter https://www.bitkom.org/Presse/Presseinformation/100-Millionen-Alt-Handys-liegenungenutzt-zu-Hause.html, zuletzt geprüft am 18.01.2018.
+Bocken, Nancy M.P.; de Pauw, Ingrid; Bakker, Conny; van der Grinten, Bram (2016): Product design
+and business model strategies for a circular economy. In: Journal of Industrial and Production Engineering, 33, 5, S. 308-320. DOI: 10.1080/21681015.2016. 1172124.
+Dießenbacher, Joshena; Reller, Armin (2016): Das „Fairphone“ – ein Impuls in Richtung nachhaltiger
+Elektronik? In: Exner, Andreas; Held, Martin; Kümmerer, Klaus (Hrsg.): Kritische Metalle in der
+Großen Transformation. Berlin, Heidelberg: Springer, S. 269-292.
+DUH (24.10.2016): Pressemitteilung, Blauer Engel und Deutscher Umweltpreis für das Fairphone:
+Deutsche Umwelthilfe fordert Smartphone-Hersteller zum Bau langlebiger Geräte auf. Verfügbar
+unter http://www.duh.de/pressemitteilung/blauer-engel-und-deutscher-umweltpreis-fuer-dasfairphone-deutsche-umwelthilfe-fordert-smartphone-he/?no_cache=1, zuletzt geprüft am
+19.07.2017.
+Fairphone (2016): List of Suppliers for the Fairphone 2. December 2016. Verfügbar unter
+https://www.fairphone.com/wp-content/uploads/2017/01/List-of-Suppliers-final-December2016.pdf, zuletzt geprüft am 20.07.2017.
+Fairphone/ Waag Society (2013): Fairphone Open Design Bootcamp. Amsterdam, June 2013. Verfügbar unter https://waag.org/sites/waag/files/public/Publicaties/bootcamp-booklet.pdf, zuletzt
+geprüft am 12.01.2018.
+Geels, F.W. (2002). Technological transitions as evolutionary reconfiguration processes: a multi-level
+perspective and a case-study. Research Policy, 31 (8–9), 1257–1274. DOI:10.1016/S00487333(02)00062-8.
+Geels, F.W. (2010). Ontologies, socio-technical transitions (to sustainability), and the multi-level perspective. Research Policy, 39 (4), 495–510. DOI:10.1016/j.respol.2010.01.022.
+Hütz-Adams, Friedel (2012): Von der Mine bis zum Konsumenten. Die Wertschöpfungskette von Mobiltelefonen. Siegburg: Südwind.
+
+34
+
+LITERATURVERZEICHNIS
+
+Kahlenborn, Walter; Tappeser, Valentin; Chichowitz, Lisa (2016): Models of Change als Analyseansatz. Inputpaper (Entwurf). adelphi. Verfügbar unter https://evolution2green.de/sites/evolution2green.de/files/documents/evolution2green_inputpapier_moc_als_analyseansatz_entwurf.pdf, zuletzt geprüft am 02.05.2017.
+Kristof, Kora (2010): Models of Change: Einführung und Verbreitung sozialer Innovationen und gesellschaftlicher Veränderungen in transdisziplinärer Perspektive: vdf Hochschulverlag AG.
+Leonhardt, Eva/ DUH (2014a): Hintergrundpapier zum Fairphone (Stand Juni 2014). Verfügbar unter
+http://www.duh.de/uploads/media/DUH_Hintergrundpapier_Fairphone.pdf, zuletzt geprüft am
+12.01.2018.
+Leonhardt, Eva/ DUH (2014b): Fragebogen „Wie nachhaltig ist das Fairphone?“ (Stand 14.01.2014)
+Verfügbar unter https://media.arbeiterkammer.at/ooe/konsument/fairkonsumieren/KI_2016_Fraunhofer_Nachhaltigkeit_Fairphone2.pdf, zuletzt geprüft am 12.01.2018.
+Leonhardt, Eva/ DUH (2014c): Ergebnisse der Umfrage „Wie nachhaltig ist das Fairphone?“ (Stand
+Juni 2014) Verfügbar unter http://www.duh.de/uploads/media/DUH_Ergebnisse_Fragebogen_Fairphone.pdf, zuletzt geprüft am 12.01.2018.
+Lin-Hi, Nick; Blumberg, Igor (2015): Social Entrepreneure als Change-Agenten für eine nachhaltige
+Entwicklung – Neue Anreize für klassisches Unternehmertum. In: uwf UmweltWirtschaftsForum,
+Vol. 23, 4, S. 171-176. DOI: 10.1007/s00550-015-0363-6.
+Prakash, Siddharth; Dehoust, Günther; Gsell, Martin; Schleicher, Tobias; Stamminger, Rainer (2016):
+Einfluss der Nutzungsdauer von Produkten auf ihre Umweltwirkung. Schaffung einer Informationsgrundlage und Entwicklung von Strategien gegen „Obsoleszenz“. Dessau-Roßlau: Umweltbundesamt. Verfügbar unter https://www.umweltbundesamt.de/sites/default/files/medien/378/publikationen/texte_11_2016_einfluss_der_nutzungsdauer_von_produkten_obsoleszenz.pdf, zuletzt geprüft am 12.01.2018.
+Prendeville, Sharon; Bocken, Nancy (2017): Sustainable Business Models through Service Design. In:
+Procedia Manufacturing 8, S. 292-299.
+Schneidewind, Uwe (2016): Unpolitisch? Unsinn! In: TAZ.zeozwei, 04/2016, S. 22-23.
+Schischke, Karsten; Proske, Marina; Sommer, Philipp; Trinks, Tina (2016): „Wie nachhaltig ist das Fairphone 2?“ Ergebnisse einer Expertenbefragung. Fraunhofer IZM/ Deutsche Umwelthilfe: Berlin.
+statista - Das Statistik Portal (2018a): Anzahl der Smartphone-Nutzer in Deutschland in den Jahren
+2009 bis 2016 (in Millionen). Verfügbar unter https://de.statista.com/statistik/daten/studie/198959/umfrage/anzahl-der-smartphonenutzer-in-deutschland-seit-2010/, zuletzt geprüft
+am 18.01.2018.
+statista - Das Statistik-Portal (2018b): Prognose zur Anzahl der Smartphone-Nutzer weltweilt von
+2012 bis 2020 (in Milliarden). Verfügbar unter https://de.statista.com/statistik/daten/studie/309656/umfrage/prognose-zur-anzahl-der-smartphone-nutzer-weltweit/, zuletzt geprüft am
+18.01.2018.
+
+35
+
+LITERATURVERZEICHNIS
+
+SÜDWIND (2012): Minen, Felder und Fabriken. Der komplexe Weg unserer Alltagsprodukte. Südwind-Ausgabe 12/2012, Taz-Beilage, Siegburg: SÜDWIND. Verfügbar unter https://www.suedwind-institut.de/fileadmin/fuerSuedwind/Publikationen/2012/2012-46_Taz-Beilage_Wertschoepfungsketten.pdf (Zugriff am 15.07.2017).
+van der Velden, Maja (2014): Re-politicising Participatory Design: What can we learn from Fairphone, In: Ninth International Conference on Culture, Technology, and Communication (CaTaC),
+Oslo, 19-20 June. Verfügbar unter http://dis.ifi.uio.no/sites/default/files/googlescholar/majavan-der-velden-fairphone.pdf, zuletzt geprüft am 13.07.2017.
+van der Velden, Maja (2016): Design as Regulation: Towards a Regulatory Ecology of the Mobile
+Phone. In: van der Velden, M.; Strano, H.; Hrachvec, H.; Abdelnour Nocera, J.; Ess C. (Eds.): Culture, Technology, Communication. Common worlds, different futures? Proceedings of the Tenth
+International Conference on Culture, Technology, Communication. London (UK), 15-17 June
+2016, S. 151-164.
+Velmurugan, Manivannan Senthil (2017): Sustainable perspectives on energy consumptio, EMRF, environment, health and accident risks associated with the use of mobile phones. In: Renewable
+and Sustainable Energy Reviews 67, S. 192-206. http://dx.DOI.org/10.1016/j.rser.2016.09.011.
+Walker, Benedict (2015): Aktuelles zum Fairphone. Hintergrundpapier. Berlin: Germanwatch. Verfügbar unter http://germanwatch.org/de/8133, zuletzt geprüft am 20.07.2017.
+WBGU (2011): Welt im Wandel. Gesellschaftsvertrag für eine Große Transformation (Hauptgutachten). Berlin: Wissenschaftlicher Beirat der Bundesregierung Globale Umweltveränderungen.
+
+36
+
+Impressum
+IZT - Institut für Zukunftsstudien
+und Technologiebewertung gemeinnützige GmbH
+Tel.: +49 (0) 30 803088-0
+Fax: +49 (0) 30 803088-88
+Schopenhauerstr. 26
+14129 Berlin
+Berlin, AG Charlottenburg, HRB 18 636
+Wissenschaftlicher Direktor
+Prof. Dr. Stephan Rammler
+Geschäftsführer
+Dr. Roland Nolte
+Aufsichtsratsvorsitzende
+Doris Sibum
+
+ISBN 978-3-941374-38-6
+
+www.izt.de
+
+

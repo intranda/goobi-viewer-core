@@ -279,6 +279,8 @@ public class SolrConstants {
     public static final String _LIDO = "LIDO";
     /** Constant <code>_DENKXWEB="DENKXWEB"</code> */
     public static final String _DENKXWEB = "DENKXWEB";
+    /** Constant <code>_DUBLINCORE="DUBLINCORE"</code> */
+    public static final String _DUBLINCORE = "DUBLINCORE";
     /** Constant <code>_WORLDVIEWS="WORLDVIEWS"</code> */
     public static final String _WORLDVIEWS = "WORLDVIEWS";
 
@@ -301,5 +303,9 @@ public class SolrConstants {
     public static final String MD_BODY = "MD_BODY"; //body of UGC docs from json annotations
     /** Field containing true if a record has a right-to-left reading direction. */
     public static final String BOOL_DIRECTION_RTL = "BOOL_DIRECTION_RTL";
+    /** Field containing a list of dates as year **/
+    public static final String YEAR = "YEAR";
+    /** Single field containing a date as year for sorting**/
+    public static final String SORTNUM_YEAR = "SORTNUM_YEAR";
 
 }

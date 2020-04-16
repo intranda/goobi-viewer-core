@@ -4,9 +4,12 @@
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/(\w+|-)$" trailingSlash="append" />
-
+	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
+	
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
+	
+	
 	
 	<!-- INDEX -->
 	<url-mapping id="index">
@@ -19,11 +22,6 @@
 		<pattern value="/index/" />
 		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-	</url-mapping>
-	<url-mapping id="index1">
-		<pattern value="/index/#{subThemeDiscriminatorValue:navigationHelper.subThemeDiscriminatorValue}/" />
-		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
@@ -729,6 +727,11 @@
     <url-mapping id="adminRole">
         <pattern value="/admin/role/" />
         <view-id value="/resources/admin/views/adminRole.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCreateRecord">
+        <pattern value="/admin/record/new/" />
+        <view-id value="/resources/admin/views/adminCreateRecord.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 

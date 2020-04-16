@@ -313,6 +313,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getIndexedDublinCoreFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getIndexedDublinCoreFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("indexed_dublincore", DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
+    }
+
+    /**
      * @see Configuration#getMainMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
@@ -844,15 +853,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see ConfigurationHelper#isSubthemeAutoSwitch()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeAutoSwitch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
-    }
-
-    /**
      * @see Configuration#isSubthemeAddFilterQuery()
      * @verifies return correct value
      */
@@ -1334,14 +1334,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 
-    /**
-     * @see Configuration#isSubthemesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemesEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSubthemesEnabled());
-    }
 
     /**
      * @see Configuration#isUrnDoRedirect()
@@ -2405,9 +2397,10 @@ public class ConfigurationTest extends AbstractTest {
     public void getDisplayAdditionalMetadataTranslateFields_shouldReturnCorrectValues() throws Exception {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields();
         Assert.assertNotNull(results);
-        Assert.assertEquals(2, results.size());
+        Assert.assertEquals(3, results.size());
         Assert.assertEquals(SolrConstants.DC, results.get(0));
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
+        Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
 
     /**
@@ -2695,9 +2688,18 @@ public class ConfigurationTest extends AbstractTest {
     public void getLimitImageHeightLowerRatioThreshold_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(2.0f == DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold());
     }
-    
+
     @Test
     public void testReadMapBoxToken() {
         Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
+    }
+    
+    @Test
+    public void testGetLicenseDescriptions() {
+        List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();
+        Assert.assertEquals(2, licenses.size());
+        Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
+        Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
+        Assert.assertEquals("", licenses.get(0).getIcon());
     }
 }

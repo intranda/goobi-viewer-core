@@ -56,7 +56,7 @@ var viewerJS = (function () {
         }
 
         $.extend(true, _defaults, config);
-
+        console.log("init ", _defaults);
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
 
@@ -82,7 +82,8 @@ var viewerJS = (function () {
         
         viewerJS.popovers.init();
         
-        
+	    viewerJS.userDropdown.init();
+       
         // init bookmarks if enabled
         if ( bookmarksEnabled ) {
             viewerJS.bookmarks.init( {

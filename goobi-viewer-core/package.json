@@ -14,6 +14,7 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-less": "^2.0.0",
     "grunt-contrib-watch": "*",
+    "grunt-copy-deps": "^1.4.0",
     "grunt-jsdoc": "^2.4.1",
     "grunt-kss": "^5.0.1",
     "grunt-riot": "*",
@@ -42,6 +43,7 @@
     "kss": "kss --config kss-config.json"
   },
   "dependencies": {
-    "pixl-xml": "^1.0.13"
+    "pixl-xml": "^1.0.13",
+    "tinymce": "~5.2.0"
   }
 }
