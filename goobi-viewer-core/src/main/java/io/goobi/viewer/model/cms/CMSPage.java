@@ -1198,12 +1198,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 case MEDIA:
                     String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
                     switch (type) {
-                        case CMSMediaItem.CONTENT_TYPE_DOCX:
-                        case CMSMediaItem.CONTENT_TYPE_HTML:
-                        case CMSMediaItem.CONTENT_TYPE_RTF:
-                            //                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                            contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), null, null);
-                            break;
                         case CMSMediaItem.CONTENT_TYPE_XML:
                             contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
                             try {
@@ -1997,7 +1991,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         if (selectableCategories == null) {
             return;
         }
-        
+
         try {
             List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
             List<CMSCategory> tempCats = new ArrayList<>();

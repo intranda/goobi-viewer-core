@@ -89,7 +89,6 @@
 		<commons-net.version>3.6</commons-net.version>
 		<commons-text.version>1.8</commons-text.version>
 		<dbunit.version>2.7.0</dbunit.version>
-		<docx4j.version>8.1.4</docx4j.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.12</httpclient.version>
 		<httpcore.version>4.4.13</httpcore.version>
@@ -267,30 +266,6 @@
 			<artifactId>dbunit</artifactId>
 			<version>${dbunit.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.docx4j</groupId>
-			<artifactId>docx4j-core</artifactId>
-			<version>${docx4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.docx4j</groupId>
-			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-			<version>${docx4j.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
