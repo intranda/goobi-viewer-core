@@ -35,7 +35,7 @@
 		     apiTarget += '/';
 		     
 		     // get data from api
-		     var promise = fetch(apiTarget)
+// 		     var promise = fetch(apiTarget)
 		     
 		     // render thumbnails
 		    opts.loading.show()

@@ -26,8 +26,9 @@
 			<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrixCalculate}</button>
 		</form>
 		<div class="timematrix__hitsForm">
-			<label>#{msg.hits}:</label> 
-			<input type="number" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
+			<label data-domain="#{msg.hits}:">
+			<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
+			</label> 
 			<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
 		</div>
 	</div>
@@ -41,6 +42,7 @@
 	<timematrix></timematrix>
 
 	<script>
+	//<![CDATA[
 		<!-- Loads results when the page is reloaded -->
 		$("document").ready(function() {
 		    setTimeout(function() {
@@ -50,7 +52,9 @@
 		
 		<!-- Reloads the results after the slider is released -->
 		function mouseUp() {
-			document.getElementById("setTimematrix").click();
+		    $(window).mouseup(function(){
+		    	document.getElementById("setTimematrix").click();
+		    });
 		}
 		
 		<!-- Reloads the results after leaving the input field -->
@@ -69,6 +73,7 @@
 		   document.getElementById("setTimematrix").click();
 		  }
 		});	 
+		 //]]>
 	</script>
 
    	<script>

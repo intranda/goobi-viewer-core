@@ -1944,8 +1944,6 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 		     apiTarget += $(this.opts.count).val();
 		     apiTarget += '/';
 
-		     var promise = fetch(apiTarget)
-
 		    opts.loading.show()
 			fetch(apiTarget)
 			.then( function(result) {
