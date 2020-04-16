@@ -51,12 +51,17 @@
 		});
 		
 		<!-- Reloads the results after the slider is released -->
-		function mouseUp() {
-		    $(window).mouseup(function(){
-		    	document.getElementById("setTimematrix").click();
-		    });
-		}
-		
+			var isDown = false;
+			$("#slider-range").mousedown(function(){
+			    isDown = true;
+			});
+			$(document).mouseup(function(){
+			    if(isDown){
+			    	document.getElementById("setTimematrix").click();
+			        isDown = false;
+			    }
+			}); 
+
 		<!-- Reloads the results after leaving the input field -->
 		document.getElementById("hitsPerPage").onfocusout = function() {myFunction()};
 		
