@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.controller.ConversionTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.Helper;
@@ -159,12 +158,10 @@ public class CMSMediaResource {
                         }
                     }
                 };
-            } else {
-                throw new ContentNotFoundException("File " + path + " not found in file system");
             }
-        } else {
-            throw new ContentNotFoundException("No pdf item with id " + id + " found");
+            throw new ContentNotFoundException("File " + path + " not found in file system");
         }
+        throw new ContentNotFoundException("No pdf item with id " + id + " found");
 
     }
 
@@ -195,30 +192,10 @@ public class CMSMediaResource {
         java.nio.file.Path filePath = Paths.get(sbUri.toString());
         if (Files.isRegularFile(filePath)) {
             switch (item.getContentType()) {
-                case CMSMediaItem.CONTENT_TYPE_HTML:
                 case CMSMediaItem.CONTENT_TYPE_XML:
                     try {
                         String encoding = "windows-1252";
                         String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
-                        return StringTools.renameIncompatibleCSSClasses(ret);
-                    } catch (FileNotFoundException e) {
-                        logger.debug(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
-                case CMSMediaItem.CONTENT_TYPE_DOCX:
-                    try {
-                        String ret = ConversionTools.convertDocxToHtml(filePath);
-                        return StringTools.renameIncompatibleCSSClasses(ret);
-                    } catch (FileNotFoundException e) {
-                        logger.debug(e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                case CMSMediaItem.CONTENT_TYPE_RTF:
-                    try {
-                        String ret = ConversionTools.convertFileToHtml(filePath);
                         return StringTools.renameIncompatibleCSSClasses(ret);
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());
@@ -249,10 +226,8 @@ public class CMSMediaResource {
         if (item != null) {
             MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
-        } else {
-            return Response.status(Status.OK).entity("{}").build();
-
         }
+        return Response.status(Status.OK).entity("{}").build();
     }
 
     /**
@@ -317,14 +292,12 @@ public class CMSMediaResource {
                     }
                     MediaItem jsonItem = new MediaItem(item, servletRequest);
                     return Response.status(Status.OK).entity(jsonItem).build();
-                } else {
-                    String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                    if (Files.exists(mediaFile)) {
-                        Files.delete(mediaFile);
-                    }
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
-
                 }
+                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+                if (Files.exists(mediaFile)) {
+                    Files.delete(mediaFile);
+                }
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             } catch (AccessDeniedException e) {
                 return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
             } catch (FileAlreadyExistsException e) {
@@ -349,15 +322,14 @@ public class CMSMediaResource {
      * @throws DAOException
      * @throws AccessDeniedException if the user is not allowed to use any categories whatsoever
      */
-    private Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
+    private static Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
 
         if (!user.hasPrivilegeForAllCategories()) {
             List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
             if (!allowedCategories.isEmpty()) {
                 return Optional.of(allowedCategories.get(0));
-            } else {
-                throw new AccessDeniedException("The user " + user + " has no rights to any categories and may therefore not upload any media files");
             }
+            throw new AccessDeniedException("The user " + user + " has no rights to any categories and may therefore not upload any media files");
         }
         return Optional.empty();
     }
@@ -388,7 +360,7 @@ public class CMSMediaResource {
      * @param session
      * @return
      */
-    private Optional<User> getUser() {
+    private static Optional<User> getUser() {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean == null) {
             logger.trace("Unable to get user: No UserBean found in session store.");
