@@ -188,6 +188,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         // the emptiness inside
     }
 
+    public User(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+    
+    public User(String nickname) {
+        this.nickName = nickname;
+    }
+    
     /*
      * (non-Javadoc)
      *

@@ -28,6 +28,7 @@ import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.MapTranslation;
 
 /**
  * <p>
@@ -90,6 +91,17 @@ public abstract class Translation {
         this.language = language;
         this.tag = tag;
         this.value = value;
+    }
+
+    /**
+     * Clone constructor
+     * @param t
+     */
+    public Translation(MapTranslation t) {
+        this.id = t.id;
+        this.language = t.language;
+        this.value = t.value;
+        this.tag = t.tag;
     }
 
     /**
@@ -232,4 +244,27 @@ public abstract class Translation {
     public String toString() {
         return value;
     }
+    
+    /**
+     * Hash code is build from hashCode of language
+     */
+    @Override
+    public int hashCode() {
+        return this.language.hashCode();
+    }
+    
+    /**
+     * Two Translations are equal if they are of the same class and both tag and language match
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            Translation other = (Translation)obj;
+            return StringUtils.equals(this.language, other.language) && 
+                    StringUtils.equals(this.tag, other.tag);
+        } else {
+            return false;
+        }
+    }
+    
 }

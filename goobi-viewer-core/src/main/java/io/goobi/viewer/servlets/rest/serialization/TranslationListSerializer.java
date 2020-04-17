@@ -17,6 +17,7 @@ package io.goobi.viewer.servlets.rest.serialization;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,14 +35,14 @@ import io.goobi.viewer.model.misc.Translation;
  *
  * @author florian
  */
-public class TranslationListSerializer extends JsonSerializer<List<Translation>> {
+public class TranslationListSerializer extends JsonSerializer<Collection<Translation>> {
 
     /* (non-Javadoc)
      * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
      */
     /** {@inheritDoc} */
     @Override
-    public void serialize(List<Translation> translations, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(Collection<Translation> translations, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 
         Map<String, List<Translation>> groupedTranslations = groupByLabel(translations);
 
@@ -63,7 +64,7 @@ public class TranslationListSerializer extends JsonSerializer<List<Translation>>
 
     }
 
-    private Map<String, List<Translation>> groupByLabel(List<Translation> translations) {
+    private Map<String, List<Translation>> groupByLabel(Collection<Translation> translations) {
         Map<String, List<Translation>> map = new HashMap<>();
         for (Translation translation : translations) {
             String tag = translation.getTag();

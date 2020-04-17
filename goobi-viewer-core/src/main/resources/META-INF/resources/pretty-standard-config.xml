@@ -789,6 +789,22 @@
         <view-id value="/resources/cms/adminCmsCategories.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <!-- CMS GeoMaps -->
+    <url-mapping id="adminCmsGeoMaps">
+        <pattern value="/admin/cms/maps/" />
+		<view-id value="/resources/cms/adminCmsGeoMaps.xhtml" />        
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsGeoMapNew">
+        <pattern value="/admin/cms/maps/new/" />
+        <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsGeoMapEdit">
+        <pattern value="/admin/cms/maps/edit/#{mapId:geoMapBean.currentMapId}/" />
+        <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">

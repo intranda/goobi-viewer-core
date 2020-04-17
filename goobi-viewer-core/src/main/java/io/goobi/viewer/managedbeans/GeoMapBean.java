@@ -1,0 +1,208 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.goobi.viewer.managedbeans;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.maps.GeoMap;
+
+/**
+ * Bean for managing {@link GeoMaps} in the admin Backend
+ * 
+ * @author florian
+ *
+ */
+@Named
+@ViewScoped
+public class GeoMapBean implements Serializable {
+
+    private static final long serialVersionUID = 2602901072184103402L;
+
+    @Inject
+    private NavigationHelper navigationHelper;
+    
+    private GeoMap currentMap = null;
+    
+    private String selectedLanguage;
+        
+    /**
+     * 
+     */
+    public GeoMapBean() {
+        this.selectedLanguage = BeanUtils.getNavigationHelper().getLocaleString();
+    }
+    
+    /**
+     * @return the currentMap
+     */
+    public GeoMap getCurrentMap() {
+        return currentMap;
+    }
+    
+    /**
+     * 
+     * Sets the current map to a clone of the given map
+     * @param currentMap the currentMap to set
+     */
+    public void setCurrentMap(GeoMap currentMap) {
+        this.currentMap = new GeoMap(currentMap);
+    }
+    
+    /**
+     * If a GeoMap of the given mapId exists in the database, set the current map to a clone of that map
+     * 
+     * @param mapId
+     * @throws DAOException
+     */
+    public void setCurrentMapId(Long mapId) throws DAOException {
+        this.currentMap = new GeoMap(DataManager.getInstance().getDao().getGeoMap(mapId));
+    }
+    
+    public Long getCurrentMapId() {
+        if(this.currentMap != null) {
+            return this.currentMap.getId();
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Save the current map. Either add it to database if it has no id yet, or otherwise update it in the database
+     * 
+     * @throws DAOException
+     */
+    public void saveCurrentMap() throws DAOException {
+        if(this.currentMap == null) {
+            throw new IllegalArgumentException("No map selected. Cannot save");
+        } else if(this.currentMap.getId() == null) {
+            DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+        } else {
+            DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
+        }
+    }
+    
+    public void deleteMap(GeoMap map) throws DAOException {
+        DataManager.getInstance().getDao().deleteGeoMap(map);
+    }
+    
+    /**
+     * If the current map has an id, restore the map from the database, removing all unsaved changes.
+     * If the current map exists but has no id, set the current map to a new empty map
+     * @throws DAOException 
+     * 
+     */
+    public void resetCurrentMap() throws DAOException {
+        if(getCurrentMap() != null) {
+            if(getCurrentMap().getId() != null) {
+                setCurrentMapId(getCurrentMap().getId());
+            } else {
+                createEmptyCurrentMap();
+            }
+        }
+    }
+    
+    /**
+     * Sets the currentMap to a new empty {@link GeoMap}
+     * 
+     * @return  the pretty url to creating a new GeoMap
+     */
+    public String createEmptyCurrentMap() {
+        this.currentMap = new GeoMap();
+        return "pretty:adminCmsGeoMapNew";
+    }
+    
+    /**
+     * @return the selectedLanguage
+     */
+    public String getSelectedLanguage() {
+        return selectedLanguage;
+    }
+    
+    /**
+     * @param selectedLanguage the selectedLanguage to set
+     */
+    public void setSelectedLanguage(String selectedLanguage) {
+        this.selectedLanguage = selectedLanguage;
+    }
+    
+//    /**
+//     * Sets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
+//     * @param value
+//     */
+//    public void setTitle(String value) { 
+//        if(this.getCurrentMap() != null) {
+//            this.getCurrentMap().setTitle(value, getSelectedLanguage());
+//        }
+//    }
+//    
+//    /**
+//     * Gets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
+//     * @return  the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage} 
+//     */
+//    public String getTitle() {
+//        if(this.getCurrentMap() != null) {
+//            return this.getCurrentMap().getTitle(getSelectedLanguage());
+//        } else {
+//            return "";
+//        }
+//    }
+//    
+//    /**
+//     * Sets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
+//     * @param value
+//     */
+//    public void setDescription(String value) { 
+//        if(this.getCurrentMap() != null) {
+//            this.getCurrentMap().setDescription(value, getSelectedLanguage());
+//        }
+//    }
+//    
+//    /**
+//     * Gets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
+//     * @return  the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage} 
+//     */
+//    public String getDescription() {
+//        if(this.getCurrentMap() != null) {
+//            return this.getCurrentMap().getDescription(getSelectedLanguage());
+//        } else {
+//            return "";
+//        }
+//    }
+    
+    /**
+     * Get a list of all {@link GeoMap}s from the databse.
+     * Note that the databse is queries at each method call
+     * 
+     * @return  a list of all stored GeoMaps
+     * @throws DAOException 
+     */
+    public List<GeoMap> getAllMaps() throws DAOException {
+        return DataManager.getInstance().getDao().getAllGeoMaps();
+    }
+    
+    
+
+}

@@ -68,6 +68,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -3893,6 +3894,102 @@ public class JPADAO implements IDAO {
         try {
             em.getTransaction().begin();
             PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getGeoMap(java.lang.Long)
+     */
+    @Override
+    public GeoMap getGeoMap(Long mapId) throws DAOException {
+        if(mapId == null) {
+            return null;
+        }
+        preQuery();
+        try {
+            GeoMap o = em.find(GeoMap.class, mapId);
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllGeoMaps()
+     */
+    @Override
+    public List<GeoMap> getAllGeoMaps() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT u FROM GeoMap u");
+        q.setFlushMode(FlushModeType.COMMIT);
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean addGeoMap(GeoMap map) throws DAOException {
+        if (getGeoMap(map.getId()) != null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(map);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean updateGeoMap(GeoMap map) throws DAOException {
+        if(map.getId() == null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(map);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean deleteGeoMap(GeoMap map) throws DAOException {
+        if(map.getId() == null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            GeoMap o = em.getReference(GeoMap.class, map.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;

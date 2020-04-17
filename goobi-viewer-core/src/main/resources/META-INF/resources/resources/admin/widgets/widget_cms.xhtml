@@ -71,6 +71,14 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsGeoMaps' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsGeoMaps')}/">
+                                    <i class="fa fa-map-o" aria-hidden="true"></i>
+                                    <span>#{msg.cms__geo_maps__title}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                     </ul>
                 </h:form>
             </div>

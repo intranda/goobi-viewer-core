@@ -24,6 +24,8 @@
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.maps.GeoMap</class>
+        <class>io.goobi.viewer.model.maps.MapTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
@@ -88,6 +90,8 @@
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.maps.GeoMap</class>
+        <class>io.goobi.viewer.model.maps.MapTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
