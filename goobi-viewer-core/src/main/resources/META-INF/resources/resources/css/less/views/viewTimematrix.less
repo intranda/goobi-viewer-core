@@ -52,13 +52,14 @@
         #slider-range {
         	height: 1.2rem;
         	border: 1px solid @middlegray;
+        	margin-bottom: 1rem;
             .ui-slider-range {}
             .ui-slider-handle {
                 display: block;
                 position: absolute;
                 float: left;
-                width: 6rem;
-                height: 2.5rem;
+                width: 2rem;
+                height: 2rem;
                 border: 1px solid @middlegray;
                 background-color: @blue;
                 cursor: pointer;
@@ -86,24 +87,21 @@
                 }
             }
 			.ui-slider-handle {
-				top: -.7rem;
                 margin-left: -.1rem;
                 color: @white;
                 &::before {
                 	content:"\f105";
                 	font-family: "FontAwesome";
-                	right: .8rem;
+                	right: .6rem;
 					position: absolute;
-					top: .1rem;
                 }
                 &:last-child {
-                	margin-left: -5.9rem;
+                	margin-left: -1.9rem;
                 	&::before {
 	                	content:"\f104";
 	                	font-family: "FontAwesome";
-	                	left: .8rem;
+	                	left: .6rem;
 						position: absolute;
-						top: .1rem;
                 	}
                 }
             }
@@ -118,12 +116,31 @@
     		display: none;
     	}
     }
+    &__selectionRangeInput {
+    	border: 0;
+    	pointer-events:none;
+    	flex: 0 0 5%;
+    	max-width: 5%;
+    	font-weight: bold;
+    }
+    &__period {
+    	display: flex;
+    	margin-bottom: 2rem;
+    	p {
+    		flex: 0 0 10%;
+			max-width: 10%;
+			margin: 0;
+    	}
+    	span {
+    		font-weight: bold;
+    		margin-right: .5rem;
+    	}
+    }
     &__hitsForm {
-    	flex: 0 0 100%;
+    	flex: 0 1 80%;
 		display: flex;
 		justify-content: flex-end;
 		align-items: baseline;
-		margin-top: 2rem;
 		label, input {
 			position: relative;
 			width: 4rem;
@@ -141,8 +158,6 @@
 	&__hitsInput {
 		display: flex;
 		justify-content: flex-end;
-		border: 1px solid @middlegray;
-		padding: .5rem 1rem;
 	}
 	&__objects {
 	    display: flex;

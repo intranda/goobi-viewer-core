@@ -20,18 +20,22 @@
 
 	<div class="timematrix__selection">
 		<form id="locateTimematrix" method="POST">
-			<input type="hidden" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
-			<input type="hidden" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
+			<div class="timematrix__period">
+				<p>#{msg.timePeriod}:</p>
+				<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
+				<span>-</span>
+				<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
+				<div class="timematrix__hitsForm">
+					<div class="timematrix__hitsInput">
+						<label data-domain="#{msg.hits}:" />
+						<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
+					</div>
+					<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
+				</div>
+			</div>
 			<div id="slider-range"></div>
 			<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrixCalculate}</button>
 		</form>
-		<div class="timematrix__hitsForm">
-			<div class="timematrix__hitsInput">
-				<label data-domain="#{msg.hits}:" />
-				<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
-			</div>
-			<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
-		</div>
 	</div>
 	
 	<div class="clearfix"></div>

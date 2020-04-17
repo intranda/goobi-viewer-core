@@ -160,7 +160,7 @@ var viewerJS = ( function( viewer ) {
             console.log( 'viewer.timematrix _renderSliderBubble: val - ' + val );
         }
         
-        return '<div class="timematrix-slider-bubble-' + time + '">' + val + '</div>';
+        return '<div class="timematrix-slider-bubble</div>';
     }
     
     return viewer;
