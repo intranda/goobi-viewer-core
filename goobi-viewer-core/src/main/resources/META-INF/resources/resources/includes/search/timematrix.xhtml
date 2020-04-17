@@ -26,15 +26,16 @@
 			<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrixCalculate}</button>
 		</form>
 		<div class="timematrix__hitsForm">
-			<label data-domain="#{msg.hits}:">
-			<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
-			</label> 
+			<div class="timematrix__hitsInput">
+				<label data-domain="#{msg.hits}:" />
+				<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
+			</div>
 			<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
 		</div>
 	</div>
 	
 	<div class="clearfix"></div>
-
+ 
 	<div id="timematrixCanvas"></div>
 	
 	<div class="clearfix"></div>

@@ -74,15 +74,15 @@
                 .timematrix-slider-bubble-endDate {
                     position: absolute;
                     left: 50%;
-                    width: 6rem;
-                    margin-left: -3.5rem;
+                    margin-left: -2.2rem;
                     font-size: @fontMedium;
                     text-align: center;
                     color: @white;
                     height: 100%;
+                    top: .1rem;
                 }
                 .timematrix-slider-bubble-endDate {
-                	margin-left: -2.5rem;
+                	margin-left: -1.1rem;
                 }
             }
 			.ui-slider-handle {
@@ -126,29 +126,24 @@
 		margin-top: 2rem;
 		label, input {
 			position: relative;
-			display: block;
-			padding-right: 1rem;
-			width: 10rem;
-			height: 2.5rem;
-			box-sizing: border-box;
-			text-align: right;
-			margin-left: -1rem;
-			padding-left: 1rem;
+			width: 4rem;
 			border: 0 inset ThreeDLightShadow;
+			border: 0;
+			margin: 0;
+			padding: 0;
+			text-align: right;
 		}
 		label::after {
 			content: ' \0020' attr(data-domain);
-			position: absolute;
-			display: block;
-			font-weight: bold;
-			height: 100%;
-			top: .2rem;
-		}
-		input {
-			border: 1px solid @middlegray;
+			font-weight: normal;
 		}
 	}
-	
+	&__hitsInput {
+		display: flex;
+		justify-content: flex-end;
+		border: 1px solid @middlegray;
+		padding: .5rem 1rem;
+	}
 	&__objects {
 	    display: flex;
 	    flex-wrap: wrap;
