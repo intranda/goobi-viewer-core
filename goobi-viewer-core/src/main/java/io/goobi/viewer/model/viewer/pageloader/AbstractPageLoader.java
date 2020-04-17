@@ -232,6 +232,11 @@ public abstract class AbstractPageLoader implements IPageLoader {
             pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
         }
 
+        // Full-text available
+        if (doc.containsKey(SolrConstants.BOOL_IMAGEAVAILABLE)) {
+            pe.setHasImage((boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
+        }
+
         return pe;
     }
 }

@@ -21,10 +21,11 @@
         </ui:fragment>
         
         <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextMimeType != 'text/plain'}">        
-	        <div>
+	        <div class="view-fulltext__content">
 	            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false" rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
 	            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
 	        </div>
         </ui:fragment>
+
     </div>
 </ui:composition>

@@ -10,7 +10,7 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<h2>#{msg.bibData}</h2>
+	<h2>#{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg.bibData}</h2>
 
 	<!-- CHANGE RECORD LOCALE -->
     <viewerComponent:changeRecordLocale />

@@ -1254,6 +1254,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isShowRecordLabelIfNoOtherViews()
+     * @verifies return correct value
+     */
+    @Test
+    public void isShowRecordLabelIfNoOtherViews_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews());
+    }
+
+    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -2693,7 +2702,7 @@ public class ConfigurationTest extends AbstractTest {
     public void testReadMapBoxToken() {
         Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
     }
-    
+
     @Test
     public void testGetLicenseDescriptions() {
         List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();
