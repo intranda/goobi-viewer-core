@@ -59,7 +59,8 @@
                 position: absolute;
                 float: left;
                 width: 2rem;
-                height: 2rem;
+                height: 3rem;
+                top: -1rem;
                 border: 1px solid @middlegray;
                 background-color: @blue;
                 cursor: pointer;
@@ -94,6 +95,7 @@
                 	font-family: "FontAwesome";
                 	right: .6rem;
 					position: absolute;
+					top: 0.4rem;
                 }
                 &:last-child {
                 	margin-left: -1.9rem;
@@ -119,17 +121,15 @@
     &__selectionRangeInput {
     	border: 0;
     	pointer-events:none;
-    	flex: 0 0 5%;
-    	max-width: 5%;
     	font-weight: bold;
+    	width: 4rem;
     }
     &__period {
     	display: flex;
     	margin-bottom: 2rem;
     	p {
-    		flex: 0 0 10%;
-			max-width: 10%;
 			margin: 0;
+			width: 7rem;
     	}
     	span {
     		font-weight: bold;
@@ -137,10 +137,9 @@
     	}
     }
     &__hitsForm {
-    	flex: 0 1 80%;
-		display: flex;
 		justify-content: flex-end;
 		align-items: baseline;
+		margin-left: auto;
 		label, input {
 			position: relative;
 			width: 4rem;
@@ -158,6 +157,7 @@
 	&__hitsInput {
 		display: flex;
 		justify-content: flex-end;
+		font-weight: bold;
 	}
 	&__objects {
 	    display: flex;
@@ -271,8 +271,13 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.timematrix__content {
-		flex: 0 0 calc(50% - 1rem);
-		max-width: calc(50% - 1rem);
-	}
+	.timematrix{
+		&__content {
+			flex: 0 0 calc(50% - 1rem);
+			max-width: calc(50% - 1rem);
+		}
+		&__selectionRangeInput {
+	    	pointer-events:auto;
+	    }
+    }
 }
