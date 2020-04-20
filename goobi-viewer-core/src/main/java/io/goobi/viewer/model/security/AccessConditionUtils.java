@@ -952,7 +952,7 @@ public class AccessConditionUtils {
                 } else {
                     sbQuery.append(" AND (").append(conditions).append(')');
                 }
-                // logger.trace("License relevance query: {}", sbQuery.toString());
+                 logger.trace("License relevance query: {}", sbQuery.toString());
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the
                     // license subquery.", licenseType
