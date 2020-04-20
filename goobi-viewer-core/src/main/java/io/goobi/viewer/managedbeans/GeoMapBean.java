@@ -16,18 +16,18 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -40,9 +40,6 @@ import io.goobi.viewer.model.maps.GeoMap;
 public class GeoMapBean implements Serializable {
 
     private static final long serialVersionUID = 2602901072184103402L;
-
-    @Inject
-    private NavigationHelper navigationHelper;
     
     private GeoMap currentMap = null;
     
@@ -129,9 +126,8 @@ public class GeoMapBean implements Serializable {
      * 
      * @return  the pretty url to creating a new GeoMap
      */
-    public String createEmptyCurrentMap() {
+    public void createEmptyCurrentMap() {
         this.currentMap = new GeoMap();
-        return "pretty:adminCmsGeoMapNew";
     }
     
     /**
@@ -148,49 +144,6 @@ public class GeoMapBean implements Serializable {
         this.selectedLanguage = selectedLanguage;
     }
     
-//    /**
-//     * Sets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
-//     * @param value
-//     */
-//    public void setTitle(String value) { 
-//        if(this.getCurrentMap() != null) {
-//            this.getCurrentMap().setTitle(value, getSelectedLanguage());
-//        }
-//    }
-//    
-//    /**
-//     * Gets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
-//     * @return  the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage} 
-//     */
-//    public String getTitle() {
-//        if(this.getCurrentMap() != null) {
-//            return this.getCurrentMap().getTitle(getSelectedLanguage());
-//        } else {
-//            return "";
-//        }
-//    }
-//    
-//    /**
-//     * Sets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
-//     * @param value
-//     */
-//    public void setDescription(String value) { 
-//        if(this.getCurrentMap() != null) {
-//            this.getCurrentMap().setDescription(value, getSelectedLanguage());
-//        }
-//    }
-//    
-//    /**
-//     * Gets the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage}
-//     * @return  the title of the {@link #getCurrentMap} for the {@link #getSelectedLanguage} 
-//     */
-//    public String getDescription() {
-//        if(this.getCurrentMap() != null) {
-//            return this.getCurrentMap().getDescription(getSelectedLanguage());
-//        } else {
-//            return "";
-//        }
-//    }
     
     /**
      * Get a list of all {@link GeoMap}s from the databse.
@@ -202,7 +155,9 @@ public class GeoMapBean implements Serializable {
     public List<GeoMap> getAllMaps() throws DAOException {
         return DataManager.getInstance().getDao().getAllGeoMaps();
     }
-    
-    
+
+    public Collection<GeoMapType> getPossibleMapTypes() {
+        return EnumSet.allOf(GeoMapType.class).of(GeoMapType.MANUAL);
+    }
 
 }

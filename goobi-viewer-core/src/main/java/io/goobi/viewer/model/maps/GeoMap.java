@@ -63,6 +63,10 @@ public class GeoMap {
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
 
+    public static enum GeoMapType {
+        SOLR_QUERY,
+        MANUAL
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,6 +94,8 @@ public class GeoMap {
     @Column(name = "date_updated")
     @JsonIgnore
     private Date dateUpdated;
+    
+    private GeoMapType type = null;
 
     /**
      * Empty Constructor
@@ -215,40 +221,18 @@ public class GeoMap {
         return title;
     }
     
-//    public void setTitle(String value, String language) {
-//        MapTranslation title = translations.stream()
-//                .filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
-//                .filter(t -> language.equals(t.getLanguage()))
-//                .findFirst().orElse(new MapTranslation(language, METADATA_TAG_TITLE, this));
-//        title.setValue(value);
-//        translations.add(title);
-//    }
-//    
-//    public void setDescription(String value, String language) {
-//        MapTranslation title = translations.stream()
-//                .filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
-//                .filter(t -> language.equals(t.getLanguage()))
-//                .findFirst().orElse(new MapTranslation(language, METADATA_TAG_DESCRIPTION, this));
-//        title.setValue(value);
-//        translations.add(title);
-//    }
-//    
-//    public String getTitle(String language) {
-//        return translations.stream()
-//        .filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
-//        .filter(t -> language.equals(t.getLanguage()))
-//        .map(t -> t.getValue())
-//        .findFirst().orElse("");
-//    }
-//    
-//    public String getDescription(String language) {
-//        return translations.stream()
-//        .filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
-//        .filter(t -> language.equals(t.getLanguage()))
-//        .map(t -> t.getValue())
-//        .findFirst().orElse("");
-//    }
+    /**
+     * @return the type
+     */
+    public GeoMapType getType() {
+        return type;
+    }
     
-    
+    /**
+     * @param type the type to set
+     */
+    public void setType(GeoMapType type) {
+        this.type = type;
+    }
     
 }

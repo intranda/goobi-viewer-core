@@ -799,6 +799,7 @@
         <pattern value="/admin/cms/maps/new/" />
         <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{geoMapBean.createEmptyCurrentMap()}</action>
     </url-mapping>
     <url-mapping id="adminCmsGeoMapEdit">
         <pattern value="/admin/cms/maps/edit/#{mapId:geoMapBean.currentMapId}/" />
