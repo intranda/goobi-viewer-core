@@ -176,7 +176,7 @@
     	     initImageFragmentLinks();
            	 initImageFragmentSelect(image);
            	} ).catch( function( error ) {
-           		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
+           		console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
            		
            		// reload image footer in fullscreen
