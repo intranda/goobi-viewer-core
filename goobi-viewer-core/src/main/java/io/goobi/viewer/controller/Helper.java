@@ -787,8 +787,6 @@ public class Helper {
         }
 
         return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
-                .append('-')
-                .append('/')
                 .append(filePath.replace(" ", "%20"))
                 .append('/')
                 .toString();

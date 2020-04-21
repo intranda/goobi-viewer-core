@@ -136,7 +136,7 @@ public class RecordsResource {
         if (StringUtils.isEmpty(query)) {
             throw new ContentNotFoundException("query required");
         }
-        query = new StringBuilder().append('(').append(query).append(')').append(SearchHelper.getAllSuffixes(true)).toString();
+        query = new StringBuilder().append('(').append(query).append(')').append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery())).toString();
         logger.debug("query: {}", query);
 
         if (count <= 0) {

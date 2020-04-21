@@ -32,8 +32,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.security.authentication.IOAuthResponseListener;
-import io.goobi.viewer.model.security.authentication.OAuthResponseListener;
+import io.goobi.viewer.model.security.authentication.AuthResponseListener;
+import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -65,7 +65,7 @@ public final class DataManager {
 
     private SessionStoreBookmarkManager bookmarkManager;
 
-    private IOAuthResponseListener oAuthResponseListener;
+    private AuthResponseListener<OpenIdProvider> oAuthResponseListener;
 
     private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
 
@@ -353,9 +353,9 @@ public final class DataManager {
      * injectOAuthResponseListener.
      * </p>
      *
-     * @param listener a {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} object.
+     * @param listener a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
      */
-    public void injectOAuthResponseListener(IOAuthResponseListener listener) {
+    public void injectOAuthResponseListener(AuthResponseListener<OpenIdProvider> listener) {
         if (listener != null) {
             this.oAuthResponseListener = listener;
         }
@@ -366,12 +366,12 @@ public final class DataManager {
      * Getter for the field <code>oAuthResponseListener</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
      */
-    public IOAuthResponseListener getOAuthResponseListener() {
+    public AuthResponseListener<OpenIdProvider> getOAuthResponseListener() {
         if (oAuthResponseListener == null) {
             synchronized (lock) {
-                oAuthResponseListener = new OAuthResponseListener();
+                oAuthResponseListener = new AuthResponseListener<>();
             }
         }
 

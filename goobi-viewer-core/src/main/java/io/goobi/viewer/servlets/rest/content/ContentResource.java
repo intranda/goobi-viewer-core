@@ -118,7 +118,6 @@ public class ContentResource {
      * API method for retrieving any type of content by its relative path within its data repository.
      *
      * @param pi Record identifier
-     * @param dataRepository Absolute path of the data repository
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      * @param contentFolder a {@link java.lang.String} object.
@@ -132,21 +131,19 @@ public class ContentResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
      */
     @GET
-    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
-    @Produces({ MediaType.TEXT_XML })
-    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
+    @Path("/document/{contentFolder}/{pi}/{fileName}")
+    @Produces({ MediaType.TEXT_XML, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    public String getContentDocument(@PathParam("contentFolder") String contentFolder,
             @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
             MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         setResponseHeader("");
         checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if ("-".equals(dataRepository)) {
-            dataRepository = null;
-        }
 
         java.nio.file.Path file = Helper.getDataFilePath(pi, contentFolder, null, fileName);
         if (file != null && Files.isRegularFile(file)) {
             try {
-                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+                String content = FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+                return content;
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
@@ -156,6 +153,31 @@ public class ContentResource {
 
         throw new ContentNotFoundException("Resource not found");
     }
+    
+    /**
+     * 
+     * @param dataRepository    ignored
+     * @param contentFolder
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * 
+     * @deprecated  use {@link #getContentDocument(String, String, String)} instead
+     */
+    @GET
+    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
+    @Produces({ MediaType.TEXT_XML, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
+            @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
+            MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+        return getContentDocument(contentFolder, pi, fileName);
+    }   
 
     /**
      * <p>

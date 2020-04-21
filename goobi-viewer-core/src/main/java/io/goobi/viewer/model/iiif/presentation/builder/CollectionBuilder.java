@@ -16,7 +16,6 @@
 package io.goobi.viewer.model.iiif.presentation.builder;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -43,7 +42,6 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -335,7 +333,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param ele
      * @return
      */
-    private void addTagListService(Collection collection, CollectionView view, String label) {
+    private static void addTagListService(Collection collection, CollectionView view, String label) {
             if(collection.getInternalName() != null) {
                 view.getCompleteList().stream().filter(e -> collection.getInternalName().equals(e.getName())).findAny().ifPresent( ele -> {
                     TagListService tagsService = new TagListService(label, JsonLdDefinitionsResource.getUrl());

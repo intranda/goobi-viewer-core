@@ -19,39 +19,42 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Implementation of {@link io.goobi.viewer.model.security.authentication.IOAuthResponseListener} which keeps all providers waiting for a response in
- * a {@link java.util.concurrent.ConcurrentHashMap}
+ * Implementation of {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} which keeps all providers waiting for a response in a
+ * {@link java.util.concurrent.ConcurrentHashMap}
  *
  * @author Florian Alpers
  */
-public class OAuthResponseListener implements IOAuthResponseListener {
+public class AuthResponseListener<T extends IAuthenticationProvider> {
 
-    private final ConcurrentHashMap<OpenIdProvider, Boolean> authenticationProviders = new ConcurrentHashMap<>(5, 0.75f, 6);
+    private final ConcurrentHashMap<T, Boolean> authenticationProviders = new ConcurrentHashMap<>(5, 0.75f, 6);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IOAuthResponseListener#register(io.goobi.viewer.model.security.authentication.OpenIdProvider)
+    /**
+     * Make an Auth provider issuing an authentication request eligible for receiving a response
+     *
+     * @param provider The provider issuing the request
      */
-    /** {@inheritDoc} */
-    @Override
-    public void register(OpenIdProvider provider) {
+
+    public void register(T provider) {
         authenticationProviders.put(provider, Boolean.TRUE);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IOAuthResponseListener#unregister(io.goobi.viewer.model.security.authentication.OpenIdProvider)
+    /**
+     * Removing a provider from the list of issuers waiting for a response. To be called either after a request has been answered or if an answer is
+     * no longer expected
+     *
+     * @param provider The provider to remove
      */
-    /** {@inheritDoc} */
-    @Override
-    public void unregister(OpenIdProvider provider) {
+
+    public void unregister(T provider) {
         authenticationProviders.remove(provider);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IOAuthResponseListener#getProviders()
+    /**
+     * Gets a list of all registered providers
+     *
+     * @return The registered providers
      */
-    /** {@inheritDoc} */
-    @Override
-    public Set<OpenIdProvider> getProviders() {
+    public Set<T> getProviders() {
         return authenticationProviders.keySet();
     }
 

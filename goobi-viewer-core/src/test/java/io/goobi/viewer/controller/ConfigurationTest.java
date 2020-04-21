@@ -853,15 +853,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see ConfigurationHelper#isSubthemeAutoSwitch()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeAutoSwitch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
-    }
-
-    /**
      * @see Configuration#isSubthemeAddFilterQuery()
      * @verifies return correct value
      */
@@ -1263,6 +1254,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isShowRecordLabelIfNoOtherViews()
+     * @verifies return correct value
+     */
+    @Test
+    public void isShowRecordLabelIfNoOtherViews_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews());
+    }
+
+    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -1343,14 +1343,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
 
-    /**
-     * @see Configuration#isSubthemesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemesEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSubthemesEnabled());
-    }
 
     /**
      * @see Configuration#isUrnDoRedirect()
@@ -2414,9 +2406,10 @@ public class ConfigurationTest extends AbstractTest {
     public void getDisplayAdditionalMetadataTranslateFields_shouldReturnCorrectValues() throws Exception {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields();
         Assert.assertNotNull(results);
-        Assert.assertEquals(2, results.size());
+        Assert.assertEquals(3, results.size());
         Assert.assertEquals(SolrConstants.DC, results.get(0));
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
+        Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
 
     /**
@@ -2709,7 +2702,7 @@ public class ConfigurationTest extends AbstractTest {
     public void testReadMapBoxToken() {
         Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
     }
-    
+
     @Test
     public void testGetLicenseDescriptions() {
         List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();

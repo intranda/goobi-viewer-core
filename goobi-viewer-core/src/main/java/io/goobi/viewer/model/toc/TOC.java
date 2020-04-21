@@ -597,7 +597,7 @@ public class TOC implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean hasChildren() {
+    public boolean isHasChildren() {
         if (tocElementMap == null || tocElementMap.get(DEFAULT_GROUP) == null || tocElementMap.get(DEFAULT_GROUP).isEmpty()) {
             return false;
         } else if (tocElementMap.get(DEFAULT_GROUP).size() == 1 && !tocElementMap.get(DEFAULT_GROUP).get(0).isHasChild()) {

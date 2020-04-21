@@ -89,7 +89,7 @@ public class BrowseElement implements Serializable {
     private String docStructType;
     private long iddoc;
     private String thumbnailUrl;
-    private boolean thumbnailAccessDenied = false;
+    //    private boolean thumbnailAccessDenied = false;
     private int imageNo;
     @JsonIgnore
     private String volumeNo = null;
@@ -102,8 +102,8 @@ public class BrowseElement implements Serializable {
     private boolean hasImages = false;
     @JsonIgnore
     private boolean hasMedia = false;
-    //    @JsonIgnore
-    //    private boolean useOverviewPage = false;
+    @JsonIgnore
+    private boolean showThumbnail = false;
     @JsonIgnore
     private long numVolumes = 0;
     private String pi;
@@ -414,11 +414,13 @@ public class BrowseElement implements Serializable {
         }
 
         //check if we have images
-        hasImages = !isAnchor() && this.mimeType.startsWith("image");
+        hasImages = !isAnchor() && (this.mimeType.startsWith("image") || structElement.isHasImages());
 
         //..or if we have video or audio
         hasMedia = !hasImages && !isAnchor()
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
+
+        showThumbnail = hasImages || hasMedia || isAnchor();
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -518,7 +520,8 @@ public class BrowseElement implements Serializable {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
                                     String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
@@ -545,7 +548,8 @@ public class BrowseElement implements Serializable {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
                                     String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                             "$1" + translatedValue + "$3");
@@ -953,6 +957,20 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the showThumbnail
+     */
+    public boolean isShowThumbnail() {
+        return showThumbnail;
+    }
+
+    /**
+     * @param showThumbnail the showThumbnail to set
+     */
+    public void setShowThumbnail(boolean showThumbnail) {
+        this.showThumbnail = showThumbnail;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>numVolumes</code>.
      * </p>
@@ -1172,17 +1190,6 @@ public class BrowseElement implements Serializable {
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
-    }
-
-    /**
-     * <p>
-     * isThumbnailAccessDenied.
-     * </p>
-     *
-     * @return the thumbnailAccessDenied
-     */
-    public boolean isThumbnailAccessDenied() {
-        return thumbnailAccessDenied;
     }
 
     /**

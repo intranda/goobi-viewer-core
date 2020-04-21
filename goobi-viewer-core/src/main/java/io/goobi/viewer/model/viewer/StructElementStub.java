@@ -422,6 +422,19 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     public boolean isLidoRecord() {
         return "LIDO".equals(sourceDocFormat);
     }
+    
+    /**
+     * 
+     * @return true if record has images; false otherwise
+     */
+    public boolean isHasImages() {
+        String imageAvailable = getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE);
+        if (imageAvailable == null || !Boolean.valueOf(imageAvailable)) {
+            return false;
+        }
+        
+        return true;
+    }
 
     /**
      * Returns the number of pages (for the entire record, not a particular docstruct).
