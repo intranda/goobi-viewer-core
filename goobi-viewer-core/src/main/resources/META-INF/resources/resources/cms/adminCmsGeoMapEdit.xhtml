@@ -121,13 +121,91 @@
 		                        </div>
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
 		                        	<div>#{msg.cms__geo_maps__map__help}</div>
-		                        	<map></map>
+		                        	<map class="input_form__geomap" id="geomap"></map>
 		                        	<div>#{msg.cms__geo_maps__map_token__help}</div>
+					            	<script>
+					            		
+					            		let geoMap = new viewerJS.GeoMap();
+					            		geoMap.init();
+					            		geoMap.onMapClick.subscribe((geojson) => {
+					            		    console.log("click at ", geojson);
+					            		    geoMap.addMarker(geojson);
+					            		})
+					            		geoMap.onFeatureMoved.subscribe((marker) => {
+					            		    console.log("moved ", marker);
+					            		})
+					            		geoMap.onFeatureClick.subscribe((marker) => {
+					            		    console.log("click on ", marker);
+					            		    geoMap.removeMarker(marker);
+					            		})
+					            	
+					            	</script>
 		                        </ui:fragment>
 			            	</div>
 			            	
-			            	
                         </h:panelGroup>
+                        
+                        <h:panelGroup id="featurePanel" rendered="#{geoMapBean.hasCurrentFeature()}">
+                        	<ul class="nav nav-tabs" role="tablist">
+                        		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
+                                    <li role="presentation" class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
+                                    <a href="#featureLanguage-#{status.index}" aria-controls="featureLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
+<!--                                         <h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}"> -->
+<!--                                         	<f:ajax execute="@form" render="@form"/> -->
+<!--                                         </h:commandLink> -->
+                                    </li>
+                                </ui:repeat>
+                        	</ul>
+                        	<div class="tab-content">
+                        	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
+                                <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="featureLanguage-#{status.index}">
+                        	
+	                        	<div class="admin__content-inner-content__input_form">
+									<!-- TITLE -->
+			                        <div class="input_form__option_group">
+			                            <div class="input_form__option_label">
+			                                <label for="featureTitle_#{language}">#{msg.name}:</label>
+			                            </div>
+			                            <div class="input_form__option_marker">
+			                            <label>*</label>
+			                            </div>
+			                            <div class="input_form__option_control">
+			                                <h:inputText id="featureTitle_#{language}" styleClass="form-control"
+			                                    value="#{geoMapBean.currentFeature.getTitle(language).value}"/>
+			                            </div>
+			                            <div class="input_form__option_help">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="featureTitleHelp_#{language}">
+			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+			                                </button>
+			                            </div>
+			                            <div id="featureTitleHelp_#{language}" class="input_form__option_control_helptext">#{msg.cms__geo_maps__feature_title__help}</div>
+			                        </div>
+			                        
+			                        <!-- DESCRIPTION -->
+			                        <div class="input_form__option_group">
+			                            <div class="input_form__option_label">
+			                                <label for="featureDesc_#{language}">#{msg.description}:</label>
+			                            </div>
+			                            <div class="input_form__option_marker">
+			                            <label>*</label>
+			                            </div>
+			                            <div class="input_form__option_control">
+			                                <h:inputTextarea id="featureDesc_#{language}" styleClass="form-control"
+			                                    value="#{geoMapBean.currentFeature.getDescription(language).value}"/>
+			                            </div>
+			                            <div class="input_form__option_help">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="featureDescHelp_#{language}">
+			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+			                                </button>
+			                            </div>
+			                            <div id="featureDescHelp_#{language}" class="input_form__option_control_helptext">#{msg.cms__geo_maps__feature_description__help}</div>
+			                        </div>
+								</div>
+								</div>
+								</ui:repeat>
+                            </div>
+                       </h:panelGroup>
+                        
                     </h:form>
                     
                 </div>

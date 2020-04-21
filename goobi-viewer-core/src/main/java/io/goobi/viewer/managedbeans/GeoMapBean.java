@@ -159,5 +159,9 @@ public class GeoMapBean implements Serializable {
     public Collection<GeoMapType> getPossibleMapTypes() {
         return EnumSet.allOf(GeoMapType.class).of(GeoMapType.MANUAL);
     }
+    
+    public boolean hasCurrentFeature() {
+        return false;
+    }
 
 }

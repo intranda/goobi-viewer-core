@@ -1141,10 +1141,8 @@ riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="ann
 
 
 this.question = this.opts.question;
-this.markerIdCounter = 1;
-this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 this.annotationToMark = null;
-this.markers = [];
+this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {
