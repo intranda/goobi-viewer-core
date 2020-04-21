@@ -4,17 +4,20 @@
    ==============================================================*/
 .timematrix {
     h2 {}
-    p {}
+    p {
+    	margin-bottom: 0;
+    }
     h3 {}
     &__subarea {
     	display: flex;
+    	height: 3rem; 
     }
     &__selection-header {
     	flex: 0 0 50%;
     	max-width: 50%;
     }
     &__loader {
-    	flex: 0 0 50%;
+    	flex: 0 0 100%;
     	max-width: 100%;
     	justify-content: right;
 		display: grid;
@@ -123,6 +126,7 @@
     	pointer-events:none;
     	font-weight: bold;
     	width: 4rem;
+    	padding: 0; 
     }
     &__bar {
     	display: flex;
