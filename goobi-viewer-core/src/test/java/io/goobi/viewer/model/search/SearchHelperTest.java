@@ -604,6 +604,43 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#normalizeField(String)
+     * @verifies normalize correctly
+     */
+    @Test
+    public void normalizeField_shouldNormalizeCorrectly() throws Exception {
+        Assert.assertEquals("MD_FOO", SearchHelper.normalizeField("MD_FOO_UNTOKENIZED"));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies apply prefix correctly
+     */
+    @Test
+    public void adaptField_shouldApplyPrefixCorrectly() throws Exception {
+        Assert.assertEquals("SORT_DC", SearchHelper.adaptField(SolrConstants.DC, "SORT_"));
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO", "SORT_"));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies not apply prefix to regular fields if empty
+     */
+    @Test
+    public void adaptField_shouldNotApplyPrefixToRegularFieldsIfEmpty() throws Exception {
+        Assert.assertEquals("MD_FOO", SearchHelper.adaptField("MD_FOO", ""));
+    }
+
+    /**
+     * @see SearchHelper#adaptField(String,String)
+     * @verifies remove untokenized correctly
+     */
+    @Test
+    public void adaptField_shouldRemoveUntokenizedCorrectly() throws Exception {
+        Assert.assertEquals("SORT_FOO", SearchHelper.adaptField("MD_FOO_UNTOKENIZED", "SORT_"));
+    }
+
+    /**
      * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
      * @verifies add static suffix
      */
@@ -1119,14 +1156,15 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         int previousSize = -1;
         Map<String, Long> previousCounts = new HashMap<>();
         BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig("MD_LANGUAGE_UNTOKENIZED", null, null, false, null, false);
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 100; ++i) {
             List<BrowseTerm> terms = SearchHelper.getFilteredTerms(bmfc, null, null, new BrowseTermComparator(Locale.ENGLISH), true);
             Assert.assertFalse(terms.isEmpty());
             Assert.assertTrue(previousSize == -1 || terms.size() == previousSize);
             previousSize = terms.size();
             for (BrowseTerm term : terms) {
                 if (previousCounts.containsKey(term.getTerm())) {
-                    Assert.assertEquals(Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()));
+                    Assert.assertEquals("Token '" + term.getTerm() + "' - ", Long.valueOf(previousCounts.get(term.getTerm())),
+                            Long.valueOf(term.getHitCount()));
                 }
                 previousCounts.put(term.getTerm(), term.getHitCount());
             }

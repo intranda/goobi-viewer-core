@@ -648,7 +648,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Add discriminator subquery, if set and configured to be part of the visible query
-        if (DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
+        if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery() && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
             try {
                 String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
                         DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
@@ -1059,7 +1059,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             // Add discriminator subquery, if set and configurated to be part of the visible query
-            if (DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
+            if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery() && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
                 try {
                     String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
                             DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
@@ -2341,7 +2341,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, true));
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {

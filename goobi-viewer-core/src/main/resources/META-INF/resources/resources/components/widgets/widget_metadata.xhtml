@@ -65,6 +65,7 @@
 				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
 					<dl>
 						<c:forEach items="#{metadataBean.events}" var="event">
+						    <ui:fragment rendered="#{event.hasSidebarMetadata}">
     							<dt>
     								<h:outputText value="#{msg[event.label]}" escape="false" />
     							</dt>
@@ -86,6 +87,7 @@
     									</h:panelGroup>
     								</h:panelGroup>
     							</ui:repeat>
+    					    </ui:fragment>
 						</c:forEach>
 					</dl>
 				</h:panelGroup>

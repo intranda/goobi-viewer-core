@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
@@ -57,7 +58,6 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -471,7 +471,8 @@ public final class SearchHelper {
             }
             sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
-        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
+        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(),
+                BeanUtils.getNavigationHelper()));
         sbQuery.append(" AND (")
                 .append(luceneField)
                 .append(":")
@@ -561,7 +562,8 @@ public final class SearchHelper {
                 }
                 sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
             }
-            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
+            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(
+                    DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), BeanUtils.getNavigationHelper()));
             Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
                 String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -702,7 +704,8 @@ public final class SearchHelper {
     public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
-        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
+        StringBuilder sbQuery =
+                new StringBuilder(query).append(getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
         return DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
@@ -780,7 +783,7 @@ public final class SearchHelper {
                     logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
             }
-            sbQuery.append(getAllSuffixes(true));
+            sbQuery.append(getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
             logger.debug("Autocomplete query: {}", sbQuery.toString());
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
@@ -1388,8 +1391,7 @@ public final class SearchHelper {
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery,
             Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
         List<BrowseTerm> ret = new ArrayList<>();
-        Map<BrowseTerm, Boolean> terms = new ConcurrentHashMap<>();
-        Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
+        ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
@@ -1452,6 +1454,10 @@ public final class SearchHelper {
                     Set<String> usedTermsInCurrentDoc = new HashSet<>();
                     for (Object o : termList) {
                         String term = String.valueOf(o);
+                        // Only add to hit count if the same string is not in the same doc
+                        if (usedTermsInCurrentDoc.contains(term)) {
+                            continue;
+                        }
                         String termStart = term;
                         if (termStart.length() > 1) {
                             termStart = term.substring(0, 1);
@@ -1462,18 +1468,14 @@ public final class SearchHelper {
                         }
                         Matcher m = p.matcher(compareTerm);
                         if (m.find()) {
-                            if (!usedTerms.containsKey(term)) {
-                                BrowseTerm browseTerm =
-                                        new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
-                                terms.put(browseTerm, true);
-                                usedTerms.put(term, browseTerm);
-                                usedTermsInCurrentDoc.add(term);
-                                sortTerm = null; // only use the sort term for the first term
-                            } else if (!usedTermsInCurrentDoc.contains(term)) {
-                                // Only add to hit count if the same string is not in the same doc
-                                usedTerms.get(term).addToHitCount(1);
-                                usedTermsInCurrentDoc.add(term);
+                            BrowseTerm browseTerm = terms.get(term);
+                            if (browseTerm == null) {
+                                browseTerm = new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
+                                terms.put(term, browseTerm);
                             }
+                            sortTerm = null; // only use the sort term for the first term
+                            browseTerm.addToHitCount(1);
+                            usedTermsInCurrentDoc.add(term);
                         }
                     }
                 }
@@ -1481,11 +1483,11 @@ public final class SearchHelper {
                 // Without filtering or using alphabetical filtering
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
                 //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, usedTerms, aggregateHits));
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
 
                 // Sequential processing (doesn't break the sorting done by Solr)
                 for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, usedTerms, aggregateHits);
+                    processSolrResult(doc, bmfc, startsWith, terms, aggregateHits);
                 }
             }
         } catch (PresentationException e) {
@@ -1497,7 +1499,7 @@ public final class SearchHelper {
         }
 
         if (!terms.isEmpty()) {
-            ret = new ArrayList<>(terms.keySet());
+            ret = new ArrayList<>(terms.values());
             if (comparator != null) {
                 Collections.sort(ret, comparator);
             }
@@ -1514,12 +1516,11 @@ public final class SearchHelper {
      * @param doc
      * @param bmfc
      * @param startsWith
-     * @param terms Set of terms collected so far.
-     * @param usedTerms Terms that are already in the terms map.
+     * @param terms Map of terms collected so far.
      * @param aggregateHits
      */
-    private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith, Map<BrowseTerm, Boolean> terms,
-            Map<String, BrowseTerm> usedTerms, boolean aggregateHits) {
+    private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
+            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
         Collection<Object> termList = doc.getFieldValues(bmfc.getField());
         if (termList == null) {
@@ -1533,6 +1534,12 @@ public final class SearchHelper {
             if (StringUtils.isEmpty(term)) {
                 continue;
             }
+
+            // Only add to hit count if the same string is not in the same doc
+            if (usedTermsInCurrentDoc.contains(term)) {
+                continue;
+            }
+
             String compareTerm = term;
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
@@ -1541,26 +1548,28 @@ public final class SearchHelper {
                 continue;
             }
 
-            if (!usedTerms.containsKey(term)) {
-                BrowseTerm browseTerm =
-                        new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
-                // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
-                terms.put(browseTerm, true);
-                usedTerms.put(term, browseTerm);
-                usedTermsInCurrentDoc.add(term);
-                browseTerm.getPiList().add(pi);
-            } else if (!usedTermsInCurrentDoc.contains(term)) {
-                // Only add to hit count if the same string is not in the same doc
-                BrowseTerm browseTerm = usedTerms.get(term);
-                // If using aggregated search, do not count instances of records that already have been counted
-                if (aggregateHits && browseTerm.getPiList().contains(pi)) {
-                    continue;
+            BrowseTerm browseTerm = terms.get(term);
+            if (browseTerm == null) {
+                synchronized (lock) {
+                    // Another thread may have added this term by now
+                    if (!terms.containsKey(term)) {
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                        terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
+                    }
                 }
-                browseTerm.addToHitCount(1);
-                usedTermsInCurrentDoc.add(term);
-                browseTerm.getPiList().add(pi);
+                browseTerm = terms.get(term);
             }
+
             sortTerm = null; // only use the sort term for the first term
+
+            // If using aggregated search, do not count instances of records that already have been counted
+            if (aggregateHits && browseTerm.getPiList().contains(pi)) {
+                continue;
+            }
+
+            browseTerm.addToHitCount(1);
+            browseTerm.getPiList().add(pi);
+            usedTermsInCurrentDoc.add(term);
         }
     }
 
@@ -1767,8 +1776,20 @@ public final class SearchHelper {
     /**
      * 
      * @param fieldName
+     * @return
+     */
+    public static String normalizeField(String fieldName) {
+        return adaptField(fieldName, null);
+    }
+
+    /**
+     * 
+     * @param fieldName
      * @param prefix
      * @return modified field name
+     * @should apply prefix correctly
+     * @should not apply prefix to regular fields if empty
+     * @should remove untokenized correctly
      */
     static String adaptField(String fieldName, String prefix) {
         if (fieldName == null) {
@@ -1785,8 +1806,14 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
             default:
-                if (fieldName.startsWith("MD_")) {
-                    fieldName = fieldName.replace("MD_", prefix);
+                if (StringUtils.isNotEmpty(prefix)) {
+                    if (fieldName.startsWith("MD_")) {
+                        fieldName = fieldName.replace("MD_", prefix);
+                    } else if (fieldName.startsWith("MD2_")) {
+                        fieldName = fieldName.replace("MD2_", prefix);
+                    } else if (fieldName.startsWith("BOOL_")) {
+                        fieldName = fieldName.replace("BOOL_", prefix);
+                    }
                 }
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
                 return fieldName;
@@ -2152,7 +2179,7 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
-        String suffixes = getAllSuffixes(true, nh);
+        String suffixes = getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), nh);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }

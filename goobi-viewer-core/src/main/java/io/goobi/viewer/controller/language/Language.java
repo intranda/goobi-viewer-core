@@ -17,14 +17,12 @@ package io.goobi.viewer.controller.language;
 
 import java.util.Locale;
 
-import org.apache.sis.util.Locales;
-
 /**
  * <p>
  * Language class.
  * </p>
  */
-public class Language implements Comparable<Language>{
+public class Language implements Comparable<Language> {
 
     /**
      * language code according to iso 639-2/B (based on English names)
@@ -42,7 +40,6 @@ public class Language implements Comparable<Language>{
     private String frenchName;
     private String germanName;
 
-    
     /**
      * <p>
      * getIsoCode639_1.
@@ -218,16 +215,16 @@ public class Language implements Comparable<Language>{
     public void setGermanName(String germanName) {
         this.germanName = germanName;
     }
-    
+
     public String getName(Locale locale) {
-        switch(locale.getLanguage()) {
+        switch (locale.getLanguage()) {
             case "ger":
             case "de":
                 return getGermanName();
             case "fr":
             case "fra":
                 return getFrenchName();
-            default: 
+            default:
                 return getEnglishName();
         }
     }
@@ -239,18 +236,18 @@ public class Language implements Comparable<Language>{
     public int compareTo(Language other) {
         return this.getIsoCode().compareTo(other.getIsoCode());
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            Language other = (Language)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            Language other = (Language) obj;
             return this.getIsoCode().equals(other.getIsoCode());
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 }

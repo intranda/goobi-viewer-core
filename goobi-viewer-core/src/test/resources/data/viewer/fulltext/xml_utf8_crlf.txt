@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div>
+  <h3 xmlns="http://www.w3.org/1999/xhtml">
+    <span class="headingNumber">6.2.</span>
+    <span class="head">Civilrecht</span>
+  </h3>
+  <h4 xmlns="http://www.w3.org/1999/xhtml">
+    <span class="headingNumber">6.2.1.</span>
+    <span class="head">Obligationen-, Handels- und Wechselrecht</span>
+  </h4>
+  <h5 xmlns="http://www.w3.org/1999/xhtml">
+    <span class="headingNumber">6.2.1.1.</span>
+    <span class="head">
+      <q class="titlea">Die Tragweite des Reichs-Haftpflichtgesetzes nach der Rechtsprechung des Reichsoberhandelsgerichts</q>
+    </span>
+  </h5>
+  <div xmlns="http://www.w3.org/1999/xhtml" class="byline">
+    <span class="docAuthor">vom Geh. Justiz- und Oberlandesgerichtsrat Dr. v. Kräwel, Naumburg</span>
+  </div>
+  <p xmlns="http://www.w3.org/1999/xhtml">23</p>
+  <p xmlns="http://www.w3.org/1999/xhtml">B. Civilrecht.</p>
+  <p xmlns="http://www.w3.org/1999/xhtml">
+    1. Obligationen-, Handels- und Wechselrecht.
+    <br />
+    Die Tragweite des Reichshaftpflichtgesetzes
+    <br />
+    nach der Rechtsprechung des Reichsober-
+    <br />
+    handelsgerich ts.
+    <br />
+    Von l)r. v. Kriiwel, (Ich. Justiz- und Oberlandesgerichtsrat in Naumburg.
+    <br />
+    Man klagt vielfach über die zu geringe Tragweite des
+    <br />
+    Reichsgesetzes vom 7. Juni 1871 und verlangt das Einschreiten
+    <br />
+    der Gesetzgebung, um die Entschädigungspflicht auf noch mehr
+    <br />
+    Fälle auszudehnen.
+    <br />
+    Doch haben diese Klagen auch darin ihren Grund, dafs
+    <br />
+    die Gerichte dies Gesetz zu eng anwenden. Dies aus der Recht-
+    <br />
+    sprechung des Reichsoberhandelsgerichts nachzuweisen, ist die
+    <br />
+    Aufgabe dieses Aufsatzes.
+    <br />
+    Solche Prüfung der Entscheidungen des Reichsoberhandels-
+    <br />
+    gerichts dürfte gerade jetzt an der Zeit sein, da an dessen Stelle
+    <br />
+    das Reichsgericht getreten ist, dessen Mitglieder die vom Reichs-
+    <br />
+    oberhandelsgericht angenommenen Grundsätze neuer Beratung
+    <br />
+    unterziehen werden.
+    <br />
+    Um nun zu einer richtigen Auslegung des Gesetzes zu ge-
+    <br />
+    langen, ist es vor Allem nötig, sich dessen eigentlichen Zweck
+    <br />
+    zu vergegenwärtigen, denn die grammatische Auslegung reicht
+    <br />
+    nicht hin, um die Zweifel zu lösen, welche sich aus den im Gesetz
+    <br />
+    gebrauchten Worten ergeben. Man mufs daher die logische
+    <br />
+    Auslegung zu Hülfe nehmen, welche wesentlich auf dem vom
+    <br />
+    Gesetzgeber ausgesprochenen Zwecke des Gesetzes beruht.
+    <br />
+    Ds ist eine alte Streitfrage, welcher Auslegung der Vorzug
+    <br />
+    gebühre, wenn die logische Auslegung zu einem anderen Ergebnis
+    <br />
+    Fuhrt als die grammatische. Doch sprechen sich die angesehensten
+  </p>
+</div>

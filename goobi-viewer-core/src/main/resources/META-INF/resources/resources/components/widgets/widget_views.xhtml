@@ -19,14 +19,13 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and configurationBean.sidebarMetadataLinkVisible}">
+	    <ui:fragment rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly}">
 		<div id="widgetViews" class="widget">
 			<h:form id="widgetViewsForm">
 				<h3>#{msg.view}</h3>
 				<ul>
 					<!-- Object -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarPageLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayObjectViewLink}">
 						<li
 							class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
 							<h:outputLink
@@ -38,8 +37,7 @@
 					</h:panelGroup>
 
 					<!-- Calendar -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayCalendarViewLink}">
 						<li
 							class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
 							<h:outputLink
@@ -50,7 +48,7 @@
 					</h:panelGroup>
 
 					<!-- TOC -->
-					<h:panelGroup rendered="#{configurationBean.sidebarTocLinkVisible and navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.topDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayTocViewLink}">
 						<li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
 							<h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" escape="false" />
@@ -59,8 +57,7 @@
 					</h:panelGroup>
 
 					<!-- Thumbnails -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarThumbsLinkVisible and activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayThumbnailViewLink}">
 						<li
 							class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
 							<h:outputLink
@@ -71,25 +68,21 @@
 					</h:panelGroup>
 
 					<!-- Metadata -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarMetadataLinkVisible and !activeDocumentBean.group}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
 						<li
 							class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
 							<h:outputLink
 								value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText
-									rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}"
+								<h:outputText rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.bibData}" />
-								<h:outputText
-									rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
+								<h:outputText rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.metadata}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
 					<!-- Full-text -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarFulltextLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.topDocument.fulltextAvailable and !activeDocumentBean.viewManager.filesOnly}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayFulltextViewLink}">
 						<li
 							class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
 							<h:outputLink
@@ -100,8 +93,7 @@
 					</h:panelGroup>
 
 					<!-- External full-text URL -->
-					<h:panelGroup
-						rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT') != null}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">
 						<li class=""><h:outputLink
 								value="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
 								target="_blank">
@@ -110,7 +102,7 @@
 					</h:panelGroup>
 
 					<!-- NER -->
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.nerAvailable}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayNerViewLink}">
 						<li class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
 							<h:outputLink
 								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
@@ -120,7 +112,7 @@
 					</h:panelGroup>
 
 					<!-- EXTERNAL URL -->
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayExternalResolverLink}">
 						<li> 
                             <a 
                                 href="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
