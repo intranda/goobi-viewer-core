@@ -24,6 +24,9 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -108,6 +111,11 @@ public class GeoMapBean implements Serializable {
     
     public void deleteMap(GeoMap map) throws DAOException {
         DataManager.getInstance().getDao().deleteGeoMap(map);
+    }
+    
+    public String getEditMapUrl(GeoMap map) {
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("adminCmsGeoMapEdit").getPatternParser().getMappedURL(map.getId());
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
     
     /**

@@ -110,7 +110,7 @@ public class GeoMap {
     
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cms_geomap_features", joinColumns = @JoinColumn(name = "geomap_id"))
-    @Column(name = "features")
+    @Column(name = "features", columnDefinition = "LONGTEXT")
     private List<String> features = new ArrayList<String>();
 
     @Column(name = "map_type")

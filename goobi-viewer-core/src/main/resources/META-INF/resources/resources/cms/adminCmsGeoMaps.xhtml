@@ -34,8 +34,10 @@
                     	<div class="admin__content-inner-content__list">
 	                    	<ui:repeat value="#{geoMapBean.allMaps}" var="map" varStatus="status">
 	                    		<div class="admin__content-inner-content__list__item">
-	                    			<h3>#{map.getTitle(navigationHelper.localeString)}</h3>
-	                    			<h:outputText escape="false" value="#{map.getDescription(navigationHelper.localeString)}"></h:outputText>
+	                    			<h:outputLink value="#{geoMapBean.getEditMapUrl(map)}">
+		                    			<h3>#{map.getTitle(navigationHelper.localeString)}</h3>
+		                    			<h:outputText escape="false" value="#{map.getDescription(navigationHelper.localeString)}"></h:outputText>
+	                    			</h:outputLink>
 	                    		</div>
 	                    	</ui:repeat>
                     	</div>
