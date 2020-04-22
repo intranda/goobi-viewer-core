@@ -62,7 +62,7 @@
             if (typeof mapBoxToken !== 'undefined') {		        	
                 widgetGeoLocationsConfig = {
 	        			locations: '#{cc.attrs.widget.geoLocationsString}',
-	        			mapboxAccessToken: mapBoxToken,
+	        			mapboxAccessToken: viewerJS.getMapBoxToken(),
 	        			msg: {
 	        			    propertiesLink: "#{msg.widgetGeoLoacations_popupLinkText}"
 	        			}
