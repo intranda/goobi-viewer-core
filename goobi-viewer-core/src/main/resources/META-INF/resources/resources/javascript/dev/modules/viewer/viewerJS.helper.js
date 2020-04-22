@@ -24,7 +24,7 @@
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
-    
+        
     // default variables
     var _debug = false;
     
@@ -386,20 +386,19 @@ var viewerJS = ( function( viewer ) {
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
     
-    viewer.getMetadataValue = function(object, language) {
-        return viewer.getOrElse([language, 0], object);
-    }   
-    
     viewer.getMapBoxToken = function() {
         if(typeof mapBoxToken != "undefined") {
             return mapBoxToken;
         } else {
-            return undefined;
+            return undefined; 
         }
         
     }   
     
-    
+    viewer.getMetadataValue = function(object, language) {
+        return viewer.getOrElse([language, 0], object);
+    }   
+
     viewer.getOrElse = function(p, o) {  
         var reducer = function(xs, x) {
             return (xs && xs[x]) ? xs[x] : ((xs && xs[Object.keys(xs)[0]]) ? xs[Object.keys(xs)[0]] : null);

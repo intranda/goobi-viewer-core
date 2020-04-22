@@ -122,89 +122,82 @@
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
 		                        	<div>#{msg.cms__geo_maps__map__help}</div>
 		                        	<map class="input_form__geomap" id="geomap"></map>
+		                        	<popover id="geoMapPopoverTemplate">
+		                        		<h4 data-metadata="title"></h4>
+		                        		<span data-metadata="description"></span>
+		                        	</popover>
 		                        	<div>#{msg.cms__geo_maps__map_token__help}</div>
 					            	<script>
 					            		
-					            		let geoMap = new viewerJS.GeoMap();
+					            		let displayLanguage = "#{navigationHelper.localeString}"
+					            		let geoMap = new viewerJS.GeoMap({
+					            		    language: displayLanguage,
+					            		    popover: document.getElementById("geoMapPopoverTemplate"),
+					            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
+					            		});
 					            		geoMap.init();
 					            		geoMap.onMapClick.subscribe((geojson) => {
 					            		    console.log("click at ", geojson);
-					            		    geoMap.addMarker(geojson);
+					            		    geoMap.addMarker(geojson).openPopup();
+					            		    updateMetadata(geojson);
 					            		})
-					            		geoMap.onFeatureMoved.subscribe((marker) => {
-					            		    console.log("moved ", marker);
+					            		geoMap.onFeatureMoved.subscribe((geojson) => {
+					            		    console.log("moved ", geojson);
 					            		})
-					            		geoMap.onFeatureClick.subscribe((marker) => {
-					            		    console.log("click on ", marker);
-					            		    geoMap.removeMarker(marker);
+					            		geoMap.onFeatureClick.subscribe((geojson) => {
+					            		    console.log("click on ", geojson);
+					            		    updateMetadata(geojson);
 					            		})
 					            	
+					            		let metadataProvider = new Rx.Subject();
+					            		riot.mount("metadataEditor", {
+					            		    languages: #{navigationHelper.supportedLanguagesAsJson},
+					            		    metadata: [],
+					            		    provider: metadataProvider,
+					            		    currentLanguage: displayLanguage
+					            		});
+					            		
+					            		updateMetadata = function(geojson) {
+					            		    let listener = new Rx.Subject();
+					            		    listener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
+					            		        geojson.properties[metadata.property] = metadata.value;
+// 					            		        console.log("updated ", geojson);
+					            		        geoMap.updateMarker(geojson.id);
+					            		    })
+					            		    let metadataList = [
+					            		        {	
+					            		    		property: "title",
+					            		    		tyle: "text",
+					            		    		label: "#{msg.title}",
+					            		    		value: geojson.properties.title,
+					            		    		required: false,
+					            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
+					            		    		listener: listener,
+					            		    	},
+					            		    	{	
+					            		    		property: "description",
+					            		    		type:"longtext",
+					            		    		label: "#{msg.description}",
+					            		    		value: geojson.properties.description,
+					            		    		required: false,
+					            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
+					            		    		listener: listener
+					            		    	}
+					            		    ]
+					            		    console.log("update metadata ", metadataList);
+					            		    metadataProvider.next(metadataList);
+					            		    $("html, body").scrollTop($("#featureForm").offset().top)
+					            		}
+					            		
 					            	</script>
 		                        </ui:fragment>
 			            	</div>
-			            	
+			            	<br/>
+			            	<div id="featureForm">
+				            	<metadataEditor/>
+			            	</div>
                         </h:panelGroup>
                         
-                        <h:panelGroup id="featurePanel" rendered="#{geoMapBean.hasCurrentFeature()}">
-                        	<ul class="nav nav-tabs" role="tablist">
-                        		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                    <li role="presentation" class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
-                                    <a href="#featureLanguage-#{status.index}" aria-controls="featureLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
-<!--                                         <h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}"> -->
-<!--                                         	<f:ajax execute="@form" render="@form"/> -->
-<!--                                         </h:commandLink> -->
-                                    </li>
-                                </ui:repeat>
-                        	</ul>
-                        	<div class="tab-content">
-                        	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="featureLanguage-#{status.index}">
-                        	
-	                        	<div class="admin__content-inner-content__input_form">
-									<!-- TITLE -->
-			                        <div class="input_form__option_group">
-			                            <div class="input_form__option_label">
-			                                <label for="featureTitle_#{language}">#{msg.name}:</label>
-			                            </div>
-			                            <div class="input_form__option_marker">
-			                            <label>*</label>
-			                            </div>
-			                            <div class="input_form__option_control">
-			                                <h:inputText id="featureTitle_#{language}" styleClass="form-control"
-			                                    value="#{geoMapBean.currentFeature.getTitle(language).value}"/>
-			                            </div>
-			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="featureTitleHelp_#{language}">
-			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-			                                </button>
-			                            </div>
-			                            <div id="featureTitleHelp_#{language}" class="input_form__option_control_helptext">#{msg.cms__geo_maps__feature_title__help}</div>
-			                        </div>
-			                        
-			                        <!-- DESCRIPTION -->
-			                        <div class="input_form__option_group">
-			                            <div class="input_form__option_label">
-			                                <label for="featureDesc_#{language}">#{msg.description}:</label>
-			                            </div>
-			                            <div class="input_form__option_marker">
-			                            <label>*</label>
-			                            </div>
-			                            <div class="input_form__option_control">
-			                                <h:inputTextarea id="featureDesc_#{language}" styleClass="form-control"
-			                                    value="#{geoMapBean.currentFeature.getDescription(language).value}"/>
-			                            </div>
-			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="featureDescHelp_#{language}">
-			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-			                                </button>
-			                            </div>
-			                            <div id="featureDescHelp_#{language}" class="input_form__option_control_helptext">#{msg.cms__geo_maps__feature_description__help}</div>
-			                        </div>
-								</div>
-								</div>
-								</ui:repeat>
-                            </div>
-                       </h:panelGroup>
                         
                     </h:form>
                     

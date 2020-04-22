@@ -44,6 +44,7 @@ public class GeoMapBean implements Serializable {
     private GeoMap currentMap = null;
     
     private String selectedLanguage;
+    
         
     /**
      * 

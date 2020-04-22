@@ -28,7 +28,7 @@ var viewerJS = ( function( viewer ) {
     'use strict'; 
     
     // default variables
-    var _debug = false;
+    var _debug = true;
     
     var _defaults = {
             mapId : "geomap",
@@ -38,7 +38,12 @@ var viewerJS = ( function( viewer ) {
                 zoom: 5,
                 center: [49.451993, 11.073397] //lat, long
             },
-            allowMovingFeatures: true
+            allowMovingFeatures: true,
+            mapBoxToken : undefined,
+            mapBoxWorldId: "mapbox.world-bright",
+            language: "de",
+            popover: undefined,
+            emptyMarkerMessage: undefined
     }
     
     viewer.GeoMap = function(config) {
@@ -46,11 +51,17 @@ var viewerJS = ( function( viewer ) {
         if (typeof L == "undefined") {
             throw "leaflet.js is not loaded";
         }
+        this.config = $.extend( true, {}, _defaults, config );
+        if(!this.config.mapBoxToken) {
+            this.config.mapBoxToken = viewerJS.getMapBoxToken();
+        }
+        if(_debug) {
+            console.log("load GeoMap with config ", this.config);
+        }
         
         this.markerIdCounter = 1;
         this.markers = [];
         
-        this.config = $.extend( true, {}, _defaults, config );
         
         this.onMapClick = new Rx.Subject();
         this.onFeatureClick = new Rx.Subject();
@@ -60,16 +71,32 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.prototype.init = function() {
         this.map = new L.Map(this.config.mapId);
-        var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          minZoom: this.config.minZoom,
-          maxZoom: this.config.maxZoom,
-          attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-        });
+        
+        if(this.config.mapBoxToken) {
+            var mapbox = new L.TileLayer(
+                    'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=' + this.config.mapBoxToken, {
+                        tileSize: 512,
+                        zoomOffset: -1,
+                        attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    });
+            if(_debug) {                
+                console.log("Add mapbox layer");
+            }
+            this.map.addLayer(mapbox);
+        } else {            
+            var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                minZoom: this.config.minZoom,
+                maxZoom: this.config.maxZoom,
+                attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+            });
+            if(_debug) {                         
+                console.log("add openStreatMap layer");
+            }
+            this.map.addLayer(osm);
+        }
      
         // define view
         this.setView(this.config.initialView);
-        this.map.addLayer(osm);
-        
         this.locations = L.geoJSON([], {
             pointToLayer: function(geoJsonPoint, latlng) {
                 let marker = L.marker(latlng, {
@@ -87,13 +114,26 @@ var viewerJS = ( function( viewer ) {
                     let position = marker.getLatLng();
                     marker.feature.geometry = marker.toGeoJSON().geometry;
                     marker.feature.view = {zoom: this.map.getZoom(), center: [marker.getLatLng().lng, marker.getLatLng().lat]};
-                    console.log("position ", position, marker.feature);
                     this.onFeatureMoved.next(marker.feature);
                 }.bind(this));
                 
                 marker.on("click", function(event) {
                     this.onFeatureClick.next(marker.feature);
                 }.bind(this));
+                
+                marker.bindPopup(() => {
+                    if(this.config.popover && (marker.feature.properties.title || marker.feature.properties.description) ) {
+                        let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
+                        let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
+                        let $popover = $(this.config.popover);
+                        $popover.find("[data-metadata='title']").text(title);
+                        $popover.find("[data-metadata='description']").text(desc);
+                        $popover.show();
+                        return $popover.get(0);
+                    } else {
+                        return this.config.emptyMarkerMessage;
+                    }
+                });
                 
                 this.markers.push(marker);    
                 
@@ -118,6 +158,13 @@ var viewerJS = ( function( viewer ) {
         this.map.setView(view.center, view.zoom);
     }
     
+    viewer.GeoMap.prototype.updateMarker = function(id) {
+        let marker = this.getMarker(id);
+        if(marker) {            
+            marker.openPopup();
+        }
+    }
+    
     viewer.GeoMap.prototype.resetMarkers = function() {
         this.markerIdCounter = 1;
         this.markers.forEach((marker) => {
@@ -132,7 +179,8 @@ var viewerJS = ( function( viewer ) {
                 "type": "Feature",
                 "id": id,
                 "properties": {
-                    "name": "",
+                    "title": "",
+                    "description":""
                 },
                 "geometry": {
                     "type": "Point",
@@ -154,7 +202,9 @@ var viewerJS = ( function( viewer ) {
         let id = this.markerIdCounter++;
         geoJson.id = id;
         this.locations.addData(geoJson);
-        return id;
+        let marker = this.getMarker(id);
+        console.log("Add marker ", marker);
+        return marker;
     }
 
 

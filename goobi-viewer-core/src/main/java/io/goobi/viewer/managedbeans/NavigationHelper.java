@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -612,6 +613,21 @@ public class NavigationHelper implements Serializable {
                 //                .peek(language -> logger.trace("Adding sort field: {}", language))
                 .forEach(locale -> ret.add(locale.getLanguage()));
 
+        return ret;
+    }
+    
+    /**
+     * Returns ISO 639-1 language codes of available JSF locales as json array.
+     *
+     * @return a String to be interpreted as json array of strings.
+     */
+    public String getSupportedLanguagesAsJson() {
+
+        Iterable<Locale> locales = () -> getSupportedLocales();
+        String ret = StreamSupport.stream(locales.spliterator(), false)
+            .map(lang -> "\"" + lang + "\"")
+            .collect(Collectors.joining(","));
+        ret = "[" + ret + "]";
         return ret;
     }
 

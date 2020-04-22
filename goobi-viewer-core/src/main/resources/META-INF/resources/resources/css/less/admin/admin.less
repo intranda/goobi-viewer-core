@@ -154,59 +154,62 @@
 				padding: 0;
 			}
 		}
-		.input_form {
-				&__option_group {
-					display: grid;
-					grid-template-columns: 10% 1% 83% 6%;
-					grid-row-gap: 5px;
-				}
-				&__option_label {
-					label {
-						height: auto;
-					}
-				}
-				&__option_marker {
-					visibility: hidden;
-					&.in {
-						visibility: visible;
-					}
-				}
-				&__option_control {
-					input[type="date"] {
-						line-height: inherit;
-					}
-				}
-				&__option_help {
-					text-align: center;
-				}
-				&__option_control_helptext {
-					display: none;
-					font-size: 1.2rem;
-					font-style: italic;
-					grid-column-start: 3;
-					color: #666;
-					&.in {
-						display: block;
-					}
-				}
-				&__geomap {
-					width: 100%;
-					height: 400px;
-					
-				}
+		&__controls {
+			display: flex;
+			justify-content: flex-end;
+			.btn {
+				margin-left: 10px;
 			}
-			&__controls {
-				display: flex;
-				justify-content: flex-end;
-				.btn {
-					margin-left: 10px;
-				}
-			}
+		}
 	}
-	
-	
 	table {
 		background-color: @white;
+	}
+}
+
+.input_form {
+	background: white;
+	display: grid;
+	grid-row-gap: 10px;
+	font-size: 1.4rem;
+	&__option_group {
+		display: grid;
+		grid-template-columns: 10% 1% 83% 6%;
+		grid-row-gap: 5px;
+	}
+	&__option_label {
+		label {
+			height: auto;
+		}
+	}
+	&__option_marker {
+		visibility: hidden;
+		&.in {
+			visibility: visible;
+		}
+	}
+	&__option_control {
+		input[type="date"] {
+			line-height: inherit;
+		}
+	}
+	&__option_help {
+		text-align: center;
+	}
+	&__option_control_helptext {
+		display: none;
+		font-size: 1.2rem;
+		font-style: italic;
+		grid-column-start: 3;
+		color: #666;
+		&.in {
+			display: block;
+		}
+	} 
+	&__geomap {
+		width: 100%;
+		height: 400px;
+		
 	}
 }
 

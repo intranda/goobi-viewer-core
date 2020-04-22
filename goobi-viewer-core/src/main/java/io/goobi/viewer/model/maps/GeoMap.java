@@ -15,18 +15,28 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -34,11 +44,14 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsonorg.JSONArrayDeserializer;
+import com.google.gson.Gson;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -95,6 +108,12 @@ public class GeoMap {
     @JsonIgnore
     private Date dateUpdated;
     
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "cms_geomap_features", joinColumns = @JoinColumn(name = "geomap_id"))
+    @Column(name = "features")
+    private List<String> features = new ArrayList<String>();
+
+    @Column(name = "map_type")
     private GeoMapType type = null;
 
     /**
@@ -233,6 +252,51 @@ public class GeoMap {
      */
     public void setType(GeoMapType type) {
         this.type = type;
+    }
+    
+    /**
+     * @return the features
+     */
+    public List<String> getFeatures() {
+        return features;
+    }
+    
+    /**
+     * @param features the features to set
+     */
+    public void setFeatures(List<String> features) {
+        this.features = features;
+    }
+    
+    public String getFeaturesAsString() {
+        String string = this.features.stream().collect(Collectors.joining(","));
+        string = "[" + string + "]";
+        return string;
+    }
+    
+    public void setFeaturesAsString(String features) {
+        JSONArray array = new JSONArray(features);
+        this.features = new ArrayList<>();
+        for (Object object : array) {
+            this.features.add(object.toString());
+        }
+    }
+    
+    public static void main(String[] args) {
+        
+        String string = "[{a: \"b,c\", b: \"sdfsdf\"}, {a: [\"a\",\"b\", \"c\"], d: 12, e: {a: 2}},{a: \"b\", d: { a: [1,2], b: \"dsfsdf\"}}]";
+        
+        JSONArray array = new JSONArray(string);
+        for (Object object : array) {
+            System.out.println(object);
+        }
+        
+//        StringReader reader = new StringReader(string);
+//        JsonParser parser = Json.createParser(reader);
+//        JsonArray array = parser.getArray();
+//        for (JsonValue jsonValue : array) {
+//            System.out.println(jsonValue);
+//        }
     }
     
 }
