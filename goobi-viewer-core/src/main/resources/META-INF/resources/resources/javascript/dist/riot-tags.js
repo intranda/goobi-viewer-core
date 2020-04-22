@@ -1645,7 +1645,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 
 
-riot.tag2('metadataeditor', '<div if="{this.metadataList && this.metadataList.length > 0}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div></div></div></div></div>', '', '', function(opts) {
+riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="input_form__actions"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
 
  	this.on("mount", () => {
  	    console.log("mount metadataEditor ", this.opts);
@@ -1671,41 +1671,50 @@ riot.tag2('metadataeditor', '<div if="{this.metadataList && this.metadataList.le
 
  	this.updateMetadataList = function(metadataList) {
  	   this.metadataList = metadataList;
-       	this.metadataList.forEach(md => {
-   	        let valueObject = this.getValueForLanguages(this.opts.languages);
-   	        if(typeof md.value == "string") {
-   	            valueObject[this.currentLanguage] = [md.value];
-   	        } else if(md.value) {
-   	            $.extend(valueObject, md.value);
-   	        }
-   	        md.value = valueObject;
-   	    })
- 	}.bind(this)
-
- 	this.getValueForLanguages = function(languages) {
- 	    let ret = {};
- 	    languages.forEach(lang => {
- 	        ret[lang] = []
- 	    })
- 	    return ret;
  	}.bind(this)
 
  	this.updateMetadata = function(event) {
  	    let metadata = event.item.metadata;
- 	    metadata.value[this.currentLanguage] = [event.target.value];
- 	    if(metadata.listener) {
- 	        metadata.listener.next(metadata);
+ 	    if(!metadata.value) {
+ 	        metadata.value = {};
  	    }
+ 	    let value = event.target.value;
+ 	    if(value) {
+	 	    metadata.value[this.currentLanguage] = [event.target.value];
+ 	    } else {
+ 	       metadata.value[this.currentLanguage] = undefined;
+ 	    }
+ 	    if(this.opts.updateListener) {
+ 	       this.opts.updateListener.next(metadata);
+ 	    }
+ 	    console.log("set metadata ", metadata.value);
  	}.bind(this)
 
  	this.getValue = function(metadata) {
- 	    let value = viewerJS.getMetadataValue(metadata.value, this.currentLanguage);
- 	    return value;
+ 	    if(metadata.value && metadata.value[this.currentLanguage]) {
+	 	    let value = metadata.value[this.currentLanguage][0];
+	 	    return value;
+ 	    } else {
+ 	        return "";
+ 	    }
  	}.bind(this)
 
  	this.setCurrentLanguage = function(event) {
  	    this.currentLanguage = event.item.language;
  	    this.update();
+ 	}.bind(this)
+
+ 	this.notifyDelete = function() {
+ 	    this.opts.deleteListener.next();
+ 	}.bind(this)
+
+ 	this.isEditable = function(metadata) {
+ 	    return metadata.editable === undefined || metadata.editable === true;
+ 	}.bind(this)
+
+ 	this.mayDelete = function() {
+ 	    editable = this.metadataList.find( md => this.isEditable(md));
+ 	    return editable !== undefined;
  	}.bind(this)
 
 });

@@ -148,6 +148,9 @@
 			grid-row-gap: 10px;
 			font-size: 1.4rem;
 		}
+		&__empty_form {
+			
+		}
 		.tab-content {
 			.admin__content-inner-content__input_form {
 				border:none;
@@ -206,11 +209,22 @@
 			display: block;
 		}
 	} 
+	&__actions {
+		display: flex;
+		justify-content: end;
+//		visibility: hidden;
+	}
 	&__geomap {
 		width: 100%;
 		height: 400px;
-		
 	}
+//	&:hover {
+//		.input_form {
+//			&__actions {
+//				visibility: visible;
+//			}
+//		}
+//	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

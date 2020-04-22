@@ -17,6 +17,106 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
+    
+                      	<script>
+					            		
+					            		let currentFeature = undefined;
+					            		let displayLanguage = "#{navigationHelper.localeString}";
+					            		let deleteListener = new Rx.Subject();
+				            		    let updateListener = new Rx.Subject();
+					            		let metadataProvider = new Rx.Subject();
+					            		
+					            		let geoMap = new viewerJS.GeoMap({
+					            		    language: displayLanguage,
+					            		    popover: "#geoMapPopoverTemplate",
+					            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
+					            		});
+					            		geoMap.onMapClick.subscribe((geojson) => {
+					            		    console.log("click at ", geojson);
+					            		    currentFeature = geojson;
+					            		    geoMap.addMarker(geojson).openPopup();
+					            		    updateMetadata(geojson);
+					            		})
+					            		geoMap.onFeatureMoved.subscribe((geojson) => {
+					            		    console.log("moved ", geojson);
+					            		})
+					            		geoMap.onFeatureClick.subscribe((geojson) => {
+					            		    console.log("click on ", geojson);
+					            		    console.log("current Feature", currentFeature);
+					            		    if(currentFeature == geojson) {
+					            		        currentFeature = undefined;
+					            		        updateMetadata();
+					            		    } else {		
+					            		        currentFeature = geojson;
+					            		    	updateMetadata(geojson);
+					            		    }
+					            		})
+				            		    
+					            		deleteListener.subscribe(() => {
+					            		    if(currentFeature) {
+					            		        geoMap.removeMarker(currentFeature);
+					            		        currentFeature = undefined;
+					            		        updateMetadata();
+					            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+					            		    }
+					            		})
+					            		updateListener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
+					            		    if(currentFeature) {					            		        
+					            		        currentFeature.properties[metadata.property] = metadata.value;
+					            		        geoMap.updateMarker(currentFeature.id);
+					            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+					            		    }
+				            		    })
+					            		
+					            		init = function() {
+						            		let features = JSON.parse($("#featuresInput").val())
+						            		console.log("load features ", features);
+						            		geoMap.init();
+						            		features.forEach( feature => {
+						            		    geoMap.addMarker(feature);
+						            		})
+						            		
+						            		riot.mount("metadataEditor", {
+						            		    languages: #{navigationHelper.supportedLanguagesAsJson},
+						            		    metadata: undefined,
+						            		    provider: metadataProvider,
+						            		    currentLanguage: displayLanguage,
+						            		    updateListener: updateListener,
+						            		    deleteListener : deleteListener,
+						            		    deleteLabel : "#{msg.delete}"
+						            		});
+					            		}
+					            		
+					            		updateMetadata = function(geojson) {
+					            		    let metadataList = [
+					            		        {	
+					            		    		property: "title",
+					            		    		tyle: "text",
+					            		    		label: "#{msg.title}",
+					            		    		value: geojson ? geojson.properties.title : "",
+					            		    		required: false,
+					            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
+					            		    		editable: geojson != undefined
+					            		    	},
+					            		    	{	
+					            		    		property: "description",
+					            		    		type:"longtext",
+					            		    		label: "#{msg.description}",
+					            		    		value: geojson ? geojson.properties.description: "",
+					            		    		required: false,
+					            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
+					            		    		editable: geojson != undefined
+					            		    	}
+					            		    ]
+					 		           		metadataProvider.next(metadataList, true);
+					            		    if(geojson) {
+						            		    $("html, body").scrollTop($("#featureForm").offset().top)
+					            		    }
+					            		}
+					            		
+					     </script>
+    
+    
         <ui:fragment id="cmsGeoMaps" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
             <div id="cmsGeoMaps">
                 <h2 class="admin__content-inner-title">#{msg.cms__geo_maps__title}
@@ -29,9 +129,6 @@
                         		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                     <li role="presentation" class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
                                     <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
-<!--                                         <h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}"> -->
-<!--                                         	<f:ajax execute="@form" render="@form"/> -->
-<!--                                         </h:commandLink> -->
                                     </li>
                                 </ui:repeat>
                         	</ul>
@@ -45,12 +142,12 @@
 			                            <div class="input_form__option_label">
 			                                <label for="mapTitle_#{language}">#{msg.name}:</label>
 			                            </div>
-			                            <div class="input_form__option_marker in">
+			                            <div class="input_form__option_marker #{language == navigationHelper.defaultLocale.language ? 'in' : ''}">
 			                            <label>*</label>
 			                            </div>
 			                            <div class="input_form__option_control">
 			                                <h:inputText id="mapTitle_#{language}" styleClass="form-control"
-			                                    value="#{geoMapBean.currentMap.getTitle(language).value}" required="true" requiredMessage="#{msg.error__title_required}"/>
+			                                    value="#{geoMapBean.currentMap.getTitle(language).value}" required="#{language == navigationHelper.defaultLocale.language}" requiredMessage="#{msg.error__title_required}"/>
 			                            </div>
 			                            <div class="input_form__option_help">
 			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp_#{language}">
@@ -127,80 +224,28 @@
 		                        		<span data-metadata="description"></span>
 		                        	</popover>
 		                        	<div>#{msg.cms__geo_maps__map_token__help}</div>
-					            	<script>
-					            		
-					            		let displayLanguage = "#{navigationHelper.localeString}"
-					            		let geoMap = new viewerJS.GeoMap({
-					            		    language: displayLanguage,
-					            		    popover: document.getElementById("geoMapPopoverTemplate"),
-					            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
-					            		});
-					            		geoMap.init();
-					            		geoMap.onMapClick.subscribe((geojson) => {
-					            		    console.log("click at ", geojson);
-					            		    geoMap.addMarker(geojson).openPopup();
-					            		    updateMetadata(geojson);
-					            		})
-					            		geoMap.onFeatureMoved.subscribe((geojson) => {
-					            		    console.log("moved ", geojson);
-					            		})
-					            		geoMap.onFeatureClick.subscribe((geojson) => {
-					            		    console.log("click on ", geojson);
-					            		    updateMetadata(geojson);
-					            		})
-					            	
-					            		let metadataProvider = new Rx.Subject();
-					            		riot.mount("metadataEditor", {
-					            		    languages: #{navigationHelper.supportedLanguagesAsJson},
-					            		    metadata: [],
-					            		    provider: metadataProvider,
-					            		    currentLanguage: displayLanguage
-					            		});
-					            		
-					            		updateMetadata = function(geojson) {
-					            		    let listener = new Rx.Subject();
-					            		    listener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
-					            		        geojson.properties[metadata.property] = metadata.value;
-// 					            		        console.log("updated ", geojson);
-					            		        geoMap.updateMarker(geojson.id);
-					            		    })
-					            		    let metadataList = [
-					            		        {	
-					            		    		property: "title",
-					            		    		tyle: "text",
-					            		    		label: "#{msg.title}",
-					            		    		value: geojson.properties.title,
-					            		    		required: false,
-					            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
-					            		    		listener: listener,
-					            		    	},
-					            		    	{	
-					            		    		property: "description",
-					            		    		type:"longtext",
-					            		    		label: "#{msg.description}",
-					            		    		value: geojson.properties.description,
-					            		    		required: false,
-					            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
-					            		    		listener: listener
-					            		    	}
-					            		    ]
-					            		    console.log("update metadata ", metadataList);
-					            		    metadataProvider.next(metadataList);
-					            		    $("html, body").scrollTop($("#featureForm").offset().top)
-					            		}
-					            		
-					            	</script>
+		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featuresAsString}"></h:inputHidden>
 		                        </ui:fragment>
 			            	</div>
 			            	<br/>
-			            	<div id="featureForm">
-				            	<metadataEditor/>
+			            	<div class="admin__content-inner-content__empty_form" id="featureForm">
+				            	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
+					            	<metadataEditor/>
+					            	<script>
+				            			init();
+		                        	</script>
+				            	</ui:fragment>
 			            	</div>
                         </h:panelGroup>
-                        
+                        <br/>
+                        <div class="admin__content-inner-content__controls">
+                            <h:commandButton styleClass="btn btn--default" value="#{msg.reset}" action="#{geoMapBean.resetCurrentMap}">
+                            	<f:ajax execute="@none" render="@all"/>
+                            </h:commandButton>
+                        	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}"></h:commandButton>
+                        </div>
                         
                     </h:form>
-                    
                 </div>
             </div>
         </ui:fragment>

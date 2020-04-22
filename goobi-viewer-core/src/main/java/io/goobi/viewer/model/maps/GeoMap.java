@@ -135,6 +135,8 @@ public class GeoMap {
         this.dateUpdated = blueprint.dateUpdated;
         this.id = blueprint.id;
         this.translations = blueprint.translations.stream().map(t -> new MapTranslation(t)).collect(Collectors.toSet());
+        this.type = blueprint.type;
+        this.features = blueprint.features;
     }
     
     

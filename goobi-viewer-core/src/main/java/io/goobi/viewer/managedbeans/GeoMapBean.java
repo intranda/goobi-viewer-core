@@ -17,6 +17,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -96,8 +97,11 @@ public class GeoMapBean implements Serializable {
         if(this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if(this.currentMap.getId() == null) {
+            this.currentMap.setDateCreated(new Date());
+            this.currentMap.setDateUpdated(new Date());
             DataManager.getInstance().getDao().addGeoMap(this.currentMap);
         } else {
+            this.currentMap.setDateUpdated(new Date());
             DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
         }
     }

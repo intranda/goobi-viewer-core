@@ -7,14 +7,17 @@
 		value: "Mein Titel",
 		required: true|false,
 		helptext: "Hilfetext zum Titel" (optional),
-		listener: Rx.Observable triggered at onChange (optional)
+		editable: true|false (optional)
 	}
 	The array of metadata must be provided in opts.metadata
 	The supported languages must be provided in opts.languages
 	A Rx.observable returning a metadata array may be added in opts.provider to change the metadata on the fly 
+	deleteListener: An observable notified by a delete command (optional)
+	updateListener: Rx.Observable triggered at onChange (optional)
+	deleteLabel: a label for the delete button
  -->
 <metadataEditor> 
-	<div if="{this.metadataList && this.metadataList.length > 0}">
+	<div if="{this.metadataList}">
 		<ul class="nav nav-tabs">
 				<li each="{language, index in this.opts.languages}"
 					class="{language == this.currentLanguage ? 'active' : ''}">
@@ -33,11 +36,11 @@
 							<label>*</label>
 						</div>
 						<div class="input_form__option_control">
-							<input ref="input" if="{metadata.type != 'longtext'}" type="{metadata.type}" id="input-{metadata.property}"
+							<input disabled="{this.isEditable(metadata) ? '' : 'disabled' }" ref="input" if="{metadata.type != 'longtext'}" type="{metadata.type}" id="input-{metadata.property}"
 								class="form-control"
 								value="{getValue(metadata)}"
 								oninput="{this.updateMetadata}"/>
-							 <textarea ref="input" if="{metadata.type == 'longtext'}" id="input-{metadata.property}"
+							 <textarea disabled="{this.isEditable(metadata) ? '' : 'disabled' }" ref="input" if="{metadata.type == 'longtext'}" id="input-{metadata.property}"
 								class="form-control"
 								value="{getValue(metadata)}"
 								oninput="{this.updateMetadata}"/>
@@ -50,6 +53,9 @@
 						</div>
 						<div if="{metadata.helptext}" id="help_{metadata.property}"
 							class="input_form__option_control_helptext">{metadata.helptext}</div>
+					</div>
+					<div class="input_form__actions">
+						<a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? '' : 'disabled' }" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a>
 					</div>
 				</div>
 			</div>
@@ -81,41 +87,50 @@
  	
  	updateMetadataList(metadataList) {
  	   this.metadataList = metadataList;
-       	this.metadataList.forEach(md => {
-   	        let valueObject = this.getValueForLanguages(this.opts.languages);
-   	        if(typeof md.value == "string") {
-   	            valueObject[this.currentLanguage] = [md.value];
-   	        } else if(md.value) {
-   	            $.extend(valueObject, md.value);
-   	        }
-   	        md.value = valueObject;
-   	    })
- 	}
- 	
- 	getValueForLanguages(languages) {
- 	    let ret = {};
- 	    languages.forEach(lang => {
- 	        ret[lang] = []
- 	    })
- 	    return ret;
  	}
  	
  	updateMetadata(event) { 
  	    let metadata = event.item.metadata;
- 	    metadata.value[this.currentLanguage] = [event.target.value];
- 	    if(metadata.listener) {
- 	        metadata.listener.next(metadata);
+ 	    if(!metadata.value) {
+ 	        metadata.value = {};
  	    }
+ 	    let value = event.target.value;
+ 	    if(value) {
+	 	    metadata.value[this.currentLanguage] = [event.target.value]; 	        
+ 	    } else {
+ 	       metadata.value[this.currentLanguage] = undefined;
+ 	    }
+ 	    if(this.opts.updateListener) {
+ 	       this.opts.updateListener.next(metadata);
+ 	    }
+ 	    console.log("set metadata ", metadata.value);
  	}
  	
  	getValue(metadata) {
- 	    let value = viewerJS.getMetadataValue(metadata.value, this.currentLanguage);
- 	    return value;
+ 	    if(metadata.value && metadata.value[this.currentLanguage]) { 	        
+	 	    let value = metadata.value[this.currentLanguage][0];
+	 	    return value;
+ 	    } else {
+ 	        return "";
+ 	    }
  	}
  	
  	setCurrentLanguage(event) {
  	    this.currentLanguage = event.item.language;
  	    this.update();
+ 	}
+ 	
+ 	notifyDelete() {
+ 	    this.opts.deleteListener.next();
+ 	}
+ 	
+ 	isEditable(metadata) {
+ 	    return metadata.editable === undefined || metadata.editable === true;
+ 	}
+ 	
+ 	mayDelete() {
+ 	    editable = this.metadataList.find( md => this.isEditable(md));
+ 	    return editable !== undefined;
  	}
  
 </script> 
