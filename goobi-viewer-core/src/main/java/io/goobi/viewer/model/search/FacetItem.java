@@ -333,11 +333,19 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         String escapedValue = getEscapedValue(value);
         if (field.startsWith(SolrConstants.COORDS_)) {
             String[] valueSplit = value.split(",");
-            if (valueSplit.length > 2) {
+            if (valueSplit.length > 1) {
+                // Polygon
                 escapedValue = new StringBuilder()
                         .append("\"IsWithin(POLYGON((")
                         .append(value)
                         .append("))) distErrPct=0\"")
+                        .toString();
+            } else if (valueSplit.length == 1) {
+                // Point
+                escapedValue = new StringBuilder()
+                        .append("\"IsWithin(POINT(")
+                        .append(value)
+                        .append(")) distErrPct=0\"")
                         .toString();
             }
         }
