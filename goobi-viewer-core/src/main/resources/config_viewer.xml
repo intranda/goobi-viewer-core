@@ -354,9 +354,9 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme mainTheme="haab2"
-			discriminatorField="DOCSTRCT" addFilterQuery="false"
-			filterQueryVisible="false">
+		<theme mainTheme="reference" discriminatorField="DOCSTRCT"
+			autoSwitch="false" addFilterQuery="false"
+			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
 				mechanism needs the root path of the theme. The path must be defined down 
 				to the /themes folder, just above the folder named like the theme. -->
@@ -1197,8 +1197,6 @@
 			<!-- showEventMetadata: if false, the event metadata of LIDO records is 
 				hidden (default is true) -->
 			<showEventMetadata>true</showEventMetadata>
-			<!-- showRecordLabelIfNoOtherViews: If enabled and metadata is the only view available, display the record label instead. Default is false. -->
-			<showRecordLabelIfNoOtherViews>true</showRecordLabelIfNoOtherViews>
 		</metadata>
 
 		<!-- fulltext: if false, the fulltext view is hidden -->
