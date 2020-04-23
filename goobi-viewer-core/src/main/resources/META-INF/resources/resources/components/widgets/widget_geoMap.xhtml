@@ -12,14 +12,11 @@
 
     <composite:implementation>
         <!-- WIDGET GEO LOCATIONS -->
-        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
-            <!-- MAPBOX RESOURCES -->
-            <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
-            <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
+        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoMap' or cc.attrs.widget == null}">
 
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
-                <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+                <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         <ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
                             #{msg[cc.attrs.widget.widgetTitle]}
@@ -30,13 +27,13 @@
                     </h3>
 
                     <!-- MAP -->
-                    <div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
+                    <div id="geomap" class="widget-geomap__map"></div>
                 </div>
             </h:panelGroup>
 
             <!-- FOLDOUT -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-                <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+                <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         <ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
                             #{msg[cc.attrs.widget.widgetTitle]}
@@ -52,24 +49,29 @@
 
                     <div id="widgetGeoLocationsCollapse" class="collapse">
                         <!-- MAP -->
-                        <div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
+                        <div id="geomap" class="widget-geomap__map"></div>
                     </div>
                 </div>
             </h:panelGroup>
-
+            <popover id="geoMapPopoverTemplate">
+           		<h4 data-metadata="title"></h4>
+           		<span data-metadata="description"></span>
+           	</popover>
             <script type="text/javascript">	  
             $(document).ready( () => {	
-            if (typeof mapBoxToken !== 'undefined') {		        	
-                widgetGeoLocationsConfig = {
-	        			locations: '#{cc.attrs.widget.geoLocationsString}',
-	        			mapboxAccessToken: viewerJS.getMapBoxToken(),
-	        			msg: {
-	        			    propertiesLink: "#{msg.widgetGeoLoacations_popupLinkText}"
-	        			}
-					};
-		        	
-		        	cmsJS.geoLocations.init( widgetGeoLocationsConfig );
-                }
+                
+            	let geoMap = new viewerJS.GeoMap({
+            	    popover: "#geoMapPopoverTemplate"
+            	});
+            	let view = #{cc.attrs.widget.geoMap.initialView};
+            	let features = #{cc.attrs.widget.geoMap.featuresAsString};
+            	console.log("init map with ", view, features);
+            	geoMap.init();
+            	geoMap.setView(view);
+            	features.forEach(feature => {
+            	    geoMap.addMarker(feature);
+            	})
+            	
             })
 	        </script>
         </h:panelGroup>
