@@ -22,14 +22,14 @@
 			<div class="timematrix__bar">
 				<div class="timematrix__period">
 					<span>#{msg.timePeriod}:</span>&#xA0;
-					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" size="1" />
+					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
 					&#xA0;<span>-</span>&#xA0; <!-- The spaces created are inserted outside of the span using hexa-code, since the spaces typed in the span caused different spacing in the different themes and the entities in the span had no effect -->
-					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" size="1" />
+					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
 				</div>
 				<div class="timematrix__hitsForm">
 					<div class="timematrix__hitsInput">
 						<span>#{msg.hits}:</span>
-							<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" size="2" />
+							<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
 					</div>
 					<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
 				</div>
