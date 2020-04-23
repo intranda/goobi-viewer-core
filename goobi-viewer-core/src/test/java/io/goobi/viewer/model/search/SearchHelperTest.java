@@ -186,7 +186,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
         Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
-                + ":\"license type 3 name\" -" + SolrConstants.ACCESSCONDITION + ":\"license type 4 name\"", suffix);
+                + ":\"license type 3 name\" -" + SolrConstants.ACCESSCONDITION
+                + ":\"license type 4 name\" -(ACCESSCONDITION:\"restriction on access\" AND -MDNUM_PUBLICRELEASEYEAR:[* TO 2020])", suffix);
     }
 
     /**
