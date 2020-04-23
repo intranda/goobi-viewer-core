@@ -174,7 +174,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //                    //                    Assert.fail("Unknown collection name: " + key);
         //                    break;
         //            }
-    }
+        //    }
 
     }
 
