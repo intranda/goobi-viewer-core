@@ -20,13 +20,13 @@
     
                       	<script>
 		            		
-		            		let currentFeature = undefined;
-		            		let displayLanguage = "#{navigationHelper.localeString}";
-		            		let deleteListener = new Rx.Subject();
-	            		    let updateListener = new Rx.Subject();
-		            		let metadataProvider = new Rx.Subject();
+		            		var currentFeature = undefined;
+		            		var displayLanguage = "#{navigationHelper.localeString}";
+		            		var deleteListener = new Rx.Subject();
+		            		var updateListener = new Rx.Subject();
+		            		var metadataProvider = new Rx.Subject();
 		            		
-		            		let geoMap = new viewerJS.GeoMap({
+		            		var geoMap = new viewerJS.GeoMap({
 		            		    language: displayLanguage,
 		            		    popover: "#geoMapPopoverTemplate",
 		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
@@ -63,12 +63,15 @@
 		            		        geoMap.updateMarker(currentFeature.id);
 		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
 		            		    }
+		            		    setView();
 	            		    })
 		            		
 		            		init = function() {
 			            		let features = JSON.parse($("#featuresInput").val())
 			            		console.log("load features ", features);
 			            		geoMap.init();
+			            		let view = $("#viewInput").val();
+			            		geoMap.setView(view);
 			            		features.forEach( feature => {
 			            		    geoMap.addMarker(feature);
 			            		})
@@ -82,6 +85,12 @@
 			            		    deleteListener : deleteListener,
 			            		    deleteLabel : "#{msg.delete}"
 			            		});
+		            		}
+		            		
+		            		setView = function() {
+		            		    let view = geoMap.getView();
+		            		    console.log("set view to ", view)
+		            		    $("#viewInput").val(JSON.stringify(view));
 		            		}
 		            		
 		            		updateMetadata = function(geojson) {
@@ -106,6 +115,7 @@
 		            		    	}
 		            		    ]
 		 		           		metadataProvider.next(metadataList, true);
+		            		    setView();
 		            		    if(geojson) {
 			            		    $("html, body").scrollTop($("#featureForm").offset().top)
 		            		    }
@@ -222,6 +232,7 @@
 		                        	</popover>
 		                        	<div>#{msg.cms__geo_maps__map_token__help}</div>
 		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featuresAsString}"></h:inputHidden>
+		                        	<h:inputHidden id="viewInput" value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
 		                        </ui:fragment>
 			            	</div>
 			            	<br/>
@@ -229,7 +240,10 @@
 				            	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
 					            	<metadataEditor/>
 					            	<script>
+					            	$(document).ready(() => {
+					            	    console.log("init map");
 				            			init();
+					            	})
 		                        	</script>
 				            	</ui:fragment>
 			            	</div>

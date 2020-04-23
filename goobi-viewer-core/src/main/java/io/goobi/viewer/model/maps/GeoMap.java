@@ -116,6 +116,9 @@ public class GeoMap {
 
     @Column(name = "map_type")
     private GeoMapType type = null;
+    
+    @Column(name="initial_view")
+    private String initialView = "{}";
 
     /**
      * Empty Constructor
@@ -138,6 +141,7 @@ public class GeoMap {
         this.translations = blueprint.translations.stream().map(t -> new MapTranslation(t)).collect(Collectors.toSet());
         this.type = blueprint.type;
         this.features = blueprint.features;
+        this.initialView = blueprint.initialView;
     }
     
     
@@ -302,13 +306,20 @@ public class GeoMap {
         for (Object object : array) {
             System.out.println(object);
         }
-        
-//        StringReader reader = new StringReader(string);
-//        JsonParser parser = Json.createParser(reader);
-//        JsonArray array = parser.getArray();
-//        for (JsonValue jsonValue : array) {
-//            System.out.println(jsonValue);
-//        }
+    }
+    
+    /**
+     * @param initialView the initialView to set
+     */
+    public void setInitialView(String initialView) {
+        this.initialView = initialView;
+    }
+    
+    /**
+     * @return the initialView
+     */
+    public String getInitialView() {
+        return initialView;
     }
     
 }

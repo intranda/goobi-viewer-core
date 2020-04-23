@@ -59,11 +59,13 @@
                   		});
                   		$(document).ready(() => {                  		    
 	                  		geoMap.init();
+	                  		let view = #{cmsPage.getContentItem('geomap').geoMap.initialView};
+		            		geoMap.setView(view);
 	                  		let features = #{cmsPage.getContentItem("geomap").geoMap.featuresAsString};
 	                  		features.forEach(feature => {
 	                  		    geoMap.addMarker(feature);
 	                  		})
-	                  		})
+	                  	})
                     	
                     </script>
                 </ui:fragment>
