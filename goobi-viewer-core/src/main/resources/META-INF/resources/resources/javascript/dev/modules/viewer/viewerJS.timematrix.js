@@ -107,9 +107,11 @@ var viewerJS = ( function( viewer ) {
                 values: [ parseInt( _defaults.startDate ), parseInt( _defaults.endDate ) ],
                 slide: function( event, ui ) {
                     _defaults.rangeInput1.val( ui.values[ 0 ] );
+                    _defaults.rangeInput1.change();
                     $( '.timematrix-slider-bubble-startDate' ).html( ui.values[ 0 ] );
                     _defaults.startDate = ui.values[ 0 ];
-                    _defaults.rangeInput1.val( ui.values[ 1 ] );
+                    _defaults.rangeInput2.val( ui.values[ 1 ] );
+                    _defaults.rangeInput2.change();
                     $( '.timematrix-slider-bubble-endDate' ).html( ui.values[ 1 ] );
                     _defaults.endDate = ui.values[ 1 ];
                 }
@@ -128,12 +130,7 @@ var viewerJS = ( function( viewer ) {
             // listen to submit event of locate timematrix form
             $( '#locateTimematrix' ).on( 'submit', function( e ) {
                 e.preventDefault();
-                
-                // check for popovers and remove them
-                if ( $( '.timematrix-popover' ).length ) {
-                    $( '.timematrix-popover' ).remove();
-                }
-                
+
                 // build api target
                 var apiTarget = _defaults.contextPath;
                 apiTarget += _defaults.apiQuery;
@@ -145,189 +142,9 @@ var viewerJS = ( function( viewer ) {
                 apiTarget += _defaults.count;
                 apiTarget += '/';
                 
-                // get data from api
-                _promise = viewer.helper.getRemoteData( apiTarget );
-                
-                // render thumbnails
-                _promise.then( function( data ) {
-                    _apiData = data;
-                    
-                    _defaults.$tmCanvas.html( _renderThumbs( _apiData ) );
-                    $( '.timematrix-thumb' ).css( {
-                        height: $( '.timematrix-thumb' ).outerWidth()
-                    } );
-                    
-                    // show thumbs after they´ve been loaded
-                    $( '.timematrix-thumb img' ).on("load", function() {
-                        $( this ).css( {
-                            visibility: 'visible'
-                        } );
-                    } );
-                    
-                    // listen to click event on thumbnails
-                    $( '.timematrix-thumb' ).on( 'click', function() {
-                        if ( !$( '.timematrix-popover' ) ) {
-                            $( '.timematrix-thumb' ).removeClass( 'marker' );
-                            $( this ).addClass( 'marker' );
-                            _renderPopover( $( this ), _defaults.lang );
-                        }
-                        else {
-                            $( '.timematrix-popover' ).remove();
-                            $( '.timematrix-thumb' ).removeClass( 'marker' );
-                            $( this ).addClass( 'marker' );
-                            _renderPopover( $( this ), _defaults.lang );
-                        }
-                        
-                        // close popover
-                        $( '.timematrix-popover-close' ).on( 'click', function() {
-                            $( this ).parent().remove();
-                            $( '.timematrix-thumb' ).removeClass( 'marker' );
-                        } );
-                        
-                        // check if image is loaded and reset loader
-                        $( '.timematrix-popover-body img' ).on("load", function() {
-                            $( '.timematrix-popover-imageloader' ).hide();
-                        } );
-                    } );
-                } ).then( null, function() {
-                    _defaults.$tmCanvas.append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
-                    console.error( 'ERROR: viewer.timematrix.init - ', error );
-                } )
-            } );
-            
-            // remove all popovers by clicking on body
-            $( 'body' ).on( 'click', function( event ) {
-                if ( $( event.target ).closest( '.timematrix-thumb' ).length ) {
-                    return;
-                }
-                else {
-                    _removePopovers();
-                }
             } );
         }
     };
-    
-    /**
-     * Method to render image thumbnails to the timematrix canvas.
-     * 
-     * @method _renderThumbs
-     * @param {Object} json An JSON-Object which contains the image data.
-     * @returns {String} HTML-String which displays the image thumbnails.
-     */
-    function _renderThumbs( json ) {
-        if ( _debug ) {
-            console.log( 'viewer.timematrix _renderThumbs: json - ' );
-            console.log( json );
-        }
-        
-        var tlbox = '';
-        tlbox += '<div class="timematrix-box">';
-        tlbox += '<header class="timematrix-header">';
-        if ( _defaults.startDate !== '' && _defaults.endDate !== '' ) {
-            tlbox += '<h3>' + _defaults.startDate + ' - ' + _defaults.endDate + '</h3>';
-        }
-        tlbox += '</header>';
-        tlbox += '<section class="timematrix-body">';
-        $.each( json, function( i, j ) {
-            tlbox += '<div class="timematrix-thumb" data-title="' + j.title + '" data-mediumimage="' + j.mediumimage + '" data-url="' + j.url + '">';
-            if ( j.thumbnailUrl ) {
-                tlbox += '<img src="' + j.thumbnailUrl + '" style="visibility: hidden;" />';
-            }
-            else {
-                tlbox += '';
-            }
-            tlbox += '</div>';
-        } );
-        tlbox += '</section>';
-        tlbox += '<footer class="timematrix-footer"></footer>';
-        tlbox += '</div>';
-        
-        return tlbox;
-    }
-    
-    /**
-     * Method to render a popover with a thumbnail image.
-     * 
-     * @method _renderPopover
-     * @param {Object} $Obj Must be an jQuery-Object like $(this).
-     * @param {Object} lang An Object with localized strings in the selected language.
-     */
-    function _renderPopover( $Obj, lang ) {
-        if ( _debug ) {
-            console.log( 'viewer.timematrix _renderPopover: obj - ' );
-            console.log( $Obj );
-            console.log( 'viewer.timematrix _renderPopover: lang - ' + lang );
-        }
-        
-        var title = $Obj.attr( 'data-title' );
-        var mediumimage = $Obj.attr( 'data-mediumimage' );
-        var url = $Obj.attr( 'data-url' );
-        var $objPos = $Obj.position();
-        var $objCoords = {
-            top: $objPos.top,
-            left: $objPos.left,
-            width: $Obj.outerWidth()
-        };
-        var popoverPos = _calculatePopoverPosition( $objCoords, _defaults.$tmCanvasCoords );
-        var popover = '';
-        popover += '<div class="timematrix-popover" style="top: ' + popoverPos.top + 'px; left: ' + popoverPos.left + 'px;">';
-        popover += '<span class="timematrix-popover-close" title="' + lang.closeWindow + '">&times;</span>';
-        popover += '<header class="timematrix-popover-header">';
-        popover += '<h4 title="' + title + '">' + viewer.helper.truncateString( title, 75 ) + '</h4>';
-        popover += '</header>';
-        popover += '<section class="timematrix-popover-body">';
-        popover += '<div class="timematrix-popover-imageloader"></div>';
-        popover += '<a href="' + url + '"><img src="' + mediumimage + '" /></a>';
-        popover += '</section>';
-        popover += '<footer class="timematrix-popover-footer">';
-        popover += '<a href="' + url + '" title="' + title + '">' + lang.goToWork + '</a>';
-        popover += '</footer>';
-        popover += '</div>';
-        
-        _defaults.$tmCanvas.append( popover );
-    }
-    
-    /**
-     * Method which calculates the position of the popover.
-     * 
-     * @method _calculatePopoverPosition
-     * @param {Object} triggerCoords An object which contains the coordinates of the
-     * element has been clicked.
-     * @param {Object} tmCanvasCoords An object which contains the coordinates of the
-     * wrapper element from the timematrix.
-     * @returns {Object} An object which contains the top and the left position of the
-     * popover.
-     */
-    function _calculatePopoverPosition( triggerCoords, tmCanvasCoords ) {
-        if ( _debug ) {
-            console.log( 'viewer.timematrix _calculatePopoverPosition: triggerCoords - ' );
-            console.log( triggerCoords );
-            console.log( 'viewer.timematrix _calculatePopoverPosition: tmCanvasCoords - ' );
-            console.log( tmCanvasCoords );
-        }
-        
-        var poLeftBorder = triggerCoords.left - ( 150 - ( triggerCoords.width / 2 ) );
-        var poRightBorder = poLeftBorder + 300;
-        var tbLeftBorder = tmCanvasCoords.left;
-        var tbRightBorder = tmCanvasCoords.right;
-        var poTop;
-        var poLeft = poLeftBorder;
-        
-        poTop = ( triggerCoords.top + $( '.timematrix-thumb' ).outerHeight() ) - 1;
-        
-        if ( poLeftBorder <= tbLeftBorder ) {
-            poLeft = tbLeftBorder;
-        }
-        
-        if ( poRightBorder >= tbRightBorder ) {
-            poLeft = tmCanvasCoords.right - 300;
-        }
-        
-        return {
-            top: poTop,
-            left: poLeft
-        };
-    }
     
     /**
      * Method which renders the bubbles for the slider.
@@ -343,21 +160,7 @@ var viewerJS = ( function( viewer ) {
             console.log( 'viewer.timematrix _renderSliderBubble: val - ' + val );
         }
         
-        return '<div class="timematrix-slider-bubble-' + time + '">' + val + '</div>';
-    }
-    
-    /**
-     * Method which removes all popovers.
-     * 
-     * @method _removePopovers
-     */
-    function _removePopovers() {
-        if ( _debug ) {
-            console.log( '---------- _removePopovers() ----------' );
-        }
-        
-        $( '.timematrix-popover' ).remove();
-        $( '.timematrix-thumb' ).removeClass( 'marker' );
+        return '<div class="timematrix-slider-bubble</div>';
     }
     
     return viewer;

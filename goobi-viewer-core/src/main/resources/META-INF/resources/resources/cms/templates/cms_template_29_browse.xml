@@ -8,7 +8,7 @@
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>
     <content>
-        <item id="text01" order="1" type="HTML" label="cms_template_29_text_label"/>
-        <item id="browseTerms" order="2" type="BROWSETERMS" label="cms_template_29_browseterm_label" />
+        <item id="text01" order="1" type="HTML" label="cms__template_29__text__label"/>
+        <item id="browseTerms" order="2" type="BROWSETERMS" label="cms__template_29__browseterm__label" />
     </content>
 </cms_page_template>

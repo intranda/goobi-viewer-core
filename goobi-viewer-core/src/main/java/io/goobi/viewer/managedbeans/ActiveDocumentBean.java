@@ -264,7 +264,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IDDOCNotFoundException
+     * @should throw RecordNotFoundException if listing not allowed by default
+     * @should load records that have been released via moving wall
      */
+
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException {
         synchronized (this) {

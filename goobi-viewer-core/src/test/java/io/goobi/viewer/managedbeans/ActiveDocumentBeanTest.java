@@ -32,6 +32,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -214,4 +215,45 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.update();
         Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl(12));
     }
+
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies load records that have been released via moving wall
+     */
+    @Test
+    public void update_shouldLoadRecordsThatHaveBeenReleasedViaMovingWall() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+
+        // Record has been unlocked via a moving wall functionality and should load withour throwing a RecordNotFoundException.
+        // The public release year metadata is only available in docstruct and page Solr docs. Here, it is important that none of the
+        // record's docs match the conditional query of the license type anyway.
+        adb.setPersistentIdentifier("1045513032");
+        adb.setImageToShow(1);
+
+        // Override config setting so that localhost doesn't get full access
+        DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
+
+        adb.update();
+        Assert.assertTrue(adb.isRecordLoaded());
+    }
+
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies throw RecordNotFoundException if listing not allowed by default
+     */
+    @Test(expected = RecordNotFoundException.class)
+    public void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+
+        // Record will be released by a moving wall in 2041
+        adb.setPersistentIdentifier("557335825");
+        adb.setImageToShow(1);
+
+        // Override config setting so that localhost doesn't get full access
+        DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
+
+        adb.update();
+        Assert.fail();
+    }
+
 }
