@@ -1,0 +1,38 @@
+/* ==============================================================
+   CMS Template "Simple"
+   style declarations for cms_template_05_simple.xhtml
+   ==============================================================*/
+/* SIMPLE */
+/* BLOCK */
+.tpl-geomap {
+    /* ELEMENT */
+    &__text,
+    &__image {
+        margin-bottom: 15px;
+    }
+    &__text {}
+    &__image {
+        figcaption {
+            padding: 5px 0;
+            font-style: italic;
+            font-size: @fontMedium;
+            color: @middlegray;
+        }
+    }
+    &__geomap {
+    	width: 100%;
+    	height: 600px;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

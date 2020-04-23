@@ -1112,6 +1112,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
             case COMPONENT:
                 return StringUtils.isNotBlank(item.getComponent());
+            case GEOMAP:
+                return item.getGeoMap() != null;
             default:
                 return false;
         }

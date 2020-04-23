@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_geoMap" version="2020-04-23">
+    <name>cms__template_30__title</name>
+    <description>cms__template_30__description</description>
+    <icon>cms_template_30_geoMap.png</icon>
+    <html>cms_template_30_geoMap.xhtml</html>
+    <content>
+        <item id="text01" order="1" type="HTML" label="cms__template_30___textblock__label" inlinehelp="cms__template_30___textblock__help"/>
+        <item id="geomap" order="2" type="GEOMAP" label="cms__template_30___geomap__label" inlinehelp="cms__template_30___geomap__help"/>
+    </content>
+</cms_page_template>

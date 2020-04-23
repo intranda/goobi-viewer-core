@@ -104,6 +104,7 @@ public class GeoMapBean implements Serializable {
         } else if(this.currentMap.getId() == null) {
             this.currentMap.setDateCreated(new Date());
             this.currentMap.setDateUpdated(new Date());
+            this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
             DataManager.getInstance().getDao().addGeoMap(this.currentMap);
         } else {
             this.currentMap.setDateUpdated(new Date());

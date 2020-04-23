@@ -70,6 +70,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.TocFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.TrivialFunctionality;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.CollectionView;
@@ -108,7 +109,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         METADATA,
         CAMPAIGNOVERVIEW,
         BOOKMARKLISTS,
-        BROWSETERMS;
+        BROWSETERMS,
+        GEOMAP;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -189,6 +191,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /** Media item reference for media content items. */
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
+    
+    /** GeoMap reference for GeoMap content items */
+    @JoinColumn(name = "geomap_id")
+    private GeoMap geoMap;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_content_item_cms_categories", joinColumns = @JoinColumn(name = "content_item_id"),
@@ -337,6 +343,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setSearchType(blueprint.getSearchType());
         this.setMetadataFields(blueprint.getMetadataFields());
         this.setGroupBy(blueprint.groupBy);
+        this.setGeoMap(blueprint.getGeoMap());
 
     }
 
@@ -1682,6 +1689,32 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     public boolean isGroupBySelected() {
         return StringUtils.isNotBlank(this.groupBy);
+    }
+    
+    /**
+     * @return the geoMap
+     */
+    public GeoMap getGeoMap() {
+        return geoMap;
+    }
+    
+    /**
+     * @param geoMap the geoMap to set
+     */
+    public void setGeoMap(GeoMap geoMap) {
+        this.geoMap = geoMap;
+    }
+    
+    public Long getGeoMapId() {
+        if(this.geoMap == null)  {
+            return null;
+        } else {
+            return this.geoMap.getId();
+        }
+    }
+    
+    public void setGeoMapId(Long id) throws DAOException {
+        this.geoMap = DataManager.getInstance().getDao().getGeoMap(id);
     }
 
 }

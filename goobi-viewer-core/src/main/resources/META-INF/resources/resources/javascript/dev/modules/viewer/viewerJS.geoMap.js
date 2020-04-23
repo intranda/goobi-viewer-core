@@ -52,9 +52,6 @@ var viewerJS = ( function( viewer ) {
             throw "leaflet.js is not loaded";
         }
         this.config = $.extend( true, {}, _defaults, config );
-        if(!this.config.mapBoxToken) {
-            this.config.mapBoxToken = viewerJS.getMapBoxToken();
-        }
         if(_debug) {
             console.log("load GeoMap with config ", this.config);
         }
@@ -73,6 +70,15 @@ var viewerJS = ( function( viewer ) {
         if(this.map) {
             this.map.remove();
         }
+        
+        if(!this.config.mapBoxToken) {
+            this.config.mapBoxToken = viewerJS.getMapBoxToken();
+            console.log("loaded mapbox token " + viewerJS.getMapBoxToken());
+        }
+        if(_debug) {
+            console.log("init GeoMap with config ", this.config);
+        }
+        
         this.map = new L.Map(this.config.mapId);
         
         if(this.config.mapBoxToken) {
