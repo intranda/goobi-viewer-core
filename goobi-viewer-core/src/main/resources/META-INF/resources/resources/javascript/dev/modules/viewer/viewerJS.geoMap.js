@@ -105,7 +105,6 @@ var viewerJS = ( function( viewer ) {
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures
                 });
-                console.log("add markere ", geoJsonPoint);             
                 marker.id = geoJsonPoint.id;
                 marker.view = geoJsonPoint.view;
                     
@@ -125,16 +124,13 @@ var viewerJS = ( function( viewer ) {
                 }.bind(this));
                 
                 marker.bindPopup(() => {
-                    console.log("popover for ", marker.feature);
                     let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
                     let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
                     if(this.config.popover && (title || desc) ) {
                         let $popover = $(this.config.popover).clone();
-                        console.log("popover ", $popover);
                         $popover.find("[data-metadata='title']").text(title);
-                        $popover.find("[data-metadata='description']").text(desc);
+                        $popover.find("[data-metadata='description']").html(desc);
                         $popover.css("display", "block");
-                        console.log("show ", $popover.get(0));
                         return $popover.get(0);
                     } else {
                         return this.config.emptyMarkerMessage;
@@ -213,7 +209,9 @@ var viewerJS = ( function( viewer ) {
         geoJson.id = id;
         this.locations.addData(geoJson);
         let marker = this.getMarker(id);
-        console.log("Add marker ", marker);
+        if(_debug) {            
+            console.log("Add marker ", marker);
+        }
         return marker;
     }
 

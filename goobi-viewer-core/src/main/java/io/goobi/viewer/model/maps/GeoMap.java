@@ -55,6 +55,7 @@ import com.google.gson.Gson;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
@@ -217,6 +218,15 @@ public class GeoMap {
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+    
+    public String getTitle() {
+        return getTitle(BeanUtils.getNavigationHelper().getLocale().getLanguage()).getValue();
+    }
+    
+    public String getDescription() {
+        return getDescription(BeanUtils.getNavigationHelper().getLocale().getLanguage()).getValue();
+    }
+
     
     public MapTranslation getTitle(String language) {
         MapTranslation title = translations.stream()

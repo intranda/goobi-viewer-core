@@ -36,11 +36,11 @@
 							<label>*</label>
 						</div>
 						<div class="input_form__option_control">
-							<input disabled="{this.isEditable(metadata) ? '' : 'disabled' }" ref="input" if="{metadata.type != 'longtext'}" type="{metadata.type}" id="input-{metadata.property}"
+							<input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? '' : 'disabled' }" ref="input" if="{metadata.type != 'longtext'}" type="{metadata.type}" id="input-{metadata.property}"
 								class="form-control"
 								value="{getValue(metadata)}"
 								oninput="{this.updateMetadata}"/>
-							 <textarea disabled="{this.isEditable(metadata) ? '' : 'disabled' }" ref="input" if="{metadata.type == 'longtext'}" id="input-{metadata.property}"
+							 <textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? '' : 'disabled' }" ref="input" if="{metadata.type == 'longtext'}" id="input-{metadata.property}"
 								class="form-control"
 								value="{getValue(metadata)}"
 								oninput="{this.updateMetadata}"/>
@@ -103,7 +103,6 @@
  	    if(this.opts.updateListener) {
  	       this.opts.updateListener.next(metadata);
  	    }
- 	    console.log("set metadata ", metadata.value);
  	}
  	
  	getValue(metadata) {

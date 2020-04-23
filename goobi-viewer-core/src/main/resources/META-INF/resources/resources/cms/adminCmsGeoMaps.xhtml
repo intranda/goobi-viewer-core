@@ -31,13 +31,51 @@
                			<h:outputText escape="false" value="#{msg.cms__geo_maps__description}"></h:outputText>
                		</div>
                     <h:form id="cmsGeoMapsForm" prependId="false">
-                    	<div class="admin__content-inner-content__list">
+                    	<div class="admin__content-inner-content__entity_list entity_list">
 	                    	<ui:repeat value="#{geoMapBean.allMaps}" var="map" varStatus="status">
-	                    		<div class="admin__content-inner-content__list__item">
-	                    			<h:outputLink value="#{geoMapBean.getEditMapUrl(map)}">
+	                    		<div class="entity_list__item">
+	                    			<div class="entity_list__item__header">
 		                    			<h3>#{map.getTitle(navigationHelper.localeString)}</h3>
-		                    			<h:outputText escape="false" value="#{map.getDescription(navigationHelper.localeString)}"></h:outputText>
-	                    			</h:outputLink>
+		                    			<div class="entity_list__item__header__tags">
+		                    				<a 
+				                               id="oEmbedLink" 
+				                               class="label label-default" 
+				                               data-copy="oembed" 
+				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}" 
+				                               data-copy-done="#{msg.copyUrlDone}"
+				                               title="#{msg.copyUrl}"> 
+				                               #{msg.oEmbed}
+				                           </a> 
+		                    			</div>
+	                    			</div>
+	                    			<div class="entity_list__item__content">
+	                    				<div class="entity_list__item__content__label">#{msg.type}:</div>
+	                    				<div class="entity_list__item__content__value">#{msg[map.type]}</div>
+	                    				
+	                    				<div class="entity_list__item__content__label">#{msg.description}:</div>
+	                    				<div class="entity_list__item__content__value">#{map.description}</div>
+	                    				
+	                    				<ui:fragment rendered="#{geoMapBean.isInUse(map)}">
+		                    				<div class="entity_list__item__content__label">#{msg.label__usage}:</div>
+		                    				<div class="entity_list__item__content__value">
+		                    					<ui:repeat var="cmsPage" value="#{geoMapBean.getEmbeddingCmsPages(map)}">
+		                    						<div class="entity_list__item__content__subvalue">
+		                    							<a href="#{cmsPage.pageUrl}">#{cmsPage.title}</a>
+		                    						</div>
+		                    					</ui:repeat>
+		                    				</div>
+	                    				</ui:fragment>
+	                    			</div>
+	                    			<div class="entity_list__item__controls">
+		                    			<ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
+			                    			<h:commandLink styleClass="btn btn--clean delete" 
+			                    			onclick="if ( !confirm( &quot;#{msg.confirm__delete_map}&quot; ) ) { return false };" 
+			                    			value="#{msg.delete}" action="#{geoMapBean.deleteMap(map)}">
+			                    			</h:commandLink>
+		                    			</ui:fragment>
+		                    			<h:outputLink styleClass="btn btn--link" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}
+		                    			</h:outputLink>
+		                    		</div>
 	                    		</div>
 	                    	</ui:repeat>
                     	</div>

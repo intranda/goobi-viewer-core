@@ -19,100 +19,97 @@
     <ui:define name="content">
     
                       	<script>
-					            		
-					            		let currentFeature = undefined;
-					            		let displayLanguage = "#{navigationHelper.localeString}";
-					            		let deleteListener = new Rx.Subject();
-				            		    let updateListener = new Rx.Subject();
-					            		let metadataProvider = new Rx.Subject();
-					            		
-					            		let geoMap = new viewerJS.GeoMap({
-					            		    language: displayLanguage,
-					            		    popover: "#geoMapPopoverTemplate",
-					            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
-					            		});
-					            		geoMap.onMapClick.subscribe((geojson) => {
-					            		    console.log("click at ", geojson);
-					            		    currentFeature = geojson;
-					            		    geoMap.addMarker(geojson).openPopup();
-					            		    updateMetadata(geojson);
-					            		})
-					            		geoMap.onFeatureMoved.subscribe((geojson) => {
-					            		    console.log("moved ", geojson);
-					            		})
-					            		geoMap.onFeatureClick.subscribe((geojson) => {
-					            		    console.log("click on ", geojson);
-					            		    console.log("current Feature", currentFeature);
-					            		    if(currentFeature == geojson) {
-					            		        currentFeature = undefined;
-					            		        updateMetadata();
-					            		    } else {		
-					            		        currentFeature = geojson;
-					            		    	updateMetadata(geojson);
-					            		    }
-					            		})
-				            		    
-					            		deleteListener.subscribe(() => {
-					            		    if(currentFeature) {
-					            		        geoMap.removeMarker(currentFeature);
-					            		        currentFeature = undefined;
-					            		        updateMetadata();
-					            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-					            		    }
-					            		})
-					            		updateListener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
-					            		    if(currentFeature) {					            		        
-					            		        currentFeature.properties[metadata.property] = metadata.value;
-					            		        geoMap.updateMarker(currentFeature.id);
-					            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-					            		    }
-				            		    })
-					            		
-					            		init = function() {
-						            		let features = JSON.parse($("#featuresInput").val())
-						            		console.log("load features ", features);
-						            		geoMap.init();
-						            		features.forEach( feature => {
-						            		    geoMap.addMarker(feature);
-						            		})
-						            		
-						            		riot.mount("metadataEditor", {
-						            		    languages: #{navigationHelper.supportedLanguagesAsJson},
-						            		    metadata: undefined,
-						            		    provider: metadataProvider,
-						            		    currentLanguage: displayLanguage,
-						            		    updateListener: updateListener,
-						            		    deleteListener : deleteListener,
-						            		    deleteLabel : "#{msg.delete}"
-						            		});
-					            		}
-					            		
-					            		updateMetadata = function(geojson) {
-					            		    let metadataList = [
-					            		        {	
-					            		    		property: "title",
-					            		    		tyle: "text",
-					            		    		label: "#{msg.title}",
-					            		    		value: geojson ? geojson.properties.title : "",
-					            		    		required: false,
-					            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
-					            		    		editable: geojson != undefined
-					            		    	},
-					            		    	{	
-					            		    		property: "description",
-					            		    		type:"longtext",
-					            		    		label: "#{msg.description}",
-					            		    		value: geojson ? geojson.properties.description: "",
-					            		    		required: false,
-					            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
-					            		    		editable: geojson != undefined
-					            		    	}
-					            		    ]
-					 		           		metadataProvider.next(metadataList, true);
-					            		    if(geojson) {
-						            		    $("html, body").scrollTop($("#featureForm").offset().top)
-					            		    }
-					            		}
+		            		
+		            		let currentFeature = undefined;
+		            		let displayLanguage = "#{navigationHelper.localeString}";
+		            		let deleteListener = new Rx.Subject();
+	            		    let updateListener = new Rx.Subject();
+		            		let metadataProvider = new Rx.Subject();
+		            		
+		            		let geoMap = new viewerJS.GeoMap({
+		            		    language: displayLanguage,
+		            		    popover: "#geoMapPopoverTemplate",
+		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
+		            		});
+		            		geoMap.onMapClick.subscribe((geojson) => {
+		            		    console.log("click at ", geojson);
+		            		    currentFeature = geojson;
+		            		    geoMap.addMarker(geojson).openPopup();
+		            		    updateMetadata(geojson);
+		            		})
+		            		geoMap.onFeatureMoved.subscribe((geojson) => {
+		            		})
+		            		geoMap.onFeatureClick.subscribe((geojson) => {
+		            		    if(currentFeature == geojson) {
+		            		        currentFeature = undefined;
+		            		        updateMetadata();
+		            		    } else {		
+		            		        currentFeature = geojson;
+		            		    	updateMetadata(geojson);
+		            		    }
+		            		})
+	            		    
+		            		deleteListener.subscribe(() => {
+		            		    if(currentFeature) {
+		            		        geoMap.removeMarker(currentFeature);
+		            		        currentFeature = undefined;
+		            		        updateMetadata();
+		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+		            		    }
+		            		})
+		            		updateListener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
+		            		    if(currentFeature) {					            		        
+		            		        currentFeature.properties[metadata.property] = metadata.value;
+		            		        geoMap.updateMarker(currentFeature.id);
+		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+		            		    }
+	            		    })
+		            		
+		            		init = function() {
+			            		let features = JSON.parse($("#featuresInput").val())
+			            		console.log("load features ", features);
+			            		geoMap.init();
+			            		features.forEach( feature => {
+			            		    geoMap.addMarker(feature);
+			            		})
+			            		
+			            		riot.mount("metadataEditor", {
+			            		    languages: #{navigationHelper.supportedLanguagesAsJson},
+			            		    metadata: undefined,
+			            		    provider: metadataProvider,
+			            		    currentLanguage: displayLanguage,
+			            		    updateListener: updateListener,
+			            		    deleteListener : deleteListener,
+			            		    deleteLabel : "#{msg.delete}"
+			            		});
+		            		}
+		            		
+		            		updateMetadata = function(geojson) {
+		            		    let metadataList = [
+		            		        {	
+		            		    		property: "title",
+		            		    		tyle: "text",
+		            		    		label: "#{msg.title}",
+		            		    		value: geojson ? geojson.properties.title : "",
+		            		    		required: false,
+		            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
+		            		    		editable: geojson != undefined
+		            		    	},
+		            		    	{	
+		            		    		property: "description",
+		            		    		type:"longtext",
+		            		    		label: "#{msg.description}",
+		            		    		value: geojson ? geojson.properties.description: "",
+		            		    		required: false,
+		            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
+		            		    		editable: geojson != undefined
+		            		    	}
+		            		    ]
+		 		           		metadataProvider.next(metadataList, true);
+		            		    if(geojson) {
+			            		    $("html, body").scrollTop($("#featureForm").offset().top)
+		            		    }
+		            		}
 					            		
 					     </script>
     

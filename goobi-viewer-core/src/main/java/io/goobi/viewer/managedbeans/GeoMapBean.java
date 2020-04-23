@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
@@ -30,6 +31,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 
@@ -169,12 +171,28 @@ public class GeoMapBean implements Serializable {
         return DataManager.getInstance().getDao().getAllGeoMaps();
     }
 
+    @SuppressWarnings("static-access")
     public Collection<GeoMapType> getPossibleMapTypes() {
         return EnumSet.allOf(GeoMapType.class).of(GeoMapType.MANUAL);
     }
     
     public boolean hasCurrentFeature() {
         return false;
+    }
+    
+    public String getOEmbedLink(GeoMap map) {
+        //TODO create actual oEmbed link
+        return "dummy link";
+    }
+    
+    public boolean isInUse(GeoMap map) {
+        //TODO: return embedding cmsPages
+        return false;
+    }
+    
+    public List<CMSPage> getEmbeddingCmsPages(GeoMap map) {
+        //TODO: return a list of embedding pages
+        return new ArrayList<>();
     }
 
 }
