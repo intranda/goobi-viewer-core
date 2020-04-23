@@ -5,6 +5,7 @@
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/(\w+|-)$" trailingSlash="append" />
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
+	<rewrite match="/admin/cms/maps/edit" substitute="/admin/cms/maps"/>
 	
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
