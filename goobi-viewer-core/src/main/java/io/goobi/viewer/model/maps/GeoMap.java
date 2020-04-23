@@ -56,6 +56,7 @@ import com.google.gson.Gson;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
@@ -138,7 +139,7 @@ public class GeoMap {
         this.dateCreated = blueprint.dateCreated;
         this.dateUpdated = blueprint.dateUpdated;
         this.id = blueprint.id;
-        this.translations = blueprint.translations.stream().map(t -> new MapTranslation(t)).collect(Collectors.toSet());
+        this.translations = blueprint.translations.stream().filter(t -> !t.isEmpty()).map(t -> new MapTranslation(t)).collect(Collectors.toSet());
         this.type = blueprint.type;
         this.features = blueprint.features;
         this.initialView = blueprint.initialView;
@@ -224,11 +225,19 @@ public class GeoMap {
     }
     
     public String getTitle() {
-        return getTitle(BeanUtils.getNavigationHelper().getLocale().getLanguage()).getValue();
+        MapTranslation title = getTitle(BeanUtils.getNavigationHelper().getLocale().getLanguage());
+        if(title.isEmpty()) {
+            title = getTitle(BeanUtils.getNavigationHelper().getDefaultLocale().getLanguage());
+        }
+        return title.getValue();
     }
     
     public String getDescription() {
-        return getDescription(BeanUtils.getNavigationHelper().getLocale().getLanguage()).getValue();
+        MapTranslation desc = getDescription(BeanUtils.getNavigationHelper().getLocale().getLanguage());
+        if(desc.isEmpty()) {
+            desc = getDescription(BeanUtils.getNavigationHelper().getDefaultLocale().getLanguage());
+        }
+        return desc.getValue();
     }
 
     

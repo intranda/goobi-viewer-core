@@ -29,7 +29,8 @@
 		            		var geoMap = new viewerJS.GeoMap({
 		            		    language: displayLanguage,
 		            		    popover: "#geoMapPopoverTemplate",
-		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}"
+		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}",
+		            		    allowMovingFeatures: true
 		            		});
 		            		geoMap.onMapClick.subscribe((geojson) => {
 		            		    console.log("click at ", geojson);
@@ -211,7 +212,7 @@
 						                            value="#{geoMapBean.possibleMapTypes}"
 						                            var="type"
 						                            itemValue="#{type}"
-						                            itemLabel="#{msg[type]}" />
+						                            itemLabel="#{msg['select__geomap_type__'.concat(type)]}" />
 						                         <f:ajax render="mapPanel"/>
 						                    </h:selectOneMenu>
 						                </div>

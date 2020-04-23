@@ -267,4 +267,8 @@ public abstract class Translation {
         }
     }
     
+    public boolean isEmpty() {
+        return StringUtils.isBlank(getValue());
+    }
+    
 }

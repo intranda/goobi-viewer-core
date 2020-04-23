@@ -37,23 +37,25 @@
 	                    			<div class="entity_list__item__header">
 		                    			<h3>#{map.getTitle(navigationHelper.localeString)}</h3>
 		                    			<div class="entity_list__item__header__tags">
-		                    				<a 
-				                               id="oEmbedLink" 
-				                               class="label label-default" 
-				                               data-copy="oembed" 
-				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}" 
-				                               data-copy-done="#{msg.copyUrlDone}"
-				                               title="#{msg.copyUrl}"> 
-				                               #{msg.oEmbed}
-				                           </a> 
+<!-- 		                    				<a  -->
+<!-- 				                               id="oEmbedLink"  -->
+<!-- 				                               class="label label-default"  -->
+<!-- 				                               data-copy="oembed"  -->
+<!-- 				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}"  -->
+<!-- 				                               data-copy-done="#{msg.copyUrlDone}" -->
+<!-- 				                               title="#{msg.copyUrl}">  -->
+<!-- 				                               #{msg.oEmbed} -->
+<!-- 				                           </a>  -->
 		                    			</div>
 	                    			</div>
 	                    			<div class="entity_list__item__content">
 	                    				<div class="entity_list__item__content__label">#{msg.type}:</div>
-	                    				<div class="entity_list__item__content__value">#{msg[map.type]}</div>
+	                    				<div class="entity_list__item__content__value">#{msg['label__geomap_type__'.concat(map.type)]}</div>
 	                    				
-	                    				<div class="entity_list__item__content__label">#{msg.description}:</div>
-	                    				<div class="entity_list__item__content__value">#{map.description}</div>
+	                    				<ui:fragment rendered="#{map.getDescription().length() > 0}">
+		                    				<div class="entity_list__item__content__label">#{msg.description}:</div>
+		                    				<div class="entity_list__item__content__value">#{map.description}</div>
+	                    				</ui:fragment>
 	                    				
 	                    				<ui:fragment rendered="#{geoMapBean.isInUse(map)}">
 		                    				<div class="entity_list__item__content__label">#{msg.label__usage}:</div>

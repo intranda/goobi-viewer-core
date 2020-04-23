@@ -38,7 +38,7 @@ var viewerJS = ( function( viewer ) {
                 zoom: 5,
                 center: [11.073397, 49.451993] //long, lat
             },
-            allowMovingFeatures: true,
+            allowMovingFeatures: false,
             mapBoxToken : undefined,
             mapBoxWorldId: "mapbox.world-bright",
             language: "de",
@@ -150,11 +150,15 @@ var viewerJS = ( function( viewer ) {
         }).addTo(this.map);
             
         
-        this.map.on("click", function(e) {
-                var location= e.latlng;
-                let geoJson = this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
-                this.onMapClick.next(geoJson);
-        }.bind(this))
+//        this.map.on("click", function(e) {
+//        }.bind(this))
+        
+        this.map.on("contextmenu", (e) => {
+            var location= e.latlng;
+            let geoJson = this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
+            this.onMapClick.next(geoJson);
+            return false;
+        })
 
     }
     

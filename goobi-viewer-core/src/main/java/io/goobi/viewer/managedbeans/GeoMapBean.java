@@ -31,6 +31,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
@@ -99,16 +100,22 @@ public class GeoMapBean implements Serializable {
      * @throws DAOException
      */
     public void saveCurrentMap() throws DAOException {
+        boolean saved = false;
         if(this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if(this.currentMap.getId() == null) {
             this.currentMap.setDateCreated(new Date());
             this.currentMap.setDateUpdated(new Date());
             this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
-            DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+            saved = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
         } else {
             this.currentMap.setDateUpdated(new Date());
-            DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
+            saved = DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
+        }
+        if(saved) {
+            Messages.info("notify__save_map__success");
+        } else {
+            Messages.error("notify__save_map__error");
         }
     }
     
