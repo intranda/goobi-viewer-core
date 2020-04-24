@@ -67,7 +67,7 @@
                         <c:forEach var="subPage" items="#{cmsPage.getContentItem('list01').nestedPages}">
                             <div class="tpl-news-overview__list-item clearfix">
                                 <!-- IMAGE -->
-                                <div class="col-xs-12 col-sm-4">
+                                <div class="col-12 col-sm-4">
                                     <figure class="tpl-news-overview__list-image">
                                         <a href="#{cmsBean.getUrl(subPage)}">
 	                                        <img src="#{subPage.getContent('image01')}" class="img-responsive" title="#{subPage.getMediaName('image01')}" />
@@ -77,7 +77,7 @@
                                 </div>
     
                                 <!-- PREVIEW -->
-                                <div class="col-xs-12 col-sm-8">
+                                <div class="col-12 col-sm-8">
                                     <div class="tpl-news-overview__list-preview">
                                         <h3>#{subPage.title}</h3>
                                         

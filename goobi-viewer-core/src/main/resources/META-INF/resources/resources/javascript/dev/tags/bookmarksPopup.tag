@@ -21,10 +21,10 @@
 	
 	<div class="bookmark-popup__footer">
 		<div class="row no-margin">
-			<div class="col-xs-11 no-padding">
+			<div class="col-11 no-padding">
 				<input ref="inputValue" type="text" placeholder="{msg('bookmarkList_addNewBookmarkList')}"/>
 			</div>
-			<div class="col-xs-1 no-padding">
+			<div class="col-1 no-padding">
 				<button class="btn btn-clean" type="button" onclick="{add}"></button>
 			</div>
 		</div>

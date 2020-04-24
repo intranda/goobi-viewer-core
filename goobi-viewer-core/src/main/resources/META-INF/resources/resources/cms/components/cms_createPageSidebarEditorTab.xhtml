@@ -34,7 +34,7 @@
 
 							<!-- add sidebar item -->
 							<div class="row">
-								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+								<div class="col-12 col-sm-12 col-md-12 col-lg-12">
 									<div id="addMenuItemWrapper">
 										<!-- trigger -->
 										<h:commandButton id="addSidebarItemBtn" styleClass="btn btn--default" value="#{msg.cms_sidebar_createItem}" action="#{cmsBean.createSidebarElement}">
@@ -47,7 +47,7 @@
 							</div>
 
 							<div class="row">
-								<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+								<div class="col-12 col-sm-12 col-md-6 col-lg-6">
 									<div class="sidebar-editor-editor-left">
 										<h4>#{msg.cms_menu_visibleComponents}</h4>
 
@@ -146,11 +146,11 @@
 																				<div class="row">
 																					<!-- CENTER VALUE -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
-																					<div class="col-xs-6">
+																					<div class="col-6">
 																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
 																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
 																					</div>
-																					<div class="col-xs-6">
+																					<div class="col-6">
 																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
 																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
 																					</div>
@@ -158,31 +158,31 @@
 																					<!-- LOCATIONS -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
 																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
-																						<div class="col-xs-5">
+																						<div class="col-5">
 																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
 																						</div>
-																						<div class="col-xs-5">
+																						<div class="col-5">
 																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
 																						</div>
 																						<!-- INFOS -->
-																						<div class="col-xs-10">
+																						<div class="col-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
 																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
 																						</div>
 																						<!-- LINK -->
-																						<div class="col-xs-10">
+																						<div class="col-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
 																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
 																						</div>
-																						<div class="col-xs-10">
+																						<div class="col-10">
 																							<div class="widget-geo-locations__input-spacer"></div>
 																						</div>
 																					</ui:repeat>
 																					<!-- ADD LOCATION -->																				
 																					<div class="widget-geo-locations__action">
-																						<div class="col-xs-2">
+																						<div class="col-2">
 																							<h:commandLink action="#{element.removeGeoLocation}">
 																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
 																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
@@ -220,7 +220,7 @@
 										</ul>
 									</div>
 								</div>
-								<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+								<div class="col-12 col-sm-12 col-md-6 col-lg-6">
 									<div class="sidebar-editor-editor-right">
 										<h4>#{msg.cms_menu_availableComponents}</h4>
 
@@ -317,11 +317,11 @@
 																				<div class="row">
 																					<!-- CENTER VALUE -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
-																					<div class="col-xs-6">
+																					<div class="col-6">
 																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
 																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
 																					</div>
-																					<div class="col-xs-6">
+																					<div class="col-6">
 																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
 																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
 																					</div>
@@ -329,31 +329,31 @@
 																					<!-- LOCATIONS -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
 																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
-																						<div class="col-xs-5">
+																						<div class="col-5">
 																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
 																						</div>
-																						<div class="col-xs-5">
+																						<div class="col-5">
 																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
 																						</div>
 																						<!-- INFOS -->
-																						<div class="col-xs-10">
+																						<div class="col-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
 																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
 																						</div>
 																						<!-- LINK -->
-																						<div class="col-xs-10">
+																						<div class="col-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
 																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
 																						</div>
-																						<div class="col-xs-10">
+																						<div class="col-10">
 																							<div class="widget-geo-locations__input-spacer"></div>
 																						</div>
 																					</ui:repeat>
 																					<!-- ADD LOCATION -->																				
 																					<div class="widget-geo-locations__action">
-																						<div class="col-xs-2">
+																						<div class="col-2">
 																							<h:commandLink action="#{element.removeGeoLocation}">
 																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
 																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />

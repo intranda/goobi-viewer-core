@@ -19,7 +19,7 @@
 			<ui:fragment rendered="#{!(hideOwned and owned)}">
 				<div class="user-bookmark__panel">
 					<div class="user-bookmark__panel-header">
-						<div class="col-xs-8 col-sm-9">
+						<div class="col-8 col-sm-9">
 							<h4>
 								<ui:fragment rendered="#{userList}">
 									<a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
@@ -41,7 +41,7 @@
 								</ui:fragment>
 							</h4>
 						</div>
-						<div class="col-xs-4 col-sm-3 user-bookmark__panel-action text-right">
+						<div class="col-4 col-sm-3 user-bookmark__panel-action text-right">
 							
 							<h:panelGroup rendered="#{userList}" id="isPublicMarker">
 								<ui:fragment rendered="#{bookmarkList.isPublic}">
@@ -67,14 +67,14 @@
 						
 					<!-- DESCRIPTION -->
 					<ui:fragment rendered="#{bookmarkList.hasDescription()}">
-						<div class="col-xs-12">
+						<div class="col-12">
 							<div class="user-bookmark__panel-body">
 								<p>#{bookmarkList.description}</p>
 							</div>
 						</div>
 					</ui:fragment>
 	
-					<div class="col-xs-12 col-sm-12">
+					<div class="col-12 col-sm-12">
 						<div class="user-bookmark__items-image-preview">
 							<ui:repeat value="#{bookmarkList.items}" var="item"
 								varStatus="status">
@@ -92,7 +92,7 @@
 					</div>
 	
 						<!-- ACTIONS - share, search, compare -->
-	                    <div class="col-xs-12 col-sm-12">
+	                    <div class="col-12 col-sm-12">
 							<!-- ACTION -->
 							<div class="user-bookmark__panel-action text-center">
 								<ui:fragment rendered="#{userList}">

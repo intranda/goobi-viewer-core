@@ -15,10 +15,10 @@
 			<h:form id="downloadPdfPartsForm">
 			<div class="row">
 				<!-- FROM -->
-				<div class="col-xs-2 download-pdf-parts__from">
+				<div class="col-2 download-pdf-parts__from">
 					<label for="selectPageFrom">#{msg.downloadPdfPartsFrom}:</label>
 				</div>
-				<div class="col-xs-3 download-pdf-parts__select-from">
+				<div class="col-3 download-pdf-parts__select-from">
 					<div class="custom-control custom-control--select">
                         <h:selectOneMenu
                             id="selectPageFrom"
@@ -29,10 +29,10 @@
 					</div>
 				</div>
 				<!-- TO -->
-				<div class="col-xs-2 download-pdf-parts__to">
+				<div class="col-2 download-pdf-parts__to">
 					<label for="selectPageTo">#{msg.downloadPdfPartsTo}:</label>
 				</div>
-				<div class="col-xs-3 download-pdf-parts__select-to">
+				<div class="col-3 download-pdf-parts__select-to">
 					<div class="custom-control custom-control--select">
                         <h:selectOneMenu
                             id="selectPageTo"
@@ -43,7 +43,7 @@
 					</div>
 				</div>
 				<!-- Download -->
-				<div class="col-xs-2 download-pdf-parts__download">
+				<div class="col-2 download-pdf-parts__download">
 					<h:outputLink styleClass="btn btn--icon"
 					    disabled="#{!activeDocumentBean.viewManager.pdfPartDownloadLinkEnabled}"
 					    title="#{msg.label_pdf_download_record}"
