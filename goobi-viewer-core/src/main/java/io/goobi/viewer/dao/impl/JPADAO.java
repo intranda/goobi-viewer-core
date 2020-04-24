@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -4012,16 +4013,25 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
         preQuery();
-//        Query q = em.createQuery(
-//                "SELECT DISTINCT page FROM CMSPage page JOIN CMSPageLanguageVersion lang ON (lang.ownerPage = page) JOIN CMSContentItem item ON (item. ownerPageLanguageVersion = lang) WHERE item.geoMap = :map");
-        Query q = em.createQuery(
+        
+        Query qItems = em.createQuery(
                 "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
-
-        q.setParameter("map", map);
-        List<CMSContentItem> itemList = q.getResultList();
-        List<CMSPage> pageList = itemList.stream()
+        qItems.setParameter("map", map);
+        List<CMSContentItem> itemList = qItems.getResultList();
+        
+        Query qWidgets = em.createQuery(
+                "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
+        qWidgets.setParameter("mapId", map.getId());
+        List<CMSSidebarElement> widgetList = qWidgets.getResultList();
+         
+        Stream<CMSPage> itemPages = itemList.stream()
                 .map(CMSContentItem::getOwnerPageLanguageVersion)
-                .map(CMSPageLanguageVersion::getOwnerPage)
+                .map(CMSPageLanguageVersion::getOwnerPage);
+        
+        Stream<CMSPage> widgetPages = widgetList.stream()
+                .map(CMSSidebarElement::getOwnerPage);
+        
+        List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
