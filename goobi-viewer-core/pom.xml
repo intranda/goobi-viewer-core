@@ -135,7 +135,7 @@
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
-		<!-- This needs to be added explicitly because otherwise Solr will use 
+		<!-- This needs to be added explicitly because otherwise Solr will use
 			an older version that's incompatible -->
 		<xerces.version>2.12.0</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -870,6 +870,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
