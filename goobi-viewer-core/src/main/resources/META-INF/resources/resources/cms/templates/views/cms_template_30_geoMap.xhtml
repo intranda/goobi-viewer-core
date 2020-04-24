@@ -55,7 +55,8 @@
                     <script>
                   		let geoMap = new viewerJS.GeoMap({
                   			allowMovingFeatures: false,
-                  			popover: "#geoMapPopoverTemplate"
+                  			popover: "#geoMapPopoverTemplate",
+                  			language: "#{navigationHelper.localeString}"
                   		});
                   		$(document).ready(() => {                  		    
 	                  		geoMap.init();
@@ -65,6 +66,7 @@
 	                  		features.forEach(feature => {
 	                  		    geoMap.addMarker(feature);
 	                  		})
+	                  		geoMap.setView(geoMap.getViewAroundFeatures());
 	                  	})
                     	
                     </script>

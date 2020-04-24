@@ -193,14 +193,12 @@ public class GeoMapBean implements Serializable {
         return "dummy link";
     }
     
-    public boolean isInUse(GeoMap map) {
-        //TODO: return embedding cmsPages
-        return false;
+    public boolean isInUse(GeoMap map) throws DAOException {
+        return DataManager.getInstance().getDao().getPagesUsingMap(map).size() > 0;
     }
     
-    public List<CMSPage> getEmbeddingCmsPages(GeoMap map) {
-        //TODO: return a list of embedding pages
-        return new ArrayList<>();
+    public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
+        return DataManager.getInstance().getDao().getPagesUsingMap(map);
     }
 
 }

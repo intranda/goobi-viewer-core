@@ -61,6 +61,7 @@ import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -2386,10 +2387,10 @@ public class JPADAO implements IDAO {
      * @return
      */
     private boolean updateCMSPageFromDatabase(Long id) {
-        Object o = null;
+        CMSPage o = null;
         try {
             o = this.em.getReference(CMSPage.class, id);
-            this.em.refresh(o);
+            this.em.refresh(o);  
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
@@ -3927,12 +3928,17 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllGeoMaps()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<GeoMap> getAllGeoMaps() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT u FROM GeoMap u");
         q.setFlushMode(FlushModeType.COMMIT);
-        return q.getResultList();
+        List<GeoMap> list = q.getResultList();
+        list.forEach(map -> {
+            updateFromDatabase(map.getId(), GeoMap.class);
+        });
+        return list;
     }
 
     /* (non-Javadoc)
@@ -3998,6 +4004,27 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
+        preQuery();
+//        Query q = em.createQuery(
+//                "SELECT DISTINCT page FROM CMSPage page JOIN CMSPageLanguageVersion lang ON (lang.ownerPage = page) JOIN CMSContentItem item ON (item. ownerPageLanguageVersion = lang) WHERE item.geoMap = :map");
+        Query q = em.createQuery(
+                "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
+
+        q.setParameter("map", map);
+        List<CMSContentItem> itemList = q.getResultList();
+        List<CMSPage> pageList = itemList.stream()
+                .map(CMSContentItem::getOwnerPageLanguageVersion)
+                .map(CMSPageLanguageVersion::getOwnerPage)
+                .distinct()
+                .collect(Collectors.toList());
+        return pageList;
     }
 
 }

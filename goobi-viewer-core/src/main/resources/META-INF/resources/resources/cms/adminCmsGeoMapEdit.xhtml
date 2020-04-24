@@ -33,12 +33,13 @@
 		            		    allowMovingFeatures: true
 		            		});
 		            		geoMap.onMapClick.subscribe((geojson) => {
-		            		    console.log("click at ", geojson);
 		            		    currentFeature = geojson;
 		            		    geoMap.addMarker(geojson).openPopup();
 		            		    updateMetadata(geojson);
+		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
 		            		})
 		            		geoMap.onFeatureMoved.subscribe((geojson) => {
+		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
 		            		})
 		            		geoMap.onFeatureClick.subscribe((geojson) => {
 		            		    if(currentFeature == geojson) {
@@ -76,6 +77,7 @@
 			            		features.forEach( feature => {
 			            		    geoMap.addMarker(feature);
 			            		})
+			            		geoMap.setView(geoMap.getViewAroundFeatures());
 			            		
 			            		riot.mount("metadataEditor", {
 			            		    languages: #{navigationHelper.supportedLanguagesAsJson},
@@ -89,7 +91,7 @@
 		            		}
 		            		
 		            		setView = function() {
-		            		    let view = geoMap.getView();
+		            		    view = geoMap.getView();
 		            		    console.log("set view to ", view)
 		            		    $("#viewInput").val(JSON.stringify(view));
 		            		}
@@ -136,57 +138,63 @@
                         	<ul class="nav nav-tabs" role="tablist">
                         		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                     <li role="presentation" class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
-                                    <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a>
+<!--                                     <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a> -->
+                                    	<h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}">
+                                    		<passThroughAttribute name="aria-controls" value="nameLanguage-#{language}"/>
+                                    		<passThroughAttribute name="role" value="tab"/>
+                                    		<f:ajax render="metadataPanel"></f:ajax>
+                                    	</h:commandLink>
                                     </li>
                                 </ui:repeat>
                         	</ul>
                         	<div class="tab-content">
-                        	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
-                                <div role="tabpanel" class="tab-pane #{status.index == 0 ? 'active' : ''}" id="nameLanguage-#{status.index}">
+                        	<ui:param name="language" value="de"></ui:param>
+<!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
+                                <div role="tabpanel" class="tab-pane active" id="nameLanguage-#{geoMapBean.selectedLanguage}">
                         	
 	                        	<div class="admin__content-inner-content__input_form">
 									<!-- TITLE -->
 			                        <div class="input_form__option_group">
 			                            <div class="input_form__option_label">
-			                                <label for="mapTitle_#{language}">#{msg.name}:</label>
+			                                <label for="mapTitle">#{msg.name}:</label>
 			                            </div>
-			                            <div class="input_form__option_marker #{language == navigationHelper.defaultLocale.language ? 'in' : ''}">
+			                            <div class="input_form__option_marker #{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language ? 'in' : ''}">
 			                            <label>*</label>
 			                            </div>
 			                            <div class="input_form__option_control">
-			                                <h:inputText id="mapTitle_#{language}" styleClass="form-control"
-			                                    value="#{geoMapBean.currentMap.getTitle(language).value}" required="#{language == navigationHelper.defaultLocale.language}" requiredMessage="#{msg.error__title_required}"/>
+			                                <h:inputText id="mapTitle" styleClass="form-control"
+			                                    value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).value}" required="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}" requiredMessage="#{msg.error__title_required}"/>
 			                            </div>
 			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp_#{language}">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp">
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
-			                            <div id="titleHelp_#{language}" class="input_form__option_control_helptext">#{msg.cms__geo_maps__metadata_title__help}</div>
+			                            <div id="titleHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__metadata_title__help}</div>
 			                        </div>
 			                        
 			                        <!-- DESCRIPTION -->
 			                        <div class="input_form__option_group">
 			                            <div class="input_form__option_label">
-			                                <label for="mapDesc_#{language}">#{msg.description}:</label>
+			                                <label for="mapDes">#{msg.description}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker">
 			                            <label>*</label>
 			                            </div>
 			                            <div class="input_form__option_control">
-			                                <h:inputTextarea id="mapDesc_#{language}" styleClass="form-control"
-			                                    value="#{geoMapBean.currentMap.getDescription(language).value}"/>
+			                                <h:inputTextarea id="mapDesc" styleClass="form-control"
+			                                    value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}"/>
 			                            </div>
 			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="descHelp_#{language}">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="descHelp">
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
-			                            <div id="descHelp_#{language}" class="input_form__option_control_helptext">#{msg.cms__geo_maps__metadata_description__help}</div>
+			                            <div id="descHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__metadata_description__help}</div>
 			                        </div>
 								</div>
 								</div>
-								</ui:repeat>
+<!-- 								</ui:repeat> -->
                             </div>
                        </h:panelGroup>
                         <h3>#{msg.cms__geo_maps__map__title}</h3>

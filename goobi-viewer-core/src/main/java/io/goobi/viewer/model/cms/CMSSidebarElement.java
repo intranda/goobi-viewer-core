@@ -646,6 +646,7 @@ public class CMSSidebarElement {
         } else {
             this.linkedPages = null;
         }
+        this.geoMap = null;
     }
     
     /**
@@ -660,6 +661,7 @@ public class CMSSidebarElement {
      */
     public void setGeoMapId(Long geoMapId) {
         this.geoMapId = geoMapId;
+        this.geoMap = null;
     }
     
     public synchronized GeoMap getGeoMap() throws DAOException {

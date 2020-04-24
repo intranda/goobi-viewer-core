@@ -18,16 +18,11 @@
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
-                        <ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
-                            #{msg[cc.attrs.widget.widgetTitle]}
-                        </ui:fragment>
-                        <ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">
-                            #{msg[cc.attrs.widget.type]}
-                        </ui:fragment>
+                        #{cc.attrs.widget.geoMap.title}
                     </h3>
 
                     <!-- MAP -->
-                    <div id="geomap" class="widget-geomap__map"></div>
+                    <div id="geomapWidget" class="widget-geomap__map"></div>
                 </div>
             </h:panelGroup>
 
@@ -35,12 +30,7 @@
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
                 <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
-                        <ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
-                            #{msg[cc.attrs.widget.widgetTitle]}
-                        </ui:fragment>
-                        <ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">
-                            #{msg[cc.attrs.widget.type]}
-                        </ui:fragment>
+                        #{cc.attrs.widget.geoMap.title}
                         <a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
                             <h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
                             <i class="fa fa-arrow-down" aria-hidden="true"></i>
@@ -61,7 +51,9 @@
             $(document).ready( () => {	
                 
             	let geoMap = new viewerJS.GeoMap({
-            	    popover: "#geoMapPopoverTemplate"
+            	    popover: "#geoMapPopoverTemplate",
+            	    mapId: "geomapWidget",
+            	    language: "#{navigationHelper.localeString}"
             	});
             	let view = #{cc.attrs.widget.geoMap.initialView};
             	let features = #{cc.attrs.widget.geoMap.featuresAsString};
@@ -71,7 +63,7 @@
             	features.forEach(feature => {
             	    geoMap.addMarker(feature);
             	})
-            	
+            	geoMap.setView(geoMap.getViewAroundFeatures());
             })
 	        </script>
         </h:panelGroup>

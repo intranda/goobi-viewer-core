@@ -250,7 +250,11 @@ public abstract class Translation {
      */
     @Override
     public int hashCode() {
-        return this.language.hashCode();
+        if(this.language != null) {            
+            return this.language.hashCode();
+        } else {
+            return 0;
+        }
     }
     
     /**

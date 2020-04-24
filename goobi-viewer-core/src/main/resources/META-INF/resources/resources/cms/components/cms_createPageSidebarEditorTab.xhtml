@@ -62,18 +62,22 @@
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
 																	<!-- WIDGET MODE -->
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_widgetmode}:</label>
-																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																			</h:selectOneRadio>
-																		</div>
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
+																			<div class="form-group">
+																				<label>#{msg.cms_sidebarElement_widgetmode}:</label>
+																				<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																					<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																					<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																				</h:selectOneRadio>
+																			</div>
+																		</ui:fragment>
 																	<!-- WIDGET TITLE -->
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
 																		</div>
+																		</ui:fragment>
 																	<!-- HTML INPUT -->
 																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
 																		<div class="form-group">
@@ -137,10 +141,9 @@
 																		</div>
 																	</h:panelGroup>
 																	<!-- GEO MAP -->
-																	Category #{element.category}
 																	<h:panelGroup id="inputGeoMap" rendered="#{element.category == 'geoMap'}">
-																		<div class="widget-geo-locations">																			
-																			<div class="widget-geo-locations__input">
+																		<div class="widget-geomap">																			
+																			<div class="widget-geomap__input">
 																			
 																				<div class="row">
 																					<label>#{msg.cms__geo_maps__map__title}:</label>
@@ -163,14 +166,14 @@
 																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
-																	<h:panelGroup id="inputCss">
+																	<h:panelGroup rendered="#{element.category != 'geoMap'}" id="inputCss">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_css}:</label>
 																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
 																	<!-- ACTION -->
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoMap'}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
 																				<f:ajax execute="inputHtml inputQuery inputGeoMap" render="inputHtml inputQuery inputGeoMap :messages" onevent="cmsJS.sortableList.save" />
@@ -200,6 +203,7 @@
 
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
 																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
@@ -207,11 +211,14 @@
 																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
 																			</h:selectOneRadio>
 																		</div>
+																		</ui:fragment>
 																	<!-- WIDGET TITLE -->
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
 																		</div>
+																		</ui:fragment>
 																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_html}:</h4>
@@ -274,8 +281,8 @@
 																	</h:panelGroup>
 																	<!-- GEO MAP -->
 																	<h:panelGroup id="inputGeoMap" rendered="#{element.category == 'geoMap'}">
-																		<div class="widget-geo-locations">																			
-																			<div class="widget-geo-locations__input">
+																		<div class="widget-geomap">																			
+																			<div class="widget-geomap__input">
 																			
 																				<div class="row">
 																					<label>#{msg.cms__geo_maps__map__title}:</label>
@@ -298,13 +305,13 @@
 																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
-																	<h:panelGroup id="inputCss">
+																	<h:panelGroup rendered="#{element.category != 'geoMap'}" id="inputCss">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_css}:</label>
 																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoMap'}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
 																				<f:ajax execute="inputHtml inputQuery inputGeoMap" render="inputHtml inputQuery inputGeoMap :messages" onevent="cmsJS.sortableList.save" />

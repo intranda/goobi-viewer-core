@@ -2002,4 +2002,12 @@ public interface IDAO {
      */
     public boolean deleteGeoMap(GeoMap map) throws DAOException;
 
+    /**
+     * Return a list of CMS-pages embedding the given map
+     * 
+     * @param map
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
 }

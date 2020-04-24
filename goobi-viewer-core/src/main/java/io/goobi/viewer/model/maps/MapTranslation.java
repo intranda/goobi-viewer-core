@@ -41,8 +41,7 @@ public class MapTranslation extends Translation {
      * Empty Constructor
      */
     public MapTranslation() {
-        super();
-        
+        super();        
     }
     
     /**

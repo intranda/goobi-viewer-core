@@ -192,6 +192,25 @@ var viewerJS = ( function( viewer ) {
         }
     }
     
+    viewer.GeoMap.prototype.getViewAroundFeatures = function() {
+        let features = this.getFeatures();
+        if(features.length == 0) {
+            return undefined;
+        } else if(features.length == 1) {
+            let view  = this.getView();
+            view.center = features[0].geometry.coordinates;
+            return view;
+        } else {
+            let points = features.map(f => f.geometry.coordinates).map(c =>  L.latLng(c[1], c[0]));
+            let bounds = L.latLngBounds(points);
+            let center = bounds.getCenter();
+            return {
+                "zoom": this.map.getBoundsZoom(bounds),
+                "center": [center.lng, center.lat]
+            }
+        }
+    }
+    
     viewer.GeoMap.prototype.updateMarker = function(id) {
         let marker = this.getMarker(id);
         if(marker) {            

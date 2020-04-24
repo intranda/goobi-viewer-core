@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.maps;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -23,10 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -50,13 +45,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsonorg.JSONArrayDeserializer;
-import com.google.gson.Gson;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
@@ -82,7 +74,7 @@ public class GeoMap {
         SOLR_QUERY,
         MANUAL
     }
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "geomap_id")
@@ -139,10 +131,11 @@ public class GeoMap {
         this.dateCreated = blueprint.dateCreated;
         this.dateUpdated = blueprint.dateUpdated;
         this.id = blueprint.id;
-        this.translations = blueprint.translations.stream().filter(t -> !t.isEmpty()).map(t -> new MapTranslation(t)).collect(Collectors.toSet());
+        this.translations = blueprint.translations;//.stream().filter(t -> !t.isEmpty()).map(t -> new MapTranslation(t)).collect(Collectors.toSet());
         this.type = blueprint.type;
         this.features = blueprint.features;
         this.initialView = blueprint.initialView;
+        
     }
     
     
