@@ -93,7 +93,7 @@
 		<httpcore.version>4.4.13</httpcore.version>
 		<httpmime.version>4.5.12</httpmime.version>
 		<httpunit.version>1.7.3</httpunit.version>
-		<icu.version>66.1</icu.version>
+		<icu.version>67.1</icu.version>
 		<inject.version>1</inject.version>
 		<jackson.version>2.10.3</jackson.version>
 		<jackson-jaxrs.version>2.10.3</jackson-jaxrs.version>
