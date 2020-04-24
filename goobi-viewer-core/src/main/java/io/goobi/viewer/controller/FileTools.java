@@ -31,6 +31,7 @@ import java.net.URLConnection;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -50,7 +51,6 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
-import de.unigoettingen.sub.commons.util.StreamUtils;
 
 /**
  * File I/O utilities.
@@ -161,8 +161,8 @@ public class FileTools {
 
         return null;
     }
-    
-    public static String getCharset(String input) throws IOException {
+
+    public static String getCharset(String input) {
         CharsetDetector cd = new CharsetDetector();
             cd.setText(input.getBytes());
             CharsetMatch cm = cd.detect();
@@ -426,6 +426,7 @@ public class FileTools {
         return path;
     }
     
+    
     /**
      * Guess the content type (mimeType) of the resource found at the given uri. 
      * Content type if primarily guessed from the file extension of the last url path part. 
@@ -501,5 +502,23 @@ public class FileTools {
         try(InputStream in = Files.newInputStream(file)) {
             return getCharset(in);
         }
+    }
+    
+    /**
+     * 
+     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
+     * if the given path is empty or null
+     * 
+     * @param pathString
+     * @return The filename, or an empty String if it could not be determined
+     */
+
+    public static String getFilenameFromPathString(String pathString) {
+        if (StringUtils.isBlank(pathString)) {
+            return "";
+        }
+
+        Path path = Paths.get(pathString);
+        return path.getFileName().toString();
     }
 }

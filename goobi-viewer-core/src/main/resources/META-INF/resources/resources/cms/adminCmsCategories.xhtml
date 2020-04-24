@@ -95,7 +95,7 @@
                                     <tbody>
                                         <ui:repeat var="category" value="#{categories.allCategories}">
                                             <tr>
-                                                <td>
+                                                <td class="admin-cms-categories__name">
                                                     #{category.name}
                                                     <div class="cms-module__actions">
                                                         <h:commandLink type="button" class="btn btn--clean" action="#{categories.edit(category)}">

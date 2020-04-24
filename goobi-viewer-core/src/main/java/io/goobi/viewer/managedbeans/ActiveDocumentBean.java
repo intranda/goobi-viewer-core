@@ -121,9 +121,6 @@ public class ActiveDocumentBean implements Serializable {
     private boolean group = false;
     protected long topDocumentIddoc = 0;
 
-    /** Table of contents object. */
-    private TOC toc;
-
     /** Metadata displayed in title.xhtml */
     private List<Metadata> titleBarMetadata = new ArrayList<>();
 
@@ -200,7 +197,6 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
             viewManager = null;
             topDocumentIddoc = 0;
-            toc = null;
             titleBarMetadata.clear();
             logid = "";
             action = "";
@@ -268,7 +264,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IDDOCNotFoundException
+     * @should throw RecordNotFoundException if listing not allowed by default
+     * @should load records that have been released via moving wall
      */
+
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException {
         synchronized (this) {
@@ -288,7 +287,6 @@ public class ActiveDocumentBean implements Serializable {
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
             if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
-                toc = null;
                 anchor = false;
                 volume = false;
                 group = false;
@@ -322,7 +320,7 @@ public class ActiveDocumentBean implements Serializable {
                 List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
-                            new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(topDocument.getPi()).toString(),
+                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topDocument.getPi()).toString(),
                             (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access) {
                         logger.debug("User may not open {}", topDocument.getPi());
@@ -341,7 +339,7 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
-                toc = createTOC();
+                viewManager.setToc(createTOC());
             }
 
             // If LOGID is set, update the current element
@@ -1129,7 +1127,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setChildrenVisible(TOCElement element)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (getToc() != null) {
-            synchronized (toc) {
+            synchronized (getToc()) {
                 getToc().setChildVisible(element.getID());
                 getToc().getActiveElement();
             }
@@ -1150,7 +1148,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setChildrenInvisible(TOCElement element)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (getToc() != null) {
-            synchronized (toc) {
+            synchronized (getToc()) {
                 getToc().setChildInvisible(element.getID());
                 getToc().getActiveElement();
             }
@@ -1193,10 +1191,14 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (toc == null) {
-            toc = createTOC();
+        if (viewManager == null) {
+            return null;
         }
-        return toc;
+
+        if (viewManager.getToc() == null) {
+            viewManager.setToc(createTOC());
+        }
+        return viewManager.getToc();
     }
 
     /**
@@ -1230,18 +1232,19 @@ public class ActiveDocumentBean implements Serializable {
                 this.tocCurrentPage = 1;
             }
             // Do not call getToc() here - the setter is usually called before update(), so the required information for proper TOC creation is not yet available
-            if (toc != null) {
-                int currentCurrentPage = toc.getCurrentPage();
-                toc.setCurrentPage(this.tocCurrentPage);
+            if (viewManager != null && viewManager.getToc() != null) {
+                int currentCurrentPage = viewManager.getToc().getCurrentPage();
+                viewManager.getToc().setCurrentPage(this.tocCurrentPage);
                 // The TOC object will correct values that are too high, so update the local value, if necessary
-                if (toc.getCurrentPage() != this.tocCurrentPage) {
-                    this.tocCurrentPage = toc.getCurrentPage();
+                if (viewManager.getToc().getCurrentPage() != this.tocCurrentPage) {
+                    this.tocCurrentPage = viewManager.getToc().getCurrentPage();
                 }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
-                    toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
-                            this.tocCurrentPage);
+                    viewManager.getToc()
+                            .generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                                    this.tocCurrentPage);
                 }
             }
         }

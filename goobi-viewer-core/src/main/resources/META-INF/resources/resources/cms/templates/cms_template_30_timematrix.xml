@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateTimematrix" version="2020-04-08">
+    <name>cms__template_30__title</name>
+    <description>cms__template_30__description</description>
+    <icon>cms_template_30_timeMatrix.png</icon>
+    <html>cms_template_30_timematrix.xhtml</html>
+    <options>    
+        <appliesToExpandedUrl>true</appliesToExpandedUrl>
+    </options>
+    <content>
+        <item id="text01" order="1" label="cms__template_30__text01__label" type="HTML" inlinehelp="cms__template_30__text01__help"/>
+    </content>
+</cms_page_template>

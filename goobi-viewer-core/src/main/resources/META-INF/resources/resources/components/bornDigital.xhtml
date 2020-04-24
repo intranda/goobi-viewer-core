@@ -9,7 +9,7 @@
 
     <!-- component content -->
 	<composite:implementation>
-        <div id="ePub" class="e-pub">
+        <div id="bornDigital" class="born-digital">
             <h3><h:outputText value="#{msg.bornDigital_fileList}" /></h3>
             
             <!-- ACCESS DENIED -->
@@ -21,14 +21,14 @@
             
             <!-- ACCESS GRANTED -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
-                <div class="e-pub__items">
+                <div class="born-digital__items">
                     <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
-                        <div class="e-pub__item">
+                        <div class="born-digital__item">
                             <a href="#{page.url}" target="_blank">
                                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                 <br />
                                 [#{page.fileSizeAsString}]
-                                <span class="e-pub__item-order-label">#{page.orderLabel}</span>
+                                <span class="born-digital__item-order-label">#{page.orderLabel}</span>
                             </a>
                         </div>        
                     </ui:repeat>
