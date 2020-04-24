@@ -16,8 +16,6 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +35,8 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -586,7 +584,6 @@ public class BookmarkList implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    @SuppressWarnings("unchecked")
     public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
         int cols = (int) Math.ceil(Math.sqrt(items.size()));
@@ -612,7 +609,7 @@ public class BookmarkList implements Serializable {
             JSONObject dataItem = new JSONObject();
             dataItem.put("manifestUri", manifestUrl);
             dataItem.put("location", "Goobi viewer");
-            dataArray.add(dataItem);
+            dataArray.put(dataItem);
 
             JSONObject windowObjectItem = new JSONObject();
             windowObjectItem.put("loadedManifest", manifestUrl);
@@ -621,7 +618,7 @@ public class BookmarkList implements Serializable {
             windowObjectItem.put("sidePanelVisible", false);
             windowObjectItem.put("bottomPanel", false);
             windowObjectItem.put("viewType", "ImageView");
-            windowObjectsArray.add(windowObjectItem);
+            windowObjectsArray.put(windowObjectItem);
 
             //            col++;
             //            if (col > cols) {
@@ -632,7 +629,7 @@ public class BookmarkList implements Serializable {
         root.put("data", dataArray);
         root.put("windowObjects", windowObjectsArray);
 
-        return root.toJSONString();
+        return root.toString();
     }
 
     /**
@@ -675,9 +672,9 @@ public class BookmarkList implements Serializable {
     public String getEscapedName() {
         if (name != null) {
             return StringEscapeUtils.escapeHtml4(name);
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     public boolean isOwnedBy(User user) {

@@ -43,8 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2876,7 +2875,6 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    @SuppressWarnings("unchecked")
     public List<String> getVersionHistory() throws PresentationException, IndexUnreachableException {
         if (versionHistory == null) {
             versionHistory = new ArrayList<>();
@@ -2903,7 +2901,7 @@ public class ViewManager implements Serializable {
                             }
                             jsonObj.put("order", "1"); // "1" means this is a
                                                        // succeeding version
-                            next.add(jsonObj.toJSONString());
+                            next.add(jsonObj.toString());
                             identifier = null;
                             if (doc.getFieldValues(nextVersionIdentifierField) != null) {
                                 identifier = (String) doc.getFieldValues(nextVersionIdentifierField).iterator().next();
@@ -2925,7 +2923,7 @@ public class ViewManager implements Serializable {
                 jsonObj.put("id", getPi());
                 jsonObj.put("year", topDocument.getMetadataValue("MD_YEARPUBLISH"));
                 jsonObj.put("order", "0"); // "0" identifies the currently loaded version
-                versionHistory.add(jsonObj.toJSONString());
+                versionHistory.add(jsonObj.toString());
             }
 
             {
@@ -2948,7 +2946,7 @@ public class ViewManager implements Serializable {
                             }
                             jsonObj.put("order", "-1"); // "-1" means this is a
                                                         // preceding version
-                            previous.add(jsonObj.toJSONString());
+                            previous.add(jsonObj.toString());
                             identifier = null;
                             if (doc.getFieldValues(prevVersionIdentifierField) != null) {
                                 identifier = (String) doc.getFieldValues(prevVersionIdentifierField).iterator().next();
@@ -3024,7 +3022,7 @@ public class ViewManager implements Serializable {
                 return "";
             }
             Messages.info("transkribus_recordIngestSuccess");
-        } catch (IOException | JDOMException | ParseException e) {
+        } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
             Messages.error("transkribus_recordInjestError");
         } catch (DAOException e) {

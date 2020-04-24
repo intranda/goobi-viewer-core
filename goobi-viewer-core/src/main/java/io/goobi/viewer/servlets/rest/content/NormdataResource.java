@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +32,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +47,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
@@ -100,7 +95,6 @@ public class NormdataResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
      */
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/get/{url}/{template}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -169,18 +163,18 @@ public class NormdataResource {
         // Explorative mode to return all available fields
         if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
             for (NormData normData : normDataList) {
-                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
-            return jsonArray.toJSONString();
+            return jsonArray.toString();
         }
 
         List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
         // Missing template config - add all fields
         if (normdataFields.isEmpty()) {
             for (NormData normData : normDataList) {
-                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
-            return jsonArray.toJSONString();
+            return jsonArray.toString();
         }
         // Use template config
         for (String field : normdataFields) {
@@ -188,11 +182,11 @@ public class NormdataResource {
                 if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
                     continue;
                 }
-                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
         }
 
-        return jsonArray.toJSONString();
+        return jsonArray.toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -232,7 +226,7 @@ public class NormdataResource {
             if (valueMap.get("text") == null) {
                 valueMap.put("text", valueMap.get("identifier"));
             }
-            //                                logger.debug(jsonObj.toJSONString());
+            //                                logger.debug(jsonObj.toString());
         }
 
         return jsonObj;

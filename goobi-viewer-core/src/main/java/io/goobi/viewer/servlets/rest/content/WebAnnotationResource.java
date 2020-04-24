@@ -30,7 +30,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +45,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -57,7 +54,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -70,8 +66,8 @@ public class WebAnnotationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(WebAnnotationResource.class);
 
-    private static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
-    private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
+    //    private static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
+    //    private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
 
     @Context
     private HttpServletRequest servletRequest;
@@ -151,7 +147,7 @@ public class WebAnnotationResource {
      * @param owner
      * @return
      */
-    private Agent createAgent(User owner) {
+    private static Agent createAgent(User owner) {
         Agent agent = new Agent(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/" + owner.getId()), AgentType.PERSON,
                 owner.getDisplayName());
         return agent;
@@ -236,54 +232,5 @@ public class WebAnnotationResource {
         collection.setFirst(first);
 
         return collection;
-    }
-
-    /**
-     * 
-     * @param comment
-     * @param servletRequest
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    static JSONObject generateCommentAnnotation(Comment comment, HttpServletRequest servletRequest) {
-        if (comment == null) {
-            throw new IllegalArgumentException("comment may not be null");
-        }
-        if (servletRequest == null) {
-            throw new IllegalArgumentException("servletRequest may not be null");
-        }
-
-        String idUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
-                .toString();
-        String targetUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
-                .append(PageType.viewObject.getName())
-                .append('/')
-                .append(comment.getPi())
-                .append('/')
-                .append(comment.getPage())
-                .append('/')
-                .toString();
-
-        JSONObject json = new JSONObject();
-        json.put("@context", CONTEXT_URI);
-        json.put("id", idUrl);
-        json.put("creator", comment.getOwner().getDisplayNameObfuscated());
-        json.put("created", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateCreated().getTime()));
-        if (comment.getDateUpdated() != null) {
-            json.put("modified", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateUpdated().getTime()));
-        }
-        json.put("generator", GENERATOR_URI);
-        {
-            JSONObject body = new JSONObject();
-            body.put("type", "TextualBody");
-            body.put("format", "text/plain");
-            body.put("value", comment.getText());
-            json.put("body", body);
-        }
-        json.put("target", targetUrl);
-
-        return json;
     }
 }

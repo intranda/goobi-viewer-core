@@ -28,7 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,6 @@ public class IndexingResource {
      * @param params a {@link io.goobi.viewer.servlets.rest.utils.IndexingRequestParameters} object.
      * @return Short summary of files created
      */
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/deleterecord")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -100,7 +99,7 @@ public class IndexingResource {
         if (params == null || StringUtils.isEmpty(params.getPi())) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
-            return ret.toJSONString();
+            return ret.toString();
         }
 
         if (workerThread == null || !workerThread.isAlive()) {
@@ -148,6 +147,6 @@ public class IndexingResource {
             ret.put("message", "Record deletion currently in progress");
         }
 
-        return ret.toJSONString();
+        return ret.toString();
     }
 }

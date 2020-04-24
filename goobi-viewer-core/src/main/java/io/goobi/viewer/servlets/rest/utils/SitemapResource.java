@@ -28,8 +28,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,6 @@ public class SitemapResource {
      * @param params a {@link io.goobi.viewer.servlets.rest.utils.SitemapRequestParameters} object.
      * @return Short summary of files created
      */
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/update")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -100,7 +99,7 @@ public class SitemapResource {
         if (params == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
-            return ret.toJSONString();
+            return ret.toString();
         }
 
         Sitemap sitemap = new Sitemap();
@@ -125,7 +124,7 @@ public class SitemapResource {
                             for (File file : sitemapFiles) {
                                 JSONObject fileObj = new JSONObject();
                                 fileObj.put("filename", file.getName());
-                                fileArray.add(fileObj);
+                                fileArray.put(fileObj);
                             }
                             ret.put("files", fileArray);
                         } else {
@@ -163,6 +162,6 @@ public class SitemapResource {
             ret.put("message", "Sitemap generation currently in progress");
         }
 
-        return ret.toJSONString();
+        return ret.toString();
     }
 }
