@@ -25,11 +25,16 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.apache.solr.common.SolrDocument;
+
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
@@ -199,6 +204,17 @@ public class GeoMapBean implements Serializable {
     
     public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
         return DataManager.getInstance().getDao().getPagesUsingMap(map);
+    }
+    
+    public List<String> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().search(query);
+        List<String> features = new ArrayList<>();
+        for (SolrDocument doc : docs) {
+            String point = SolrSearchIndex.getSingleFieldStringValue(doc, "MD_GEOJSON_POINT");
+            System.out.println("Found point " + point);
+            features.add(point);
+        }
+        return features;
     }
 
 }

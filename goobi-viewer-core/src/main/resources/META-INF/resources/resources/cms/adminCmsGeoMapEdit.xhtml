@@ -69,8 +69,13 @@
 	            		    })
 		            		
 		            		init = function() {
+		            		    
+// 		            		    let solrFeatures = #{geoMapBean.getFeaturesFromSolrQuery('MD_GEOJSON_POINT:*')};
+// 		            		    console.log("solrFeatures", solrFeatures);
+// 		            		    let features = solrFeatures.flatMap(fc => fc.features);
+// 		            		    console.log("got features ", features);
+		            		    
 			            		let features = JSON.parse($("#featuresInput").val())
-			            		console.log("load features ", features);
 			            		geoMap.init();
 			            		let view = $("#viewInput").val();
 			            		geoMap.setView(view);
