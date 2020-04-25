@@ -72,11 +72,7 @@ var viewerJS = ( function( viewer ) {
          * <pre>
          * $( document ).ready( function() {
          *     var timematrixConfig = {
-         *         path: '#{request.contextPath}/',
-         *         lang: {
-         *             closeWindow: '#{msg.timematrix__close-window}',
-         *             goToWork: '#{msg.timematrix__go-to-work}'
-         *         }
+         *         path: '#{request.contextPath}/'
          *     };
          *     viewerJS.timematrix.init( timematrixConfig );
          * } );
