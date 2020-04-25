@@ -1,12 +1,12 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
@@ -14,33 +14,33 @@
         <!-- LOADER -->
 		<span class="timematrix__loader">
 			<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Timematrix Loader" />
-		</span> 
+		</span>
 	</div>
-    
+
 	<div class="timematrix__selection">
 		<form id="locateTimematrix" method="POST">
 			<div class="timematrix__bar">
 				<div class="timematrix__period">
-					<span>#{msg.timePeriod}:</span>&#xA0;
+					<span>#{msg.timematrix_timePeriod}:</span>&#xA0;
 					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput1" value="#{configurationBean.timeMatrixStartYear}" />
 					&#xA0;<span>-</span>&#xA0; <!-- The spaces created are inserted outside of the span using hexa-code, since the spaces typed in the span caused different spacing in the different themes and the entities in the span had no effect -->
 					<input tabindex="+1" class="timematrix__selectionRangeInput" id="timematrixSelectionRangeInput2" value="#{configurationBean.timeMatrixEndYear}" />
 				</div>
 				<div class="timematrix__hitsForm">
 					<div class="timematrix__hitsInput">
-						<span>#{msg.hits}:</span>
+						<span>#{msg.timematrix__maxResults}:</span>
 							<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="hits per page" />
 					</div>
-					<button type="submit" class="setTimematrix">#{msg.timematrixCalculate}</button>
+					<button type="submit" class="setTimematrix">#{msg.timematrix__calculate}</button>
 				</div>
 			</div>
 			<div id="slider-range"></div>
-			<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrixCalculate}</button>
+			<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrix__calculate}</button>
 		</form>
 	</div>
-	 
+
 	<div id="timematrixCanvas"></div>
-		
+
 	<timematrix></timematrix>
 
 	<script>
@@ -51,7 +51,7 @@
 		        $(".setTimematrix").trigger('click');
 		    },10);
 		});
-		
+
 		<!-- Reloads the results after the slider is released -->
 			var isDown = false;
 			$("#slider-range").mousedown(function(){
@@ -62,16 +62,16 @@
 			    	document.getElementById("setTimematrix").click();
 			        isDown = false;
 			    }
-			}); 
+			});
 
 		<!-- Reloads the results after leaving the input field -->
 		document.getElementById("hitsPerPage").onfocusout = function() {myFunction()};
-		
+
 		function myFunction() {
 			document.getElementById("setTimematrix").click();
-			
+
 		}
-		
+
 	    <!-- Reloads the results after pressing the input field with Enter -->
 		var input = document.getElementById("hitsPerPage");
 		input.addEventListener("keyup", function(event) {
@@ -87,12 +87,10 @@
    		var $startHere= $("#timematrixSelectionRangeInput1");
        	var $endHere= $("#timematrixSelectionRangeInput2");
        	var $count= $(".hitsPerPage");
-      	
+
    		riot.mount('timematrix', {
       		msg: {
-      			timematrixCalculate: "#{msg.timematrixCalculate}",
-  	        	closeWindow: "#{msg.timematrixCloseWindow}",
-  	        	goToWork: "#{msg.timematrixGoToWork}"
+      			timematrixCalculate: "#{msg.timematrix__calculate}"
       		},
            	startInput: "#timematrixSelectionRangeInput1",
            	endInput: "#timematrixSelectionRangeInput2",
@@ -103,7 +101,7 @@
            	loaderImg: "#{request.contextPath}/resources/images/infinity_loader.gif",
            	});
    	</script>
-         
+
     <script type="text/javascript">
 	     $(document).ready(function() {
 	       	var timematrixConfig = {
@@ -114,16 +112,12 @@
 	       endDate: $( "#timematrixSelectionRangeInput2" ).val(),
 	       count: $( ".hitsPerPage" ),
 	       $tmCanvas: $( "#timematrixCanvas" ),
-	       $tmCanvasPos: $( "#timematrixCanvas" ).position(),
-	          lang: {
-	          	closeWindow: "#{msg.timematrixCloseWindow}",
-	          	goToWork: "#{msg.timematrixGoToWork}"	                  
-	          }              	      
+	       $tmCanvasPos: $( "#timematrixCanvas" ).position()
 	       	};
-	       	
-	         viewerJS.timematrix.init( timematrixConfig );            	
+
+	         viewerJS.timematrix.init( timematrixConfig );
 	     });
     </script>
-    	
-   
+
+
 </ui:composition>
