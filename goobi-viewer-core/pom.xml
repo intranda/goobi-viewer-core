@@ -76,7 +76,6 @@
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
-		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 		<commons-codec.version>1.14</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
@@ -91,7 +90,6 @@
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.12</httpclient.version>
 		<httpcore.version>4.4.13</httpcore.version>
-		<httpmime.version>4.5.12</httpmime.version>
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>67.1</icu.version>
 		<inject.version>1</inject.version>
@@ -202,11 +200,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>${commons-beanutils.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>${commons-codec.version}</version>
@@ -279,11 +272,6 @@
 			<version>${httpcore.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>${httpmime.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.httpunit</groupId>
 			<artifactId>httpunit</artifactId>
 			<version>${httpunit.version}</version>
@@ -322,33 +310,8 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jsonSchema</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-json-org</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-base</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
@@ -407,49 +370,14 @@
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-common</artifactId>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-multipart</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-jaxb</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-multipart</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.inject</groupId>
-			<artifactId>jersey-hk2</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-entity-filtering</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
-			<artifactId>jersey-guava</artifactId>
-			<version>${jersey-guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.timgroup</groupId>
@@ -569,11 +497,6 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>${poi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-scratchpad</artifactId>
 			<version>${poi.version}</version>
 		</dependency>
 		<dependency>
@@ -717,6 +640,19 @@
 								<!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
 								<ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
+
+								<!-- The jersey-container-servlet dependency is used for startup during runtime 
+								     Unit tests run without it though -->
+								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
+
+								<!-- JXPath is used at XPathExpressionEngine from org.apache.commons.configuration2, i.e. LanguageHelper -->
+								<ignoredUnusedDeclaredDependency>commons-jxpath:commons-jxpath</ignoredUnusedDeclaredDependency>
+
+								<!-- Fileupload is used as a dependency to Primefaces FileUpload -->
+								<ignoredUnusedDeclaredDependency>commons-fileupload:commons-fileupload</ignoredUnusedDeclaredDependency>
+
+								<!-- The MariaDB java client is used for the database connection and configured in the Tomcat -->
+								<ignoredUnusedDeclaredDependency>org.mariadb.jdbc:mariadb-java-client</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
