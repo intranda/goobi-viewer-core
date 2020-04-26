@@ -98,7 +98,6 @@
 		<jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
 		<jakarta.persistence.version>2.2.3</jakarta.persistence.version>
 		<javax.faces.version>2.4.0</javax.faces.version>
-		<javax.json-api.version>1.1.4</javax.json-api.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.persistence.version>2.2.1</javax.persistence.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
@@ -112,7 +111,6 @@
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
-		<log4j.version>2.13.2</log4j.version>
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<mockito.version>3.3.3</mockito.version>
 		<mockserver.version>5.10.0</mockserver.version>
@@ -128,7 +126,6 @@
 		<solr.version>4.10.4</solr.version>
 		<stax-api.version>1.0-2</stax-api.version>
 		<tomcat.version>9.0.34</tomcat.version>
-		<validation-api.version>2.0.1.Final</validation-api.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
 		<!-- This needs to be added explicitly because otherwise Solr will use
@@ -335,11 +332,6 @@
 			<version>${javax.faces.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.json</groupId>
-			<artifactId>javax.json-api</artifactId>
-			<version>${javax.json-api.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<version>${javax.mail.version}</version>
@@ -419,21 +411,6 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
@@ -530,16 +507,6 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-core</artifactId>
 			<version>${solr.version}</version>
@@ -559,11 +526,6 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-catalina</artifactId>
 			<version>${tomcat.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>${validation-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
@@ -653,6 +615,9 @@
 
 								<!-- The MariaDB java client is used for the database connection and configured in the Tomcat -->
 								<ignoredUnusedDeclaredDependency>org.mariadb.jdbc:mariadb-java-client</ignoredUnusedDeclaredDependency>
+
+								<!-- The lib is used with annotations and the byte code analysis does not detect it -->
+								<ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
