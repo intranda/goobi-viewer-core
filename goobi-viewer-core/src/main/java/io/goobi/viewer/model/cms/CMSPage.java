@@ -51,8 +51,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -994,7 +994,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 case HTML:
                     String htmlText = item.getHtmlFragment();
                     String plainText = htmlText.replaceAll("\\<.*?\\>", "");
-                    plainText = StringEscapeUtils.unescapeHtml(plainText);
+                    plainText = StringEscapeUtils.unescapeHtml4(plainText);
                     return plainText;
                 default:
                     return item.toString();
