@@ -29,6 +29,13 @@
                                 <span>#{msg.admin__groups}</span>
                             </h:outputLink>
                         </li>
+                        <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or
+                                     navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
+                                <i class="fa fa-bolt" aria-hidden="true"></i>
+                                <span>#{msg.admin__ip_ranges}</span>
+                            </h:outputLink>
+                        </li>
                         <li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminLicenseType' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminAllLicenseTypes')}/">
@@ -36,26 +43,22 @@
                                 <span>#{msg.admin__licenses}</span>
                             </h:outputLink>
                         </li>
+                        <br />
                         <li class="#{navigationHelper.currentPage == 'adminRoles' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminRole' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRoles')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
-                                <span>#{msg.admin__rolesPrivs}</span>
+                                <span>#{msg.admin__roles}</span>
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
-                                <i class="fa fa-bolt" aria-hidden="true"></i>
-                                <span>#{msg.admin__networks}</span>
-                            </h:outputLink>
-                        </li>
+                        <br />
                         <li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminUserComments')}/">
                                 <i class="fa fa-comments" aria-hidden="true"></i>
                                 <span>#{msg.admin__comments}</span>
                             </h:outputLink>
                         </li>
+                        <br />
                         <li class="#{navigationHelper.currentPage == 'adminCreateRecord' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminCreateRecord')}/">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
