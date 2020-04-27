@@ -98,9 +98,9 @@ public final class SearchHelper {
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
     public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[-]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
-    public static final String PLACEHOLDER_HIGHLIGHTING_START = "##HLS##";
+    public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁŠ##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
-    public static final String PLACEHOLDER_HIGHLIGHTING_END = "##HLE##";
+    public static final String PLACEHOLDER_HIGHLIGHTING_END = "##ĦŁË##";
     /** Constant <code>SEARCH_TYPE_REGULAR=0</code> */
     public static final int SEARCH_TYPE_REGULAR = 0;
     /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
@@ -1141,6 +1141,7 @@ public final class SearchHelper {
             String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
+                logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
@@ -1169,7 +1170,7 @@ public final class SearchHelper {
         if (term.length() < 2) {
             return phrase;
         }
-
+        
         StringBuilder sb = new StringBuilder();
         String normalizedPhrase = normalizeString(phrase);
         String normalizedTerm = normalizeString(term);
@@ -1180,6 +1181,7 @@ public final class SearchHelper {
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
+        logger.trace("highlighted term: {}", highlightedTerm);
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
