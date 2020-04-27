@@ -476,8 +476,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws PresentationException
      */
     public String open()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
-            PresentationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
             logger.trace("open()");
             try {
@@ -512,7 +511,11 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
                 Messages.error(e.getMessage());
             } catch (IDDOCNotFoundException e) {
-                return reload(lastReceivedIdentifier);
+                try {
+                    return reload(lastReceivedIdentifier);
+                } catch (PresentationException e1) {
+                    logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                }
             }
 
             return "";
