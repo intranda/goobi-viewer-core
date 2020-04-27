@@ -1788,13 +1788,16 @@ public final class Configuration extends AbstractConfiguration {
             String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
             String relyingPartyIdentifier =
                     myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
+            String samlPublicKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@publicKeyPath]", null);
+            String samlPrivateKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@privateKeyPath]", null);
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
                     case "saml":
-                        providers.add(new SAMLProvider(name, idpMetadataUrl, relyingPartyIdentifier, timeoutMillis));
+                        providers.add(
+                                new SAMLProvider(name, idpMetadataUrl, relyingPartyIdentifier, samlPublicKeyPath, samlPrivateKeyPath, timeoutMillis));
                         break;
                     case "openid":
                         providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
@@ -2136,7 +2139,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isShowSidebarEventMetadata() {
         return getLocalBoolean("sidebar.metadata.showEventMetadata", true);
     }
-    
+
     /**
      * <p>
      * isShowSidebarEventMetadata.
@@ -3518,8 +3521,9 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return true if search should generally be filtered by {@link NavigationHelper#getSubThemeDiscriminatorValue()}
      * 
-     * @deprecated  should always return false since search filtering should be done via dedicated cms search pages
+     * @deprecated should always return false since search filtering should be done via dedicated cms search pages
      */
+    @Deprecated
     public boolean isSubthemeAddFilterQuery() {
         return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
     }
@@ -3532,8 +3536,9 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      * 
-     * @deprecated  should always return false since search filtering should be done via dedicated cms search pages
+     * @deprecated should always return false since search filtering should be done via dedicated cms search pages
      */
+    @Deprecated
     public boolean isSubthemeFilterQueryVisible() {
         return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
     }
