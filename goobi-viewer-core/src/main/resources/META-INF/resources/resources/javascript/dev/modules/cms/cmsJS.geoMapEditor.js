@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         mapId: "geomap",
         displayLanguage : "de",
@@ -61,28 +61,30 @@ var cmsJS = ( function( cms ) {
         });
         
         this.geoMap.onMapRightclick
-        .pipe(RxOp.map(geojson => this.addFeature(geojson)))
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(geojson => this.addFeature(geojson)))
         .subscribe(() => this.saveFeatures());
         
         this.geoMap.onMapClick
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures))
         .subscribe(() => this.setCurrentFeature());
         
         this.geoMap.onFeatureClick
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures))
         .subscribe(geojson => this.setCurrentFeature(geojson, true));
         
         this.geoMap.onFeatureMove
-        .pipe(RxOp.map(geojson => this.setCurrentFeature(geojson)))
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(geojson => this.setCurrentFeature(geojson)))
         .subscribe(() => this.saveFeatures());
         
         this.geoMap.onMapMove
         .subscribe(() => this.saveView())
         
         this.onDeleteClick
-        .pipe(RxOp.map(() => this.deleteCurrentFeature()))
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(() => this.deleteCurrentFeature()))
         .subscribe(() => this.saveFeatures());
         
         this.onMetadataUpdate
-        .pipe(RxOp.map(() => this.updateCurrentFeatureMetadata()))
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(() => this.updateCurrentFeatureMetadata()))
         .subscribe(() => this.saveFeatures());
     }
     
@@ -196,15 +198,16 @@ var cmsJS = ( function( cms ) {
     cms.GeoMapEditor.prototype.updateFeatures = function() {
 
         let features = JSON.parse($(this.config.featuresInput).val())
+        if(_debug)console.log("update features", features);
         features.forEach( feature => {
             this.geoMap.addMarker(feature);
         })
     }
     
     cms.GeoMapEditor.prototype.setAllowEditFeatures = function(allow) {
-        console.log("allow draggin features", allow);
+        this.config.allowEditFeatures = allow;
         this.geoMap.config.allowMovingFeatures = allow;
-        this.geoMap.markers.forEach(marker => {
+        this.geoMap.markers.filter(m => m.dragging).forEach(marker => {
             if(allow) {
                 marker.dragging.enable();
             } else {
