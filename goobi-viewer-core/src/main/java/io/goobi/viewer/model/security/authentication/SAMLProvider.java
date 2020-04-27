@@ -114,7 +114,7 @@ public class SAMLProvider implements IAuthenticationProvider {
      */
     public Future<Boolean> completeLogin(String encodedResponse, HttpServletRequest request, HttpServletResponse response) {
         try {
-            SamlResponse samlResponse = client.decodeAndValidateSamlResponse(encodedResponse);
+            SamlResponse samlResponse = client.decodeAndValidateSamlResponse(encodedResponse, "POST");
             String id = samlResponse.getNameID();
 
             User user = null;
