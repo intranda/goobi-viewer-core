@@ -98,9 +98,9 @@ public final class SearchHelper {
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
     public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[-]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
-    public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁŠ##";
+    public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
-    public static final String PLACEHOLDER_HIGHLIGHTING_END = "##ĦŁË##";
+    public static final String PLACEHOLDER_HIGHLIGHTING_END = "##ĦŁȄ##";
     /** Constant <code>SEARCH_TYPE_REGULAR=0</code> */
     public static final int SEARCH_TYPE_REGULAR = 0;
     /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
