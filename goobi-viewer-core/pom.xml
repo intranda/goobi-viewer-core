@@ -605,6 +605,9 @@
 
 								<!-- The lib is used with annotations and the byte code analysis does not detect it -->
 								<ignoredUnusedDeclaredDependency>javax.xml.bind:jaxb-api</ignoredUnusedDeclaredDependency>
+
+								<!-- EclipseLink Java Persistence API for database management -->
+								<ignoredUnusedDeclaredDependency>org.eclipse.persistence:org.eclipse.persistence.jpa</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>
