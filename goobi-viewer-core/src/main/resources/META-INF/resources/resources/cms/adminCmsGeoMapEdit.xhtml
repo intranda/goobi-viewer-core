@@ -20,114 +20,135 @@
     
                       	<script>
 		            		
-		            		var currentFeature = undefined;
-		            		var displayLanguage = "#{navigationHelper.localeString}";
-		            		var deleteListener = new Rx.Subject();
-		            		var updateListener = new Rx.Subject();
-		            		var metadataProvider = new Rx.Subject();
+                      		var mapEditor = new cmsJS.GeoMapEditor({
+                      			mapId: "geomap",
+                      		    displayLanguage : "#{navigationHelper.localeString}",
+                      		    supportedLanguages: #{navigationHelper.supportedLanguagesAsJson},
+                      		  	popover: "#geoMapPopoverTemplate",
+                    	    	allowEditFeatures: false,
+	                    		msg: {
+	                            	emptyMarker: "#{msg.request__insert_metadata}",
+	                            	titleLabel: "#{msg.title}",
+	                                titleHelp: "#{msg.cms__geo_maps__feature_title__help}",
+	                                descLabel: "#{msg.description}",
+	                                descHelp: "#{msg.cms__geo_maps__feature_description__help}",
+	                                deleteLabel: "#{msg.delete}"
+	                            }
+                      		})
+                      	
+// 		            		var currentFeature = undefined;
+// 		            		var displayLanguage = "#{navigationHelper.localeString}";
+// 		            		var deleteListener = new Rx.Subject();
+// 		            		var updateListener = new Rx.Subject();
+// 		            		var metadataProvider = new Rx.Subject();
 		            		
-		            		var geoMap = new viewerJS.GeoMap({
-		            		    language: displayLanguage,
-		            		    popover: "#geoMapPopoverTemplate",
-		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}",
-		            		    allowMovingFeatures: true
-		            		});
-		            		geoMap.onMapClick.subscribe((geojson) => {
-		            		    currentFeature = geojson;
-		            		    geoMap.addMarker(geojson).openPopup();
-		            		    updateMetadata(geojson);
-		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-		            		})
-		            		geoMap.onFeatureMoved.subscribe((geojson) => {
-		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-		            		})
-		            		geoMap.onFeatureClick.subscribe((geojson) => {
-		            		    if(currentFeature == geojson) {
-		            		        currentFeature = undefined;
-		            		        updateMetadata();
-		            		    } else {		
-		            		        currentFeature = geojson;
-		            		    	updateMetadata(geojson);
-		            		    }
-		            		})
+// 		            		var geoMap = new viewerJS.GeoMap({
+// 		            		    language: displayLanguage,
+// 		            		    popover: "#geoMapPopoverTemplate",
+// 		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}",
+// 		            		    allowMovingFeatures: true
+// 		            		});
+// 		            		geoMap.onMapClick.subscribe((geojson) => {
+// 		            		    currentFeature = geojson;
+// 		            		    geoMap.addMarker(geojson).openPopup();
+// 		            		    updateMetadata(geojson);
+// 		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+// 		            		})
+// 		            		geoMap.onFeatureMoved.subscribe((geojson) => {
+// 		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+// 		            		})
+// 		            		geoMap.onFeatureClick.subscribe((geojson) => {
+// 		            		    console.log("feature click ", geojson);
+// 		            		    if(currentFeature == geojson) {
+// 		            		        currentFeature = undefined;
+// 		            		        updateMetadata();
+// 		            		    } else {		
+// 		            		        currentFeature = geojson;
+// 		            		    	updateMetadata(geojson);
+// 		            		    }
+// 		            		})
+		            		
+// 		            		geoMap.onMapMove.subscribe(view => {
+// 		            		    console.log("moved map to ", view);
+// 		            		})
 	            		    
-		            		deleteListener.subscribe(() => {
-		            		    if(currentFeature) {
-		            		        geoMap.removeMarker(currentFeature);
-		            		        currentFeature = undefined;
-		            		        updateMetadata();
-		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-		            		    }
-		            		})
-		            		updateListener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
-		            		    if(currentFeature) {					            		        
-		            		        currentFeature.properties[metadata.property] = metadata.value;
-		            		        geoMap.updateMarker(currentFeature.id);
-		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-		            		    }
-		            		    setView();
-	            		    })
+// 		            		deleteListener.subscribe(() => {
+// 		            		    if(currentFeature) {
+// 		            		        geoMap.removeMarker(currentFeature);
+// 		            		        currentFeature = undefined;
+// 		            		        updateMetadata();
+// 		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+// 		            		    }
+// 		            		})
+// 		            		updateListener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
+// 		            		    if(currentFeature) {					            		        
+// 		            		        currentFeature.properties[metadata.property] = metadata.value;
+// 		            		        geoMap.updateMarker(currentFeature.id);
+// 		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
+// 		            		    }
+// 		            		    setView();
+// 	            		    })
 		            		
-		            		init = function() {
+// 		            		init = function() {
 		            		    
-// 		            		    let solrFeatures = #{geoMapBean.getFeaturesFromSolrQuery('MD_GEOJSON_POINT:*')};
-// 		            		    console.log("solrFeatures", solrFeatures);
-// 		            		    let features = solrFeatures.flatMap(fc => fc.features);
-// 		            		    console.log("got features ", features);
+// // 		            		    let solrFeatures = #{geoMapBean.getFeaturesFromSolrQuery('MD_GEOJSON_POINT:*')};
+// // 		            		    console.log("solrFeatures", solrFeatures);
+// // 		            		    let features = solrFeatures.flatMap(fc => fc.features);
+// // 		            		    console.log("got features ", features);
 		            		    
-			            		let features = JSON.parse($("#featuresInput").val())
-			            		geoMap.init();
-			            		let view = $("#viewInput").val();
-			            		geoMap.setView(view);
-			            		features.forEach( feature => {
-			            		    geoMap.addMarker(feature);
-			            		})
-			            		geoMap.setView(geoMap.getViewAroundFeatures());
+// 			            		let features = JSON.parse($("#featuresInput").val())
+// 			            		geoMap.init();
+// 			            		let view = $("#viewInput").val();
+// 			            		geoMap.setView(view);
+// 			            		features.forEach( feature => {
+// 			            		    geoMap.addMarker(feature);
+// 			            		})
+// 			            		geoMap.setView(geoMap.getViewAroundFeatures());
 			            		
-			            		riot.mount("metadataEditor", {
-			            		    languages: #{navigationHelper.supportedLanguagesAsJson},
-			            		    metadata: undefined,
-			            		    provider: metadataProvider,
-			            		    currentLanguage: displayLanguage,
-			            		    updateListener: updateListener,
-			            		    deleteListener : deleteListener,
-			            		    deleteLabel : "#{msg.delete}"
-			            		});
-		            		}
+// 			            		riot.mount("metadataEditor", {
+// 			            		    languages: #{navigationHelper.supportedLanguagesAsJson},
+// 			            		    metadata: undefined,
+// 			            		    provider: metadataProvider,
+// 			            		    currentLanguage: displayLanguage,
+// 			            		    updateListener: updateListener,
+// 			            		    deleteListener : deleteListener,
+// 			            		    deleteLabel : "#{msg.delete}"
+// 			            		});
+// 		            		}
 		            		
-		            		setView = function() {
-		            		    view = geoMap.getView();
-		            		    console.log("set view to ", view)
-		            		    $("#viewInput").val(JSON.stringify(view));
-		            		}
+// 		            		setView = function() {
+// 		            		    view = geoMap.getView();
+// 		            		    console.log("set view to ", view)
+// 		            		    $("#viewInput").val(JSON.stringify(view));
+// 		            		}
 		            		
-		            		updateMetadata = function(geojson) {
-		            		    let metadataList = [
-		            		        {	
-		            		    		property: "title",
-		            		    		tyle: "text",
-		            		    		label: "#{msg.title}",
-		            		    		value: geojson ? geojson.properties.title : "",
-		            		    		required: false,
-		            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
-		            		    		editable: geojson != undefined
-		            		    	},
-		            		    	{	
-		            		    		property: "description",
-		            		    		type:"longtext",
-		            		    		label: "#{msg.description}",
-		            		    		value: geojson ? geojson.properties.description: "",
-		            		    		required: false,
-		            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
-		            		    		editable: geojson != undefined
-		            		    	}
-		            		    ]
-		 		           		metadataProvider.next(metadataList, true);
-		            		    setView();
-		            		    if(geojson) {
-			            		    $("html, body").scrollTop($("#featureForm").offset().top)
-		            		    }
-		            		}
+// 		            		updateMetadata = function(geojson) {
+// 		            		    let metadataList = [
+// 		            		        {	
+// 		            		    		property: "title",
+// 		            		    		tyle: "text",
+// 		            		    		label: "#{msg.title}",
+// 		            		    		value: geojson ? geojson.properties.title : "",
+// 		            		    		required: false,
+// 		            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
+// 		            		    		editable: geojson != undefined
+// 		            		    	},
+// 		            		    	{	
+// 		            		    		property: "description",
+// 		            		    		type:"longtext",
+// 		            		    		label: "#{msg.description}",
+// 		            		    		value: geojson ? geojson.properties.description: "",
+// 		            		    		required: false,
+// 		            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
+// 		            		    		editable: geojson != undefined
+// 		            		    	}
+// 		            		    ]
+// 		 		           		metadataProvider.next(metadataList, true);
+// 		            		    setView();
+// 		            		    if(geojson) {
+// 			            		    $("html, body").scrollTop($("#featureForm").offset().top)
+// 		            		    }
+// 		            		}
 					            		
 					     </script>
     
@@ -256,7 +277,10 @@
 					            	<script>
 					            	$(document).ready(() => {
 					            	    console.log("init map");
-				            			init();
+					            	    mapEditor.init();
+					            	    mapEditor.updateFeatures();
+					            	    mapEditor.updateView();
+					            	    mapEditor.setAllowEditFeatures(true);
 					            	})
 		                        	</script>
 				            	</ui:fragment>

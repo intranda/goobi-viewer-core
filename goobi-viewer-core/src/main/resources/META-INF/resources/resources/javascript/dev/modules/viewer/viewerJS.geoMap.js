@@ -28,12 +28,12 @@ var viewerJS = ( function( viewer ) {
     'use strict'; 
     
     // default variables
-    var _debug = true;
+    var _debug = false;
     
     var _defaults = {
             mapId : "geomap",
             minZoom : 0,
-            maxZoom : 20,
+            maxZoom : 19,
             initialView : {
                 zoom: 5,
                 center: [11.073397, 49.451993] //long, lat
@@ -60,9 +60,11 @@ var viewerJS = ( function( viewer ) {
         this.markers = [];
         
         
+        this.onMapRightclick = new Rx.Subject();
         this.onMapClick = new Rx.Subject();
         this.onFeatureClick = new Rx.Subject();
-        this.onFeatureMoved = new Rx.Subject();
+        this.onFeatureMove = new Rx.Subject();
+        this.onMapMove = new Rx.Subject();
 
     }
     
@@ -73,7 +75,6 @@ var viewerJS = ( function( viewer ) {
         
         if(!this.config.mapBoxToken) {
             this.config.mapBoxToken = viewerJS.getMapBoxToken();
-            console.log("loaded mapbox token " + viewerJS.getMapBoxToken());
         }
         if(_debug) {
             console.log("init GeoMap with config ", this.config);
@@ -103,11 +104,22 @@ var viewerJS = ( function( viewer ) {
             }
             this.map.addLayer(osm);
         }
-     
-        // define view
+        
         this.setView(this.config.initialView);
+        
+        //init map events
+        Rx.fromEvent(this.map, "moveend").pipe(RxOp.map(e => this.getView())).subscribe(this.onMapMove);
+        Rx.fromEvent(this.map, "contextmenu")
+        .pipe(RxOp.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
+        .subscribe(this.onMapRightclick);
+        Rx.fromEvent(this.map, "click")
+        .pipe(RxOp.map(e => this.createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
+        .subscribe(this.onMapClick);
+    
+        //init feature layer
         this.locations = L.geoJSON([], {
             pointToLayer: function(geoJsonPoint, latlng) {
+                console.log("create marker. Draggable: " + this.config.allowMovingFeatures)
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures
                 });
@@ -118,48 +130,38 @@ var viewerJS = ( function( viewer ) {
                     return this.id;
                 }
                 
-                marker.on("dragend", function(event) {
-                    let position = marker.getLatLng();
-                    marker.feature.geometry = marker.toGeoJSON().geometry;
-                    marker.feature.view = {zoom: this.map.getZoom(), center: [marker.getLatLng().lng, marker.getLatLng().lat]};
-                    this.onFeatureMoved.next(marker.feature);
-                }.bind(this));
+                Rx.fromEvent(marker, "dragend").pipe(RxOp.map(e => this.updatePosition(marker))).subscribe(this.onFeatureMove);
+                Rx.fromEvent(marker, "click").pipe(RxOp.map(e => marker.feature)).subscribe(this.onFeatureClick);
                 
-                marker.on("click", function(event) {
-                    this.onFeatureClick.next(marker.feature);
-                }.bind(this));
-                
-                marker.bindPopup(() => {
-                    let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
-                    let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
-                    if(this.config.popover && (title || desc) ) {
-                        let $popover = $(this.config.popover).clone();
-                        $popover.find("[data-metadata='title']").text(title);
-                        $popover.find("[data-metadata='description']").html(desc);
-                        $popover.css("display", "block");
-                        return $popover.get(0);
-                    } else {
-                        return this.config.emptyMarkerMessage;
-                    }
-                });
+                marker.bindPopup(() => this.createPopup(marker));
                 
                 this.markers.push(marker);    
                 
                 return marker;
             }.bind(this)
         }).addTo(this.map);
-            
-        
-//        this.map.on("click", function(e) {
-//        }.bind(this))
-        
-        this.map.on("contextmenu", (e) => {
-            var location= e.latlng;
-            let geoJson = this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
-            this.onMapClick.next(geoJson);
-            return false;
-        })
 
+    }
+    
+    viewer.GeoMap.prototype.updatePosition = function(marker) {
+        marker.feature.geometry = marker.toGeoJSON().geometry;
+        marker.feature.view = {zoom: this.map.getZoom(), center: [marker.getLatLng().lng, marker.getLatLng().lat]};
+        return marker.feature;
+    }
+
+    
+    viewer.GeoMap.prototype.createPopup = function(marker) {
+        let title = viewerJS.getMetadataValue(marker.feature.properties.title, this.config.language);
+        let desc = viewerJS.getMetadataValue(marker.feature.properties.description, this.config.language);
+        if(this.config.popover && (title || desc) ) {
+            let $popover = $(this.config.popover).clone();
+            $popover.find("[data-metadata='title']").text(title);
+            $popover.find("[data-metadata='description']").html(desc);
+            $popover.css("display", "block");
+            return $popover.get(0);
+        } else {
+            return this.config.emptyMarkerMessage;
+        }
     }
     
     /**
@@ -197,15 +199,16 @@ var viewerJS = ( function( viewer ) {
         if(features.length == 0) {
             return undefined;
         } else if(features.length == 1) {
-            let view  = this.getView();
-            view.center = features[0].geometry.coordinates;
-            return view;
+            return {
+                "zoom": this.map.getZoom(),
+                "center": features[0].geometry.coordinates
+            }
         } else {
             let points = features.map(f => f.geometry.coordinates).map(c =>  L.latLng(c[1], c[0]));
             let bounds = L.latLngBounds(points);
             let center = bounds.getCenter();
             return {
-                "zoom": this.map.getBoundsZoom(bounds),
+                "zoom": Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom()),
                 "center": [center.lng, center.lat]
             }
         }
@@ -277,7 +280,8 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.prototype.close = function() {
         this.onMapClick.complete();
         this.onFeatureClick.complete();
-        this.onFeatureMoved.complete();
+        this.onFeatureMove.complete();
+        this.onMapMove.complete();
         if(this.map) {
             this.map.remove();
         }
