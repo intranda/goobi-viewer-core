@@ -532,13 +532,6 @@
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
-		<!-- tools.jar depencency so that the Solr dependencies don't cause errors -->
-		<dependency>
-			<groupId>jdk.tools</groupId>
-			<artifactId>jdk.tools</artifactId>
-			<version>1.8.0</version>
-			<scope>test</scope>
-		</dependency>
 		<!-- Do not remove until migrating to current Solr version -->
 		<dependency>
 			<groupId>xerces</groupId>
