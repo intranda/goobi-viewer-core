@@ -19,10 +19,9 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminAllUserGroups">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h2 class="admin__content-inner-title">#{msg.admin__groups}</h2>
-
                     <div class="admin__content-inner-content">
                         <h:form id="adminAllUserGroupsForm" prependId="false">
+                            <h2 class="admin__content-inner-title">#{msg.admin__groups}</h2>
                             <h:commandLink action="adminUserGroup" actionListener="#{adminBean.resetCurrentUserGroupAction}" value="#{msg.userGroup_createNewUserGroup}"
                                 styleClass="btn btn--default pull-right" />
 
