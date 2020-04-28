@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -82,7 +83,9 @@ public class AnnotationResource {
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
 
         PersistentAnnotation data = DataManager.getInstance().getDao().getAnnotation(id);
-
+        if(data == null) {
+            throw new NotFoundException("No annotation with id " + id + " found");
+        }
         IAnnotation anno;
         if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
             anno = data.getAsOpenAnnotation();
