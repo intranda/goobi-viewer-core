@@ -44,7 +44,10 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 
 /**
  * <p>
@@ -74,26 +77,35 @@ public class AnnotationResource {
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
      */
     @GET
     @Path("/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public IAnnotation getAnnotation(@PathParam("id") Long id, @QueryParam("type") String type)
-            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException, PresentationException, IndexUnreachableException {
 
         PersistentAnnotation data = DataManager.getInstance().getDao().getAnnotation(id);
-        if(data == null) {
-            throw new NotFoundException("No annotation with id " + id + " found");
-        }
-        IAnnotation anno;
-        if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
-            anno = data.getAsOpenAnnotation();
-        } else {
-            anno = data.getAsAnnotation();
-        }
+        if(data != null) {
+            IAnnotation anno;
+            if ("OpenAnnotation".equalsIgnoreCase(type) || "oa".equalsIgnoreCase(type)) {
+                anno = data.getAsOpenAnnotation();
+            } else {
+                anno = data.getAsAnnotation();
+            }
+            return anno;
+        } else { 
+            AbstractBuilder builder = new AbstractBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()),
+                    URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
+            IAnnotation anno = builder.getCrowdsourcingAnnotation(id.toString());
+            if(anno != null) {                
+                return anno;
+            }
+        } 
+        throw new NotFoundException("No annotation with id " + id + " found");
 
-        return anno;
     }
 
     /**
