@@ -42,9 +42,9 @@
 		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css" />
 
 	    <!-- SUBTHEME CSS -->
-	    <h:panelGroup rendered="#{navigationHelper.subthemeSelected}">
+	    <h:panelGroup rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-'}">
 	        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css" />
-	    </h:panelGroup>
+	    </h:panelGroup> 
 
 	    <!-- JAVASCRIPT -->
 	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rxjs.umd.min.js"></script>
