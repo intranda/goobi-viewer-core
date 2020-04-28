@@ -35,121 +35,7 @@
 	                                deleteLabel: "#{msg.delete}"
 	                            }
                       		})
-                      	
-// 		            		var currentFeature = undefined;
-// 		            		var displayLanguage = "#{navigationHelper.localeString}";
-// 		            		var deleteListener = new Rx.Subject();
-// 		            		var updateListener = new Rx.Subject();
-// 		            		var metadataProvider = new Rx.Subject();
-		            		
-// 		            		var geoMap = new viewerJS.GeoMap({
-// 		            		    language: displayLanguage,
-// 		            		    popover: "#geoMapPopoverTemplate",
-// 		            		    emptyMarkerMessage: "#{msg.request__insert_metadata}",
-// 		            		    allowMovingFeatures: true
-// 		            		});
-// 		            		geoMap.onMapClick.subscribe((geojson) => {
-// 		            		    currentFeature = geojson;
-// 		            		    geoMap.addMarker(geojson).openPopup();
-// 		            		    updateMetadata(geojson);
-// 		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-// 		            		})
-// 		            		geoMap.onFeatureMoved.subscribe((geojson) => {
-// 		            		    $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-// 		            		})
-// 		            		geoMap.onFeatureClick.subscribe((geojson) => {
-// 		            		    console.log("feature click ", geojson);
-// 		            		    if(currentFeature == geojson) {
-// 		            		        currentFeature = undefined;
-// 		            		        updateMetadata();
-// 		            		    } else {		
-// 		            		        currentFeature = geojson;
-// 		            		    	updateMetadata(geojson);
-// 		            		    }
-// 		            		})
-		            		
-// 		            		geoMap.onMapMove.subscribe(view => {
-// 		            		    console.log("moved map to ", view);
-// 		            		})
-	            		    
-// 		            		deleteListener.subscribe(() => {
-// 		            		    if(currentFeature) {
-// 		            		        geoMap.removeMarker(currentFeature);
-// 		            		        currentFeature = undefined;
-// 		            		        updateMetadata();
-// 		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-// 		            		    }
-// 		            		})
-// 		            		updateListener.pipe(RxOp.debounceTime(100)).subscribe((metadata) => {
-// 		            		    if(currentFeature) {					            		        
-// 		            		        currentFeature.properties[metadata.property] = metadata.value;
-// 		            		        geoMap.updateMarker(currentFeature.id);
-// 		            		        $("#featuresInput").val(JSON.stringify(geoMap.getFeatures()));
-// 		            		    }
-// 		            		    setView();
-// 	            		    })
-		            		
-// 		            		init = function() {
-		            		    
-// // 		            		    let solrFeatures = #{geoMapBean.getFeaturesFromSolrQuery('MD_GEOJSON_POINT:*')};
-// // 		            		    console.log("solrFeatures", solrFeatures);
-// // 		            		    let features = solrFeatures.flatMap(fc => fc.features);
-// // 		            		    console.log("got features ", features);
-		            		    
-// 			            		let features = JSON.parse($("#featuresInput").val())
-// 			            		geoMap.init();
-// 			            		let view = $("#viewInput").val();
-// 			            		geoMap.setView(view);
-// 			            		features.forEach( feature => {
-// 			            		    geoMap.addMarker(feature);
-// 			            		})
-// 			            		geoMap.setView(geoMap.getViewAroundFeatures());
-			            		
-// 			            		riot.mount("metadataEditor", {
-// 			            		    languages: #{navigationHelper.supportedLanguagesAsJson},
-// 			            		    metadata: undefined,
-// 			            		    provider: metadataProvider,
-// 			            		    currentLanguage: displayLanguage,
-// 			            		    updateListener: updateListener,
-// 			            		    deleteListener : deleteListener,
-// 			            		    deleteLabel : "#{msg.delete}"
-// 			            		});
-// 		            		}
-		            		
-// 		            		setView = function() {
-// 		            		    view = geoMap.getView();
-// 		            		    console.log("set view to ", view)
-// 		            		    $("#viewInput").val(JSON.stringify(view));
-// 		            		}
-		            		
-// 		            		updateMetadata = function(geojson) {
-// 		            		    let metadataList = [
-// 		            		        {	
-// 		            		    		property: "title",
-// 		            		    		tyle: "text",
-// 		            		    		label: "#{msg.title}",
-// 		            		    		value: geojson ? geojson.properties.title : "",
-// 		            		    		required: false,
-// 		            		    		helptext: "#{msg.cms__geo_maps__feature_title__help}",
-// 		            		    		editable: geojson != undefined
-// 		            		    	},
-// 		            		    	{	
-// 		            		    		property: "description",
-// 		            		    		type:"longtext",
-// 		            		    		label: "#{msg.description}",
-// 		            		    		value: geojson ? geojson.properties.description: "",
-// 		            		    		required: false,
-// 		            		    		helptext: "#{msg.cms__geo_maps__feature_description__help}",
-// 		            		    		editable: geojson != undefined
-// 		            		    	}
-// 		            		    ]
-// 		 		           		metadataProvider.next(metadataList, true);
-// 		            		    setView();
-// 		            		    if(geojson) {
-// 			            		    $("html, body").scrollTop($("#featureForm").offset().top)
-// 		            		    }
-// 		            		}
-					            		
+	
 					     </script>
     
     
@@ -258,14 +144,53 @@
 		                            </div>
 		                            <div id="typeHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__type__help}</div>
 		                        </div>
-		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
+		                        <!-- SOLR QUERY -->
+		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'SOLR_QUERY'}">
+			                        <div class="input_form__option_group">
+			                            <div class="input_form__option_label">
+			                                <label for="solrQueryInput">#{msg.cms__geo_maps__solrquery__label}:</label>
+			                            </div>
+			                            <div class="input_form__option_marker in">
+			                            <label>*</label>
+			                            </div>
+			                            <div class="input_form__option_control">
+						                    <div class="input_form__option-message">
+							                    <h:messages for="solrQueryInput" 
+							                        infoClass="cms-module__option-message-status success" 
+							                        warnClass="cms-module__option-message-status warning"
+							                        errorClass="cms-module__option-message-status danger" />
+							
+							                    <div class="input_form__option-message-mark">
+							                        <i class="fa fa-check" aria-hidden="true"></i>
+							                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+							                    </div>
+							                </div>
+						                    <h:inputText id="solrQueryInput" styleClass="form-control"  
+						                    	value="#{geoMapBean.currentMap.solrQuery}" 
+						                    	required="true" requiredMessage="#{msg.error__query_required}"
+						                    	>
+						                    	<f:validator validatorId="solrQueryValidator" for="solrQueryInput" />
+						                    	<f:ajax event="blur" render="mapPanel"/>
+						                    </h:inputText>							                    
+			                            </div>
+			                            <div class="input_form__option_help">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="queryHelp">
+			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+			                                </button>
+			                            </div>
+			                            <div id="queryHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__solrquery__help}</div>
+			                        </div>
+		                        </ui:fragment>
+		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL' or geoMapBean.currentMap.hasSolrQuery()}">
 		                        	<div>#{msg.cms__geo_maps__map__help}</div>
 		                        	<map class="input_form__geomap" id="geomap"></map>
 		                        	<popover id="geoMapPopoverTemplate">
 		                        		<h4 data-metadata="title"></h4>
 		                        		<span data-metadata="description"></span>
 		                        	</popover>
-		                        	<div>#{msg.cms__geo_maps__map_token__help}</div>
+		                        	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
+		                        		<div>#{msg.cms__geo_maps__map_token__help}</div>
+		                        	</ui:fragment>
 		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featuresAsString}"></h:inputHidden>
 		                        	<h:inputHidden id="viewInput" value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
 		                        </ui:fragment>
@@ -274,23 +199,27 @@
 			            	<div class="admin__content-inner-content__empty_form" id="featureForm">
 				            	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
 					            	<metadataEditor/>
-					            	<script>
-					            	$(document).ready(() => {
+				            	</ui:fragment>
+				            	<script>
+				            	$(document).ready(() => {
+				            	    if($("#geomap").length > 0) {				            	        
 					            	    console.log("init map");
+					            	    let editable = #{geoMapBean.currentMap.type == 'MANUAL'};
 					            	    mapEditor.init();
+					            	    mapEditor.geoMap.config.popoverOnHover = !editable;
+					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.updateFeatures();
 					            	    mapEditor.updateView();
-					            	    mapEditor.setAllowEditFeatures(true);
-					            	})
-		                        	</script>
-				            	</ui:fragment>
+				            	    }
+				            	})
+	                        	</script>
 			            	</div>
                         </h:panelGroup>
                         <br/>
                         <div class="admin__content-inner-content__controls">
-                            <h:commandButton styleClass="btn btn--default" value="#{msg.reset}" action="#{geoMapBean.resetCurrentMap}">
+                            <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{geoMapBean.resetCurrentMap}">
                             	<f:ajax execute="@none" render="@all"/>
-                            </h:commandButton>
+                            </h:commandLink>
                         	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}"></h:commandButton>
                         </div>
                         

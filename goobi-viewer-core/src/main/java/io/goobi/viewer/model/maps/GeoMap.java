@@ -38,8 +38,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +50,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
@@ -102,6 +109,9 @@ public class GeoMap {
     @JsonIgnore
     private Date dateUpdated;
     
+    @Column(name="solr_query")
+    private String solrQuery = null;
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cms_geomap_features", joinColumns = @JoinColumn(name = "geomap_id"))
     @Column(name = "features", columnDefinition = "LONGTEXT")
@@ -135,6 +145,7 @@ public class GeoMap {
         this.type = blueprint.type;
         this.features = blueprint.features;
         this.initialView = blueprint.initialView;
+        this.solrQuery = blueprint.solrQuery;
         
     }
     
@@ -286,29 +297,107 @@ public class GeoMap {
         this.features = features;
     }
     
-    public String getFeaturesAsString() {
-        String string = this.features.stream().collect(Collectors.joining(","));
-        string = "[" + string + "]";
-        return string;
+    public String getFeaturesAsString() throws PresentationException, IndexUnreachableException {
+        if(getType() != null) {
+            switch(getType()) {
+                case MANUAL:
+                    String string = this.features.stream().collect(Collectors.joining(","));
+                    string = "[" + string + "]";
+                    return string;
+                case SOLR_QUERY:
+                    List<String> features = getFeaturesFromSolrQuery(getSolrQuery());
+                    List<String> ret = new ArrayList<>(features.size());
+                    for (String featureString : features) {
+                        JSONObject json = new JSONObject(featureString);
+                        String type = json.getString("type");
+                        if("FeatureCollection".equalsIgnoreCase(type)) {
+                            JSONArray array = json.getJSONArray("features");
+                            if(array != null) {
+                                array.forEach(f -> ret.add(f.toString()));
+                            }
+                        } else if("Feature".equalsIgnoreCase(type)) {
+                            ret.add(featureString);
+                        }
+                    }
+                    return "[" + ret.stream().collect(Collectors.joining(",")) + "]";
+                default:
+                    return "[]";
+            }
+            
+        } else {
+            return "[]";
+        }
     }
+
     
     public void setFeaturesAsString(String features) {
-        JSONArray array = new JSONArray(features);
-        this.features = new ArrayList<>();
-        for (Object object : array) {
-            this.features.add(object.toString());
+        if(GeoMapType.MANUAL.equals(getType())) {
+            JSONArray array = new JSONArray(features);
+            this.features = new ArrayList<>();
+            for (Object object : array) {
+                this.features.add(object.toString());
+            }
+        } else {
+            this.features = new ArrayList<>();
         }
     }
     
-    public static void main(String[] args) {
-        
-        String string = "[{a: \"b,c\", b: \"sdfsdf\"}, {a: [\"a\",\"b\", \"c\"], d: 12, e: {a: 2}},{a: \"b\", d: { a: [1,2], b: \"dsfsdf\"}}]";
-        
-        JSONArray array = new JSONArray(string);
-        for (Object object : array) {
-            System.out.println(object);
+    public static List<String> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().search(query);
+        List<String> features = new ArrayList<>();
+        for (SolrDocument doc : docs) {
+            List<JSONObject> docFeatures = new ArrayList<>();
+            docFeatures.addAll(getGeojsonPoints(doc, "MD_GEOJSON_POINT"));
+            docFeatures.addAll(getGeojsonPoints(doc, "NORM_COORDS_GEOJSON"));
+            features.addAll(docFeatures.stream().map(JSONObject::toString).collect(Collectors.toList()));
         }
+        return features;
     }
+
+    /**
+     * @param doc
+     * @param docFeatures
+     */
+    public static List<JSONObject> getGeojsonPoints(SolrDocument doc, String metadataField) {
+        List<JSONObject> docFeatures = new ArrayList<>();
+        List<String> points = SolrSearchIndex.getMetadataValues(doc, metadataField);
+        for (String point : points) {
+            JSONObject json = new JSONObject(point);
+            String type = json.getString("type");
+            if("FeatureCollection".equalsIgnoreCase(type)) {
+                JSONArray array = json.getJSONArray("features");
+                if(array != null) {
+                    array.forEach(f -> {
+                        if(f instanceof JSONObject) {                            
+                            docFeatures.add((JSONObject) f);
+                        }
+                    });
+                }
+            } else if("Feature".equalsIgnoreCase(type)) {
+                docFeatures.add(json);
+            }
+        }
+        for (JSONObject f : docFeatures) {
+            JSONObject properties = f.getJSONObject("properties");
+            if(properties == null) {
+                properties = new JSONObject();
+                f.append("properties", properties);
+            }
+            if(!properties.has("title")) {                    
+                String label = SolrSearchIndex.getSingleFieldStringValue(doc, "MD_VALUE");
+                if(StringUtils.isBlank(label)) {
+                    label = SolrSearchIndex.getSingleFieldStringValue(doc, "LABEL");
+                    if(StringUtils.isBlank(label)) {
+                        label = SolrSearchIndex.getSingleFieldStringValue(doc, "DOCSTRCT");
+                        label = Helper.getTranslation(label);
+                    }
+                }
+                properties.append("title", label);
+            }
+        }
+        return docFeatures;
+    }
+
     
     /**
      * @param initialView the initialView to set
@@ -322,6 +411,24 @@ public class GeoMap {
      */
     public String getInitialView() {
         return initialView;
+    }
+    
+    /**
+     * @return the solrQuery
+     */
+    public String getSolrQuery() {
+        return solrQuery;
+    }
+    
+    /**
+     * @param solrQuery the solrQuery to set
+     */
+    public void setSolrQuery(String solrQuery) {
+        this.solrQuery = solrQuery;
+    }
+    
+    public boolean hasSolrQuery() {
+        return GeoMapType.SOLR_QUERY.equals(this.getType()) && StringUtils.isNotBlank(this.solrQuery);
     }
     
 }

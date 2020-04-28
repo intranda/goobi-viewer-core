@@ -396,6 +396,11 @@ var viewerJS = ( function( viewer ) {
     }   
     
     viewer.getMetadataValue = function(object, language) {
+        if(typeof object === "string") {
+            return object;
+        } else if(Array.isArray(object) && object.length > 0 && typeof object[0] === "string") {
+            return object.join(" ");
+        }
         return viewer.getOrElse([language, 0], object);
     }   
 

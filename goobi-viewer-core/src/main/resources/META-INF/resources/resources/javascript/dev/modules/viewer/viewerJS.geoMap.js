@@ -43,7 +43,9 @@ var viewerJS = ( function( viewer ) {
             mapBoxWorldId: "mapbox.world-bright",
             language: "de",
             popover: undefined,
-            emptyMarkerMessage: undefined
+            emptyMarkerMessage: undefined,
+            popoverOnHover: false,
+            
     }
     
     viewer.GeoMap = function(config) {
@@ -65,6 +67,7 @@ var viewerJS = ( function( viewer ) {
         this.onFeatureClick = new Rx.Subject();
         this.onFeatureMove = new Rx.Subject();
         this.onMapMove = new Rx.Subject();
+
 
     }
     
@@ -119,7 +122,6 @@ var viewerJS = ( function( viewer ) {
         //init feature layer
         this.locations = L.geoJSON([], {
             pointToLayer: function(geoJsonPoint, latlng) {
-                console.log("create marker. Draggable: " + this.config.allowMovingFeatures)
                 let marker = L.marker(latlng, {
                     draggable: this.config.allowMovingFeatures
                 });
@@ -130,8 +132,14 @@ var viewerJS = ( function( viewer ) {
                     return this.id;
                 }
                 
-                Rx.fromEvent(marker, "dragend").pipe(RxOp.map(e => this.updatePosition(marker))).subscribe(this.onFeatureMove);
+                Rx.fromEvent(marker, "dragend")
+                .pipe(RxOp.map(() => marker.openPopup()), RxOp.map(() => this.updatePosition(marker)))
+                .subscribe(this.onFeatureMove);
                 Rx.fromEvent(marker, "click").pipe(RxOp.map(e => marker.feature)).subscribe(this.onFeatureClick);
+                if(this.config.popoverOnHover) {                    
+                    Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
+                    Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
+                }
                 
                 marker.bindPopup(() => this.createPopup(marker));
                 

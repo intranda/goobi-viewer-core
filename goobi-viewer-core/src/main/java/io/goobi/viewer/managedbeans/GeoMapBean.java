@@ -21,11 +21,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.solr.common.SolrDocument;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -186,7 +189,7 @@ public class GeoMapBean implements Serializable {
 
     @SuppressWarnings("static-access")
     public Collection<GeoMapType> getPossibleMapTypes() {
-        return EnumSet.allOf(GeoMapType.class).of(GeoMapType.MANUAL);
+        return EnumSet.allOf(GeoMapType.class);
     }
     
     public boolean hasCurrentFeature() {
@@ -204,17 +207,6 @@ public class GeoMapBean implements Serializable {
     
     public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
         return DataManager.getInstance().getDao().getPagesUsingMap(map);
-    }
-    
-    public List<String> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().search(query);
-        List<String> features = new ArrayList<>();
-        for (SolrDocument doc : docs) {
-            String point = SolrSearchIndex.getSingleFieldStringValue(doc, "MD_GEOJSON_POINT");
-            System.out.println("Found point " + point);
-            features.add(point);
-        }
-        return features;
     }
 
 }

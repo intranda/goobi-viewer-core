@@ -53,7 +53,8 @@
             	let geoMap = new viewerJS.GeoMap({
             	    popover: "#geoMapPopoverTemplate",
             	    mapId: "geomapWidget",
-            	    language: "#{navigationHelper.localeString}"
+            	    language: "#{navigationHelper.localeString}",
+            	    popoverOnHover: #{cc.attrs.widget.geoMap.type == 'SOLR_QUERY'}
             	});
             	let view = #{cc.attrs.widget.geoMap.initialView};
             	let features = #{cc.attrs.widget.geoMap.featuresAsString};
