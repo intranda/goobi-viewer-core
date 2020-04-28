@@ -206,9 +206,10 @@
 					            	    console.log("init map");
 					            	    let editable = #{geoMapBean.currentMap.type == 'MANUAL'};
 					            	    mapEditor.init();
+					            	    mapEditor.geoMap.config.popoverOnHover = !editable;
+					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.updateFeatures();
 					            	    mapEditor.updateView();
-					            	    mapEditor.setAllowEditFeatures(editable);
 				            	    }
 				            	})
 	                        	</script>

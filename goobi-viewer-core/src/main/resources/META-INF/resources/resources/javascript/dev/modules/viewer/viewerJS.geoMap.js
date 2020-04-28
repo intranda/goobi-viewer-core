@@ -44,6 +44,8 @@ var viewerJS = ( function( viewer ) {
             language: "de",
             popover: undefined,
             emptyMarkerMessage: undefined,
+            popoverOnHover: false,
+            
     }
     
     viewer.GeoMap = function(config) {
@@ -65,6 +67,7 @@ var viewerJS = ( function( viewer ) {
         this.onFeatureClick = new Rx.Subject();
         this.onFeatureMove = new Rx.Subject();
         this.onMapMove = new Rx.Subject();
+
 
     }
     
@@ -133,6 +136,10 @@ var viewerJS = ( function( viewer ) {
                 .pipe(RxOp.map(() => marker.openPopup()), RxOp.map(() => this.updatePosition(marker)))
                 .subscribe(this.onFeatureMove);
                 Rx.fromEvent(marker, "click").pipe(RxOp.map(e => marker.feature)).subscribe(this.onFeatureClick);
+                if(this.config.popoverOnHover) {                    
+                    Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
+                    Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
+                }
                 
                 marker.bindPopup(() => this.createPopup(marker));
                 

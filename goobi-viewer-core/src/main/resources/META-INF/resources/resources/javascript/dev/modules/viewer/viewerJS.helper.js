@@ -396,7 +396,6 @@ var viewerJS = ( function( viewer ) {
     }   
     
     viewer.getMetadataValue = function(object, language) {
-        console.log("get metadata value ", object);
         if(typeof object === "string") {
             return object;
         } else if(Array.isArray(object) && object.length > 0 && typeof object[0] === "string") {

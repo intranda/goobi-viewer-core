@@ -56,7 +56,8 @@
                   		let geoMap = new viewerJS.GeoMap({
                   			allowMovingFeatures: false,
                   			popover: "#geoMapPopoverTemplate",
-                  			language: "#{navigationHelper.localeString}"
+                  			language: "#{navigationHelper.localeString}",
+                  			popoverOnHover: #{cc.attrs.widget.geoMap.type == 'SOLR_QUERY'},
                   		});
                   		$(document).ready(() => {                  		    
 	                  		geoMap.init();
