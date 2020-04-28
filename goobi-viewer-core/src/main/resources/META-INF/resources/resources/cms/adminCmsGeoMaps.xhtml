@@ -20,7 +20,7 @@
         <ui:fragment id="cmsGeoMaps" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
             <div id="cmsGeoMaps">
                 <h:form id="addGeoMapForm">
-                	<h2 class="admin__content-inner-title">#{msg.cms__geo_maps__title}
+                	<h2 class="admin__content-inner-title">#{msg.cms__geomaps__title}
 	                	<h:commandButton styleClass="btn btn--default" action="pretty:adminCmsGeoMapNew" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
 	                    </h:commandButton>
                 	</h2>
@@ -29,10 +29,10 @@
                 <div class="admin__content-inner-content">
                 	<div class="admin__content-inner-content__description">
                			<ui:fragment rendered="#{geoMapBean.hasMaps}">
-               				<h:outputText escape="false" value="#{msg.cms__geo_maps__description}"></h:outputText>
+               				<h:outputText escape="false" value="#{msg.cms__geomaps__description}"></h:outputText>
                			</ui:fragment>
                			<ui:fragment rendered="#{!geoMapBean.hasMaps}">
-               				<h:outputText escape="false" value="#{msg.cms__geo_maps__description__no_content}"></h:outputText>
+               				<h:outputText escape="false" value="#{msg.cms__geomaps__description__no_content}"></h:outputText>
                			</ui:fragment>
                		</div>
                     <h:form id="cmsGeoMapsForm" prependId="false">

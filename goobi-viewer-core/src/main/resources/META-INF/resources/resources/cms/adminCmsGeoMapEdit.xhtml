@@ -17,35 +17,39 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
-    
-                      	<script>
-		            		
-                      		var mapEditor = new cmsJS.GeoMapEditor({
-                      			mapId: "geomap",
-                      		    displayLanguage : "#{navigationHelper.localeString}",
-                      		    supportedLanguages: #{navigationHelper.supportedLanguagesAsJson},
-                      		  	popover: "#geoMapPopoverTemplate",
-                    	    	allowEditFeatures: false,
-	                    		msg: {
-	                            	emptyMarker: "#{msg.request__insert_metadata}",
-	                            	titleLabel: "#{msg.title}",
-	                                titleHelp: "#{msg.cms__geo_maps__feature_title__help}",
-	                                descLabel: "#{msg.description}",
-	                                descHelp: "#{msg.cms__geo_maps__feature_description__help}",
-	                                deleteLabel: "#{msg.delete}"
-	                            }
-                      		})
+	    
+	   	<script>
 	
-					     </script>
+	   		var mapEditor = new cmsJS.GeoMapEditor({
+	   			mapId: "geomap",
+	   		    displayLanguage : "#{navigationHelper.localeString}",
+	   		    supportedLanguages: #{navigationHelper.supportedLanguagesAsJson},
+	   		  	popover: "#geoMapPopoverTemplate",
+	 	    	allowEditFeatures: false,
+		  		msg: {
+		          	emptyMarker: "#{msg.request__insert_metadata}",
+		          	titleLabel: "#{msg.title}",
+		              titleHelp: "#{msg.cms__geomaps__feature_title__help}",
+		              descLabel: "#{msg.description}",
+		              descHelp: "#{msg.cms__geomaps__feature_description__help}",
+		              deleteLabel: "#{msg.delete}"
+		          }
+	   		})
+	
+	    </script>
     
     
         <ui:fragment id="cmsGeoMaps" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
             <div id="cmsGeoMaps">
-                <h2 class="admin__content-inner-title">#{msg.cms__geo_maps__title}
+                <h2 class="admin__content-inner-title">#{msg.cms__geomaps__title}
                 </h2>
                 <div class="admin__content-inner-content">
+	                <div class="admin__content-inner-content__description">
+	               		<h:outputText escape="false" value="#{msg.cms__geomap_edit__description}"></h:outputText>
+	               </div>
+                
                     <h:form id="geoMapEditForm" prependId="false">
-                        <h3>#{msg.cms__geo_maps__metadata__title}</h3>
+                        <h3>#{msg.cms__geomaps__metadata__title}</h3>
                         <h:panelGroup id="metadataPanel" >
                         	<ul class="nav nav-tabs" role="tablist">
                         		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
@@ -82,7 +86,7 @@
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
-			                            <div id="titleHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__metadata_title__help}</div>
+			                            <div id="titleHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__metadata_title__help}</div>
 			                        </div>
 			                        
 			                        <!-- DESCRIPTION -->
@@ -102,20 +106,20 @@
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
-			                            <div id="descHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__metadata_description__help}</div>
+			                            <div id="descHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__metadata_description__help}</div>
 			                        </div>
 								</div>
 								</div>
 <!-- 								</ui:repeat> -->
                             </div>
                        </h:panelGroup>
-                        <h3>#{msg.cms__geo_maps__map__title}</h3>
+                        <h3>#{msg.cms__geomaps__map__title}</h3>
                         <h:panelGroup id="mapPanel" >
                         	<div class="admin__content-inner-content__input_form">
 								<!-- TYPE -->
 		                        <div class="input_form__option_group">
 		                            <div class="input_form__option_label">
-		                                <label for="mapType">#{msg.cms__geo_maps__type__label}:</label>
+		                                <label for="mapType">#{msg.cms__geomaps__type__label}:</label>
 		                            </div>
 		                            <div class="input_form__option_marker in">
 		                            <label>*</label>
@@ -142,13 +146,13 @@
 		                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 		                                </button>
 		                            </div>
-		                            <div id="typeHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__type__help}</div>
+		                            <div id="typeHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__type__help}</div>
 		                        </div>
 		                        <!-- SOLR QUERY -->
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'SOLR_QUERY'}">
 			                        <div class="input_form__option_group">
 			                            <div class="input_form__option_label">
-			                                <label for="solrQueryInput">#{msg.cms__geo_maps__solrquery__label}:</label>
+			                                <label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker in">
 			                            <label>*</label>
@@ -178,18 +182,18 @@
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
-			                            <div id="queryHelp" class="input_form__option_control_helptext">#{msg.cms__geo_maps__solrquery__help}</div>
+			                            <div id="queryHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__solrquery__help}</div>
 			                        </div>
 		                        </ui:fragment>
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL' or geoMapBean.currentMap.hasSolrQuery()}">
-		                        	<div>#{msg.cms__geo_maps__map__help}</div>
+		                        	<div>#{msg.cms__geomaps__map__help}</div>
 		                        	<map class="input_form__geomap" id="geomap"></map>
 		                        	<popover id="geoMapPopoverTemplate">
 		                        		<h4 data-metadata="title"></h4>
 		                        		<span data-metadata="description"></span>
 		                        	</popover>
 		                        	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
-		                        		<div>#{msg.cms__geo_maps__map_token__help}</div>
+		                        		<div>#{msg.cms__geomaps__map_token__help}</div>
 		                        	</ui:fragment>
 		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featuresAsString}"></h:inputHidden>
 		                        	<h:inputHidden id="viewInput" value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>

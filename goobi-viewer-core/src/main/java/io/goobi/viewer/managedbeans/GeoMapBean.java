@@ -206,7 +206,7 @@ public class GeoMapBean implements Serializable {
     }
     
     public boolean isHasMaps() throws DAOException {
-        return getAllMaps().isEmpty();
+        return !getAllMaps().isEmpty();
     }
 
 }
