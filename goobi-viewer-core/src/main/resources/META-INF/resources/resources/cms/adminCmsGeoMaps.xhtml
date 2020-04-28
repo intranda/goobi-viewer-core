@@ -28,7 +28,12 @@
 
                 <div class="admin__content-inner-content">
                 	<div class="admin__content-inner-content__description">
-               			<h:outputText escape="false" value="#{msg.cms__geo_maps__description}"></h:outputText>
+               			<ui:fragment rendered="#{geoMapBean.hasMaps}">
+               				<h:outputText escape="false" value="#{msg.cms__geo_maps__description}"></h:outputText>
+               			</ui:fragment>
+               			<ui:fragment rendered="#{!geoMapBean.hasMaps}">
+               				<h:outputText escape="false" value="#{msg.cms__geo_maps__description__no_content}"></h:outputText>
+               			</ui:fragment>
                		</div>
                     <h:form id="cmsGeoMapsForm" prependId="false">
                     	<div class="admin__content-inner-content__entity_list entity_list">

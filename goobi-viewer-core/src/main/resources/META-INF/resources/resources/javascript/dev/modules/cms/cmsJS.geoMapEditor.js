@@ -84,7 +84,7 @@ var cmsJS = ( function( cms ) {
         .subscribe(() => this.saveFeatures());
         
         this.onMetadataUpdate
-        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map(() => this.updateCurrentFeatureMetadata()))
+        .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map((metadata) => this.updateCurrentFeatureMetadata(metadata)))
         .subscribe(() => this.saveFeatures());
     }
     
@@ -178,7 +178,7 @@ var cmsJS = ( function( cms ) {
     }
     
     cms.GeoMapEditor.prototype.updateCurrentFeatureMetadata = function(metadata) {
-        if(this.currentFeature) {                                                
+        if(this.currentFeature && metadata) {                                                
             this.currentFeature.properties[metadata.property] = metadata.value;
             this.geoMap.updateMarker(this.currentFeature.id);
         }

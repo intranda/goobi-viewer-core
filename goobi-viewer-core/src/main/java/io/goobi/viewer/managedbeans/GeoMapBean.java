@@ -16,28 +16,19 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-
-import org.apache.solr.common.SolrDocument;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
@@ -59,6 +50,8 @@ public class GeoMapBean implements Serializable {
     private GeoMap currentMap = null;
     
     private String selectedLanguage;
+    
+    private List<GeoMap> loadedMaps = null;
     
         
     /**
@@ -184,7 +177,10 @@ public class GeoMapBean implements Serializable {
      * @throws DAOException 
      */
     public List<GeoMap> getAllMaps() throws DAOException {
-        return DataManager.getInstance().getDao().getAllGeoMaps();
+        if(this.loadedMaps == null) {
+            this.loadedMaps = DataManager.getInstance().getDao().getAllGeoMaps();
+        }
+        return this.loadedMaps;
     }
 
     @SuppressWarnings("static-access")
@@ -207,6 +203,10 @@ public class GeoMapBean implements Serializable {
     
     public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
         return DataManager.getInstance().getDao().getPagesUsingMap(map);
+    }
+    
+    public boolean isHasMaps() throws DAOException {
+        return getAllMaps().isEmpty();
     }
 
 }
