@@ -118,10 +118,12 @@ public class GeoMapBean implements Serializable {
         } else {
             Messages.error("notify__save_map__error");
         }
+        this.loadedMaps = null;
     }
     
     public void deleteMap(GeoMap map) throws DAOException {
         DataManager.getInstance().getDao().deleteGeoMap(map);
+        this.loadedMaps = null;
     }
     
     public String getEditMapUrl(GeoMap map) {
