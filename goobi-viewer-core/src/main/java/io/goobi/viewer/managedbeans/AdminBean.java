@@ -93,6 +93,7 @@ public class AdminBean implements Serializable {
 
     private String passwordOne = "";
     private String passwordTwo = "";
+    private boolean deleteUserContributions = false;
 
     /**
      * <p>
@@ -417,15 +418,19 @@ public class AdminBean implements Serializable {
      * deleteUserAction.
      * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user User to be deleted
+     * @param deleteContributions If true, all content created by this user will also be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deleteUserAction(User user) throws DAOException {
+    public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
         logger.debug("Deleting user: " + user.getDisplayName());
-        if (DataManager.getInstance().getDao().deleteUser(user)) {
-            Messages.info("deletedSuccessfully");
-        } else {
-            Messages.error("deleteFailure");
+        if(deleteContributions) {
+            // TODO delete comments, CS content, etc.
+            if (DataManager.getInstance().getDao().deleteUser(user)) {
+                Messages.info("deletedSuccessfully");
+            } else {
+                Messages.error("deleteFailure");
+            }
         }
     }
 
@@ -436,6 +441,7 @@ public class AdminBean implements Serializable {
      */
     public void resetCurrentUserAction() {
         currentUser = new User();
+        deleteUserContributions = false;
     }
 
     /**
@@ -444,19 +450,21 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveUserGroupAction() throws DAOException {
-        if (currentUserGroup != null) {
-            if (getCurrentUserGroup().getId() != null) {
-                if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
-                    Messages.info("updatedSuccessfully");
-                } else {
-                    Messages.info("errSave");
-                }
+        if (currentUserGroup == null) {
+            return;
+        }
+
+        if (getCurrentUserGroup().getId() != null) {
+            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
+                Messages.info("updatedSuccessfully");
             } else {
-                if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
-                    Messages.info("addedSuccessfully");
-                } else {
-                    Messages.info("errSave");
-                }
+                Messages.info("errSave");
+            }
+        } else {
+            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
+                Messages.info("addedSuccessfully");
+            } else {
+                Messages.info("errSave");
             }
         }
         setCurrentUserGroup(null);
@@ -1366,6 +1374,20 @@ public class AdminBean implements Serializable {
      */
     public void setPasswordTwo(String passwordTwo) {
         this.passwordTwo = passwordTwo;
+    }
+
+    /**
+     * @return the deleteUserContributions
+     */
+    public boolean isDeleteUserContributions() {
+        return deleteUserContributions;
+    }
+
+    /**
+     * @param deleteUserContributions the deleteUserContributions to set
+     */
+    public void setDeleteUserContributions(boolean deleteUserContributions) {
+        this.deleteUserContributions = deleteUserContributions;
     }
 
     /**

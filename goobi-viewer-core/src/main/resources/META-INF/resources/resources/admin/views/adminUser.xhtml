@@ -24,37 +24,192 @@
                         <h2 class="admin__content-inner-title">#{msg.newUserCreateUser}</h2>
                     </h:panelGroup>
                     <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
-                        <h2 class="admin__content-inner-title">#{msg.user}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.changeUserData}</h2>
                     </h:panelGroup>
 
                     <div class="admin__content-inner-content">
-                        <div role="tabpanel">
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs" role="tablist">
-                                <!-- user data link -->
-                                <li role="presentation" class="active">
-                                    <a href="#userData" aria-controls="home" role="tab" data-toggle="tab">#{msg.userCP}</a>
-                                </li>
     
-                                <!-- licenses link -->
-                                <li role="presentation">
-                                    <a href="#licenses" aria-controls="profile" role="tab" data-toggle="tab">#{msg.licenses}</a>
-                                </li>
-                            </ul>
-    
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <!-- user data tab -->
-                                <div role="tabpanel" class="tab-pane active" id="userData">
-                                    <ui:include src="/resources/admin/includes/tabUserGeneral.xhtml" />
-                                </div>
-    
-                                <!-- licenses tab -->
-                                <div role="tabpanel" class="tab-pane" id="licenses">
-                                    <ui:include src="/resources/admin/includes/tabUserLicenses.xhtml" />
-                                </div>
+                    <h:form id="editUserGeneral" styleClass="form-horizontal" role="form" prependId="false">
+                        <!-- prevent autocomplete in IE, Chrome and Firefox -->
+                        <input type="text" class="hidden" />
+                        <input type="password" class="hidden" />
+
+                        <!-- PROFILE -->
+                        <h3>#{msg.user__profile}</h3>
+
+
+                        <div class="form-group">
+                            <h:outputLabel for="displayName" styleClass="col-sm-2 control-label" value="#{msg.user__displayName} *" />
+                            <div class="col-sm-9">
+                                <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
+                                    required="true" requiredMessage="#{msg.loginEnterDisplayName}" />
+                                <span class="form-group-helptext">#{msg.help__admin_user_displayName}</span>
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <h:outputLabel for="email" styleClass="col-sm-2 control-label" value="#{msg.email} *" />
+                            <div class="col-sm-9">
+                                <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
+                                    styleClass="form-control">
+                                    <f:validator validatorId="emailValidator" />
+                                    <f:ajax render="avatar" />
+                                </h:inputText>
+                                <span class="form-group-helptext">#{msg.help__admin_user_email}</span>
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="firstName" styleClass="col-sm-2 control-label" value="#{msg.nameFirst}" />
+                            <div class="col-sm-9">
+                                <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
+                                <span class="form-group-helptext">#{msg.help__admin_user_firstName}</span>
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="lastName" styleClass="col-sm-2 control-label" value="#{msg.nameLast}" />
+                            <div class="col-sm-9">
+                                <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
+                                <span class="form-group-helptext">#{msg.help__admin_user_lastName}</span>
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="avatar" styleClass="col-sm-2 control-label" value="#{msg.user__avatar}" />
+                            <div id="avatar" class="col-sm-9">
+                                <h:selectOneRadio value="#{adminBean.currentUser.useGravatar}"> 
+                                    <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
+                                    <f:selectItem itemValue="false" itemLabel="#{msg.user__avatar_standard}" />
+                                    <img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
+                                    <f:selectItem itemValue="true" itemLabel="#{msg.user_useGravatar}" />
+                                </h:selectOneRadio>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="gravatar" styleClass="col-sm-2 control-label" value="#{msg.admin_superuser}" />
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label> 
+                                        <h:selectBooleanCheckbox value="#{adminBean.currentUser.superuser}" />
+                                        #{msg.admin_superuserNotice}
+                                    </label>
+                                </div>
+<!--                                 <span class="help-block">#{msg.admin_superuserNotice}</span> -->
+                            </div>
+                        </div>
+                        
+            
+                        <!-- ACCOUNT OPTIONS -->
+<!--                         <div class="form-group"> -->
+<!--                             <div class="col-sm-offset-4 col-sm-8"> -->
+<!--                                 <div class="checkbox"> -->
+<!--                                     <label>  -->
+<!--                                         <h:selectBooleanCheckbox value="#{adminBean.currentUser.active}" disabled="#{adminBean.currentUser.active}" /> #{msg.accountActive} -->
+<!--                                     </label> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                         <div class="form-group"> -->
+<!--                             <div class="col-sm-offset-4 col-sm-8"> -->
+<!--                                 <div class="checkbox"> -->
+<!--                                     <label>  -->
+<!--                                         <h:selectBooleanCheckbox value="#{adminBean.currentUser.suspended}" /> #{msg.user_accountSuspended} -->
+<!--                                     </label> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+                        
+                        <!-- ACTION -->
+                        <div class="text-right">
+<!--                             <h:commandLink id="cancelUserGeneralButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true"> -->
+<!--                                 <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" /> -->
+<!--                             </h:commandLink> -->
+                            <h:commandLink id="saveUserGeneralButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
+                        </div>
+                        </h:form>
+
+                        <!-- PASSWORD -->
+                        <h:form id="editUserPassword" styleClass="form-horizontal" role="form" prependId="false">
+                        <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
+                            <h3>#{msg.password}</h3>
+                
+                            <div class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
+                                    <div class="col-sm-8">
+                                        <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}" required="true"
+                                            requiredMessage="#{msg.newUserPasswordOneRequired}" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
+                                    <div class="col-sm-8">
+                                        <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}" required="true"
+                                            requiredMessage="#{msg.newUserPasswordOneRequired}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
+                            <h3>#{msg.changePassword}</h3>
+                
+                            <div class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <h:outputLabel for="adminPasswordOne" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
+                                    <div class="col-sm-8">
+                                        <h:inputSecret id="adminPasswordOne" styleClass="form-control" value="#{adminBean.passwordOne}" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <h:outputLabel for="adminPasswordTwo" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
+                                    <div class="col-sm-8">
+                                        <h:inputSecret id="adminPasswordTwo" styleClass="form-control" value="#{adminBean.passwordTwo}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                        
+                        <div class="text-right">
+<!--                             <h:commandLink id="cancelUserPasswordButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true"> -->
+<!--                                 <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" /> -->
+<!--                             </h:commandLink> -->
+                            <h:commandLink id="saveUserPasswordButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
+                        </div>
+                        </h:form>
+                        
+                        <!-- DELETE USER -->
+                        <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
+                        <h3>#{msg.admin__delete_user_account}</h3>
+
+                        <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
+                            <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
+                            <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}" />
+                        </h:selectOneRadio>
+
+                        <div class="text-right">
+                            <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"
+                                action="#{adminBean.deleteUserAction(user, false)}" />
+                        </div>
+                        </h:form>
+                        
                     </div>
                 </h:panelGroup>
             </div>
