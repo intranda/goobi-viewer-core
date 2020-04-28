@@ -347,7 +347,21 @@ public class GeoMap {
         List<String> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
             List<JSONObject> docFeatures = new ArrayList<>();
-            String point = SolrSearchIndex.getSingleFieldStringValue(doc, "MD_GEOJSON_POINT");
+            docFeatures.addAll(getGeojsonPoints(doc, "MD_GEOJSON_POINT"));
+            docFeatures.addAll(getGeojsonPoints(doc, "NORM_COORDS_GEOJSON"));
+            features.addAll(docFeatures.stream().map(JSONObject::toString).collect(Collectors.toList()));
+        }
+        return features;
+    }
+
+    /**
+     * @param doc
+     * @param docFeatures
+     */
+    public static List<JSONObject> getGeojsonPoints(SolrDocument doc, String metadataField) {
+        List<JSONObject> docFeatures = new ArrayList<>();
+        List<String> points = SolrSearchIndex.getMetadataValues(doc, metadataField);
+        for (String point : points) {
             JSONObject json = new JSONObject(point);
             String type = json.getString("type");
             if("FeatureCollection".equalsIgnoreCase(type)) {
@@ -362,22 +376,26 @@ public class GeoMap {
             } else if("Feature".equalsIgnoreCase(type)) {
                 docFeatures.add(json);
             }
-            docFeatures.forEach(f -> {
-                JSONObject properties = f.getJSONObject("properties");
-                if(properties == null) {
-                    properties = new JSONObject();
-                    f.append("properties", properties);
-                }
-                String label = SolrSearchIndex.getSingleFieldStringValue(doc, "LABEL");
+        }
+        for (JSONObject f : docFeatures) {
+            JSONObject properties = f.getJSONObject("properties");
+            if(properties == null) {
+                properties = new JSONObject();
+                f.append("properties", properties);
+            }
+            if(!properties.has("title")) {                    
+                String label = SolrSearchIndex.getSingleFieldStringValue(doc, "MD_VALUE");
                 if(StringUtils.isBlank(label)) {
-                    label = SolrSearchIndex.getSingleFieldStringValue(doc, "DOCSTRCT");
-                    label = Helper.getTranslation(label);
+                    label = SolrSearchIndex.getSingleFieldStringValue(doc, "LABEL");
+                    if(StringUtils.isBlank(label)) {
+                        label = SolrSearchIndex.getSingleFieldStringValue(doc, "DOCSTRCT");
+                        label = Helper.getTranslation(label);
+                    }
                 }
                 properties.append("title", label);
-            });
-            features.addAll(docFeatures.stream().map(JSONObject::toString).collect(Collectors.toList()));
+            }
         }
-        return features;
+        return docFeatures;
     }
 
     

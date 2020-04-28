@@ -43,7 +43,7 @@ var viewerJS = ( function( viewer ) {
             mapBoxWorldId: "mapbox.world-bright",
             language: "de",
             popover: undefined,
-            emptyMarkerMessage: undefined
+            emptyMarkerMessage: undefined,
     }
     
     viewer.GeoMap = function(config) {

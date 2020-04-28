@@ -148,16 +148,29 @@
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'SOLR_QUERY'}">
 			                        <div class="input_form__option_group">
 			                            <div class="input_form__option_label">
-			                                <label for="queryInput">#{msg.cms__geo_maps__solrquery__label}:</label>
+			                                <label for="solrQueryInput">#{msg.cms__geo_maps__solrquery__label}:</label>
 			                            </div>
 			                            <div class="input_form__option_marker in">
 			                            <label>*</label>
 			                            </div>
 			                            <div class="input_form__option_control">
-						                    <h:inputText id="queryInput" styleClass="form-control"  
-						                    	value="#{geoMapBean.currentMap.solrQuery}"
-						                    	required="true" requiredMessage="#{msg.error__query_required}">
-						                    	<f:ajax render="mapPanel"/>
+						                    <div class="input_form__option-message">
+							                    <h:messages for="solrQueryInput" 
+							                        infoClass="cms-module__option-message-status success" 
+							                        warnClass="cms-module__option-message-status warning"
+							                        errorClass="cms-module__option-message-status danger" />
+							
+							                    <div class="input_form__option-message-mark">
+							                        <i class="fa fa-check" aria-hidden="true"></i>
+							                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+							                    </div>
+							                </div>
+						                    <h:inputText id="solrQueryInput" styleClass="form-control"  
+						                    	value="#{geoMapBean.currentMap.solrQuery}" 
+						                    	required="true" requiredMessage="#{msg.error__query_required}"
+						                    	>
+						                    	<f:validator validatorId="solrQueryValidator" for="solrQueryInput" />
+						                    	<f:ajax event="blur" render="mapPanel"/>
 						                    </h:inputText>							                    
 			                            </div>
 			                            <div class="input_form__option_help">
@@ -203,9 +216,9 @@
                         </h:panelGroup>
                         <br/>
                         <div class="admin__content-inner-content__controls">
-                            <h:commandButton styleClass="btn btn--default" value="#{msg.reset}" action="#{geoMapBean.resetCurrentMap}">
+                            <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{geoMapBean.resetCurrentMap}">
                             	<f:ajax execute="@none" render="@all"/>
-                            </h:commandButton>
+                            </h:commandLink>
                         	<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}"></h:commandButton>
                         </div>
                         

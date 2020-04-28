@@ -53,7 +53,7 @@ var cmsJS = ( function( cms ) {
             		case 'complete':
             			break;
             		case 'success':
-            			if ( $( '.cms-module__option-message' ).length > 0 ) {
+            			if ( $( '.cms-module__option-message, .input_form__option-message' ).length > 0 ) {
             				cmsJS.modules.setValidationStatus( data.source.id );							
             			}
             			
@@ -78,23 +78,23 @@ var cmsJS = ( function( cms ) {
         	
         	if ( source.indexOf( ':' ) > -1 ) {
         		stripedSource = source.match(/.*:(.*)/)[1];        		
-        		status = $( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
+        		status = $( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control, .input_form__option_control' ).find( '.cms-module__option-message-status, .input_form__option-message-status' );
         	}
         	else {
         		stripedSource = source;       		
-        		status = $( '#' + stripedSource ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
+        		status = $( '#' + stripedSource ).parents( '.cms-module__option-control, .input_form__option_control' ).find( '.cms-module__option-message-status, .input_form__option-message-status' );
         	}
 
         	if ( status.hasClass( 'success' ) ) {
-        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'success' );
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control, .input_form__option_control' ).find( '.cms-module__option-message-mark, .input_form__option-message-mark' ).addClass( 'success' );
         		$( '[id*="' + stripedSource + '"]' ).addClass( 'success' );
         	}
         	else if ( status.hasClass( 'warning' ) ) {
-        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'warning' );
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control, .input_form__option_control' ).find( '.cms-module__option-message-mark, .input_form__option-message-mark' ).addClass( 'warning' );
         		$( '[id*="' + stripedSource + '"]' ).addClass( 'warning' );
         	}
         	else if ( status.hasClass( 'danger' ) ) {
-        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'danger' );
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control, .input_form__option_control' ).find( '.cms-module__option-message-mark, .input_form__option-message-mark' ).addClass( 'danger' );
         		$( '[id*="' + stripedSource + '"]' ).addClass( 'danger' );
         	}
         },
