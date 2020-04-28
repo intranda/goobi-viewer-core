@@ -45,6 +45,7 @@ var viewerJS = ( function( viewer ) {
             popover: undefined,
             emptyMarkerMessage: undefined,
             popoverOnHover: false,
+            fixed: false
             
     }
     
@@ -83,7 +84,12 @@ var viewerJS = ( function( viewer ) {
             console.log("init GeoMap with config ", this.config);
         }
         
-        this.map = new L.Map(this.config.mapId);
+        this.map = new L.Map(this.config.mapId, {
+            zoomControl: !this.config.fixed,
+            scrollWheelZoom: !this.config.fixed,
+            dragging: !this.config.fixed,    
+            keyboard: !this.config.fixed
+        });
         
         if(this.config.mapBoxToken) {
             var mapbox = new L.TileLayer(

@@ -34,49 +34,73 @@
                     	<div class="admin__content-inner-content__entity_list entity_list">
 	                    	<ui:repeat value="#{geoMapBean.allMaps}" var="map" varStatus="status">
 	                    		<div class="entity_list__item">
-	                    			<div class="entity_list__item__header">
-		                    			<h3>#{map.title}</h3>
-		                    			<div class="entity_list__item__header__tags">
-<!-- 		                    				<a  -->
-<!-- 				                               id="oEmbedLink"  -->
-<!-- 				                               class="label label-default"  -->
-<!-- 				                               data-copy="oembed"  -->
-<!-- 				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}"  -->
-<!-- 				                               data-copy-done="#{msg.copyUrlDone}" -->
-<!-- 				                               title="#{msg.copyUrl}">  -->
-<!-- 				                               #{msg.oEmbed} -->
-<!-- 				                           </a>  -->
+	                    			<div class="entity_list__item__area area__left">
+		                    			<div class="entity_list__item__header">
+			                    			<h3>#{map.title}</h3>
+			                    			<div class="entity_list__item__header__tags">
+	<!-- 		                    				<a  -->
+	<!-- 				                               id="oEmbedLink"  -->
+	<!-- 				                               class="label label-default"  -->
+	<!-- 				                               data-copy="oembed"  -->
+	<!-- 				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}"  -->
+	<!-- 				                               data-copy-done="#{msg.copyUrlDone}" -->
+	<!-- 				                               title="#{msg.copyUrl}">  -->
+	<!-- 				                               #{msg.oEmbed} -->
+	<!-- 				                           </a>  -->
+			                    			</div>
 		                    			</div>
-	                    			</div>
-	                    			<div class="entity_list__item__content">
-	                    				<div class="entity_list__item__content__label">#{msg.type}:</div>
-	                    				<div class="entity_list__item__content__value">#{msg['label__geomap_type__'.concat(map.type)]}</div>
-	                    				<ui:fragment rendered="#{map.description.length() > 0}">
-		                    				<div class="entity_list__item__content__label">#{msg.description}:</div>
-		                    				<div class="entity_list__item__content__value">#{map.description}</div>
-	                    				</ui:fragment>
-	                    				
-	                    				<ui:fragment rendered="#{geoMapBean.isInUse(map)}">
-		                    				<div class="entity_list__item__content__label">#{msg.label__usage}:</div>
-		                    				<div class="entity_list__item__content__value">
-		                    					<ui:repeat var="cmsPage" value="#{geoMapBean.getEmbeddingCmsPages(map)}">
-		                    						<div class="entity_list__item__content__subvalue">
-		                    							<a href="#{cmsPage.pageUrl}">#{cmsPage.title}</a>
-		                    						</div>
-		                    					</ui:repeat>
-		                    				</div>
-	                    				</ui:fragment>
-	                    			</div>
-	                    			<div class="entity_list__item__controls">
-		                    			<ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
-			                    			<h:commandLink styleClass="btn btn--clean delete" 
-			                    			onclick="if ( !confirm( &quot;#{msg.confirm__delete_map}&quot; ) ) { return false };" 
-			                    			value="#{msg.delete}" action="#{geoMapBean.deleteMap(map)}">
-			                    			</h:commandLink>
-		                    			</ui:fragment>
-		                    			<h:outputLink styleClass="btn btn--link" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}
-		                    			</h:outputLink>
-		                    		</div>
+		                    			<div class="entity_list__item__content">
+		                    				<div class="entity_list__item__content__label">#{msg.type}:</div>
+		                    				<div class="entity_list__item__content__value">#{msg['label__geomap_type__'.concat(map.type)]}</div>
+		                    				<ui:fragment rendered="#{map.description.length() > 0}">
+			                    				<div class="entity_list__item__content__label">#{msg.description}:</div>
+			                    				<div class="entity_list__item__content__value">#{map.description}</div>
+		                    				</ui:fragment>
+		                    				
+		                    				<ui:fragment rendered="#{geoMapBean.isInUse(map)}">
+			                    				<div class="entity_list__item__content__label">#{msg.label__usage}:</div>
+			                    				<div class="entity_list__item__content__value">
+			                    					<ui:repeat var="cmsPage" value="#{geoMapBean.getEmbeddingCmsPages(map)}">
+			                    						<div class="entity_list__item__content__subvalue">
+			                    							<a href="#{cmsPage.pageUrl}">#{cmsPage.title}</a>
+			                    						</div>
+			                    					</ui:repeat>
+			                    				</div>
+		                    				</ui:fragment>
+		                    			</div>
+		                    			<div class="entity_list__item__controls">
+			                    			<ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
+				                    			<h:commandLink styleClass="btn btn--clean delete" 
+				                    			onclick="if ( !confirm( &quot;#{msg.confirm__delete_map}&quot; ) ) { return false };" 
+				                    			value="#{msg.delete}" action="#{geoMapBean.deleteMap(map)}">
+				                    			</h:commandLink>
+			                    			</ui:fragment>
+			                    			<h:outputLink styleClass="btn btn--link" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}
+			                    			</h:outputLink>
+			                    		</div>
+			                    	</div>
+			                    	<div class="entity_list__item__area area__right">
+			                    		<div id="geomap_#{map.id}" class="entity_list__item__map"></div>
+			                    		<script type="text/javascript">	  
+								            $(document).ready( () => {	
+								                
+								            	let geoMap = new viewerJS.GeoMap({
+								            	    popover: undefined,
+								            	    mapId: "geomap_#{map.id}",
+								            	    fixed: true
+								            	});
+								            	let view = #{map.initialView};
+								            	let features = #{map.featuresAsString};
+								            	console.log("init map with ", view, features);
+								            	geoMap.init();
+								            	geoMap.setView(view);
+								            	features.forEach(feature => {
+								            	    geoMap.addMarker(feature);
+								            	})
+								            	geoMap.setView(geoMap.getViewAroundFeatures());
+								            })
+									        </script>
+			                    	</div>
 	                    		</div>
 	                    	</ui:repeat>
                     	</div>

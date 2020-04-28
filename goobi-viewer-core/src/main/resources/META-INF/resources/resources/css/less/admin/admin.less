@@ -170,11 +170,22 @@
 				&__item {
 					border: 1px solid #ddd;
 					background: white;
-					padding: 10px;
-					display: grid;
-					grid-row-gap: 10px;
+					display: flex;
+					flex-direction: row;
+					align-content: stretch;
 					font-size: 1.4rem;
 					margin-bottom: 20px;
+					min-height: 200px;
+					&__area {
+						display: grid;
+						grid-row-gap: 10px;
+						flex-grow: 1;
+						width: 100%;
+						padding: 10px;
+						&.area__right {
+							padding: 0px;
+						}
+					}
 					&__header {
 						display: flex;
 						justify-content: space-between;
@@ -191,6 +202,7 @@
 					&__controls {
 						display: flex;
 						justify-content: flex-end;
+						align-items: end;
 						visibility: hidden;
 						.btn {
 							padding: 0 5px;
