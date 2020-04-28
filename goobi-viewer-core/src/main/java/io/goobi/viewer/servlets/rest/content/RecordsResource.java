@@ -42,8 +42,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,6 @@ import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -121,7 +120,6 @@ public class RecordsResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/timematrix/q/{query}/{count}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -136,7 +134,11 @@ public class RecordsResource {
         if (StringUtils.isEmpty(query)) {
             throw new ContentNotFoundException("query required");
         }
-        query = new StringBuilder().append('(').append(query).append(')').append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery())).toString();
+        query = new StringBuilder().append('(')
+                .append(query)
+                .append(')')
+                .append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()))
+                .toString();
         logger.debug("query: {}", query);
 
         if (count <= 0) {
@@ -164,10 +166,10 @@ public class RecordsResource {
         for (CompareYearSolrDocWrapper solrWrapper : sortDocResult) {
             SolrDocument doc = solrWrapper.getSolrDocument();
             JSONObject jsonObj = JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
-            jsonArray.add(jsonObj);
+            jsonArray.put(jsonObj);
         }
 
-        return jsonArray.toJSONString();
+        return jsonArray.toString();
     }
 
     /**
@@ -227,7 +229,6 @@ public class RecordsResource {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/q")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -238,7 +239,7 @@ public class RecordsResource {
         if (params == null || params.getQuery() == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
-            return ret.toJSONString();
+            return ret.toString();
         }
 
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
@@ -294,7 +295,7 @@ public class RecordsResource {
             jsonArray = new JSONArray();
         }
 
-        return jsonArray.toJSONString();
+        return jsonArray.toString();
     }
 
     /**
@@ -306,7 +307,6 @@ public class RecordsResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/count")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -316,7 +316,7 @@ public class RecordsResource {
         if (params == null || params.getQuery() == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
-            return ret.toJSONString();
+            return ret.toString();
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
         String query =
@@ -325,7 +325,7 @@ public class RecordsResource {
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);
 
-        return ret.toJSONString();
+        return ret.toString();
     }
 
     /**
@@ -429,8 +429,7 @@ public class RecordsResource {
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
         setResponseHeader("");
 
-        // TODO Check PRIV_VIEW_METADATA once merged
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)) {
             throw new ContentNotFoundException("Resource not found");
         }
 

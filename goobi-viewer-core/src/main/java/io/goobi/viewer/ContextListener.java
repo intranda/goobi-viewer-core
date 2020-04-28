@@ -34,7 +34,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,6 +144,6 @@ public class ContextListener implements ServletContextListener {
         }
 
         // Shut all loggers down to prevent memory leaks when re-deploying the context
-        LogManager.shutdown();
+        // LogManager.shutdown();
     }
 }

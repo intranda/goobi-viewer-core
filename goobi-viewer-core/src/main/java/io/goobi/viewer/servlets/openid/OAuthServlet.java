@@ -45,9 +45,8 @@ import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +63,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 /**
  * OpenID Connect business logic.
  */
+@Deprecated
 public class OAuthServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6279885446798463881L;
@@ -110,17 +110,11 @@ public class OAuthServlet extends HttpServlet {
                         logger.error(e.getMessage(), e);
                     }
                     listener.unregister(provider);
-                } catch (OAuthSystemException | ParseException e) {
+                } catch (OAuthSystemException e) {
                     logger.error(e.getMessage(), e);
                     this.redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
                     //            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OpenID Connect login failed");
-                } catch (DAOException e) {
-                    logger.debug("DAOException thrown here: {}", e.getMessage());
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database offline");
-                    this.redirected = provider.completeLogin(null, request, response);
-                    listener.unregister(provider);
-                    return;
                 } catch (AuthenticationProviderException e) {
                     logger.debug("AuthenticationProviderException thrown here: {}", e.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -151,7 +145,7 @@ public class OAuthServlet extends HttpServlet {
     }
 
     private boolean handleResponse(OAuthAuthzResponse oar, OpenIdProvider provider, HttpServletRequest request, HttpServletResponse response)
-            throws DAOException, OAuthProblemException, OAuthSystemException, ParseException, AuthenticationProviderException {
+            throws OAuthProblemException, OAuthSystemException, AuthenticationProviderException {
         if (provider.getoAuthState() == null || !oar.getState().equals(provider.getoAuthState())) {
             return false;
         }
@@ -181,7 +175,8 @@ public class OAuthServlet extends HttpServlet {
                     // String header = new String(new Base64(true).decode(idTokenEncodedSplit[0]), Charset.forName("UTF-8"));
                     String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), Charset.forName("UTF-8"));
                     // String signature = idTokenEncodedSplit[2];
-                    JSONObject jsonPayload = (JSONObject) new JSONParser().parse(payload);
+                    JSONTokener tokener = new JSONTokener(payload);
+                    JSONObject jsonPayload = new JSONObject(tokener);
                     this.redirected = provider.completeLogin(jsonPayload, request, response);
                     return true;
                     //                    return provider.completeLogin();
@@ -212,7 +207,8 @@ public class OAuthServlet extends HttpServlet {
                             oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
                     if (resourceResponse != null) {
                         // logger.debug(resourceResponse.getBody());
-                        JSONObject jsonProfile = (JSONObject) new JSONParser().parse(resourceResponse.getBody());
+                        JSONTokener tokener = new JSONTokener(resourceResponse.getBody());
+                        JSONObject jsonProfile = new JSONObject(tokener);
                         this.redirected = provider.completeLogin(jsonProfile, request, response);
                         return true;
                         //                        return provider.completeLogin();

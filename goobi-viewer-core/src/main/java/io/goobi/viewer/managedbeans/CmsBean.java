@@ -141,7 +141,6 @@ public class CmsBean implements Serializable {
     private List<String> solrSortFields = null;
     private List<String> solrGroupFields = null;
 
-
     /**
      * <p>
      * init.
@@ -1435,10 +1434,13 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
      */
-    public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException,
+    public String cmsContextAction() throws IndexUnreachableException, DAOException, ViewerConfigurationException,
             RecordNotFoundException, RecordDeletedException {
         return cmsContextAction(true);
     }
@@ -1452,11 +1454,14 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
      */
     public String cmsContextAction(boolean resetSearch)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException,
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException,
             RecordDeletedException {
         logger.trace("cmsContextAction: {}", resetSearch);
         if (currentPage == null) {
@@ -1464,53 +1469,57 @@ public class CmsBean implements Serializable {
         }
 
         List<CMSContentItem> contentItems = currentPage.getGlobalContentItems();
-        for (CMSContentItem item : contentItems) {
-            if (item == null || item.getType() == null) {
-                continue;
-            }
-            switch (item.getType()) {
-                case SOLRQUERY:
-                    if (resetSearch && searchBean != null) {
-                        searchBean.resetSearchAction();
-                        searchBean.setExactSearchString(item.getSolrQuery());
-                    }
-                    return searchAction(item);
-                case SEARCH:
-                    if (resetSearch && searchBean != null) {
-                        //TODO: perform searchBean.resetSearchFilter herer instead of in pretty-config. Needs testing
-                        searchBean.resetSearchAction();
-                        searchBean.setActiveSearchType(item.getSearchType());
-                    }
-                    if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
-                        searchBean.setShowReducedSearchOptions(true);
+        try {
+            for (CMSContentItem item : contentItems) {
+                if (item == null || item.getType() == null) {
+                    continue;
+                }
+                switch (item.getType()) {
+                    case SOLRQUERY:
+                        if (resetSearch && searchBean != null) {
+                            searchBean.resetSearchAction();
+                            searchBean.setExactSearchString(item.getSolrQuery());
+                        }
                         return searchAction(item);
-                    } else if (item.isDisplayEmptySearchResults()) {
-                        String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
-                        //                        searchBean.setSearchString(item.getSolrQuery());
-                        searchBean.setExactSearchString(searchString);
-                        searchBean.setShowReducedSearchOptions(false);
-                        return searchAction(item);
-                    } else {
-                        searchBean.setShowReducedSearchOptions(false);
-                    }
-                    break;
-                case COLLECTION:
-                    getCollection(item.getItemId(), currentPage).reset(true);
-                    break;
-                case BROWSETERMS:
-                    BrowseFunctionality browse = currentPage.getBrowse();
-                    if (resetSearch) {
-                        browse.reset();
-                    }
-                    //filter for subtheme
-                    if (StringUtils.isNotBlank(currentPage.getSubThemeDiscriminatorValue())) {
-                        browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
-                                currentPage.getSubThemeDiscriminatorValue());
-                    }
-                    browse.searchTerms();
-                default:
-                    break;
+                    case SEARCH:
+                        if (resetSearch && searchBean != null) {
+                            //TODO: perform searchBean.resetSearchFilter herer instead of in pretty-config. Needs testing
+                            searchBean.resetSearchAction();
+                            searchBean.setActiveSearchType(item.getSearchType());
+                        }
+                        if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
+                            searchBean.setShowReducedSearchOptions(true);
+                            return searchAction(item);
+                        } else if (item.isDisplayEmptySearchResults()) {
+                            String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
+                            //                        searchBean.setSearchString(item.getSolrQuery());
+                            searchBean.setExactSearchString(searchString);
+                            searchBean.setShowReducedSearchOptions(false);
+                            return searchAction(item);
+                        } else {
+                            searchBean.setShowReducedSearchOptions(false);
+                        }
+                        break;
+                    case COLLECTION:
+                        getCollection(item.getItemId(), currentPage).reset(true);
+                        break;
+                    case BROWSETERMS:
+                        BrowseFunctionality browse = currentPage.getBrowse();
+                        if (resetSearch) {
+                            browse.reset();
+                        }
+                        //filter for subtheme
+                        if (StringUtils.isNotBlank(currentPage.getSubThemeDiscriminatorValue())) {
+                            browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
+                                    currentPage.getSubThemeDiscriminatorValue());
+                        }
+                        browse.searchTerms();
+                    default:
+                        break;
+                }
             }
+        } catch (PresentationException e) {
+            logger.warn(e.getMessage());
         }
 
         // If the page is related to a record, load that record
@@ -1526,7 +1535,13 @@ public class CmsBean implements Serializable {
                 } catch (RecordDeletedException e) {
                     logger.warn(e.getMessage());
                 } catch (IDDOCNotFoundException e) {
-                    adb.reload(currentPage.getRelatedPI());
+                    try {
+                        adb.reload(currentPage.getRelatedPI());
+                    } catch (PresentationException e1) {
+                        logger.warn(e.getMessage());
+                    }
+                } catch (PresentationException e) {
+                    logger.warn(e.getMessage());
                 }
             }
         }
@@ -1571,23 +1586,29 @@ public class CmsBean implements Serializable {
 
         return Collections.emptyList();
     }
-    
-    public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) throws IndexUnreachableException, PresentationException, DAOException {
-        
+
+    /**
+     * 
+     * @param hits
+     * @param groupingField
+     * @return
+     */
+    public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) {
+
         Map<String, List<SearchHit>> hitMap = new HashMap<>();
         for (SearchHit searchHit : hits) {
             List<String> groupingValues = getMetadataValues(searchHit, groupingField);
-            if(groupingValues == null || groupingValues.isEmpty()) {
-                    List<SearchHit> valueHits = hitMap.get("");
-                    if(valueHits == null) {
-                        valueHits = new ArrayList<>();
-                        hitMap.put("", valueHits);
-                    }
-                    valueHits.add(searchHit);
-            } else {                
+            if (groupingValues == null || groupingValues.isEmpty()) {
+                List<SearchHit> valueHits = hitMap.get("");
+                if (valueHits == null) {
+                    valueHits = new ArrayList<>();
+                    hitMap.put("", valueHits);
+                }
+                valueHits.add(searchHit);
+            } else {
                 for (String value : groupingValues) {
                     List<SearchHit> valueHits = hitMap.get(value);
-                    if(valueHits == null) {
+                    if (valueHits == null) {
                         valueHits = new ArrayList<>();
                         hitMap.put(value, valueHits);
                     }
@@ -1596,20 +1617,26 @@ public class CmsBean implements Serializable {
             }
         }
         List<Entry<String, List<SearchHit>>> entryList = new ArrayList<>(hitMap.entrySet());
-        entryList.sort( (e1,e2) -> e1.getKey().compareTo(e2.getKey()));
+        entryList.sort((e1, e2) -> e1.getKey().compareTo(e2.getKey()));
         return entryList;
     }
-    
-    private List<String> getMetadataValues(SearchHit hit, String solrField) {
+
+    /**
+     * 
+     * @param hit
+     * @param solrField
+     * @return
+     */
+    private static List<String> getMetadataValues(SearchHit hit, String solrField) {
         SolrDocument doc = hit.getSolrDoc();
-        if(doc != null) {
+        if (doc != null) {
             Collection<Object> values = doc.getFieldValues(solrField);
-            if(values != null) {                 
+            if (values != null) {
                 return values.stream().map(SolrSearchIndex::getAsString).collect(Collectors.toList());
             }
-        } 
+        }
         return null;
-    } 
+    }
 
     /**
      * Uses SearchBean to execute a search.
@@ -1639,7 +1666,7 @@ public class CmsBean implements Serializable {
                 searchBean.setSortString(item.getSolrSortFields());
             }
             //NOTE: Cannot sort by multivalued fields like DC.
-            if(StringUtils.isNotBlank(item.getGroupBy())) {
+            if (StringUtils.isNotBlank(item.getGroupBy())) {
                 String sortString = search.getSortString() == null ? "" : search.getSortString().replace("-", "");
                 sortString = item.getGroupBy() + ";" + sortString;
                 search.setSortString(sortString);
@@ -1915,7 +1942,7 @@ public class CmsBean implements Serializable {
 
         return null;
     }
-    
+
     /**
      * <p>
      * getLuceneFields.
@@ -2398,7 +2425,7 @@ public class CmsBean implements Serializable {
         }
         return this.solrSortFields;
     }
-    
+
     /**
      * <p>
      * getPossibleGroupFields.
@@ -2409,20 +2436,20 @@ public class CmsBean implements Serializable {
      * @throws java.io.IOException if any.
      */
     public List<String> getPossibleGroupFields() throws SolrServerException, IOException {
-        
+
         if (this.solrGroupFields == null) {
             this.solrGroupFields = DataManager.getInstance().getSearchIndex().getAllGroupFieldNames();
             Collections.sort(solrGroupFields);
         }
         return this.solrGroupFields;
-        
-//        List<String> fields = new ArrayList<>();
-//        fields.add(SolrConstants.SORTNUM_YEAR);
-//        fields.add(SolrConstants.DOCSTRCT);
-//        fields.add(SolrConstants.DC);
-//        fields.add(SolrConstants.PI_ANCHOR);
-//        fields.add(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
-//        return fields;
+
+        //        List<String> fields = new ArrayList<>();
+        //        fields.add(SolrConstants.SORTNUM_YEAR);
+        //        fields.add(SolrConstants.DOCSTRCT);
+        //        fields.add(SolrConstants.DC);
+        //        fields.add(SolrConstants.PI_ANCHOR);
+        //        fields.add(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        //        return fields;
     }
 
     /**

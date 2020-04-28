@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,7 +179,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         for (CompareYearSolrDocWrapper solrWrapper : sortDocResult) {
                             SolrDocument doc = solrWrapper.getSolrDocument();
                             JSONObject jsonObj = JsonTools.getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-                            jsonArray.add(jsonObj);
+                            jsonArray.put(jsonObj);
                         }
                     } catch (PresentationException e) {
                         logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -194,7 +194,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                         return;
                     }
-                    ret.append(jsonArray.toJSONString());
+                    ret.append(jsonArray.toString());
                 }
                     break;
                 case "query": {
@@ -283,7 +283,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                             jsonArray = new JSONArray();
                         }
 
-                        ret.append(jsonArray.toJSONString());
+                        ret.append(jsonArray.toString());
                     } catch (PresentationException e) {
                         logger.debug("PresentationException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -323,14 +323,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     logger.debug("q: {}", query);
                     try {
                         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
-
-                        //                        JSONArray jsonArray ;
-                        //                        if (jsonArray == null) {
-                        //                            jsonArray = new JSONArray();
-                        //                        }
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("count", count);
-                        ret.append(jsonObject.toJSONString());
+                        ret.append(jsonObject.toString());
                     } catch (PresentationException e) {
                         logger.debug("PresentationException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

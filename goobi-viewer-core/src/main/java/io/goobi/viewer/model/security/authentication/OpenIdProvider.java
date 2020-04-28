@@ -27,7 +27,7 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ResponseType;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private String oAuthState = null;
     private String oAuthAccessToken = null;
-    private JSONObject jsonResponse = null;
     private volatile LoginResult loginResult = null;
 
     /**
@@ -325,13 +324,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     public void setoAuthAccessToken(String oAuthAccessToken) {
         this.oAuthAccessToken = oAuthAccessToken;
-    }
-
-    /**
-     * @return the jsonResponse
-     */
-    private Optional<JSONObject> getJsonResponse() {
-        return Optional.ofNullable(jsonResponse);
     }
 
     /* (non-Javadoc)

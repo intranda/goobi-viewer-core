@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,17 +55,22 @@ public class SAMLProvider implements IAuthenticationProvider {
     private final String name;
     private final String idpMetadataUrl;
     private final String relyingPartyIdentifier;
+    private final String publicKeyPath;
+    private final String privateKeyPath;
     protected final long timeoutMillis;
 
     private volatile SamlClient client;
     private volatile LoginResult loginResult = null;
     private Object responseLock = new Object();
 
-    public SAMLProvider(String name, String idpMetadataUrl, String relyingPartyIdentifier, long timeoutMillis) {
+    public SAMLProvider(String name, String idpMetadataUrl, String relyingPartyIdentifier,
+            String publicKeyPath, String privateKeyPath, long timeoutMillis) {
         super();
         this.name = name;
         this.idpMetadataUrl = idpMetadataUrl;
         this.relyingPartyIdentifier = relyingPartyIdentifier;
+        this.publicKeyPath = publicKeyPath;
+        this.privateKeyPath = privateKeyPath;
         this.timeoutMillis = timeoutMillis;
     }
 
@@ -84,6 +90,9 @@ public class SAMLProvider implements IAuthenticationProvider {
         try (InputStream in = new URL(idpMetadataUrl).openConnection().getInputStream(); Reader idpMetaReader = new InputStreamReader(in)) {
             String redirectUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + SAMLAssertionServlet.URL;
             SamlClient client = SamlClient.fromMetadata(this.relyingPartyIdentifier, redirectUrl, idpMetaReader);
+            if (!StringUtils.isBlank(this.publicKeyPath) && !StringUtils.isBlank(this.privateKeyPath)) {
+                client.setSPKeys(publicKeyPath, privateKeyPath);
+            }
             this.client = client;
             // this needs to be done, so the SAMLServlet is able to find this instance when the IdP redirects back to the viewer
             BeanUtils.getRequest().getSession().setAttribute("SAMLProvider", this);
@@ -114,7 +123,7 @@ public class SAMLProvider implements IAuthenticationProvider {
      */
     public Future<Boolean> completeLogin(String encodedResponse, HttpServletRequest request, HttpServletResponse response) {
         try {
-            SamlResponse samlResponse = client.decodeAndValidateSamlResponse(encodedResponse);
+            SamlResponse samlResponse = client.decodeAndValidateSamlResponse(encodedResponse, "POST");
             String id = samlResponse.getNameID();
 
             User user = null;

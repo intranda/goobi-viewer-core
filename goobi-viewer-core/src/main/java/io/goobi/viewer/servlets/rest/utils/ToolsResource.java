@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,6 @@ public class ToolsResource {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/updatedatarepository")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -100,13 +99,13 @@ public class ToolsResource {
         if (params == null || params.getPi() == null || params.getDataRepositoryName() == null) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
-            return ret.toJSONString();
+            return ret.toString();
         }
 
         DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
         logger.debug("Updated data repository for '{}': {}", params.getPi(), params.getDataRepositoryName());
 
         ret.put("status", HttpServletResponse.SC_OK);
-        return ret.toJSONString();
+        return ret.toString();
     }
 }
