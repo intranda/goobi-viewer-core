@@ -660,8 +660,10 @@ public class CMSSidebarElement {
      * @param geoMapId the geoMapId to set
      */
     public void setGeoMapId(Long geoMapId) {
-        this.geoMapId = geoMapId;
-        this.geoMap = null;
+        if(geoMapId != null) {            
+            this.geoMapId = geoMapId;
+            this.geoMap = null;
+        }
     }
     
     public synchronized GeoMap getGeoMap() throws DAOException {
@@ -674,7 +676,7 @@ public class CMSSidebarElement {
         }
         return this.geoMap;
     }
-    
+        
     private GeoMap loadGeoMap() throws DAOException {
         if(this.getGeoMapId() != null && this.getGeoMapId() > -1) {
             GeoMap map = DataManager.getInstance().getDao().getGeoMap(this.getGeoMapId());
@@ -735,4 +737,5 @@ public class CMSSidebarElement {
     public String getWidgetType() {
         return this.widgetType;
     }
+
 }

@@ -12,7 +12,7 @@
 
     <composite:implementation>
         <!-- WIDGET GEO LOCATIONS -->
-        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoMap' or cc.attrs.widget == null}">
+        <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetGeoMap' and cc.attrs.widget.geoMapId > -1) or cc.attrs.widget == null}">
 
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">

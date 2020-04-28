@@ -153,7 +153,7 @@
 																	                        id="geoMapSelect" 
 																	                        styleClass="form-control" 
 																	                        value="#{element.geoMapId}">
-																	                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+																	                        <f:selectItem itemValue="{-1}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
 																	                        <f:selectItems 
 																	                            value="#{geoMapBean.allMaps}"
 																	                            var="map"
@@ -194,7 +194,8 @@
 
 										<ul id="availableItemList">
 											<ui:repeat var="element" value="#{cmsBean.selectedPage.unusedSidebarElements}">
-												<li sortposition="item_#{element.sortingId}"><h:panelGroup id="availableItem">
+												<li sortposition="item_#{element.sortingId}">
+													<h:panelGroup id="availableItem" rendered="#{element.category != 'geoMap' or geoMapBean.allMaps.size() > 0}">
 														<div class="sidebar-editor-widget-item">
 															<div class="sidebar-editor-widget-item-header">
 																<h4>#{msg[element.type]}</h4>
@@ -292,7 +293,7 @@
 																	                        id="geoMapSelect" 
 																	                        styleClass="form-control" 
 																	                        value="#{element.geoMapId}">
-																	                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+																	                        <f:selectItem itemValue="#{-1}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
 																	                        <f:selectItems 
 																	                            value="#{geoMapBean.allMaps}"
 																	                            var="map"
