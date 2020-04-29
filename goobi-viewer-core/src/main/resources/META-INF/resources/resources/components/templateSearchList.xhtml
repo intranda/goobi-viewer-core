@@ -59,7 +59,7 @@
 							<div class="form-group">
 								<label class="sr-only" for="currentSearchInput">#{msg.currentSearch}</label>
 								<div class="input-group">
-									<div class="input-group-addon reset">
+									<div class="input-group-prepend reset">
 										<h:commandLink role="button" id="resetSearch" styleClass="btn btn--icon" data-toggle="tooltip" data-placement="top"
 											action="#{cc.attrs.search.resetSearch()}" title="#{msg.searchList_resetCurrentSearch}">
 											<i class="fa fa-times-circle" aria-hidden="true"></i>
@@ -84,7 +84,7 @@
                     <div class="search-standard__filter-radio">
                         <h:inputHidden id="hiddenSearchFilterString" value="#{searchBean.currentSearchFilterString}" />
                         <ui:repeat var="filter" value="#{searchBean.searchFilters}">
-                            <label for="#{filter.label}" class="custom-control custom-control--radio">
+                            <label for="#{filter.label}" class="custom-control custom-control--radio search-standard__filter-label">
                                 <!-- jsf:id is needed for automatic setting of the current value from the bean -->
                                 <!-- pt:name is needed binding this input to the bean variable via passthrough -->
                                 <input
