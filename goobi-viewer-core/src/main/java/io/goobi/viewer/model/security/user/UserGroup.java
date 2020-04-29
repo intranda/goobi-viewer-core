@@ -408,6 +408,15 @@ public class UserGroup implements ILicensee, Serializable {
 
         return ret;
     }
+    
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public int getMemberCount() throws DAOException {
+        return DataManager.getInstance().getDao().getUserRoles(this, null, null).size();
+    }
 
     /**
      * <p>

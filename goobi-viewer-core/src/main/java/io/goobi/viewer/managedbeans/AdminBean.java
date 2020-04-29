@@ -327,7 +327,7 @@ public class AdminBean implements Serializable {
     public List<User> getAllUsers() throws DAOException {
         return DataManager.getInstance().getDao().getAllUsers(true);
     }
-
+    
     /**
      * <p>
      * getAllUsersExcept.
@@ -443,6 +443,17 @@ public class AdminBean implements Serializable {
     public void resetCurrentUserAction() {
         currentUser = new User();
         deleteUserContributions = false;
+    }
+    
+    /**
+     * Returns all user groups in the DB. Needed for getting a list of users (e.g for adding user group members).
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<UserGroup> getAllUserGroups() throws DAOException {
+        logger.trace("getAllUserGroups");
+        return DataManager.getInstance().getDao().getAllUserGroups();
     }
 
     /**
