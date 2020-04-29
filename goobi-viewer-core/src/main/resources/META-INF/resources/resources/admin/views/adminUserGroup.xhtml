@@ -20,7 +20,7 @@
             <div id="adminUserGroup">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
-                        <h2 class="admin__content-inner-title">#{msg.userGroup_createNewUserGroup}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.admin_userGroup_create_new}</h2>
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
@@ -30,6 +30,9 @@
                     <div class="admin__content-inner-content">
                         <h:form id="editUserGroupGeneral" styleClass="form-horizontal" role="form" prependId="false">
                             <h3>#{msg.admin__userGroup_general}</h3>
+                            
+                            <!-- TODO proper css class -->
+                            <div class="cms-select-template__template">
 
                             <!-- DATA INPUT -->
                             <div class="form-group">
@@ -89,10 +92,15 @@
                                 </div>
                             </div>
                             
+                            </div>
+                            
                             <h3>#{msg.userGroup_members}</h3>
+                            
+                            <!-- TODO proper css class -->
+                            <div class="cms-select-template__template">
             
                             <!-- add member -->
-                            <h4>#{msg.userGroup_addNewMember}</h4>
+                            #{msg.userGroup_addNewMember}
                             <div class="form-group">
                             <h:selectOneMenu styleClass="col-sm-10" value="#{adminBean.currentUserRole.user}" id="user"
                                 converter="userConverter" hideNoSelectionOption="false">
@@ -104,38 +112,39 @@
                             </h:commandLink>
                             </div>
            
-            <table id="editUserGroupMembersTable" class="sortable-table">
-                <thead>
-                    <th></th>
-                    <th></th>
-                </thead>
-                <tbody>
-                    <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships}">
-                        <tr>
-                            <td>#{membership.user.displayName} </td>
-                            <td>
-                                <!-- delete member -->
-                                <h:commandLink
-                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
-                                    action="#{adminBean.deleteUserRoleAction(membership)}" title="#{msg.delete}">
-<!--                                     <i class="fa fa-trash-o" aria-hidden="true"></i> -->
-                                    #{msg.delete}
-                                </h:commandLink>
-                            </td>
-                        </tr>
-                    </ui:repeat>
-                </tbody>
-            </table>
+                            <table id="editUserGroupMembersTable" class="sortable-table">
+                                <thead>
+                                    <th></th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships}">
+                                        <tr>
+                                            <td>#{membership.user.displayName} </td>
+                                            <td>
+                                                <!-- delete member -->
+                                                <h:commandLink
+                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
+                                                    action="#{adminBean.deleteUserRoleAction(membership)}" title="#{msg.delete}">
+                                                    #{msg.delete}
+                                                </h:commandLink>
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
+                            
+                            </div>
             
-            <!-- ACTION -->
-            <div class="text-right">
+                            <!-- ACTION -->
+                            <div class="text-right">
 <!--                 <h:commandLink action="adminAllUserGroups" value="#{msg.cancel}" styleClass="btn" immediate="true"> -->
 <!--                     <f:setPropertyActionListener target="#{adminBean.currentUserGroup}" value="#{null}" /> -->
 <!--                 </h:commandLink> -->
 
-                <h:commandLink action="adminAllUserGroups" actionListener="#{adminBean.saveUserGroupAction}" value="#{msg.save}" styleClass="btn btn--success" />
-            </div>
-        </h:form>
+                                <h:commandLink action="adminAllUserGroups" actionListener="#{adminBean.saveUserGroupAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                            </div>
+                        </h:form>
                     </div>
                 </h:panelGroup>
             </div>
