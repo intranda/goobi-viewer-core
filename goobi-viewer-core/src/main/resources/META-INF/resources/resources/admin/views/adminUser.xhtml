@@ -21,22 +21,22 @@
             <div id="adminUser">
                 <h:panelGroup rendered="#{userBean.admin == true and adminBean.currentUser != null}">
                     <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
-                        <h2 class="admin__content-inner-title">#{msg.newUserCreateUser}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.admin__user_create_new}</h2>
                     </h:panelGroup>
                     <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
-                        <h2 class="admin__content-inner-title">#{msg.changeUserData}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.admin__user_edit}</h2>
                     </h:panelGroup>
 
                     <div class="admin__content-inner-content">
     
+                    <!-- PROFILE -->
                     <h:form id="editUserGeneral" styleClass="form-horizontal" role="form" prependId="false">
+                    <h3>#{msg.user__profile}</h3>
+                    <!-- TODO proper css class -->
+                    <div class="cms-select-template__template">
                         <!-- prevent autocomplete in IE, Chrome and Firefox -->
                         <input type="text" class="hidden" />
                         <input type="password" class="hidden" />
-
-                        <!-- PROFILE -->
-                        <h3>#{msg.user__profile}</h3>
-
 
                         <div class="form-group">
                             <h:outputLabel for="displayName" styleClass="col-sm-2 control-label" value="#{msg.user__displayName} *" />
@@ -143,15 +143,17 @@
 <!--                             </h:commandLink> -->
                             <h:commandLink id="saveUserGeneralButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                         </div>
+                        </div>
                         </h:form>
 
                         <!-- PASSWORD -->
                         <h:form id="editUserPassword" styleClass="form-horizontal" role="form" prependId="false">
+                                   <h3>#{msg.changePassword}</h3>
+                        <!-- TODO proper css class -->
+                        <div class="cms-select-template__template">
                         <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
-                            <h3>#{msg.password}</h3>
-                
                             <div class="form-horizontal" role="form">
-                                <div class="form-group">
+                                <div class="form-group cms-select-template__template">
                                     <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
                                     <div class="col-sm-8">
                                         <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}" required="true"
@@ -169,7 +171,6 @@
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
-                            <h3>#{msg.changePassword}</h3>
                 
                             <div class="form-horizontal" role="form">
                                 <div class="form-group">
@@ -193,21 +194,24 @@
 <!--                             </h:commandLink> -->
                             <h:commandLink id="saveUserPasswordButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                         </div>
+                        </div>
                         </h:form>
                         
                         <!-- DELETE USER -->
                         <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
-                        <h3>#{msg.admin__delete_user_account}</h3>
+                            <h3>#{msg.admin__delete_user_account}</h3>
+                            <!-- TODO proper css class -->
+                            <div class="cms-select-template__template">
+                                <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
+                                    <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
+                                    <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}" />
+                                </h:selectOneRadio>
 
-                        <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
-                            <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
-                            <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}" />
-                        </h:selectOneRadio>
-
-                        <div class="text-right">
-                            <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"
-                                action="#{adminBean.deleteUserAction(user, false)}" />
-                        </div>
+                                <div class="text-right">
+                                    <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"
+                                        action="#{adminBean.deleteUserAction(user, false)}" />
+                                </div>
+                            </div>
                         </h:form>
                         
                     </div>
