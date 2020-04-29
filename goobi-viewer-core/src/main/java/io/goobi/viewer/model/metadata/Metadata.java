@@ -362,7 +362,7 @@ public class Metadata implements Serializable {
                     break;
                 case TRANSLATEDFIELD:
                     // Values that are message keys
-                    value = Helper.getTranslation(value, locale);
+                    value = ViewerResourceBundle.getTranslation(value, locale);
                     // value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
@@ -484,7 +484,7 @@ public class Metadata implements Serializable {
                 sbHierarchy.append('.');
             }
             sbHierarchy.append(s);
-            String displayValue = Helper.getTranslation(sbHierarchy.toString(), locale);
+            String displayValue = ViewerResourceBundle.getTranslation(sbHierarchy.toString(), locale);
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
             displayValue = StringEscapeUtils.escapeHtml4(displayValue);
             if (applicationUrl != null) {

@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Search query group for the advanced search.
@@ -36,7 +36,7 @@ public class SearchQueryGroup implements Serializable {
         OR;
 
         public String getLabel() {
-            return Helper.getTranslation(this.name(), null);
+            return ViewerResourceBundle.getTranslation(this.name(), null);
         }
     }
 

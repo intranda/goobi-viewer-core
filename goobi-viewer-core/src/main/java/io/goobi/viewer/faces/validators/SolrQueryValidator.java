@@ -30,9 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Validates the query syntax and displays the number of hits.
@@ -59,7 +59,7 @@ public class SolrQueryValidator implements Validator<String> {
             long hits = resp.getResults().getNumFound();
             logger.trace("{} hits", hits);
             if (hits == 0) {
-                String message = Helper.getTranslation("inline_help__solr_query_warning", null).replace("{0}", String.valueOf(hits));
+                String message = ViewerResourceBundle.getTranslation("inline_help__solr_query_warning", null).replace("{0}", String.valueOf(hits));
                 Messages.warn(component.getClientId(), message);
             } else {
                 Messages.info(component.getClientId(), "");
@@ -69,7 +69,7 @@ public class SolrQueryValidator implements Validator<String> {
         } catch (SolrServerException | RemoteSolrException e) {
             if (SolrSearchIndex.isQuerySyntaxError(e)) {
                 logger.debug(e.getMessage());
-                String message = Helper.getTranslation("inline_help__solr_query_danger", null);
+                String message = ViewerResourceBundle.getTranslation("inline_help__solr_query_danger", null);
                 FacesMessage msg = new FacesMessage(message, "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);

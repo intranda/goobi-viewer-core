@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -55,7 +55,7 @@ public class PdfInformationFilter implements ContainerResponseFilter {
         if (content != null && content instanceof PdfInformation) {
             PdfInformation info = (PdfInformation) content;
             if (info.getDiv() != null) {
-                info.setDiv(Helper.getTranslation(info.getDiv(), null));
+                info.setDiv(ViewerResourceBundle.getTranslation(info.getDiv(), null));
             }
         }
     }

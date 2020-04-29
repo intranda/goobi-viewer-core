@@ -43,13 +43,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.calendar.CalendarItemDay;
 import io.goobi.viewer.model.calendar.CalendarItemMonth;
 import io.goobi.viewer.model.calendar.CalendarItemWeek;
@@ -247,88 +246,88 @@ public class CalendarBean implements Serializable {
         }
 
         if (jan != null) {
-            CalendarItemMonth january = new CalendarItemMonth(Helper.getTranslation("january", null), 1, (int) jan.getCount());
+            CalendarItemMonth january = new CalendarItemMonth(ViewerResourceBundle.getTranslation("january", null), 1, (int) jan.getCount());
             monthRow.addItem(january);
         } else {
-            CalendarItemMonth january = new CalendarItemMonth(Helper.getTranslation("january", null), 1, 0);
+            CalendarItemMonth january = new CalendarItemMonth(ViewerResourceBundle.getTranslation("january", null), 1, 0);
             monthRow.addItem(january);
         }
         if (feb != null) {
-            CalendarItemMonth february = new CalendarItemMonth(Helper.getTranslation("february", null), 2, (int) feb.getCount());
+            CalendarItemMonth february = new CalendarItemMonth(ViewerResourceBundle.getTranslation("february", null), 2, (int) feb.getCount());
             monthRow.addItem(february);
         } else {
-            CalendarItemMonth february = new CalendarItemMonth(Helper.getTranslation("february", null), 2, 0);
+            CalendarItemMonth february = new CalendarItemMonth(ViewerResourceBundle.getTranslation("february", null), 2, 0);
             monthRow.addItem(february);
         }
 
         if (mar != null) {
-            CalendarItemMonth march = new CalendarItemMonth(Helper.getTranslation("march", null), 3, (int) mar.getCount());
+            CalendarItemMonth march = new CalendarItemMonth(ViewerResourceBundle.getTranslation("march", null), 3, (int) mar.getCount());
             monthRow.addItem(march);
         } else {
-            CalendarItemMonth march = new CalendarItemMonth(Helper.getTranslation("march", null), 3, 0);
+            CalendarItemMonth march = new CalendarItemMonth(ViewerResourceBundle.getTranslation("march", null), 3, 0);
             monthRow.addItem(march);
         }
         if (apr != null) {
-            CalendarItemMonth april = new CalendarItemMonth(Helper.getTranslation("april", null), 4, (int) apr.getCount());
+            CalendarItemMonth april = new CalendarItemMonth(ViewerResourceBundle.getTranslation("april", null), 4, (int) apr.getCount());
             monthRow.addItem(april);
         } else {
-            CalendarItemMonth april = new CalendarItemMonth(Helper.getTranslation("april", null), 4, 0);
+            CalendarItemMonth april = new CalendarItemMonth(ViewerResourceBundle.getTranslation("april", null), 4, 0);
             monthRow.addItem(april);
         }
         if (may != null) {
-            CalendarItemMonth m = new CalendarItemMonth(Helper.getTranslation("may", null), 5, (int) may.getCount());
+            CalendarItemMonth m = new CalendarItemMonth(ViewerResourceBundle.getTranslation("may", null), 5, (int) may.getCount());
             monthRow.addItem(m);
         } else {
-            CalendarItemMonth m = new CalendarItemMonth(Helper.getTranslation("may", null), 5, 0);
+            CalendarItemMonth m = new CalendarItemMonth(ViewerResourceBundle.getTranslation("may", null), 5, 0);
             monthRow.addItem(m);
         }
         if (jun != null) {
-            CalendarItemMonth june = new CalendarItemMonth(Helper.getTranslation("june", null), 6, (int) jun.getCount());
+            CalendarItemMonth june = new CalendarItemMonth(ViewerResourceBundle.getTranslation("june", null), 6, (int) jun.getCount());
             monthRow.addItem(june);
         } else {
-            CalendarItemMonth june = new CalendarItemMonth(Helper.getTranslation("june", null), 6, 0);
+            CalendarItemMonth june = new CalendarItemMonth(ViewerResourceBundle.getTranslation("june", null), 6, 0);
             monthRow.addItem(june);
         }
         if (jul != null) {
-            CalendarItemMonth july = new CalendarItemMonth(Helper.getTranslation("july", null), 7, (int) jul.getCount());
+            CalendarItemMonth july = new CalendarItemMonth(ViewerResourceBundle.getTranslation("july", null), 7, (int) jul.getCount());
             monthRow.addItem(july);
         } else {
-            CalendarItemMonth july = new CalendarItemMonth(Helper.getTranslation("july", null), 7, 0);
+            CalendarItemMonth july = new CalendarItemMonth(ViewerResourceBundle.getTranslation("july", null), 7, 0);
             monthRow.addItem(july);
         }
         if (aug != null) {
-            CalendarItemMonth august = new CalendarItemMonth(Helper.getTranslation("august", null), 8, (int) aug.getCount());
+            CalendarItemMonth august = new CalendarItemMonth(ViewerResourceBundle.getTranslation("august", null), 8, (int) aug.getCount());
             monthRow.addItem(august);
         } else {
-            CalendarItemMonth august = new CalendarItemMonth(Helper.getTranslation("august", null), 8, 0);
+            CalendarItemMonth august = new CalendarItemMonth(ViewerResourceBundle.getTranslation("august", null), 8, 0);
             monthRow.addItem(august);
         }
         if (sep != null) {
-            CalendarItemMonth september = new CalendarItemMonth(Helper.getTranslation("september", null), 9, (int) sep.getCount());
+            CalendarItemMonth september = new CalendarItemMonth(ViewerResourceBundle.getTranslation("september", null), 9, (int) sep.getCount());
             monthRow.addItem(september);
         } else {
-            CalendarItemMonth september = new CalendarItemMonth(Helper.getTranslation("september", null), 9, 0);
+            CalendarItemMonth september = new CalendarItemMonth(ViewerResourceBundle.getTranslation("september", null), 9, 0);
             monthRow.addItem(september);
         }
         if (oct != null) {
-            CalendarItemMonth october = new CalendarItemMonth(Helper.getTranslation("october", null), 10, (int) oct.getCount());
+            CalendarItemMonth october = new CalendarItemMonth(ViewerResourceBundle.getTranslation("october", null), 10, (int) oct.getCount());
             monthRow.addItem(october);
         } else {
-            CalendarItemMonth october = new CalendarItemMonth(Helper.getTranslation("october", null), 10, 0);
+            CalendarItemMonth october = new CalendarItemMonth(ViewerResourceBundle.getTranslation("october", null), 10, 0);
             monthRow.addItem(october);
         }
         if (nov != null) {
-            CalendarItemMonth november = new CalendarItemMonth(Helper.getTranslation("november", null), 11, (int) nov.getCount());
+            CalendarItemMonth november = new CalendarItemMonth(ViewerResourceBundle.getTranslation("november", null), 11, (int) nov.getCount());
             monthRow.addItem(november);
         } else {
-            CalendarItemMonth november = new CalendarItemMonth(Helper.getTranslation("november", null), 11, 0);
+            CalendarItemMonth november = new CalendarItemMonth(ViewerResourceBundle.getTranslation("november", null), 11, 0);
             monthRow.addItem(november);
         }
         if (dec != null) {
-            CalendarItemMonth december = new CalendarItemMonth(Helper.getTranslation("december", null), 12, (int) dec.getCount());
+            CalendarItemMonth december = new CalendarItemMonth(ViewerResourceBundle.getTranslation("december", null), 12, (int) dec.getCount());
             monthRow.addItem(december);
         } else {
-            CalendarItemMonth december = new CalendarItemMonth(Helper.getTranslation("december", null), 12, 0);
+            CalendarItemMonth december = new CalendarItemMonth(ViewerResourceBundle.getTranslation("december", null), 12, 0);
             monthRow.addItem(december);
         }
 

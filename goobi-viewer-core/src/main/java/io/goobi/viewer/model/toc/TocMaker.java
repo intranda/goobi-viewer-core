@@ -748,18 +748,18 @@ public class TocMaker {
                         // Docstruct fallback should always be translated
                         String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
                         value = ViewerResourceBundle.getTranslations(docstruct);
-                        //                        value.setValue(Helper.getTranslation(docstruct, null));
+                        //                        value.setValue(ViewerResourceBundle.getTranslation(docstruct, null));
                     }
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);
                 // logger.trace("param value: {}", param.getKey());
                 if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
-                    String prefix = Helper.getTranslation(param.getPrefix(), null);
+                    String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
                     value.addPrefix(prefix);
                 }
                 if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
-                    String suffix = Helper.getTranslation(param.getSuffix(), null);
+                    String suffix = ViewerResourceBundle.getTranslation(param.getSuffix(), null);
                     value.addSuffix(suffix);
                 }
                 Set<String> languages = new HashSet<>(value.getLanguages());

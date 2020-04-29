@@ -46,6 +46,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -153,18 +154,18 @@ public class Comment implements Comparable<Comment> {
         String subject = null;
         String body = null;
         if (StringUtils.isEmpty(oldText)) {
-            subject = Helper.getTranslation("commentNewNotificationEmailSubject", locale);
+            subject = ViewerResourceBundle.getTranslation("commentNewNotificationEmailSubject", locale);
             subject = subject.replace("{0}", comment.getOwner().getDisplayName())
                     .replace("{1}", comment.getPi())
                     .replace("{2}", String.valueOf(comment.getPage()));
-            body = Helper.getTranslation("commentNewNotificationEmailBody", locale);
+            body = ViewerResourceBundle.getTranslation("commentNewNotificationEmailBody", locale);
             body = body.replace("{0}", comment.getText());
         } else {
-            subject = Helper.getTranslation("commentChangedNotificationEmailSubject", locale);
+            subject = ViewerResourceBundle.getTranslation("commentChangedNotificationEmailSubject", locale);
             subject = subject.replace("{0}", comment.getOwner().getDisplayName())
                     .replace("{1}", comment.getPi())
                     .replace("{2}", String.valueOf(comment.getPage()));
-            body = Helper.getTranslation("commentChangedNotificationEmailBody", locale);
+            body = ViewerResourceBundle.getTranslation("commentChangedNotificationEmailBody", locale);
             body = body.replace("{0}", oldText).replace("{1}", comment.getText());
         }
 

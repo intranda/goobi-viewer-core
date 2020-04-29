@@ -23,9 +23,9 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -42,12 +42,12 @@ public class EmailAvailableValidator implements Validator<String> {
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         try {
             if (!validateEmailUniqueness(value)) {
-                FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errExists", null), "");
+                FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("email_errExists", null), "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
             }
         } catch (DAOException e) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("login_internalerror", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("login_internalerror", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }

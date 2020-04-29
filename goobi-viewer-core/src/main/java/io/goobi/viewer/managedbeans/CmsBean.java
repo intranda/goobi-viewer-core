@@ -903,7 +903,7 @@ public class CmsBean implements Serializable {
      */
     public static boolean validateSidebarElement(CMSSidebarElement element) {
         if (element != null && !element.isValid()) {
-            String msg = Helper.getTranslation("cms_validationWarningHtmlInvalid", null);
+            String msg = ViewerResourceBundle.getTranslation("cms_validationWarningHtmlInvalid", null);
             Messages.error(msg.replace("{0}", element.getType()).replace("{1}", CMSSidebarManager.getInstance().getDisallowedHtmlTagsForDisplay()));
             return false;
         }
@@ -974,14 +974,14 @@ public class CmsBean implements Serializable {
                 // FINISHED
                 if (CMSPageStatus.FINISHED.equals(languageVersion.getStatus())) {
                     languageVersion.setStatus(CMSPageStatus.WIP);
-                    String msg = Helper.getTranslation("cms_validationWarningLanguageVersionIncomplete", null);
+                    String msg = ViewerResourceBundle.getTranslation("cms_validationWarningLanguageVersionIncomplete", null);
                     Messages.error(msg.replace("{0}", languageVersion.getLanguage()));
                 }
                 // Remove the finished flag on the page if the default language
                 // page is incomplete
                 if (defaultLanguage.equals(languageVersion.getLanguage()) && page.isPublished()) {
                     page.setPublished(false);
-                    String msg = Helper.getTranslation("cms_validationWarningPageIncomplete", null);
+                    String msg = ViewerResourceBundle.getTranslation("cms_validationWarningPageIncomplete", null);
                     Messages.error(msg.replace("{0}", languageVersion.getLanguage()));
                 }
             } else if (defaultLanguage.equals(languageVersion.getLanguage()) && page.isPublished()) {

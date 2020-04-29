@@ -35,18 +35,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.misc.GeoLocation;
-import io.goobi.viewer.model.misc.GeoLocationInfo;
 import io.goobi.viewer.model.misc.NumberIterator;
 import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
@@ -472,7 +468,7 @@ public class CMSSidebarElement {
      */
     public void setCssClass(String className) {
         if (!validateCssClass(className)) {
-            String msg = Helper.getTranslation("cms_validationWarningCssClassInvalid", null);
+            String msg = ViewerResourceBundle.getTranslation("cms_validationWarningCssClassInvalid", null);
             Messages.error(msg.replace("{0}", this.getType()));
         } else {
             this.cssClass = className;

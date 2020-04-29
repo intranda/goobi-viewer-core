@@ -26,33 +26,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Syntax validator for passwords addresses.
  */
 @FacesValidator("piInSolrValidator")
-public class PIInSolrValidator implements Validator {
+public class PIInSolrValidator implements Validator<String> {
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
     /** {@inheritDoc} */
     @Override
-    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
+    public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         try {
-            if (!validatePi((String) value)) {
-                FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_errNotFound", null), "");
+            if (!validatePi(value)) {
+                FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("pi_errNotFound", null), "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
             }
         } catch (IndexUnreachableException | PresentationException e) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_validationError", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("pi_validationError", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }
@@ -70,8 +67,8 @@ public class PIInSolrValidator implements Validator {
         if (StringUtils.isNotBlank(pi)) {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             return doc != null;
-        } else {
-            return true;
         }
+        
+        return true;
     }
 }

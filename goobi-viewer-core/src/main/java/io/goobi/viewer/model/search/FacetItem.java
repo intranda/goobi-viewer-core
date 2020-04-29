@@ -313,7 +313,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 label += SolrConstants._DRILLDOWN_SUFFIX;
             }
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
-            retList.add(new FacetItem(field, link, label, Helper.getTranslation(label, locale), values.get(String.valueOf(value)), hierarchical));
+            retList.add(new FacetItem(field, link, label, ViewerResourceBundle.getTranslation(label, locale), values.get(String.valueOf(value)), hierarchical));
         }
 
         // logger.debug("filters: " + retList.size());

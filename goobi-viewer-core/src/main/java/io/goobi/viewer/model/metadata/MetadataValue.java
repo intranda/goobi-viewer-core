@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -39,7 +38,6 @@ public class MetadataValue implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
 
     private final List<String> paramLabels = new ArrayList<>();
-
     /**
      * List of lists with parameter values. The top list represents the different parameters, with each containing one or more values for that
      * parameters.
@@ -136,8 +134,10 @@ public class MetadataValue implements Serializable {
      * @param index a int.
      */
     public String getParamLabelWithColon(int index) {
+        logger.trace("getParamLabelWithColon: {}", index);
         if (paramLabels.size() > index && paramLabels.get(index) != null) {
-            return Helper.getTranslation(paramLabels.get(index), null) + ": ";
+            logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
+            return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
         }
         return "";
     }

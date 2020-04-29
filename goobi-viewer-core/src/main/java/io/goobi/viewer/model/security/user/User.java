@@ -59,7 +59,6 @@ import com.timgroup.jgravatar.GravatarRating;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -67,6 +66,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -307,7 +307,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public String getDisplayNameObfuscated() {
         String displayName = getDisplayName();
         if (displayName.equals(email) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
-            return new StringBuilder().append(Helper.getTranslation("user_anonymous", null)).append(" (").append(id).append(')').toString();
+            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null)).append(" (").append(id).append(')').toString();
         }
 
         return displayName;
