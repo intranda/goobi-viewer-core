@@ -1198,21 +1198,6 @@ public class Helper {
     }
 
     /**
-     * <p>
-     * intern.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String intern(String string) {
-        if (string == null) {
-            return null;
-        }
-        return string.intern();
-    }
-
-    /**
      * Loads plain full-text via the REST service. ALTO is preferred (and converted to plain text, with a plain text fallback.
      *
      * @param dataRepository a {@link java.lang.String} object.

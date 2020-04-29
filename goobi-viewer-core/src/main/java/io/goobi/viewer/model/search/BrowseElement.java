@@ -227,7 +227,7 @@ public class BrowseElement implements Serializable {
                                             new Metadata(anchorStructElement.getDocStructType(), null,
                                                     new MetadataParameter(MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(),
                                                             null, null, null, null, false, false, false, Collections.emptyList()),
-                                                    Helper.intern(anchorLabel)));
+                                                    StringTools.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -244,7 +244,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
                                     topStructElement.getDocStructType(), null, null, null, null, false, false, false, Collections.emptyList()),
-                                    Helper.intern(topstructLabel)));
+                                    StringTools.intern(topstructLabel)));
                 }
             }
         }
@@ -314,7 +314,7 @@ public class BrowseElement implements Serializable {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                             }
                         }
-                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(Helper.intern(value)), null,
+                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                         count++;
                     }
@@ -346,9 +346,9 @@ public class BrowseElement implements Serializable {
             logger.error("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;
         }
-        pi = Helper.intern(pi);
+        pi = StringTools.intern(pi);
         iddoc = structElement.getLuceneId();
-        logId = Helper.intern(structElement.getMetadataValue(SolrConstants.LOGID));
+        logId = StringTools.intern(structElement.getMetadataValue(SolrConstants.LOGID));
         volumeNo = structElement.getVolumeNo();
         if (StringUtils.isEmpty(volumeNo)) {
             volumeNo = structElement.getVolumeNoSort();
@@ -410,7 +410,7 @@ public class BrowseElement implements Serializable {
         // Thumbnail
         String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
         if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-            thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
+            thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
         }
 
         //check if we have images

@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -206,7 +208,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
             FacetItem facetItem =
-                    new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, locale), values.get(value), hierarchical);
+                    new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), values.get(value), hierarchical);
             if (!priorityValues.isEmpty() && priorityValues.contains(value)) {
                 priorityValueMap.put(value, facetItem);
             } else {

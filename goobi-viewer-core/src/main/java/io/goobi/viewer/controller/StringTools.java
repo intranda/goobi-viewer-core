@@ -435,4 +435,19 @@ public class StringTools {
 
         return "";
     }
+    
+    /**
+     * <p>
+     * intern.
+     * </p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String intern(String string) {
+        if (string == null) {
+            return null;
+        }
+        return string.intern();
+    }
 }
