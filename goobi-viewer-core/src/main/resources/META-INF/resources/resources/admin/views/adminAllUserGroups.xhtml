@@ -27,29 +27,36 @@
 
                             <div class="clearfix"></div>
                             
-                            <h:outputText value="#{msg.admin__groups_description_text}" />
+                            <div>
+                                <h:outputText value="#{msg.admin__groups_description_text}" />
+                            </div>
                             
                             <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
-                                <div>
-                                <h3>#{userGroup.name}</h3>
-                                #{userGroup.description}
-                                <br/>
+                                <div class="row no-margin">
+                                    <!-- TODO proper css class -->
+                                    <div class="cms-select-template__template">
+                                        <h3>#{userGroup.name}</h3>
+                                        <ui:fragment rendered="#{userGroup.description != ''}">
+                                            #{userGroup.description}
+                                            <br/>
+                                        </ui:fragment>
                                 
-                                <br />
-                                #{msg.userGroup_members}: #{userGroup.memberCount}
-                                <br />
-                                #{msg.owner}: #{userGroup.owner.displayName}
-                                <!-- delete user group -->
-                                <h:commandLink
-                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
-                                    action="adminAllUserGroups" actionListener="#{adminBean.deleteUserGroupAction(userGroup)}" title="#{msg.delete}">
-                                    #{msg.delete}
-                                </h:commandLink>
-                                <!-- edit user group -->
-                                <h:commandLink action="pretty:adminUserGroup" title="#{msg.edit}">
-                                    <f:setPropertyActionListener value="#{userGroup}" target="#{adminBean.currentUserGroup}" />
-                                    #{msg.edit}
-                                </h:commandLink>
+                                        <br />
+                                        #{msg.userGroup_members}: #{userGroup.memberCount}
+                                        <br />
+                                        #{msg.owner}: #{userGroup.owner.displayName}
+                                        <!-- delete user group -->
+                                        <h:commandLink
+                                            onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
+                                            action="adminAllUserGroups" actionListener="#{adminBean.deleteUserGroupAction(userGroup)}" title="#{msg.delete}">
+                                            #{msg.delete}
+                                        </h:commandLink>
+                                        <!-- edit user group -->
+                                        <h:commandLink action="pretty:adminUserGroup" title="#{msg.edit}">
+                                            <f:setPropertyActionListener value="#{userGroup}" target="#{adminBean.currentUserGroup}" />
+                                            #{msg.edit}
+                                        </h:commandLink>
+                                    </div>
                                 </div>
                             </ui:repeat>
 
