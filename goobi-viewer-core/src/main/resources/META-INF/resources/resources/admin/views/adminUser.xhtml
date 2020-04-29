@@ -52,12 +52,23 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <h:panelGroup id="emailGroup">
+                                        <div class="cms-module__option-message">
+                                            <h:messages for="email" 
+                                                infoClass="cms-module__option-message-status success" 
+                                                warnClass="cms-module__option-message-status warning"
+                                                errorClass="cms-module__option-message-status danger" />
+                                            <div class="cms-module__option-message-mark">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
                             <h:outputLabel for="email" styleClass="col-sm-2 control-label" value="#{msg.email} *" />
                             <div class="col-sm-9">
                                 <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
                                     styleClass="form-control">
-                                    <f:validator validatorId="emailValidator" />
-                                    <f:ajax render="avatar" />
+                                    <f:validator validatorId="emailValidator" for="email" />
+                                    <f:ajax render="emailGroup" />
                                 </h:inputText>
                                 <span class="form-group-helptext">#{msg.help__admin_user_email}</span>
                             </div>
@@ -66,6 +77,7 @@
                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                                 </button>
                             </div>
+                            </h:panelGroup>
                         </div>
                         <div class="form-group">
                             <h:outputLabel for="firstName" styleClass="col-sm-2 control-label" value="#{msg.nameFirst}" />
