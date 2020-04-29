@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -90,7 +89,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -149,28 +147,6 @@ public class Helper {
     /** Constant <code>nsIntrandaViewerCrowdsourcing</code> */
     public static Namespace nsIntrandaViewerCrowdsourcing =
             Namespace.getNamespace("iv_crowdsourcing", "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
-
-    /**
-     * Translation method for Java code. (Re-)loads resource bundles if necessary.
-     *
-     * @param text Message key to translate.
-     * @param locale The language for which we want the translation. If null, the current locale from the faces context will be used if available, or
-     *            else English
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getTranslation(String text, Locale locale) {
-        return ViewerResourceBundle.getTranslation(text, locale);
-    }
-
-    /**
-     * Translation method for Java code. (Re-)loads resource bundles if necessary.
-     * 
-     * @param Message key to translate.
-     * @return the translation for the current locale from faces context if available, otherwise the English translation
-     */
-    public static String getTranslation(String text) {
-        return ViewerResourceBundle.getTranslation(text, null);
-    }
 
     /**
      * Creates an MD5 hash of the given String.
@@ -1195,21 +1171,6 @@ public class Helper {
      */
     public static String getVersion() {
         return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
-    }
-
-    /**
-     * <p>
-     * intern.
-     * </p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String intern(String string) {
-        if (string == null) {
-            return null;
-        }
-        return string.intern();
     }
 
     /**

@@ -38,12 +38,12 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
@@ -361,7 +361,7 @@ public class BrowseBean implements Serializable {
             if (currentBmfc == null) {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 resetTerms();
-                Messages.error(Helper.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
+                Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
                 return "searchTermList";
             }
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {

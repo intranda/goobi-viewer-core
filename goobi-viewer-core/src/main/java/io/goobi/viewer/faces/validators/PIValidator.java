@@ -24,7 +24,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Syntax validator for passwords addresses.
@@ -42,7 +42,7 @@ public class PIValidator implements Validator<String> {
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         if (!validatePi(value)) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_errInvalid", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("pi_errInvalid", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }

@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.DAOException;
@@ -41,6 +40,7 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -337,15 +337,15 @@ public class IdentifierResolver extends HttpServlet {
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");
-                request.setAttribute("errMsg", Helper.getTranslation("errRecordNotFoundMsg", BeanUtils.getLocale()).replace("{0}", identifier));
+                request.setAttribute("errMsg", ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_GONE:
                 request.setAttribute("type", "recordDeleted");
-                request.setAttribute("errMsg", Helper.getTranslation("errRecordDeletedMsg", BeanUtils.getLocale()).replace("{0}", identifier));
+                request.setAttribute("errMsg", ViewerResourceBundle.getTranslation("errRecordDeletedMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_CONFLICT:
                 request.setAttribute("type", "general");
-                request.setAttribute("errMsg", Helper.getTranslation("errMultiMatch", BeanUtils.getLocale()).replace("{0}", identifier));
+                request.setAttribute("errMsg", ViewerResourceBundle.getTranslation("errMultiMatch", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
         }
         request.setAttribute("sourceUrl", NavigationHelper.getFullRequestUrl(request, null));

@@ -34,11 +34,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 
 /**
@@ -86,7 +86,7 @@ public class StatisticsBean implements Serializable {
                 countList = new ArrayList<>(counts.size() + dataPoints + 1);
                 dateList = new ArrayList<>(counts.size());
                 for (Count count : counts) {
-                    String name = Helper.getTranslation(count.getName(), null);
+                    String name = ViewerResourceBundle.getTranslation(count.getName(), null);
                     // TODO limit the number of results?
                     // ret.add(new String[] { count.getName(), String.valueOf(count.getCount()) });
                     dateList.add(name);
@@ -166,7 +166,7 @@ public class StatisticsBean implements Serializable {
                 List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT).getValues();
                 List<String> ret = new ArrayList<>(counts.size());
                 for (Count count : counts) {
-                    String name = Helper.getTranslation(count.getName(), null).replaceAll(",", "");
+                    String name = ViewerResourceBundle.getTranslation(count.getName(), null).replaceAll(",", "");
                     // TODO limit the number of results?
                     //                    ret.add(new String[] { count.getName(), String.valueOf(count.getCount()) });
                     ret.add(name + SEPARATOR + count.getCount() + SEPARATOR + count.getName());

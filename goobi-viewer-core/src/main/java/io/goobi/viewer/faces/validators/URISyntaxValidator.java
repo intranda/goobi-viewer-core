@@ -17,7 +17,6 @@ package io.goobi.viewer.faces.validators;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -26,7 +25,7 @@ import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -47,7 +46,7 @@ public class URISyntaxValidator implements Validator<String> {
         try {
             new URI(value);
         } catch (URISyntaxException e) {
-            FacesMessage message = new FacesMessage(Helper.getTranslation("error_invalid_URI", null).replace("{0}", value), "");
+            FacesMessage message = new FacesMessage(ViewerResourceBundle.getTranslation("error_invalid_URI", null).replace("{0}", value), "");
             message.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(message);
         }

@@ -215,7 +215,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
                 .findFirst()
                 .map(translation -> translation.getValue())
-                .orElse(Helper.getTranslation(getSolrFieldValue(), null));
+                .orElse(ViewerResourceBundle.getTranslation(getSolrFieldValue(), null));
     }
 
     /**
@@ -288,7 +288,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .findFirst()
                 .map(translation -> translation.getValue())
                 .orElse("");
-        //                .orElse(Helper.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
+        //                .orElse(ViewerResourceBundle.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
     }
 
     /**

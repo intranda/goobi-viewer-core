@@ -24,7 +24,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Validates that any input text has no "script" tags
@@ -42,7 +42,7 @@ public class HtmlScriptValidator implements Validator<String> {
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {
         if (!validate(input)) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("validate_error_scriptTag", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("validate_error_scriptTag", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }

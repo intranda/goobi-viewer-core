@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 import com.ocpsoft.pretty.PrettyException;
 
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /*
  * taken from here:
@@ -143,7 +143,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 try {
                     String pi =
                             t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ", "");
-                    String msg = Helper.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
+                    String msg = ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "recordNotFound");
@@ -157,7 +157,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class.getSimpleName()))) {
                 try {
                     String pi = t.getMessage().substring(t.getMessage().indexOf("RecordDeletedException: ")).replace("RecordDeletedException: ", "");
-                    String msg = Helper.getTranslation("errRecordDeletedMsg", null).replace("{0}", pi);
+                    String msg = ViewerResourceBundle.getTranslation("errRecordDeletedMsg", null).replace("{0}", pi);
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "recordDeleted");

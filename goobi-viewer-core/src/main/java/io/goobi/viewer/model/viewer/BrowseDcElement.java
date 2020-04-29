@@ -29,9 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Collection tree element.
@@ -450,7 +450,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
          */
         @Override
         public int compare(BrowseDcElement o1, BrowseDcElement o2) {
-            return Helper.getTranslation(o1.getName(), null).compareTo(Helper.getTranslation(o2.getName(), null));
+            return ViewerResourceBundle.getTranslation(o1.getName(), null).compareTo(ViewerResourceBundle.getTranslation(o2.getName(), null));
         }
 
     }
@@ -487,9 +487,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public URI getIcon() {
         if (getInfo() != null) {
             return getInfo().getIconURI();
-        } else {
-            return null;
         }
+        
+        return null;
     }
     
     /**

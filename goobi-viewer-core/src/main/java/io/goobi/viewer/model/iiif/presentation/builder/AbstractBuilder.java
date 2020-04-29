@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.JSONResource;
 import de.intranda.api.annotation.SimpleResource;
@@ -526,6 +527,22 @@ public abstract class AbstractBuilder {
             }
         }
         return annoMap;
+    }
+    
+    public IAnnotation getCrowdsourcingAnnotation(String id) throws PresentationException, IndexUnreachableException {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(" +DOCTYPE:UGC");
+        queryBuilder.append(" +IDDOC:").append(id);
+        
+        SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString());
+        if(docList != null && !docList.isEmpty()) {
+            SolrDocument doc = docList.get(0);
+            IAnnotation anno = createOpenAnnotation(doc, false);
+            return anno;
+        } else {
+            return null;
+        }
+        
     }
 
     /**

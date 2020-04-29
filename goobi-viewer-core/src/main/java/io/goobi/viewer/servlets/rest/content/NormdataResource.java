@@ -48,6 +48,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -192,7 +193,7 @@ public class NormdataResource {
     @SuppressWarnings("unchecked")
     JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();
-        String translation = Helper.getTranslation(normData.getKey(), locale);
+        String translation = ViewerResourceBundle.getTranslation(normData.getKey(), locale);
         String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
         for (NormDataValue value : normData.getValues()) {
             List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);

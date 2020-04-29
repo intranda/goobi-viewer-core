@@ -35,15 +35,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.misc.GeoLocation;
-import io.goobi.viewer.model.misc.GeoLocationInfo;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.NumberIterator;
 import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 
@@ -66,6 +65,7 @@ public class CMSSidebarElement {
     /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();
+    private static final GeoMap MISSING_GEOMAP = new GeoMap();
 
     private static Pattern patternHtmlTag = Pattern.compile("<.*?>");
     private static Pattern patternHtmlAttribute = Pattern.compile("[ ].*?[=][\"].*?[\"]");
@@ -105,10 +105,8 @@ public class CMSSidebarElement {
     @Transient
     private PageList linkedPages = null;
 
-    @Column(name = "geo_locations", columnDefinition = "LONGTEXT")
-    private String geoLocationsString = null;
-    @Transient
-    private GeoLocationInfo geoLocations = null;
+    @Column(name = "geomap__id")
+    private Long geoMapId = null;
 
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
@@ -118,6 +116,9 @@ public class CMSSidebarElement {
 
     @Transient
     private final int sortingId = ID_COUNTER.next();
+    
+    @Transient
+    private GeoMap geoMap = null;
 
     public enum WidgetMode {
         STANDARD,
@@ -178,7 +179,7 @@ public class CMSSidebarElement {
         this.cssClass = original.cssClass;
         this.widgetMode = original.widgetMode;
         this.linkedPagesString = original.linkedPagesString;
-        this.geoLocationsString = original.geoLocationsString;
+        this.geoMapId = original.geoMapId;
         this.widgetType = original.widgetType;
         this.widgetTitle = original.widgetTitle;
         deSerialize();
@@ -467,7 +468,7 @@ public class CMSSidebarElement {
      */
     public void setCssClass(String className) {
         if (!validateCssClass(className)) {
-            String msg = Helper.getTranslation("cms_validationWarningCssClassInvalid", null);
+            String msg = ViewerResourceBundle.getTranslation("cms_validationWarningCssClassInvalid", null);
             Messages.error(msg.replace("{0}", this.getType()));
         } else {
             this.cssClass = className;
@@ -544,8 +545,8 @@ public class CMSSidebarElement {
             return SidebarElementType.Category.search;
         } else if (this.getLinkedPages() != null) {
             return SidebarElementType.Category.pageLinks;
-        } else if (this.getGeoLocations() != null) {
-            return SidebarElementType.Category.geoLocations;
+        } else if (this.getGeoMapId() != null) {
+            return SidebarElementType.Category.geoMap;
         } 
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
@@ -628,10 +629,6 @@ public class CMSSidebarElement {
         } else {
             this.linkedPagesString = null;
         }
-        if (geoLocations != null) {
-            this.geoLocationsString = createGeoLocationsString(geoLocations);
-        }
-
     }
 
     /**
@@ -645,115 +642,45 @@ public class CMSSidebarElement {
         } else {
             this.linkedPages = null;
         }
-        if (StringUtils.isNotBlank(this.geoLocationsString)) {
-            this.geoLocations = createGeoLocationsFromString(this.geoLocationsString);
+        this.geoMap = null;
+    }
+    
+    /**
+     * @return the geoMapId
+     */
+    public Long getGeoMapId() {
+        return geoMapId;
+    }
+    
+    /**
+     * @param geoMapId the geoMapId to set
+     */
+    public void setGeoMapId(Long geoMapId) {
+        if(geoMapId != null) {            
+            this.geoMapId = geoMapId;
+            this.geoMap = null;
         }
     }
-
-    /**
-     * <p>
-     * initGeolocations.
-     * </p>
-     *
-     * @param info a {@link io.goobi.viewer.model.misc.GeoLocationInfo} object.
-     */
-    public void initGeolocations(GeoLocationInfo info) {
-        if (info.getLocationList().isEmpty()) {
-            info.getLocationList().add(new GeoLocation());
-        }
-        this.geoLocations = info;
-        this.geoLocationsString = createGeoLocationsString(this.geoLocations);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>geoLocations</code>.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.misc.GeoLocationInfo} object.
-     */
-    public GeoLocationInfo getGeoLocations() {
-        return this.geoLocations;
-    }
-
-    /**
-     * <p>
-     * addGeoLocation.
-     * </p>
-     */
-    public void addGeoLocation() {
-        this.geoLocations.getLocationList().add(new GeoLocation());
-    }
-
-    /**
-     * <p>
-     * removeGeoLocation.
-     * </p>
-     */
-    public void removeGeoLocation() {
-        if (geoLocations != null) {
-            this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size() - 1);
-            if (this.geoLocations.getLocationList().isEmpty()) {
-                this.geoLocations.getLocationList().add(new GeoLocation());
+    
+    public synchronized GeoMap getGeoMap() throws DAOException {
+        if(this.geoMap == null) {
+            GeoMap map = loadGeoMap();
+            if(map == null) {
+                map = MISSING_GEOMAP;
             }
+            this.geoMap = map;
         }
+        return this.geoMap;
     }
-
-    /**
-     * @param geoLocationsString2
-     * @return
-     */
-    private GeoLocationInfo createGeoLocationsFromString(String string) {
-
-        try {
-            JSONObject json = new JSONObject(string);
-            GeoLocationInfo info = new GeoLocationInfo(json);
-            //            if(locations != null) {                
-            //                for (int i = 0; i < locations.length(); i++) {
-            //                    JSONObject obj = locations.getJSONObject(i);
-            //                    list.add(new GeoLocation(obj));
-            //                }
-            //            }
-            return info;
-        } catch (JSONException e) {
-            logger.error("Failed to create geolocation list from string \n" + string, e);
+        
+    private GeoMap loadGeoMap() throws DAOException {
+        if(this.getGeoMapId() != null && this.getGeoMapId() > -1) {
+            GeoMap map = DataManager.getInstance().getDao().getGeoMap(this.getGeoMapId());
+            return map;
         }
-        return new GeoLocationInfo();
-        //        if(list.isEmpty()) {
-        //            list.add(new GeoLocation());
-        //        }
+        return null;
     }
 
-    /**
-     * @param geoLocations2
-     * @return
-     */
-    private String createGeoLocationsString(GeoLocationInfo info) {
-
-        JSONObject json = info.getAsJson();
-
-        //        JSONArray locations = new JSONArray();
-        //        list.stream()
-        //        .filter(loc -> !loc.isEmpty())
-        //        .map(loc -> loc.getAsJson())
-        //        .forEach(loc -> locations.put(loc));
-        //        
-        //        JSONObject json = new JSONObject();
-        //        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
-
-        return json.toString();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>geoLocationsString</code>.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getGeoLocationsString() {
-        return this.geoLocationsString;
-    }
 
     /**
      * <p>
@@ -806,4 +733,5 @@ public class CMSSidebarElement {
     public String getWidgetType() {
         return this.widgetType;
     }
+
 }

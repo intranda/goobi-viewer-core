@@ -24,24 +24,24 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.net.util.SubnetUtils;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Syntax validator for subnet masks.
  */
 @FacesValidator("subnetMaskValidator")
-public class SubnetMaskValidator implements Validator {
+public class SubnetMaskValidator implements Validator<String> {
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
     /** {@inheritDoc} */
     @Override
-    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
+    public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         try {
-            new SubnetUtils((String) value);
+            new SubnetUtils(value);
         } catch (IllegalArgumentException e) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("ipRange_errInvalidSubnetMask", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("ipRange_errInvalidSubnetMask", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }

@@ -1141,10 +1141,8 @@ riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="ann
 
 
 this.question = this.opts.question;
-this.markerIdCounter = 1;
-this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 this.annotationToMark = null;
-this.markers = [];
+this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {
@@ -1644,6 +1642,82 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
 
 });
+
+
+
+riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="input_form__actions"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+
+ 	this.on("mount", () => {
+ 	    console.log("mount metadataEditor ", this.opts);
+ 	    this.currentLanguage = this.opts.currentLanguage;
+ 	    this.updateMetadataList(this.opts.metadata);
+ 	    this.focusInput();
+ 	    if(this.opts.provider) {
+ 	        this.opts.provider.subscribe( (metadata) => {
+ 	            this.updateMetadataList(metadata)
+ 	            this.update();
+ 	            this.focusInput();
+ 	        });
+ 	    }
+ 	})
+
+ 	this.focusInput = function() {
+ 	    if(Array.isArray(this.refs.input)) {
+ 	        this.refs.input[0].focus();
+ 	    } else if(this.refs.input) {
+ 	        this.refs.input.focus();
+ 	    }
+ 	}.bind(this)
+
+ 	this.updateMetadataList = function(metadataList) {
+ 	   this.metadataList = metadataList;
+ 	}.bind(this)
+
+ 	this.updateMetadata = function(event) {
+ 	    let metadata = event.item.metadata;
+ 	    if(!metadata.value) {
+ 	        metadata.value = {};
+ 	    }
+ 	    let value = event.target.value;
+ 	    if(value) {
+	 	    metadata.value[this.currentLanguage] = [event.target.value];
+ 	    } else {
+ 	       metadata.value[this.currentLanguage] = undefined;
+ 	    }
+ 	    if(this.opts.updateListener) {
+ 	       this.opts.updateListener.next(metadata);
+ 	    }
+ 	}.bind(this)
+
+ 	this.getValue = function(metadata) {
+ 	    if(metadata.value && metadata.value[this.currentLanguage]) {
+	 	    let value = metadata.value[this.currentLanguage][0];
+	 	    return value;
+ 	    } else {
+ 	        return "";
+ 	    }
+ 	}.bind(this)
+
+ 	this.setCurrentLanguage = function(event) {
+ 	    this.currentLanguage = event.item.language;
+ 	    this.update();
+ 	}.bind(this)
+
+ 	this.notifyDelete = function() {
+ 	    this.opts.deleteListener.next();
+ 	}.bind(this)
+
+ 	this.isEditable = function(metadata) {
+ 	    return metadata.editable === undefined || metadata.editable === true;
+ 	}.bind(this)
+
+ 	this.mayDelete = function() {
+ 	    editable = this.metadataList.find( md => this.isEditable(md));
+ 	    return editable !== undefined;
+ 	}.bind(this)
+
+});
+
 
 
 riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {

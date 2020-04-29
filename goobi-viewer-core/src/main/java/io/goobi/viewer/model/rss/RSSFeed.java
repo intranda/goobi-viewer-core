@@ -488,7 +488,7 @@ public class RSSFeed {
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
-            entry.setDocType(Helper.getTranslation(docStructType, locale));
+            entry.setDocType(ViewerResourceBundle.getTranslation(docStructType, locale));
 
             for (String field : FIELDS) {
                 Object value = doc.getFirstValue(field);
@@ -580,26 +580,26 @@ public class RSSFeed {
             if (modified != null) {
                 SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_STRING);
                 String imported = format.format(new Date(modified));
-                description.addMetadata(new RssMetadata(Helper.getTranslation("DATECREATED", locale), imported));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("DATECREATED", locale), imported));
             }
 
             if (StringUtils.isNotBlank(placeAndTime)) {
-                description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_published", locale), placeAndTime));
             }
             if (StringUtils.isNotBlank(bookSeries)) {
-                description.addMetadata(new RssMetadata(Helper.getTranslation("rss_bookSeries", locale), bookSeries));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_bookSeries", locale), bookSeries));
             }
             if (StringUtils.isNotBlank(author)) {
-                description.addMetadata(new RssMetadata(Helper.getTranslation("MD_AUTHOR", locale), author));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("MD_AUTHOR", locale), author));
             }
             if (StringUtils.isNotBlank(publisher)) {
-                description.addMetadata(new RssMetadata(Helper.getTranslation("MD_PUBLISHER", locale), publisher));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("MD_PUBLISHER", locale), publisher));
             }
             if (StringUtils.isNotBlank(urn)) {
-                description.addMetadata(new RssMetadata(Helper.getTranslation("rss_url", locale), urn, urnLink));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_url", locale), urn, urnLink));
             }
             if (StringUtils.isNotBlank(shelfmark)) {
-                description.addMetadata(new RssMetadata(Helper.getTranslation("MD_SHELFMARK", locale), shelfmark));
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("MD_SHELFMARK", locale), shelfmark));
             }
             entry.setDescription(description);
 

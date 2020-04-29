@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -61,6 +62,7 @@ import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -68,6 +70,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -2385,10 +2388,10 @@ public class JPADAO implements IDAO {
      * @return
      */
     private boolean updateCMSPageFromDatabase(Long id) {
-        Object o = null;
+        CMSPage o = null;
         try {
             o = this.em.getReference(CMSPage.class, id);
-            this.em.refresh(o);
+            this.em.refresh(o);  
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
@@ -3901,6 +3904,137 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getGeoMap(java.lang.Long)
+     */
+    @Override
+    public GeoMap getGeoMap(Long mapId) throws DAOException {
+        if(mapId == null) {
+            return null;
+        }
+        preQuery();
+        try {
+            GeoMap o = em.find(GeoMap.class, mapId);
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllGeoMaps()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<GeoMap> getAllGeoMaps() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT u FROM GeoMap u");
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<GeoMap> list = q.getResultList();
+        list.forEach(map -> {
+            updateFromDatabase(map.getId(), GeoMap.class);
+        });
+        return list;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean addGeoMap(GeoMap map) throws DAOException {
+        if (getGeoMap(map.getId()) != null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(map);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean updateGeoMap(GeoMap map) throws DAOException {
+        if(map.getId() == null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(map);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteGeoMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public boolean deleteGeoMap(GeoMap map) throws DAOException {
+        if(map.getId() == null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            GeoMap o = em.getReference(GeoMap.class, map.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
+     */
+    @Override
+    public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
+        preQuery();
+        
+        Query qItems = em.createQuery(
+                "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
+        qItems.setParameter("map", map);
+        List<CMSContentItem> itemList = qItems.getResultList();
+        
+        Query qWidgets = em.createQuery(
+                "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
+        qWidgets.setParameter("mapId", map.getId());
+        List<CMSSidebarElement> widgetList = qWidgets.getResultList();
+         
+        Stream<CMSPage> itemPages = itemList.stream()
+                .map(CMSContentItem::getOwnerPageLanguageVersion)
+                .map(CMSPageLanguageVersion::getOwnerPage);
+        
+        Stream<CMSPage> widgetPages = widgetList.stream()
+                .map(CMSSidebarElement::getOwnerPage);
+        
+        List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
+                .distinct()
+                .collect(Collectors.toList());
+        return pageList;
     }
 
 }

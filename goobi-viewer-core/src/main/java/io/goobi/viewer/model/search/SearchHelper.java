@@ -2261,7 +2261,7 @@ public final class SearchHelper {
         for (String field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
             SXSSFCell cell = row.createCell(currentCellIndex++);
             cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString(Helper.getTranslation(field, locale)));
+            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field, locale)));
         }
 
         List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();

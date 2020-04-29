@@ -123,7 +123,7 @@
 	<searches search_id="3" owner_id="1" name="search 3" query="query 3"
 		page="1" date_updated="2013-07-15 12:00:00.000000000"
 	    new_hits_notification="0" />
-	    
+
 	        
     <cms_categories category_id="1" name="tag1" description="description1" />
     <cms_categories category_id="2" name="tag2" description="description2" />
@@ -148,6 +148,19 @@
     <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
 		
+	<cms_geomap geomap_id="1" creator_id="1" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" map_type="1" initial_view="{&quot;zoom&quot;:8,&quot;center&quot;:[6.501159667968751,49.89109559573688]}"></cms_geomap>
+    <cms_geomap geomap_id="2" creator_id="3" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" map_type="1" initial_view="{&quot;zoom&quot;:5,&quot;center&quot;:[11.073397,49.451993]}"></cms_geomap>
+    
+    <cms_geomap_translation translation_id="1" language="de" tag="Title" value="Kartentitel 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="2" language="de" tag="Description" value="Kartenbeschreibung 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="3" language="en" tag="Title" value="Map title 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="4" language="en" tag="Description" value="Map description 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="5" language="de" tag="Title" value="Kartentitel 2" owner_id="2"></cms_geomap_translation>
+    
+    <cms_geomap_features geomap_id="1" features="{&quot;view&quot;:{&quot;center&quot;:[6.064453125000001,49.57795219958587],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[6.064453125000001,49.57795219958587],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:1,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:{&quot;de&quot;:[&quot;Hauptstadt des gleichnamigen Fürstentums. &lt;a target=\&quot;_blank\&quot; href=\&quot;https://en.wikipedia.org/wiki/Luxembourg\&quot;>Wikipedia&lt;\/a>&quot;]},&quot;title&quot;:{&quot;de&quot;:[&quot;Luxemburg&quot;],&quot;en&quot;:[&quot;Luxembourg&quot;],&quot;fr&quot;:[&quot;Luxembourg&quot;]}}}"></cms_geomap_features>
+    <cms_geomap_features geomap_id="2" features="{&quot;view&quot;:{&quot;center&quot;:[9.799804687500002,51.449899262572615],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[9.799804687500002,51.449899262572615],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:2,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:&quot;&quot;,&quot;title&quot;:{&quot;de&quot;:[&quot;Irgendwo in Deutschland&quot;]}}}"></cms_geomap_features>
+    	
+		
 	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
 	    published="true" use_default_sidebar="false"/>
 	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
@@ -165,6 +178,8 @@
         title="Titel 1" menu_title="Menütitel 1" />
     <cms_page_language_versions cms_page_language_version_id="2" owner_page_id="1" language="en" status="FINISHED"
         title="Title 1" menu_title="Menu title 1" />
+    <cms_page_language_versions cms_page_language_version_id="3" owner_page_id="2" language="global" status="FINISHED"
+     title="Title 1" menu_title="Menu title 1"/>
         
     <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML"  owner_page_language_version_id="1"
         html_fragment="&lt;b&gt;Hello CMS&lt;/b&gt;" />
@@ -174,6 +189,8 @@
         solr_query="PI:*" solr_sort_fields="SORT_TITLE,DATECREATED" elements_per_page="20" />
     <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" owner_page_language_version_id="1" 
     	elements_per_page="5" />
+    <cms_content_items cms_content_item_id="5" item_id="C5" type="GEOMAP" geomap_id="1" owner_page_language_version_id="1"/>
+    <cms_content_items cms_content_item_id="6" item_id="C6" type="GEOMAP" geomap_id="1" owner_page_language_version_id="3"/>
     
     <cms_page_cms_categories page_id="1" category_id="4" />
     <cms_page_cms_categories page_id="1" category_id="5" />

@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.bookmark.BookmarkTools;
@@ -159,7 +160,7 @@ public class BookmarkBean implements Serializable {
 
             try {
                 if (DataManager.getInstance().getDao().addBookmarkList(bookmarkList)) {
-                    String msg = Helper.getTranslation("bookmarkList_createBookmarkListSuccess", null);
+                    String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListSuccess", null);
                     Messages.info(msg.replace("{0}", bookmarkList.getName()));
                     logger.debug("Bookmark list '{}' for user {} added.", bookmarkList.getName(), userBean.getUser().getId());
                     return true;
@@ -167,21 +168,21 @@ public class BookmarkBean implements Serializable {
             } catch (DAOException e) {
                 logger.error("Could not save bookmark list: {}", e.getMessage());
             }
-            String msg = Helper.getTranslation("bookmarkList_createBookmarkListFailure", null);
+            String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListFailure", null);
             Messages.error(msg.replace("{0}", bookmarkList.getName()));
         } else {
             // Update bookmark list in the DB
             try {
                 if (DataManager.getInstance().getDao().updateBookmarkList(bookmarkList)) {
                     logger.debug("Bookmark list '{}' for user {} updated.", bookmarkList.getName(), userBean.getUser().getId());
-                    String msg = Helper.getTranslation("bookmarkList_updateBookmarkListSuccess", null);
+                    String msg = ViewerResourceBundle.getTranslation("bookmarkList_updateBookmarkListSuccess", null);
                     Messages.info(msg.replace("{0}", bookmarkList.getName()));
                     return true;
                 }
             } catch (DAOException e) {
                 logger.error("Could not update bookmark list: {}", e.getMessage());
             }
-            String msg = Helper.getTranslation("bookmarkList_updateBookmarkListFailure", null);
+            String msg = ViewerResourceBundle.getTranslation("bookmarkList_updateBookmarkListFailure", null);
             Messages.error(msg.replace("{0}", bookmarkList.getName()));
         }
 
@@ -199,7 +200,7 @@ public class BookmarkBean implements Serializable {
             UserBean userBean = BeanUtils.getUserBean();
             if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookmarkList(currentBookmarkList)) {
                 logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' deleted.");
-                String msg = Helper.getTranslation("bookmarkList_deleteSuccess", null);
+                String msg = ViewerResourceBundle.getTranslation("bookmarkList_deleteSuccess", null);
                 Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
                 resetCurrentBookmarkListAction();
                 return "pretty:userMenuBookmarkLists";
@@ -207,7 +208,7 @@ public class BookmarkBean implements Serializable {
         } catch (DAOException e) {
             logger.error("Could not delete bookmark list: {}", e.getMessage());
         }
-        String msg = Helper.getTranslation("bookmarkList_deleteFailure", null);
+        String msg = ViewerResourceBundle.getTranslation("bookmarkList_deleteFailure", null);
         Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
 
         return "pretty:userMenuEditBookmarkList";
@@ -284,12 +285,12 @@ public class BookmarkBean implements Serializable {
                 if (currentBookmarkList.getItems().contains(currentBookmark)) {
                     // TODO Do not throw error if item already in bookmark list. Instead, offer to edit or remove.
                     DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList);
-                    String msg = Helper.getTranslation("bookmarkList_addToBookmarkListFailureAlreadyContains", null);
+                    String msg = ViewerResourceBundle.getTranslation("bookmarkList_addToBookmarkListFailureAlreadyContains", null);
                     Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
                     return "";
                 } else if (currentBookmarkList.addItem(currentBookmark)
                         && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
-                    String msg = Helper.getTranslation("bookmarkList_addToBookmarkListSuccess", null);
+                    String msg = ViewerResourceBundle.getTranslation("bookmarkList_addToBookmarkListSuccess", null);
                     Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
                     logger.debug("Bookmark '{}' added, ID: {}", currentBookmark.getName(), currentBookmark.getId());
                     return "";
@@ -299,7 +300,7 @@ public class BookmarkBean implements Serializable {
             }
         }
 
-        String msg = Helper.getTranslation("bookmarkList_addToBookmarkListFailure", null);
+        String msg = ViewerResourceBundle.getTranslation("bookmarkList_addToBookmarkListFailure", null);
         Messages.error(msg.replace("{0}", currentBookmarkList.getName()));
         return "";
     }
@@ -314,7 +315,7 @@ public class BookmarkBean implements Serializable {
         if (bookmark != null && userBean != null && userBean.getUser() != null && currentBookmarkList != null) {
             try {
                 if (currentBookmarkList.removeItem(bookmark) && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
-                    String msg = Helper.getTranslation("bookmarkList_removeBookmarkSuccess", null);
+                    String msg = ViewerResourceBundle.getTranslation("bookmarkList_removeBookmarkSuccess", null);
                     Messages.info(msg.replace("{0}", bookmark.getPi()));
                     logger.debug("Bookmark '" + bookmark.getName() + "' deleted.");
                     return;
@@ -322,7 +323,7 @@ public class BookmarkBean implements Serializable {
             } catch (DAOException e) {
                 logger.error("Could not delete bookmark: {}", e.getMessage());
             }
-            String msg = Helper.getTranslation("bookmarkList_removeBookmarkFailure", null);
+            String msg = ViewerResourceBundle.getTranslation("bookmarkList_removeBookmarkFailure", null);
             Messages.error(msg.replace("{0}", bookmark.getPi()));
         } else if (bookmark == null) {
             logger.error("Bookmark to delete is not defined");
@@ -485,7 +486,7 @@ public class BookmarkBean implements Serializable {
 
         if (StringUtils.isEmpty(name)) {
             ((UIInput) toValidate).setValid(false);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Helper.getTranslation("bookmark listNameFailure", null), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation("bookmark listNameFailure", null), null);
             throw new ValidatorException(message);
         }
 
@@ -498,8 +499,8 @@ public class BookmarkBean implements Serializable {
                     ((UIInput) toValidate).setValid(false);
                     logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' for user '" + userBean.getEmail()
                             + "' could not be added. A bookmark list with this name for this use may already exist.");
-                    String msg = Helper.getTranslation("bookmarkList_createBookmarkListNameExists", null);
-                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Helper.getTranslation(msg.replace("{0}", name), null), null);
+                    String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListNameExists", null);
+                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation(msg.replace("{0}", name), null), null);
                     throw new ValidatorException(message);
                 }
             }
@@ -825,16 +826,16 @@ public class BookmarkBean implements Serializable {
         }
 
         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
-            String body = SessionStoreBookmarkManager.generateBookmarkListInfo(Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
-                    Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
+            String body = SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
+                    ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null), ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null),
                     bookmarkList);
-            String subject = Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
+            String subject = ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
             try {
                 Helper.postMail(Collections.singletonList(getSessionBookmarkListEmail()), subject, body);
-                Messages.info(Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
+                Messages.info(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
             } catch (UnsupportedEncodingException | MessagingException e) {
                 logger.error(e.getMessage(), e);
-                Messages.error(Helper.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ERROR, null)
+                Messages.error(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ERROR, null)
                         .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             }
         });

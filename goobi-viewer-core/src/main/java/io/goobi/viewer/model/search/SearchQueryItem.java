@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -39,6 +38,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
@@ -60,7 +60,7 @@ public class SearchQueryItem implements Serializable {
         AUTO;
 
         public String getLabel() {
-            return Helper.getTranslation("searchQueryItemOperator_" + this.name(), null);
+            return ViewerResourceBundle.getTranslation("searchQueryItemOperator_" + this.name(), null);
         }
     }
 

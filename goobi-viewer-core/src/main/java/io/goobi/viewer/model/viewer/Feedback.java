@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Convenience class for user feedback submission.
@@ -46,7 +46,7 @@ public class Feedback implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getEmailSubject(String key) {
-        return Helper.getTranslation(key, null);
+        return ViewerResourceBundle.getTranslation(key, null);
     }
 
     /**
@@ -58,7 +58,7 @@ public class Feedback implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getEmailBody(String key) {
-        String body = Helper.getTranslation(key, null);
+        String body = ViewerResourceBundle.getTranslation(key, null);
         if (body != null) {
             body = body.replace("{0}", name).replace("{1}", email).replace("{2}", url).replace("{3}", message);
             // Feedback type only exists for crowdsourcing feedback

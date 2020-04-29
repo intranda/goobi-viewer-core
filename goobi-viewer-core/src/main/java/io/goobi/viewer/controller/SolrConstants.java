@@ -17,6 +17,8 @@ package io.goobi.viewer.controller;
 
 import java.util.Locale;
 
+import io.goobi.viewer.messages.ViewerResourceBundle;
+
 /**
  * This class provides constants for Lucene in alphabetical order.
  */
@@ -57,7 +59,7 @@ public class SolrConstants {
         }
 
         public String getLabel(Locale locale) {
-            return Helper.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
+            return ViewerResourceBundle.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
         }
     }
 

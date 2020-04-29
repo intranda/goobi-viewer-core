@@ -1,0 +1,72 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface>
+        <composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <!-- WIDGET GEO LOCATIONS -->
+        <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetGeoMap' and cc.attrs.widget.geoMapId > -1) or cc.attrs.widget == null}">
+
+            <!-- STANDARD -->
+            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
+                <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
+                    <h3>
+                        #{cc.attrs.widget.geoMap.title}
+                    </h3>
+
+                    <!-- MAP -->
+                    <div id="geomapWidget" class="widget-geomap__map"></div>
+                </div>
+            </h:panelGroup>
+
+            <!-- FOLDOUT -->
+            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+                <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
+                    <h3>
+                        #{cc.attrs.widget.geoMap.title}
+                        <a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
+                            <h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                        </a>
+                    </h3>
+
+                    <div id="widgetGeoLocationsCollapse" class="collapse">
+                        <!-- MAP -->
+                        <div id="geomap" class="widget-geomap__map"></div>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <popover id="geoMapPopoverTemplate">
+           		<h4 data-metadata="title"></h4>
+           		<span data-metadata="description"></span>
+           	</popover>
+            <script type="text/javascript">	  
+            $(document).ready( () => {	
+                
+            	let geoMap = new viewerJS.GeoMap({
+            	    popover: "#geoMapPopoverTemplate",
+            	    mapId: "geomapWidget",
+            	    language: "#{navigationHelper.localeString}",
+            	    popoverOnHover: #{cc.attrs.widget.geoMap.type == 'SOLR_QUERY'}
+            	});
+            	let view = #{cc.attrs.widget.geoMap.initialView};
+            	let features = #{cc.attrs.widget.geoMap.featuresAsString};
+            	console.log("init map with ", view, features);
+            	geoMap.init();
+            	geoMap.setView(view);
+            	features.forEach(feature => {
+            	    geoMap.addMarker(feature);
+            	})
+            	geoMap.setView(geoMap.getViewAroundFeatures());
+            })
+	        </script>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

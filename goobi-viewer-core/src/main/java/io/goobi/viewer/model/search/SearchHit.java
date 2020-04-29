@@ -119,7 +119,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         public String getLabel(Locale locale) {
-            return Helper.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
+            return ViewerResourceBundle.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
         }
     }
 
@@ -166,7 +166,7 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     private SearchHit(HitType type, BrowseElement browseElement, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
-        this.translatedType = type != null ? Helper.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
+        this.translatedType = type != null ? ViewerResourceBundle.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
@@ -392,7 +392,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 for (CMSPage page : hitPages.keySet()) {
                     int count = 0;
                     SearchHit cmsPageHit = new SearchHit(HitType.CMS, new BrowseElement(browseElement.getPi(), 1,
-                            Helper.getTranslation(page.getMenuTitle(), locale), null, locale, null, page.getRelativeUrlPath()), searchTerms, locale);
+                            ViewerResourceBundle.getTranslation(page.getMenuTitle(), locale), null, locale, null, page.getRelativeUrlPath()), searchTerms, locale);
                     children.add(cmsPageHit);
                     for (String text : hitPages.get(page)) {
                         cmsPageHit.getChildren()
@@ -456,7 +456,7 @@ public class SearchHit implements Comparable<SearchHit> {
             int count = 0;
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
                 SearchHit hit = new SearchHit(HitType.PAGE,
-                        new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, locale, null, null), searchTerms,
+                        new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation("TEI", locale), null, locale, null, null), searchTerms,
                         locale);
                 for (String fragment : fulltextFragments) {
                     hit.getChildren()

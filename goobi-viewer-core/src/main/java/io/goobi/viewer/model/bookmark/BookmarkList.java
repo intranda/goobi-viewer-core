@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
@@ -443,7 +444,7 @@ public class BookmarkList implements Serializable {
         String publicString = "";
 
         if (this.isPublic) {
-            publicString = "(" + Helper.getTranslation("public", null) + ")";
+            publicString = "(" + ViewerResourceBundle.getTranslation("public", null) + ")";
         }
 
         return publicString;

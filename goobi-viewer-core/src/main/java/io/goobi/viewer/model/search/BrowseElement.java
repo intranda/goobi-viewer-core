@@ -38,7 +38,6 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
@@ -227,7 +226,7 @@ public class BrowseElement implements Serializable {
                                             new Metadata(anchorStructElement.getDocStructType(), null,
                                                     new MetadataParameter(MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(),
                                                             null, null, null, null, false, false, false, Collections.emptyList()),
-                                                    Helper.intern(anchorLabel)));
+                                                    StringTools.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -244,7 +243,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
                                     topStructElement.getDocStructType(), null, null, null, null, false, false, false, Collections.emptyList()),
-                                    Helper.intern(topstructLabel)));
+                                    StringTools.intern(topstructLabel)));
                 }
             }
         }
@@ -314,7 +313,7 @@ public class BrowseElement implements Serializable {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                             }
                         }
-                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(Helper.intern(value)), null,
+                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                         count++;
                     }
@@ -346,9 +345,9 @@ public class BrowseElement implements Serializable {
             logger.error("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;
         }
-        pi = Helper.intern(pi);
+        pi = StringTools.intern(pi);
         iddoc = structElement.getLuceneId();
-        logId = Helper.intern(structElement.getMetadataValue(SolrConstants.LOGID));
+        logId = StringTools.intern(structElement.getMetadataValue(SolrConstants.LOGID));
         volumeNo = structElement.getVolumeNo();
         if (StringUtils.isEmpty(volumeNo)) {
             volumeNo = structElement.getVolumeNoSort();
@@ -410,7 +409,7 @@ public class BrowseElement implements Serializable {
         // Thumbnail
         String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
         if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-            thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
+            thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
         }
 
         //check if we have images
@@ -615,7 +614,7 @@ public class BrowseElement implements Serializable {
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
                     }
-                    ret = Helper.getTranslation(ret, locale);
+                    ret = ViewerResourceBundle.getTranslation(ret, locale);
                     break;
                 case EVENT:
                     // Try to use the event name or type (optionally with dates), otherwise use LABEL
@@ -635,12 +634,12 @@ public class BrowseElement implements Serializable {
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
                     }
-                    ret = Helper.getTranslation(ret, locale);
+                    ret = ViewerResourceBundle.getTranslation(ret, locale);
                     break;
                 case UGC:
                     // User-generated content
                     ret = DisplayUserGeneratedContent.generateUgcLabel(se);
-                    ret = Helper.getTranslation(ret, locale);
+                    ret = ViewerResourceBundle.getTranslation(ret, locale);
                     break;
                 default:
                     ret = generateDefaultLabel(se, locale);
@@ -704,7 +703,7 @@ public class BrowseElement implements Serializable {
             }
         }
         if (StringUtils.isEmpty(ret)) {
-            ret = Helper.getTranslation(se.getDocStructType(), locale);
+            ret = ViewerResourceBundle.getTranslation(se.getDocStructType(), locale);
         }
 
         return ret;

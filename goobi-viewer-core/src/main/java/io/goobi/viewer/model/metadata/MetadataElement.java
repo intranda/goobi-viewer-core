@@ -26,13 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -181,12 +181,12 @@ public class MetadataElement {
         }
 
         //create a label for this struct element for display in bibliographic data
-        label = Helper.getTranslation(se.getLabel(), null);
+        label = ViewerResourceBundle.getTranslation(se.getLabel(), null);
         if (label != null && label.equals("-")) {
             label = null;
         }
         title = se.getMetadataValue("MD_TITLE");
-        docType = Helper.getTranslation(se.getDocStructType(), null);
+        docType = ViewerResourceBundle.getTranslation(se.getDocStructType(), null);
         docStructType = se.getDocStructType();
         topElement = se.isAnchor() || se.isWork();
         se.getPi(); // TODO why?
