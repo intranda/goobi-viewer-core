@@ -16,7 +16,6 @@
 package io.goobi.viewer.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -38,7 +37,6 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -49,7 +47,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -61,72 +58,15 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.exceptions.HTTPException;
 
+/**
+ * Utility methods for HTTP operations, mail, etc.
+ *
+ */
 public class NetTools {
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
     private static final int HTTP_TIMEOUT = 30000;
-    
-
-    /**
-     * <p>
-     * sendDataAsStream.
-     * </p>
-     *
-     * @param url Destination URL. Must contain all required GET parameters.
-     * @param data String to send as a stream.
-     * @return a boolean.
-     */
-    @Deprecated
-    public static synchronized boolean sendDataAsStream(String url, String data) {
-        try (InputStream is = IOUtils.toInputStream(data, "UTF-8")) {
-            HttpEntity entity = new InputStreamEntity(is, -1);
-            int code = simplePOSTRequest(url, entity);
-            switch (code) {
-                case HttpStatus.SC_OK:
-                    return true;
-                default:
-                    return false;
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
-    }
-    
-    /**
-     * Sends the given HttpEntity to the given URL via HTTP POST. Only returns a status code.
-     *
-     * @param url
-     * @param entity
-     * @return
-     */
-    @Deprecated
-    private static int simplePOSTRequest(String url, HttpEntity entity) {
-        logger.debug(url);
-
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
-            HttpPost post = new HttpPost(url);
-            Charset.forName(Helper.DEFAULT_ENCODING);
-            post.setEntity(entity);
-            try (CloseableHttpResponse response = httpClient.execute(post); StringWriter writer = new StringWriter()) {
-                int code = response.getStatusLine().getStatusCode();
-                if (code != HttpStatus.SC_OK) {
-                    logger.error("{}: {}", code, response.getStatusLine().getReasonPhrase());
-                }
-                return code;
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return -1;
-    }
 
     /**
      * <p>
