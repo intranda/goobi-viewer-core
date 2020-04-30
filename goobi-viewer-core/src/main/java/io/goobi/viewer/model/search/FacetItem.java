@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -327,11 +326,31 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should escape values containing whitespaces
      * @should construct hierarchical link correctly
      * @should construct range link correctly
+     * @should construct polygon link correctly
      * @return a {@link java.lang.String} object.
      */
     public String getQueryEscapedLink() {
-        String escapedValue = getEscapedValue(value);
         String field = SearchHelper.facetifyField(this.field);
+        String escapedValue = getEscapedValue(value);
+        //        if (field.startsWith(SolrConstants.WKT_)) {
+        //            String[] valueSplit = value.split(",");
+        //            if (valueSplit.length > 1) {
+        //                // Polygon
+        //                escapedValue = new StringBuilder()
+        //                        .append("\"IsWithin(POLYGON((")
+        //                        .append(value)
+        //                        .append("))) distErrPct=0\"")
+        //                        .toString();
+        //            } else if (valueSplit.length == 1) {
+        //                // Point
+        //                escapedValue = new StringBuilder()
+        //                        .append("\"IsWithin(POINT(")
+        //                        .append(value)
+        //                        .append(")) distErrPct=0\"")
+        //                        .toString();
+        //            }
+        //        }
+
         if (hierarchial) {
             return new StringBuilder("(").append(field)
                     .append(':')
@@ -354,13 +373,21 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * 
      * @param value
      * @return
+     * @should escape value correctly
+     * @should add quotation marks if value contains space
+     * @should preserve leading and trailing quotation marks
      */
     static String getEscapedValue(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
         }
-
-        String escapedValue = ClientUtils.escapeQueryChars(value);
+        String escapedValue = null;
+        if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"' && value.length() > 2) {
+            escapedValue = '"' + ClientUtils.escapeQueryChars(value.substring(1, value.length() - 1)) + '"';
+        } else {
+            escapedValue = ClientUtils.escapeQueryChars(value);
+        }
+        // Add quotation marks if spaces are contained
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
         }

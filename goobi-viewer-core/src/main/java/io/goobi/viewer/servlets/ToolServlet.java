@@ -34,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrSearchIndex;
 
 /**
@@ -117,7 +117,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 case "getVersion":
                     response.setContentType("text/html"); {
                     ServletOutputStream output = response.getOutputStream();
-                    output.write(Helper.getVersion().getBytes(Charset.forName("utf-8")));
+                    output.write(DataManager.getVersion().getBytes(Charset.forName("utf-8")));
                 }
                     break;
                 default:

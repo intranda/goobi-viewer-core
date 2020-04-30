@@ -41,11 +41,11 @@ import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -104,7 +104,7 @@ public class NormdataResource {
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         logger.trace("getNormData: {}", url);
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         Locale locale = Locale.getDefault();
@@ -133,13 +133,13 @@ public class NormdataResource {
             }
         }
 
-        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(url);
-        if (marcRecord == null) {
+        Record record = NormDataImporter.getSingleRecord(url);
+        if (record == null) {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        List<NormData> normDataList = marcRecord.getNormDataList();
-        if (normDataList == null) {
+        List<NormData> normDataList = record.getNormDataList();
+        if (normDataList == null || normDataList.isEmpty()) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
         }

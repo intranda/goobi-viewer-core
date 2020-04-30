@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
@@ -44,12 +44,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.TEITools;
-import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -392,7 +392,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 for (CMSPage page : hitPages.keySet()) {
                     int count = 0;
                     SearchHit cmsPageHit = new SearchHit(HitType.CMS, new BrowseElement(browseElement.getPi(), 1,
-                            ViewerResourceBundle.getTranslation(page.getMenuTitle(), locale), null, locale, null, page.getRelativeUrlPath()), searchTerms, locale);
+                            ViewerResourceBundle.getTranslation(page.getMenuTitle(), locale), null, locale, null, page.getRelativeUrlPath()),
+                            searchTerms, locale);
                     children.add(cmsPageHit);
                     for (String text : hitPages.get(page)) {
                         cmsPageHit.getChildren()
@@ -444,7 +445,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         try {
-            String fulltext = Helper.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
+            String fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             if (fulltext != null) {
                 fulltext = TEITools.getTeiFulltext(fulltext);
                 fulltext = Jsoup.parse(fulltext).text();
@@ -456,7 +457,8 @@ public class SearchHit implements Comparable<SearchHit> {
             int count = 0;
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
                 SearchHit hit = new SearchHit(HitType.PAGE,
-                        new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation("TEI", locale), null, locale, null, null), searchTerms,
+                        new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation("TEI", locale), null, locale, null, null),
+                        searchTerms,
                         locale);
                 for (String fragment : fulltextFragments) {
                     hit.getChildren()
@@ -538,7 +540,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE:
                         try {
-                            fulltext = Helper.loadFulltext(browseElement.getDataRepository(),
+                            fulltext = DataFileTools.loadFulltext(browseElement.getDataRepository(),
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO),
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), true, request);
                         } catch (AccessDeniedException e) {

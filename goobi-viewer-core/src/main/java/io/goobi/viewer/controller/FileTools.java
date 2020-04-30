@@ -119,7 +119,7 @@ public class FileTools {
                 logger.trace("'{}' encoding detected: {}", file.getName(), encoding);
             }
             if (encoding == null) {
-                encoding = Helper.DEFAULT_ENCODING;
+                encoding = StringTools.DEFAULT_ENCODING;
             }
         }
 
@@ -184,7 +184,7 @@ public class FileTools {
         String result = "";
 
         if (encoding == null) {
-            encoding = Helper.DEFAULT_ENCODING;
+            encoding = StringTools.DEFAULT_ENCODING;
         }
 
         Scanner scanner = null;
@@ -219,7 +219,7 @@ public class FileTools {
             throw new IllegalArgumentException("string may not be null");
         }
         if (encoding == null) {
-            encoding = Helper.DEFAULT_ENCODING;
+            encoding = StringTools.DEFAULT_ENCODING;
         }
 
         File file = new File(filePath);

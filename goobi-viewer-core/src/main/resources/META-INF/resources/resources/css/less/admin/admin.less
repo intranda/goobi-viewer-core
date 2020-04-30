@@ -129,8 +129,21 @@
 	}
 	&__content-inner-content {
 		padding: 15px;
-		h3 {
+		&__form_title {
+			display: flex;
+			justify-content: space-between;
 			margin-top: 3rem; 
+			h3 {
+				margin-top: 0;
+			}
+			.ajax_loader {
+				display: none;
+				img {
+					height: 2.4rem;
+				}
+			}
+		}
+		h3 {
 			font-size: 2.4rem;
 		}
 		&__description {

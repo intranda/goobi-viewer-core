@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
@@ -170,7 +170,7 @@ public class Comment implements Comparable<Comment> {
         }
 
         try {
-            Helper.postMail(addresses, subject, body);
+            NetTools.postMail(addresses, subject, body);
             return true;
         } catch (UnsupportedEncodingException | MessagingException e) {
             logger.error(e.getMessage(), e);

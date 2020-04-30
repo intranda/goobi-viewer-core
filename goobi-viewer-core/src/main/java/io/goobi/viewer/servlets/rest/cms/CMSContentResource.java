@@ -34,13 +34,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -94,7 +93,7 @@ public class CMSContentResource {
     public String getContentHtml(@PathParam("pageId") Long pageId, @PathParam("language") String language, @PathParam("contentId") String contentId)
             throws IOException, DAOException, ServletException {
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
         String output = createResponseInThread(TargetType.CONTENT, pageId, language, contentId, REQUEST_TIMEOUT);
         return wrap(output, false);

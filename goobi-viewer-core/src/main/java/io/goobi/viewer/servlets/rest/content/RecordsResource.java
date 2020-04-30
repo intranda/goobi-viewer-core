@@ -53,10 +53,10 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -128,7 +128,7 @@ public class RecordsResource {
             ContentNotFoundException, ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
         logger.trace("getTimeMatrix({}, {})", query, count);
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         if (StringUtils.isEmpty(query)) {
@@ -450,7 +450,7 @@ public class RecordsResource {
             if (StringUtils.isNotBlank(filename)) {
                 servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             }
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
     }
 }

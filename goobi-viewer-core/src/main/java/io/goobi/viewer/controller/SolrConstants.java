@@ -261,6 +261,8 @@ public class SolrConstants {
     /** Constant <code>OPEN_ACCESS_VALUE="OPENACCESS"</code> */
     public static final String OPEN_ACCESS_VALUE = "OPENACCESS";
 
+    /** Constant <code>WKT_="WKT_"</code> */
+    public static final String WKT_ = "WKT_";
     /** Constant <code>GROUPID_="GROUPID_"</code> */
     public static final String GROUPID_ = "GROUPID_";
     /** Constant <code>GROUPORDER_="GROUPORDER_"</code> */

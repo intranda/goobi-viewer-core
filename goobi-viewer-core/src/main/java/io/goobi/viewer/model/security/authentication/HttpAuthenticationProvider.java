@@ -35,7 +35,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.StringTools;
 
 //import com.google.common.io.CharStreams;
 
@@ -210,9 +210,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
             post.setEntity(e);
             try (CloseableHttpResponse httpResponse = client.execute(post)) {
                 try (StringWriter writer = new StringWriter()) {
-                    //                    IOUtils.copy(httpResponse.getEntity().getContent(), writer, Helper.DEFAULT_ENCODING);
+                    //                    IOUtils.copy(httpResponse.getEntity().getContent(), writer, StringTools.DEFAULT_ENCODING);
                     //                    return writer.toString();
-                    return EntityUtils.toString(httpResponse.getEntity(), Helper.DEFAULT_ENCODING);
+                    return EntityUtils.toString(httpResponse.getEntity(), StringTools.DEFAULT_ENCODING);
                 }
             }
         } catch (IOException e) {
@@ -238,7 +238,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
             RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setSocketTimeout(1000).setConnectTimeout(1000).build();
             get.setConfig(config);
             try (CloseableHttpResponse httpResponse = client.execute(get)) {
-                return EntityUtils.toString(httpResponse.getEntity(), Helper.DEFAULT_ENCODING);
+                return EntityUtils.toString(httpResponse.getEntity(), StringTools.DEFAULT_ENCODING);
             }
         } catch (IOException e) {
             throw new WebApplicationException("Error getting url " + url, e);

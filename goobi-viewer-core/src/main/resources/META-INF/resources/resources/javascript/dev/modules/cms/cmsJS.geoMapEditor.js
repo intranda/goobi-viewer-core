@@ -36,6 +36,7 @@ var cmsJS = ( function( cms ) {
         featuresInput: "#featuresInput",
         viewInput: "#viewInput",
         metadataArea: "#featureForm",
+        loader: ".ajax_loader",
         msg: {
             emptyMarker: "...",
             titleLabel: "title",
@@ -86,6 +87,15 @@ var cmsJS = ( function( cms ) {
         this.onMetadataUpdate
         .pipe(RxOp.takeWhile(() => this.config.allowEditFeatures), RxOp.map((metadata) => this.updateCurrentFeatureMetadata(metadata)))
         .subscribe(() => this.saveFeatures());
+    
+        if(this.config.loader) {
+            viewerJS.jsfAjax.begin.subscribe((e) => {
+                if($(e.source).closest("#mapPanel").length > 0) {                    
+                    $(this.config.loader).show();
+                }
+            });
+            viewerJS.jsfAjax.complete.subscribe(() => $(this.config.loader).hide());
+        }
     }
     
     cms.GeoMapEditor.prototype.init = function() {

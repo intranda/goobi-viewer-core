@@ -109,7 +109,7 @@ public class DateTools {
                 }
 
                 // Try finding a complete date in the string (enclosed in parentheses)
-                Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
+                Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
                 Matcher m = p.matcher(s);
                 if (m.find()) {
                     s = s.substring(m.start() + 1, m.end() - 1);

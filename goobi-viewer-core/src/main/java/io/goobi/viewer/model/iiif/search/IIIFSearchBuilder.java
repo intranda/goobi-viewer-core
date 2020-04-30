@@ -38,8 +38,8 @@ import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
@@ -605,7 +605,7 @@ public class IIIFSearchBuilder {
     /**
      * Test if the given fieldName is included in the configuredFields or matches any of the contained wildcard fieldNames
      */
-    private boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
+    private static boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
         for (String configuredField : configuredFields) {
             if (configuredField.contains("*") && !fieldName.endsWith("_UNTOKENIZED")) {
                 String fieldRegex = AbstractSearchParser.getQueryRegex(configuredField);
@@ -619,12 +619,12 @@ public class IIIFSearchBuilder {
         return false;
     }
 
-    private List<StringPair> getPageSortFields() {
+    private static List<StringPair> getPageSortFields() {
         StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
         return Collections.singletonList(sortField);
     }
 
-    private List<StringPair> getDocStructSortFields() {
+    private static List<StringPair> getDocStructSortFields() {
         StringPair sortField1 = new StringPair(SolrConstants.THUMBPAGENO, "asc");
         StringPair sortField2 = new StringPair(SolrConstants.ISANCHOR, "asc");
         StringPair sortField3 = new StringPair(SolrConstants.ISWORK, "asc");
@@ -635,7 +635,7 @@ public class IIIFSearchBuilder {
         return pairs;
     }
 
-    private List<String> getSearchFields() {
+    private static List<String> getSearchFields() {
         List<String> configuredFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
         if (configuredFields.stream().anyMatch(field -> field.contains("*"))) {
             configuredFields = configuredFields.stream().filter(field -> !field.contains("*")).collect(Collectors.toList());
@@ -661,7 +661,7 @@ public class IIIFSearchBuilder {
             return null;
         }
 
-        return Helper.getDataFilePath(pi, relativeFilePath);
+        return DataFileTools.getDataFilePath(pi, relativeFilePath);
     }
 
     /**

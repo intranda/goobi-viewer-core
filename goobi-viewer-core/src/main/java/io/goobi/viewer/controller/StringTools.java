@@ -25,6 +25,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +54,19 @@ public class StringTools {
 
     private static final Logger logger = LoggerFactory.getLogger(StringTools.class);
 
+    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code> */
+    public static final String REGEX_QUOTATION_MARKS = "\"[^()]*?\"";
+    /** Constant <code>REGEX_PARENTHESES="\\([^()]*\\)"</code> */
+    public static final String REGEX_PARENTHESES = "\\([^()]*\\)";
+    /** Constant <code>REGEX_PARENTESES_DATES="\\([\\w|\\s|\\-|\\.|\\?]+\\)"</code> */
+    public static final String REGEX_PARENTESES_DATES = "\\([\\w|\\s|\\-|\\.|\\?]+\\)";
+    /** Constant <code>REGEX_BRACES="\\{(\\w+)\\}"</code> */
+    public static final String REGEX_BRACES = "\\{(\\w+)\\}";
+    /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code> */
+    public static final String REGEX_WORDS = "[a-zäáàâöóòôüúùûëéèêßñ0123456789]+";
+    /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
+    public static final String DEFAULT_ENCODING = "UTF-8";
+
     /**
      * <p>
      * encodeUrl.
@@ -63,9 +78,9 @@ public class StringTools {
     public static String encodeUrl(String string) {
         try {
             //            return BeanUtils.escapeCriticalUrlChracters(string);
-            return URLEncoder.encode(string, Helper.DEFAULT_ENCODING);
+            return URLEncoder.encode(string, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            logger.error("Unable to encode '{}' with {}", string, Helper.DEFAULT_ENCODING);
+            logger.error("Unable to encode '{}' with {}", string, StringTools.DEFAULT_ENCODING);
             return string;
         }
     }
@@ -435,7 +450,7 @@ public class StringTools {
 
         return "";
     }
-    
+
     /**
      * <p>
      * intern.
@@ -449,5 +464,39 @@ public class StringTools {
             return null;
         }
         return string.intern();
+    }
+
+    /**
+     * Creates an MD5 hash of the given String.
+     *
+     * @param myString a {@link java.lang.String} object.
+     * @return MD5 hash
+     * @should hash string correctly
+     */
+    public static String generateMD5(String myString) {
+        String answer = "";
+        try {
+            byte[] defaultBytes = myString.getBytes("UTF-8");
+            MessageDigest algorithm = MessageDigest.getInstance("MD5");
+            algorithm.reset();
+            algorithm.update(defaultBytes);
+            byte messageDigest[] = algorithm.digest();
+
+            StringBuffer hexString = new StringBuffer();
+            for (byte element : messageDigest) {
+                String hex = Integer.toHexString(0xFF & element);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            answer = hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage(), e);
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return answer;
     }
 }

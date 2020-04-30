@@ -43,12 +43,10 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -91,7 +89,7 @@ public class ObjectResource {
         String objectURI = request.getRequestURL().toString().replace("/info.json", "");
         String baseURI = objectURI.replace(filename, "");
         String baseFilename = FilenameUtils.getBaseName(filename);
-        Path mediaDirectory = Helper.getMediaFolder(pi);
+        Path mediaDirectory = DataFileTools.getMediaFolder(pi);
 
         try {
             List<URI> resourceURIs = getResources(mediaDirectory.toString(), baseFilename, baseURI);
@@ -158,7 +156,7 @@ public class ObjectResource {
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("filename") final String filename) throws IOException, PresentationException, IndexUnreachableException {
 
-        Path mediaDirectory = Helper.getMediaFolder(pi);
+        Path mediaDirectory = DataFileTools.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(filename);
         if (!objectPath.toFile().isFile()) {
             //try subfolders
@@ -208,7 +206,7 @@ public class ObjectResource {
             @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename)
             throws IOException, PresentationException, IndexUnreachableException {
 
-        Path mediaDirectory = Helper.getMediaFolder(pi);
+        Path mediaDirectory = DataFileTools.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder).resolve(filename);
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
@@ -264,7 +262,7 @@ public class ObjectResource {
             @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2, @PathParam("filename") String filename)
             throws IOException, PresentationException, IndexUnreachableException {
 
-        Path mediaDirectory = Helper.getMediaFolder(pi);
+        Path mediaDirectory = DataFileTools.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder1).resolve(subfolder2).resolve(filename);
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");

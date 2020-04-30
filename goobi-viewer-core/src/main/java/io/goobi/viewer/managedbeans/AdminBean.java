@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -1463,7 +1463,7 @@ public class AdminBean implements Serializable {
 
         Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
         try {
-            String metsFilePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
+            String metsFilePath = DataFileTools.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
             Document doc = XmlTools.readXmlFile(metsFilePath);
             if (doc == null || doc.getRootElement() == null) {
                 logger.error("Invalid METS file: {}", metsFilePath);

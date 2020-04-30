@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.cms;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -31,7 +30,6 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
@@ -124,8 +122,8 @@ public class CMSPageTemplate implements Serializable {
                 Collections.sort(template.getContentItems());
                 Element options = root.getChild("options");
                 if (options != null) {
-                    template.setDisplaySortingField(Helper.parseBoolean(options.getChildText("useSorterField")));
-                    template.setAppliesToExpandedUrl(Helper.parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
+                    template.setDisplaySortingField(parseBoolean(options.getChildText("useSorterField")));
+                    template.setAppliesToExpandedUrl(parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
                 }
                 template.validate();
                 return template;
@@ -496,6 +494,37 @@ public class CMSPageTemplate implements Serializable {
      */
     public boolean isAppliesToExpandedUrl() {
         return appliesToExpandedUrl;
+    }
+
+    /**
+     * <p>
+     * parseBoolean.
+     * </p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @param defaultValue a boolean.
+     * @return a boolean.
+     */
+    public static boolean parseBoolean(String text, boolean defaultValue) {
+        if ("FALSE".equalsIgnoreCase(text)) {
+            return false;
+        } else if ("TRUE".equalsIgnoreCase(text)) {
+            return true;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * <p>
+     * parseBoolean.
+     * </p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @return a boolean.
+     */
+    public static boolean parseBoolean(String text) {
+        return parseBoolean(text, false);
     }
 
 }

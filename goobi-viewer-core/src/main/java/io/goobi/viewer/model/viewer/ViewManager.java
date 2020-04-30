@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
@@ -2505,7 +2505,7 @@ public class ViewManager implements Serializable {
         }
 
         try {
-            Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+            Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
             if (!Files.isDirectory(sourceFileDir)) {
                 return false;
             }
@@ -2537,7 +2537,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public List<LabeledLink> getContentDownloadLinksForWork() throws IndexUnreachableException, DAOException, PresentationException {
-        Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
         if (!Files.isDirectory(sourceFileDir)) {
             return Collections.emptyList();
         }
@@ -2555,7 +2555,7 @@ public class ViewManager implements Serializable {
                         Boolean access = fileAccess.get(file.toPath().toString());
                         if (access != null && access) {
                             String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
-                                    + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
+                                    + URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
                             ret.add(new LabeledLink(file.getName(), url, 0));
                         }
                         ;
@@ -2593,7 +2593,7 @@ public class ViewManager implements Serializable {
 
         String page = String.valueOf(currentImageOrder);
         Path sourceFileDir = Paths
-                .get(Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(), page);
+                .get(DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(), page);
         if (!Files.isDirectory(sourceFileDir)) {
             return Collections.emptyList();
         }
@@ -2611,7 +2611,7 @@ public class ViewManager implements Serializable {
                                 .append("&page=")
                                 .append(page)
                                 .append("&file=")
-                                .append(URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING))
+                                .append(URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING))
                                 .toString();
                         ret.add(new LabeledLink(file.getName(), url, 0));
                     }

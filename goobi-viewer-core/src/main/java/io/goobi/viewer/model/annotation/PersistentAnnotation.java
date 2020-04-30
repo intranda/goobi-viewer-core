@@ -55,9 +55,9 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -701,7 +701,7 @@ public class PersistentAnnotation {
         int count = 0;
         try {
             Set<Path> filesToDelete = new HashSet<>();
-            Path annotationFolder = Helper.getDataFolder(targetPI, DataManager.getInstance().getConfiguration().getAnnotationFolder());
+            Path annotationFolder = DataFileTools.getDataFolder(targetPI, DataManager.getInstance().getConfiguration().getAnnotationFolder());
             logger.trace("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(annotationFolder)) {
                 logger.trace("Annotation folder not found - nothing to delete");

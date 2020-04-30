@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -55,9 +54,10 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -893,9 +893,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
-        String url = Helper.buildFullTextUrl(fulltextFileName);
+        String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
-            String text = Helper.getWebContentGET(url);
+            String text = NetTools.getWebContentGET(url);
             textContentType = FileTools.probeContentType(text);
             return text;
         } catch (HTTPException e) {
@@ -981,10 +981,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             logger.debug("Access denied for ALTO file {}", altoFileName);
             throw new AccessDeniedException("fulltextAccessDenied");
         }
-        String url = Helper.buildFullTextUrl(altoFileName);
+        String url = DataFileTools.buildFullTextUrl(altoFileName);
         logger.trace("ALTO URL: {}", url);
         try {
-            altoText = Helper.getWebContentGET(url);
+            altoText = NetTools.getWebContentGET(url);
             //Text from alto is always plain text
             textContentType = "text/plain";
             if (altoText != null) {
