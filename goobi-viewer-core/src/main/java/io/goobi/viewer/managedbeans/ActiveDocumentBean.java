@@ -44,7 +44,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
@@ -1434,7 +1434,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String reIndexRecordAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         if (viewManager != null) {
-            if (Helper.reIndexRecord(viewManager.getPi())) {
+            if (IndexerTools.reIndexRecord(viewManager.getPi())) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
@@ -1460,12 +1460,8 @@ public class ActiveDocumentBean implements Serializable {
                 return "";
             }
 
-            //            if (viewManager.isHasVolumes()) {
-            //                Messages.error("deleteRecord_failure_volumes_present");
-            //                return "";
-            //            }
-
-            if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+            if (IndexerTools.deleteRecord(viewManager.getPi(), keepTraceDocument,
+                    Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");
                 return "pretty:index";
             }

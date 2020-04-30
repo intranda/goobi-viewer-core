@@ -29,12 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.servlets.rest.download.DownloadResource;
-import io.goobi.viewer.servlets.rest.search.SearchHitsNotificationResource;
-import io.goobi.viewer.servlets.rest.utils.IndexingResource;
-import io.goobi.viewer.servlets.rest.utils.SitemapResource;
+import io.goobi.viewer.controller.NetTools;
 
 /**
  * <p>
@@ -59,7 +54,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         }
 
         String pathInfo = req.getPathInfo();
-        String ip = Helper.getIpAddress(req);
+        String ip = NetTools.getIpAddress(req);
 
         //  check against configured ip range
         if (!checkPermissions(ip, token, pathInfo)) {

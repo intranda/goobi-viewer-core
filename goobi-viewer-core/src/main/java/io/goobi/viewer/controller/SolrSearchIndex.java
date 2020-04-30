@@ -1000,9 +1000,9 @@ public final class SolrSearchIndex {
     private static Document getSolrSchemaDocument() {
         StringReader sr = null;
         try {
-            Helper.getWebContentGET(
+            NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
-            String responseBody = Helper.getWebContentGET(
+            String responseBody = NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
             sr = new StringReader(responseBody);
             return new SAXBuilder().build(sr);
@@ -1321,7 +1321,7 @@ public final class SolrSearchIndex {
 
         return list;
     }
-    
+
     /**
      * 
      * @return A list of all SOLR fields without the multivalues flag
@@ -1340,8 +1340,9 @@ public final class SolrSearchIndex {
         for (String name : keys) {
             FieldInfo info = fieldInfoMap.get(name);
             EnumSet<FieldFlag> flags = FieldInfo.parseFlags(info.getSchema());
-            if(!flags.contains(FieldFlag.MULTI_VALUED)) {
-                if(info.getDocs() > 0 && (flags.contains(FieldFlag.DOC_VALUES) || name.equals(SolrConstants.DOCSTRCT) || name.equals(SolrConstants.PI_ANCHOR))) {                    
+            if (!flags.contains(FieldFlag.MULTI_VALUED)) {
+                if (info.getDocs() > 0
+                        && (flags.contains(FieldFlag.DOC_VALUES) || name.equals(SolrConstants.DOCSTRCT) || name.equals(SolrConstants.PI_ANCHOR))) {
                     list.add(name);
                 }
             }
@@ -1349,7 +1350,6 @@ public final class SolrSearchIndex {
 
         return list;
     }
-
 
     /**
      * <p>

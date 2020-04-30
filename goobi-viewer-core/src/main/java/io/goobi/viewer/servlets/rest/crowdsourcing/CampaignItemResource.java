@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.servlets.rest.crowdsourcing;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.streams.Try;
@@ -49,7 +48,6 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
-import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
@@ -129,9 +127,8 @@ public class CampaignItemResource {
             item.setSource(manifestURI);
             item.setCampaign(campaign);
             return item;
-        } else {
-            throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
+        throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
 
     /**
@@ -162,7 +159,7 @@ public class CampaignItemResource {
             DataManager.getInstance().getDao().updateCampaign(campaign);
             // Re-index finished record to have its annotations indexed
             if (status.equals(CampaignRecordStatus.FINISHED)) {
-                Helper.triggerReIndexRecord(pi);
+                IndexerTools.triggerReIndexRecord(pi);
             }
         }
     }

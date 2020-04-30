@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.model.UserPasswordAuthenticationRequest;
@@ -66,7 +67,7 @@ public class XServiceProvider extends VuFindProvider {
         sbUrl.append(url).append("&bor_id=").append(borID).append("&verification=").append(password);
 
         UserPasswordAuthenticationRequest request = new UserPasswordAuthenticationRequest(borID, password);
-        String[] resp = Helper.callUrlGET(sbUrl.toString());
+        String[] resp = NetTools.callUrlGET(sbUrl.toString());
 
         LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), null, true);
         if ("200".equals(resp[0])) {

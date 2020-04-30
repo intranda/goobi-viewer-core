@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.TranskribusUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -543,7 +544,7 @@ public class UserBean implements Serializable {
 
             // Send
             try {
-                if (Helper.postMail(Collections.singletonList(user.getEmail()), ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
+                if (NetTools.postMail(Collections.singletonList(user.getEmail()), ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
                         sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
                     return true;
@@ -574,13 +575,13 @@ public class UserBean implements Serializable {
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
-                    requesterIp = Helper.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                    requesterIp = NetTools.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
-                        if (Helper.postMail(Collections.singletonList(email),
+                        if (NetTools.postMail(Collections.singletonList(email),
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
                                         .replace("{0}", requesterIp)
@@ -629,7 +630,7 @@ public class UserBean implements Serializable {
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {
-                    if (Helper.postMail(Collections.singletonList(email), ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
+                    if (NetTools.postMail(Collections.singletonList(email), ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(user)) {
                         email = null;
@@ -749,7 +750,7 @@ public class UserBean implements Serializable {
      */
     public String submitFeedbackAction() {
         try {
-            if (Helper.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
+            if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 Messages.info("feedbackSubmitted");
             } else {

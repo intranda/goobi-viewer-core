@@ -15,18 +15,12 @@
  */
 package io.goobi.viewer.controller;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.controller.SolrConstants;
 
 public class HelperTest {
 
@@ -100,15 +94,6 @@ public class HelperTest {
     }
 
     /**
-     * @see Helper#parseMultipleIpAddresses(String)
-     * @verifies filter multiple addresses correctly
-     */
-    @Test
-    public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
-        Assert.assertEquals("3.3.3.3", Helper.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
-    }
-
-    /**
      * @see Helper#buildFullTextUrl(String,String)
      * @verifies build url correctly
      */
@@ -117,7 +102,6 @@ public class HelperTest {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/alto/PPN123/00000001.xml/",
                 Helper.buildFullTextUrl("alto/PPN123/00000001.xml"));
     }
-    
 
     /**
      * @see Helper#buildFullTextUrl(String)
@@ -127,54 +111,6 @@ public class HelperTest {
     public void buildFullTextUrl_shouldEscapeSpacesCorrectly() throws Exception {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/alto/PPN123/00000001%20(1).xml/",
                 Helper.buildFullTextUrl("alto/PPN123/00000001 (1).xml"));
-    }
-
-    /**
-     * @see Helper#deleteRecord(String,boolean)
-     * @verifies create delete file correctly
-     */
-    @Test
-    public void deleteRecord_shouldCreateDeleteFileCorrectly() throws Exception {
-        Path hotfolder = Paths.get("src/test/resources", DataManager.getInstance().getConfiguration().getHotfolder());
-        if (!Files.isDirectory(hotfolder)) {
-            Files.createDirectory(hotfolder);
-        }
-        Path file = Paths.get(hotfolder.toAbsolutePath().toString(), "PPN123.delete");
-        try {
-            Assert.assertTrue(Helper.deleteRecord("PPN123", true, hotfolder));
-            Assert.assertTrue(Files.isRegularFile(file));
-        } finally {
-            if (Files.isRegularFile(file)) {
-                Files.delete(file);
-            }
-            if (!Files.isDirectory(hotfolder)) {
-                Files.delete(hotfolder);
-            }
-        }
-    }
-
-    /**
-     * @see Helper#deleteRecord(String,boolean)
-     * @verifies create purge file correctly
-     */
-    @Test
-    public void deleteRecord_shouldCreatePurgeFileCorrectly() throws Exception {
-        Path hotfolder = Paths.get("src/test/resources", DataManager.getInstance().getConfiguration().getHotfolder());
-        if (!Files.isDirectory(hotfolder)) {
-            Files.createDirectory(hotfolder);
-        }
-        Path file = Paths.get(hotfolder.toAbsolutePath().toString(), "PPN123.purge");
-        try {
-            Assert.assertTrue(Helper.deleteRecord("PPN123", false, hotfolder));
-            Assert.assertTrue(Files.isRegularFile(file));
-        } finally {
-            if (Files.isRegularFile(file)) {
-                Files.delete(file);
-            }
-            if (!Files.isDirectory(hotfolder)) {
-                Files.delete(hotfolder);
-            }
-        }
     }
 
     /**

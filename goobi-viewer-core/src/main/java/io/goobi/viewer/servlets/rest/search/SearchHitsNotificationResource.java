@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -125,7 +125,7 @@ public class SearchHitsNotificationResource {
                     String address = search.getOwner().getEmail();
                     if (StringUtils.isNotEmpty(address)) {
                         try {
-                            Helper.postMail(Collections.singletonList(address), subject, body);
+                            NetTools.postMail(Collections.singletonList(address), subject, body);
                         } catch (UnsupportedEncodingException | MessagingException e) {
                             logger.error(e.getMessage(), e);
                         }

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -842,7 +842,7 @@ public class CmsBean implements Serializable {
                 // Re-index related record
                 if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
                     try {
-                        Helper.reIndexRecord(selectedPage.getRelatedPI());
+                        IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
                         Messages.info("admin_recordReExported");
                     } catch (RecordNotFoundException e) {
                         logger.error(e.getMessage());
@@ -1094,7 +1094,7 @@ public class CmsBean implements Serializable {
                 try {
                     if (page.deleteExportedTextFiles() > 0) {
                         try {
-                            Helper.reIndexRecord(page.getRelatedPI());
+                            IndexerTools.reIndexRecord(page.getRelatedPI());
                             logger.debug("Re-indexing record: {}", page.getRelatedPI());
                         } catch (RecordNotFoundException e) {
                             logger.error(e.getMessage());

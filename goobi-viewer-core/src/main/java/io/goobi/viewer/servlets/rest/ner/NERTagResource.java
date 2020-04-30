@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -436,7 +437,7 @@ public class NERTagResource {
                     // Load ALTO via the REST service
                     String url = Helper.buildFullTextUrl(altoFileName);
                     try {
-                        String altoString = Helper.getWebContentGET(url);
+                        String altoString = NetTools.getWebContentGET(url);
                         Integer pageOrder = getPageOrder(solrDoc);
                         List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
                         for (TagCount tagCount : tags) {

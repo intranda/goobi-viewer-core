@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -112,7 +112,7 @@ public class IndexingResource {
                             ret.put("status", HttpServletResponse.SC_FORBIDDEN);
                             ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure_volumes_present", null));
                         }
-                        if (Helper.deleteRecord(params.getPi(), params.isCreateTraceDocument(),
+                        if (IndexerTools.deleteRecord(params.getPi(), params.isCreateTraceDocument(),
                                 Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                             ret.put("status", HttpServletResponse.SC_OK);
                             ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_success", null));
