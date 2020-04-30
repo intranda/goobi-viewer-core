@@ -331,7 +331,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public String getQueryEscapedLink() {
         String field = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
-        //        if (field.startsWith(SolrConstants.COORDS_)) {
+        //        if (field.startsWith(SolrConstants.WKT_)) {
         //            String[] valueSplit = value.split(",");
         //            if (valueSplit.length > 1) {
         //                // Polygon

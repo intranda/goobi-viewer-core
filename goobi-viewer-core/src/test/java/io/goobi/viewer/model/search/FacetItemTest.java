@@ -105,8 +105,8 @@ public class FacetItemTest extends AbstractTest {
     //     */
     //    @Test
     //    public void getQueryEscapedLink_shouldConstructPolygonLinkCorrectly() throws Exception {
-    //        FacetItem item = new FacetItem("COORDS_SEARCH:0 0, 0 90, 90 90, 90 0, 0 0", false);
-    //        Assert.assertEquals("COORDS_SEARCH:\"IsWithin(POLYGON((0 0, 0 90, 90 90, 90 0, 0 0))) distErrPct=0\"", item.getQueryEscapedLink());
+    //        FacetItem item = new FacetItem("WKT_COORDS:0 0, 0 90, 90 90, 90 0, 0 0", false);
+    //        Assert.assertEquals("WKT_:\"IsWithin(POLYGON((0 0, 0 90, 90 90, 90 0, 0 0))) distErrPct=0\"", item.getQueryEscapedLink());
     //    }
 
     /**
