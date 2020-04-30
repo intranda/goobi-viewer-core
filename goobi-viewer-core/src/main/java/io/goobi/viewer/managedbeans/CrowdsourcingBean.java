@@ -44,7 +44,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -505,7 +505,7 @@ public class CrowdsourcingBean implements Serializable {
                 try {
                     if (annotation.deleteExportedTextFiles() > 0) {
                         try {
-                            Helper.reIndexRecord(annotation.getTargetPI());
+                            IndexerTools.reIndexRecord(annotation.getTargetPI());
                             logger.debug("Re-indexing record: {}", annotation.getTargetPI());
                         } catch (RecordNotFoundException e) {
                             logger.error(e.getMessage());
@@ -860,9 +860,8 @@ public class CrowdsourcingBean implements Serializable {
                 if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())
                         || !getTargetCampaign().isEligibleToEdit(getTargetIdentifier(), getTargetRecordStatus(), userBean.getUser())) {
                     return "pretty:crowdCampaigns";
-                } else {
-                    return "";
                 }
+                return "";
             } catch (DAOException e) {
                 logger.error(e.toString(), e);
                 return "";

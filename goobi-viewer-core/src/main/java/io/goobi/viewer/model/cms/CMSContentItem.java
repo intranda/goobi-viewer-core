@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -1625,7 +1626,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         }
 
         List<File> ret = new ArrayList<>(2);
-        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + Helper.SUFFIX_CMS);
+        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + IndexerTools.SUFFIX_CMS);
         if (!Files.isDirectory(cmsDataDir)) {
             Files.createDirectory(cmsDataDir);
             logger.trace("Created overview page subdirectory: {}", cmsDataDir.toAbsolutePath().toString());
