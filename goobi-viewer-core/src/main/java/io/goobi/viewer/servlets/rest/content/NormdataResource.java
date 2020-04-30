@@ -41,6 +41,7 @@ import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -133,13 +134,13 @@ public class NormdataResource {
             }
         }
 
-        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(url);
-        if (marcRecord == null) {
+        Record record = NormDataImporter.getSingleRecord(url);
+        if (record == null) {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        List<NormData> normDataList = marcRecord.getNormDataList();
-        if (normDataList == null) {
+        List<NormData> normDataList = record.getNormDataList();
+        if (normDataList == null || normDataList.isEmpty()) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
         }
