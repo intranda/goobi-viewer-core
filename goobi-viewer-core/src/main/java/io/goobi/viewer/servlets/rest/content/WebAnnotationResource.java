@@ -45,7 +45,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -111,7 +111,7 @@ public class WebAnnotationResource {
     public IAnnotation getAnnotation(@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         Comment comment = DataManager.getInstance().getDao().getComment(id);
@@ -175,7 +175,7 @@ public class WebAnnotationResource {
     public AnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page) throws PresentationException,
             DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
@@ -216,7 +216,7 @@ public class WebAnnotationResource {
             DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
 
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);

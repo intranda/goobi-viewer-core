@@ -60,9 +60,10 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -1203,7 +1204,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                         case CMSMediaItem.CONTENT_TYPE_XML:
                             contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
                             try {
-                                String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
+                                String format = XmlTools.determineFileFormat(contentString, StringTools.DEFAULT_ENCODING);
                                 if (format != null) {
                                     switch (format.toLowerCase()) {
                                         case "tei":
@@ -1863,7 +1864,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         int count = 0;
         try {
             Set<Path> filesToDelete = new HashSet<>();
-            Path cmsTextFolder = Helper.getDataFolder(relatedPI, DataManager.getInstance().getConfiguration().getCmsTextFolder());
+            Path cmsTextFolder = DataFileTools.getDataFolder(relatedPI, DataManager.getInstance().getConfiguration().getCmsTextFolder());
             logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(cmsTextFolder)) {
                 logger.trace("CMS text folder not found - nothing to delete");

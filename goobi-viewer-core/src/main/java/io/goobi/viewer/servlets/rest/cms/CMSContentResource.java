@@ -94,7 +94,7 @@ public class CMSContentResource {
     public String getContentHtml(@PathParam("pageId") Long pageId, @PathParam("language") String language, @PathParam("contentId") String contentId)
             throws IOException, DAOException, ServletException {
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
         String output = createResponseInThread(TargetType.CONTENT, pageId, language, contentId, REQUEST_TIMEOUT);
         return wrap(output, false);

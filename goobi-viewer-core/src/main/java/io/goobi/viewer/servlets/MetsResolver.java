@@ -32,8 +32,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -115,7 +115,8 @@ public class MetsResolver extends HttpServlet {
             String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
             String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
 
-            String filePath = Helper.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
+            String filePath =
+                    DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
 
             response.setContentType("text/xml");
             File file = new File(filePath);

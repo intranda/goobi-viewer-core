@@ -54,8 +54,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -1635,7 +1635,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isNotEmpty(htmlFragment)) {
             File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".xml");
             try {
-                FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
+                FileUtils.writeStringToFile(file, htmlFragment, StringTools.DEFAULT_ENCODING);
                 logger.debug("Wrote HTML fragment: {}", file.getName());
                 ret.add(file);
             } catch (IOException e) {
@@ -1652,7 +1652,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             }
             if (StringUtils.isNotEmpty(html)) {
                 File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
-                FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
+                FileUtils.writeStringToFile(file, html, StringTools.DEFAULT_ENCODING);
                 logger.debug("Wrote media content: {}", file.getName());
                 ret.add(file);
             }

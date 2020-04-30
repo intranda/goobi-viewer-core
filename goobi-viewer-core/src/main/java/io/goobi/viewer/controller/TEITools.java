@@ -48,7 +48,7 @@ public class TEITools {
             return null;
         }
 
-        Document doc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
+        Document doc = XmlTools.getDocumentFromString(tei, StringTools.DEFAULT_ENCODING);
         if (doc == null) {
             return null;
         }
@@ -86,7 +86,7 @@ public class TEITools {
             return null;
         }
 
-        Document teiDoc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
+        Document teiDoc = XmlTools.getDocumentFromString(tei, StringTools.DEFAULT_ENCODING);
         Document htmlDoc = XmlTools.transformViaXSLT(teiDoc,
                 DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/html5/html5.xsl", null);
         if (htmlDoc != null) {

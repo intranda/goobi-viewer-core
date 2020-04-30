@@ -33,8 +33,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -168,7 +168,7 @@ public class PDFDownloadJob extends DownloadJob {
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        String mediaRepository = Helper.getDataRepositoryPathForRecord(pi);
+        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
         logger.debug("Calling taskManager at " + taskManagerUrl);
         File metsFile = new File(mediaRepository + "/" + DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pi + ".xml");
         HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,

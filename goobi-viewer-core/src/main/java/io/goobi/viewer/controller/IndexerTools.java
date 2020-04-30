@@ -128,7 +128,7 @@ public class IndexerTools {
             return false;
         }
 
-        String filePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, recordType);
+        String filePath = DataFileTools.getSourceFilePath(pi + ".xml", dataRepository, recordType);
         File recordXmlFile = new File(filePath);
         if (!recordXmlFile.isFile()) {
             logger.error("Cannot re-index '{}': record not found.", recordXmlFile.getAbsolutePath());
@@ -190,7 +190,7 @@ public class IndexerTools {
                         try {
                             String json = annotation.getAsAnnotation().toString();
                             String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
-                            FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(Helper.DEFAULT_ENCODING));
+                            FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(StringTools.DEFAULT_ENCODING));
                         } catch (JsonParseException e) {
                             logger.error(e.getMessage(), e);
                         } catch (JsonMappingException e) {

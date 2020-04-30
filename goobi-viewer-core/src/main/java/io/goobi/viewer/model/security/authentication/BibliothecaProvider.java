@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthenticationRequest;
@@ -72,7 +72,7 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
         LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), null, true);
         if ("200".equals(resp[0])) {
             try {
-                BibliothecaAuthenticationResponse response = new BibliothecaAuthenticationResponse(resp[1], Helper.DEFAULT_ENCODING);
+                BibliothecaAuthenticationResponse response = new BibliothecaAuthenticationResponse(resp[1], StringTools.DEFAULT_ENCODING);
                 Optional<User> user = getUser(request, response);
                 result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !response.isValid());
             } catch (JDOMException e) {

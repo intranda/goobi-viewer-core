@@ -58,12 +58,13 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.language.LocaleComparator;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -122,7 +123,7 @@ public final class SearchHelper {
     /** Constant <code>patternNotBrackets</code> */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
     /** Constant <code>patternPhrase</code> */
-    public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
+    public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
@@ -209,7 +210,7 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = Helper.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
+                    fulltext = DataFileTools.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
                             (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
                             true, request);
                 } catch (AccessDeniedException e) {

@@ -195,7 +195,7 @@ public class CMSMediaResource {
                 case CMSMediaItem.CONTENT_TYPE_XML:
                     try {
                         String encoding = "windows-1252";
-                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
+                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, StringTools.DEFAULT_ENCODING);
                         return StringTools.renameIncompatibleCSSClasses(ret);
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());

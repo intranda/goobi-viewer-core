@@ -498,7 +498,7 @@ public final class SolrSearchIndex {
         String query = new StringBuilder(fieldName).append(":*").append(querySuffix).toString();
         logger.trace("generateFilteredTagCloud query: {}", query);
         // Pattern p = Pattern.compile("\\w+");
-        Pattern p = Pattern.compile(Helper.REGEX_WORDS);
+        Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
 
         SolrQuery solrQuery = new SolrQuery(query);

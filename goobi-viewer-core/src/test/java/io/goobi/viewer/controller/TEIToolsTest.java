@@ -37,7 +37,7 @@ public class TEIToolsTest extends AbstractTest {
     //    @Test
     //    public void convertTeiToHtml_shouldConvertTeiToHtmlCorrectly() throws Exception {
     //        Document doc = XmlTools.readXmlFile(Paths.get("src/test/resources/data/sample_tei.xml"));
-    //        String result = TEITools.convertTeiToHtml(XmlTools.getStringFromElement(doc, Helper.DEFAULT_ENCODING));
+    //        String result = TEITools.convertTeiToHtml(XmlTools.getStringFromElement(doc, StringTools.DEFAULT_ENCODING));
     //        Assert.assertTrue(StringUtils.isNotEmpty(result));
     //        System.out.println(result);
     //    }
@@ -61,7 +61,7 @@ public class TEIToolsTest extends AbstractTest {
     public void getTeiFulltext_shouldExtractFulltextCorrectly() throws Exception {
         Path path = Paths.get("src/test/resources/data/viewer/tei/DE_2013_Riedel_PolitikUndCo_241__248/DE_2013_Riedel_PolitikUndCo_241__248_eng.xml");
         Assert.assertTrue(Files.isRegularFile(path));
-        String tei = FileTools.getStringFromFile(path.toFile(), Helper.DEFAULT_ENCODING);
+        String tei = FileTools.getStringFromFile(path.toFile(), StringTools.DEFAULT_ENCODING);
         Assert.assertFalse(StringUtils.isEmpty(tei));
         Assert.assertTrue(tei.contains("<note>"));
         String text = TEITools.getTeiFulltext(tei);

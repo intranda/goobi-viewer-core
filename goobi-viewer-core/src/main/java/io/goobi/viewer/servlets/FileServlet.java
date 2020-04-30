@@ -34,8 +34,8 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -179,27 +179,7 @@ public class FileServlet extends HttpServlet implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Path getFile(String pi, String fileName, String page) throws PresentationException, IndexUnreachableException {
-        //        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        //        StringBuilder sbFilePath = new StringBuilder();
-        //        if (StringUtils.isNotEmpty(dataRepository)) {
-        //            sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
-        //                    File.separator);
-        //        } else {
-        //            sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
-        //        }
-        //        sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
-        //        sbFilePath.append(File.separator).append(pi).append(File.separator);
-        //
-        //        if (page != null) {
-        //            sbFilePath.append(page).append(File.separator);
-        //        }
-        //        sbFilePath.append(fileName);
-        //        
-        //        Path path = Paths.get(sbFilePath.toString());
-        //        
-        //        return path;
-
-        return Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, fileName);
+        return DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, fileName);
     }
 
     /** {@inheritDoc} */

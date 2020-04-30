@@ -196,7 +196,7 @@ public class TranskribusUtils {
         params.put("pw", password);
         String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null);
 
-        return XmlTools.getDocumentFromString(response, Helper.DEFAULT_ENCODING);
+        return XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
     }
 
     //    public static Document oauth(String endpoint, String clientId) {
@@ -367,7 +367,7 @@ public class TranskribusUtils {
         }
 
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CREATE_DOC_FROM_METS_URL.replace("{collId}", userCollectionId));
-        sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, Helper.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
+        sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, StringTools.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", session.getSessionId());
         String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null);

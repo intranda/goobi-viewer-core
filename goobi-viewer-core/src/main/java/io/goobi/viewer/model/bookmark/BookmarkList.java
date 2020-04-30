@@ -45,9 +45,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -491,7 +491,7 @@ public class BookmarkList implements Serializable {
      * Generates a persistent share key for public sharing via link.
      */
     public void generateShareKey() {
-        setShareKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
+        setShareKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
     }
 
     /**
@@ -674,7 +674,7 @@ public class BookmarkList implements Serializable {
         if (name != null) {
             return StringEscapeUtils.escapeHtml4(name);
         }
-        
+
         return "";
     }
 

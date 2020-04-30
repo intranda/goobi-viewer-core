@@ -128,7 +128,7 @@ public class XmlTools {
      * @throws java.io.IOException if any.
      */
     public static File writeXmlFile(Document doc, String filePath) throws FileNotFoundException, IOException {
-        return FileTools.getFileFromString(getStringFromElement(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
+        return FileTools.getFileFromString(getStringFromElement(doc, StringTools.DEFAULT_ENCODING), filePath, StringTools.DEFAULT_ENCODING, false);
     }
 
     /**
@@ -143,7 +143,7 @@ public class XmlTools {
      */
     public static Document getDocumentFromString(String string, String encoding) throws JDOMException, IOException {
         if (encoding == null) {
-            encoding = Helper.DEFAULT_ENCODING;
+            encoding = StringTools.DEFAULT_ENCODING;
         }
 
         byte[] byteArray = null;
@@ -176,7 +176,7 @@ public class XmlTools {
             throw new IllegalArgumentException("element may not be null");
         }
         if (encoding == null) {
-            encoding = Helper.DEFAULT_ENCODING;
+            encoding = StringTools.DEFAULT_ENCODING;
         }
         Format format = Format.getRawFormat();
         XMLOutputter outputter = new XMLOutputter(format);

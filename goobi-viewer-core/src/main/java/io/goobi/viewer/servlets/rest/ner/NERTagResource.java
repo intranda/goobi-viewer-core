@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.ALTOTools;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -435,7 +435,7 @@ public class NERTagResource {
                     }
                     //TODO: Load directly from file if on same server?
                     // Load ALTO via the REST service
-                    String url = Helper.buildFullTextUrl(altoFileName);
+                    String url = DataFileTools.buildFullTextUrl(altoFileName);
                     try {
                         String altoString = NetTools.getWebContentGET(url);
                         Integer pageOrder = getPageOrder(solrDoc);

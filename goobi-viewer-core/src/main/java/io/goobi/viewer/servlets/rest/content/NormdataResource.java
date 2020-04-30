@@ -105,7 +105,7 @@ public class NormdataResource {
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         logger.trace("getNormData: {}", url);
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         Locale locale = Locale.getDefault();
