@@ -575,7 +575,7 @@ public class UserBean implements Serializable {
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
-                    requesterIp = Helper.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                    requesterIp = NetTools.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
 

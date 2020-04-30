@@ -34,6 +34,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +68,10 @@ public class NetTools {
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
     private static final int HTTP_TIMEOUT = 30000;
+    /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
+    public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
+    /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
+    public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
 
     /**
      * <p>
@@ -310,4 +315,69 @@ public class NetTools {
 
         return true;
     }
+
+    /**
+     * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the last in the list is
+     * returned.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String getIpAddress(HttpServletRequest request) {
+        String address = ADDRESS_LOCALHOST_IPV4;
+        if (request != null) {
+            //            if (logger.isTraceEnabled()) {
+            //                Enumeration<String> headerNames = request.getHeaderNames();
+            //                while (headerNames.hasMoreElements()) {
+            //                    String headerName = headerNames.nextElement();
+            //                    logger.trace("request header '{}':'{}'", headerName, request.getHeader(headerName));
+            //                }
+            //            }
+
+            // Prefer address from x-forwarded-for
+            address = request.getHeader("x-forwarded-for");
+            if (address == null) {
+                address = request.getHeader("X-Forwarded-For");
+            }
+            if (address == null) {
+                address = request.getRemoteAddr();
+            }
+        }
+
+        if (address == null) {
+            address = ADDRESS_LOCALHOST_IPV4;
+            logger.warn("Could not extract remote IP address, using localhost.");
+        }
+
+        // logger.trace("Pre-parsed IP address(es): {}", address);
+        return
+
+        parseMultipleIpAddresses(address);
+    }
+
+    /**
+     * <p>
+     * parseMultipleIpAddresses.
+     * </p>
+     *
+     * @param address a {@link java.lang.String} object.
+     * @should filter multiple addresses correctly
+     * @return a {@link java.lang.String} object.
+     */
+    protected static String parseMultipleIpAddresses(String address) {
+        if (address == null) {
+            throw new IllegalArgumentException("address may not be null");
+        }
+
+        if (address.contains(",")) {
+            String[] addressSplit = address.split(",");
+            if (addressSplit.length > 0) {
+                address = addressSplit[addressSplit.length - 1].trim();
+            }
+        }
+
+        // logger.trace("Parsed IP address: {}", address);
+        return address;
+    }
+
 }

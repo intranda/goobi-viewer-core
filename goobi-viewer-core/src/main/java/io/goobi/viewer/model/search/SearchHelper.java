@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -908,7 +909,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static void updateFilterQuerySuffix(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), Helper.getIpAddress(request));
+        String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request));
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -1170,7 +1171,7 @@ public final class SearchHelper {
         if (term.length() < 2) {
             return phrase;
         }
-        
+
         StringBuilder sb = new StringBuilder();
         String normalizedPhrase = normalizeString(phrase);
         String normalizedTerm = normalizeString(term);

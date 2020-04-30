@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -240,7 +240,7 @@ public class AccessConditionUtils {
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
                 boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), query[0]);
+                        privilegeName, user, NetTools.getIpAddress(request), query[0]);
                 ret.put(pageFileName, access);
             }
             return ret;
@@ -277,7 +277,7 @@ public class AccessConditionUtils {
             }
             Map<String, Boolean> ret = new HashMap<>(page.getAccessConditions().size());
             boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), page.getAccessConditions(),
-                    privilegeName, user, Helper.getIpAddress(request), query);
+                    privilegeName, user, NetTools.getIpAddress(request), query);
             return access;
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -339,7 +339,7 @@ public class AccessConditionUtils {
                     }
                 }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
+                        privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
@@ -417,7 +417,7 @@ public class AccessConditionUtils {
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
                             ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    Helper.getIpAddress(request), sbQuery.toString()));
+                                    NetTools.getIpAddress(request), sbQuery.toString()));
                         }
                     }
                     long end = System.nanoTime();
@@ -503,7 +503,7 @@ public class AccessConditionUtils {
 
                 Map<String, Boolean> lokalAccessMap =
                         checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString(), files);
+                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, NetTools.getIpAddress(request), sbQuery.toString(), files);
                 accessMap.putAll(lokalAccessMap);
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -559,7 +559,7 @@ public class AccessConditionUtils {
                     }
                 }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
+                        privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
@@ -592,7 +592,7 @@ public class AccessConditionUtils {
             }
         }
         return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions, privilegeName, user,
-                Helper.getIpAddress(request), query);
+                NetTools.getIpAddress(request), query);
     }
 
     /**
@@ -849,7 +849,7 @@ public class AccessConditionUtils {
                 } else {
                     // Check IP range
                     if (StringUtils.isNotEmpty(remoteAddress)) {
-                        if ((Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
+                        if ((NetTools.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || NetTools.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
                                 && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                             logger.debug("Access granted to localhost");
                             accessMap.put(key, Boolean.TRUE);

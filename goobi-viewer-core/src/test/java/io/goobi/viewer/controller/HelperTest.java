@@ -100,15 +100,6 @@ public class HelperTest {
     }
 
     /**
-     * @see Helper#parseMultipleIpAddresses(String)
-     * @verifies filter multiple addresses correctly
-     */
-    @Test
-    public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
-        Assert.assertEquals("3.3.3.3", Helper.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
-    }
-
-    /**
      * @see Helper#buildFullTextUrl(String,String)
      * @verifies build url correctly
      */
@@ -117,7 +108,6 @@ public class HelperTest {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/alto/PPN123/00000001.xml/",
                 Helper.buildFullTextUrl("alto/PPN123/00000001.xml"));
     }
-    
 
     /**
      * @see Helper#buildFullTextUrl(String)
