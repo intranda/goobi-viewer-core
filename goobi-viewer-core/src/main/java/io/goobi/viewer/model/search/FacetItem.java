@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.SearchBean;

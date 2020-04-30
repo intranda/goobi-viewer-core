@@ -23,10 +23,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.controller.StringTools;
-
 public class StringToolsTest {
 
     /**

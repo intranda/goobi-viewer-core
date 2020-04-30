@@ -24,9 +24,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.controller.TEITools;
 
 public class TEIToolsTest extends AbstractTest {
 

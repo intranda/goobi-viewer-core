@@ -67,7 +67,7 @@ import io.goobi.viewer.exceptions.HTTPException;
  */
 public class NetTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(Helper.class);
+    private static final Logger logger = LoggerFactory.getLogger(NetTools.class);
 
     private static final int HTTP_TIMEOUT = 30000;
     /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
