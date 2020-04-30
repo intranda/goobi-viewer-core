@@ -1158,21 +1158,25 @@ this.setView = function(view) {
 }.bind(this)
 
 this.resetFeatures = function() {
-    this.markerIdCounter = 1;
     this.setFeatures(this.question.annotations);
-    if(this.markers.length > 0) {
-   		this.setView(this.markers[0].view);
+    if(this.geoMap.getMarkerCount() > 0) {
+        let zoom = 12;
+        if(this.geoMap.getMarkerCount() == 1) {
+            let marker = this.geoMap.getMarker(this.question.annotations[0].markerId);
+            if(marker) {
+            	zoom = marker.feature.view.zoom;
+            }
+        }
+        let featureView = this.geoMap.getViewAroundFeatures(zoom);
+	    this.geoMap.setView(featureView);
     }
 }.bind(this)
 
 this.setFeatures = function(annotations) {
-    this.markers.forEach((marker) => {
-        marker.remove();
-    })
-    this.markers = [];
+    this.geoMap.resetMarkers();
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
-        let markerId = this.addGeoJson(anno.body);
-        anno.markerId = markerId;
+        let marker = this.geoMap.addMarker(anno.body);
+        anno.markerId = marker.getId();
     });
 }.bind(this)
 
@@ -1192,7 +1196,7 @@ this.updateAnnotation = function(anno) {
 this.focusAnnotation = function(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.getMarker(anno.markerId);
+        let marker = this.geoMap.getMarker(anno.markerId);
         if(marker) {
 	        console.log("focus ", anno, marker);
 
@@ -1229,130 +1233,72 @@ this.setNameFromEvent = function(event) {
 }.bind(this)
 
 this.initMap = function() {
-    this.map = new L.Map('geoMap_' + this.opts.index);
-    var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      minZoom: 0,
-      maxZoom: 20,
-      attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-    });
+    this.geoMap = new viewerJS.GeoMap({
+        mapId : "geoMap_" + this.opts.index,
+        initialView : {
+            zoom: 5,
+            center: [11.073397, 49.451993]
+        },
+        allowMovingFeatures: !this.opts.item.isReviewMode(),
+        language: Crowdsourcing.translator.language,
+        popover: undefined,
+        emptyMarkerMessage: undefined,
+        popoverOnHover: false,
+    })
+    this.geoMap.init();
 
-    this.map.setView(new L.LatLng(49.451993, 11.073397), 5);
-    this.map.addLayer(osm);
-
-    this.locations = L.geoJSON([], {
-        pointToLayer: function(geoJsonPoint, latlng) {
-            let marker = L.marker(latlng, {
-                draggable: !this.opts.item.isReviewMode()
-            });
-
-            marker.id = geoJsonPoint.id;
-            marker.view = geoJsonPoint.view;
-
-            marker.getId = function() {
-                return this.id;
+    this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
+    this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
+    this.geoMap.onMapClick.subscribe(geoJson => {
+        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
+            let marker = this.geoMap.addMarker(geoJson);
+            if(this.annotationToMark) {
+                this.annotationToMark.markerId = marker.getId();
+                this.updateFeature(marker.getId());
+            } else {
+            	this.addFeature(marker.getId());
             }
-
-            marker.on("dragend", function(event) {
-                var position = marker.getLatLng();
-                this.moveFeature(marker, position);
-            }.bind(this));
-
-            marker.on("click", function(event) {
-                this.removeFeature(marker);
-            }.bind(this));
-
-            this.markers.push(marker);
-
-            return marker;
-        }.bind(this)
-    }).addTo(this.map);
-
-    this.map.on("click", function(e) {
-        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency)) {
-	        var location= e.latlng;
-	        this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
 	        this.addMarkerActive = !this.question.isRegionTarget();
 	        if(this.question.areaSelector) {
 	            this.question.areaSelector.enableDrawer();
 	        }
         }
-    }.bind(this))
-
-}.bind(this)
-
-this.createGeoJson = function(location, zoom, center) {
-	let id = this.markerIdCounter++;
-    var geojsonFeature = {
-        	"type": "Feature",
-        	"id": id,
-        	"properties": {
-        		"name": "",
-        	},
-        	"geometry": {
-        		"type": "Point",
-        		"coordinates": [location.lng, location.lat]
-        	},
-        	"view": {
-        	    "zoom": zoom,
-        		"center": [location.lat, location.lng]
-        	}
-        };
-    this.locations.addData(geojsonFeature);
-    if(this.annotationToMark) {
-        this.annotationToMark.markerId = id;
-        this.updateFeature(id);
-    } else {
-    	this.addFeature(id);
-    }
+    })
 }.bind(this)
 
 this.getAnnotation = function(id) {
     return this.question.annotations.find(anno => anno.markerId == id);
 }.bind(this)
 
-this.getMarker = function(id) {
-    return this.markers.find(marker => marker.getId() == id);
-}.bind(this)
-
-this.addGeoJson = function(geoJson) {
-    let id = this.markerIdCounter++;
-    geoJson.id = id;
-    this.locations.addData(geoJson);
-    return id;
-}.bind(this)
-
 this.updateFeature = function(id) {
     let annotation = this.getAnnotation(id);
-    let marker = this.getMarker(annotation.markerId);
-    annotation.setBody(marker.toGeoJSON());
-    annotation.setView(marker.view);
+    let marker = this.geoMap.getMarker(annotation.markerId);
+    annotation.setBody(marker.feature);
+    annotation.setView(marker.feature.view);
     this.question.saveToLocalStorage();
 }.bind(this)
 
 this.addFeature = function(id) {
+    let marker = this.geoMap.getMarker(id);
     let annotation = this.question.addAnnotation();
     annotation.markerId = id;
-    let marker = this.getMarker(id);
-    annotation.setBody(marker.toGeoJSON());
-    annotation.setView(marker.view);
+    annotation.setBody(marker.feature);
+    annotation.setView(marker.feature.view);
     this.question.saveToLocalStorage();
 }.bind(this)
 
-this.moveFeature = function(marker, location) {
-    marker.setLatLng(location);
-    let annotation = this.getAnnotation(marker.getId());
+this.moveFeature = function(feature) {
+    let annotation = this.getAnnotation(feature.id);
     if(annotation) {
-        annotation.setGeometry(marker.toGeoJSON().geometry);
-        annotation.setView({zoom: this.map.getZoom(), center: [marker.getLatLng().lat, marker.getLatLng().lng]});
+        annotation.setGeometry(feature.geometry);
+        annotation.setView(feature.view);
     }
     this.question.saveToLocalStorage();
 }.bind(this)
 
-this.removeFeature = function(marker) {
-    marker.remove();
-    let index = this.markers.indexOf(marker);
-    this.markers.splice(index, 1);
-    let annotation = this.getAnnotation(marker.getId());
+this.removeFeature = function(feature) {
+    this.geoMap.removeMarker(feature);
+	let annotation = this.getAnnotation(feature.id);
     if(annotation) {
 	    this.question.deleteAnnotation(annotation);
 	    this.question.saveToLocalStorage();
