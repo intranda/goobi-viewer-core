@@ -77,9 +77,11 @@ public class AdminBean implements Serializable {
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
     private TableDataProvider<User> lazyModelUsers;
+    @Deprecated
     private TableDataProvider<UserGroup> lazyModelUserGroups;
     private TableDataProvider<LicenseType> lazyModelLicenseTypes;
     private TableDataProvider<LicenseType> lazyModelCoreLicenseTypes;
+    @Deprecated
     private TableDataProvider<IpRange> lazyModelIpRanges;
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -775,6 +777,16 @@ public class AdminBean implements Serializable {
     }
 
     // IpRange
+    
+    
+    /**
+     * 
+     * @return all IpRanges from the database
+     * @throws DAOException 
+     */
+    public List<IpRange> getAllIpRanges() throws DAOException {
+        return DataManager.getInstance().getDao().getAllIpRanges();
+    }
 
     /**
      * <p>
