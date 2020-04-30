@@ -20,20 +20,21 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminUser">
                 <h:panelGroup rendered="#{userBean.admin == true and adminBean.currentUser != null}">
-                    <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
+                    <ui:fragment rendered="#{adminBean.currentUser.id == null}">
                         <h2 class="admin__content-inner-title">#{msg.admin__user_create_new}</h2>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
+                    </ui:fragment>
+                    <ui:fragment rendered="#{adminBean.currentUser.id != null}">
                         <h2 class="admin__content-inner-title">#{msg.admin__user_edit}</h2>
-                    </h:panelGroup>
+                    </ui:fragment>
 
                     <div class="admin__content-inner-content">
     
                     <!-- PROFILE -->
                     <h:form id="editUserGeneral" styleClass="form-horizontal" role="form" prependId="false">
-                    <h3>#{msg.user__profile}</h3>
-                    <!-- TODO proper css class -->
-                    <div class="cms-select-template__template">
+                        <h3>#{msg.user__profile}</h3>
+                        <!-- TODO proper css class -->
+                        <div class="cms-select-template__template">
+                        
                         <!-- prevent autocomplete in IE, Chrome and Firefox -->
                         <input type="text" class="hidden" />
                         <input type="password" class="hidden" />
@@ -123,7 +124,6 @@
                                         #{msg.admin_superuserNotice}
                                     </label>
                                 </div>
-<!--                                 <span class="help-block">#{msg.admin_superuserNotice}</span> -->
                             </div>
                         </div>
                         
@@ -138,21 +138,9 @@
 <!--                                 </div> -->
 <!--                             </div> -->
 <!--                         </div> -->
-<!--                         <div class="form-group"> -->
-<!--                             <div class="col-sm-offset-4 col-sm-8"> -->
-<!--                                 <div class="checkbox"> -->
-<!--                                     <label>  -->
-<!--                                         <h:selectBooleanCheckbox value="#{adminBean.currentUser.suspended}" /> #{msg.user_accountSuspended} -->
-<!--                                     </label> -->
-<!--                                 </div> -->
-<!--                             </div> -->
-<!--                         </div> -->
                         
                         <!-- ACTION -->
                         <div class="text-right">
-<!--                             <h:commandLink id="cancelUserGeneralButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true"> -->
-<!--                                 <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" /> -->
-<!--                             </h:commandLink> -->
                             <h:commandLink id="saveUserGeneralButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                         </div>
                         </div>
@@ -160,7 +148,13 @@
 
                         <!-- PASSWORD -->
                         <h:form id="editUserPassword" styleClass="form-horizontal" role="form" prependId="false">
-                                   <h3>#{msg.changePassword}</h3>
+                            <ui:fragment rendered="#{adminBean.currentUser.id == null}">
+                                <h3>#{msg.password}</h3>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{adminBean.currentUser.id != null}">
+                                <h3>#{msg.changePassword}</h3>
+                            </ui:fragment>
+                            
                         <!-- TODO proper css class -->
                         <div class="cms-select-template__template">
                         <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
@@ -201,30 +195,34 @@
                         </h:panelGroup>
                         
                         <div class="text-right">
-<!--                             <h:commandLink id="cancelUserPasswordButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true"> -->
-<!--                                 <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" /> -->
-<!--                             </h:commandLink> -->
+                            <h:commandLink  rendered="#{adminBean.currentUser.id != null}"
+                                id="cancelUserPasswordButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true">
+                                <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" />
+                            </h:commandLink>
                             <h:commandLink id="saveUserPasswordButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                         </div>
                         </div>
                         </h:form>
                         
                         <!-- DELETE USER -->
-                        <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
-                            <h3>#{msg.admin__delete_user_account}</h3>
-                            <!-- TODO proper css class -->
-                            <div class="cms-select-template__template">
-                                <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
-                                    <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
-                                    <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}" />
-                                </h:selectOneRadio>
+                        <ui:fragment rendered="#{adminBean.currentUser.id != null}">
+                            <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
+                                <h3>#{msg.admin__delete_user_account}</h3>
+                                <!-- TODO proper css class -->
+                                <div class="cms-select-template__template">
+                                    <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
+                                        <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
+                                        <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}"
+                                            itemDisabled="#{adminBean.currentUser.cmsCreator}" />
+                                    </h:selectOneRadio>
 
-                                <div class="text-right">
-                                    <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"
-                                        action="#{adminBean.deleteUserAction(user, false)}" />
+                                    <div class="text-right">
+                                        <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"
+                                            action="#{adminBean.deleteUserAction(user, false)}" />
+                                    </div>
                                 </div>
-                            </div>
-                        </h:form>
+                            </h:form>
+                        </ui:fragment>
                         
                     </div>
                 </h:panelGroup>

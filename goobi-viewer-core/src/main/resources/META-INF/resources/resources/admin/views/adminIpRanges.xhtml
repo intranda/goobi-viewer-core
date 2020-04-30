@@ -10,6 +10,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminIpRanges')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentIpRangeAction}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>

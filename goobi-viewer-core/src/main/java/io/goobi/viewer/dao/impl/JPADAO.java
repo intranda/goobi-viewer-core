@@ -992,6 +992,53 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getUserRoleCount(io.goobi.viewer.model.security.user.UserGroup, io.goobi.viewer.model.security.user.User,
+     *      io.goobi.viewer.model.security.Role)
+     * @should return correct count
+     */
+    @Override
+    public long getUserRoleCount(UserGroup userGroup, User user, Role role) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(ur) FROM UserRole ur");
+        if (userGroup != null || user != null || role != null) {
+            sbQuery.append(" WHERE ");
+            int args = 0;
+            if (userGroup != null) {
+                sbQuery.append("ur.userGroup = :userGroup");
+                args++;
+            }
+            if (user != null) {
+                if (args > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("ur.user = :user");
+                args++;
+            }
+            if (role != null) {
+                if (args > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("ur.role = :role");
+                args++;
+            }
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        // logger.debug(sbQuery.toString());
+        if (userGroup != null) {
+            q.setParameter("userGroup", userGroup);
+        }
+        if (user != null) {
+            q.setParameter("user", user);
+        }
+        if (role != null) {
+            q.setParameter("role", role);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+
+        return (long) q.getSingleResult();
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -2146,7 +2193,7 @@ public class JPADAO implements IDAO {
                     where.append(" ) ");
                     count++;
 
-                    //apply join table if neccessary
+                    //apply join table if necessary
                     if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
                         join.append(" JOIN ")
                                 .append(joinTable)
@@ -2391,7 +2438,7 @@ public class JPADAO implements IDAO {
         CMSPage o = null;
         try {
             o = this.em.getReference(CMSPage.class, id);
-            this.em.refresh(o);  
+            this.em.refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
@@ -3911,7 +3958,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public GeoMap getGeoMap(Long mapId) throws DAOException {
-        if(mapId == null) {
+        if (mapId == null) {
             return null;
         }
         preQuery();
@@ -3967,7 +4014,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean updateGeoMap(GeoMap map) throws DAOException {
-        if(map.getId() == null) {
+        if (map.getId() == null) {
             return false;
         }
         preQuery();
@@ -3989,7 +4036,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean deleteGeoMap(GeoMap map) throws DAOException {
-        if(map.getId() == null) {
+        if (map.getId() == null) {
             return false;
         }
         preQuery();
@@ -4010,31 +4057,31 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
         preQuery();
-        
+
         Query qItems = em.createQuery(
                 "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
         qItems.setParameter("map", map);
         List<CMSContentItem> itemList = qItems.getResultList();
-        
+
         Query qWidgets = em.createQuery(
                 "SELECT ele FROM CMSSidebarElement ele WHERE ele.geoMapId = :mapId");
         qWidgets.setParameter("mapId", map.getId());
         List<CMSSidebarElement> widgetList = qWidgets.getResultList();
-         
+
         Stream<CMSPage> itemPages = itemList.stream()
                 .map(CMSContentItem::getOwnerPageLanguageVersion)
                 .map(CMSPageLanguageVersion::getOwnerPage);
-        
+
         Stream<CMSPage> widgetPages = widgetList.stream()
                 .map(CMSSidebarElement::getOwnerPage);
-        
+
         List<CMSPage> pageList = Stream.concat(itemPages, widgetPages)
                 .distinct()
                 .collect(Collectors.toList());
         return pageList;
     }
-
 }

@@ -608,6 +608,16 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE,
                 recordsForWhichUserMayDeleteOcrPage);
     }
+    
+    /**
+     * 
+     * @return true if there are CMS pages or campaigns created by this user; false otherwise
+     */
+    public boolean isCmsCreator() {
+
+
+        return false;
+    }
 
     /**
      *

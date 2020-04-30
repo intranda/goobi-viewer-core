@@ -88,16 +88,15 @@
             
                             <!-- ACTION -->
                             <div class="text-right">
-<!--                 <h:commandLink action="adminIpRanges" value="#{msg.cancel}" styleClass="btn" immediate="true"> -->
-<!--                     <f:setPropertyActionListener target="#{adminBean.currentIpRange}" value="#{null}" /> -->
-<!--                 </h:commandLink> -->
-
+                                <h:commandLink action="adminIpRanges" value="#{msg.cancel}" styleClass="btn" immediate="true">
+                                    <f:setPropertyActionListener target="#{adminBean.currentIpRange}" value="#{null}" />
+                                </h:commandLink>
                                 <h:commandLink action="adminIpRanges" actionListener="#{adminBean.saveIpRangeAction}" value="#{msg.save}"
                                     styleClass="btn btn--success" />
                             </div>
                         </h:form>
 
-        <script type="text/javascript">
+                                <script type="text/javascript">
                                     $( "#editIpRangeForm .fa-question-circle" ).popover( {
                                         html: true,
                                         title: "#{msg.ipRange_descriptionHeading}",

@@ -75,22 +75,6 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="userGroupActive" styleClass="col-sm-2 control-label" value="#{msg.active} *" />
-                                <div class="col-sm-9">
-                                    <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox id="userGroupActive" value="#{adminBean.currentUserGroup.active}" />
-                                            <span class="form-group-helptext">#{msg.help__admin_userGroup_active}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-1">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
                             
                             </div>
                             
@@ -138,11 +122,10 @@
             
                             <!-- ACTION -->
                             <div class="text-right">
-<!--                 <h:commandLink action="adminAllUserGroups" value="#{msg.cancel}" styleClass="btn" immediate="true"> -->
-<!--                     <f:setPropertyActionListener target="#{adminBean.currentUserGroup}" value="#{null}" /> -->
-<!--                 </h:commandLink> -->
-
-                                <h:commandLink action="adminAllUserGroups" actionListener="#{adminBean.saveUserGroupAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                                <h:commandLink action="adminUserGroups" value="#{msg.cancel}" styleClass="btn" immediate="true">
+                                    <f:setPropertyActionListener target="#{adminBean.currentUserGroup}" value="#{null}" />
+                                </h:commandLink>
+                                <h:commandLink action="adminUserGroups" actionListener="#{adminBean.saveUserGroupAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </h:form>
                     </div>

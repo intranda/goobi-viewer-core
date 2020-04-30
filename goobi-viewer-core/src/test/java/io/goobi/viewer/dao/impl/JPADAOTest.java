@@ -358,6 +358,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, userRoles.size());
     }
 
+    /**
+     * @see JPADAO#getUserRoleCount(UserGroup,User,Role)
+     * @verifies return correct count
+     */
+    @Test
+    public void getUserRoleCount_shouldReturnCorrectCount() throws Exception {
+        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
+        Assert.assertNotNull(userGroup);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, null, null));
+    }
+
     @Test
     public void getUserGroupMembershipsByUserGroupTest() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
@@ -2366,35 +2377,35 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(2,
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI 2")).size());
     }
-    
+
     @Test
     public void testGetAllGeoMaps() throws DAOException {
         List<GeoMap> maps = DataManager.getInstance().getDao().getAllGeoMaps();
         Assert.assertEquals(2, maps.size());
     }
-    
+
     @Test
     public void testGetPagesUsingMap() throws DAOException {
-        
+
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
         GeoMap map2 = DataManager.getInstance().getDao().getGeoMap(2l);
 
         List<CMSPage> embedMap1 = DataManager.getInstance().getDao().getPagesUsingMap(map1);
         List<CMSPage> embedMap2 = DataManager.getInstance().getDao().getPagesUsingMap(map2);
-        
+
         Assert.assertEquals(2, embedMap1.size());
         Assert.assertEquals(0, embedMap2.size());
 
     }
-    
+
     @Test
-    public void testUpdateTranslations() throws Exception{
+    public void testUpdateTranslations() throws Exception {
         String newVal = "Kartenbeschreibung 2";
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
         Assert.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getValue());
         map1.getDescription("de").setValue(newVal);
         Assert.assertEquals(newVal, map1.getDescription("de").getValue());
-        
+
         DataManager.getInstance().getDao().updateGeoMap(map1);
         map1 = DataManager.getInstance().getDao().getAllGeoMaps().stream().filter(map -> map.getId() == 1l).findAny().orElse(null);
         Assert.assertEquals(newVal, map1.getDescription("de").getValue());
