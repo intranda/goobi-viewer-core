@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -97,7 +97,7 @@ public class PdfHandler {
         }
         sb.append(".pdf");
 
-        Path indexedSourceFile = Paths.get(Helper.getSourceFilePath(pages[0].getPi() + ".xml", pages[0].getDataRepository(),
+        Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(pages[0].getPi() + ".xml", pages[0].getDataRepository(),
                 doc != null ? doc.getSourceDocFormat() : SolrConstants._METS));
         if (Files.exists(indexedSourceFile)) {
             sb.append(paramSep.getChar()).append("metsFile=").append(indexedSourceFile.toUri());

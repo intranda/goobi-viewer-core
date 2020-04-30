@@ -46,7 +46,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -105,7 +104,7 @@ public class NormdataResource {
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         logger.trace("getNormData: {}", url);
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         Locale locale = Locale.getDefault();

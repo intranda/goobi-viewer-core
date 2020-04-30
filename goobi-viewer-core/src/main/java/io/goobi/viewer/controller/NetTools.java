@@ -67,7 +67,7 @@ import io.goobi.viewer.exceptions.HTTPException;
  */
 public class NetTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(Helper.class);
+    private static final Logger logger = LoggerFactory.getLogger(NetTools.class);
 
     private static final int HTTP_TIMEOUT = 30000;
     /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
@@ -95,7 +95,7 @@ public class NetTools {
                     case HttpServletResponse.SC_OK:
                         HttpEntity httpEntity = response.getEntity();
                         httpEntity.getContentLength();
-                        IOUtils.copy(httpEntity.getContent(), writer, Helper.DEFAULT_ENCODING);
+                        IOUtils.copy(httpEntity.getContent(), writer, StringTools.DEFAULT_ENCODING);
                         ret[1] = writer.toString();
                         break;
                     case 401:
@@ -137,7 +137,7 @@ public class NetTools {
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
-                    return EntityUtils.toString(response.getEntity(), Helper.DEFAULT_ENCODING);
+                    return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
                     // IOUtils.copy(response.getEntity().getContent(), writer);
                     // return writer.toString();
                 }
@@ -198,19 +198,19 @@ public class NetTools {
                 .build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpPost post = new HttpPost(url);
-            Charset.forName(Helper.DEFAULT_ENCODING);
+            Charset.forName(StringTools.DEFAULT_ENCODING);
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             try (CloseableHttpResponse response = (context == null ? httpClient.execute(post) : httpClient.execute(post, context));
                     StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
                     logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
-                    return EntityUtils.toString(response.getEntity(), Helper.DEFAULT_ENCODING);
+                    return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
                     //                    IOUtils.copy(response.getEntity().getContent(), writer, DEFAULT_ENCODING);
                     //                    return writer.toString();
                 }
                 logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
-                        IOUtils.toString(response.getEntity().getContent(), Helper.DEFAULT_ENCODING));
+                        IOUtils.toString(response.getEntity().getContent(), StringTools.DEFAULT_ENCODING));
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }

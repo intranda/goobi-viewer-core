@@ -64,10 +64,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -195,7 +196,7 @@ public abstract class DownloadJob implements Serializable {
             }
         }
 
-        return Helper.generateMD5(sbCriteria.toString());
+        return StringTools.generateMD5(sbCriteria.toString());
     }
 
     /**
@@ -315,8 +316,8 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static boolean ocrFolderExists(String pi) throws PresentationException, IndexUnreachableException {
-        Path abbyyFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
-        Path altoFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
+        Path abbyyFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
+        Path altoFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
         return Files.isDirectory(abbyyFolder) || Files.isDirectory(altoFolder);
     }
 

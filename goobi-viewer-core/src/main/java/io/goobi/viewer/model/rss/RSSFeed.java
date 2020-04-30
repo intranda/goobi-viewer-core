@@ -38,7 +38,6 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndFeedImpl;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;

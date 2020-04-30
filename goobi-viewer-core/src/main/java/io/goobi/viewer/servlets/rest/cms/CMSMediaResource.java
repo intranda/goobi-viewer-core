@@ -55,7 +55,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -195,7 +194,7 @@ public class CMSMediaResource {
                 case CMSMediaItem.CONTENT_TYPE_XML:
                     try {
                         String encoding = "windows-1252";
-                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
+                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, StringTools.DEFAULT_ENCODING);
                         return StringTools.renameIncompatibleCSSClasses(ret);
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());

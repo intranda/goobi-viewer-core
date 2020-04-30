@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -339,7 +338,7 @@ public class Metadata implements Serializable {
                 case WIKIPERSONFIELD:
                     if (value.contains(",")) {
                         // Find and remove additional information in a person's name
-                        Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
+                        Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
                         Matcher m = p.matcher(value);
                         while (m.find()) {
                             String cut = value.substring(m.start(), m.end());

@@ -17,13 +17,9 @@ package io.goobi.viewer.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,11 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.Version;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -44,73 +38,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
- * Helper methods.
+ * Utility class for retrieving data folders, data files and source files.
+ *
  */
-public class Helper {
+public class DataFileTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(Helper.class);
-
-    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code> */
-    public static final String REGEX_QUOTATION_MARKS = "\"[^()]*?\"";
-    /** Constant <code>REGEX_PARENTHESES="\\([^()]*\\)"</code> */
-    public static final String REGEX_PARENTHESES = "\\([^()]*\\)";
-    /** Constant <code>REGEX_PARENTESES_DATES="\\([\\w|\\s|\\-|\\.|\\?]+\\)"</code> */
-    public static final String REGEX_PARENTESES_DATES = "\\([\\w|\\s|\\-|\\.|\\?]+\\)";
-    /** Constant <code>REGEX_BRACES="\\{(\\w+)\\}"</code> */
-    public static final String REGEX_BRACES = "\\{(\\w+)\\}";
-    /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code> */
-    public static final String REGEX_WORDS = "[a-zäáàâöóòôüúùûëéèêßñ0123456789]+";
-    /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
-    public static final String DEFAULT_ENCODING = "UTF-8";
-
-    /** Constant <code>dfTwoDecimals</code> */
-    public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
-    /** Constant <code>dfTwoDigitInteger</code> */
-    public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
-
-    /** Constant <code>nsAlto</code> */
-    public static Namespace nsAlto = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
-    // TODO final namespaces
-    /** Constant <code>nsIntrandaViewerOverviewPage</code> */
-    public static Namespace nsIntrandaViewerOverviewPage =
-            Namespace.getNamespace("iv_overviewpage", "http://www.intranda.com/digiverso/intrandaviewer/overviewpage");
-    /** Constant <code>nsIntrandaViewerCrowdsourcing</code> */
-    public static Namespace nsIntrandaViewerCrowdsourcing =
-            Namespace.getNamespace("iv_crowdsourcing", "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
-
-    /**
-     * Creates an MD5 hash of the given String.
-     *
-     * @param myString a {@link java.lang.String} object.
-     * @return MD5 hash
-     * @should hash string correctly
-     */
-    public static String generateMD5(String myString) {
-        String answer = "";
-        try {
-            byte[] defaultBytes = myString.getBytes("UTF-8");
-            MessageDigest algorithm = MessageDigest.getInstance("MD5");
-            algorithm.reset();
-            algorithm.update(defaultBytes);
-            byte messageDigest[] = algorithm.digest();
-
-            StringBuffer hexString = new StringBuffer();
-            for (byte element : messageDigest) {
-                String hex = Integer.toHexString(0xFF & element);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            answer = hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage(), e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return answer;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(DataFileTools.class);
 
     /**
      * Builds full-text document REST URL.
@@ -428,15 +361,6 @@ public class Helper {
     }
 
     /**
-     * Returns the application version number.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getVersion() {
-        return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
-    }
-
-    /**
      * Loads plain full-text via the REST service. ALTO is preferred (and converted to plain text, with a plain text fallback.
      *
      * @param dataRepository a {@link java.lang.String} object.
@@ -496,7 +420,7 @@ public class Helper {
             return null;
         }
 
-        String url = Helper.buildFullTextUrl(filePath);
+        String url = buildFullTextUrl(filePath);
         try {
             return NetTools.getWebContentGET(url);
         } catch (HTTPException e) {
@@ -549,36 +473,5 @@ public class Helper {
         }
 
         return null;
-    }
-
-    /**
-     * <p>
-     * parseBoolean.
-     * </p>
-     *
-     * @param text a {@link java.lang.String} object.
-     * @param defaultValue a boolean.
-     * @return a boolean.
-     */
-    public static boolean parseBoolean(String text, boolean defaultValue) {
-        if ("FALSE".equalsIgnoreCase(text)) {
-            return false;
-        } else if ("TRUE".equalsIgnoreCase(text)) {
-            return true;
-        } else {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * <p>
-     * parseBoolean.
-     * </p>
-     *
-     * @param text a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public static boolean parseBoolean(String text) {
-        return parseBoolean(text, false);
     }
 }

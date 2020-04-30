@@ -17,10 +17,8 @@ package io.goobi.viewer.servlets.rest.iiif.image;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -36,8 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -52,7 +50,6 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(ImageParameterFilter.class);
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         String uri = request.getUriInfo().getPath();
@@ -99,7 +96,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
         try {
-            String repositoryRoot = Helper.getDataRepositoryPathForRecord(pi);
+            String repositoryRoot = DataFileTools.getDataRepositoryPathForRecord(pi);
             addRepositoryParameter("param:imageSource", repositoryRoot, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
             addRepositoryParameter("param:pdfSource", repositoryRoot, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
             addRepositoryParameter("param:altoSource", repositoryRoot, DataManager.getInstance().getConfiguration().getAltoFolder(), request);

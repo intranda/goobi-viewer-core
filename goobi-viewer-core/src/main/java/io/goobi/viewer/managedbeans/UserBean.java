@@ -45,8 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TranskribusUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -521,7 +521,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             // Generate and save the activation key, if not yet set
             if (user.getActivationKey() == null) {
-                user.setActivationKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
             }
 
             // Generate e-mail text
@@ -544,7 +544,8 @@ public class UserBean implements Serializable {
 
             // Send
             try {
-                if (NetTools.postMail(Collections.singletonList(user.getEmail()), ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
+                if (NetTools.postMail(Collections.singletonList(user.getEmail()),
+                        ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
                         sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
                     return true;
@@ -571,7 +572,7 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && !user.isOpenIdUser()) {
             if (user.isActive()) {
-                user.setActivationKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
@@ -626,11 +627,12 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && user.isActive() && !user.isOpenIdUser()) {
             if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(user.getActivationKey())) {
-                String newPassword = Helper.generateMD5(String.valueOf(System.currentTimeMillis())).substring(0, 8);
+                String newPassword = StringTools.generateMD5(String.valueOf(System.currentTimeMillis())).substring(0, 8);
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {
-                    if (NetTools.postMail(Collections.singletonList(email), ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
+                    if (NetTools.postMail(Collections.singletonList(email),
+                            ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(user)) {
                         email = null;
