@@ -24,19 +24,19 @@
 
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
-                <div id="widgetLeaflet" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+                <div id="widgetLeaflet" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         #{msg.widgetGeoLocations}
                         </h3>
 
                     <!-- MAP -->
-                    <div id="widgetLeafletMap" class="widget-geo-locations__map"></div>
+                    <div id="widgetLeafletMap" class="widget-geomap__map"></div>
                 </div>
             </h:panelGroup>
 
             <!-- FOLDOUT -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-                <div id="widgetLeaflet" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+                <div id="widgetLeaflet" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         #{msg.widgetGeoLocations}
                         <a href="#widgetLeafletCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetLeafletCollapse">
@@ -51,22 +51,45 @@
                     </div>
                 </div>
             </h:panelGroup>
+            
+            <script type="text/javascript">	  
+            
+            let a1 = [1,2];
+            let a2 = [3,4];
+            let a = [a1,a2];
+            let b = a.flatMap(ar => ar);
+            console.log(a , " => ", b)
+            
+            $(document).ready( () => {	
+                
+            	let pageLocations = "#{configurationBean.restApiUrl}iiif/manifests/#{activeDocumentBean.viewManager.pi}/list/#{activeDocumentBean.viewManager.currentImageNo}/CROWDSOURCING/";
+    			let workLocations = "#{configurationBean.restApiUrl}iiif/manifests/#{activeDocumentBean.viewManager.pi}/list/CROWDSOURCING/";
+    			let widgetSelector = "#widgetLeaflet";
 
-            <script type="text/javascript">	        
-	        	widgetLeafletConfig = {
-	        	        //TODO: get annotation list from manifest
-	        	    pageLocations: "#{configurationBean.restApiUrl}iiif/manifests/#{activeDocumentBean.viewManager.pi}/list/#{activeDocumentBean.viewManager.currentImageNo}/CROWDSOURCING/",
-        			workLocations: "#{configurationBean.restApiUrl}iiif/manifests/#{activeDocumentBean.viewManager.pi}/list/CROWDSOURCING/",
-        			widgetSelector: "#widgetLeaflet",
-        			mapId: "widgetLeafletMap",
-        			msg: {
-        			    propertiesLink: ""//"#{msg.widgetGeoLoacations_popupLinkText}"
-        			}
-				};
-	        	
-	        	let leaflet = new viewerJS.Leaflet( widgetLeafletConfig );
-	        	leaflet.load(widgetLeafletConfig.pageLocations);
-	        	leaflet.load(widgetLeafletConfig.workLocations);
+    			let geoMap = new viewerJS.GeoMap({
+            	    popover: undefined,
+            	    mapId: "widgetLeafletMap",
+            	    language: "#{navigationHelper.localeString}",
+            	    initialView: {
+            	        zoom: 12
+            	    }
+            	});
+            	
+            	
+            	Q.all([viewerJS.iiif.getAnnotations(pageLocations), viewerJS.iiif.getAnnotations(workLocations)])
+            	.then(results => {
+            	    let features = results.flatMap(r => r).map(r => viewerJS.iiif.getBody(r)).filter(b => b.type == "Feature");
+            	    if(features.length > 0) {
+            	        $(widgetSelector).show();
+	            	    geoMap.init();
+	            	    features.forEach(feature => {
+		            	    geoMap.addMarker(feature);
+	    	        	})
+		            	geoMap.setView(geoMap.getViewAroundFeatures());
+            	    }
+            	})
+            	
+            })
 	        </script>
         </h:panelGroup>
     </composite:implementation>
