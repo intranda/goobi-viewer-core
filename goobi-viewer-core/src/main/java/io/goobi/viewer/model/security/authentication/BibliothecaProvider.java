@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthenticationRequest;
@@ -66,7 +67,7 @@ public class BibliothecaProvider extends HttpAuthenticationProvider {
 
         BibliothecaAuthenticationRequest request = new BibliothecaAuthenticationRequest(readerId, password);
         sbUrl.append(url).append("&sno=").append(request.getUsername()).append("&pwd=").append(request.getPassword());
-        String[] resp = Helper.callUrlGET(sbUrl.toString());
+        String[] resp = NetTools.callUrlGET(sbUrl.toString());
 
         LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), null, true);
         if ("200".equals(resp[0])) {

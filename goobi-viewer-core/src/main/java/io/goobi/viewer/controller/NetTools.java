@@ -35,9 +35,11 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -72,6 +74,46 @@ public class NetTools {
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
     /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
+
+    /**
+     * <p>
+     * callUrlGET.
+     * </p>
+     *
+     * @param url a {@link java.lang.String} object.
+     * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
+     *         or the error message.
+     */
+    public static String[] callUrlGET(String url) {
+        logger.debug("callUrlGET: {}", url);
+        String[] ret = new String[2];
+        try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
+            HttpGet httpGet = new HttpGet(url);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet); StringWriter writer = new StringWriter()) {
+                ret[0] = String.valueOf(response.getStatusLine().getStatusCode());
+                switch (response.getStatusLine().getStatusCode()) {
+                    case HttpServletResponse.SC_OK:
+                        HttpEntity httpEntity = response.getEntity();
+                        httpEntity.getContentLength();
+                        IOUtils.copy(httpEntity.getContent(), writer, Helper.DEFAULT_ENCODING);
+                        ret[1] = writer.toString();
+                        break;
+                    case 401:
+                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        ret[1] = response.getStatusLine().getReasonPhrase();
+                        break;
+                    default:
+                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        ret[1] = response.getStatusLine().getReasonPhrase();
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
+    }
 
     /**
      * <p>

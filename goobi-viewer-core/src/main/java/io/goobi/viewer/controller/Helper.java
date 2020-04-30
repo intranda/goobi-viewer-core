@@ -17,7 +17,6 @@ package io.goobi.viewer.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,16 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,46 +110,6 @@ public class Helper {
         }
 
         return answer;
-    }
-
-    /**
-     * <p>
-     * callUrlGET.
-     * </p>
-     *
-     * @param url a {@link java.lang.String} object.
-     * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
-     *         or the error message.
-     */
-    public static String[] callUrlGET(String url) {
-        logger.debug("callUrlGET: {}", url);
-        String[] ret = new String[2];
-        try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
-            HttpGet httpGet = new HttpGet(url);
-            try (CloseableHttpResponse response = httpClient.execute(httpGet); StringWriter writer = new StringWriter()) {
-                ret[0] = String.valueOf(response.getStatusLine().getStatusCode());
-                switch (response.getStatusLine().getStatusCode()) {
-                    case HttpServletResponse.SC_OK:
-                        HttpEntity httpEntity = response.getEntity();
-                        httpEntity.getContentLength();
-                        IOUtils.copy(httpEntity.getContent(), writer, DEFAULT_ENCODING);
-                        ret[1] = writer.toString();
-                        break;
-                    case 401:
-                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
-                        ret[1] = response.getStatusLine().getReasonPhrase();
-                        break;
-                    default:
-                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
-                        ret[1] = response.getStatusLine().getReasonPhrase();
-                        break;
-                }
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return ret;
     }
 
     /**
@@ -629,5 +581,4 @@ public class Helper {
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);
     }
-
 }
