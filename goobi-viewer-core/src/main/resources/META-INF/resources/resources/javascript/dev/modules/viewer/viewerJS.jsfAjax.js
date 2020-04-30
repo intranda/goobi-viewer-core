@@ -32,32 +32,38 @@ var viewerJS = ( function ( viewer ) {
     	 * @description Method to initialize the jsf ajax listener.
     	 * @method init 
     	 * */
+        begin: new Rx.Subject(),
+        complete: new Rx.Subject(),
+        success: new Rx.Subject(),
+        error: new Rx.Subject(),
     	init: function( config ) {
     		if (_debug) {
-    			console.log( 'Initializing: viewerJS.jsfAjax.init' );
-    			console.log( '--> config = ', config );
+    		    console.log( 'Initializing: viewerJS.jsfAjax.init' );
+    		    console.log( '--> config = ', config );
     		}
     		
     		$.extend( true, _defaults, config );
-    		
     		// listen to jsf ajax event
             if ( typeof jsf !== 'undefined' ) {
-                jsf.ajax.addOnEvent( function ( data ) {
+                jsf.ajax.addOnEvent( ( data ) => {
                     if ( _debug ) {
                         console.log( 'JSF AJAX - data: ', data );
                     }
                     
                     var ajaxloader = document.getElementById( "AJAXLoader" );
-
                     switch ( data.status ) {
-                        case 'begin':
+                        case 'begin': 
                         	if ( ajaxloader ) {
                         		ajaxloader.style.display = 'block';                        		
                         	}
+                        	this.begin.next(data);
+                        	break;
                         case 'complete':
                         	if ( ajaxloader ) {                        		
                         		ajaxloader.style.display = 'none';
                         	}
+                        	this.complete.next(data);
+                        	break;
                         case 'success':
                         	// init Bootstrap features
                             viewerJS.helper.initBsFeatures();
@@ -66,9 +72,14 @@ var viewerJS = ( function ( viewer ) {
                             // init tinyMCE    
                             if ( $( '.tinyMCE' ).length > 0 ) {
                                 viewerJS.tinyMce.close();
-                            	viewerJS.tinyMce.init( viewerJS.tinyConfig );
+                                viewerJS.tinyMce.init( viewerJS.tinyConfig );
                             }
+                            this.success.next(data);
                             break;
+                        case 'error':
+                            this.error.next(data);
+                            break;
+                            
                     }
                 });
             }

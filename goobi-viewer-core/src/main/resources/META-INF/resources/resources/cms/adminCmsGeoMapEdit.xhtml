@@ -26,6 +26,7 @@
 	   		    supportedLanguages: #{navigationHelper.supportedLanguagesAsJson},
 	   		  	popover: "#geoMapPopoverTemplate",
 	 	    	allowEditFeatures: false,
+	 	    	loader: ".ajax_loader",
 		  		msg: {
 		          	emptyMarker: "#{msg.request__insert_metadata}",
 		          	titleLabel: "#{msg.title}",
@@ -113,8 +114,14 @@
 <!-- 								</ui:repeat> -->
                             </div>
                        </h:panelGroup>
-                        <h3>#{msg.cms__geomaps__map__title}</h3>
+                        <div class="admin__content-inner-content__form_title">
+	                        <h3>#{msg.cms__geomaps__map__title}</h3>
+	                        <span class="ajax_loader">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.gif" class="img-responsive" alt="Waiting..." />
+							</span>
+						</div>
                         <h:panelGroup id="mapPanel" >
+	                        
                         	<div class="admin__content-inner-content__input_form">
 								<!-- TYPE -->
 		                        <div class="input_form__option_group">
