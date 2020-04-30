@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -831,7 +831,7 @@ public class BookmarkBean implements Serializable {
                     bookmarkList);
             String subject = ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUBJECT, null);
             try {
-                Helper.postMail(Collections.singletonList(getSessionBookmarkListEmail()), subject, body);
+                NetTools.postMail(Collections.singletonList(getSessionBookmarkListEmail()), subject, body);
                 Messages.info(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_SUCCESS, null));
             } catch (UnsupportedEncodingException | MessagingException e) {
                 logger.error(e.getMessage(), e);

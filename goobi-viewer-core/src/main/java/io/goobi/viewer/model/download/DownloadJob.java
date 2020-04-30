@@ -67,6 +67,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -485,7 +486,7 @@ public abstract class DownloadJob implements Serializable {
             subject = subject.replace("{0}", pi);
         }
 
-        return Helper.postMail(observers, subject, body);
+        return NetTools.postMail(observers, subject, body);
     }
 
     /**

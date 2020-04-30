@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -449,7 +449,7 @@ public class CmsMediaBean implements Serializable {
         StringBuilder sbUri = new StringBuilder();
         sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
         try {
-            String ret = Helper.getWebContentGET(sbUri.toString());
+            String ret = NetTools.getWebContentGET(sbUri.toString());
             return ret;
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
