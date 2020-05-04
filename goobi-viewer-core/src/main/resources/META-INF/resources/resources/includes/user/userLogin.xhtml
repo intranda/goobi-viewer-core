@@ -159,6 +159,7 @@
                     </div>
                     
                     <!-- USER LOGIN TYPE CREATE ACCOUNT -->
+                    <ui:fragment rendered="#{userBean.userRegistrationEnabled}">
                     <div id="loginTypeCreateAccount" class="user-login__body-login-type create">
                         <h:form id="loginTypeCreateAccountForm">
                             <div class="form-group">
@@ -228,6 +229,7 @@
                             </div>
                         </h:form>
                     </div>
+                    </ui:fragment>
                 </div>
     
                 <!-- USER LOGIN BODY LOGIN OPEN ID -->
