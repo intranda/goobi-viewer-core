@@ -924,6 +924,11 @@
 			<collapseLengthThreshold lowestLevelToTest="333">141
 			</collapseLengthThreshold>
 		</sidebarToc>
+		
+        <!-- opac: If true, the OPAC link from the current record will be displayed. Default is false. -->
+        <opac>
+            <visible>true</visible>
+        </opac>
 	</sidebar>
 
 

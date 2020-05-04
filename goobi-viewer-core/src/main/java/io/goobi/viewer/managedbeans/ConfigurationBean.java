@@ -732,6 +732,17 @@ public class ConfigurationBean implements Serializable {
     public boolean isSidebarTocVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarTocVisible();
     }
+    
+    /**
+     * <p>
+     * isSidebarOpacLinkVisible.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isSidebarOpacLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+    }
 
     /**
      * <p>

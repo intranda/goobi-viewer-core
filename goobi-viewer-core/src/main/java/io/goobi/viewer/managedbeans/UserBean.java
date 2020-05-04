@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -132,6 +133,10 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
+        if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
+            logger.warn("User registration is disabled.");
+            return "pretty:createUserAccount"; 
+        }
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
@@ -521,7 +526,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             // Generate and save the activation key, if not yet set
             if (user.getActivationKey() == null) {
-                user.setActivationKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateMD5(UUID.randomUUID() + String.valueOf(System.currentTimeMillis())));
             }
 
             // Generate e-mail text

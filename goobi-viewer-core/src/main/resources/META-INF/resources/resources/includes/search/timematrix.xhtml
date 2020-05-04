@@ -18,7 +18,7 @@
 	</div>
 
 	<div class="timematrix__selection">
-		<form id="locateTimematrix" method="POST">
+		<div id="locateTimematrix">
 			<div class="timematrix__bar">
 				<div class="timematrix__period">
 					<span>#{msg.timematrix__timePeriod}:</span>&#xA0;
@@ -31,12 +31,11 @@
 						<span>#{msg.timematrix__maxResults}: &#xA0;</span>
 							<input type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="#{configurationBean.timeMatrixHits}" placeholder="" maxlength="5" />
 					</div>
-					<button type="submit" class="setTimematrix">#{msg.timematrix__calculate}</button>
 				</div>
 			</div>
 			<div id="slider-range"></div>
 			<button type="submit" id="setTimematrix" class="btn btn--full setTimematrix">#{msg.timematrix__calculate}</button>
-		</form>
+		</div>
 	</div>
 
 	<div id="timematrixCanvas"></div>
@@ -84,14 +83,11 @@
 	</script>
 
    	<script>
-   		var $startHere= $("#timematrixSelectionRangeInput1");
-       	var $endHere= $("#timematrixSelectionRangeInput2");
-       	var $count= $(".hitsPerPage");
-
    		riot.mount('timematrix', {
       		msg: {
       			timematrixCalculate: "#{msg.timematrix__calculate}"
       		},
+      		slider: "#slider-range",
            	startInput: "#timematrixSelectionRangeInput1",
            	endInput: "#timematrixSelectionRangeInput2",
            	contextPath: "#{request.contextPath}/",
@@ -102,22 +98,6 @@
            	});
    	</script>
 
-    <script type="text/javascript">
-	     $(document).ready(function() {
-	       	var timematrixConfig = {
-	          contextPath: "#{request.contextPath}/",
-	          rangeInput1: $( "#timematrixSelectionRangeInput1" ),
-	          startDate: $( "#timematrixSelectionRangeInput1" ).val(),
-	          rangeInput2: $( "#timematrixSelectionRangeInput2" ),
-	       endDate: $( "#timematrixSelectionRangeInput2" ).val(),
-	       count: $( ".hitsPerPage" ),
-	       $tmCanvas: $( "#timematrixCanvas" ),
-	       $tmCanvasPos: $( "#timematrixCanvas" ).position()
-	       	};
-
-	         viewerJS.timematrix.init( timematrixConfig );
-	     });
-    </script>
 
 
 </ui:composition>

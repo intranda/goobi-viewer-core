@@ -123,6 +123,15 @@
 						</li>
 					</h:panelGroup>
 					
+					<!-- OPAC URL -->
+                    <h:panelGroup rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
+                        <li>
+                            <h:outputLink value="#{activeDocumentBean.viewManager.opacUrl}" target="_blank">
+                                #{msg.opacLink}
+                            </h:outputLink>
+                        </li>
+                    </h:panelGroup>
+					
                     <!-- RELATED CMS PAGES -->
                     <h:panelGroup rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
                         <ui:repeat var="relatedPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">

@@ -2175,6 +2175,20 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarTocVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
+    
+
+    /**
+     * <p>
+     * isSidebarOpacLinkVisible.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSidebarOpacLinkVisible() {
+        return this.getLocalBoolean("sidebar.opac.visible", false);
+    }
+
 
     /**
      * <p>
