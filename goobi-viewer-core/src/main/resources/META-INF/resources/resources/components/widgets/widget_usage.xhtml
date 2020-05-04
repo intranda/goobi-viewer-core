@@ -264,9 +264,10 @@
                     
                     <!-- STRUCT ELEMENT -->
 					<ui:fragment
-						rendered="#{(activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc)
-						    or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf)}">
-						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentDocument.label}">#{msg.label__struct_element}</h4>
+						rendered="#{(activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc) 
+							and ((activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata)
+						    or (!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf))}">
+						<h4 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentDocument.label}">#{msg[activeDocumentBean.viewManager.currentDocument.docStructType]}</h4>
 
 						<!-- STRUCT ELEMENT DOWNLOADS -->
 						<div class="widget-usage__struct-downloads">
@@ -299,8 +300,7 @@
                             </ui:fragment>
                           
                             <!-- RIS (current) -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc
-                                and activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocument.accessPermissionDownloadMetadata}">
                                 <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.currentDocumentIddoc}"
                                     id="ris"
                                     class="label label-default widget-usage__struct-download-ris" 

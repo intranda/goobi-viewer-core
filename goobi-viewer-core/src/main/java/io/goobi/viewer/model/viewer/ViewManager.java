@@ -2645,6 +2645,14 @@ public class ViewManager implements Serializable {
     public void setTopDocumentIddoc(long topDocumentIddoc) {
         this.topDocumentIddoc = topDocumentIddoc;
     }
+    
+    public Long getAnchorDocumentIddoc() {
+        if(this.anchorDocument != null) {
+            return anchorDocument.getLuceneId();
+        } else {
+            return null;
+        }
+    }
 
     /**
      * <p>
