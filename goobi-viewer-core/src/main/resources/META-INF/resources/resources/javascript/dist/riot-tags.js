@@ -1947,9 +1947,12 @@ this.addAnnotation = function() {
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{image.title}" name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
 
 		 this.on( 'mount', function() {
-		 	$(this.opts.button).on("click", this.updateRange)
-		 	this.imageList=[]
-		 })
+		 	$(this.opts.button).on("click", this.updateRange);
+		 	this.imageList=[];
+		 	this.startDate = parseInt($(this.opts.startInput).val());
+		 	this.endDate = parseInt($(this.opts.endInput).val());
+		 	this.initSlider(this.opts.slider, this.startDate, this.endDate);
+		 });
 
 		 this.updateRange = function(event){
 			this.getTimematrix()
@@ -1966,8 +1969,8 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 		     apiTarget += '/';
 
 		    opts.loading.show()
-			fetch(apiTarget)
-			.then( function(result) {
+			let fetchPromise = fetch(apiTarget);
+		    fetchPromise.then( function(result) {
 			    return result.json();
 			})
 			.then( function(json) {
@@ -1975,6 +1978,28 @@ riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in i
 			    this.update()
 			    opts.loading.hide()
 			}.bind(this));
+		 }.bind(this)
+
+		 this.initSlider = function(sliderSelector, startDate, endDate) {
+		     let $slider = $(sliderSelector);
+
+	            $slider.slider( {
+	                range: true,
+	                min: parseInt( startDate ),
+	                max: parseInt( endDate ),
+	                values: [ startDate, endDate ],
+	                slide: function( event, ui ) {
+	                    $(this.opts.startInput).val( ui.values[ 0 ] ).change();
+	                    this.startDate = parseInt(ui.values[ 0 ]);
+	                    $(this.opts.endInput).val( ui.values[ 1 ] ).change();
+	                    this.endDate = parseInt(ui.values[ 1 ]);
+	                }.bind(this)
+	            } );
+
+	            $slider.find(".ui-slider-handle").on( 'mousedown', function() {
+	                $( '.ui-slider-handle' ).removeClass( 'top' );
+	                $( this ).addClass( 'top' );
+	            } );
 		 }.bind(this)
 
 });
