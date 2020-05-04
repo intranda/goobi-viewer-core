@@ -133,6 +133,9 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
+        if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
+            logger.warn("User registration is disabled.");
+        }
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
