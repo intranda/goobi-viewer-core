@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -521,7 +522,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             // Generate and save the activation key, if not yet set
             if (user.getActivationKey() == null) {
-                user.setActivationKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateMD5(UUID.randomUUID() + String.valueOf(System.currentTimeMillis())));
             }
 
             // Generate e-mail text
