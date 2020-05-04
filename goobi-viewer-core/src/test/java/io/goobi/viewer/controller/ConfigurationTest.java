@@ -1308,6 +1308,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSidebarOpacLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarOpacLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
+    }
+
+    /**
      * @see Configuration#isSidebarTocLinkVisible()
      * @verifies return correct value
      */
@@ -1342,7 +1351,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
-
 
     /**
      * @see Configuration#isUrnDoRedirect()
