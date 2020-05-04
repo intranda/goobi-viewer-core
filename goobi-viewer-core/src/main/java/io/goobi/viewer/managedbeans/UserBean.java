@@ -135,6 +135,7 @@ public class UserBean implements Serializable {
     public String createNewUserAccount() throws DAOException {
         if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
             logger.warn("User registration is disabled.");
+            return "pretty:createUserAccount"; 
         }
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
