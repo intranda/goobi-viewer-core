@@ -21,15 +21,30 @@
 
 	<popover id="share-image-area-popup">
 
-		<div>
-		<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}" data-clipboard-text="image-region-page"
-			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_page}</a>
-		</div>
-		<div>
-			<a data-copy="image-region-image" data-copy-done="#{msg.copyUrlDone}" data-clipboard-text="image-region-image"
-			title="#{msg.bookmarkList_shareLink_copy}" >#{msg.label__share_image_region_image}</a>
+	<div class="share-image-area">
+		<div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
+
+		<div class="share-image-area__links">
+		<div>#{msg.help__share_image_area__share}</div> 
+			<ul>
+				<li>
+					<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
+						data-clipboard-text="image-region-page"
+						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
+				</li> 
+				<li>
+					<a data-copy="image-region-image"
+						data-copy-done="#{msg.copyUrlDone}"
+						data-clipboard-text="image-region-image"
+						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
+				</li>
+			</ul>
 		</div>
 
+		<div class="share-image-area__controls">
+			<button type="button" data-popover="close" class="btn btn--full">#{msg.closeWindow}</button>
+		</div>
+	</div>
 	</popover> 
 	
 	<popover id="imageFilterPopover">
@@ -173,8 +188,8 @@
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
-    	     initImageFragmentLinks();
-           	 initImageFragmentSelect(image);
+           		let shareImageFragment = new viewerJS.ShareImageFragment(image);
+           		shareImageFragment.initImageFragmentLinks();
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
@@ -195,91 +210,7 @@
        	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'fullscreen' ) {
        		$( "#imageContainerMobileOverlay" ).show();
        	}
-       	
-        var fragmentSelect, event;
-       	if(viewImage) {
-            function selectImageFragment(button) {
-                 if(fragmentSelect) {
-                    if(!$(button).hasClass("active")) {
-                	    $(button).tooltip("hide");
-	       		        $(button).popover({
-	       		            trigger: 'manual',
-	       		            title: "#{msg.action__share_image_region}",
-	       		            content: "#{msg.action__share_image_region__description}",
-	       		            placement: 'bottom'
-	       		        }).popover("show");
-	       		        setTimeout( () => {
-		       		            $("body").one("click.dismiss-popover", function() {
-		       		         	$(button).popover("hide");
-		    	      		    $(button).removeClass("active");
-		    	       		 	fragmentSelect.stopSelect();
-	       		        	})
-	       		        }, 0);
-		                $(button).addClass("active");
-		                fragmentSelect.startSelect().then( area => openShareFragmentPopup(area, button) )   
-		                viewImage.viewer.addOnceHandler( 'canvas-drag-end', (e) => {
-		                    event = e.originalEvent;
-		                });
-                	}
-                }
-            }
-       		function openShareFragmentPopup(area, button) {
-       		    if(fragmentSelect) {
-       		     	$(button).popover("hide");
-	      		    $(button).removeClass("active");
-	       		 	fragmentSelect.stopSelect();
-	       		 	var areaString = viewImage.getAreaString(area);
-	       		 	var pageUrl = window.location.origin + window.location.pathname +  window.location.search + "#xywh=" + areaString;
-	       		 	var imageUrl = viewImage.getRegionUrl(area);
-	       		 	let popover =  viewerJS.popovers.fromEvent("canvas", event, "#share-image-area-popup", {
-	       		        onClose: () => {
-		       		 	    if(fragmentSelect) {
-		       		     	    fragmentSelect.remove(0);
-		       		     	}
-	       		        },
-	       		        onShow: () => {
-			       		 	$("[data-copy='image-region-page']").attr("data-clipboard-text", pageUrl).tooltip();
-			       		    $("[data-copy='image-region-image']").attr("data-clipboard-text", imageUrl).tooltip();
-	       		        }
-	       		    });
-
-		       		$("body").off("click.dismiss-popover");
-		       		initImageFragmentLinks(areaString);
-       		    }
-       		}
-			function initImageFragmentSelect(image) {
-           		// init area select
-           		try { 
-					let styles = viewerJS.helper.getCss("image-fragment", ['borderTopColor', 'borderTopWidth', 'background-color']);
-	           		var fragmentSelectConfig = {
-	           		     removeOldAreas : true,
-	                     drawStyle : {
-	                         borderColor: styles["borderTopColor"],
-	                         borderWidth: parseInt(styles["borderTopWidth"]),
-	                         fillColor: styles["background-color"],
-	                     }
-	           		};
-	           		fragmentSelect = new ImageView.Tools.AreaSelect(image, fragmentSelectConfig);
-           		} catch(error) {
-           		    console.error("Error initializing area select: ", error);
-           		}
-			}
-			
-			function initImageFragmentLinks(fragment) {
-			    if(!fragment) {			        
-				    $wrapper = $(".widget-usage__image-fragment__wrapper");
-				    fragment = viewerJS.helper.getFragmentHash();
-			    }
-			    if(fragment) {
-			        var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + fragment;
-	       		 	var imageUrl = viewImage.getRegionUrl(fragment);
-	       		 	$wrapper.find(".widget-usage__image-fragment-page").attr("data-clipboard-text", pageUrl)
-	       		 	$wrapper.find(".widget-usage__image-fragment-image").attr("data-clipboard-text", imageUrl)
-	       		 	$wrapper.show();
-			    }
-			}
-       	}
-       	
+       	       	
 		if(viewImage) {	
 		    
 		    //init image filter tools

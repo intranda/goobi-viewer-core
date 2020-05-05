@@ -105,7 +105,7 @@
                         </div>                    
                     </ui:fragment>
                     
-                    <!-- SEARCH HIT NAVIGATION -->
+                    <!-- IMAGE FILTER -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasPages}">
                         <div id="panel-7" class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
@@ -118,6 +118,39 @@
                             	</span>
                            		<imageFilters/>
                             </div>
+                        </div>                    
+                    </ui:fragment>
+                    
+                    <!-- SHARE IMAGE AREA -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                        <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.action__share_image_region}</span>
+                            </h3>
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body share-image-area">
+								<div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
+						
+								<div class="share-image-area__links">
+								<div>#{msg.help__share_image_area__share}</div> 
+									<ul>
+										<li>
+											<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
+												data-clipboard-text="image-region-page"
+												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
+										</li> 
+										<li>
+											<a data-copy="image-region-image"
+												data-copy-done="#{msg.copyUrlDone}"
+												data-clipboard-text="image-region-image"
+												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
+										</li>
+									</ul>
+								</div>
+						
+								<div class="share-image-area__controls">
+									<button type="button" data-popover="close" class="btn btn--full">#{msg.closeWindow}</button>
+								</div>
+							</div>
                         </div>                    
                     </ui:fragment>
                     
