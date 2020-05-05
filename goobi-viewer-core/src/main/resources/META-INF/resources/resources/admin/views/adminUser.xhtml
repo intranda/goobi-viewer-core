@@ -204,6 +204,7 @@
                             <h3>#{msg.admin__user_activation_title}</h3>
                             
                             <!-- TODO proper css class -->
+                            <!-- TODO yellow frame -->
                             <div class="cms-select-template__template">
                             
                                 #{msg.admin__user_activation_description}
@@ -236,6 +237,7 @@
                                 <h3>#{msg.admin__delete_user_account}</h3>
                                 
                                 <!-- TODO proper css class -->
+                                <!-- TODO red frame -->
                                 <div class="cms-select-template__template">
                                 
                                     <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
@@ -243,6 +245,14 @@
                                         <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}"
                                             itemDisabled="#{adminBean.currentUser.cmsCreator}" />
                                     </h:selectOneRadio>
+                                    
+                                    <div class="form-group">
+                                        <h:outputLabel for="emailConfirmation" styleClass="col-sm-6 control-label" value="#{msg.user__displayName} *" />
+                                        <div class="col-sm-6">
+                                            <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation"
+                                                styleClass="form-control" required="true" requiredMessage="#{msg.loginEnterDisplayName}" />
+                                        </div>
+                                    </div>
 
                                     <div class="text-right">
                                         <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"

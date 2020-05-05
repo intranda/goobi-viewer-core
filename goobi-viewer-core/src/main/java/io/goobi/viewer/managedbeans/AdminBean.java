@@ -96,6 +96,7 @@ public class AdminBean implements Serializable {
 
     private String passwordOne = "";
     private String passwordTwo = "";
+    private String emailConfirmation = "";
     private boolean deleteUserContributions = false;
 
     /**
@@ -329,7 +330,7 @@ public class AdminBean implements Serializable {
     public List<User> getAllUsers() throws DAOException {
         return DataManager.getInstance().getDao().getAllUsers(true);
     }
-    
+
     /**
      * <p>
      * getAllUsersExcept.
@@ -426,8 +427,17 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
+        if (user == null) {
+            return;
+        }
+
+        if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
+            Messages.error("admin__error_email_mismatch");
+            return;
+        }
+        
         logger.debug("Deleting user: " + user.getDisplayName());
-        if(deleteContributions) {
+        if (deleteContributions) {
             // TODO delete comments, CS content, etc.
             if (DataManager.getInstance().getDao().deleteUser(user)) {
                 Messages.info("deletedSuccessfully");
@@ -444,9 +454,10 @@ public class AdminBean implements Serializable {
      */
     public void resetCurrentUserAction() {
         currentUser = new User();
+        emailConfirmation = "";
         deleteUserContributions = false;
     }
-    
+
     /**
      * Returns all user groups in the DB. Needed for getting a list of users (e.g for adding user group members).
      *
@@ -777,12 +788,11 @@ public class AdminBean implements Serializable {
     }
 
     // IpRange
-    
-    
+
     /**
      * 
      * @return all IpRanges from the database
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<IpRange> getAllIpRanges() throws DAOException {
         return DataManager.getInstance().getDao().getAllIpRanges();
@@ -1401,6 +1411,20 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * @return the emailConfirmation
+     */
+    public String getEmailConfirmation() {
+        return emailConfirmation;
+    }
+
+    /**
+     * @param emailConfirmation the emailConfirmation to set
+     */
+    public void setEmailConfirmation(String emailConfirmation) {
+        this.emailConfirmation = emailConfirmation;
+    }
+
+    /**
      * @return the deleteUserContributions
      */
     public boolean isDeleteUserContributions() {
@@ -1551,7 +1575,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Querys solr for a list of all values of the set ACCESSCONDITION
+     * Queries Solr for a list of all values of the set ACCESSCONDITION
      *
      * @return A list of all indexed ACCESSCONDITIONs
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
