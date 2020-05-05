@@ -57,6 +57,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -435,7 +436,7 @@ public class AdminBean implements Serializable {
             Messages.error("admin__error_email_mismatch");
             return;
         }
-        
+
         logger.debug("Deleting user: " + user.getDisplayName());
         if (deleteContributions) {
             // TODO delete comments, CS content, etc.
