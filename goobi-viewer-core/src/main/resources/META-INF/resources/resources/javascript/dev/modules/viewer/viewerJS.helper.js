@@ -380,7 +380,25 @@ var viewerJS = ( function( viewer ) {
             } else {
                 return undefined;
             }
-        }
+        },
+        
+        executeFunctionByName: function(functionName, context /*, args */) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            var namespaces = functionName.split(".");
+            var func = namespaces.pop();
+            for(var i = 0; i < namespaces.length; i++) {
+              context = context[namespaces[i]];
+            }
+            return context[func].apply(context, args);
+         },
+         getFunctionByName: function(functionName, context) {
+             var namespaces = functionName.split(".");
+             var func = namespaces.pop();
+             for(var i = 0; i < namespaces.length; i++) {
+               context = context[namespaces[i]];
+             }
+             return context[func];
+          }
 
     };
     
@@ -442,6 +460,8 @@ var viewerJS = ( function( viewer ) {
     viewer.unique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
+    
+
 
     
     return viewer;
