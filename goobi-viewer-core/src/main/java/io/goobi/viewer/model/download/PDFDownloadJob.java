@@ -176,7 +176,7 @@ public class PDFDownloadJob extends DownloadJob {
         try {
             JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());
-            if (response.get("STATUS").equals("ERROR")) {
+            if (response.has("STATUS") && response.get("STATUS").equals("ERROR")) {
                 if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
                     logger.debug("Job is already being processed");
                 } else {

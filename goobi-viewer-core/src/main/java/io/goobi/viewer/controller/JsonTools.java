@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,19 +137,20 @@ public class JsonTools {
         for (int i = 0; i < jsonArrayUngrouped.length(); ++i) {
             JSONObject jsonObject = (JSONObject) jsonArrayUngrouped.get(i);
             //            logger.debug(jsonObject.toString());
-            Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
-            if (dateCreatedTimestamp == null) {
+            try {
+                Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
+                String dateString = DateTools.formatterISO8601Date.print(dateCreatedTimestamp);
+                if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
+                    currentDateString = dateString;
+                    currentDateJsonObject = new JSONObject();
+                    currentDateJsonObject.put("date", dateString);
+                    jsonArray.put(currentDateJsonObject);
+                }
+                currentDateJsonObject.put("entry" + i, jsonObject);
+            } catch (JSONException e) {
                 logger.warn(jsonObject.get("id") + " has no " + SolrConstants.DATECREATED + " value.");
                 continue;
             }
-            String dateString = DateTools.formatterISO8601Date.print(dateCreatedTimestamp);
-            if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
-                currentDateString = dateString;
-                currentDateJsonObject = new JSONObject();
-                currentDateJsonObject.put("date", dateString);
-                jsonArray.put(currentDateJsonObject);
-            }
-            currentDateJsonObject.put("entry" + i, jsonObject);
         }
 
         return jsonArray;

@@ -190,26 +190,44 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
             switch (getName().toLowerCase()) {
                 case "google":
                     // Validate id_token
-                    String iss = (String) json.get("iss");
-                    if (!"accounts.google.com".equals(iss)) {
-                        logger.error("Google id_token validation failed - 'iss' value: " + iss);
+                    if (!json.has("iss")) {
+                        logger.error("Google id_token validation failed - 'iss' value missing");
                         break;
                     }
-                    String aud = (String) json.get("aud");
-                    if (!getClientId().equals(aud)) {
-                        logger.error("Google id_token validation failed - 'aud' value: " + aud);
+                    if (!"accounts.google.com".equals(json.get("iss"))) {
+                        logger.error("Google id_token validation failed - 'iss' value: " + json.get("iss"));
                         break;
                     }
-                    email = (String) json.get("email");
-                    sub = (String) json.get("sub");
+                    if (!json.has("aud")) {
+                        logger.error("Google id_token validation failed - 'aud' value missing");
+                        break;
+                    }
+                    if (!getClientId().equals(json.get("aud"))) {
+                        logger.error("Google id_token validation failed - 'aud' value: " + json.get("aud"));
+                        break;
+                    }
+                    if (json.has("email")) {
+                        email = (String) json.get("email");
+                    }
+                    if (json.has("sub")) {
+                        sub = (String) json.get("sub");
+                    }
                     break;
                 case "facebook":
-                    email = (String) json.get("email");
-                    sub = (String) json.get("id");
+                    if (json.has("email")) {
+                        email = (String) json.get("email");
+                    }
+                    if (json.has("sub")) {
+                        sub = (String) json.get("sub");
+                    }
                     break;
                 default:
-                    email = (String) json.get("email");
-                    sub = (String) json.get("sub");
+                    if (json.has("email")) {
+                        email = (String) json.get("email");
+                    }
+                    if (json.has("sub")) {
+                        sub = (String) json.get("sub");
+                    }
                     break;
             }
             User user = null;
