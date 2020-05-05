@@ -35,8 +35,11 @@ var viewerJS = ( function( viewer ) {
     const _popoverPlacementAttribute = "data-popover-placement";
     const _popoverTemplate = "<div class='popover' role='tooltip'><div class='arrow'></div><h3 class='popover-title-custom'>#{title}</h3><div class='popover-content'></div></div>";    
     const _popoverTemplateNoTitle = "<div class='popover' role='tooltip'><div class='arrow'></div><div class='popover-content'></div></div>";    
-    const _dismissPopoverAttribute = "data-popover-dismiss"
-    const _clickOutside = "click-outside"
+    const _dismissPopoverAttribute = "data-popover-dismiss";
+    const _clickOutside = "click-outside";
+    const _popoverOnShowAttribute = "data-popover-onshow";
+    const _popoverOnCloseAttribute = "data-popover-onclose";
+        
     
     viewer.popovers = {
             
@@ -53,9 +56,6 @@ var viewerJS = ( function( viewer ) {
                     } else {
                         console.error("Found no popover matching selector '" + popoverSelector + "'. Cannot initialize popover");
                     }
-                    
-                    
-                    
                 })
             },
             
@@ -74,8 +74,19 @@ var viewerJS = ( function( viewer ) {
                     });
                 }
                 
-                
                 let config = _createPopoverConfig($trigger, $popover);
+                
+                $popover.find("[data-popover='close']").on("click", () => {
+                    $trigger.popover("hide");
+                })
+                
+                if(config.onShow) {
+                    $trigger.on("shown.bs.popover", config.onShow);
+                }
+                
+                if(config.onClose) {
+                    $trigger.on("hidden.bs.popover", config.onClose);
+                }
                 
                 $trigger.popover(config);
             },
@@ -110,18 +121,24 @@ var viewerJS = ( function( viewer ) {
                         top: event.pageY - Math.ceil($wrapper.height()/2) + ( (config.offset && config.offset.top) ? config.offset.top : 0),
                         left: event.pageX + $arrow.outerWidth() + ( (config.offset && config.offset.left) ? config.offset.left : 0)
                     })
+                    
+                    $(popoverSelector).find("[data-popover='close']").on("click", () => {
+                        $(anchor).popover("hide");
+                    })
+                    
                     $arrow.css("top", "50%");
                     if(config.onShow) {
                         config.onShow();
                     }
                 })
                 .one("hide.bs.popover", function() {
+                    $(popoverSelector).find("[data-popover='close']").off("click");
                     if(config.onClose) {
                         config.onClose();
                     }
                 })
                 .popover("show");
-                
+                                
                 return popover;
             },
             
@@ -142,12 +159,23 @@ var viewerJS = ( function( viewer ) {
                 html: true,
                 content: $popover.get(0),
                 trigger: "manual"
-        }
+        } 
         
         let placement = $trigger.attr(_popoverPlacementAttribute);
         if(placement) {
             config.placement = placement;
         }
+        
+        let onShow = $trigger.attr(_popoverOnShowAttribute);
+        if(onShow) {
+            config.onShow = viewerJS.helper.getFunctionByName(onShow, window);
+        }
+        
+        let onClose = $trigger.attr(_popoverOnCloseAttribute);
+        if(onClose) {
+            config.onClose = viewerJS.helper.getFunctionByName(onClose, window);
+        }
+       
         
         let title = $trigger.attr(_popoverTitleAttribute);
         if(title != undefined) {

@@ -33,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,8 +197,10 @@ public class NormdataResource {
         String translation = ViewerResourceBundle.getTranslation(normData.getKey(), locale);
         String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
         for (NormDataValue value : normData.getValues()) {
-            List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
-            if (jsonObj.get(translatedKey) == null) {
+            List<Map<String, String>> valueList;
+            try {
+                valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
+            } catch (JSONException e) {
                 valueList = new ArrayList<>();
                 jsonObj.put(translatedKey, valueList);
             }

@@ -118,12 +118,15 @@
 	/* IMAGE */
     &__view-image,
 	&__view-image-inner,
-	.view-object__image-map {
-		height: 100vh;
-		img {
-		    display: block;
-			height: 100%;
-		    margin: 0 auto;
+	.view-object{
+		&__object-3d-world,
+		&__image-map {
+			height: 100vh;
+			img {
+			    display: block;
+				height: 100%;
+			    margin: 0 auto;
+			}
 		}
 	}
 	&__view-image {}
@@ -136,10 +139,13 @@
 			#333 10px,
 			#333 20px
 		);
-		.view-object__image {
-			padding: 0;
-			border: 0;
-			background-color: transparent;
+		.view-object{
+			&__object-3d,
+			&__image {
+				padding: 0;
+				border: 0;
+				background-color: transparent;
+			}
 		}
 	}
 	/* THUMBS */
@@ -341,6 +347,23 @@
 		&.fs-imagefilters {
 			imageFilters {					
 				display: none;
+			}
+		}
+		&.share-image-area {
+			ul {
+				list-style: circle;
+				li {
+					margin-top: 10px;
+					a {
+						&:hover {
+							cursor: pointer;
+						}
+					}
+				}
+			}
+			.btn--full {
+				margin-top: 10px;
+				width: 100%;
 			}
 		}
 	}

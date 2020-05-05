@@ -25,6 +25,7 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         SolrDocument doc = response.getResults().get(0);
         JSONObject json = JsonTools.getRecordJsonObject(doc, rootUrl);
         Assert.assertNotNull(json);
+        Assert.assertTrue(json.has("id"));
         Assert.assertEquals(PI, json.get("id"));
         Assert.assertEquals(doc.getFieldValue(SolrConstants.TITLE), json.get("title"));
         Assert.assertEquals(doc.getFieldValue(SolrConstants.DATECREATED), json.get("dateCreated"));
