@@ -24,16 +24,31 @@ public class SecurityQuestion {
     private final String questionKey;
     private final Set<String> correctAnswers;
 
+    /**
+     * Constructor.
+     * 
+     * @param questionKey
+     * @param correctAnswers
+     */
     public SecurityQuestion(String questionKey, Set<String> correctAnswers) {
         this.questionKey = questionKey;
         this.correctAnswers = correctAnswers;
     }
-    
+
+    /**
+     * 
+     * @param answer
+     * @return true if given answer is among correct answers; false otherwise
+     * @should return true on correct answer
+     * @should return true on correct answer and ignore case
+     * @should return false on incorrect answer
+     * @should return false empty answer
+     */
     public boolean isAnswerCorrect(String answer) {
-        if(StringUtils.isBlank(answer)) {
+        if (StringUtils.isBlank(answer)) {
             return false;
         }
-        
+
         return correctAnswers.contains(answer.toLowerCase());
     }
 

@@ -57,6 +57,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -421,7 +422,16 @@ public class AdminBean implements Serializable {
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deleteUserAction(User user) throws DAOException {
+    public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
+        if (user == null) {
+            return;
+        }
+
+        if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
+            Messages.error("admin__error_email_mismatch");
+            return;
+        }
+
         logger.debug("Deleting user: " + user.getDisplayName());
         if (DataManager.getInstance().getDao().deleteUser(user)) {
             Messages.info("deletedSuccessfully");
