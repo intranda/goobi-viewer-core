@@ -59,6 +59,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LitteraProvider;
@@ -1747,6 +1748,39 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<SecurityQuestion> getSecurityQuestions() {
+        List<HierarchicalConfiguration> nodes = getLocalConfigurationsAt("user.securityQuestions.question");
+        if (nodes == null || nodes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<SecurityQuestion> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration node : nodes) {
+            String questionKey = node.getString("[@key]");
+            if (StringUtils.isEmpty(questionKey)) {
+                logger.warn("Security question key not found, skipping...");
+                continue;
+            }
+            List<Object> answerNodes = node.getList("allowedAnswer", Collections.emptyList());
+            if (answerNodes.isEmpty()) {
+                logger.warn("Security question '{}' has no configured answers, skipping...");
+                continue;
+            }
+            Set<String> allowedAnswers = new HashSet<>(answerNodes.size());
+            for (Object answer : answerNodes) {
+                allowedAnswers.add(((String) answer).toLowerCase());
+            }
+            ret.add(new SecurityQuestion(questionKey, allowedAnswers));
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * isShowOpenIdConnect.
      * </p>
@@ -2175,7 +2209,6 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarTocVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
-    
 
     /**
      * <p>
@@ -2188,7 +2221,6 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarOpacLinkVisible() {
         return this.getLocalBoolean("sidebar.opac.visible", false);
     }
-
 
     /**
      * <p>
@@ -4624,6 +4656,10 @@ public final class Configuration extends AbstractConfiguration {
         return defaultConf;
     }
 
+    /**
+     * 
+     * @return
+     */
     public List<LicenseDescription> getLicenseDescriptions() {
         List<LicenseDescription> licenses = new ArrayList<>();
         List<HierarchicalConfiguration> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
@@ -4638,6 +4674,7 @@ public final class Configuration extends AbstractConfiguration {
                 licenses.add(license);
             }
         }
+
         return licenses;
     }
 
