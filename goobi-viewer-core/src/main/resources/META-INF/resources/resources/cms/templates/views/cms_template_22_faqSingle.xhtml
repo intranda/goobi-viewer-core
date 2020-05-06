@@ -40,13 +40,30 @@
                     </div>
                 </h:panelGroup>
 
+				<h2 class="tpl-faq-single__title">#{cmsPage.title}</h2>
                 <div class="tpl-faq-single__content">
-					<h2>#{cmsPage.getContent('heading')}</h2>
 					
-					<div class="tpl-faq-single__text">
-	                    <ui:include src="#{cmsPage.getContent('text')}" />
-	                    <ui:include src="#{cmsPage.getContent('text2')}" />
-					</div>
+					<ui:fragment rendered="#{cmsPage.hasContent('text')}">
+						<div class="tpl-faq-single__text">
+		                    <ui:include src="#{cmsPage.getContent('text')}" />
+		                </div>
+	                </ui:fragment>
+                    <!-- IMAGE -->
+                    <ui:fragment rendered="#{cmsPage.hasContent('image')}">
+	                    <div class="tpl-faq-single__image" >
+	                        <figure class="tpl-faq-single__image">
+	                            <img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMediaName('image')}" />
+	                            <figcaption>
+	                                #{cmsPage.getMediaDescription('image')}
+	                            </figcaption>
+	                        </figure>
+						</div>
+					</ui:fragment>
+					<ui:fragment rendered="#{cmsPage.hasContent('text2')}">
+						<div class="tpl-faq-single__text">
+		                    <ui:include src="#{cmsPage.getContent('text2')}" />
+						</div>
+					</ui:fragment>
                 </div>
             </div>
         </f:view>

@@ -412,6 +412,7 @@ public class CmsBean implements Serializable {
                 language.addContentItemFromTemplateItem(templateItem);
             }
         }
+        page.getLanguageVersions().forEach(lang -> lang.generateCompleteContentItemList());
         return PageValidityStatus.VALID;
     }
 
