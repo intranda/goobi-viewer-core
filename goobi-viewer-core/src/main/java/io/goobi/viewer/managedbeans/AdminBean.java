@@ -422,16 +422,7 @@ public class AdminBean implements Serializable {
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
-        if (user == null) {
-            return;
-        }
-
-        if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
-            Messages.error("admin__error_email_mismatch");
-            return;
-        }
-
+    public void deleteUserAction(User user) throws DAOException {
         logger.debug("Deleting user: " + user.getDisplayName());
         if (DataManager.getInstance().getDao().deleteUser(user)) {
             Messages.info("deletedSuccessfully");
