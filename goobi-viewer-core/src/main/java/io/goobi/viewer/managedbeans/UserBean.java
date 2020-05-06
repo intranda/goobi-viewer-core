@@ -143,29 +143,29 @@ public class UserBean implements Serializable {
         // Check whether user account registration is enabled
         if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
             logger.warn("User registration is disabled.");
-            return "pretty:createUserAccount";
+            return "";
         }
         // Check whether the security question has been answered correct, if configured
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
-            return "pretty:createUserAccount";
+            return "";
         }
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
-            return "pretty:createUserAccount";
+            return "";
         }
         // Check for existing nicknames
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
-            return "pretty:createUserAccount";
+            return "";
         }
         // Check for existing e-mail addresses
         if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
             logger.debug("User account already exists for '{}'.", email);
-            return "pretty:createUserAccount";
+            return "";
         }
 
         if (StringUtils.isNotBlank(passwordOne) && passwordOne.equals(passwordTwo)) {
@@ -191,7 +191,7 @@ public class UserBean implements Serializable {
             Messages.error("user_passwordMismatch");
         }
 
-        return "pretty:createUserAccount";
+        return "";
     }
 
     /**
