@@ -241,9 +241,11 @@ public class TranskribusUtils {
             JSONArray jsonArray = new JSONArray(tokener);
             for (Object o : jsonArray) {
                 JSONObject jsonObj = (JSONObject) o;
-                Long collectionId = (Long) jsonObj.get("colId");
-                if (collectionId != null) {
-                    return String.valueOf(collectionId);
+                if (jsonObj.has("colId")) {
+                    Long collectionId = (Long) jsonObj.get("colId");
+                    if (collectionId != null) {
+                        return String.valueOf(collectionId);
+                    }
                 }
             }
         }
@@ -419,15 +421,17 @@ public class TranskribusUtils {
         if (response != null) {
             JSONTokener tokener = new JSONTokener(response);
             JSONObject jsonObj = new JSONObject(tokener);
-            String state = (String) jsonObj.get("state");
-            logger.trace("State for job {}: {}", jobId, state);
-            if (state != null) {
-                switch (state) {
-                    // TODO more statuses
-                    case "FINISHED":
-                        return JobStatus.READY;
-                    case "FAILED":
-                        return JobStatus.ERROR;
+            if (jsonObj.has("state")) {
+                String state = (String) jsonObj.get("state");
+                logger.trace("State for job {}: {}", jobId, state);
+                if (state != null) {
+                    switch (state) {
+                        // TODO more statuses
+                        case "FINISHED":
+                            return JobStatus.READY;
+                        case "FAILED":
+                            return JobStatus.ERROR;
+                    }
                 }
             }
         }

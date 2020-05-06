@@ -182,12 +182,16 @@
         	    }
         	}
         }
+        
 
        	// desktop object view
        	console.log("access ", access, accessDeniedMessage);
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	viewImage.load().then( function( image ) {
+           	    $(".openseadragon-canvas").get(0).focus = () => {
+           	       //prevent focus on os-div to avoid scrolling down on click
+           	    }
            		let shareImageFragment = new viewerJS.ShareImageFragment(image);
            		shareImageFragment.initImageFragmentLinks();
            	} ).catch( function( error ) {
