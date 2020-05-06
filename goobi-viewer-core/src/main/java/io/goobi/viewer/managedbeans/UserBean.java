@@ -142,29 +142,37 @@ public class UserBean implements Serializable {
     public String createNewUserAccount() throws DAOException {
         // Check whether user account registration is enabled
         if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
-            logger.warn("User registration is disabled.");
+            logFailedUserRegistration();
+            logger.debug("User registration is disabled.");
             return "";
         }
         // Check whether the security question has been answered correct, if configured
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
+            logger.debug("Wrong security question answer.");
+            logFailedUserRegistration();
             return "";
         }
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
+            logFailedUserRegistration();
+            logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
         // Check for existing nicknames
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
+            logger.debug("User account already exists for nickname '{}'.", nickName);
+            logFailedUserRegistration();
             return "";
         }
         // Check for existing e-mail addresses
         if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
-            logger.debug("User account already exists for '{}'.", email);
+            logFailedUserRegistration();
+            logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
             return "";
         }
 
@@ -192,6 +200,19 @@ public class UserBean implements Serializable {
         }
 
         return "";
+    }
+
+    /**
+     * Logs failed user registration attempts with scrambled e-mail and IP addresses.
+     */
+    private void logFailedUserRegistration() {
+        String ipAddress = "UNKNOWN";
+        HttpServletRequest request = BeanUtils.getRequest();
+        if (request != null) {
+            ipAddress = NetTools.getIpAddress(request);
+        }
+        logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
+                NetTools.scrambleEmailAddress(email));
     }
 
     /**
