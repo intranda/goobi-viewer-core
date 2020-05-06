@@ -16,7 +16,6 @@
 package io.goobi.viewer.servlets.rest.content;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -125,6 +124,7 @@ public class NormdataResource {
         // logger.debug("norm data locale: {}", locale.toString());
 
         url = BeanUtils.unescapeCriticalUrlChracters(url.trim());
+        logger.trace("url: {}", url);
         String secondUrl = null;
         if (url.contains("$")) {
             String[] urlSplit = url.split("[$]");
@@ -191,17 +191,24 @@ public class NormdataResource {
         return jsonArray.toString();
     }
 
-    @SuppressWarnings("unchecked")
-    JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
+    /**
+     * 
+     * @param normData
+     * @param locale
+     * @return
+     * @should add values correctly
+     */
+    static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();
         String translation = ViewerResourceBundle.getTranslation(normData.getKey(), locale);
         String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
         for (NormDataValue value : normData.getValues()) {
-            List<Map<String, String>> valueList;
+            JSONArray valueList;
             try {
-                valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
+                valueList = (JSONArray) jsonObj.get(translatedKey);
+
             } catch (JSONException e) {
-                valueList = new ArrayList<>();
+                valueList = new JSONArray();
                 jsonObj.put(translatedKey, valueList);
             }
             Map<String, String> valueMap = new HashMap<>();
@@ -225,7 +232,7 @@ public class NormdataResource {
             if (value.getLabel() != null) {
                 valueMap.put("label", value.getLabel());
             }
-            valueList.add(valueMap);
+            valueList.put(valueMap);
             // If no text found, use the identifier
             if (valueMap.get("text") == null) {
                 valueMap.put("text", valueMap.get("identifier"));
