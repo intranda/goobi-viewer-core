@@ -422,47 +422,4 @@ public class NetTools {
         return address;
     }
 
-    /**
-     * Replaces most of the given email address with asterisks.
-     * 
-     * @param email
-     * @return Scrambled email address
-     * @should modify string correctly
-     */
-    public static String scrambleEmailAddress(String email) {
-        if (StringUtils.isEmpty(email)) {
-            return email;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < email.length(); ++i) {
-            if (i > 2 && i < email.length() - 3) {
-                sb.append('*');
-            } else {
-                sb.append(email.charAt(i));
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Replaces most the last two segments of the given IPv4 address with placeholders.
-     * 
-     * @param address
-     * @return Scrambled IP address
-     * @should modify string correctly
-     */
-    public static String scrambleIpAddress(String address) {
-        if (StringUtils.isEmpty(address)) {
-            return address;
-        }
-
-        String[] addressSplit = address.split("[.]");
-        if (addressSplit.length == 4) {
-            return addressSplit[0] + "." + addressSplit[1] + ".X.X";
-        }
-
-        return address;
-    }
 }

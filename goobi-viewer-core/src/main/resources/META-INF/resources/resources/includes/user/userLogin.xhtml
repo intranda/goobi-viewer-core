@@ -159,7 +159,7 @@
                     </div>
                     
                     <!-- USER LOGIN TYPE CREATE ACCOUNT -->
-                    <ui:fragment rendered="#{userBean.userRegistrationEnabled and userBean.resetSecurityQuestion()}">
+                    <ui:fragment rendered="#{userBean.userRegistrationEnabled}">
                     <div id="loginTypeCreateAccount" class="user-login__body-login-type create">
                         <h:form id="loginTypeCreateAccountForm">
                             <div class="form-group">
@@ -171,15 +171,6 @@
                                     required="true"
                                     requiredMessage="#{msg.loginEnterNickName}">
                                     <f:validator validatorId="nicknameValidator" />
-                                </h:inputText>
-                            </div>
-                            
-                            <div class="form-group lastname">
-                                <label for="userCreateAccountNick" class="control-label">#{msg.nameLast}:</label>
-                                <h:inputText 
-                                    id="userCreateAccountLastName" 
-                                    styleClass="form-control" 
-                                    value="#{userBean.lastName}">
                                 </h:inputText>
                             </div>
 
@@ -219,19 +210,6 @@
                                     required="true"
                                     requiredMessage="#{msg.newUserPasswordTwoRequired}" />
                             </div>
-                            
-                            <ui:fragment rendered="#{userBean.securityQuestion != null}">
-                                <div class="form-group">
-                                    <label for="userCreateAccountConfirm" class="control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
-                                    <h:inputSecret 
-                                        id="userCreateAccountConfirm" 
-                                        styleClass="form-control" 
-                                        autocomplete="off"
-                                        value="#{userBean.securityAnswer}" 
-                                        required="true"
-                                        requiredMessage="#{msg.user__security_question_required_msg}" />
-                                </div>
-                            </ui:fragment>
 
                             <p>#{msg.login__new_account_agreement}</p>
 

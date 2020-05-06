@@ -29,22 +29,4 @@ public class NetToolsTest {
     public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
         Assert.assertEquals("3.3.3.3", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
     }
-
-    /**
-     * @see NetTools#scrambleEmailAddress(String)
-     * @verifies modify string correctly
-     */
-    @Test
-    public void scrambleEmailAddress_shouldModifyStringCorrectly() throws Exception {
-        Assert.assertEquals("foo*****com", NetTools.scrambleEmailAddress("foo@bar.com"));
-    }
-
-    /**
-     * @see NetTools#scrambleIpAddress(String)
-     * @verifies modify string correctly
-     */
-    @Test
-    public void scrambleIpAddress_shouldModifyStringCorrectly() throws Exception {
-        Assert.assertEquals("192.168.X.X", NetTools.scrambleIpAddress("192.168.0.1"));
-    }
 }

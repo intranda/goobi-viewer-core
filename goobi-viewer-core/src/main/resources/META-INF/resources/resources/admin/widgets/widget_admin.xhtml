@@ -29,13 +29,6 @@
                                 <span>#{msg.admin__groups}</span>
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
-                                <i class="fa fa-bolt" aria-hidden="true"></i>
-                                <span>#{msg.admin__ip_ranges}</span>
-                            </h:outputLink>
-                        </li>
                         <li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminLicenseType' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminAllLicenseTypes')}/">
@@ -47,7 +40,14 @@
                                      navigationHelper.currentPage == 'adminRole' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRoles')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
-                                <span>#{msg.admin__roles}</span>
+                                <span>#{msg.admin__rolesPrivs}</span>
+                            </h:outputLink>
+                        </li>
+                        <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or
+                                     navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
+                                <i class="fa fa-bolt" aria-hidden="true"></i>
+                                <span>#{msg.admin__networks}</span>
                             </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">

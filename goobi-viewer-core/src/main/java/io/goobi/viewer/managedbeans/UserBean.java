@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -63,7 +62,6 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
@@ -104,11 +102,6 @@ public class UserBean implements Serializable {
     // Passwords for creating an new local user account
     private transient String passwordOne = "";
     private transient String passwordTwo = "";
-
-    private SecurityQuestion securityQuestion = null;
-    private String securityAnswer;
-    /** Honey pot field invisible to human users. */
-    private String lastName;
     private String redirectUrl = null;
     private Feedback feedback;
     private String transkribusUserName;
@@ -140,43 +133,18 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
-        // Check whether user account registration is enabled
         if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
-            logFailedUserRegistration();
-            logger.debug("User registration is disabled.");
-            return "";
+            logger.warn("User registration is disabled.");
+            return "pretty:createUserAccount"; 
         }
-        // Check whether the security question has been answered correct, if configured
-        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
-            Messages.error("user__security_question_wrong");
-            logger.debug("Wrong security question answer.");
-            logFailedUserRegistration();
-            return "";
-        }
-        // Check whether the invisible field lastName has been filled (real users cannot do that)
-        if (StringUtils.isNotEmpty(lastName)) {
-            logFailedUserRegistration();
-            logger.debug("Honeypot field entry: {}", lastName);
-            return "";
-        }
-        // Check for existing nicknames
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
-            logger.debug("User account already exists for nickname '{}'.", nickName);
-            logFailedUserRegistration();
-            return "";
-        }
-        // Check for existing e-mail addresses
-        if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
+        } else if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
-            logFailedUserRegistration();
-            logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
-            return "";
-        }
-
-        if (StringUtils.isNotBlank(passwordOne) && passwordOne.equals(passwordTwo)) {
+            logger.debug("User account already exists for '" + email + "'.");
+        } else if (StringUtils.isNotBlank(passwordOne) && passwordOne.equals(passwordTwo)) {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setNickName(nickName);
@@ -187,7 +155,7 @@ public class UserBean implements Serializable {
                 if (DataManager.getInstance().getDao().addUser(newUser)) {
                     String msg = ViewerResourceBundle.getTranslation("user_accountCreated", null);
                     Messages.info(msg.replace("{0}", email));
-                    logger.debug("User account created for '{}'.", email);
+                    logger.debug("User account created for '" + email + "'.");
                 } else {
                     Messages.error("errSave");
                 }
@@ -199,20 +167,7 @@ public class UserBean implements Serializable {
             Messages.error("user_passwordMismatch");
         }
 
-        return "";
-    }
-
-    /**
-     * Logs failed user registration attempts with scrambled e-mail and IP addresses.
-     */
-    private void logFailedUserRegistration() {
-        String ipAddress = "UNKNOWN";
-        HttpServletRequest request = BeanUtils.getRequest();
-        if (request != null) {
-            ipAddress = NetTools.getIpAddress(request);
-        }
-        logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
-                NetTools.scrambleEmailAddress(email));
+        return "pretty:createUserAccount";
     }
 
     /**
@@ -1105,56 +1060,6 @@ public class UserBean implements Serializable {
     public void resetPasswordFields() {
         passwordOne = "";
         passwordTwo = "";
-    }
-
-    /**
-     * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
-     */
-    public boolean resetSecurityQuestion() {
-        List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
-        if (questions.isEmpty()) {
-            return true;
-        }
-
-        Random random = new Random();
-        securityQuestion = questions.get(random.nextInt(questions.size()));
-
-        return true;
-    }
-
-    /**
-     * @return the securityQuestion
-     */
-    public SecurityQuestion getSecurityQuestion() {
-        return securityQuestion;
-    }
-
-    /**
-     * @return the securityAnswer
-     */
-    public String getSecurityAnswer() {
-        return securityAnswer;
-    }
-
-    /**
-     * @param securityAnswer the securityAnswer to set
-     */
-    public void setSecurityAnswer(String securityAnswer) {
-        this.securityAnswer = securityAnswer;
-    }
-
-    /**
-     * @return the lastName
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * @param lastName the lastName to set
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     /**

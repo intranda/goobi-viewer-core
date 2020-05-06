@@ -36,7 +36,6 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
-import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -454,25 +453,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isUserRegistrationEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isUserRegistrationEnabled());
-    }
-
-    /**
-     * @see Configuration#getSecurityQuestions()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getSecurityQuestions_shouldReturnAllConfiguredElements() throws Exception {
-        List<SecurityQuestion> result = DataManager.getInstance().getConfiguration().getSecurityQuestions();
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2, result.size());
-        {
-            SecurityQuestion q = result.get(0);
-            Assert.assertEquals("user__security_question__1", q.getQuestionKey());
-            Assert.assertEquals(3, q.getCorrectAnswers().size());
-            Assert.assertTrue(q.getCorrectAnswers().contains("foo"));
-            Assert.assertTrue(q.getCorrectAnswers().contains("f00"));
-            Assert.assertTrue(q.getCorrectAnswers().contains("phoo"));
-        }
     }
 
     /**

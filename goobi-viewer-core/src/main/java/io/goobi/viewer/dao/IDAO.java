@@ -540,19 +540,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getAllUserRoles() throws DAOException;
-    
-    /**
-     * <p>
-     * getUserRoleCount.
-     * </p>
-     *
-     * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param role a {@link io.goobi.viewer.model.security.Role} object.
-     * @return Row count
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public long getUserRoleCount(UserGroup userGroup, User user, Role role) throws DAOException;
 
     /**
      * <p>
