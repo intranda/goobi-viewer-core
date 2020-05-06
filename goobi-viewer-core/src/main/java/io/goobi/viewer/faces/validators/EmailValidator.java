@@ -61,7 +61,7 @@ public class EmailValidator implements Validator<String> {
      * @should not match invalid addresses
      * @return a boolean.
      */
-    protected static boolean validateEmailAddress(String email) {
+    public static boolean validateEmailAddress(String email) {
         if (email == null) {
             return false;
         }
