@@ -675,9 +675,9 @@
 		<view-id value="/resources/admin/views/adminDashboard.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminAllUsers">
+	<url-mapping id="adminUsers">
 		<pattern value="/admin/users/" />
-		<view-id value="/resources/admin/views/adminAllUsers.xhtml" />
+		<view-id value="/resources/admin/views/adminUsers.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUser">
@@ -685,9 +685,9 @@
 		<view-id value="/resources/admin/views/adminUser.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminAllUserGroups">
+	<url-mapping id="adminUserGroups">
 		<pattern value="/admin/groups/" />
-		<view-id value="/resources/admin/views/adminAllUserGroups.xhtml" />
+		<view-id value="/resources/admin/views/adminUserGroups.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUserGroup">

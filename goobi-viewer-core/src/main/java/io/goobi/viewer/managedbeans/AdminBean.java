@@ -57,6 +57,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -77,9 +78,11 @@ public class AdminBean implements Serializable {
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
     private TableDataProvider<User> lazyModelUsers;
+    @Deprecated
     private TableDataProvider<UserGroup> lazyModelUserGroups;
     private TableDataProvider<LicenseType> lazyModelLicenseTypes;
     private TableDataProvider<LicenseType> lazyModelCoreLicenseTypes;
+    @Deprecated
     private TableDataProvider<IpRange> lazyModelIpRanges;
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -94,6 +97,8 @@ public class AdminBean implements Serializable {
 
     private String passwordOne = "";
     private String passwordTwo = "";
+    private String emailConfirmation = "";
+    private boolean deleteUserContributions = false;
 
     /**
      * <p>
@@ -418,15 +423,28 @@ public class AdminBean implements Serializable {
      * deleteUserAction.
      * </p>
      *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param user User to be deleted
+     * @param deleteContributions If true, all content created by this user will also be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deleteUserAction(User user) throws DAOException {
+    public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
+        if (user == null) {
+            return;
+        }
+
+        if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
+            Messages.error("admin__error_email_mismatch");
+            return;
+        }
+
         logger.debug("Deleting user: " + user.getDisplayName());
-        if (DataManager.getInstance().getDao().deleteUser(user)) {
-            Messages.info("deletedSuccessfully");
-        } else {
-            Messages.error("deleteFailure");
+        if (deleteContributions) {
+            // TODO delete comments, CS content, etc.
+            if (DataManager.getInstance().getDao().deleteUser(user)) {
+                Messages.info("deletedSuccessfully");
+            } else {
+                Messages.error("deleteFailure");
+            }
         }
     }
 
@@ -437,6 +455,19 @@ public class AdminBean implements Serializable {
      */
     public void resetCurrentUserAction() {
         currentUser = new User();
+        emailConfirmation = "";
+        deleteUserContributions = false;
+    }
+
+    /**
+     * Returns all user groups in the DB. Needed for getting a list of users (e.g for adding user group members).
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<UserGroup> getAllUserGroups() throws DAOException {
+        logger.trace("getAllUserGroups");
+        return DataManager.getInstance().getDao().getAllUserGroups();
     }
 
     /**
@@ -445,19 +476,21 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveUserGroupAction() throws DAOException {
-        if (currentUserGroup != null) {
-            if (getCurrentUserGroup().getId() != null) {
-                if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
-                    Messages.info("updatedSuccessfully");
-                } else {
-                    Messages.info("errSave");
-                }
+        if (currentUserGroup == null) {
+            return;
+        }
+
+        if (getCurrentUserGroup().getId() != null) {
+            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
+                Messages.info("updatedSuccessfully");
             } else {
-                if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
-                    Messages.info("addedSuccessfully");
-                } else {
-                    Messages.info("errSave");
-                }
+                Messages.info("errSave");
+            }
+        } else {
+            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
+                Messages.info("addedSuccessfully");
+            } else {
+                Messages.info("errSave");
             }
         }
         setCurrentUserGroup(null);
@@ -756,6 +789,15 @@ public class AdminBean implements Serializable {
     }
 
     // IpRange
+
+    /**
+     * 
+     * @return all IpRanges from the database
+     * @throws DAOException
+     */
+    public List<IpRange> getAllIpRanges() throws DAOException {
+        return DataManager.getInstance().getDao().getAllIpRanges();
+    }
 
     /**
      * <p>
@@ -1370,6 +1412,34 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * @return the emailConfirmation
+     */
+    public String getEmailConfirmation() {
+        return emailConfirmation;
+    }
+
+    /**
+     * @param emailConfirmation the emailConfirmation to set
+     */
+    public void setEmailConfirmation(String emailConfirmation) {
+        this.emailConfirmation = emailConfirmation;
+    }
+
+    /**
+     * @return the deleteUserContributions
+     */
+    public boolean isDeleteUserContributions() {
+        return deleteUserContributions;
+    }
+
+    /**
+     * @param deleteUserContributions the deleteUserContributions to set
+     */
+    public void setDeleteUserContributions(boolean deleteUserContributions) {
+        this.deleteUserContributions = deleteUserContributions;
+    }
+
+    /**
      * <p>
      * deleteFromCache.
      * </p>
@@ -1506,7 +1576,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Querys solr for a list of all values of the set ACCESSCONDITION
+     * Queries Solr for a list of all values of the set ACCESSCONDITION
      *
      * @return A list of all indexed ACCESSCONDITIONs
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

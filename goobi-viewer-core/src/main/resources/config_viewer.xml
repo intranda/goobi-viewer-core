@@ -111,6 +111,21 @@
 		<!-- userRegistrationEnabled: If false, widgets for user registration are 
 			hidden. Default is true. -->
 		<userRegistrationEnabled>true</userRegistrationEnabled>
+		
+		<!-- securityQuestions: -->
+        <securityQuestions>
+            <question key="user__security_question__1">
+			    <allowedAnswer>blau</allowedAnswer>
+                <allowedAnswer>blue</allowedAnswer>
+                <allowedAnswer>azul</allowedAnswer>
+            </question>
+            <question key="user__security_question__2">
+                <allowedAnswer>6</allowedAnswer>
+                <allowedAnswer>sechs</allowedAnswer>
+                <allowedAnswer>six</allowedAnswer>
+            </question>
+        </securityQuestions>
+		
 		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element 
 			defines an authentication provider. Required attributes: name, endpoint (auth 
 			URL), clientId, clientSecret, image. -->

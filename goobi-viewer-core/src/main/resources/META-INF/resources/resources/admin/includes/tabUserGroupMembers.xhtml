@@ -72,15 +72,18 @@
 							<div class="form-group">
 								<h:outputLabel for="user" styleClass="col-sm-5 control-label" value="#{msg.user} *" />
 								<div class="col-sm-7">
-									<h:selectOneMenu value="#{adminBean.currentUserRole.user}" id="user" styleClass="form-control" converter="userConverter" required="true">
-										<f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.members)}" var="user" itemLabel="#{user.displayName}" />
+									<h:selectOneMenu value="#{adminBean.currentUserRole.user}" id="user" styleClass="form-control"
+									   converter="userConverter" required="true">
+										<f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.members)}" var="user"
+										  itemLabel="#{user.displayName}" />
 									</h:selectOneMenu>
 								</div>
 							</div>
 							<div class="form-group">
 								<h:outputLabel for="descriptionMember" styleClass="col-sm-5 control-label" value="#{msg.role} *" />
 								<div class="col-sm-7">
-									<h:selectOneMenu value="#{adminBean.currentUserRole.role}" id="descriptionMember" styleClass="form-control" converter="roleConverter"
+									<h:selectOneMenu value="#{adminBean.currentUserRole.role}" id="descriptionMember" styleClass="form-control"
+									   converter="roleConverter"
 										required="true">
 										<f:selectItems value="#{adminBean.allRoles}" var="role" itemLabel="#{role.name}" />
 									</h:selectOneMenu>

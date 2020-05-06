@@ -9,7 +9,8 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminAllUsers')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUsers')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentUserAction}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>
@@ -21,6 +22,9 @@
 
                 <div class="admin__content-inner-content">
                     <h:form id="adminAllUserForm" prependId="false">
+                        <!-- FILTER -->
+                        <viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/>  
+                        <div class="clearfix"></div>
                         <h:commandLink action="pretty:adminUser" actionListener="#{adminBean.resetCurrentUserAction}" value="#{msg.admin_createNewUser}" styleClass="btn btn--default pull-right" />
                         
                         <div class="clearfix"></div>
@@ -44,12 +48,7 @@
                                                 <i class="fa fa-angle-up" aria-hidden="true"></i>
                                                 <f:ajax execute="@form" render="@form" />
                                             </h:commandLink>
-                                        </div>
-                                        
-                                        <div class="clearfix"></div>
-    
-                                        <!-- FILTER -->
-                                        <viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/>    
+                                        </div>      
                                     </th>
                             		<th>
                                         #{msg.lastLoginDate}
@@ -66,58 +65,64 @@
                                             </h:commandLink>
                                         </div>                                        
                                     </th>
-                            		<th>#{msg.action}</th>
+                                    <th>
+                                        #{msg.email}
+                                        
+                                        <!-- SORTING -->
+                                        <div class="sorting-wrapper">
+                                            <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
+                                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                <f:ajax execute="@form" render="@form" />
+                                            </h:commandLink>
+                                            <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
+                                                <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                                <f:ajax execute="@form" render="@form" />
+                                            </h:commandLink>
+                                        </div>
+                                        
+                                        <div class="clearfix"></div>                            
+                                    </th>
+                            		<th>#{msg.userGroups}</th>
                                 </tr>
                         	</thead>
                         	<tbody>
                         		<ui:repeat var="user" value="#{adminBean.pageUsers}">
                         			<tr>
                         				<td>
-			                                <h:outputText value="#{user.name}" />
-			                                <br />
+                        				    <ui:fragment rendered="#{user.useGravatar}">
+                                                <img src="#{user.getGravatarUrl(48)}" />
+                                            </ui:fragment>
 			                                <h:outputText value="#{user.nickName}" />
-                                            <br />
-			                                <h:outputText value="#{user.email}" />
+			                                <!-- TODO only visible onMouseOver -->
+			                                <br/>
+                                            <h:commandLink styleClass="btn btn--icon" action="pretty:adminUser" title="#{msg.edit}">
+                                                <f:setPropertyActionListener value="#{user}" target="#{adminBean.currentUser}" />
+                                                <f:setPropertyActionListener value="#{null}" target="#{adminBean.currentLicense}" />
+                                                #{msg.edit}
+                                            </h:commandLink>
                         				</td>
                         				<td>
 			                                <h:outputText value="#{user.lastLogin}">
 			                                    <f:convertDateTime type="both" dateStyle="short" timeStyle="short" />
 			                                </h:outputText>
                         				</td>
+                                        <td>
+                                            <h:outputText value="#{user.email}" />
+                                        </td>
                         				<td class="admin-table__action">
-			                           		<h:commandLink styleClass="btn btn--icon" action="pretty:adminUser" title="#{msg.edit}">
-			                                    <f:setPropertyActionListener value="#{user}" target="#{adminBean.currentUser}" />
-			                                    <f:setPropertyActionListener value="#{null}" target="#{adminBean.currentLicense}" />
-			                                    <i class="fa fa-pencil" aria-hidden="true"></i>                          		
-			                           		</h:commandLink>
-											
-											<h:panelGroup id="userStatus">
-												<!-- suspend user -->
-												<h:panelGroup rendered="#{!user.suspended}">
-													<h:commandLink
-                                                        styleClass="btn btn--icon" 
-														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin_suspendUserConfirmationText, user.name)}&quot; ) ) { return false };" 
-														action="adminAllUsers"
-														actionListener="#{adminBean.toggleSuspendUserAction(user)}"
-														title="#{msg.suspend}">
-														<i class="fa fa-ban" aria-hidden="true"></i>
-														<f:ajax render="userStatus" />
-													</h:commandLink>
-												</h:panelGroup>
-												
-												<!-- unsuspend user -->
-												<h:panelGroup rendered="#{user.suspended}">
-													<h:commandLink
-                                                        styleClass="btn btn--icon" 
-														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin_unsuspendUserConfirmationText, user.name)}&quot; ) ) { return false };" 
-														action="adminAllUsers"
-														actionListener="#{adminBean.toggleSuspendUserAction(user)}"
-														title="#{msg.unsuspend}">
-														<i class="fa fa-check-circle-o" aria-hidden="true"></i>
-														<f:ajax render="userStatus" />
-													</h:commandLink>
-				                                </h:panelGroup>
-			                                </h:panelGroup>
+											<h:panelGroup>
+                                                <!-- Admin -->
+											    <ui:fragment rendered="#{user.superuser}">[#{msg.admin}]</ui:fragment>
+											    <!-- TODO This might get expensive -->
+											    <!-- Ownerships -->
+                                                <ui:repeat var="group" value="#{user.userGroupOwnerships}">
+                                                    &lt;#{group.name}&gt;
+                                                </ui:repeat>
+                                                <!-- Memberships -->
+											    <ui:repeat var="role" value="#{user.userGroupMemberships}">
+											        (#{role.userGroup.name})
+											    </ui:repeat>
+				                            </h:panelGroup>
                         				</td>
                         			</tr>
                         		</ui:repeat>
