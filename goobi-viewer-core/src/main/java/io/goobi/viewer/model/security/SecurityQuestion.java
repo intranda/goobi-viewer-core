@@ -44,6 +44,7 @@ public class SecurityQuestion {
      * @should return true on correct answer and ignore case
      * @should return false on incorrect answer
      * @should return false empty answer
+     * @should mark question as answered
      */
     public boolean isAnswerCorrect(String answer) {
         answered = true;

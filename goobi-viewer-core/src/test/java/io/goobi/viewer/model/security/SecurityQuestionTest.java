@@ -63,4 +63,16 @@ public class SecurityQuestionTest {
         Assert.assertFalse(q.isAnswerCorrect(""));
         Assert.assertFalse(q.isAnswerCorrect("   "));
     }
+
+    /**
+     * @see SecurityQuestion#isAnswerCorrect(String)
+     * @verifies mark question as answered
+     */
+    @Test
+    public void isAnswerCorrect_shouldMarkQuestionAsAnswered() throws Exception {
+        SecurityQuestion q = new SecurityQuestion("foo", Collections.singleton("answer"));
+        Assert.assertFalse(q.isAnswered());
+        q.isAnswerCorrect("wrong");
+        Assert.assertTrue(q.isAnswered());
+    }
 }
