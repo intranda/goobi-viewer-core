@@ -7,6 +7,6 @@
     <content>
         <item id="A1" label="cms__template_02__descriptive_text__label" type="HTML"/>
         <item id="image01" label="cms__template_02__descriptive_text_image__label" type="MEDIA" />
-        <item id="list01" label="cms__template_02__current_elements__label" type="PAGELIST" mandatory="true" />
+        <item id="list01" label="cms__template_02__current_elements__label" type="PAGELIST" mode="paginated" mandatory="true" />
     </content>
 </cms_page_template>

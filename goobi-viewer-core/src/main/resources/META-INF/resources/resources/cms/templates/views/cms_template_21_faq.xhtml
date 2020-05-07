@@ -67,7 +67,7 @@
                                                 aria-controls="collapseOne">
     											<i class="fa fa-chevron-down" aria-hidden="true"></i>
     											<i class="fa fa-chevron-up" aria-hidden="true"></i>
-    											#{faqItem.getContent('heading')}
+    											#{faqItem.title}
     										</a>
                                             <a 
                                                 class="fa fa-link panel-heading__fragment-link" 
@@ -183,11 +183,13 @@
                             </c:forEach>
                     </ui:fragment>
 
+					<ui:fragment rendered="#{cmsPage.getContentItem('faqList').paginated}">
                     <!-- PAGINATOR -->
-					<viewerComponent:simplePaginator 
-						itemCount="#{cmsPage.getContentItem('faqList').nestedPagesCount}" 
-						itemActive="#{cmsPage.listPage}"
-						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+						<viewerComponent:simplePaginator 
+							itemCount="#{cmsPage.getContentItem('faqList').nestedPagesCount}" 
+							itemActive="#{cmsPage.listPage}"
+							urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+					</ui:fragment>
 				</div>
 			</div>
 		</f:view>
