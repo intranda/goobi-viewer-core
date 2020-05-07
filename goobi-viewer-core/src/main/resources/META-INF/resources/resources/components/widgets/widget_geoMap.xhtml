@@ -39,7 +39,7 @@
 
                     <div id="widgetGeoLocationsCollapse" class="collapse">
                         <!-- MAP -->
-                        <div id="geomap" class="widget-geomap__map"></div>
+                        <div id="geomapWidget" class="widget-geomap__map"></div>
                     </div>
                 </div>
             </h:panelGroup>
@@ -48,6 +48,7 @@
            		<span data-metadata="description"></span>
            	</popover>
             <script type="text/javascript">	  
+          //<![CDATA[
             $(document).ready( () => {	
                 
             	let geoMap = new viewerJS.GeoMap({
@@ -58,14 +59,18 @@
             	});
             	let view = #{cc.attrs.widget.geoMap.initialView};
             	let features = #{cc.attrs.widget.geoMap.featuresAsString};
-            	console.log("init map with ", view, features);
-            	geoMap.init();
-            	geoMap.setView(view);
-            	features.forEach(feature => {
-            	    geoMap.addMarker(feature);
-            	})
-            	geoMap.setView(geoMap.getViewAroundFeatures());
+            	if(features && features.length > 0) {  
+            	    $("#widgetGeoMap").show();
+	            	console.log("init map with ", view, features);
+	            	geoMap.init();
+	            	geoMap.setView(view);
+	            	features.forEach(feature => {
+	            	    geoMap.addMarker(feature);
+	            	})
+	            	geoMap.setView(geoMap.getViewAroundFeatures());
+            	}
             })
+            //]]>
 	        </script>
         </h:panelGroup>
     </composite:implementation>
