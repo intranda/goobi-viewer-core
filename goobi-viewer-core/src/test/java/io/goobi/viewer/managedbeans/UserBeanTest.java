@@ -168,4 +168,17 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
         //        Assert.assertTrue(bean.getUser().isSuspended());
     }
 
+    /**
+     * @see UserBean#resetSecurityQuestion()
+     * @verifies always set securityQuestion if configured to do so
+     */
+    @Test
+    public void resetSecurityQuestion_shouldAlwaysSetSecurityQuestionIfConfiguredToDoSo() throws Exception {
+        UserBean ub = new UserBean();
+        for (int i = 0; i < 100; ++i) {
+            ub.resetSecurityQuestion();
+            Assert.assertNotNull(ub.getSecurityQuestion());
+        }
+    }
+
 }
