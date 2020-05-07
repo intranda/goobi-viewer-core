@@ -23,6 +23,7 @@ public class SecurityQuestion {
 
     private final String questionKey;
     private final Set<String> correctAnswers;
+    private boolean answered = false;
 
     /**
      * Constructor.
@@ -45,6 +46,7 @@ public class SecurityQuestion {
      * @should return false empty answer
      */
     public boolean isAnswerCorrect(String answer) {
+        answered = true;
         if (StringUtils.isBlank(answer)) {
             return false;
         }
@@ -65,4 +67,12 @@ public class SecurityQuestion {
     public Set<String> getCorrectAnswers() {
         return correctAnswers;
     }
+
+    /**
+     * @return the answered
+     */
+    public boolean isAnswered() {
+        return answered;
+    }
+
 }
