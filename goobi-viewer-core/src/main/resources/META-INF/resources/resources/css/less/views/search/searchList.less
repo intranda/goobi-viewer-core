@@ -112,6 +112,7 @@
 	            }
 	            a, button {
 	            	height: 100%;
+	            	width: 100%;
 	            }
 	            input[type="submit"] {
 		            background-image: url("@{images}/icons/icon-search.png");
@@ -124,6 +125,8 @@
 	            &.reset {
 	            	flex: 0 0 4rem;
 	                background-color: @lightgray;
+					justify-content: center;
+					border: 1px solid #ccc;
 	                a, button {}
 	                &.focus {
 	                	border-color: @blue;
@@ -135,7 +138,6 @@
 	                background-color: @blue;
 	                border-color: @blue;
 	                display: inherit;
-	                height: 3.4rem;
 	                a {
 	                    display: block;
 	                    color: @white;

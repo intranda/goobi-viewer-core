@@ -28,27 +28,27 @@
                                     <div class="row no-margin">
                                         <!-- TEMPLATE -->
                                         <div class="cms-select-template__template">
-                                            <div class="col-xs-12 col-sm-12 col-md-2">
+                                            <div class="col-12 col-sm-12 col-md-2">
                                                 <!-- ICON -->
                                                 <div class="cms-select-template__image">
-                                                    <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}" src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-responsive" />
+                                                    <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}" src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-fluid" />
                                                 </div>
                                             </div>
-                                            <div class="col-xs-12 col-sm-12 col-md-10">
+                                            <div class="col-12 col-sm-12 col-md-10">
                                                 <!-- DESCRIPTION -->
                                                 <div class="cms-select-template__description">
                                                     <h3>#{msg[template.name]}</h3>
                                                     <p>#{msg[template.description]}</p>
                                                 </div>
                                             </div>
-                                            <div class="col-xs-12 no-padding">
-                                                <div class="col-xs-2 no-padding">
+                                            <div class="col-12 no-padding">
+                                                <div class="col-2 no-padding">
                                                     <!-- THEME TEMPLATE MARKER -->
                                                     <ui:fragment rendered="#{template.themeTemplate}">
                                                         <div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
                                                     </ui:fragment>
                                                 </div>
-                                                <div class="col-xs-10">
+                                                <div class="col-10">
                                                     <!-- ACTION -->
                                                     <div class="cms-select-template__action">
                                                         <h:commandLink action="pretty:adminCmsCreatePage" value="#{msg.cms_createPageWithTemplate}"

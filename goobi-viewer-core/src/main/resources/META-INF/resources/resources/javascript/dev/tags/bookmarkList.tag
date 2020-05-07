@@ -12,11 +12,11 @@
 		</button>
 
 		<div if="{!pi}" class="row no-margin">
-			<div class="col-xs-9 no-padding">
+			<div class="col-9 no-padding">
 				<a
 					href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a>
 			</div>
-			<div class="col-xs-2 no-padding icon-list">
+			<div class="col-2 no-padding icon-list">
 				<a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg('bookmarkList_session_mail_sendList')}"> 
 					<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
@@ -29,7 +29,7 @@
 					<i class="fa fa-th" aria-hidden="true"></i>
 				</a>
 			</div>
-			<div class="col-xs-1 no-padding">
+			<div class="col-1 no-padding">
 				<span class="{mainClass}-counter">{bookmarkList.numItems}</span>
 			</div>
 		</div>
@@ -43,17 +43,17 @@
 	
 	<li each="{bookmark in bookmarkList.items}">
 		<div class="row no-margin">
-			<div class="col-xs-4 no-padding">
+			<div class="col-4 no-padding">
 				<div class="{mainClass}-image"
 					style="background-image: url({bookmark.representativeImageUrl});">
 				</div>
 			</div>
-			<div class="col-xs-7 no-padding">
+			<div class="col-7 no-padding">
 				<h4>
 					<a href="{opts.bookmarks.config.root}{bookmark.url}">{bookmark.name}</a>
 				</h4>
 			</div>
-			<div class="col-xs-1 no-padding {mainClass}-remove">
+			<div class="col-1 no-padding {mainClass}-remove">
 				<button class="btn btn--clean" type="button"
 					data-bookshelf-type="delete" onclick="{remove}">
 					<i class="fa fa-ban" aria-hidden="true"></i>

@@ -110,12 +110,12 @@
                                 <!-- THUMBNAIL -->
                                 <div class="cms-edit-collection__text-image-thumbnail">
                                     <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-responsive" alt="" />
+                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
                                     </ui:fragment>
                                     <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
                                         <img data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
                                         data-viewer-thumbnail="thumbnail"
-                                            class="img-responsive" alt="" />
+                                            class="img-fluid" alt="" />
                                     </ui:fragment>
                                 </div>
 

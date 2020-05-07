@@ -89,7 +89,7 @@
                                 <c:forEach var="queryItem" items="#{queryGroup.queryItems}" varStatus="status">
                                     <div id="searchAdvancedInputGroup-#{statusGroup.count}-#{status.count}" class="search-advanced__input-group">
                                         <div class="row">
-                                            <div class="col-xs-12 col-sm-3">
+                                            <div class="col-12 col-sm-3">
                                                 <!-- SELECT -->
                                                 <div class="search-advanced__input-col">
                                                     <div class="custom-control custom-control--select">
@@ -102,7 +102,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xs-12 col-sm-5">
+                                            <div class="col-12 col-sm-5">
                                                 <!-- INPUT FIELD -->
 													<h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
                                                     <div class="search-advanced__input-col">
@@ -136,7 +136,7 @@
                                                     </div>
                                                 </h:panelGroup>
                                             </div>
-                                            <div class="col-xs-6 col-sm-3">
+                                            <div class="col-6 col-sm-3">
                                                 <!-- OPERATOR -->
                                                 <div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
                                                     <div class="custom-control custom-control--select">
@@ -147,7 +147,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xs-6 col-sm-1">
+                                            <div class="col-6 col-sm-1">
                                                 <!-- ADD / REMOVE -->
                                                 <div class="search-advanced__input-col">
                                                     <h:commandLink 
@@ -217,10 +217,10 @@
 			<h:panelGroup rendered="#{searchBean.hitsCount > 1}">
 				<div class="search-list__sorting">
 					<div class="row">
-						<div class="col-xs-12 col-sm-4">
+						<div class="col-12 col-sm-4">
 							<span class="search-list__label">#{msg.sortBy}:</span>
 						</div>
-						<div class="col-xs-12 col-sm-8">
+						<div class="col-12 col-sm-8">
 							<div class="custom-control custom-control--select">
 								<select id="sortSelect">
 									<option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>

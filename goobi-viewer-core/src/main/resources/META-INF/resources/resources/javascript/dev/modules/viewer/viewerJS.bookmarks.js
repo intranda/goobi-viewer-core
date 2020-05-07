@@ -80,10 +80,10 @@ var viewerJS = ( function( viewer ) {
                     console.log("update ", $span)
                     if(added) {
                         $button.addClass("added");
-                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("fixTitle");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-added")).tooltip("_fixTitle");
                     } else {
                         $button.removeClass("added");
-                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("fixTitle");
+                        $span.tooltip('hide').attr("title", $span.attr("data-bookmark-list-title-add")).tooltip("_fixTitle");
                     }
                     
                 } );

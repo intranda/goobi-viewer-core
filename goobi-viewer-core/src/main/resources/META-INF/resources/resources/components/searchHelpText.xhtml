@@ -11,64 +11,92 @@
 
     <!-- component content -->
 	<composite:implementation>
-		<div class="panel-group" id="searchHelpAccordion" role="tablist" aria-multiselectable="true">
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingOne">
-					<h4 class="panel-title">
-						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading01}</a>
-					</h4>
-				</div>
-				<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-					<div class="panel-body">
-						<h:outputText value="#{msg.searchExplanationText_paragraph01}" escape="false" />
+		<div class="card-group" id="searchHelpAccordion" role="tablist"
+			aria-multiselectable="true">
+			<div class="row no-gutters">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-header" role="tab" id="headingOne">
+							<h4 class="card-title">
+								<a role="button" data-toggle="collapse" data-target="#collapseOne"
+									aria-expanded="false" aria-controls="collapseOne">#{msg.searchExplanationText_heading01}</a>
+							</h4>
+						</div>
+						<div id="collapseOne" class="collapse show"
+							aria-labelledby="headingOne" data-parent="#searchHelpAccordion">
+							<div class="card-body">
+								<h:outputText value="#{msg.searchExplanationText_paragraph01}"
+									escape="false" />
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingTwo">
-					<h4 class="panel-title">
-						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading02}</a>
-					</h4>
-				</div>
-				<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-					<div class="panel-body">
-						<h:outputText value="#{msg.searchExplanationText_paragraph02}" escape="false" />
+				<div class="col-12">
+					<div class="card">
+						<div class="card-header" role="tab" id="headingTwo">
+							<h4 class="card-title">
+								<a role="button" data-toggle="collapse" data-target="#collapseTwo"
+									aria-expanded="false" aria-controls="collapseTwo">#{msg.searchExplanationText_heading02}</a>
+							</h4>
+						</div>
+						<div id="collapseTwo" class="collapse"
+							aria-labelledby="headingTwo" data-parent="#searchHelpAccordion">
+							<div class="card-body">
+								<h:outputText value="#{msg.searchExplanationText_paragraph02}"
+									escape="false" />
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingThree">
-					<h4 class="panel-title">
-						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading03}</a>
-					</h4>
-				</div>
-				<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-					<div class="panel-body">
-						<h:outputText value="#{msg.searchExplanationText_paragraph03}" escape="false" />
+				<div class="col-12">
+					<div class="card">
+						<div class="card-header" role="tab" id="headingThree">
+							<h4 class="card-title">
+								<a role="button" data-toggle="collapse" data-target="#collapseThree"
+									aria-expanded="false" aria-controls="collapseThree">#{msg.searchExplanationText_heading03}</a>
+							</h4>
+						</div>
+						<div id="collapseThree" class="collapse"
+							aria-labelledby="headingThree" data-parent="#searchHelpAccordion">
+							<div class="card-body">
+								<h:outputText value="#{msg.searchExplanationText_paragraph03}"
+									escape="false" />
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingFour">
-					<h4 class="panel-title">
-						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading04}</a>
-					</h4>
-				</div>
-				<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-					<div class="panel-body">
-						<h:outputText value="#{msg.searchExplanationText_paragraph04}" escape="false" />
+				<div class="col-12">
+					<div class="card">
+						<div class="card-header" role="tab" id="headingFour">
+							<h4 class="card-title">
+								<a role="button" data-toggle="collapse" data-target="#collapseFour"
+									aria-expanded="false" aria-controls="collapseFour">#{msg.searchExplanationText_heading04}</a>
+							</h4>
+						</div>
+						<div id="collapseFour" class="collapse"
+							aria-labelledby="headingFour" data-parent="#searchHelpAccordion">
+							<div class="card-body">
+								<h:outputText value="#{msg.searchExplanationText_paragraph04}"
+									escape="false" />
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingFive">
-					<h4 class="panel-title">
-						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading05}</a>
-					</h4>
-				</div>
-				<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
-					<div class="panel-body">
-						<h:outputText value="#{msg.searchExplanationText_paragraph05}" escape="false" />
+				<div class="col-12">
+					<div class="card">
+						<div class="card-header" role="tab" id="headingFive">
+							<h4 class="card-title">
+								<a role="button" data-toggle="collapse" data-target="#collapseFive"
+									aria-expanded="false" aria-controls="collapseFive">#{msg.searchExplanationText_heading05}</a>
+							</h4>
+						</div>
+						<div id="collapseFive" class="collapse"
+							aria-labelledby="headingFive" data-parent="#searchHelpAccordion">
+							<div class="card-body">
+								<h:outputText value="#{msg.searchExplanationText_paragraph05}"
+									escape="false" />
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

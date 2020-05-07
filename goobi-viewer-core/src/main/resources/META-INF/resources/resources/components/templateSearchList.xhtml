@@ -52,14 +52,14 @@
 			<div class="search-list__current-search">
 				<h:form id="slCurrentSearchForm" prependId="false">
 					<div class="row">
-						<div class="col-xs-12 col-sm-2">
+						<div class="col-12 col-sm-2">
 							<span class="search-list__label">#{msg.searchFor}:</span>
 						</div>
-						<div class="col-xs-12 col-sm-10">
+						<div class="col-12 col-sm-10">
 							<div class="form-group">
 								<label class="sr-only" for="currentSearchInput">#{msg.currentSearch}</label>
 								<div class="input-group">
-									<div class="input-group-addon reset">
+									<div class="input-group-prepend reset">
 										<h:commandLink role="button" id="resetSearch" styleClass="btn btn--icon" data-toggle="tooltip" data-placement="top"
 											action="#{cc.attrs.search.resetSearch()}" title="#{msg.searchList_resetCurrentSearch}">
 											<i class="fa fa-times-circle" aria-hidden="true"></i>
@@ -84,7 +84,7 @@
                     <div class="search-standard__filter-radio">
                         <h:inputHidden id="hiddenSearchFilterString" value="#{searchBean.currentSearchFilterString}" />
                         <ui:repeat var="filter" value="#{searchBean.searchFilters}">
-                            <label for="#{filter.label}" class="custom-control custom-control--radio">
+                            <label for="#{filter.label}" class="custom-control custom-control--radio search-standard__filter-label">
                                 <!-- jsf:id is needed for automatic setting of the current value from the bean -->
                                 <!-- pt:name is needed binding this input to the bean variable via passthrough -->
                                 <input
@@ -122,10 +122,10 @@
 			<h:panelGroup rendered="#{searchBean.hitsCount > 1}">
 				<div class="search-list__sorting">
 					<div class="row">
-						<div class="col-xs-12 col-sm-4">
+						<div class="col-12 col-sm-4">
 							<span class="search-list__label">#{msg.sortBy}:</span>
 						</div>
-						<div class="col-xs-12 col-sm-8">
+						<div class="col-12 col-sm-8">
 							<div class="custom-control custom-control--select">
 								<select id="sortSelect">
 									<option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>

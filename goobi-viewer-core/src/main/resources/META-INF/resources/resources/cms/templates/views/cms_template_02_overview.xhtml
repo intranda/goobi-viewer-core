@@ -48,7 +48,7 @@
                     <!-- IMAGE -->
                     <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
                         <figure class="tpl-news-overview__image">
-                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
+                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMediaName('image01')}" />
                             <figcaption>
                                 #{cmsPage.getMediaDescription('image01')}
                             </figcaption>
@@ -67,17 +67,17 @@
                         <c:forEach var="subPage" items="#{cmsPage.getContentItem('list01').nestedPages}">
                             <div class="tpl-news-overview__list-item clearfix">
                                 <!-- IMAGE -->
-                                <div class="col-xs-12 col-sm-4">
+                                <div class="col-12 col-sm-4">
                                     <figure class="tpl-news-overview__list-image">
                                         <a href="#{cmsBean.getUrl(subPage)}">
-	                                        <img src="#{subPage.getContent('image01')}" class="img-responsive" title="#{subPage.getMediaName('image01')}" />
+	                                        <img src="#{subPage.getContent('image01')}" class="img-fluid" title="#{subPage.getMediaName('image01')}" />
                                         </a>
                                         <figcaption></figcaption>
                                     </figure>
                                 </div>
     
                                 <!-- PREVIEW -->
-                                <div class="col-xs-12 col-sm-8">
+                                <div class="col-12 col-sm-8">
                                     <div class="tpl-news-overview__list-preview">
                                         <h3>#{subPage.title}</h3>
                                         

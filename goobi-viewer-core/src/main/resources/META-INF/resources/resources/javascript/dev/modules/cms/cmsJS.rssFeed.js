@@ -105,7 +105,7 @@ var cmsJS = ( function( cms ) {
             rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
             rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
             rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
-            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
+            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-fluid' );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
             rssItemColLeft.append( rssItemDocTypeH3 ).append( rssItemImageWrapper );
