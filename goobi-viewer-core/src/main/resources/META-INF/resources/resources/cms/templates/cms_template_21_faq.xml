@@ -5,7 +5,7 @@
     <icon>cms_template_21_faq.png</icon>
     <html>cms_template_21_faq.xhtml</html>
     <content>
-        <item id="faqList" label="cms__tempalte_21__current_elements__label" type="PAGELIST" mandatory="true"></item>
-        <item id="description" type="HTML" label="cms__template_21__description__label" mandatory="false" />
+        <item id="faqList" type="PAGELIST" label="cms__template_21__current_elements__label" mandatory="true"></item>
+        <item id="description" type="HTML" label="cms__template_21__description__label" inlinehelp="cms__template_21__description__help" mandatory="false" />
     </content>
 </cms_page_template>
