@@ -53,6 +53,28 @@ var viewerJS = ( function( viewer ) {
             _elem.on( 'click', function() {
                 _scrollPage( _text );
             } );
+            
+            /**
+             * If the url contains a fragment which doesn't start with 'xywh=', assume the fragment refers to a dom id
+             */
+            let hash = window.location.hash;
+            if(hash && !hash.startsWith("#xywh=")) {
+                /**
+                 * Start scrolling just after $(document).ready() is complete (timeout with 0 millis)
+                 */
+                $(document).ready(() => {
+                    let $anchor = $(hash);
+                    if($anchor.length > 0) {
+                        setTimeout(() => {
+                            let $topHeader = $(".page-header__top");
+                            let $navHeader = $(".page-navigation");
+                            console.log("$topHeader", $topHeader.offset().top, $topHeader.outerHeight())
+                            console.log("$navHeader", $navHeader.offset().top, $navHeader.outerHeight())
+                            $("html, body").scrollTop($anchor.offset().top)
+                        }, 0)
+                    }
+                })
+            }
         },
     
         scrollToFragment: function(fragment) {

@@ -8,7 +8,8 @@
         <useSorterField>true</useSorterField>
     </options>
     <content>
-        <item id="heading" type="TEXT" label="cms__template_22__header__label" mandatory="true" />
-        <item id="text" type="HTML" preview="true" label="cms__template_22__text__label" mandatory="true" />
+        <item id="text" order="1" type="HTML" preview="true" inlinehelp="cms__template_22__text__help" label="cms__template_22__text__label" mandatory="false" />
+        <item id="image" order="2" type="MEDIA" preview="true" inlinehelp="cms__template_22__image__help" label="cms__template_22__image__label" mandatory="false" />
+        <item id="text2" order="3" type="HTML" preview="true" inlinehelp="cms__template_22__text2__help" label="cms__template_22__text2__label" mandatory="false" />
     </content>
 </cms_page_template>
