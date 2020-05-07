@@ -44,10 +44,10 @@
                     <!-- THUMBNAIL -->
                     <div class="tpl-overviewpage-legacy__overview-thumbnail">
                         <ui:fragment rendered="#{activeDocumentBean.recordLoaded}">
-                            <img src="#{imageDelivery.representativeThumbnail}" class="img-responsive" />
+                            <img src="#{imageDelivery.representativeThumbnail}" class="img-fluid" />
                         </ui:fragment>
                         <ui:fragment rendered="#{!activeDocumentBean.recordLoaded}">
-                            <img src="#{imageDelivery.staticImagesURI}access_denied.png" class="img-responsive" />
+                            <img src="#{imageDelivery.staticImagesURI}access_denied.png" class="img-fluid" />
                         </ui:fragment>
                     </div>
 

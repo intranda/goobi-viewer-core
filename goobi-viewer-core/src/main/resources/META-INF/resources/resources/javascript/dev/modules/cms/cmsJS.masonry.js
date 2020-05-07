@@ -163,7 +163,7 @@ var cmsJS = ( function( cms ) {
             // grid item image
             $gridItemImage = $( '<img />' );
             $gridItemImage.attr( 'src', item.name );
-            $gridItemImage.addClass( 'img-responsive' );
+            $gridItemImage.addClass( 'img-fluid' );
             
             if ( item.url !== '' ) {
                 // grid item image link

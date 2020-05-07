@@ -130,11 +130,11 @@ var cmsJS = ( function( cms ) {
             // create panel thumbnail if exist
             panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
             if ( member.thumbnail ) {
-                panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail['@id'] ).addClass( 'img-responsive' );
+                panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail['@id'] ).addClass( 'img-fluid' );
                 panelThumbnail.append( panelThumbnailImage );
             }
             else {
-                panelThumbnailImage = $( '<img />' ).attr( 'src', _defaults.collectionDefaultThumb ).addClass( 'img-responsive' );
+                panelThumbnailImage = $( '<img />' ).attr( 'src', _defaults.collectionDefaultThumb ).addClass( 'img-fluid' );
                 panelThumbnail.append( panelThumbnailImage );
             }
             // build title

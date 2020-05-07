@@ -15,10 +15,13 @@
 	}
 	li {
 		a {
-			border-bottom: 1px solid @middlegray;
+			display: inline-block;
+			padding: 1rem 1.5rem;
+			border: 1px solid @middlegray;
 			background-color: @lightgray;
 			border-radius: 0;
 			border-color: @middlegray;
+			margin-right: 0.2rem;
 		}
 		span {
 			display: block;
@@ -154,6 +157,16 @@ display: flex;
 
 [role=button] {
 	cursor: pointer;
+}
+
+.dl-horizontal dt {
+    float: left;
+    width: 160px;
+    overflow: hidden;
+    clear: left;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* CHROME RESETS */

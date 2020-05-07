@@ -62,7 +62,7 @@
 								<!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
+			                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMediaName('image01')}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image01')}
 			                            </figcaption>
@@ -89,7 +89,7 @@
 								<!-- IMAGE -->
 								<h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
 									<figure class="tpl-news-detail__image">
-										<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" class="img-responsive" alt="#{cmsPage.getMediaName('image02')}" />
+										<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cmsPage.getMediaName('image02')}" />
 										<figcaption>#{cmsPage.getMediaDescription('image02')}</figcaption>
 									</figure>
 								</h:panelGroup>
@@ -114,7 +114,7 @@
 			                    <!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" class="img-responsive" alt="#{cmsPage.getMediaName('image03')}" />
+			                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cmsPage.getMediaName('image03')}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image03')}
 			                            </figcaption>
@@ -141,7 +141,7 @@
 			                    <!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" class="img-responsive" alt="#{cmsPage.getMediaName('image04')}" />
+			                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cmsPage.getMediaName('image04')}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image04')}
 			                            </figcaption>
@@ -169,7 +169,7 @@
 	            							<!-- IMAGE -->
 	                                        <div class="solr-query-collection__image">
 	            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
-	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive" 
+	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-fluid" 
 	            									data-viewer-thumbnail="thumbnail"
 	            									alt="#{hit.browseElement.label}" />
 	            								</h:outputLink>
