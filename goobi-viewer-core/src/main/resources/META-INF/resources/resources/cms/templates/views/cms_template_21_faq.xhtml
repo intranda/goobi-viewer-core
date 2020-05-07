@@ -183,11 +183,13 @@
                             </c:forEach>
                     </ui:fragment>
 
+					<ui:fragment rendered="#{cmsPage.getContentItem('faqList').paginated}">
                     <!-- PAGINATOR -->
-					<viewerComponent:simplePaginator 
-						itemCount="#{cmsPage.getContentItem('faqList').nestedPagesCount}" 
-						itemActive="#{cmsPage.listPage}"
-						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+						<viewerComponent:simplePaginator 
+							itemCount="#{cmsPage.getContentItem('faqList').nestedPagesCount}" 
+							itemActive="#{cmsPage.listPage}"
+							urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+					</ui:fragment>
 				</div>
 			</div>
 		</f:view>

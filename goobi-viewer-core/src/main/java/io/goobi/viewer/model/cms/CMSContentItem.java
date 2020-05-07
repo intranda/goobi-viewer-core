@@ -867,7 +867,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         for (CMSPage cmsPage : allPages) {
             if (cmsPage.isPublished() && !nestedPages.contains(cmsPage)) {
                 counter++;
-                if (counter > offset && counter <= size + offset) {
+                if(!isPaginated()) {
+                    nestedPages.add(cmsPage);
+                } else if (counter > offset && counter <= size + offset) {
                     nestedPages.add(cmsPage);
                 }
             }
@@ -1716,6 +1718,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     
     public void setGeoMapId(Long id) throws DAOException {
         this.geoMap = DataManager.getInstance().getDao().getGeoMap(id);
+    }
+    
+    public boolean isPaginated() {
+        return ContentItemMode.paginated.equals(getMode());
     }
 
 }
