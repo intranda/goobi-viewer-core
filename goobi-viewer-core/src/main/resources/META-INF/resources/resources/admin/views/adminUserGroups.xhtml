@@ -1,0 +1,89 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminAllUserGroups')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentUserGroupAction}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminAllUserGroups">
+                <h:panelGroup rendered="#{userBean.admin}">
+                    <div class="admin__content-inner-content">
+                        <h:form id="adminAllUserGroupsForm" prependId="false">
+                            <h2 class="admin__content-inner-title">#{msg.admin__groups}</h2>
+                            <h:commandLink action="adminUserGroup" actionListener="#{adminBean.resetCurrentUserGroupAction}" value="#{msg.userGroup_createNewUserGroup}"
+                                styleClass="btn btn--default pull-right" />
+
+                            <div class="clearfix"></div>
+                            
+                            <div>
+                                <h:outputText value="#{msg.admin__groups_description_text}" />
+                            </div>
+                            
+                            <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
+                                <div class="row no-margin">
+                                    <!-- TODO proper css class -->
+                                    <div class="cms-select-template__template">
+                                        <h3>#{userGroup.name}</h3>
+                                        <ui:fragment rendered="#{userGroup.description != ''}">
+                                            #{userGroup.description}
+                                            <br/>
+                                        </ui:fragment>
+                                
+                                        <br />
+                                        #{msg.userGroup_members}: #{userGroup.memberCount}
+                                        <br />
+                                        #{msg.owner}: #{userGroup.owner.displayName}
+                                        <!-- delete user group -->
+                                        <h:commandLink
+                                            onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
+                                            action="adminAllUserGroups" actionListener="#{adminBean.deleteUserGroupAction(userGroup)}" title="#{msg.delete}">
+                                            #{msg.delete}
+                                        </h:commandLink>
+                                        <!-- edit user group -->
+                                        <h:commandLink action="pretty:adminUserGroup" title="#{msg.edit}">
+                                            <f:setPropertyActionListener value="#{userGroup}" target="#{adminBean.currentUserGroup}" />
+                                            #{msg.edit}
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+            </div>
+
+            <script type="text/javascript">
+				var dataTableConfig = {
+					dataTablePaginator : "#dataTablePaginator",
+					txtField1 : "#txtMoveTo1",
+					txtField2 : "#txtMoveTo2",
+					totalCount : "#totalCount",
+					reloadBtn : 'input[id*="cmdMoveTo"]',
+				};
+
+				viewerJS.dataTable.init(dataTableConfig);
+			</script>
+        </f:view>
+    </ui:define>
+
+    <!-- SIDEBAR -->
+    <ui:define name="sidebar">
+        <adminWidget:widget_admin />
+    	<adminWidget:widget_crowdsourcing />
+    	<adminWidget:widget_cms />
+    </ui:define>
+</ui:composition>

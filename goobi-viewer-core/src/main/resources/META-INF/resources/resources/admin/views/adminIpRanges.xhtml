@@ -10,6 +10,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminIpRanges')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentIpRangeAction}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>
@@ -22,97 +23,45 @@
 
                     <div class="admin__content-inner-content">
                         <h:form id="adminIpRangesForm" prependId="false">
-                            <h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.ipRange_addNew}" styleClass="btn btn--default pull-right" />                                  
+                            <h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}"
+                                value="#{msg.admin__ip_range_new}" styleClass="btn btn--default pull-right" />                                  
                             
                             <div class="clearfix"></div>
                             
-                            <!-- paginator -->
-                            <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelIpRanges}" />
-
-							<table id="adminIpRangesTable" class="table table-striped table-bordered admin-table">
-								<thead>
-									<tr>
-										<th>
-                                            #{msg.name}
-                                            
-                                            <!-- SORTING -->
-                                            <div class="sorting-wrapper">
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelIpRanges.sortBy('name', 'ASCENDING')}">
-                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelIpRanges.sortBy('name', 'DESCENDING')}">
-                                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                            </div>
-                                            
-                                            <div class="clearfix"></div>
-                                        </th>
-										<th>
-                                            #{msg.ipRange_subnetMask}
-                                            
-                                            <!-- SORTING -->
-                                            <div class="sorting-wrapper">
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelIpRanges.sortBy('subnetMask', 'ASCENDING')}">
-                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelIpRanges.sortBy('subnetMask', 'DESCENDING')}">
-                                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                            </div>
-                                            
-                                            <div class="clearfix"></div>
-                                        </th>
-										<th>
-                                            #{msg.description}
-                                            
-                                            <!-- SORTING -->
-                                            <div class="sorting-wrapper">
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelIpRanges.sortBy('description', 'ASCENDING')}">
-                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelIpRanges.sortBy('description', 'DESCENDING')}">
-                                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                            </div>
-                                            
-                                            <div class="clearfix"></div>
-                                        </th>
-										<th>#{msg.action}</th>
-									</tr>
-								</thead>
-								<tbody>
-									<ui:repeat var="ipRange" value="#{adminBean.pageIpRanges}">
-										<tr>
-											<td><h:outputText value="#{ipRange.name}" /></td>
-											<td><h:outputText value="#{ipRange.subnetMask}" /></td>
-											<td><h:outputText value="#{ipRange.description}" /></td>
-											<td class="admin-table__action">
-												<!-- edit ip range -->
-												<h:commandLink styleClass="btn btn--icon" action="pretty:adminIpRange" title="#{msg.edit}">
-													<f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" />
-													<i class="fa fa-pencil" aria-hidden="true"></i>
-												</h:commandLink> 
-												
-												<!-- delete ip range -->
-												<h:commandLink
+                            <div>
+                                <h:outputText value="#{msg.admin__ip_ranges_description_text}" />
+                            </div>
+                            
+                            <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
+                                <div class="row no-margin">
+                                    <!-- TODO proper css class -->
+                                    <div class="cms-select-template__template">
+                                        <h3>#{ipRange.name}</h3>
+                                        <ui:fragment rendered="#{userGroup.description != ''}">
+                                            #{ipRange.description}
+                                            <br/>
+                                        </ui:fragment>
+                                
+                                        <br />
+                                        #{msg.ipRange}: #{ipRange.subnetMask}
+                                                <!-- delete ip range -->
+                                                <h:commandLink
                                                     styleClass="btn btn--icon" 
-													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
-													action="adminIpRanges" 
-													actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
-													title="#{msg.delete}">
-													<i class="fa fa-trash-o" aria-hidden="true"></i>
-												</h:commandLink>
-											</td>
-										</tr>
-									</ui:repeat>
-								</tbody>
-							</table>
+                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
+                                                    action="adminIpRanges" 
+                                                    actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
+                                                    title="#{msg.delete}">
+                                                    #{msg.delete}
+                                                </h:commandLink>
+                                                <!-- edit ip range -->
+                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminIpRange" title="#{msg.edit}">
+                                                    <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" />
+                                                    #{msg.edit}
+                                                </h:commandLink> 
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                            
 						</h:form>
                     </div>
                 </h:panelGroup>

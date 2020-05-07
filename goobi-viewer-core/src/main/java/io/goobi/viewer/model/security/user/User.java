@@ -608,6 +608,16 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE,
                 recordsForWhichUserMayDeleteOcrPage);
     }
+    
+    /**
+     * 
+     * @return true if there are CMS pages or campaigns created by this user; false otherwise
+     */
+    public boolean isCmsCreator() {
+
+
+        return false;
+    }
 
     /**
      *
@@ -658,9 +668,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * getAvatarUrl.
-     * </p>
+     * Used by the crowdsourcing module.
      *
      * @return a {@link java.lang.String} object.
      */
@@ -673,9 +681,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * getAvatarUrl.
-     * </p>
+     * Used by the crowdsourcing module.
      *
      * @param size a int.
      * @return a {@link java.lang.String} object.
@@ -700,7 +706,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * Emptry setter so that HTML pages do not throw missing property errors.
+     * Empty setter so that HTML pages do not throw missing property errors.
      *
      * @param gravatarUrl a {@link java.lang.String} object.
      */
@@ -715,15 +721,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return Gravatar URL
      */
     public String getGravatarUrl(int size) {
-        if (useGravatar && StringUtils.isNotEmpty(email)) {
+        if (StringUtils.isNotEmpty(email)) {
             Gravatar gravatar = new Gravatar();
             gravatar.setSize(size);
             gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
             gravatar.setDefaultImage(GravatarDefaultImage.GRAVATAR_ICON);
             String url = gravatar.getUrl(email);
-            if (url != null) {
-                url = url.replace("http:", "");
-            }
+            //            if (url != null) {
+            //                url = url.replace("http:", "");
+            //            }
             return url;
         }
 
@@ -1383,6 +1389,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @param email the email to set
      */
     public void setEmail(String email) {
+        logger.trace("setEmail: {}", email);
         this.email = email;
     }
 
