@@ -810,13 +810,11 @@ public class UserBean implements Serializable {
         // Check whether the security question has been answered correct, if configured
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
-            logFailedUserRegistration();
             logger.debug("Wrong security question answer.");
             return "";
         }
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
-            logFailedUserRegistration();
             logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
