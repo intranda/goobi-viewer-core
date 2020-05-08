@@ -347,15 +347,25 @@ public final class Configuration extends AbstractConfiguration {
                     String fieldType = sub2.getString("[@type]");
                     String source = sub2.getString("[@source]", null);
                     String key = sub2.getString("[@key]");
-                    String overrideMasterValue = sub2.getString("[@value]");
+                    String altKey = sub2.getString("[@altKey]");
+                    String masterValueFragment = sub2.getString("[@value]");
                     String defaultValue = sub2.getString("[@defaultValue]");
                     String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                     String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                     boolean addUrl = sub2.getBoolean("[@url]", false);
                     boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
                     boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyList()));
+                    paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
+                            .setSource(source)
+                            .setKey(key)
+                            .setAltKey(altKey)
+                            .setMasterValueFragment(masterValueFragment)
+                            .setDefaultValue(defaultValue)
+                            .setPrefix(prefix)
+                            .setSuffix(suffix)
+                            .setAddUrl(addUrl)
+                            .setTopstructValueFallback(topstructValueFallback)
+                            .setTopstructOnly(topstructOnly));
                 }
             }
             ret.add(new Metadata(label, masterValue, type, paramList, group));
@@ -516,6 +526,7 @@ public final class Configuration extends AbstractConfiguration {
                 String fieldType = sub2.getString("[@type]");
                 String source = sub2.getString("[@source]", null);
                 String key = sub2.getString("[@key]");
+                String altKey = sub2.getString("[@altKey]");
                 String masterValueFragment = sub2.getString("[@value]");
                 String defaultValue = sub2.getString("[@defaultValue]");
                 String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
@@ -562,8 +573,18 @@ public final class Configuration extends AbstractConfiguration {
                     }
                 }
 
-                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, masterValueFragment, defaultValue,
-                        prefix, suffix, addUrl, topstructValueFallback, topstructOnly, replaceRules));
+                paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
+                        .setSource(source)
+                        .setKey(key)
+                        .setAltKey(altKey)
+                        .setMasterValueFragment(masterValueFragment)
+                        .setDefaultValue(defaultValue)
+                        .setPrefix(prefix)
+                        .setSuffix(suffix)
+                        .setAddUrl(addUrl)
+                        .setTopstructValueFallback(topstructValueFallback)
+                        .setTopstructOnly(topstructOnly)
+                        .setReplaceRules(replaceRules));
             }
         }
 
@@ -739,7 +760,8 @@ public final class Configuration extends AbstractConfiguration {
                                 // logger.trace("param type: " + fieldType);
                                 String source = eleParam.getAttributeValue("source");
                                 String key = eleParam.getAttributeValue("key");
-                                String overrideMasterValue = eleParam.getAttributeValue("value");
+                                String altKey = eleParam.getAttributeValue("altKey");
+                                String masterValueFragment = eleParam.getAttributeValue("value");
                                 String defaultValue = eleParam.getAttributeValue("defaultValue");
                                 String prefix =
                                         eleParam.getAttribute("prefix") != null ? eleParam.getAttributeValue("prefix").replace("_SPACE_", " ") : "";
@@ -753,8 +775,17 @@ public final class Configuration extends AbstractConfiguration {
                                 boolean topstructOnly = eleParam.getAttribute("topstructOnly") != null
                                         ? eleParam.getAttribute("topstructOnly").getBooleanValue() : false;
 
-                                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyList()));
+                                paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
+                                        .setSource(source)
+                                        .setKey(key)
+                                        .setAltKey(altKey)
+                                        .setMasterValueFragment(masterValueFragment)
+                                        .setDefaultValue(defaultValue)
+                                        .setPrefix(prefix)
+                                        .setSuffix(suffix)
+                                        .setAddUrl(addUrl)
+                                        .setTopstructValueFallback(topstructValueFallback)
+                                        .setTopstructOnly(topstructOnly));
                             }
                         }
                         ret.add(new Metadata(label, masterValue, type, paramList, group, number));

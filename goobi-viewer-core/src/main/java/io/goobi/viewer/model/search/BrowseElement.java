@@ -224,8 +224,8 @@ public class BrowseElement implements Serializable {
                             this.metadataList
                                     .add(position,
                                             new Metadata(anchorStructElement.getDocStructType(), null,
-                                                    new MetadataParameter(MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(),
-                                                            null, null, null, null, false, false, false, Collections.emptyList()),
+                                                    new MetadataParameter().setType(MetadataParameterType.FIELD)
+                                                            .setKey(anchorStructElement.getDocStructType()),
                                                     StringTools.intern(anchorLabel)));
                             position++;
                         }
@@ -241,8 +241,8 @@ public class BrowseElement implements Serializable {
                         topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
                     }
                     this.metadataList.add(position,
-                            new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                    topStructElement.getDocStructType(), null, null, null, null, false, false, false, Collections.emptyList()),
+                            new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter().setType(MetadataParameterType.FIELD)
+                                    .setKey(anchorStructElement.getDocStructType()),
                                     StringTools.intern(topstructLabel)));
                 }
             }
