@@ -41,6 +41,12 @@
 							<h:inputText id="feedbackName" styleClass="form-control" value="#{userBean.feedback.name}" required="true" requiredMessage="#{msg.errFeedbackNameRequired}" />
 						</div>
 					</div>
+                    <!-- LAST NAME -->
+                    <div class="form-group lastname">
+                        <label for="feedbackLastName" class="control-label">#{msg.nameLast}:</label>
+                            <h:inputText id="feedbackLastName" styleClass="form-control" value="#{userBean.lastName}">
+                        </h:inputText>
+                    </div>
 					<!-- E-MAIL -->
 					<div class="form-group">
 						<label for="feedbackEmail" class="col-sm-2 control-label">#{msg.email}:</label>
@@ -72,7 +78,22 @@
                         </div>
                     </div>
                     </h:panelGroup>
-                    <!-- ACTIONB -->
+                    <!-- SECURITY QUESTION -->
+                    <ui:fragment rendered="#{userBean.securityQuestion != null}">
+                        <div class="form-group">
+                            <label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
+                            <div class="col-sm-10">
+                                <h:inputSecret 
+                                    id="feedbackSecurityQuestion" 
+                                    styleClass="form-control" 
+                                    autocomplete="off"
+                                    value="#{userBean.securityAnswer}" 
+                                    required="true"
+                                    requiredMessage="#{msg.user__security_question_required_msg}" />
+                                </div>
+                            </div>
+                    </ui:fragment>
+                    <!-- ACTION -->
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10 text-right">
 							<h:commandButton rendered="#{configurationBean.useReCaptcha}" id="submitFeedbackBtn" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />

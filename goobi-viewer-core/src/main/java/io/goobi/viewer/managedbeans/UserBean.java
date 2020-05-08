@@ -803,6 +803,13 @@ public class UserBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String submitFeedbackAction() {
+        // Check whether the security question has been answered correct, if configured
+        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
+            Messages.error("user__security_question_wrong");
+            logFailedUserRegistration();
+            logger.debug("Wrong security question answer.");
+            return "";
+        }
         try {
             if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
