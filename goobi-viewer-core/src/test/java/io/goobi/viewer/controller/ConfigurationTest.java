@@ -366,6 +366,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("CURRENTNO", params.get(0).getKey());
         Assert.assertEquals("Number", params.get(0).getPrefix());
         Assert.assertEquals("MD_TITLE", params.get(1).getKey());
+        Assert.assertEquals("LABEL", params.get(1).getAltKey());
         Assert.assertEquals(":", params.get(1).getPrefix());
     }
 

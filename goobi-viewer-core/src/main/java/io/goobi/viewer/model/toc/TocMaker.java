@@ -723,13 +723,16 @@ public class TocMaker {
                         if (doc.getFirstValue(param.getKey()) != null) {
                             // Translate index field value, if available
                             value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getKey()).toString());
+                        } else if (param.getAltKey() != null && doc.getFirstValue(param.getAltKey()) != null) {
+                            // Translate alternative index field value, if available
+                            value = ViewerResourceBundle.getTranslations(doc.getFirstValue(param.getAltKey()).toString());
                         } else {
                             // Translate key, if no index field found
                             value = ViewerResourceBundle.getTranslations(param.getKey().toString());
                         }
                         break;
                     case FIELD:
-                        value = createMultiLanguageValue(doc, param.getKey());
+                        value = createMultiLanguageValue(doc, param.getKey(), param.getAltKey());
                         break;
                     default:
                         value = new SimpleMetadataValue();
@@ -737,20 +740,15 @@ public class TocMaker {
                         // logger.trace("value: {}:{}", param.getKey(), value.getValue());
                         break;
                 }
-                // Special case: If LABEL is missing, use MD_TITLE. If MD_TITLE is missing, use DOCSTRCT.
-                if (StringUtils.isEmpty(value.toString()) && SolrConstants.LABEL.equals(param.getKey())) {
-                    if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
-                        value = createMultiLanguageValue(doc, SolrConstants.TITLE);
-                    } else {
-                        value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
-                    }
-                    if (StringUtils.isEmpty(value.toString())) {
-                        // Docstruct fallback should always be translated
-                        String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
-                        value = ViewerResourceBundle.getTranslations(docstruct);
-                        //                        value.setValue(ViewerResourceBundle.getTranslation(docstruct, null));
-                    }
+
+                // Special case: If LABEL or MD_TITLE is missing, use DOCSTRCT.
+                if (StringUtils.isEmpty(value.toString())
+                        && (SolrConstants.LABEL.equals(param.getKey()) || SolrConstants.TITLE.equals(param.getKey()))) {
+                    // Docstruct fallback should always be translated
+                    String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
+                    value = ViewerResourceBundle.getTranslations(docstruct);
                 }
+
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);
                 // logger.trace("param value: {}", param.getKey());
@@ -797,13 +795,17 @@ public class TocMaker {
      * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @param field a {@link java.lang.String} object.
+     * @param field Index field
+     * @param altField Fallback index field
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
-    public static IMetadataValue createMultiLanguageValue(SolrDocument doc, String field) {
+    public static IMetadataValue createMultiLanguageValue(SolrDocument doc, String field, String altField) {
         IMetadataValue value;
         value = new MultiLanguageMetadataValue();
         Map<String, List<String>> valueMap = SolrSearchIndex.getMetadataValuesForLanguage(doc, field);
+        if (valueMap.isEmpty() && StringUtils.isNotEmpty(altField)) {
+            valueMap = SolrSearchIndex.getMetadataValuesForLanguage(doc, altField);
+        }
         valueMap.entrySet().stream().forEach(entry -> {
             String language = entry.getKey();
             String langValue = entry.getValue().isEmpty() ? null : entry.getValue().get(0);
