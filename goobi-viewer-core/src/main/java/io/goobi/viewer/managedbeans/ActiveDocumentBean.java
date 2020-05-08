@@ -44,7 +44,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.language.Language;
@@ -58,6 +58,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -120,9 +121,6 @@ public class ActiveDocumentBean implements Serializable {
     private boolean volume = false;
     private boolean group = false;
     protected long topDocumentIddoc = 0;
-
-    /** Table of contents object. */
-    private TOC toc;
 
     /** Metadata displayed in title.xhtml */
     private List<Metadata> titleBarMetadata = new ArrayList<>();
@@ -200,7 +198,6 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
             viewManager = null;
             topDocumentIddoc = 0;
-            toc = null;
             titleBarMetadata.clear();
             logid = "";
             action = "";
@@ -268,7 +265,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IDDOCNotFoundException
+     * @should throw RecordNotFoundException if listing not allowed by default
+     * @should load records that have been released via moving wall
      */
+
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException {
         synchronized (this) {
@@ -288,7 +288,6 @@ public class ActiveDocumentBean implements Serializable {
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
             if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
-                toc = null;
                 anchor = false;
                 volume = false;
                 group = false;
@@ -322,7 +321,7 @@ public class ActiveDocumentBean implements Serializable {
                 List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
-                            new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(topDocument.getPi()).toString(),
+                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topDocument.getPi()).toString(),
                             (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access) {
                         logger.debug("User may not open {}", topDocument.getPi());
@@ -341,7 +340,7 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
-                toc = createTOC();
+                viewManager.setToc(createTOC());
             }
 
             // If LOGID is set, update the current element
@@ -478,8 +477,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws PresentationException
      */
     public String open()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
-            PresentationException {
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
             logger.trace("open()");
             try {
@@ -514,7 +512,11 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
                 Messages.error(e.getMessage());
             } catch (IDDOCNotFoundException e) {
-                return reload(lastReceivedIdentifier);
+                try {
+                    return reload(lastReceivedIdentifier);
+                } catch (PresentationException e1) {
+                    logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                }
             }
 
             return "";
@@ -1129,7 +1131,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setChildrenVisible(TOCElement element)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (getToc() != null) {
-            synchronized (toc) {
+            synchronized (getToc()) {
                 getToc().setChildVisible(element.getID());
                 getToc().getActiveElement();
             }
@@ -1150,7 +1152,7 @@ public class ActiveDocumentBean implements Serializable {
     public void setChildrenInvisible(TOCElement element)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (getToc() != null) {
-            synchronized (toc) {
+            synchronized (getToc()) {
                 getToc().setChildInvisible(element.getID());
                 getToc().getActiveElement();
             }
@@ -1193,10 +1195,14 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (toc == null) {
-            toc = createTOC();
+        if (viewManager == null) {
+            return null;
         }
-        return toc;
+
+        if (viewManager.getToc() == null) {
+            viewManager.setToc(createTOC());
+        }
+        return viewManager.getToc();
     }
 
     /**
@@ -1230,18 +1236,19 @@ public class ActiveDocumentBean implements Serializable {
                 this.tocCurrentPage = 1;
             }
             // Do not call getToc() here - the setter is usually called before update(), so the required information for proper TOC creation is not yet available
-            if (toc != null) {
-                int currentCurrentPage = toc.getCurrentPage();
-                toc.setCurrentPage(this.tocCurrentPage);
+            if (viewManager != null && viewManager.getToc() != null) {
+                int currentCurrentPage = viewManager.getToc().getCurrentPage();
+                viewManager.getToc().setCurrentPage(this.tocCurrentPage);
                 // The TOC object will correct values that are too high, so update the local value, if necessary
-                if (toc.getCurrentPage() != this.tocCurrentPage) {
-                    this.tocCurrentPage = toc.getCurrentPage();
+                if (viewManager.getToc().getCurrentPage() != this.tocCurrentPage) {
+                    this.tocCurrentPage = viewManager.getToc().getCurrentPage();
                 }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
-                    toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
-                            this.tocCurrentPage);
+                    viewManager.getToc()
+                            .generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                                    this.tocCurrentPage);
                 }
             }
         }
@@ -1312,8 +1319,8 @@ public class ActiveDocumentBean implements Serializable {
                         && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
                     String prefix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarPrefix(labelTemplate);
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
-                    prefix = Helper.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
-                    suffix = Helper.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
+                    prefix = ViewerResourceBundle.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
+                    suffix = ViewerResourceBundle.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
                 } else {
                     label = toc.getLabel(viewManager.getPi(), language);
@@ -1427,7 +1434,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String reIndexRecordAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         if (viewManager != null) {
-            if (Helper.reIndexRecord(viewManager.getPi())) {
+            if (IndexerTools.reIndexRecord(viewManager.getPi())) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
@@ -1453,12 +1460,8 @@ public class ActiveDocumentBean implements Serializable {
                 return "";
             }
 
-            //            if (viewManager.isHasVolumes()) {
-            //                Messages.error("deleteRecord_failure_volumes_present");
-            //                return "";
-            //            }
-
-            if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+            if (IndexerTools.deleteRecord(viewManager.getPi(), keepTraceDocument,
+                    Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");
                 return "pretty:index";
             }

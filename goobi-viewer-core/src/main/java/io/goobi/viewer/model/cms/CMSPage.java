@@ -51,8 +51,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -60,9 +60,10 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -994,7 +995,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 case HTML:
                     String htmlText = item.getHtmlFragment();
                     String plainText = htmlText.replaceAll("\\<.*?\\>", "");
-                    plainText = StringEscapeUtils.unescapeHtml(plainText);
+                    plainText = StringEscapeUtils.unescapeHtml4(plainText);
                     return plainText;
                 default:
                     return item.toString();
@@ -1112,6 +1113,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
             case COMPONENT:
                 return StringUtils.isNotBlank(item.getComponent());
+            case GEOMAP:
+                return item.getGeoMap() != null;
             default:
                 return false;
         }
@@ -1198,16 +1201,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 case MEDIA:
                     String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
                     switch (type) {
-                        case CMSMediaItem.CONTENT_TYPE_DOCX:
-                        case CMSMediaItem.CONTENT_TYPE_HTML:
-                        case CMSMediaItem.CONTENT_TYPE_RTF:
-                            //                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                            contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), null, null);
-                            break;
                         case CMSMediaItem.CONTENT_TYPE_XML:
                             contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
                             try {
-                                String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
+                                String format = XmlTools.determineFileFormat(contentString, StringTools.DEFAULT_ENCODING);
                                 if (format != null) {
                                     switch (format.toLowerCase()) {
                                         case "tei":
@@ -1867,7 +1864,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         int count = 0;
         try {
             Set<Path> filesToDelete = new HashSet<>();
-            Path cmsTextFolder = Helper.getDataFolder(relatedPI, DataManager.getInstance().getConfiguration().getCmsTextFolder());
+            Path cmsTextFolder = DataFileTools.getDataFolder(relatedPI, DataManager.getInstance().getConfiguration().getCmsTextFolder());
             logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(cmsTextFolder)) {
                 logger.trace("CMS text folder not found - nothing to delete");
@@ -1997,7 +1994,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         if (selectableCategories == null) {
             return;
         }
-        
+
         try {
             List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
             List<CMSCategory> tempCats = new ArrayList<>();

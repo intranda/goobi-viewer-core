@@ -19,16 +19,19 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Collection tree element.
@@ -47,6 +50,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private boolean showDescription = false;
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
+    /**
+     * A list of metadata values of a specified SORL field contained in any volumes within the collection.
+     * Used to group collections into groups with matching elements in "facetValues"
+     */
+    private List<String> facetValues = new ArrayList<>();
 
     /**
      * <p>
@@ -85,6 +93,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         this.field = blueprint.field;
         this.splittingChar = blueprint.splittingChar;
         this.number = blueprint.number;
+        this.facetValues = blueprint.facetValues;
         this.sortField = blueprint.sortField;
         this.hasSubelements = blueprint.hasSubelements;
         this.showDescription = blueprint.showDescription;
@@ -377,27 +386,29 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @throws ViewerConfigurationException
      */
     private String buildRssUrl() throws ViewerConfigurationException {
-        String query = new StringBuilder().append(field)
+        String query = new StringBuilder()
+                .append("(")
+                .append(field) 
                 .append(':')
                 .append(name)
                 .append(" OR ")
                 .append(field)
                 .append(':')
                 .append(name)
-                .append(".* AND (ISWORK:true OR ISANCHOR:true)")
+                .append(".*) AND (ISWORK:true OR ISANCHOR:true)")
                 .toString();
 
         try {
             return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
                     .append("rss/search/")
                     .append(URLEncoder.encode(query, SearchBean.URL_ENCODING))
-                    .append("/-/-/")
+                    .append("/-/-/-/")
                     .toString();
         } catch (UnsupportedEncodingException e) {
             return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
                     .append("rss/search/")
                     .append(query)
-                    .append("/-/-/")
+                    .append("/-/-/-/")
                     .toString();
         }
     }
@@ -439,7 +450,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
          */
         @Override
         public int compare(BrowseDcElement o1, BrowseDcElement o2) {
-            return Helper.getTranslation(o1.getName(), null).compareTo(Helper.getTranslation(o2.getName(), null));
+            return ViewerResourceBundle.getTranslation(o1.getName(), null).compareTo(ViewerResourceBundle.getTranslation(o2.getName(), null));
         }
 
     }
@@ -476,8 +487,23 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public URI getIcon() {
         if (getInfo() != null) {
             return getInfo().getIconURI();
-        } else {
-            return null;
         }
+        
+        return null;
     }
+    
+    /**
+     * @return the groupingValues
+     */
+    public List<String> getFacetValues() {
+        return facetValues;
+    }
+    
+    /**
+     * @param groupingValues the groupingValues to set
+     */
+    public void setFacetValues(Collection<String> facetValues) {
+        this.facetValues = new ArrayList<>(facetValues);
+    }
+    
 }

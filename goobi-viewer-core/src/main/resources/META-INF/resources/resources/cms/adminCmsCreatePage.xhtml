@@ -231,6 +231,12 @@
                                                                 <ui:fragment rendered="#{contentItem.type == 'BROWSETERMS'}">
                                                                     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeBrowse.xhtml" />
                                                                 </ui:fragment>
+                                                                
+                                                                <!-- CONTENT TYPE BROWSE -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'GEOMAP'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeGeoMap.xhtml" />
+                                                                </ui:fragment>
+                                                                
                                                             </ui:repeat>
 
                                                             <!-- CONTENT TYPE LOCALE -->

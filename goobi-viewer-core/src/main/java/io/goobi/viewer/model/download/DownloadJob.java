@@ -63,16 +63,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -195,7 +196,7 @@ public abstract class DownloadJob implements Serializable {
             }
         }
 
-        return Helper.generateMD5(sbCriteria.toString());
+        return StringTools.generateMD5(sbCriteria.toString());
     }
 
     /**
@@ -315,8 +316,8 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static boolean ocrFolderExists(String pi) throws PresentationException, IndexUnreachableException {
-        Path abbyyFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
-        Path altoFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
+        Path abbyyFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
+        Path altoFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
         return Files.isDirectory(abbyyFolder) || Files.isDirectory(altoFolder);
     }
 
@@ -458,8 +459,8 @@ public abstract class DownloadJob implements Serializable {
         String body = "";
         switch (status) {
             case READY:
-                subject = Helper.getTranslation("downloadReadySubject", null);
-                body = Helper.getTranslation("downloadReadyBody", null);
+                subject = ViewerResourceBundle.getTranslation("downloadReadySubject", null);
+                body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
@@ -471,8 +472,8 @@ public abstract class DownloadJob implements Serializable {
                 }
                 break;
             case ERROR:
-                subject = Helper.getTranslation("downloadErrorSubject", null);
-                body = Helper.getTranslation("downloadErrorBody", null);
+                subject = ViewerResourceBundle.getTranslation("downloadErrorSubject", null);
+                body = ViewerResourceBundle.getTranslation("downloadErrorBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
@@ -486,7 +487,7 @@ public abstract class DownloadJob implements Serializable {
             subject = subject.replace("{0}", pi);
         }
 
-        return Helper.postMail(observers, subject, body);
+        return NetTools.postMail(observers, subject, body);
     }
 
     /**
@@ -765,7 +766,7 @@ public abstract class DownloadJob implements Serializable {
      * Empties the complete observer list. Should be used after observers have been notified to avoid repeat notifications
      */
     public void resetObservers() {
-        this.observers = new ArrayList<String>();
+        this.observers = new ArrayList<>();
     }
 
     /**

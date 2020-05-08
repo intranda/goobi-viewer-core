@@ -28,8 +28,8 @@ import javax.ws.rs.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -73,7 +73,8 @@ public class MediaResource {
 
         checkAccess(type, identifier, filename);
 
-        java.nio.file.Path file = Helper.getDataFilePath(identifier, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        java.nio.file.Path file =
+                DataFileTools.getDataFilePath(identifier, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
         if (Files.isRegularFile(file)) {
             logger.debug("Video file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
             try {

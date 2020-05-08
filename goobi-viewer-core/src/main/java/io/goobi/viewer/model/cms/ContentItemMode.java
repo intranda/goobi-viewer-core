@@ -25,7 +25,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum ContentItemMode {
     simple,
-    expanded;
+    expanded,
+    paginated;
 
     /**
      * <p>

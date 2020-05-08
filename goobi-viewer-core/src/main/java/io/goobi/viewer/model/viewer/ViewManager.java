@@ -43,15 +43,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.StringTools;
@@ -76,6 +76,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
@@ -111,6 +112,9 @@ public class ViewManager implements Serializable {
     private IPageLoader pageLoader;
     private PhysicalElement representativePage;
 
+    /** Table of contents object. */
+    private TOC toc;
+
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
@@ -122,7 +126,6 @@ public class ViewManager implements Serializable {
     private Boolean accessPermissionPdf = null;
     private Boolean allowUserComments = null;
     private String persistentUrl = null;
-    private boolean displayImage = false;
     private List<StructElementStub> docHierarchy = null;
     private String mainMimeType = null;
     private Boolean filesOnly = null;
@@ -137,6 +140,7 @@ public class ViewManager implements Serializable {
     private Long pagesWithFulltext = null;
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
+    private Boolean metadataViewOnly = null;
 
     /**
      * <p>
@@ -151,9 +155,11 @@ public class ViewManager implements Serializable {
      * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws ViewerConfigurationException
+     * @throws DAOException
      */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType,
-            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
+            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
@@ -185,7 +191,6 @@ public class ViewManager implements Serializable {
         }
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
-
     }
 
     /**
@@ -1596,9 +1601,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/"
                 + BeanUtils.getLocale().getLanguage();
@@ -1615,7 +1620,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
     }
 
@@ -1629,9 +1634,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        String filename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+            filename = FileTools.getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi() + "/" + filename;
     }
@@ -1871,6 +1876,167 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Convenience method that checks whether only the metadata view link is displayed for this record (i.e. criteria for all other links are not
+     * met).
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException {
+        if (metadataViewOnly == null) {
+            // Check whether this mode is enabled first to avoid all the other checks
+            if (!DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+
+            // Display object view criteria
+            if (isDisplayObjectViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayCalendarViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayTocViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayThumbnailViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayFulltextViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayExternalFulltextLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayNerViewLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+            if (isDisplayExternalResolverLink()) {
+                metadataViewOnly = false;
+                return metadataViewOnly;
+            }
+
+            metadataViewOnly = true;
+        }
+
+        return metadataViewOnly;
+    }
+
+    /**
+     * 
+     * @return true if object view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isDisplayObjectViewLink() throws IndexUnreachableException, DAOException {
+        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible() && isHasPages() && !isFilesOnly();
+    }
+
+    /**
+     * 
+     * @return true if calendar view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible() && calendarView != null && calendarView.isDisplay();
+    }
+
+    /**
+     * 
+     * @return true if TOC view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarTocVisible() && !isFilesOnly() && topDocument != null
+                && !topDocument.isLidoRecord() && toc != null
+                && (toc.isHasChildren() || DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
+    }
+
+    /**
+     * 
+     * @return true if thumbnail view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()
+                && pageLoader != null && pageLoader.getNumPages() > 1 && !isFilesOnly();
+    }
+
+    /**
+     * 
+     * @return true if metadata view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayMetadataViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible() && topDocument != null && !topDocument.isGroup();
+    }
+
+    /**
+     * 
+     * @return true if full-text view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
+                && !isFilesOnly();
+    }
+
+    /**
+     * 
+     * @return true if external full-text link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayExternalFulltextLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return topDocument != null
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null;
+    }
+
+    /**
+     * 
+     * @return true if NER view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayNerViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return topDocument != null && topDocument.isNerAvailable();
+    }
+
+    /**
+     * 
+     * @return true if NER view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public boolean isDisplayExternalResolverLink() throws IndexUnreachableException, DAOException, PresentationException {
+        return topDocument != null
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALRESOLVER") != null;
+    }
+
+    /**
      * <p>
      * getOaiMarcUrl.
      * </p>
@@ -2081,7 +2247,7 @@ public class ViewManager implements Serializable {
      * isFulltextAvailableForWork.
      * </p>
      *
-     * @return a boolean.
+     * @return true if record has full-text and user has access rights; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2094,6 +2260,21 @@ public class ViewManager implements Serializable {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
+    }
+
+    /**
+     * 
+     * @return true if any of this record's pages has an image and user has access rights; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isRecordHasImages() throws IndexUnreachableException, DAOException {
+        if (topDocument == null || !topDocument.isHasImages()) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_IMAGES,
+                BeanUtils.getRequest());
     }
 
     /**
@@ -2114,19 +2295,6 @@ public class ViewManager implements Serializable {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                 BeanUtils.getRequest());
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
-    }
-
-    /**
-     * <p>
-     * isTeiAvailableForPage.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
-        return isFulltextAvailableForPage();
     }
 
     /**
@@ -2159,6 +2327,20 @@ public class ViewManager implements Serializable {
         }
 
         return workHasTEIFiles;
+    }
+
+    /**
+     * @return the toc
+     */
+    public TOC getToc() {
+        return toc;
+    }
+
+    /**
+     * @param toc the toc to set
+     */
+    public void setToc(TOC toc) {
+        this.toc = toc;
     }
 
     /**
@@ -2202,29 +2384,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * isAltoAvailableForPage.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage == null) {
-            return false;
-        }
-        String filename = getFilenameFromPathString(currentPage.getAltoFileName());
-        if (StringUtils.isBlank(filename)) {
-            return false;
-        }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-    }
-
-    /**
      * Default fulltext getter (with HTML escaping).
      *
      * @return a {@link java.lang.String} object.
@@ -2234,39 +2393,6 @@ public class ViewManager implements Serializable {
      */
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
-    }
-
-    /**
-     * <p>
-     * isFulltextAvailableForPage.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
-        if (isBornDigital()) {
-            return false;
-        }
-
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage == null) {
-            return false;
-        }
-        if (!currentPage.isFulltextAvailable()) {
-            return false;
-        }
-        String filename = getFilenameFromPathString(currentPage.getFulltextFileName());
-        if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(currentPage.getAltoFileName());
-        }
-        if (StringUtils.isBlank(filename)) {
-            return false;
-        }
-
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -2298,6 +2424,23 @@ public class ViewManager implements Serializable {
 
         // logger.trace(currentFulltext);
         return currentFulltext;
+    }
+
+    /**
+     * 
+     * 
+     * @return the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if neccessary
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public String getFulltextMimeType() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
+        PhysicalElement currentImg = getCurrentPage();
+        if (currentImg != null) {
+            return currentImg.getFulltextMimeType();
+        }
+
+        return null;
     }
 
     /**
@@ -2362,7 +2505,7 @@ public class ViewManager implements Serializable {
         }
 
         try {
-            Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+            Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
             if (!Files.isDirectory(sourceFileDir)) {
                 return false;
             }
@@ -2394,7 +2537,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public List<LabeledLink> getContentDownloadLinksForWork() throws IndexUnreachableException, DAOException, PresentationException {
-        Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
         if (!Files.isDirectory(sourceFileDir)) {
             return Collections.emptyList();
         }
@@ -2412,7 +2555,7 @@ public class ViewManager implements Serializable {
                         Boolean access = fileAccess.get(file.toPath().toString());
                         if (access != null && access) {
                             String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
-                                    + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
+                                    + URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING);
                             ret.add(new LabeledLink(file.getName(), url, 0));
                         }
                         ;
@@ -2450,7 +2593,7 @@ public class ViewManager implements Serializable {
 
         String page = String.valueOf(currentImageOrder);
         Path sourceFileDir = Paths
-                .get(Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(), page);
+                .get(DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(), page);
         if (!Files.isDirectory(sourceFileDir)) {
             return Collections.emptyList();
         }
@@ -2468,7 +2611,7 @@ public class ViewManager implements Serializable {
                                 .append("&page=")
                                 .append(page)
                                 .append("&file=")
-                                .append(URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING))
+                                .append(URLEncoder.encode(file.getName(), StringTools.DEFAULT_ENCODING))
                                 .toString();
                         ret.add(new LabeledLink(file.getName(), url, 0));
                     }
@@ -2501,6 +2644,14 @@ public class ViewManager implements Serializable {
      */
     public void setTopDocumentIddoc(long topDocumentIddoc) {
         this.topDocumentIddoc = topDocumentIddoc;
+    }
+    
+    public Long getAnchorDocumentIddoc() {
+        if(this.anchorDocument != null) {
+            return anchorDocument.getLuceneId();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -2732,7 +2883,6 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    @SuppressWarnings("unchecked")
     public List<String> getVersionHistory() throws PresentationException, IndexUnreachableException {
         if (versionHistory == null) {
             versionHistory = new ArrayList<>();
@@ -2759,7 +2909,7 @@ public class ViewManager implements Serializable {
                             }
                             jsonObj.put("order", "1"); // "1" means this is a
                                                        // succeeding version
-                            next.add(jsonObj.toJSONString());
+                            next.add(jsonObj.toString());
                             identifier = null;
                             if (doc.getFieldValues(nextVersionIdentifierField) != null) {
                                 identifier = (String) doc.getFieldValues(nextVersionIdentifierField).iterator().next();
@@ -2781,7 +2931,7 @@ public class ViewManager implements Serializable {
                 jsonObj.put("id", getPi());
                 jsonObj.put("year", topDocument.getMetadataValue("MD_YEARPUBLISH"));
                 jsonObj.put("order", "0"); // "0" identifies the currently loaded version
-                versionHistory.add(jsonObj.toJSONString());
+                versionHistory.add(jsonObj.toString());
             }
 
             {
@@ -2804,7 +2954,7 @@ public class ViewManager implements Serializable {
                             }
                             jsonObj.put("order", "-1"); // "-1" means this is a
                                                         // preceding version
-                            previous.add(jsonObj.toJSONString());
+                            previous.add(jsonObj.toString());
                             identifier = null;
                             if (doc.getFieldValues(prevVersionIdentifierField) != null) {
                                 identifier = (String) doc.getFieldValues(prevVersionIdentifierField).iterator().next();
@@ -2880,7 +3030,7 @@ public class ViewManager implements Serializable {
                 return "";
             }
             Messages.info("transkribus_recordIngestSuccess");
-        } catch (IOException | JDOMException | ParseException e) {
+        } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
             Messages.error("transkribus_recordInjestError");
         } catch (DAOException e) {
@@ -2954,28 +3104,6 @@ public class ViewManager implements Serializable {
         }
 
         return DataManager.getInstance().getConfiguration().useTilesFullscreen();
-    }
-
-    /**
-     * <p>
-     * isDisplayImage.
-     * </p>
-     *
-     * @return the displayImage
-     */
-    public boolean isDisplayImage() {
-        return displayImage;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>displayImage</code>.
-     * </p>
-     *
-     * @param displayImage the displayImage to set
-     */
-    public void setDisplayImage(boolean displayImage) {
-        this.displayImage = displayImage;
     }
 
     /**
@@ -3237,24 +3365,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
-     * if the given path is empty or null
-     * 
-     * @param pathString
-     * @return The filename, or an empty String if it could not be determined
-     */
-
-    private static String getFilenameFromPathString(String pathString) {
-        if (StringUtils.isBlank(pathString)) {
-            return "";
-        }
-
-        Path path = Paths.get(pathString);
-        return path.getFileName().toString();
-    }
-
-    /**
      * <p>
      * getCiteLinkWork.
      * </p>
@@ -3347,8 +3457,11 @@ public class ViewManager implements Serializable {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
      */
-    public static ViewManager createViewManager(String pi) throws PresentationException, IndexUnreachableException {
+    public static ViewManager createViewManager(String pi)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }

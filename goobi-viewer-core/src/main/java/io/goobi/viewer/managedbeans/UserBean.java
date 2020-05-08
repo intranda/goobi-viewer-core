@@ -25,7 +25,9 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -45,7 +47,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TranskribusUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -55,10 +58,12 @@ import io.goobi.viewer.faces.validators.PasswordValidator;
 import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
@@ -99,6 +104,11 @@ public class UserBean implements Serializable {
     // Passwords for creating an new local user account
     private transient String passwordOne = "";
     private transient String passwordTwo = "";
+
+    private SecurityQuestion securityQuestion = null;
+    private String securityAnswer;
+    /** Honey pot field invisible to human users. */
+    private String lastName;
     private String redirectUrl = null;
     private Feedback feedback;
     private String transkribusUserName;
@@ -130,14 +140,43 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String createNewUserAccount() throws DAOException {
+        // Check whether user account registration is enabled
+        if (!DataManager.getInstance().getConfiguration().isUserRegistrationEnabled()) {
+            logFailedUserRegistration();
+            logger.debug("User registration is disabled.");
+            return "";
+        }
+        // Check whether the security question has been answered correct, if configured
+        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
+            Messages.error("user__security_question_wrong");
+            logFailedUserRegistration();
+            logger.debug("Wrong security question answer.");
+            return "";
+        }
+        // Check whether the invisible field lastName has been filled (real users cannot do that)
+        if (StringUtils.isNotEmpty(lastName)) {
+            logFailedUserRegistration();
+            logger.debug("Honeypot field entry: {}", lastName);
+            return "";
+        }
+        // Check for existing nicknames
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
-            Messages.error(Helper.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
-        } else if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
+            Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
+            logFailedUserRegistration();
+            logger.debug("User account already exists for nickname '{}'.", nickName);
+            return "";
+        }
+        // Check for existing e-mail addresses
+        if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
-            logger.debug("User account already exists for '" + email + "'.");
-        } else if (StringUtils.isNotBlank(passwordOne) && passwordOne.equals(passwordTwo)) {
+            logFailedUserRegistration();
+            logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            return "";
+        }
+
+        if (StringUtils.isNotBlank(passwordOne) && passwordOne.equals(passwordTwo)) {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setNickName(nickName);
@@ -146,21 +185,36 @@ public class UserBean implements Serializable {
             if (sendActivationEmail(newUser)) {
                 // Only attempt to persist the new user if the activation email could be sent
                 if (DataManager.getInstance().getDao().addUser(newUser)) {
-                    String msg = Helper.getTranslation("user_accountCreated", null);
+                    String msg = ViewerResourceBundle.getTranslation("user_accountCreated", null);
                     Messages.info(msg.replace("{0}", email));
-                    logger.debug("User account created for '" + email + "'.");
+                    logger.debug("User account created for '{}'.", email);
                 } else {
                     Messages.error("errSave");
                 }
                 return "user?faces-redirect=true";
             }
-            Messages.error(Helper.getTranslation("errSendEmail", null)
+            logFailedUserRegistration();
+            logger.debug("E-mail could not be sent");
+            Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } else {
             Messages.error("user_passwordMismatch");
         }
 
-        return "pretty:createUserAccount";
+        return "";
+    }
+
+    /**
+     * Logs failed user registration attempts with scrambled e-mail and IP addresses.
+     */
+    private void logFailedUserRegistration() {
+        String ipAddress = "UNKNOWN";
+        HttpServletRequest request = BeanUtils.getRequest();
+        if (request != null) {
+            ipAddress = NetTools.getIpAddress(request);
+        }
+        logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
+                NetTools.scrambleEmailAddress(email));
     }
 
     /**
@@ -180,14 +234,14 @@ public class UserBean implements Serializable {
                     user.setActivationKey(null);
                     user.setActive(true);
                     if (DataManager.getInstance().getDao().updateUser(user)) {
-                        Messages.info(Helper.getTranslation("user_accountActivationSuccess", null));
+                        Messages.info(ViewerResourceBundle.getTranslation("user_accountActivationSuccess", null));
                         logger.debug("User account successfully activated: " + user.getEmail());
                     } else {
-                        Messages.error(Helper.getTranslation("errSave", null));
+                        Messages.error(ViewerResourceBundle.getTranslation("errSave", null));
                     }
                 } else {
                     logger.debug("Activation key mismatch (expected: '" + user.getActivationKey() + "' (received: '" + activationKey + "').");
-                    Messages.error(Helper.getTranslation("user_accountActivationWrongData", null));
+                    Messages.error(ViewerResourceBundle.getTranslation("user_accountActivationWrongData", null));
                 }
             } else {
                 logger.debug("User not found or account already activated: " + email);
@@ -456,7 +510,7 @@ public class UserBean implements Serializable {
                 // Do not allow the same nickname being used for multiple users
                 User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(user.getNickName()); // This basically resets all changes
                 if (nicknameOwner != null && nicknameOwner.getId() != user.getId()) {
-                    Messages.error(Helper.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
+                    Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
                     user = copy;
                     if (copy.getCopy() != null) {
                         user.setNickName(copy.getCopy().getNickName());
@@ -519,7 +573,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             // Generate and save the activation key, if not yet set
             if (user.getActivationKey() == null) {
-                user.setActivationKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateMD5(UUID.randomUUID() + String.valueOf(System.currentTimeMillis())));
             }
 
             // Generate e-mail text
@@ -535,14 +589,15 @@ public class UserBean implements Serializable {
                     .append(user.getActivationKey())
                     .append("/")
                     .toString();
-            sb.append(Helper.getTranslation("user_activationEmailBody", null)
+            sb.append(ViewerResourceBundle.getTranslation("user_activationEmailBody", null)
                     .replace("{0}", baseUrl)
                     .replace("{1}", activationUrl)
                     .replace("{2}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
 
             // Send
             try {
-                if (Helper.postMail(Collections.singletonList(user.getEmail()), Helper.getTranslation("user_activationEmailSubject", null),
+                if (NetTools.postMail(Collections.singletonList(user.getEmail()),
+                        ViewerResourceBundle.getTranslation("user_activationEmailSubject", null),
                         sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
                     return true;
@@ -569,19 +624,19 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && !user.isOpenIdUser()) {
             if (user.isActive()) {
-                user.setActivationKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateMD5(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
-                    requesterIp = Helper.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                    requesterIp = NetTools.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
-                        if (Helper.postMail(Collections.singletonList(email),
-                                Helper.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
-                                Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
+                        if (NetTools.postMail(Collections.singletonList(email),
+                                ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
+                                ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
                                         .replace("{0}", requesterIp)
                                         .replace("{1}", resetUrl))) {
                             email = null;
@@ -595,16 +650,16 @@ public class UserBean implements Serializable {
                         logger.error(e.getMessage(), e);
                     }
                 }
-                Messages.error(Helper.getTranslation("user_retrieveAccountError", null)
+                Messages.error(ViewerResourceBundle.getTranslation("user_retrieveAccountError", null)
                         .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
                 return "userRetrieveAccount";
             }
 
             // Send new activation mail if not yet activated
             if (sendActivationEmail(user)) {
-                Messages.info(Helper.getTranslation("user_activationEmailReSent", null));
+                Messages.info(ViewerResourceBundle.getTranslation("user_activationEmailReSent", null));
             } else {
-                Messages.error(Helper.getTranslation("errSendEmail", null));
+                Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null));
             }
             return "pretty:user";
         }
@@ -624,12 +679,13 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && user.isActive() && !user.isOpenIdUser()) {
             if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(user.getActivationKey())) {
-                String newPassword = Helper.generateMD5(String.valueOf(System.currentTimeMillis())).substring(0, 8);
+                String newPassword = StringTools.generateMD5(String.valueOf(System.currentTimeMillis())).substring(0, 8);
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {
-                    if (Helper.postMail(Collections.singletonList(email), Helper.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
-                            Helper.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
+                    if (NetTools.postMail(Collections.singletonList(email),
+                            ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
+                            ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(user)) {
                         email = null;
                         Messages.info("user_retrieveAccountPasswordResetMessage");
@@ -642,7 +698,7 @@ public class UserBean implements Serializable {
                     logger.error(e.getMessage(), e);
                 }
             }
-            Messages.error(Helper.getTranslation("user_retrieveAccountError", null)
+            Messages.error(ViewerResourceBundle.getTranslation("user_retrieveAccountError", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             return "user?faces-redirect=true";
         }
@@ -678,10 +734,10 @@ public class UserBean implements Serializable {
         if (search != null) {
             logger.debug("Deleting search query: " + search.getId());
             if (DataManager.getInstance().getDao().deleteSearch(search)) {
-                String msg = Helper.getTranslation("savedSearch_deleteSuccess", null);
+                String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteSuccess", null);
                 Messages.info(msg.replace("{0}", search.getName()));
             } else {
-                String msg = Helper.getTranslation("savedSearch_deleteFailure", null);
+                String msg = ViewerResourceBundle.getTranslation("savedSearch_deleteFailure", null);
                 Messages.error(msg.replace("{0}", search.getName()));
             }
         }
@@ -748,21 +804,21 @@ public class UserBean implements Serializable {
      */
     public String submitFeedbackAction() {
         try {
-            if (Helper.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
+            if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 Messages.info("feedbackSubmitted");
             } else {
                 logger.error("{} could not send feedback.", feedback.getEmail());
-                Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                         .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+            Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+            Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         }
         return "";
@@ -1051,6 +1107,62 @@ public class UserBean implements Serializable {
     public void resetPasswordFields() {
         passwordOne = "";
         passwordTwo = "";
+    }
+
+    /**
+     * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
+     * 
+     * @should not reset securityQuest if not yet answered
+     */
+    public boolean resetSecurityQuestion() {
+        List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
+        if (questions.isEmpty()) {
+            return true;
+        }
+        if (securityQuestion != null && !securityQuestion.isAnswered()) {
+            // Do not reset if not set set or not yet answered
+            return true;
+        }
+
+        Random random = new Random();
+        securityQuestion = questions.get(random.nextInt(questions.size()));
+
+        return true;
+    }
+
+    /**
+     * @return the securityQuestion
+     */
+    public SecurityQuestion getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    /**
+     * @return the securityAnswer
+     */
+    public String getSecurityAnswer() {
+        return securityAnswer;
+    }
+
+    /**
+     * @param securityAnswer the securityAnswer to set
+     */
+    public void setSecurityAnswer(String securityAnswer) {
+        this.securityAnswer = securityAnswer;
+    }
+
+    /**
+     * @return the lastName
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * @param lastName the lastName to set
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     /**

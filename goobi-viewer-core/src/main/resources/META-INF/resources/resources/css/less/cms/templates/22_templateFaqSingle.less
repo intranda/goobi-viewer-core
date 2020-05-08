@@ -6,10 +6,28 @@
 /* BLOCK */
 .tpl-faq-single {
     /* ELEMENT */
+   	&__title {
+   		
+   	}
     &__content {
-    	h1 {}
+    	padding: 10px;
+    	border: 1px solid @middlegray;
+    	background-color: @white;
+    	display: grid;
+    	grid-row-gap: 20px;
     }
-    &__text {}
+    &__text {
+
+    }
+    &__image {
+    	img {
+    		width: 100%;
+    	}
+    	figcaption {
+    		font-style: italic;
+			font-size: 1.2rem;
+    	}
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

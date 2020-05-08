@@ -62,22 +62,24 @@
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
 																	<!-- WIDGET MODE -->
-																	<h:panelGroup rendered="#{element.category != 'geoLocations'}">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_widgetmode}:</label>
-																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																			</h:selectOneRadio>
-																		</div>
-																	</h:panelGroup>
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
+																			<div class="form-group">
+																				<label>#{msg.cms_sidebarElement_widgetmode}:</label>
+																				<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																					<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																					<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																				</h:selectOneRadio>
+																			</div>
+																		</ui:fragment>
 																	<!-- WIDGET TITLE -->
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
 																		</div>
+																		</ui:fragment>
 																	<!-- HTML INPUT -->
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
+																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_html}:</label>
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
@@ -138,77 +140,41 @@
 																			</h:selectManyCheckbox>
 																		</div>
 																	</h:panelGroup>
-																	<!-- GEO LOCATIONS -->
-																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="widget-geo-locations">																			
-																			<div class="widget-geo-locations__input">
+																	<!-- GEO MAP -->
+																	<h:panelGroup id="inputGeoMap" rendered="#{element.category == 'geoMap'}">
+																			<div class="widget-geomap__input">
 																			
 																				<div class="row">
-																					<!-- CENTER VALUE -->
-																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
-																					<div class="col-xs-6">
-																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
-																					</div>
-																					<div class="col-xs-6">
-																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
-																					</div>
-
-																					<!-- LOCATIONS -->
-																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
-																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
-																						<div class="col-xs-5">
-																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
-																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
-																						</div>
-																						<div class="col-xs-5">
-																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
-																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
-																						</div>
-																						<!-- INFOS -->
-																						<div class="col-xs-10">
-																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
-																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
-																						</div>
-																						<!-- LINK -->
-																						<div class="col-xs-10">
-																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
-																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
-																						</div>
-																						<div class="col-xs-10">
-																							<div class="widget-geo-locations__input-spacer"></div>
-																						</div>
-																					</ui:repeat>
-																					<!-- ADD LOCATION -->																				
-																					<div class="widget-geo-locations__action">
-																						<div class="col-xs-2">
-																							<h:commandLink action="#{element.removeGeoLocation}">
-																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
-																							</h:commandLink>
-																							<h:commandLink action="#{element.addGeoLocation()}">
-																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
-																							</h:commandLink>
-																						</div>
-																					</div>
+																					<label>#{msg.cms__geomaps__map__title}:</label>
+																					<!-- SELECT MENU -->
+																	                <div class="custom-control custom-control--select">
+																	                    <h:selectOneMenu 
+																	                        id="geoMapSelect" 
+																	                        styleClass="form-control" 
+																	                        value="#{element.geoMapId}">
+																	                        <f:selectItem itemValue="{-1}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+																	                        <f:selectItems 
+																	                            value="#{geoMapBean.allMaps}"
+																	                            var="map"
+																	                            itemValue="#{map.id}"
+																	                            itemLabel="#{map.title}" />
+																	                    </h:selectOneMenu>
+																	                </div>
 																				</div>
 																			</div>
-																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
-																	<h:panelGroup id="inputCss">
+																	<h:panelGroup rendered="#{element.category != 'geoMap'}" id="inputCss">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_css}:</label>
 																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
 																	<!-- ACTION -->
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
-																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
+																				<f:ajax execute="inputHtml inputQuery inputGeoMap" render="inputHtml inputQuery inputGeoMap :messages" onevent="cmsJS.sortableList.save" />
 																			</h:commandLink>
 																		</div>
 																	</h:panelGroup>
@@ -226,7 +192,8 @@
 
 										<ul id="availableItemList">
 											<ui:repeat var="element" value="#{cmsBean.selectedPage.unusedSidebarElements}">
-												<li sortposition="item_#{element.sortingId}"><h:panelGroup id="availableItem">
+												<li sortposition="item_#{element.sortingId}">
+													<h:panelGroup id="availableItem" rendered="#{element.category != 'geoMap' or geoMapBean.allMaps.size() > 0}">
 														<div class="sidebar-editor-widget-item">
 															<div class="sidebar-editor-widget-item-header">
 																<h4>#{msg[element.type]}</h4>
@@ -235,7 +202,7 @@
 
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
-																	<h:panelGroup rendered="#{element.category != 'geoLocations'}">
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
 																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
@@ -243,13 +210,15 @@
 																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
 																			</h:selectOneRadio>
 																		</div>
-																	</h:panelGroup>
+																		</ui:fragment>
 																	<!-- WIDGET TITLE -->
+																		<ui:fragment rendered="#{element.category != 'geoMap'}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
 																		</div>
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
+																		</ui:fragment>
+																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_html}:</h4>
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
@@ -309,76 +278,40 @@
 																			</h:selectManyCheckbox>
 																		</div>
 																	</h:panelGroup>
-																	<!-- GEO LOCATIONS -->
-																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="widget-geo-locations">																			
-																			<div class="widget-geo-locations__input">
+																	<!-- GEO MAP -->
+																	<h:panelGroup id="inputGeoMap" rendered="#{element.category == 'geoMap'}">
+																			<div class="widget-geomap__input">
 																			
 																				<div class="row">
-																					<!-- CENTER VALUE -->
-																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
-																					<div class="col-xs-6">
-																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
-																					</div>
-																					<div class="col-xs-6">
-																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
-																					</div>
-
-																					<!-- LOCATIONS -->
-																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
-																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
-																						<div class="col-xs-5">
-																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
-																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
-																						</div>
-																						<div class="col-xs-5">
-																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
-																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
-																						</div>
-																						<!-- INFOS -->
-																						<div class="col-xs-10">
-																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
-																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
-																						</div>
-																						<!-- LINK -->
-																						<div class="col-xs-10">
-																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
-																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
-																						</div>
-																						<div class="col-xs-10">
-																							<div class="widget-geo-locations__input-spacer"></div>
-																						</div>
-																					</ui:repeat>
-																					<!-- ADD LOCATION -->																				
-																					<div class="widget-geo-locations__action">
-																						<div class="col-xs-2">
-																							<h:commandLink action="#{element.removeGeoLocation}">
-																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
-																							</h:commandLink>
-																							<h:commandLink action="#{element.addGeoLocation()}">
-																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
-																							</h:commandLink>
-																						</div>
-																					</div>
+																					<label>#{msg.cms__geomaps__map__title}:</label>
+																					<!-- SELECT MENU -->
+																	                <div class="custom-control custom-control--select">
+																	                    <h:selectOneMenu 
+																	                        id="geoMapSelect" 
+																	                        styleClass="form-control" 
+																	                        value="#{element.geoMapId}">
+																	                        <f:selectItem itemValue="#{-1}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+																	                        <f:selectItems 
+																	                            value="#{geoMapBean.allMaps}"
+																	                            var="map"
+																	                            itemValue="#{map.id}"
+																	                            itemLabel="#{map.title}" />
+																	                    </h:selectOneMenu>
+																	                </div>
 																				</div>
 																			</div>
-																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
-																	<h:panelGroup id="inputCss">
+																	<h:panelGroup rendered="#{element.category != 'geoMap'}" id="inputCss">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_css}:</label>
 																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
-																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
+																				<f:ajax execute="inputHtml inputQuery inputGeoMap" render="inputHtml inputQuery inputGeoMap :messages" onevent="cmsJS.sortableList.save" />
 																			</h:commandLink>
 																		</div>
 																	</h:panelGroup>

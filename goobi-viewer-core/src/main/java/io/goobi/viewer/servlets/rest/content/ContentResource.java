@@ -68,10 +68,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
@@ -118,7 +119,6 @@ public class ContentResource {
      * API method for retrieving any type of content by its relative path within its data repository.
      *
      * @param pi Record identifier
-     * @param dataRepository Absolute path of the data repository
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      * @param contentFolder a {@link java.lang.String} object.
@@ -132,21 +132,19 @@ public class ContentResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
      */
     @GET
-    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
-    @Produces({ MediaType.TEXT_XML })
-    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
+    @Path("/document/{contentFolder}/{pi}/{fileName}")
+    @Produces({ MediaType.TEXT_XML, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    public String getContentDocument(@PathParam("contentFolder") String contentFolder,
             @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
             MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         setResponseHeader("");
         checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if ("-".equals(dataRepository)) {
-            dataRepository = null;
-        }
 
-        java.nio.file.Path file = Helper.getDataFilePath(pi, contentFolder, null, fileName);
+        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, contentFolder, null, fileName);
         if (file != null && Files.isRegularFile(file)) {
             try {
-                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+                String content = FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
+                return content;
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
@@ -155,6 +153,31 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+
+    /**
+     * 
+     * @param dataRepository ignored
+     * @param contentFolder
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * 
+     * @deprecated use {@link #getContentDocument(String, String, String)} instead
+     */
+    @GET
+    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
+    @Produces({ MediaType.TEXT_XML, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
+            @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
+            MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+        return getContentDocument(contentFolder, pi, fileName);
     }
 
     /**
@@ -181,9 +204,9 @@ public class ContentResource {
         setResponseHeader(pi + ".zip");
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
-        java.nio.file.Path altoPath = Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(), null, null);
+        java.nio.file.Path altoPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(), null, null);
         java.nio.file.Path altoPathCrowd =
-                Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd", null, null);
+                DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd", null, null);
 
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_alto.zip");
         try {
@@ -246,7 +269,7 @@ public class ContentResource {
         setResponseHeader("");
         checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
-        java.nio.file.Path file = Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
         if (file != null && Files.isRegularFile(file)) {
@@ -427,7 +450,7 @@ public class ContentResource {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path teiPath = Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
+        java.nio.file.Path teiPath = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
         java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
 
         if (filePath != null && Files.isRegularFile(filePath)) {
@@ -511,7 +534,7 @@ public class ContentResource {
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path cmdiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
+        java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null) {
             if (Files.isRegularFile(filePath)) {
@@ -581,7 +604,7 @@ public class ContentResource {
             if (StringUtils.isNotBlank(filename)) {
                 servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             }
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
     }
 
@@ -598,19 +621,19 @@ public class ContentResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
     public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
-        java.nio.file.Path file = Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
+        java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
 
         if (file != null && Files.isRegularFile(file)) {
             try {
-                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+                return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
-            file = Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+            file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
                     DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
             if (file != null && Files.isRegularFile(file)) {
                 try {
@@ -644,7 +667,7 @@ public class ContentResource {
         if (!fulltextFiles.isEmpty()) {
             fileMap = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
-                    return FileTools.getStringFromFile(p.toFile(), Helper.DEFAULT_ENCODING);
+                    return FileTools.getStringFromFile(p.toFile(), StringTools.DEFAULT_ENCODING);
                 } catch (IOException e) {
                     logger.error("Error reading file " + p, e);
                     return "";
@@ -682,8 +705,8 @@ public class ContentResource {
     public List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter)
             throws IOException, PresentationException, IndexUnreachableException {
 
-        java.nio.file.Path folder1 = Helper.getDataFilePath(pi, foldername, null, null);
-        java.nio.file.Path folder2 = Helper.getDataFilePath(pi, altFoldername, null, null);
+        java.nio.file.Path folder1 = DataFileTools.getDataFilePath(pi, foldername, null, null);
+        java.nio.file.Path folder2 = DataFileTools.getDataFilePath(pi, altFoldername, null, null);
 
         return getFiles(folder1, folder2, filter);
     }
@@ -873,20 +896,20 @@ public class ContentResource {
 
     //    public static java.nio.file.Path getAltoFile(String pi, String fileName, String dataRepository) {
     //        String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi + '/' + fileName;
-    //        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+    //        java.nio.file.Path file = Paths.get(DataFileTools.getRepositoryPath(dataRepository), filePath);
     //        return file;
     //    }
     //
     //    public static java.nio.file.Path getFulltextFile(String pi, String fileName, String dataRepository) {
     //        String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
-    //        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+    //        java.nio.file.Path file = Paths.get(DataFileTools.getRepositoryPath(dataRepository), filePath);
     //        return file;
     //    }
     //
     //    public static java.nio.file.Path getTEIFile(String pi, String langCode, String dataRepository) throws IOException {
     //        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
     //        java.nio.file.Path teiPath =
-    //                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
+    //                Paths.get(DataFileTools.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
     //        java.nio.file.Path filePath = null;
     //        if (Files.exists(teiPath)) {
     //            // This will return the file with the requested language or alternatively the first file in the TEI folder
@@ -909,7 +932,7 @@ public class ContentResource {
      */
     public static List<java.nio.file.Path> getTEIFiles(String pi) {
         try {
-            java.nio.file.Path teiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder());
+            java.nio.file.Path teiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder());
             List<java.nio.file.Path> filePaths = new ArrayList<>();
             if (Files.exists(teiPath)) {
                 // This will return the file with the requested language or alternatively the first file in the TEI folder
@@ -944,7 +967,7 @@ public class ContentResource {
      */
     public static java.nio.file.Path getCMDIFile(String pi, String langCode) throws IOException, PresentationException, IndexUnreachableException {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path cmdiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
+        java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
@@ -968,7 +991,7 @@ public class ContentResource {
     public static List<java.nio.file.Path> getCMDIFiles(String pi) {
 
         try {
-            java.nio.file.Path cdmiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
+            java.nio.file.Path cdmiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
             List<java.nio.file.Path> filePaths = new ArrayList<>();
             if (Files.exists(cdmiPath)) {
                 // This will return the file with the requested language or alternatively the first file in the CMDI folder

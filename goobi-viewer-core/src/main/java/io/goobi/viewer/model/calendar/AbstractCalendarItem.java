@@ -16,7 +16,7 @@
  */
 package io.goobi.viewer.model.calendar;
 
-import io.goobi.viewer.controller.Helper;
+import java.text.DecimalFormat;
 
 /**
  * <p>
@@ -24,6 +24,9 @@ import io.goobi.viewer.controller.Helper;
  * </p>
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
+    
+    /** Constant <code>dfTwoDigitInteger</code> */
+    public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
     protected final String name;
     protected final int value;
@@ -69,7 +72,7 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
      * @return a {@link java.lang.String} object.
      */
     public String getFormattedValue() {
-        return (Helper.dfTwoDigitInteger.format(value));
+        return (dfTwoDigitInteger.format(value));
     }
 
     /* (non-Javadoc)

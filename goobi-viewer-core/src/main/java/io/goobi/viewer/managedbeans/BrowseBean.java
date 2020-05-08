@@ -38,17 +38,18 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.termbrowsing.BrowseTerm;
+import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
-import io.goobi.viewer.model.viewer.BrowseTerm;
-import io.goobi.viewer.model.viewer.BrowseTerm.BrowseTermRawComparator;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 
@@ -240,35 +241,6 @@ public class BrowseBean implements Serializable {
 
     /**
      * <p>
-     * getVisibleDcList.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Deprecated
-    public List<BrowseDcElement> getVisibleDcList() {
-        logger.debug("getVisibleDcList");
-        if (!collections.containsKey(SolrConstants.DC)) {
-            initializeDCCollection();
-        }
-        return new ArrayList<>(collections.get(SolrConstants.DC).getVisibleDcElements());
-    }
-
-    /**
-     * Populates <code>visibledcList</code> with elements to be currently show in the UI. Prior to using this method, <code>dcList</code> must be
-     * sorted and each <code>BrowseDcElement.hasSubElements</code> must be set correctly.
-     *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    @Deprecated
-    public void calculateVisibleDcElements() throws IndexUnreachableException {
-        if (!collections.containsKey(SolrConstants.DC)) {
-            initializeDCCollection();
-        }
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>collectionToExpand</code>.
      * </p>
      *
@@ -368,6 +340,15 @@ public class BrowseBean implements Serializable {
             }
             hitsCount = 0;
 
+            // Sort filters
+            Locale locale = null;
+            NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+            if (navigationHelper != null) {
+                locale = navigationHelper.getLocale();
+            } else {
+                locale = Locale.GERMAN;
+            }
+
             List<BrowseTerm> terms = null;
             BrowsingMenuFieldConfig currentBmfc = null;
             List<BrowsingMenuFieldConfig> bmfcList = DataManager.getInstance().getConfiguration().getBrowsingMenuFields();
@@ -380,11 +361,11 @@ public class BrowseBean implements Serializable {
             if (currentBmfc == null) {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 resetTerms();
-                Messages.error(Helper.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
+                Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
                 return "searchTermList";
             }
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, new BrowseTermRawComparator(),
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, new BrowseTermComparator(locale),
                         DataManager.getInstance().getConfiguration().isAggregateHits());
 
                 // Populate the list of available starting characters with ones that actually exist in the complete terms list
@@ -405,57 +386,53 @@ public class BrowseBean implements Serializable {
                     }
                 }
 
-                // Sort filters
-                Locale locale = null;
-                NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
-                if (navigationHelper != null) {
-                    locale = navigationHelper.getLocale();
-                } else {
-                    locale = Locale.GERMAN;
-                }
                 Collections.sort(availableStringFilters.get(browsingMenuField), new AlphanumCollatorComparator(Collator.getInstance(locale)));
                 // logger.debug(availableStringFilters.toString());
             }
 
             // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
             if (StringUtils.isNotEmpty(currentStringFilter)) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, new BrowseTermRawComparator(),
+                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, new BrowseTermComparator(locale),
                         DataManager.getInstance().getConfiguration().isAggregateHits());
             }
             hitsCount = terms.size();
-            if (hitsCount > 0) {
-                if (currentPage > getLastPage()) {
-                    currentPage = getLastPage();
-                }
-
-                int start = (currentPage - 1) * browsingMenuHitsPerPage;
-                int end = currentPage * browsingMenuHitsPerPage;
-                if (end > terms.size()) {
-                    end = terms.size();
-                }
-
-                browseTermList = new ArrayList<>(end - start);
-                browseTermHitCountList = new ArrayList<>(browseTermList.size());
-                for (int i = start; i < end; ++i) {
-                    browseTermList.add(terms.get(i).getTerm().intern());
-                    browseTermHitCountList.add(terms.get(i).getHitCount());
-                }
-
-                browseTermListEscaped = new ArrayList<>(browseTermList.size());
-                // URL encode all terms
-                for (String s : browseTermList) {
-                    // Escape characters such as quotation marks
-                    String term = ClientUtils.escapeQueryChars(s);
-                    term = BeanUtils.escapeCriticalUrlChracters(term);
-                    try {
-                        term = URLEncoder.encode(term, SearchBean.URL_ENCODING);
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error(e.getMessage());
-                    }
-                    browseTermListEscaped.add(term.intern());
-                }
-            } else {
+            if (hitsCount == 0) {
                 resetTerms();
+                return "searchTermList";
+            }
+
+            if (currentPage > getLastPage()) {
+                currentPage = getLastPage();
+            }
+
+            int start = (currentPage - 1) * browsingMenuHitsPerPage;
+            int end = currentPage * browsingMenuHitsPerPage;
+            if (end > terms.size()) {
+                end = terms.size();
+            }
+
+            browseTermList = new ArrayList<>(end - start);
+            browseTermListEscaped = new ArrayList<>(browseTermList.size());
+            browseTermHitCountList = new ArrayList<>(browseTermList.size());
+            for (int i = start; i < end; ++i) {
+                BrowseTerm term = terms.get(i);
+                if (term.getTranslations() != null && term.getTranslations().getValue(locale).isPresent()) {
+                    // Use translated label, if present
+                    browseTermList.add(term.getTranslations().getValue(locale).get());
+                } else {
+                    browseTermList.add(term.getTerm());
+                }
+                browseTermHitCountList.add(terms.get(i).getHitCount());
+
+                // Escape characters such as quotation marks
+                String escapedTerm = ClientUtils.escapeQueryChars(term.getTerm().intern());
+                escapedTerm = BeanUtils.escapeCriticalUrlChracters(escapedTerm);
+                try {
+                    escapedTerm = URLEncoder.encode(escapedTerm, SearchBean.URL_ENCODING);
+                } catch (UnsupportedEncodingException e) {
+                    logger.error(e.getMessage());
+                }
+                browseTermListEscaped.add(escapedTerm.intern());
             }
 
             return "searchTermList";
@@ -475,6 +452,25 @@ public class BrowseBean implements Serializable {
         }
 
         return browsingMenuField;
+    }
+
+    /**
+     * 
+     * @return true if <code>browsingMenuField</code> is set and configured to be translated; false otherwise
+     */
+    public boolean isBrowsingMenuFieldTranslated() {
+        if (StringUtils.isEmpty(browsingMenuField)) {
+            return false;
+        }
+
+        List<BrowsingMenuFieldConfig> bmfcList = DataManager.getInstance().getConfiguration().getBrowsingMenuFields();
+        for (BrowsingMenuFieldConfig bmfc : bmfcList) {
+            if (bmfc.getField().equals(browsingMenuField)) {
+                return bmfc.isTranslate();
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -829,8 +825,8 @@ public class BrowseBean implements Serializable {
         collections.put(collectionField, new CollectionView(collectionField, new BrowseDataProvider() {
 
             @Override
-            public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true,
+            public Map<String, CollectionResult> getData() throws IndexUnreachableException {
+                Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }

@@ -60,7 +60,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -69,6 +68,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
@@ -87,7 +87,6 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -495,14 +494,14 @@ public class SearchBean implements SearchInterface, Serializable {
             if (sb.length() > 0) {
                 switch (advancedSearchGroupOperator) {
                     case 0:
-                        sbInfo.append(' ').append(Helper.getTranslation("searchOperator_AND", BeanUtils.getLocale())).append("\n<br />");
+                        sbInfo.append(' ').append(ViewerResourceBundle.getTranslation("searchOperator_AND", BeanUtils.getLocale())).append("\n<br />");
                         break;
                     case 1:
-                        sbInfo.append(' ').append(Helper.getTranslation("searchOperator_OR", BeanUtils.getLocale())).append("\n<br />");
+                        sbInfo.append(' ').append(ViewerResourceBundle.getTranslation("searchOperator_OR", BeanUtils.getLocale())).append("\n<br />");
                         break;
                     default:
                         sbInfo.append(' ')
-                                .append(Helper.getTranslation("searchOperator_AND", BeanUtils.getLocale()).toUpperCase())
+                                .append(ViewerResourceBundle.getTranslation("searchOperator_AND", BeanUtils.getLocale()).toUpperCase())
                                 .append("\n<br />");
                         break;
                 }
@@ -516,16 +515,16 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
                 if (!sbInfo.toString().endsWith("(")) {
                     sbInfo.append(' ')
-                            .append(Helper.getTranslation("searchOperator_" + queryGroup.getOperator().name(), BeanUtils.getLocale()))
+                            .append(ViewerResourceBundle.getTranslation("searchOperator_" + queryGroup.getOperator().name(), BeanUtils.getLocale()))
                             .append(' ');
                 }
                 // Generate the hierarchical facet parameter from query items
                 if (queryItem.isHierarchical()) {
                     logger.trace("{} is hierarchical", queryItem.getField());
                     sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
-                    sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
+                    sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
                             .append(": \"")
-                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
+                            .append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
                             .append('"');
                     continue;
                 }
@@ -596,20 +595,20 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
 
                 logger.trace("Item query: {}", itemQuery);
-                sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
+                sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
                 switch (queryItem.getOperator()) {
                     case IS:
                     case PHRASE:
                         if (!queryItem.getValue().startsWith("\"")) {
                             sbInfo.append('"');
                         }
-                        sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                         if (!queryItem.getValue().endsWith("\"")) {
                             sbInfo.append('"');
                         }
                         break;
                     default:
-                        sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                 }
 
                 // Add item query part to the group query
@@ -648,7 +647,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Add discriminator subquery, if set and configured to be part of the visible query
-        if (DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
+        if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery() && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
             try {
                 String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
                         DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
@@ -1059,7 +1058,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             // Add discriminator subquery, if set and configurated to be part of the visible query
-            if (DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
+            if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery() && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
                 try {
                     String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
                             DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
@@ -1679,18 +1678,17 @@ public class SearchBean implements SearchInterface, Serializable {
                 for (int i = 0; i < dc.getLevel(); ++i) {
                     sbItemLabel.append("- ");
                 }
-                sbItemLabel.append(Helper.getTranslation(dc.getName(), null));
+                sbItemLabel.append(ViewerResourceBundle.getTranslation(dc.getName(), null));
                 ret.add(new StringPair(dc.getName(), sbItemLabel.toString()));
                 sbItemLabel.setLength(0);
             }
             advancedSearchSelectItems.put(key, ret);
         } else {
-            new BrowsingMenuFieldConfig(field, null, null, null, false);
             String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
 
             List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);
             for (String value : values) {
-                ret.add(new StringPair(value, Helper.getTranslation(value, null)));
+                ret.add(new StringPair(value, ViewerResourceBundle.getTranslation(value, null)));
             }
 
             Collections.sort(ret);
@@ -2342,7 +2340,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, true));
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {

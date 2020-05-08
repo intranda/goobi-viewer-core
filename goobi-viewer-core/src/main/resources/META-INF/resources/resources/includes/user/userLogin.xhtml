@@ -159,6 +159,7 @@
                     </div>
                     
                     <!-- USER LOGIN TYPE CREATE ACCOUNT -->
+                    <ui:fragment rendered="#{userBean.userRegistrationEnabled and userBean.resetSecurityQuestion()}">
                     <div id="loginTypeCreateAccount" class="user-login__body-login-type create">
                         <h:form id="loginTypeCreateAccountForm">
                             <div class="form-group">
@@ -170,6 +171,15 @@
                                     required="true"
                                     requiredMessage="#{msg.loginEnterNickName}">
                                     <f:validator validatorId="nicknameValidator" />
+                                </h:inputText>
+                            </div>
+                            
+                            <div class="form-group lastname">
+                                <label for="userCreateAccountLastName" class="control-label">#{msg.nameLast}:</label>
+                                <h:inputText 
+                                    id="userCreateAccountLastName" 
+                                    styleClass="form-control" 
+                                    value="#{userBean.lastName}">
                                 </h:inputText>
                             </div>
 
@@ -209,6 +219,19 @@
                                     required="true"
                                     requiredMessage="#{msg.newUserPasswordTwoRequired}" />
                             </div>
+                            
+                            <ui:fragment rendered="#{userBean.securityQuestion != null}">
+                                <div class="form-group">
+                                    <label for="userCreateAccountConfirm" class="control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
+                                    <h:inputSecret 
+                                        id="userCreateAccountConfirm" 
+                                        styleClass="form-control" 
+                                        autocomplete="off"
+                                        value="#{userBean.securityAnswer}" 
+                                        required="true"
+                                        requiredMessage="#{msg.user__security_question_required_msg}" />
+                                </div>
+                            </ui:fragment>
 
                             <p>#{msg.login__new_account_agreement}</p>
 
@@ -228,16 +251,25 @@
                             </div>
                         </h:form>
                     </div>
+                    </ui:fragment>
                 </div>
     
                 <!-- USER LOGIN BODY LOGIN OPEN ID -->
-                <ui:fragment rendered="#{userBean.hasProvidersOfType('openId')}">
+                <ui:fragment rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
                 <div id="userLoginOpenId" class="user-login__body-login-open-id">                    
                     <h4><span>#{msg.login__login_with_other_provider}</span></h4>
                     
                     <h:form id="userLoginOpenIdForm">
                         <ul>
                             <ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
+                                <li class="user-login__body-login-open-id-provider #{provider.name}">
+                                    <h:commandLink action="#{userBean.login(provider)}">
+                                        #{provider.name}
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.login__login_with} #{provider.name}" />
+                                    </h:commandLink>
+                                </li>
+                            </ui:repeat>
+                            <ui:repeat var="provider" value="#{userBean.getProvidersOfType('saml')}">
                                 <li class="user-login__body-login-open-id-provider #{provider.name}">
                                     <h:commandLink action="#{userBean.login(provider)}">
                                         #{provider.name}

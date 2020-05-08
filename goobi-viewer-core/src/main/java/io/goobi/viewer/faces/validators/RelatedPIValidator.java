@@ -29,13 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
 
@@ -62,7 +62,7 @@ public class RelatedPIValidator extends PIValidator {
         try {
             String key = validatePi(value, user);
             if (key != null) {
-                String message = Helper.getTranslation(key, null).replace("{0}", value);
+                String message = ViewerResourceBundle.getTranslation(key, null).replace("{0}", value);
                 FacesMessage msg = new FacesMessage(message, "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);

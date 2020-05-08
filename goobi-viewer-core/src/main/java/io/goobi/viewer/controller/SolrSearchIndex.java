@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.luke.FieldFlag;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -496,7 +498,7 @@ public final class SolrSearchIndex {
         String query = new StringBuilder(fieldName).append(":*").append(querySuffix).toString();
         logger.trace("generateFilteredTagCloud query: {}", query);
         // Pattern p = Pattern.compile("\\w+");
-        Pattern p = Pattern.compile(Helper.REGEX_WORDS);
+        Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
 
         SolrQuery solrQuery = new SolrQuery(query);
@@ -998,9 +1000,9 @@ public final class SolrSearchIndex {
     private static Document getSolrSchemaDocument() {
         StringReader sr = null;
         try {
-            Helper.getWebContentGET(
+            NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
-            String responseBody = Helper.getWebContentGET(
+            String responseBody = NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
             sr = new StringReader(responseBody);
             return new SAXBuilder().build(sr);
@@ -1300,7 +1302,7 @@ public final class SolrSearchIndex {
      * getAllSortFieldNames.
      * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a list of all SOLR fields starting with "SORT_".
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
      */
@@ -1312,9 +1314,37 @@ public final class SolrSearchIndex {
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
-            FieldInfo info = fieldInfoMap.get(name);
             if (name.startsWith("SORT_")) {
                 list.add(name);
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * 
+     * @return A list of all SOLR fields without the multivalues flag
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    public List<String> getAllGroupFieldNames() throws SolrServerException, IOException {
+        LukeRequest lukeRequest = new LukeRequest();
+        lukeRequest.setNumTerms(0);
+        LukeResponse lukeResponse = lukeRequest.process(server);
+        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+
+        List<String> keys = new ArrayList<>(fieldInfoMap.keySet());
+        Collections.sort(keys);
+        List<String> list = new ArrayList<>();
+        for (String name : keys) {
+            FieldInfo info = fieldInfoMap.get(name);
+            EnumSet<FieldFlag> flags = FieldInfo.parseFlags(info.getSchema());
+            if (!flags.contains(FieldFlag.MULTI_VALUED)) {
+                if (info.getDocs() > 0
+                        && (flags.contains(FieldFlag.DOC_VALUES) || name.equals(SolrConstants.DOCSTRCT) || name.equals(SolrConstants.PI_ANCHOR))) {
+                    list.add(name);
+                }
             }
         }
 

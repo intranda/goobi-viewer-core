@@ -10,7 +10,7 @@
     </composite:interface>
 
     <composite:implementation>
-		<ui:fragment rendered="#{configurationBean.sidebarTocVisible and !activeDocumentBean.viewManager.topDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
+		<ui:fragment rendered="#{activeDocumentBean.viewManager.displayTocViewLink}">
 			<div id="widgetToc" class="widget widget-toc">
                 <!-- OVERLAY -->
                 <div class="widget-toc__overlay"></div>

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
@@ -57,11 +58,13 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.language.LocaleComparator;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -76,8 +79,8 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.viewer.BrowseTerm;
-import io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig;
+import io.goobi.viewer.model.termbrowsing.BrowseTerm;
+import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
@@ -97,9 +100,9 @@ public final class SearchHelper {
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
     public static final String SEARCH_TERM_SPLIT_REGEX = "[ ]|[,]|[-]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
-    public static final String PLACEHOLDER_HIGHLIGHTING_START = "##HLS##";
+    public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
-    public static final String PLACEHOLDER_HIGHLIGHTING_END = "##HLE##";
+    public static final String PLACEHOLDER_HIGHLIGHTING_END = "##ĦŁȄ##";
     /** Constant <code>SEARCH_TYPE_REGULAR=0</code> */
     public static final int SEARCH_TYPE_REGULAR = 0;
     /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
@@ -120,7 +123,7 @@ public final class SearchHelper {
     /** Constant <code>patternNotBrackets</code> */
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
     /** Constant <code>patternPhrase</code> */
-    public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
+    public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
 
     /** Filter subquery for collection listing (no volumes). */
     static volatile String collectionBlacklistFilterSuffix = null;
@@ -148,6 +151,34 @@ public final class SearchHelper {
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
             HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request,
+                false);
+    }
+
+    /**
+     * Main search method for flat search.
+     *
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return List of <code>StructElement</code>s containing the search hits.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            HttpServletRequest request, boolean keepSolrDoc)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -179,7 +210,7 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = Helper.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
+                    fulltext = DataFileTools.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
                             (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
                             true, request);
                 } catch (AccessDeniedException e) {
@@ -196,6 +227,9 @@ public final class SearchHelper {
 
             SearchHit hit =
                     SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields, null);
+            if (keepSolrDoc) {
+                hit.setSolrDoc(doc);
+            }
             ret.add(hit);
             count++;
             logger.trace("added hit {}", count);
@@ -227,6 +261,33 @@ public final class SearchHelper {
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false);
+    }
+
+    /**
+     * Main search method for aggregated search.
+     *
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @return List of <code>StructElement</code>s containing the search hits.
+     * @should return all hits
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            boolean keepSolrDoc)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -244,6 +305,9 @@ public final class SearchHelper {
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
+            if (keepSolrDoc) {
+                hit.setSolrDoc(doc);
+            }
             ret.add(hit);
             hit.addCMSPageChildren();
             hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
@@ -284,7 +348,8 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes(HttpServletRequest request, NavigationHelper navigationHelper, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+    public static String getAllSuffixes(HttpServletRequest request, NavigationHelper navigationHelper, boolean addStaticQuerySuffix,
+            boolean addCollectionBlacklistSuffix,
             boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
@@ -408,7 +473,8 @@ public final class SearchHelper {
             }
             sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
-        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
+        sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(),
+                BeanUtils.getNavigationHelper()));
         sbQuery.append(" AND (")
                 .append(luceneField)
                 .append(":")
@@ -481,10 +547,11 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
+    public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery,
+            boolean filterForWhitelist,
             boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
-        Map<String, Long> ret = new HashMap<>();
+        Map<String, CollectionResult> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
 
@@ -497,7 +564,8 @@ public final class SearchHelper {
                 }
                 sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
             }
-            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true, BeanUtils.getNavigationHelper()));
+            sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(
+                    DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), BeanUtils.getNavigationHelper()));
             Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
                 String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -515,54 +583,22 @@ public final class SearchHelper {
                 }
             }
 
-            // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined
-            // this way)
-            {
-                //              logger.debug("query: {}", sbQuery.toString());
-                // QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null,
-                // Collections.singletonList(
-                //                    facetField), null, null, null);
-                //              logger.trace("query done");
-                //                if (resp.getFacetField(facetField) != null && resp.getFacetField(facetField).getValues() != null) {
-                //                    for (Count count : resp.getFacetField(facetField).getValues()) {
-                // if (count.getName() == null || (!blacklist.isEmpty() && checkCollectionInBlacklist(count.getName(),
-                // blacklist))) {
-                //                            continue;
-                //                        }
-                //                        Long recordCount = ret.get(count.getName());
-                //                        if (recordCount == null) {
-                //                            recordCount = 0L;
-                //                        }
-                //                        ret.put(count.getName(), recordCount + count.getCount());
-                //
-                //                        // Add count to parent collections
-                //                        if (count.getName().contains(BrowseDcElement.split)) {
-                //                            String parent = count.getName();
-                //                            while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
-                //                                parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
-                //                                Long parentRecordCount = ret.get(parent);
-                //                                if (parentRecordCount == null) {
-                //                                    parentRecordCount = 0L;
-                //                                }
-                //                                ret.put(parent, parentRecordCount + count.getCount());
-                //                            }
-                //                        }
-                //                    }
-                //                }
-            }
-
             // Iterate over record hits instead of using facets to determine the size of the parent collections
             {
                 logger.debug("query: {}", sbQuery.toString());
-                // No faceting needed when fetching field names manually (faceting adds to the total execution time)
+                List<String> fieldList = new ArrayList<>();
+                fieldList.add(luceneField);
+                if (facetField != null) {
+                    fieldList.add(facetField);
+                }
                 SolrDocumentList results =
-                        DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), Collections.singletonList(luceneField));
+                        DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), fieldList);
                 logger.trace("query done");
                 for (SolrDocument doc : results) {
                     Set<String> dcDoneForThisRecord = new HashSet<>();
-                    Collection<Object> fieldList = doc.getFieldValues(luceneField);
-                    if (fieldList != null) {
-                        for (Object o : fieldList) {
+                    Collection<Object> mdList = doc.getFieldValues(luceneField);
+                    if (mdList != null) {
+                        for (Object o : mdList) {
                             String dc = SolrSearchIndex.getAsString(o);
                             if (StringUtils.isNotBlank(dc)) {
                                 //                            String dc = (String) o;
@@ -570,12 +606,15 @@ public final class SearchHelper {
                                     continue;
                                 }
                                 {
-                                    Long count = ret.get(dc);
-                                    if (count == null) {
-                                        count = 0L;
+                                    CollectionResult result = ret.get(dc);
+                                    if (result == null) {
+                                        result = new CollectionResult(dc);
+                                        ret.put(dc, result);
                                     }
-                                    count++;
-                                    ret.put(dc, count);
+                                    result.incrementCount();
+                                    if (StringUtils.isNotBlank(facetField)) {
+                                        result.addFacetValues(doc.getFieldValues(facetField));
+                                    }
                                     dcDoneForThisRecord.add(dc);
                                 }
 
@@ -584,12 +623,15 @@ public final class SearchHelper {
                                     while (parent.lastIndexOf(splittingChar) != -1) {
                                         parent = parent.substring(0, parent.lastIndexOf(splittingChar));
                                         if (!dcDoneForThisRecord.contains(parent)) {
-                                            Long count = ret.get(parent);
-                                            if (count == null) {
-                                                count = 0L;
+                                            CollectionResult result = ret.get(parent);
+                                            if (result == null) {
+                                                result = new CollectionResult(parent);
+                                                ret.put(parent, result);
                                             }
-                                            count++;
-                                            ret.put(parent, count);
+                                            result.incrementCount();
+                                            if (StringUtils.isNotBlank(facetField)) {
+                                                result.addFacetValues(doc.getFieldValues(facetField));
+                                            }
                                             dcDoneForThisRecord.add(parent);
                                         }
                                     }
@@ -664,7 +706,8 @@ public final class SearchHelper {
     public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
-        StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
+        StringBuilder sbQuery =
+                new StringBuilder(query).append(getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
         return DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
@@ -742,7 +785,7 @@ public final class SearchHelper {
                     logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
             }
-            sbQuery.append(getAllSuffixes(true));
+            sbQuery.append(getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
             logger.debug("Autocomplete query: {}", sbQuery.toString());
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
@@ -867,7 +910,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static void updateFilterQuerySuffix(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), Helper.getIpAddress(request));
+        String filterQuerySuffix = getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request));
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -1100,6 +1143,7 @@ public final class SearchHelper {
             String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
+                logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
@@ -1139,6 +1183,7 @@ public final class SearchHelper {
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
+        logger.trace("highlighted term: {}", highlightedTerm);
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
@@ -1337,7 +1382,7 @@ public final class SearchHelper {
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
      * a query.
      *
-     * @param bmfc a {@link io.goobi.viewer.model.viewer.BrowsingMenuFieldConfig} object.
+     * @param bmfc a {@link io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig} object.
      * @param startsWith a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
      * @param comparator a {@link java.util.Comparator} object.
@@ -1345,12 +1390,12 @@ public final class SearchHelper {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should be thread safe when counting terms
      */
     public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery,
             Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
         List<BrowseTerm> ret = new ArrayList<>();
-        Map<BrowseTerm, Boolean> terms = new ConcurrentHashMap<>();
-        Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
+        ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
 
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
@@ -1413,6 +1458,10 @@ public final class SearchHelper {
                     Set<String> usedTermsInCurrentDoc = new HashSet<>();
                     for (Object o : termList) {
                         String term = String.valueOf(o);
+                        // Only add to hit count if the same string is not in the same doc
+                        if (usedTermsInCurrentDoc.contains(term)) {
+                            continue;
+                        }
                         String termStart = term;
                         if (termStart.length() > 1) {
                             termStart = term.substring(0, 1);
@@ -1423,30 +1472,27 @@ public final class SearchHelper {
                         }
                         Matcher m = p.matcher(compareTerm);
                         if (m.find()) {
-                            if (!usedTerms.containsKey(term)) {
-                                BrowseTerm browseTerm = new BrowseTerm(term, sortTerm);
-                                terms.put(browseTerm, true);
-                                usedTerms.put(term, browseTerm);
-                                usedTermsInCurrentDoc.add(term);
-                                sortTerm = null; // only use the sort term for the first term
-                            } else if (!usedTermsInCurrentDoc.contains(term)) {
-                                // Only add to hit count if the same string is not in the same doc
-                                usedTerms.get(term).addToHitCount(1);
-                                usedTermsInCurrentDoc.add(term);
+                            BrowseTerm browseTerm = terms.get(term);
+                            if (browseTerm == null) {
+                                browseTerm = new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
+                                terms.put(term, browseTerm);
                             }
+                            sortTerm = null; // only use the sort term for the first term
+                            browseTerm.addToHitCount(1);
+                            usedTermsInCurrentDoc.add(term);
                         }
                     }
                 }
             } else {
                 // Without filtering or using alphabetical filtering
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
-                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                        .forEach(doc -> processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms, aggregateHits));
+                //                ((List<SolrDocument>) resp.getResults()).parallelStream()
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
 
                 // Sequential processing (doesn't break the sorting done by Solr)
-                //                for (SolrDocument doc : resp.getResults()) {
-                //                    processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms, aggregateHits);
-                //                }
+                for (SolrDocument doc : resp.getResults()) {
+                    processSolrResult(doc, bmfc, startsWith, terms, aggregateHits);
+                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -1457,7 +1503,7 @@ public final class SearchHelper {
         }
 
         if (!terms.isEmpty()) {
-            ret = new ArrayList<>(terms.keySet());
+            ret = new ArrayList<>(terms.values());
             if (comparator != null) {
                 Collections.sort(ret, comparator);
             }
@@ -1472,56 +1518,62 @@ public final class SearchHelper {
      * <code>terms</code> and <code>usedTerms</code> are synchronized.
      *
      * @param doc
-     * @param field
-     * @param sortField
+     * @param bmfc
      * @param startsWith
-     * @param terms Set of terms collected so far.
-     * @param usedTerms Terms that are already in the terms map.
+     * @param terms Map of terms collected so far.
      * @param aggregateHits
      */
-    private static void processSolrResult(SolrDocument doc, String field, String sortField, String startsWith, Map<BrowseTerm, Boolean> terms,
-            Map<String, BrowseTerm> usedTerms, boolean aggregateHits) {
+    private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
+            ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
-        Collection<Object> termList = doc.getFieldValues(field);
+        Collection<Object> termList = doc.getFieldValues(bmfc.getField());
         if (termList == null) {
             return;
         }
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-        String sortTerm = (String) doc.getFieldValue(sortField);
+        String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
         for (Object o : termList) {
             String term = String.valueOf(o);
             if (StringUtils.isEmpty(term)) {
                 continue;
             }
+
+            // Only add to hit count if the same string is not in the same doc
+            if (usedTermsInCurrentDoc.contains(term)) {
+                continue;
+            }
+
             String compareTerm = term;
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
             }
-            //            if (logger.isTraceEnabled() && StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-            //                logger.trace("compareTerm '{}' starts with '{}'", compareTerm, startsWith);
-            //            }
-            if (StringUtils.isEmpty(startsWith) || "-".equals(startsWith) || StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-                if (!usedTerms.containsKey(term)) {
-                    BrowseTerm browseTerm = new BrowseTerm(term, sortTerm);
-                    // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}", term, compareTerm, sortTerm);
-                    terms.put(browseTerm, true);
-                    usedTerms.put(term, browseTerm);
-                    usedTermsInCurrentDoc.add(term);
-                    browseTerm.getPiList().add(pi);
-                } else if (!usedTermsInCurrentDoc.contains(term)) {
-                    // Only add to hit count if the same string is not in the same doc
-                    BrowseTerm browseTerm = usedTerms.get(term);
-                    // If using aggregated search, do not count instances of records that already have been counted
-                    if (aggregateHits && browseTerm.getPiList().contains(pi)) {
-                        continue;
-                    }
-                    browseTerm.addToHitCount(1);
-                    usedTermsInCurrentDoc.add(term);
-                    browseTerm.getPiList().add(pi);
-                }
+            if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
+                continue;
             }
+
+            BrowseTerm browseTerm = terms.get(term);
+            if (browseTerm == null) {
+                synchronized (lock) {
+                    // Another thread may have added this term by now
+                    if (!terms.containsKey(term)) {
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", term, compareTerm, sortTerm, bmfc.isTranslate());
+                        terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
+                    }
+                }
+                browseTerm = terms.get(term);
+            }
+
             sortTerm = null; // only use the sort term for the first term
+
+            // If using aggregated search, do not count instances of records that already have been counted
+            if (aggregateHits && browseTerm.getPiList().contains(pi)) {
+                continue;
+            }
+
+            browseTerm.addToHitCount(1);
+            browseTerm.getPiList().add(pi);
+            usedTermsInCurrentDoc.add(term);
         }
     }
 
@@ -1728,8 +1780,20 @@ public final class SearchHelper {
     /**
      * 
      * @param fieldName
+     * @return
+     */
+    public static String normalizeField(String fieldName) {
+        return adaptField(fieldName, null);
+    }
+
+    /**
+     * 
+     * @param fieldName
      * @param prefix
      * @return modified field name
+     * @should apply prefix correctly
+     * @should not apply prefix to regular fields if empty
+     * @should remove untokenized correctly
      */
     static String adaptField(String fieldName, String prefix) {
         if (fieldName == null) {
@@ -1746,8 +1810,14 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
             default:
-                if (fieldName.startsWith("MD_")) {
-                    fieldName = fieldName.replace("MD_", prefix);
+                if (StringUtils.isNotEmpty(prefix)) {
+                    if (fieldName.startsWith("MD_")) {
+                        fieldName = fieldName.replace("MD_", prefix);
+                    } else if (fieldName.startsWith("MD2_")) {
+                        fieldName = fieldName.replace("MD2_", prefix);
+                    } else if (fieldName.startsWith("BOOL_")) {
+                        fieldName = fieldName.replace("BOOL_", prefix);
+                    }
                 }
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
                 return fieldName;
@@ -2113,7 +2183,7 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
-        String suffixes = getAllSuffixes(true, nh);
+        String suffixes = getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), nh);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -2193,7 +2263,7 @@ public final class SearchHelper {
         for (String field : DataManager.getInstance().getConfiguration().getSearchExcelExportFields()) {
             SXSSFCell cell = row.createCell(currentCellIndex++);
             cell.setCellStyle(styleBold);
-            cell.setCellValue(new XSSFRichTextString(Helper.getTranslation(field, locale)));
+            cell.setCellValue(new XSSFRichTextString(ViewerResourceBundle.getTranslation(field, locale)));
         }
 
         List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();

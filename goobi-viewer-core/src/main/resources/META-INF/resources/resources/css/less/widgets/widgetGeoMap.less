@@ -2,14 +2,27 @@
    Widget Geo Locations
    style declarations for widget_geoLocations.xhtml
    ==============================================================*/
-.widget-geo-locations {
-	display: none;
+.widget-geomap {
 	position: relative;
+	display: none;
 	h3 {}
 	&__map {
 		min-height: 350px;
 		.mapboxgl-popup-content {
 		    padding: 20px 15px 10px 15px;
+		}
+		.leaflet-control-container {
+			.leaflet-top {
+				a {					
+					line-height: 22px;
+				}
+			}
+			.leaflet-bottom {
+				a {
+					display: inline;
+				}
+				
+			}
 		}
 	}
     /* CMS BACKEND WIDGET */
@@ -19,8 +32,6 @@
     &__input {
     	.mx-clearfloats;
     	margin-bottom: 20px;
-    	padding-bottom: 15px;
-    	border-bottom: 1px solid @middlegray;
     	.row {
     		margin: 0;
     	}
@@ -65,9 +76,6 @@
     	.checkbox {
     		margin: 0;
     	}
-    }
-    .leaflet-touch .leaflet-bar a {
-    	line-height: 20px;
     }
 }
 

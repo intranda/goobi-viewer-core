@@ -54,7 +54,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -70,6 +71,8 @@ import io.goobi.viewer.model.cms.itemfunctionality.TocFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.TrivialFunctionality;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
@@ -107,7 +110,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         METADATA,
         CAMPAIGNOVERVIEW,
         BOOKMARKLISTS,
-        BROWSETERMS;
+        BROWSETERMS,
+        GEOMAP;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -188,6 +192,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /** Media item reference for media content items. */
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
+    
+    /** GeoMap reference for GeoMap content items */
+    @JoinColumn(name = "geomap_id")
+    private GeoMap geoMap;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_content_item_cms_categories", joinColumns = @JoinColumn(name = "content_item_id"),
@@ -230,6 +238,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @Column(name = "glossary")
     private String glossaryName;
+    
+    /**
+     * Name of SOLR field by which to group results of a search or collection
+     */
+    @Column(name = "group_by")
+    private String groupBy = "";
 
     /**
      * For TileGrid
@@ -329,6 +343,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
         this.setSearchType(blueprint.getSearchType());
         this.setMetadataFields(blueprint.getMetadataFields());
+        this.setGroupBy(blueprint.groupBy);
+        this.setGeoMap(blueprint.getGeoMap());
 
     }
 
@@ -851,7 +867,9 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         for (CMSPage cmsPage : allPages) {
             if (cmsPage.isPublished() && !nestedPages.contains(cmsPage)) {
                 counter++;
-                if (counter > offset && counter <= size + offset) {
+                if(!isPaginated()) {
+                    nestedPages.add(cmsPage);
+                } else if (counter > offset && counter <= size + offset) {
                     nestedPages.add(cmsPage);
                 }
             }
@@ -1023,7 +1041,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+        Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list.add(0, "");
@@ -1041,7 +1059,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+        Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
@@ -1122,8 +1140,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
             @Override
-            public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
+            public Map<String, CollectionResult> getData() throws IndexUnreachableException {
+                Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
@@ -1610,7 +1628,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         }
 
         List<File> ret = new ArrayList<>(2);
-        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + Helper.SUFFIX_CMS);
+        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + IndexerTools.SUFFIX_CMS);
         if (!Files.isDirectory(cmsDataDir)) {
             Files.createDirectory(cmsDataDir);
             logger.trace("Created overview page subdirectory: {}", cmsDataDir.toAbsolutePath().toString());
@@ -1619,7 +1637,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         if (StringUtils.isNotEmpty(htmlFragment)) {
             File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".xml");
             try {
-                FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
+                FileUtils.writeStringToFile(file, htmlFragment, StringTools.DEFAULT_ENCODING);
                 logger.debug("Wrote HTML fragment: {}", file.getName());
                 ret.add(file);
             } catch (IOException e) {
@@ -1636,7 +1654,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             }
             if (StringUtils.isNotEmpty(html)) {
                 File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
-                FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
+                FileUtils.writeStringToFile(file, html, StringTools.DEFAULT_ENCODING);
                 logger.debug("Wrote media content: {}", file.getName());
                 ret.add(file);
             }
@@ -1652,6 +1670,58 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Override
     public boolean hasMediaItem() {
         return this.mediaItem != null;
+    }
+    
+    /**
+     * @param groupBy the {@link #groupBy} to set
+     */
+    public void setGroupBy(String groupBy) {
+        this.groupBy = groupBy;
+    }
+    
+    /**
+     * @return the {@link #groupBy}
+     */
+    public String getGroupBy() {
+        return groupBy;
+    }
+    
+    /**
+     * 
+     * @return true if {@link #groupBy} is not blank an grouping should therefore be done
+     */
+    public boolean isGroupBySelected() {
+        return StringUtils.isNotBlank(this.groupBy);
+    }
+    
+    /**
+     * @return the geoMap
+     */
+    public GeoMap getGeoMap() {
+        return geoMap;
+    }
+    
+    /**
+     * @param geoMap the geoMap to set
+     */
+    public void setGeoMap(GeoMap geoMap) {
+        this.geoMap = geoMap;
+    }
+    
+    public Long getGeoMapId() {
+        if(this.geoMap == null)  {
+            return null;
+        } else {
+            return this.geoMap.getId();
+        }
+    }
+    
+    public void setGeoMapId(Long id) throws DAOException {
+        this.geoMap = DataManager.getInstance().getDao().getGeoMap(id);
+    }
+    
+    public boolean isPaginated() {
+        return ContentItemMode.paginated.equals(getMode());
     }
 
 }

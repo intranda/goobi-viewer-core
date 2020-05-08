@@ -25,11 +25,7 @@ import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Syntax validator for e-mail addresses.
@@ -48,7 +44,7 @@ public class EmailValidator implements Validator<String> {
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
         if (!validateEmailAddress(value)) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errlnvalid", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("email_errlnvalid", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }
@@ -65,7 +61,7 @@ public class EmailValidator implements Validator<String> {
      * @should not match invalid addresses
      * @return a boolean.
      */
-    protected static boolean validateEmailAddress(String email) {
+    public static boolean validateEmailAddress(String email) {
         if (email == null) {
             return false;
         }

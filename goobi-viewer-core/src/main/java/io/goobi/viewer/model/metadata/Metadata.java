@@ -42,10 +42,10 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -338,7 +338,7 @@ public class Metadata implements Serializable {
                 case WIKIPERSONFIELD:
                     if (value.contains(",")) {
                         // Find and remove additional information in a person's name
-                        Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
+                        Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
                         Matcher m = p.matcher(value);
                         while (m.find()) {
                             String cut = value.substring(m.start(), m.end());
@@ -361,7 +361,7 @@ public class Metadata implements Serializable {
                     break;
                 case TRANSLATEDFIELD:
                     // Values that are message keys
-                    value = Helper.getTranslation(value, locale);
+                    value = ViewerResourceBundle.getTranslation(value, locale);
                     // value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
                     value = value.replace("&lt;br /&gt;", "<br />");
@@ -453,7 +453,7 @@ public class Metadata implements Serializable {
                 if (mdValue.getParamValues().size() <= paramIndex) {
                     mdValue.getParamValues().add(paramIndex, new ArrayList<>());
                 }
-                mdValue.getParamValues().get(paramIndex).add(Helper.intern(value));
+                mdValue.getParamValues().get(paramIndex).add(StringTools.intern(value));
                 mdValue.getParamMasterValueFragments().add(paramIndex, origParam.getMasterValueFragment());
                 mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
                 mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
@@ -483,7 +483,7 @@ public class Metadata implements Serializable {
                 sbHierarchy.append('.');
             }
             sbHierarchy.append(s);
-            String displayValue = Helper.getTranslation(sbHierarchy.toString(), locale);
+            String displayValue = ViewerResourceBundle.getTranslation(sbHierarchy.toString(), locale);
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
             displayValue = StringEscapeUtils.escapeHtml4(displayValue);
             if (applicationUrl != null) {

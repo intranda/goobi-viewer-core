@@ -36,6 +36,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -456,6 +457,25 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSecurityQuestions()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getSecurityQuestions_shouldReturnAllConfiguredElements() throws Exception {
+        List<SecurityQuestion> result = DataManager.getInstance().getConfiguration().getSecurityQuestions();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        {
+            SecurityQuestion q = result.get(0);
+            Assert.assertEquals("user__security_question__1", q.getQuestionKey());
+            Assert.assertEquals(3, q.getCorrectAnswers().size());
+            Assert.assertTrue(q.getCorrectAnswers().contains("foo"));
+            Assert.assertTrue(q.getCorrectAnswers().contains("f00"));
+            Assert.assertTrue(q.getCorrectAnswers().contains("phoo"));
+        }
+    }
+
+    /**
      * @see Configuration#isShowOpenIdConnect()
      * @verifies return correct value
      */
@@ -850,15 +870,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSubthemeDiscriminatorField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("FACET_VIEWERSUBTHEME", DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
-    }
-
-    /**
-     * @see ConfigurationHelper#isSubthemeAutoSwitch()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemeAutoSwitch_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
     }
 
     /**
@@ -1263,6 +1274,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isShowRecordLabelIfNoOtherViews()
+     * @verifies return correct value
+     */
+    @Test
+    public void isShowRecordLabelIfNoOtherViews_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews());
+    }
+
+    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -1308,6 +1328,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSidebarOpacLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarOpacLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
+    }
+
+    /**
      * @see Configuration#isSidebarTocLinkVisible()
      * @verifies return correct value
      */
@@ -1341,15 +1370,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("SORT_DEFAULT1;SORT_DEFAULT2;SORT_DEFAULT3", DataManager.getInstance().getConfiguration().getDefaultSortField());
-    }
-
-    /**
-     * @see Configuration#isSubthemesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSubthemesEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSubthemesEnabled());
     }
 
     /**
@@ -2414,9 +2434,10 @@ public class ConfigurationTest extends AbstractTest {
     public void getDisplayAdditionalMetadataTranslateFields_shouldReturnCorrectValues() throws Exception {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields();
         Assert.assertNotNull(results);
-        Assert.assertEquals(2, results.size());
+        Assert.assertEquals(3, results.size());
         Assert.assertEquals(SolrConstants.DC, results.get(0));
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
+        Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
 
     /**
@@ -2709,7 +2730,7 @@ public class ConfigurationTest extends AbstractTest {
     public void testReadMapBoxToken() {
         Assert.assertEquals("some.token", DataManager.getInstance().getConfiguration().getMapBoxToken());
     }
-    
+
     @Test
     public void testGetLicenseDescriptions() {
         List<LicenseDescription> licenses = DataManager.getInstance().getConfiguration().getLicenseDescriptions();

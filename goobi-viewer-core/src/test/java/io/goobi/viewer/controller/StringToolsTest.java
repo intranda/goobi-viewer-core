@@ -23,10 +23,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.controller.StringTools;
-
 public class StringToolsTest {
 
     /**
@@ -118,7 +114,7 @@ public class StringToolsTest {
         Path file = Paths.get("src/test/resources/data/text_example_bad_classes.htm");
         Assert.assertTrue(Files.isRegularFile(file));
 
-        String html = FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+        String html = FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
         Assert.assertNotNull(html);
         Assert.assertTrue(html.contains(".20Formatvorlage"));
         Assert.assertTrue(html.contains("class=\"20Formatvorlage"));
@@ -171,5 +167,14 @@ public class StringToolsTest {
     @Test
     public void normalizeWebAnnotationCoordinates_shouldPreserveLegacyCoordinates() throws Exception {
         Assert.assertEquals("1, 2, 3, 4", StringTools.normalizeWebAnnotationCoordinates("1, 2, 3, 4"));
+    }
+
+    /**
+     * @see StringTools#generateMD5(String)
+     * @verifies hash string correctly
+     */
+    @Test
+    public void generateMD5_shouldHashStringCorrectly() throws Exception {
+        Assert.assertEquals("098f6bcd4621d373cade4e832627b4f6", StringTools.generateMD5("test"));
     }
 }

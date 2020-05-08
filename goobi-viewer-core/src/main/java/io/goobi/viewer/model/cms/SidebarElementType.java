@@ -38,7 +38,7 @@ public enum SidebarElementType {
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),
     cmsPageLinks("widgetCmsPageLinks", Category.pageLinks),
-    geoLocations("widgetGeoLocations", Category.geoLocations);
+    geoMap("widgetGeoMap", Category.geoMap);
 
     private final String label;
     private final Category type;
@@ -97,9 +97,9 @@ public enum SidebarElementType {
                 element = new CMSSidebarElement();
                 element.setLinkedPages(new PageList());
                 break;
-            case geoLocations:
+            case geoMap:
                 element = new CMSSidebarElement();
-                element.initGeolocations(new GeoLocationInfo());
+                element.setGeoMapId(-1l);
                 break;
             default:
                 element = new CMSSidebarElement();
@@ -114,7 +114,7 @@ public enum SidebarElementType {
         custom,
         fieldQuery,
         pageLinks,
-        geoLocations,
+        geoMap,
         search;
     }
 }

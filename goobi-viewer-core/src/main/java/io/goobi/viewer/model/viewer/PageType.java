@@ -77,6 +77,8 @@ public enum PageType {
     adminCmsMenuItems("admin/cms/menus"),
     adminCmsCollections("admin/cms/collections"),
     adminCmsEditCollection("admin/cms/collections/edit"),
+    adminCmsGeoMaps("admin/cms/maps"),
+    adminCmsGeoMapEdit("admin/cms/maps/edit"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

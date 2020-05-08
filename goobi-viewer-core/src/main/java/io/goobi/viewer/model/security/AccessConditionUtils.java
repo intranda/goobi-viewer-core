@@ -41,11 +41,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.monitoring.timer.Time;
-import de.intranda.monitoring.timer.TimeAnalysis;
-import de.intranda.monitoring.timer.TimeAnalysisItem;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -66,7 +63,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 public class AccessConditionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessConditionUtils.class);
-    
+
     /**
      * <p>
      * checkAccess.
@@ -243,7 +240,7 @@ public class AccessConditionUtils {
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
                 boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), query[0]);
+                        privilegeName, user, NetTools.getIpAddress(request), query[0]);
                 ret.put(pageFileName, access);
             }
             return ret;
@@ -280,7 +277,7 @@ public class AccessConditionUtils {
             }
             Map<String, Boolean> ret = new HashMap<>(page.getAccessConditions().size());
             boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), page.getAccessConditions(),
-                    privilegeName, user, Helper.getIpAddress(request), query);
+                    privilegeName, user, NetTools.getIpAddress(request), query);
             return access;
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -342,7 +339,7 @@ public class AccessConditionUtils {
                     }
                 }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
+                        privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
@@ -420,7 +417,7 @@ public class AccessConditionUtils {
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
                             ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    Helper.getIpAddress(request), sbQuery.toString()));
+                                    NetTools.getIpAddress(request), sbQuery.toString()));
                         }
                     }
                     long end = System.nanoTime();
@@ -506,7 +503,7 @@ public class AccessConditionUtils {
 
                 Map<String, Boolean> lokalAccessMap =
                         checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString(), files);
+                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, NetTools.getIpAddress(request), sbQuery.toString(), files);
                 accessMap.putAll(lokalAccessMap);
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -562,7 +559,7 @@ public class AccessConditionUtils {
                     }
                 }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
+                        privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
@@ -595,7 +592,7 @@ public class AccessConditionUtils {
             }
         }
         return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions, privilegeName, user,
-                Helper.getIpAddress(request), query);
+                NetTools.getIpAddress(request), query);
     }
 
     /**
@@ -824,7 +821,6 @@ public class AccessConditionUtils {
         if (licenseMap.isEmpty()) {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
         } else {
-
             for (String key : licenseMap.keySet()) {
                 List<LicenseType> relevantLicenseTypes = licenseMap.get(key);
                 requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
@@ -853,7 +849,7 @@ public class AccessConditionUtils {
                 } else {
                     // Check IP range
                     if (StringUtils.isNotEmpty(remoteAddress)) {
-                        if ((Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
+                        if ((NetTools.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || NetTools.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
                                 && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                             logger.debug("Access granted to localhost");
                             accessMap.put(key, Boolean.TRUE);
@@ -940,8 +936,7 @@ public class AccessConditionUtils {
             if (!requiredAccessConditions.contains(licenseType.getName())) {
                 continue;
             }
-            // Check whether the license type contains conditions that exclude the given record, in that case disregard this
-            // license type
+            // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
             if (StringUtils.isNotEmpty(licenseType.getProcessedConditions()) && StringUtils.isNotEmpty(query)) {
                 String conditions = licenseType.getProcessedConditions();
                 // logger.trace("License conditions: {}", conditions);
@@ -952,11 +947,9 @@ public class AccessConditionUtils {
                 } else {
                     sbQuery.append(" AND (").append(conditions).append(')');
                 }
-                // logger.trace("License relevance query: {}", sbQuery.toString());
+                logger.trace("License relevance query: {}", sbQuery.toString());
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the
-                    // license subquery.", licenseType
-                    // .getName(), query);
+                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
                     continue;
                 }
                 logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
@@ -993,18 +986,4 @@ public class AccessConditionUtils {
 
         return ret;
     }
-
-    //    /**
-    //     * Testing
-    //     * 
-    //     * @return
-    //     */
-    //    private static long getNumberOfOpenFiles() {
-    //        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-    //        if (os instanceof UnixOperatingSystemMXBean) {
-    //            return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
-    //        }
-    //
-    //        return -1;
-    //    }
 }

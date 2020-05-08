@@ -917,6 +917,123 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
         }.bind(this)
 });
 
+riot.tag2('collectionlist', '<div class="panel-group" role="tablist"><div if="{collections}" each="{collection, index in collections}" class="panel"><div class="panel-heading"><div class="panel-thumbnail"><img if="{collection.thumbnail}" class="img-responsive" riot-src="{collection.thumbnail[\'@id\']}"></div><h4 class="panel-title"><a if="{!hasChildren(collection)}" href="{collection.rendering[0][\'@id\']}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h4><div class="panel-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false"><div class="panel-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="panel-body__collection" href="{child.rendering[0][\'@id\']}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="panel-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', '', function(opts) {
+
+this.collections = this.opts.collections;
+
+this.on("mount", () => {
+    console.log("mounting collectionList", this.opts);
+    this.loadSubCollections();
+})
+
+this.loadSubCollections = function() {
+    let promises = [];
+
+    let subject = new Rx.Subject();
+    this.collections.forEach( child => {
+        fetch(child['@id'])
+        .then( result => result.json())
+        .then(json => {
+            child.members = json.members;
+            subject.next(child);
+        })
+        .catch( error => {
+           subject.error(error);
+        });
+    });
+
+    subject
+    .pipe(RxOp.debounceTime(100))
+    .subscribe( () => this.update())
+}.bind(this)
+
+this.getValue = function(element) {
+    return viewerJS.iiif.getValue(element, this.opts.language);
+}.bind(this)
+
+this.hasChildren = function(element) {
+    let count = viewerJS.iiif.getChildCollections(element);
+    return count > 0;
+}.bind(this)
+
+this.getChildren = function(collection) {
+    return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+}.bind(this)
+
+});
+
+
+riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h3 if="{set[0] != \'\'}">{translator.translate(set[0])}</h3><collectionlist collections="{set[1]}" language="{opts.language}" setindex="{index}"></collectionlist></div>', '', '', function(opts) {
+
+this.collectionSets = [];
+
+this.on("mount", () => {
+    console.log("mounting collectionView", this.opts);
+
+    this.fetchCollections()
+    .then( () => {
+        let keys = this.collectionSets.map(set => set[0]);
+        this.translator = new viewerJS.Translator(keys, this.opts.restapi, this.opts.language);
+    	return this.translator.init();
+    })
+    .then( () => {
+        this.update();
+    })
+})
+
+this.fetchCollections = function() {
+    let url = this.opts.url;
+    if(this.opts.baseCollection) {
+        url += this.opts.baseCollection + "/";
+    }
+    if(this.opts.grouping) {
+        url += "grouping/" + this.opts.grouping + "/";
+    }
+    return fetch(url)
+    .then( result => result.json())
+    .then( json => this.buildSets(json))
+    .then( sets => this.collectionSets = sets);
+}.bind(this)
+
+this.buildSets = function(collection) {
+    let map = new Map();
+    collection.members
+    .filter( member => viewerJS.iiif.isCollection(member))
+    .forEach( member => {
+        let tagList = viewerJS.iiif.getTags(member, "grouping");
+        if(tagList == undefined || tagList.length == 0) {
+            this.addToMap(map, "", member);
+        } else {
+            tagList.forEach(tag => {
+               this.addToMap(map, tag, member);
+            });
+        }
+    })
+    let entries = Array.from(map.entries());
+	entries.sort( (e1,e2) => {
+	   	 let key1 = e1[0];
+	   	 let key2 = e2[0];
+	   	 if(key1 == "" && key2 != "") {
+	   	     return 1;
+	   	 } else if(key2 == "" && key1 != "") {
+	   	     return -1;
+	   	 } else {
+	   	     return key1.localeCompare(key2);
+	   	 }
+	});
+    return entries;
+}.bind(this)
+
+this.addToMap = function(map, key, value) {
+    let list = map.get(key);
+    if(list === undefined) {
+        list = [];
+        map.set(key, list);
+    }
+    list.push(value);
+}.bind(this)
+
+});
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 
@@ -1024,10 +1141,8 @@ riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="ann
 
 
 this.question = this.opts.question;
-this.markerIdCounter = 1;
-this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 this.annotationToMark = null;
-this.markers = [];
+this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {
@@ -1043,21 +1158,25 @@ this.setView = function(view) {
 }.bind(this)
 
 this.resetFeatures = function() {
-    this.markerIdCounter = 1;
     this.setFeatures(this.question.annotations);
-    if(this.markers.length > 0) {
-   		this.setView(this.markers[0].view);
+    if(this.geoMap.getMarkerCount() > 0) {
+        let zoom = 12;
+        if(this.geoMap.getMarkerCount() == 1) {
+            let marker = this.geoMap.getMarker(this.question.annotations[0].markerId);
+            if(marker) {
+            	zoom = marker.feature.view.zoom;
+            }
+        }
+        let featureView = this.geoMap.getViewAroundFeatures(zoom);
+	    this.geoMap.setView(featureView);
     }
 }.bind(this)
 
 this.setFeatures = function(annotations) {
-    this.markers.forEach((marker) => {
-        marker.remove();
-    })
-    this.markers = [];
+    this.geoMap.resetMarkers();
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
-        let markerId = this.addGeoJson(anno.body);
-        anno.markerId = markerId;
+        let marker = this.geoMap.addMarker(anno.body);
+        anno.markerId = marker.getId();
     });
 }.bind(this)
 
@@ -1077,7 +1196,7 @@ this.updateAnnotation = function(anno) {
 this.focusAnnotation = function(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.getMarker(anno.markerId);
+        let marker = this.geoMap.getMarker(anno.markerId);
         if(marker) {
 	        console.log("focus ", anno, marker);
 
@@ -1114,130 +1233,72 @@ this.setNameFromEvent = function(event) {
 }.bind(this)
 
 this.initMap = function() {
-    this.map = new L.Map('geoMap_' + this.opts.index);
-    var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      minZoom: 0,
-      maxZoom: 20,
-      attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-    });
+    this.geoMap = new viewerJS.GeoMap({
+        mapId : "geoMap_" + this.opts.index,
+        initialView : {
+            zoom: 5,
+            center: [11.073397, 49.451993]
+        },
+        allowMovingFeatures: !this.opts.item.isReviewMode(),
+        language: Crowdsourcing.translator.language,
+        popover: undefined,
+        emptyMarkerMessage: undefined,
+        popoverOnHover: false,
+    })
+    this.geoMap.init();
 
-    this.map.setView(new L.LatLng(49.451993, 11.073397), 5);
-    this.map.addLayer(osm);
-
-    this.locations = L.geoJSON([], {
-        pointToLayer: function(geoJsonPoint, latlng) {
-            let marker = L.marker(latlng, {
-                draggable: !this.opts.item.isReviewMode()
-            });
-
-            marker.id = geoJsonPoint.id;
-            marker.view = geoJsonPoint.view;
-
-            marker.getId = function() {
-                return this.id;
+    this.geoMap.onFeatureMove.subscribe(feature => this.moveFeature(feature));
+    this.geoMap.onFeatureClick.subscribe(feature => this.removeFeature(feature));
+    this.geoMap.onMapClick.subscribe(geoJson => {
+        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.geoMap.getMarkerCount() < this.question.targetFrequency)) {
+            let marker = this.geoMap.addMarker(geoJson);
+            if(this.annotationToMark) {
+                this.annotationToMark.markerId = marker.getId();
+                this.updateFeature(marker.getId());
+            } else {
+            	this.addFeature(marker.getId());
             }
-
-            marker.on("dragend", function(event) {
-                var position = marker.getLatLng();
-                this.moveFeature(marker, position);
-            }.bind(this));
-
-            marker.on("click", function(event) {
-                this.removeFeature(marker);
-            }.bind(this));
-
-            this.markers.push(marker);
-
-            return marker;
-        }.bind(this)
-    }).addTo(this.map);
-
-    this.map.on("click", function(e) {
-        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency)) {
-	        var location= e.latlng;
-	        this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
 	        this.addMarkerActive = !this.question.isRegionTarget();
 	        if(this.question.areaSelector) {
 	            this.question.areaSelector.enableDrawer();
 	        }
         }
-    }.bind(this))
-
-}.bind(this)
-
-this.createGeoJson = function(location, zoom, center) {
-	let id = this.markerIdCounter++;
-    var geojsonFeature = {
-        	"type": "Feature",
-        	"id": id,
-        	"properties": {
-        		"name": "",
-        	},
-        	"geometry": {
-        		"type": "Point",
-        		"coordinates": [location.lng, location.lat]
-        	},
-        	"view": {
-        	    "zoom": zoom,
-        		"center": [location.lat, location.lng]
-        	}
-        };
-    this.locations.addData(geojsonFeature);
-    if(this.annotationToMark) {
-        this.annotationToMark.markerId = id;
-        this.updateFeature(id);
-    } else {
-    	this.addFeature(id);
-    }
+    })
 }.bind(this)
 
 this.getAnnotation = function(id) {
     return this.question.annotations.find(anno => anno.markerId == id);
 }.bind(this)
 
-this.getMarker = function(id) {
-    return this.markers.find(marker => marker.getId() == id);
-}.bind(this)
-
-this.addGeoJson = function(geoJson) {
-    let id = this.markerIdCounter++;
-    geoJson.id = id;
-    this.locations.addData(geoJson);
-    return id;
-}.bind(this)
-
 this.updateFeature = function(id) {
     let annotation = this.getAnnotation(id);
-    let marker = this.getMarker(annotation.markerId);
-    annotation.setBody(marker.toGeoJSON());
-    annotation.setView(marker.view);
+    let marker = this.geoMap.getMarker(annotation.markerId);
+    annotation.setBody(marker.feature);
+    annotation.setView(marker.feature.view);
     this.question.saveToLocalStorage();
 }.bind(this)
 
 this.addFeature = function(id) {
+    let marker = this.geoMap.getMarker(id);
     let annotation = this.question.addAnnotation();
     annotation.markerId = id;
-    let marker = this.getMarker(id);
-    annotation.setBody(marker.toGeoJSON());
-    annotation.setView(marker.view);
+    annotation.setBody(marker.feature);
+    annotation.setView(marker.feature.view);
     this.question.saveToLocalStorage();
 }.bind(this)
 
-this.moveFeature = function(marker, location) {
-    marker.setLatLng(location);
-    let annotation = this.getAnnotation(marker.getId());
+this.moveFeature = function(feature) {
+    let annotation = this.getAnnotation(feature.id);
     if(annotation) {
-        annotation.setGeometry(marker.toGeoJSON().geometry);
-        annotation.setView({zoom: this.map.getZoom(), center: [marker.getLatLng().lat, marker.getLatLng().lng]});
+        annotation.setGeometry(feature.geometry);
+        annotation.setView(feature.view);
     }
     this.question.saveToLocalStorage();
 }.bind(this)
 
-this.removeFeature = function(marker) {
-    marker.remove();
-    let index = this.markers.indexOf(marker);
-    this.markers.splice(index, 1);
-    let annotation = this.getAnnotation(marker.getId());
+this.removeFeature = function(feature) {
+    this.geoMap.removeMarker(feature);
+	let annotation = this.getAnnotation(feature.id);
     if(annotation) {
 	    this.question.deleteAnnotation(annotation);
 	    this.question.saveToLocalStorage();
@@ -1529,6 +1590,82 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 });
 
 
+
+riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="input_form__actions"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+
+ 	this.on("mount", () => {
+ 	    console.log("mount metadataEditor ", this.opts);
+ 	    this.currentLanguage = this.opts.currentLanguage;
+ 	    this.updateMetadataList(this.opts.metadata);
+ 	    this.focusInput();
+ 	    if(this.opts.provider) {
+ 	        this.opts.provider.subscribe( (metadata) => {
+ 	            this.updateMetadataList(metadata)
+ 	            this.update();
+ 	            this.focusInput();
+ 	        });
+ 	    }
+ 	})
+
+ 	this.focusInput = function() {
+ 	    if(Array.isArray(this.refs.input)) {
+ 	        this.refs.input[0].focus();
+ 	    } else if(this.refs.input) {
+ 	        this.refs.input.focus();
+ 	    }
+ 	}.bind(this)
+
+ 	this.updateMetadataList = function(metadataList) {
+ 	   this.metadataList = metadataList;
+ 	}.bind(this)
+
+ 	this.updateMetadata = function(event) {
+ 	    let metadata = event.item.metadata;
+ 	    if(!metadata.value) {
+ 	        metadata.value = {};
+ 	    }
+ 	    let value = event.target.value;
+ 	    if(value) {
+	 	    metadata.value[this.currentLanguage] = [event.target.value];
+ 	    } else {
+ 	       metadata.value[this.currentLanguage] = undefined;
+ 	    }
+ 	    if(this.opts.updateListener) {
+ 	       this.opts.updateListener.next(metadata);
+ 	    }
+ 	}.bind(this)
+
+ 	this.getValue = function(metadata) {
+ 	    if(metadata.value && metadata.value[this.currentLanguage]) {
+	 	    let value = metadata.value[this.currentLanguage][0];
+	 	    return value;
+ 	    } else {
+ 	        return "";
+ 	    }
+ 	}.bind(this)
+
+ 	this.setCurrentLanguage = function(event) {
+ 	    this.currentLanguage = event.item.language;
+ 	    this.update();
+ 	}.bind(this)
+
+ 	this.notifyDelete = function() {
+ 	    this.opts.deleteListener.next();
+ 	}.bind(this)
+
+ 	this.isEditable = function(metadata) {
+ 	    return metadata.editable === undefined || metadata.editable === true;
+ 	}.bind(this)
+
+ 	this.mayDelete = function() {
+ 	    editable = this.metadataList.find( md => this.isEditable(md));
+ 	    return editable !== undefined;
+ 	}.bind(this)
+
+});
+
+
+
 riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {
 
 		this.pages = [];
@@ -1807,3 +1944,62 @@ this.addAnnotation = function() {
 });
 
 
+riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{image.title}" name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
+
+		 this.on( 'mount', function() {
+		 	$(this.opts.button).on("click", this.updateRange);
+		 	this.imageList=[];
+		 	this.startDate = parseInt($(this.opts.startInput).val());
+		 	this.endDate = parseInt($(this.opts.endInput).val());
+		 	this.initSlider(this.opts.slider, this.startDate, this.endDate);
+		 });
+
+		 this.updateRange = function(event){
+			this.getTimematrix()
+		}.bind(this)
+		 this.getTimematrix = function(){
+
+		     var apiTarget = this.opts.contextPath;
+		     apiTarget += 'rest/records/timematrix/range/';
+		     apiTarget += $(this.opts.startInput).val();
+		     apiTarget += "/";
+		     apiTarget += $(this.opts.endInput).val();
+		     apiTarget += '/';
+		     apiTarget += $(this.opts.count).val();
+		     apiTarget += '/';
+
+		    opts.loading.show()
+			let fetchPromise = fetch(apiTarget);
+		    fetchPromise.then( function(result) {
+			    return result.json();
+			})
+			.then( function(json) {
+			    this.imageList=json;
+			    this.update()
+			    opts.loading.hide()
+			}.bind(this));
+		 }.bind(this)
+
+		 this.initSlider = function(sliderSelector, startDate, endDate) {
+		     let $slider = $(sliderSelector);
+
+	            $slider.slider( {
+	                range: true,
+	                min: parseInt( startDate ),
+	                max: parseInt( endDate ),
+	                values: [ startDate, endDate ],
+	                slide: function( event, ui ) {
+	                    $(this.opts.startInput).val( ui.values[ 0 ] ).change();
+	                    this.startDate = parseInt(ui.values[ 0 ]);
+	                    $(this.opts.endInput).val( ui.values[ 1 ] ).change();
+	                    this.endDate = parseInt(ui.values[ 1 ]);
+	                }.bind(this)
+	            } );
+
+	            $slider.find(".ui-slider-handle").on( 'mousedown', function() {
+	                $( '.ui-slider-handle' ).removeClass( 'top' );
+	                $( this ).addClass( 'top' );
+	            } );
+		 }.bind(this)
+
+});

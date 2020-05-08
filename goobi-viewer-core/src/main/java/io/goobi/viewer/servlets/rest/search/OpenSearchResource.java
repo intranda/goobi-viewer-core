@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -64,7 +64,7 @@ public class OpenSearchResource {
             String rootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
             String url = rootUrl + "/resources/opensearch/opensearch.xml";
             logger.trace(url);
-            xml = Helper.getWebContentGET(url);
+            xml = NetTools.getWebContentGET(url);
             xml = xml.replace("{name}", DataManager.getInstance().getConfiguration().getName())
                     .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
                     .replace("{applicationUrl}", rootUrl);

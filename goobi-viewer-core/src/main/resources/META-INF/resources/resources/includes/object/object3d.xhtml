@@ -11,9 +11,9 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image">        
+    <div id="objectContainer" class="view-object__object-3d">        
         <!-- MAP -->
-        <div id="imageMap" class="view-object__image-map">
+        <div id="world" class="view-object__object-3d-world">
             <div id="ajaxloader_image">
                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
             </div>
@@ -51,8 +51,8 @@
 <!--     <script src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/x3dom/x3dom.js"></script> -->
     <script type="text/javascript">
   		//<![CDATA[
-    	var imageMap = $( "#imageMap" );
-        var objectVisible = $( "#imageContainer" ).is( ":visible" );
+    	var worldElement = $( "#world" );
+        var objectVisible = $( "#objectContainer" ).is( ":visible" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessPermission3DObject};
         var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         
@@ -78,7 +78,7 @@
 	 			    }
 	 			},
 	    		container: {
-	    			id: "imageMap"
+	    			id: "world"
 	    		},
 		 };
                 
@@ -109,7 +109,7 @@
 	 		 })
 	 		
         } else if ( objectVisible ) {
-       		imageMap.append( accessDeniedMessage );
+            worldElement.append( accessDeniedMessage );
        	}
 
         function freeJSResources(data) {

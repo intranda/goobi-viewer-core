@@ -38,8 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -348,12 +348,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
      *
      * @param totalCount a long.
      * @param objects a {@link java.util.List} object.
-     * @return a {@link org.json.simple.JSONArray} object.
+     * @return a {@link org.json.JSONArray} object.
      */
-    @SuppressWarnings("unchecked")
     protected static JSONArray convertToJSON(long totalCount, List<? extends Harvestable> objects) {
         JSONArray jsonArray = new JSONArray();
-        jsonArray.add(totalCount);
+        jsonArray.put(totalCount);
         for (Harvestable o : objects) {
             JSONObject jsonObj = new JSONObject();
             jsonObj.put("id", o.getPi());
@@ -367,7 +366,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 jsonObj.put("du", 0);
                 logger.debug("{} has no dateUpdated", o.getPi());
             }
-            jsonArray.add(jsonObj);
+            jsonArray.put(jsonObj);
         }
 
         return jsonArray;

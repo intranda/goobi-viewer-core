@@ -24,18 +24,17 @@ import java.util.Map;
 import org.apache.http.client.ClientProtocolException;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
-import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
+import io.goobi.viewer.model.transkribus.TranskribusSession;
 
 /**
  * <p>
@@ -71,11 +70,10 @@ public class TranskribusUtils {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      * @throws org.jdom2.JDOMException if any.
-     * @throws org.json.simple.parser.ParseException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static TranskribusJob ingestRecord(String restApiUrl, TranskribusSession userSession, String pi, String metsResolverUrlRoot)
-            throws ClientProtocolException, IOException, HTTPException, JDOMException, ParseException, DAOException {
+            throws ClientProtocolException, IOException, HTTPException, JDOMException, DAOException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
@@ -196,9 +194,9 @@ public class TranskribusUtils {
         Map<String, String> params = new HashMap<>(2);
         params.put("user", userName);
         params.put("pw", password);
-        String response = Helper.getWebContentPOST(sbUrl.toString(), params, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null);
 
-        return XmlTools.getDocumentFromString(response, Helper.DEFAULT_ENCODING);
+        return XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
     }
 
     //    public static Document oauth(String endpoint, String clientId) {
@@ -221,10 +219,9 @@ public class TranskribusUtils {
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
-     * @throws org.json.simple.parser.ParseException if any.
      */
     public static String getCollectionId(String baseUrl, String sessionId, String collectionName)
-            throws ClientProtocolException, IOException, HTTPException, ParseException {
+            throws ClientProtocolException, IOException, HTTPException {
         logger.trace("getCollectionId: {}", collectionName);
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
@@ -238,12 +235,13 @@ public class TranskribusUtils {
 
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_COLLECTION_LIST);
         sbUrl.append("?JSESSIONID=").append(sessionId).append("&name=").append(collectionName);
-        String response = Helper.getWebContentGET(sbUrl.toString());
+        String response = NetTools.getWebContentGET(sbUrl.toString());
         if (response != null) {
-            JSONArray jsonArray = (JSONArray) new JSONParser().parse(response);
-            if (jsonArray != null) {
-                for (Object o : jsonArray) {
-                    JSONObject jsonObj = (JSONObject) o;
+            JSONTokener tokener = new JSONTokener(response);
+            JSONArray jsonArray = new JSONArray(tokener);
+            for (Object o : jsonArray) {
+                JSONObject jsonObj = (JSONObject) o;
+                if (jsonObj.has("colId")) {
                     Long collectionId = (Long) jsonObj.get("colId");
                     if (collectionId != null) {
                         return String.valueOf(collectionId);
@@ -287,7 +285,7 @@ public class TranskribusUtils {
         params.put("JSESSIONID", sessionId);
         //        params.put("collName", collectionName);
 
-        return Helper.getWebContentPOST(sbUrl.toString(), params, null);
+        return NetTools.getWebContentPOST(sbUrl.toString(), params, null);
     }
 
     /**
@@ -329,7 +327,7 @@ public class TranskribusUtils {
         //        params.put("userid", recipientUserId);
         //        params.put("role", "Editor");
         //        params.put("sendMail", String.valueOf(sendMail));
-        Helper.getWebContentPOST(sbUrl.toString(), params, null);
+        NetTools.getWebContentPOST(sbUrl.toString(), params, null);
         // Status 200 means success
         return true;
     }
@@ -371,10 +369,10 @@ public class TranskribusUtils {
         }
 
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CREATE_DOC_FROM_METS_URL.replace("{collId}", userCollectionId));
-        sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, Helper.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
+        sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, StringTools.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", session.getSessionId());
-        String response = Helper.getWebContentPOST(sbUrl.toString(), params, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null);
         TranskribusJob job = new TranskribusJob();
         job.setPi(pi);
         job.setOwnerId(session.getUserId());
@@ -403,10 +401,9 @@ public class TranskribusUtils {
      * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
-     * @throws org.json.simple.parser.ParseException if any.
      */
     protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
-            throws ClientProtocolException, IOException, HTTPException, ParseException {
+            throws ClientProtocolException, IOException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
         }
@@ -420,10 +417,11 @@ public class TranskribusUtils {
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CHECK_JOB_STATUS.replace("{id}", jobId).replace("{docId}", "TODO"))
                 .append("?JSESSIONID=")
                 .append(sessionId);
-        String response = Helper.getWebContentGET(sbUrl.toString());
+        String response = NetTools.getWebContentGET(sbUrl.toString());
         if (response != null) {
-            JSONObject jsonObj = (JSONObject) new JSONParser().parse(response);
-            if (jsonObj != null) {
+            JSONTokener tokener = new JSONTokener(response);
+            JSONObject jsonObj = new JSONObject(tokener);
+            if (jsonObj.has("state")) {
                 String state = (String) jsonObj.get("state");
                 logger.trace("State for job {}: {}", jobId, state);
                 if (state != null) {

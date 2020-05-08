@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Validates that any input text has no html-tags other than <br>
@@ -51,7 +51,7 @@ public class HtmlTagValidator implements Validator<String> {
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {
         if (!validate(input)) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("validate_error_invalidTag", null), "");
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("validate_error_invalidTag", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }
@@ -73,9 +73,9 @@ public class HtmlTagValidator implements Validator<String> {
                             .stream() //all tags within body
                             .skip(1) //skip body tag itself
                             .allMatch(element -> allowedTags.contains(element.tagName().toLowerCase())); //all tags have names contained in allowedTags
-        } else {
-            return true;
         }
+        
+        return true;
     }
 
 }

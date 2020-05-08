@@ -54,8 +54,10 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -126,6 +128,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int width = 0;
     /** Actual image/video height (if available). */
     private int height = 0;
+    /** Whether or not this page has image data. */
+    private boolean hasImage = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
     /** File name of the full-text document in the file system. */
@@ -152,6 +156,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private String previousCommentText;
     /** List of <code>StructElement</code>s contained on this page. */
     private List<StructElement> containedStructElements;
+    /** Content type of loaded fulltext **/
+    private String textContentType = null;
 
     /**
      * <p>
@@ -644,6 +650,64 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public boolean isDisplayImage() throws IndexUnreachableException, DAOException {
+        if (!hasImage) {
+            return false;
+        }
+        String filename = FileTools.getFilenameFromPathString(getFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES);
+    }
+
+    /**
+     * @return the hasImage
+     */
+    public boolean isHasImage() {
+        return hasImage;
+    }
+
+    /**
+     * @param hasImage the hasImage to set
+     */
+    public void setHasImage(boolean hasImage) {
+        this.hasImage = hasImage;
+    }
+
+    /**
+     * <p>
+     * isFulltextAvailableForPage.
+     * </p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isDisplayFulltext() throws IndexUnreachableException, DAOException {
+        if (!fulltextAvailable) {
+            return false;
+        }
+        String filename = FileTools.getFilenameFromPathString(getFulltextFileName());
+        if (StringUtils.isBlank(filename)) {
+            filename = FileTools.getFilenameFromPathString(getAltoFileName());
+        }
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+    }
+
+    /**
      * <p>
      * isFulltextAvailable.
      * </p>
@@ -664,6 +728,39 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public void setFulltextAvailable(boolean fulltextAvailable) {
         this.fulltextAvailable = fulltextAvailable;
     }
+
+    /**
+     * <p>
+     * isAltoAvailableForPage.
+     * </p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isAltoAvailable() throws IndexUnreachableException, DAOException {
+        String filename = FileTools.getFilenameFromPathString(getAltoFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+    }
+    
+    /**
+     * <p>
+     * isTeiAvailableForPage.
+     * </p>
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isTeiAvailable() throws IndexUnreachableException, DAOException {
+        return isDisplayFulltext();
+    }
+
 
     /**
      * <p>
@@ -752,6 +849,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return fullText;
     }
+    
+    /**
+     * 
+     * @return  The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
+     * @throws ViewerConfigurationException
+     */
+    public String getFulltextMimeType() throws ViewerConfigurationException {
+        if(textContentType == null) {
+            getFullText();
+        }
+        return textContentType;
+    }
 
     /**
      * <p>
@@ -784,9 +893,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
-        String url = Helper.buildFullTextUrl(fulltextFileName);
+        String url = DataFileTools.buildFullTextUrl(fulltextFileName);
         try {
-            return Helper.getWebContentGET(url);
+            String text = NetTools.getWebContentGET(url);
+            textContentType = FileTools.probeContentType(text);
+            return text;
         } catch (HTTPException e) {
             logger.error("Could not retrieve file from {}", url);
             logger.error(e.getMessage());
@@ -870,10 +981,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             logger.debug("Access denied for ALTO file {}", altoFileName);
             throw new AccessDeniedException("fulltextAccessDenied");
         }
-        String url = Helper.buildFullTextUrl(altoFileName);
+        String url = DataFileTools.buildFullTextUrl(altoFileName);
         logger.trace("ALTO URL: {}", url);
         try {
-            altoText = Helper.getWebContentGET(url);
+            altoText = NetTools.getWebContentGET(url);
+            //Text from alto is always plain text
+            textContentType = "text/plain";
             if (altoText != null) {
                 wordCoordsFormat = CoordsFormat.ALTO;
             }

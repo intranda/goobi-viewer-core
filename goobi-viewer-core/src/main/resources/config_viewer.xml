@@ -111,6 +111,21 @@
 		<!-- userRegistrationEnabled: If false, widgets for user registration are 
 			hidden. Default is true. -->
 		<userRegistrationEnabled>true</userRegistrationEnabled>
+		
+		<!-- securityQuestions: -->
+        <securityQuestions>
+            <question key="user__security_question__1">
+			    <allowedAnswer>blau</allowedAnswer>
+                <allowedAnswer>blue</allowedAnswer>
+                <allowedAnswer>azul</allowedAnswer>
+            </question>
+            <question key="user__security_question__2">
+                <allowedAnswer>6</allowedAnswer>
+                <allowedAnswer>sechs</allowedAnswer>
+                <allowedAnswer>six</allowedAnswer>
+            </question>
+        </securityQuestions>
+		
 		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element 
 			defines an authentication provider. Required attributes: name, endpoint (auth 
 			URL), clientId, clientSecret, image. -->
@@ -354,8 +369,8 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="haab2"
-			discriminatorField="DOCSTRCT" autoSwitch="false" addFilterQuery="false"
+		<theme mainTheme="reference" discriminatorField="DOCSTRCT"
+			autoSwitch="false" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
 				mechanism needs the root path of the theme. The path must be defined down 
@@ -1229,6 +1244,11 @@
 			<collapseLengthThreshold lowestLevelToTest="2">0
 			</collapseLengthThreshold>
 		</sidebarToc>
+		
+		<!-- opac: If true, the OPAC link from the current record will be displayed. Default is false. -->
+		<opac>
+		    <visible>true</visible>
+		</opac>
 	</sidebar>
 
 	<!-- ##### VARIOUS OPTIONS ##### -->

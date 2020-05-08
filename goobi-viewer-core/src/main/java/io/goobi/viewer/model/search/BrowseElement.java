@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,11 +38,10 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -55,8 +54,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
-import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
@@ -89,7 +88,7 @@ public class BrowseElement implements Serializable {
     private String docStructType;
     private long iddoc;
     private String thumbnailUrl;
-    private boolean thumbnailAccessDenied = false;
+    //    private boolean thumbnailAccessDenied = false;
     private int imageNo;
     @JsonIgnore
     private String volumeNo = null;
@@ -102,8 +101,8 @@ public class BrowseElement implements Serializable {
     private boolean hasImages = false;
     @JsonIgnore
     private boolean hasMedia = false;
-    //    @JsonIgnore
-    //    private boolean useOverviewPage = false;
+    @JsonIgnore
+    private boolean showThumbnail = false;
     @JsonIgnore
     private long numVolumes = 0;
     private String pi;
@@ -227,7 +226,7 @@ public class BrowseElement implements Serializable {
                                             new Metadata(anchorStructElement.getDocStructType(), null,
                                                     new MetadataParameter(MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(),
                                                             null, null, null, null, false, false, false, Collections.emptyList()),
-                                                    Helper.intern(anchorLabel)));
+                                                    StringTools.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -244,7 +243,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
                                     topStructElement.getDocStructType(), null, null, null, null, false, false, false, Collections.emptyList()),
-                                    Helper.intern(topstructLabel)));
+                                    StringTools.intern(topstructLabel)));
                 }
             }
         }
@@ -314,7 +313,7 @@ public class BrowseElement implements Serializable {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                             }
                         }
-                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(Helper.intern(value)), null,
+                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                         count++;
                     }
@@ -346,9 +345,9 @@ public class BrowseElement implements Serializable {
             logger.error("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
             return;
         }
-        pi = Helper.intern(pi);
+        pi = StringTools.intern(pi);
         iddoc = structElement.getLuceneId();
-        logId = Helper.intern(structElement.getMetadataValue(SolrConstants.LOGID));
+        logId = StringTools.intern(structElement.getMetadataValue(SolrConstants.LOGID));
         volumeNo = structElement.getVolumeNo();
         if (StringUtils.isEmpty(volumeNo)) {
             volumeNo = structElement.getVolumeNoSort();
@@ -410,15 +409,17 @@ public class BrowseElement implements Serializable {
         // Thumbnail
         String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
         if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-            thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
+            thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
         }
 
         //check if we have images
-        hasImages = !isAnchor() && this.mimeType.startsWith("image");
+        hasImages = !isAnchor() && (this.mimeType.startsWith("image") || structElement.isHasImages());
 
         //..or if we have video or audio
         hasMedia = !hasImages && !isAnchor()
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
+
+        showThumbnail = hasImages || hasMedia || isAnchor();
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -517,12 +518,12 @@ public class BrowseElement implements Serializable {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(docFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    // highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                    // "$1" + translatedValue + "$3");
-                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(translatedValue, searchTerms.get(termsFieldName));
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                            "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
@@ -545,12 +546,12 @@ public class BrowseElement implements Serializable {
                         for (String fieldValue : fieldValues) {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
-                                // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
-                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    // highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                    // "$1" + translatedValue + "$3");
-                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(translatedValue, searchTerms.get(termsFieldName));
+                                // Translate values for certain fields, keeping the highlighting
+                                if (translateFields != null && (translateFields.contains(termsFieldName)
+                                        || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                            "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
@@ -613,7 +614,7 @@ public class BrowseElement implements Serializable {
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
                     }
-                    ret = Helper.getTranslation(ret, locale);
+                    ret = ViewerResourceBundle.getTranslation(ret, locale);
                     break;
                 case EVENT:
                     // Try to use the event name or type (optionally with dates), otherwise use LABEL
@@ -633,12 +634,12 @@ public class BrowseElement implements Serializable {
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
                     }
-                    ret = Helper.getTranslation(ret, locale);
+                    ret = ViewerResourceBundle.getTranslation(ret, locale);
                     break;
                 case UGC:
                     // User-generated content
                     ret = DisplayUserGeneratedContent.generateUgcLabel(se);
-                    ret = Helper.getTranslation(ret, locale);
+                    ret = ViewerResourceBundle.getTranslation(ret, locale);
                     break;
                 default:
                     ret = generateDefaultLabel(se, locale);
@@ -702,7 +703,7 @@ public class BrowseElement implements Serializable {
             }
         }
         if (StringUtils.isEmpty(ret)) {
-            ret = Helper.getTranslation(se.getDocStructType(), locale);
+            ret = ViewerResourceBundle.getTranslation(se.getDocStructType(), locale);
         }
 
         return ret;
@@ -955,6 +956,20 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the showThumbnail
+     */
+    public boolean isShowThumbnail() {
+        return showThumbnail;
+    }
+
+    /**
+     * @param showThumbnail the showThumbnail to set
+     */
+    public void setShowThumbnail(boolean showThumbnail) {
+        this.showThumbnail = showThumbnail;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>numVolumes</code>.
      * </p>
@@ -1174,17 +1189,6 @@ public class BrowseElement implements Serializable {
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
-    }
-
-    /**
-     * <p>
-     * isThumbnailAccessDenied.
-     * </p>
-     *
-     * @return the thumbnailAccessDenied
-     */
-    public boolean isThumbnailAccessDenied() {
-        return thumbnailAccessDenied;
     }
 
     /**

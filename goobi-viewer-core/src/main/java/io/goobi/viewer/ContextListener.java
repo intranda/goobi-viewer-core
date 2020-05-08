@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -24,24 +23,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
-import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 
@@ -69,7 +63,7 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("Launching {}", Helper.getVersion());
+        logger.info("Launching {}", DataManager.getVersion());
         DataManager.getInstance();
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         // Add a "member" role, if not yet in the database
@@ -144,6 +138,6 @@ public class ContextListener implements ServletContextListener {
         }
 
         // Shut all loggers down to prevent memory leaks when re-deploying the context
-        LogManager.shutdown();
+        // LogManager.shutdown();
     }
 }

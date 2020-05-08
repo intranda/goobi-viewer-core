@@ -16,15 +16,12 @@
 package io.goobi.viewer.controller;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collections;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.output.XMLOutputter;
-import org.jdom2.transform.XSLTransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +48,7 @@ public class TEITools {
             return null;
         }
 
-        Document doc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
+        Document doc = XmlTools.getDocumentFromString(tei, StringTools.DEFAULT_ENCODING);
         if (doc == null) {
             return null;
         }
@@ -89,7 +86,7 @@ public class TEITools {
             return null;
         }
 
-        Document teiDoc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
+        Document teiDoc = XmlTools.getDocumentFromString(tei, StringTools.DEFAULT_ENCODING);
         Document htmlDoc = XmlTools.transformViaXSLT(teiDoc,
                 DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/html5/html5.xsl", null);
         if (htmlDoc != null) {
@@ -99,52 +96,4 @@ public class TEITools {
         return null;
     }
 
-    /**
-     * <p>
-     * convertDocxToTei.
-     * </p>
-     *
-     * @param docxFile a {@link java.nio.file.Path} object.
-     * @should convert docx to tei correctly
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    public static String convertDocxToTei(Path docxFile) throws IOException {
-        if (docxFile == null) {
-            throw new IllegalArgumentException("docxFile may not be null");
-        }
-
-        //        try (InputStream in = new FileInputStream(docxFile.toFile()); XWPFDocument document = new XWPFDocument(in);
-        //                OutputStream out = new ByteArrayOutputStream();) {
-        //
-        //                  XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
-        //                        XHTMLConverter.getInstance().convert(document, out, options);
-        //            
-        //    
-        //            return out.toString();
-        //        }
-
-        //      XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
-        //            XHTMLConverter.getInstance().convert(document, out, options);
-
-        // TODO Unzip docxFile
-        try {
-            String wordDirectory = "C:/digiverso/viewer/temp/docx/";
-            Document docxDoc = XmlTools.readXmlFile(wordDirectory + "word/document.xml");
-
-            Document teiDoc = XmlTools.transformViaXSLT(docxDoc,
-                    DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/docx/from/docxtotei.xsl",
-                    Collections.singletonMap("word-directory", wordDirectory));
-            if (teiDoc != null) {
-                return new XMLOutputter().outputString(teiDoc);
-            }
-        } catch (XSLTransformException e) {
-            logger.error(e.getMessage(), e);
-        } catch (JDOMException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return null;
-    }
 }

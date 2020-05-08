@@ -23,12 +23,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.model.search.FacetItem;
 
-public class FacetItemTest {
+public class FacetItemTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
@@ -99,6 +99,16 @@ public class FacetItemTest {
         Assert.assertEquals("FIELD:[foo TO bar]", item.getQueryEscapedLink());
     }
 
+    //    /**
+    //     * @see FacetItem#getQueryEscapedLink()
+    //     * @verifies construct polygon link correctly
+    //     */
+    //    @Test
+    //    public void getQueryEscapedLink_shouldConstructPolygonLinkCorrectly() throws Exception {
+    //        FacetItem item = new FacetItem("WKT_COORDS:0 0, 0 90, 90 90, 90 0, 0 0", false);
+    //        Assert.assertEquals("WKT_:\"IsWithin(POLYGON((0 0, 0 90, 90 90, 90 0, 0 0))) distErrPct=0\"", item.getQueryEscapedLink());
+    //    }
+
     /**
      * @see FacetItem#generateFacetItems(String,Map,boolean,boolean,boolean)
      * @verifies sort items correctly
@@ -137,5 +147,32 @@ public class FacetItemTest {
         Assert.assertEquals("foo", item.getValue());
         Assert.assertEquals("bar", item.getValue2());
         Assert.assertEquals("foo - bar", item.getFullValue());
+    }
+
+    /**
+     * @see FacetItem#getEscapedValue(String)
+     * @verifies escape value correctly
+     */
+    @Test
+    public void getEscapedValue_shouldEscapeValueCorrectly() throws Exception {
+        Assert.assertEquals("\\(foo\\)", FacetItem.getEscapedValue("(foo)"));
+    }
+
+    /**
+     * @see FacetItem#getEscapedValue(String)
+     * @verifies add quotation marks if value contains space
+     */
+    @Test
+    public void getEscapedValue_shouldAddQuotationMarksIfValueContainsSpace() throws Exception {
+        Assert.assertEquals("\"foo\\ bar\"", FacetItem.getEscapedValue("foo bar"));
+    }
+
+    /**
+     * @see FacetItem#getEscapedValue(String)
+     * @verifies preserve leading and trailing quotation marks
+     */
+    @Test
+    public void getEscapedValue_shouldPreserveLeadingAndTrailingQuotationMarks() throws Exception {
+        Assert.assertEquals("\"IsWithin\\(foobar\\)\\ disErrPct=0\"", FacetItem.getEscapedValue("\"IsWithin(foobar) disErrPct=0\""));
     }
 }

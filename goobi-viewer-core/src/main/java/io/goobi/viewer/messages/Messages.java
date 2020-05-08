@@ -21,8 +21,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 
-import io.goobi.viewer.controller.Helper;
-
 /**
  * <p>
  * Messages class.
@@ -136,7 +134,7 @@ public class Messages {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String inMessage, Locale locale, String... messageParams) {
-        String translatedMessage = Helper.getTranslation(inMessage, locale);
+        String translatedMessage = ViewerResourceBundle.getTranslation(inMessage, locale);
         for (int i = 0; i < messageParams.length; i++) {
             //two replacements to handle both placeholders with and without numbers
             translatedMessage = translatedMessage.replace("{" + i + "}", messageParams[i]);

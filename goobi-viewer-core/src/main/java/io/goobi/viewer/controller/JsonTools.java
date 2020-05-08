@@ -25,8 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +58,12 @@ public class JsonTools {
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a {@link org.json.simple.JSONArray} object.
+     * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    @SuppressWarnings("unchecked")
     public static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
@@ -87,7 +87,7 @@ public class JsonTools {
             }
 
             JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-            jsonArray.add(jsonObj);
+            jsonArray.put(jsonObj);
         }
 
         return jsonArray;
@@ -98,13 +98,12 @@ public class JsonTools {
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a {@link org.json.simple.JSONArray} object.
+     * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    @SuppressWarnings("unchecked")
     public static JSONArray getDateCentricRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
@@ -129,28 +128,29 @@ public class JsonTools {
             }
 
             JSONObject jsonObj = getRecordJsonObject(doc, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-            jsonArrayUngrouped.add(jsonObj);
+            jsonArrayUngrouped.put(jsonObj);
         }
 
         // Group records by their import date
         String currentDateString = null;
         JSONObject currentDateJsonObject = null;
-        for (int i = 0; i < jsonArrayUngrouped.size(); ++i) {
+        for (int i = 0; i < jsonArrayUngrouped.length(); ++i) {
             JSONObject jsonObject = (JSONObject) jsonArrayUngrouped.get(i);
-            //            logger.debug(jsonObject.toJSONString());
-            Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
-            if (dateCreatedTimestamp == null) {
+            //            logger.debug(jsonObject.toString());
+            try {
+                Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
+                String dateString = DateTools.formatterISO8601Date.print(dateCreatedTimestamp);
+                if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
+                    currentDateString = dateString;
+                    currentDateJsonObject = new JSONObject();
+                    currentDateJsonObject.put("date", dateString);
+                    jsonArray.put(currentDateJsonObject);
+                }
+                currentDateJsonObject.put("entry" + i, jsonObject);
+            } catch (JSONException e) {
                 logger.warn(jsonObject.get("id") + " has no " + SolrConstants.DATECREATED + " value.");
                 continue;
             }
-            String dateString = DateTools.formatterISO8601Date.print(dateCreatedTimestamp);
-            if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
-                currentDateString = dateString;
-                currentDateJsonObject = new JSONObject();
-                currentDateJsonObject.put("date", dateString);
-                jsonArray.add(currentDateJsonObject);
-            }
-            currentDateJsonObject.put("entry" + i, jsonObject);
         }
 
         return jsonArray;
@@ -179,7 +179,6 @@ public class JsonTools {
      * @return a {@link org.json.simple.JSONObject} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    @SuppressWarnings("unchecked")
     public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language) throws ViewerConfigurationException {
         JSONObject jsonObj = new JSONObject();
 

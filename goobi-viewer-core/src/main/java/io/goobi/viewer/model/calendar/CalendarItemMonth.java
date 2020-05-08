@@ -18,8 +18,6 @@ package io.goobi.viewer.model.calendar;
 import java.io.Serializable;
 import java.util.List;
 
-import io.goobi.viewer.controller.Helper;
-
 /**
  * <p>
  * CalendarItemMonth class.

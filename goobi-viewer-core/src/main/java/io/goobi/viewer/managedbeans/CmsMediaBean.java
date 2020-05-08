@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -40,22 +39,21 @@ import javax.persistence.RollbackException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
-import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -189,7 +187,7 @@ public class CmsMediaBean implements Serializable {
                                 }
 
                                 List<CMSCategory> categories = userBean.getUser().getAllowedCategories(getAllMediaCategories());
-                                this.items = stream.map(item -> new CategorizableTranslatedSelectable<CMSMediaItem>(item, false,
+                                this.items = stream.map(item -> new CategorizableTranslatedSelectable<>(item, false,
                                         item.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()),
                                         item.wrapCategories(categories))).collect(Collectors.toList());
                                 reloadNeeded = false;
@@ -206,55 +204,6 @@ public class CmsMediaBean implements Serializable {
         dataProvider.addFilter(GENERAL_FILTER);
         dataProvider.addFilter(FILENAME_FILTER);
         return dataProvider;
-    }
-
-    /**
-     * @param mediaFile2
-     * @param contentType
-     * @return false if the content type is html or xml and the file contains the string "<script" (case insensitive)
-     * @throws IOException
-     */
-    @Deprecated
-    private static boolean validate(File file, String contentType) throws IOException {
-        if (CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
-            String content = FileUtils.readFileToString(file, "UTF-8");
-            return !content.toLowerCase().contains("<script");
-        }
-
-        return true;
-    }
-
-    /**
-     * @param contentType
-     * @param fileName
-     * @return true if supported; false otherwise
-     * @should return true for tiff
-     * @should return true for jpeg
-     * @should return true for jpeg 2000
-     * @should return true for png
-     * @should return true for docx
-     */
-    @Deprecated
-    private static boolean isValidMediaType(String contentType, String fileName) {
-        logger.trace("isValidMediaType: {} - {}", contentType, fileName);
-        switch (contentType) {
-            case "image/tiff":
-            case "image/jpeg":
-            case "image/jp2":
-            case "image/png":
-            case CMSMediaItem.CONTENT_TYPE_DOC: // RTF
-            case CMSMediaItem.CONTENT_TYPE_DOCX:
-            case CMSMediaItem.CONTENT_TYPE_HTML:
-            case CMSMediaItem.CONTENT_TYPE_RTF:
-            case CMSMediaItem.CONTENT_TYPE_RTF2:
-            case CMSMediaItem.CONTENT_TYPE_RTF3:
-            case CMSMediaItem.CONTENT_TYPE_RTF4:
-            case CMSMediaItem.CONTENT_TYPE_XML:
-                return true;
-            default:
-                logger.warn("Unsupported media type: {}", contentType);
-                return false;
-        }
     }
 
     /**
@@ -500,7 +449,7 @@ public class CmsMediaBean implements Serializable {
         StringBuilder sbUri = new StringBuilder();
         sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
         try {
-            String ret = Helper.getWebContentGET(sbUri.toString());
+            String ret = NetTools.getWebContentGET(sbUri.toString());
             return ret;
         } catch (ClientProtocolException e) {
             logger.error(e.getMessage(), e);
@@ -610,7 +559,6 @@ public class CmsMediaBean implements Serializable {
             if (media.getId() == null) {
                 DataManager.getInstance().getDao().addCMSMediaItem(media);
             } else {
-                media.processMediaFile(media.getFilePath());
                 DataManager.getInstance().getDao().updateCMSMediaItem(media);
             }
         }

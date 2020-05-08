@@ -24,7 +24,7 @@
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
-    
+        
     // default variables
     var _debug = false;
     
@@ -380,16 +380,48 @@ var viewerJS = ( function( viewer ) {
             } else {
                 return undefined;
             }
-        }
+        },
+        
+        executeFunctionByName: function(functionName, context /*, args */) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            var namespaces = functionName.split(".");
+            var func = namespaces.pop();
+            for(var i = 0; i < namespaces.length; i++) {
+              context = context[namespaces[i]];
+            }
+            return context[func].apply(context, args);
+         },
+         getFunctionByName: function(functionName, context) {
+             var namespaces = functionName.split(".");
+             var func = namespaces.pop();
+             for(var i = 0; i < namespaces.length; i++) {
+               context = context[namespaces[i]];
+             }
+             return context[func];
+          }
 
     };
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
     
+    viewer.getMapBoxToken = function() {
+        if(typeof mapBoxToken != "undefined") {
+            return mapBoxToken;
+        } else {
+            return undefined; 
+        }
+        
+    }   
+    
     viewer.getMetadataValue = function(object, language) {
+        if(typeof object === "string") {
+            return object;
+        } else if(Array.isArray(object) && object.length > 0 && typeof object[0] === "string") {
+            return object.join(" ");
+        }
         return viewer.getOrElse([language, 0], object);
     }   
-        
+
     viewer.getOrElse = function(p, o) {  
         var reducer = function(xs, x) {
             return (xs && xs[x]) ? xs[x] : ((xs && xs[Object.keys(xs)[0]]) ? xs[Object.keys(xs)[0]] : null);
@@ -428,6 +460,8 @@ var viewerJS = ( function( viewer ) {
     viewer.unique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
+    
+
 
     
     return viewer;

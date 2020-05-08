@@ -361,7 +361,7 @@ public class CMSPageLanguageVersion {
      * Generates complete content item list for this page language version. The language version must be added to a CMS page before calling this
      * method!
      */
-    protected void generateCompleteContentItemList() {
+    public void generateCompleteContentItemList() {
         if (getOwnerPage() == null) {
             throw new IllegalArgumentException("Cannot generate content item list unless this language version is already added to a CMS page");
         }

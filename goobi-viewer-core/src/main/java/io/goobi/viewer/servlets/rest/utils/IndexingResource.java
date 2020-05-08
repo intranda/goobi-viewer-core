@@ -28,13 +28,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -87,7 +87,6 @@ public class IndexingResource {
      * @param params a {@link io.goobi.viewer.servlets.rest.utils.IndexingRequestParameters} object.
      * @return Short summary of files created
      */
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/deleterecord")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -100,7 +99,7 @@ public class IndexingResource {
         if (params == null || StringUtils.isEmpty(params.getPi())) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
-            return ret.toJSONString();
+            return ret.toString();
         }
 
         if (workerThread == null || !workerThread.isAlive()) {
@@ -113,7 +112,7 @@ public class IndexingResource {
                             ret.put("status", HttpServletResponse.SC_FORBIDDEN);
                             ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure_volumes_present", null));
                         }
-                        if (Helper.deleteRecord(params.getPi(), params.isCreateTraceDocument(),
+                        if (IndexerTools.deleteRecord(params.getPi(), params.isCreateTraceDocument(),
                                 Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                             ret.put("status", HttpServletResponse.SC_OK);
                             ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_success", null));
@@ -148,6 +147,6 @@ public class IndexingResource {
             ret.put("message", "Record deletion currently in progress");
         }
 
-        return ret.toJSONString();
+        return ret.toString();
     }
 }

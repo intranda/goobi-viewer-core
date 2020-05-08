@@ -42,10 +42,10 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -76,7 +76,7 @@ public class TocMaker {
             SolrConstants.LABEL, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBNAIL,
             SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE };
 
-    private static Pattern patternVolumeLabel = Pattern.compile(Helper.REGEX_BRACES);
+    private static Pattern patternVolumeLabel = Pattern.compile(StringTools.REGEX_BRACES);
 
     /**
      * Returns a list of fields to be used as the field filter for Solr queries. The list constists of statically defined fields in REQUIRED_FIELDS
@@ -748,18 +748,18 @@ public class TocMaker {
                         // Docstruct fallback should always be translated
                         String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
                         value = ViewerResourceBundle.getTranslations(docstruct);
-                        //                        value.setValue(Helper.getTranslation(docstruct, null));
+                        //                        value.setValue(ViewerResourceBundle.getTranslation(docstruct, null));
                     }
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);
                 // logger.trace("param value: {}", param.getKey());
                 if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
-                    String prefix = Helper.getTranslation(param.getPrefix(), null);
+                    String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
                     value.addPrefix(prefix);
                 }
                 if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
-                    String suffix = Helper.getTranslation(param.getSuffix(), null);
+                    String suffix = ViewerResourceBundle.getTranslation(param.getSuffix(), null);
                     value.addSuffix(suffix);
                 }
                 Set<String> languages = new HashSet<>(value.getLanguages());

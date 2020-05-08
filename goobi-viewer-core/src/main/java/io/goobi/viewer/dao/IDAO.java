@@ -39,6 +39,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -1958,4 +1959,55 @@ public interface IDAO {
      */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
 
+    /**
+     * Get the {@link GeoMap} of the given mapId
+     * 
+     * @param mapId
+     * @return  The GeoMap of the given id or else null
+     */
+    public GeoMap getGeoMap(Long mapId) throws DAOException;
+    
+    /**
+     * Get all {@link GeoMap}s in database
+     * 
+     * @return  A list of all stored GeoMaps
+     * @throws DAOException
+     */
+    public List<GeoMap> getAllGeoMaps() throws DAOException;
+    
+    /**
+     * Add the given map to the database if no map of the same id already exists
+     * 
+     * @param map
+     * @return  true if successfull
+     * @throws DAOException
+     */
+    public boolean addGeoMap(GeoMap map) throws DAOException;
+    
+    /**
+     * Update the given {@link GeoMap} in the database
+     * 
+     * @param map
+     * @return  true if successfull
+     * @throws DAOException
+     */
+    public boolean updateGeoMap(GeoMap map) throws DAOException;
+    
+    /**
+     * Delete the given {@link GeoMap} from the database
+     * 
+     * @param map
+     * @return  true if successfull
+     * @throws DAOException
+     */
+    public boolean deleteGeoMap(GeoMap map) throws DAOException;
+
+    /**
+     * Return a list of CMS-pages embedding the given map
+     * 
+     * @param map
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
 }

@@ -33,8 +33,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -236,15 +236,15 @@ public class EPUBDownloadJob extends DownloadJob {
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        File metsFile = new File(Helper.getSourceFilePath(pi + ".xml", SolrConstants._METS));
-        String mediaRepository = Helper.getDataRepositoryPathForRecord(pi);
+        File metsFile = new File(DataFileTools.getSourceFilePath(pi + ".xml", SolrConstants._METS));
+        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
         HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(),
                 CmsBean.getCurrentLocale().getLanguage(), "", priority, "", title, mediaRepository, "VIEWEREPUB", downloadIdentifier,
                 "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
         try {
             JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());
-            if (response.get("STATUS").equals("ERROR")) {
+            if (response.has("STATUS") && response.get("STATUS").equals("ERROR")) {
                 if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
                     logger.debug("Job is already being processed");
                 } else {

@@ -41,9 +41,9 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -365,7 +365,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * @param pageUrl2
      * @return
      */
-    private boolean isOnSameRessource(String url) {
+    private static boolean isOnSameRessource(String url) {
         return url.startsWith("#");
     }
 
@@ -752,10 +752,10 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     
     public String getAssociatedSubtheme() {
         if(cmsPage != null && StringUtils.isNotBlank(cmsPage.getSubThemeDiscriminatorValue())) {
-            return Helper.getTranslation(cmsPage.getSubThemeDiscriminatorValue());
-        } else {
-            return "";
+            return ViewerResourceBundle.getTranslation(cmsPage.getSubThemeDiscriminatorValue(), null);
         }
+        
+        return "";
     }
 
 }

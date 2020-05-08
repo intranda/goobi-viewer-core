@@ -5,6 +5,7 @@
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/(\w+|-)$" trailingSlash="append" />
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
+	<rewrite match="/admin/cms/maps/edit/?$" substitute="/admin/cms/maps/"/>
 	
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
@@ -22,11 +23,6 @@
 		<pattern value="/index/" />
 		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-	</url-mapping>
-	<url-mapping id="index1">
-		<pattern value="/index/#{subThemeDiscriminatorValue:navigationHelper.subThemeDiscriminatorValue}/" />
-		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	
@@ -792,6 +788,23 @@
     <url-mapping id="adminCmsCategories">
         <pattern value="/admin/cms/categories/" />
         <view-id value="/resources/cms/adminCmsCategories.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <!-- CMS GeoMaps -->
+    <url-mapping id="adminCmsGeoMaps">
+        <pattern value="/admin/cms/maps/" />
+		<view-id value="/resources/cms/adminCmsGeoMaps.xhtml" />        
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsGeoMapNew">
+        <pattern value="/admin/cms/maps/new/" />
+        <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{geoMapBean.createEmptyCurrentMap()}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsGeoMapEdit">
+        <pattern value="/admin/cms/maps/edit/#{mapId:geoMapBean.currentMapId}/" />
+        <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     

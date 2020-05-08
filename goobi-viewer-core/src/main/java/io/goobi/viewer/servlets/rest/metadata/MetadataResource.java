@@ -28,8 +28,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -51,7 +51,7 @@ public class MetadataResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>
+     * <p>  
      * getTagsForPageJson.
      * </p>
      *
@@ -61,7 +61,6 @@ public class MetadataResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/{query}/{fields}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -77,10 +76,10 @@ public class MetadataResource {
                 for (String field : fieldsSplit) {
                     jsonObj.put(field, doc.getFieldValue(field));
                 }
-                jsonArray.add(jsonObj);
+                jsonArray.put(jsonObj);
             }
         }
 
-        return jsonArray.toJSONString();
+        return jsonArray.toString();
     }
 }

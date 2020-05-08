@@ -47,6 +47,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.Description;
@@ -101,6 +102,7 @@ public class RssResource {
 
         return rss;
     }
+    
     
     /**
      * Returns the RSS feed containing the @numHits most recently indexed objects which match the given filterQuery
@@ -285,6 +287,7 @@ public class RssResource {
 
         return rss;
     }
+
 
     /**
      * <p>

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.viewer;
+package io.goobi.viewer.model.termbrowsing;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     private final String field;
     private final String sortField;
     private final List<String> filterQueries = new ArrayList<>(3);
+    private final boolean translate;
 
     /**
      * Constructor.
@@ -43,16 +44,18 @@ public class BrowsingMenuFieldConfig implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @param sortField a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
+     * @param translate
      * @param docstructFilterString a {@link java.lang.String} object.
      * @param recordsAndAnchorsOnly a boolean.
      */
-    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, @Deprecated String docstructFilterString,
+    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, boolean translate, @Deprecated String docstructFilterString,
             @Deprecated boolean recordsAndAnchorsOnly) {
         this.field = field;
         this.sortField = sortField;
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
         }
+        this.translate = translate;
 
         setDocstructFilterString(docstructFilterString);
         setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
@@ -89,6 +92,13 @@ public class BrowsingMenuFieldConfig implements Serializable {
      */
     public List<String> getFilterQueries() {
         return filterQueries;
+    }
+
+    /**
+     * @return the translate
+     */
+    public boolean isTranslate() {
+        return translate;
     }
 
     /**

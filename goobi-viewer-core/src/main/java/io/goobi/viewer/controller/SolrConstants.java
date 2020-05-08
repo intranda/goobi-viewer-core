@@ -17,6 +17,8 @@ package io.goobi.viewer.controller;
 
 import java.util.Locale;
 
+import io.goobi.viewer.messages.ViewerResourceBundle;
+
 /**
  * This class provides constants for Lucene in alphabetical order.
  */
@@ -57,7 +59,7 @@ public class SolrConstants {
         }
 
         public String getLabel(Locale locale) {
-            return Helper.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
+            return ViewerResourceBundle.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
         }
     }
 
@@ -259,6 +261,8 @@ public class SolrConstants {
     /** Constant <code>OPEN_ACCESS_VALUE="OPENACCESS"</code> */
     public static final String OPEN_ACCESS_VALUE = "OPENACCESS";
 
+    /** Constant <code>WKT_="WKT_"</code> */
+    public static final String WKT_ = "WKT_";
     /** Constant <code>GROUPID_="GROUPID_"</code> */
     public static final String GROUPID_ = "GROUPID_";
     /** Constant <code>GROUPORDER_="GROUPORDER_"</code> */
@@ -301,5 +305,11 @@ public class SolrConstants {
     public static final String MD_BODY = "MD_BODY"; //body of UGC docs from json annotations
     /** Field containing true if a record has a right-to-left reading direction. */
     public static final String BOOL_DIRECTION_RTL = "BOOL_DIRECTION_RTL";
+    /** Field containing true if a page or any of the record's pages has an image. */
+    public static final String BOOL_IMAGEAVAILABLE = "BOOL_IMAGEAVAILABLE";
+    /** Field containing a list of dates as year **/
+    public static final String YEAR = "YEAR";
+    /** Single field containing a date as year for sorting**/
+    public static final String SORTNUM_YEAR = "SORTNUM_YEAR";
 
 }

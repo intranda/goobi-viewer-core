@@ -24,7 +24,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * <p>
@@ -32,16 +32,16 @@ import io.goobi.viewer.controller.Helper;
  * </p>
  */
 @FacesValidator("cmsTitleValidator")
-public class CMSTitleValidator implements Validator {
+public class CMSTitleValidator implements Validator<String> {
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
     /** {@inheritDoc} */
     @Override
-    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        if (!validate((String) value)) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("cms_errTitle", null), "");
+    public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
+        if (!validate(value)) {
+            FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("cms_errTitle", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
         }

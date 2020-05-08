@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -51,11 +51,13 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -361,7 +363,7 @@ public class AdminBean implements Serializable {
         // Do not allow the same nickname being used for multiple users
         User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(currentUser.getNickName()); // This basically resets all changes
         if (nicknameOwner != null && nicknameOwner.getId() != currentUser.getId()) {
-            Messages.error(Helper.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
+            Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
             currentUser = copy;
             currentUser.setNickName(copy.getCopy().getNickName());
             return "adminUser";
@@ -1429,7 +1431,7 @@ public class AdminBean implements Serializable {
 
         Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
         try {
-            String metsFilePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
+            String metsFilePath = DataFileTools.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
             Document doc = XmlTools.readXmlFile(metsFilePath);
             if (doc == null || doc.getRootElement() == null) {
                 logger.error("Invalid METS file: {}", metsFilePath);
@@ -1520,7 +1522,7 @@ public class AdminBean implements Serializable {
 
     public void triggerMessage(String message) {
         logger.debug("Show message " + message);
-        Messages.info(Helper.getTranslation(message, null));
+        Messages.info(ViewerResourceBundle.getTranslation(message, null));
 
     }
 }

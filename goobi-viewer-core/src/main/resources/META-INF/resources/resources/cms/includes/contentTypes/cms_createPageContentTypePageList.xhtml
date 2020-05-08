@@ -56,6 +56,7 @@
     </div>
 
     <!-- ITEM COUNT -->
+    <ui:fragment rendered="#{contentItem.paginated}">
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
             <label for="pageListItemCount">#{msg.cms_itemCount}:</label>
@@ -93,7 +94,8 @@
             </button>
         </div>
     </div>
-
+	</ui:fragment>
+	
     <!-- CATEGORIES AS HEADER -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -101,7 +103,7 @@
         </div>
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="pageListCategoriesAsHeaderGroup">
+            <h:panelGroup layout="block" id="pageListCategoriesAsHeaderGroup" styleClass="cms-module__option-checkbox">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
                     <h:messages for="pageListCategoriesAsHeader" 

@@ -1,0 +1,124 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsGeoMaps')}" />
+        </f:metadata>
+    </ui:define>
+
+    <!-- CONTENT -->
+    <ui:define name="content">
+        <ui:fragment id="cmsGeoMaps" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
+            <div id="cmsGeoMaps">
+                <h:form id="addGeoMapForm">
+                	<h2 class="admin__content-inner-title">#{msg.cms__geomaps__title}
+	                	<h:commandButton styleClass="btn btn--default" action="pretty:adminCmsGeoMapNew" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
+	                    </h:commandButton>
+                	</h2>
+                </h:form>
+
+                <div class="admin__content-inner-content">
+                	<div class="admin__content-inner-content__description">
+               			<ui:fragment rendered="#{geoMapBean.hasMaps}">
+               				<h:outputText escape="false" value="#{msg.cms__geomaps__description}"></h:outputText>
+               			</ui:fragment>
+               			<ui:fragment rendered="#{!geoMapBean.hasMaps}">
+               				<h:outputText escape="false" value="#{msg.cms__geomaps__description__no_content}"></h:outputText>
+               			</ui:fragment>
+               		</div>
+                    <h:form id="cmsGeoMapsForm" prependId="false">
+                    	<div class="admin__content-inner-content__entity_list entity_list">
+	                    	<ui:repeat value="#{geoMapBean.allMaps}" var="map" varStatus="status">
+	                    		<div class="entity_list__item">
+	                    			<div class="entity_list__item__area area__left">
+		                    			<div class="entity_list__item__header">
+			                    			<h3>#{map.title}</h3>
+			                    			<div class="entity_list__item__header__tags">
+	<!-- 		                    				<a  -->
+	<!-- 				                               id="oEmbedLink"  -->
+	<!-- 				                               class="label label-default"  -->
+	<!-- 				                               data-copy="oembed"  -->
+	<!-- 				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}"  -->
+	<!-- 				                               data-copy-done="#{msg.copyUrlDone}" -->
+	<!-- 				                               title="#{msg.copyUrl}">  -->
+	<!-- 				                               #{msg.oEmbed} -->
+	<!-- 				                           </a>  -->
+			                    			</div>
+		                    			</div>
+		                    			<div class="entity_list__item__content">
+		                    				<div class="entity_list__item__content__label">#{msg.type}:</div>
+		                    				<div class="entity_list__item__content__value">#{msg['label__geomap_type__'.concat(map.type)]}</div>
+		                    				<ui:fragment rendered="#{map.description.length() > 0}">
+			                    				<div class="entity_list__item__content__label">#{msg.description}:</div>
+			                    				<div class="entity_list__item__content__value">#{map.description}</div>
+		                    				</ui:fragment>
+		                    				
+		                    				<ui:fragment rendered="#{geoMapBean.isInUse(map)}">
+			                    				<div class="entity_list__item__content__label">#{msg.label__usage}:</div>
+			                    				<div class="entity_list__item__content__value">
+			                    					<ui:repeat var="cmsPage" value="#{geoMapBean.getEmbeddingCmsPages(map)}">
+			                    						<div class="entity_list__item__content__subvalue">
+			                    							<a href="#{cmsPage.pageUrl}">#{cmsPage.title}</a>
+			                    						</div>
+			                    					</ui:repeat>
+			                    				</div>
+		                    				</ui:fragment>
+		                    			</div>
+		                    			<div class="entity_list__item__controls">
+			                    			<ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
+				                    			<h:commandLink styleClass="btn btn--clean delete" 
+				                    			onclick="if ( !confirm( &quot;#{msg.confirm__delete_map}&quot; ) ) { return false };" 
+				                    			value="#{msg.delete}" action="#{geoMapBean.deleteMap(map)}">
+				                    			</h:commandLink>
+			                    			</ui:fragment>
+			                    			<h:outputLink styleClass="btn btn--link" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}
+			                    			</h:outputLink>
+			                    		</div>
+			                    	</div>
+			                    	<div class="entity_list__item__area area__right">
+			                    		<div id="geomap_#{map.id}" class="entity_list__item__map"></div>
+			                    		<script type="text/javascript">	  
+								            $(document).ready( () => {	
+								                
+								            	let geoMap = new viewerJS.GeoMap({
+								            	    popover: undefined,
+								            	    mapId: "geomap_#{map.id}",
+								            	    fixed: true
+								            	});
+								            	let view = #{map.initialView};
+								            	let features = #{map.featuresAsString};
+								            	console.log("init map with ", view, features);
+								            	geoMap.init();
+								            	geoMap.setView(view);
+								            	features.forEach(feature => {
+								            	    geoMap.addMarker(feature);
+								            	})
+								            	geoMap.setView(geoMap.getViewAroundFeatures());
+								            })
+									        </script>
+			                    	</div>
+	                    		</div>
+	                    	</ui:repeat>
+                    	</div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+    </ui:define>
+
+    <!-- SIDEBAR -->
+    <ui:define name="sidebar">
+        <adminWidget:widget_admin />
+        <adminWidget:widget_crowdsourcing />
+        <adminWidget:widget_cms />
+    </ui:define>
+</ui:composition>

@@ -99,6 +99,7 @@ module.exports = function (grunt) {
 			viewer: {
 				src: [
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
+					'<%=src.jsDevFolderModules %>viewer/viewerJS.helper.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js',
@@ -154,9 +155,12 @@ module.exports = function (grunt) {
                             "tinymce/plugins" : "tinymce/",
                             "tinymce/skins" : "tinymce/",
                             "tinymce/themes" : "tinymce/",
-                            "tinymce/tinymce.min.js" : "tinymce/"
+                            "tinymce/tinymce.min.js" : "tinymce/",
+                            "leaflet/dist/leaflet.js" : "leaflet/"
                         },
                         css : {
+                            "leaflet/dist/leaflet.css" : "leaflet/",
+                            "leaflet/dist/images" : "leaflet"
                         }
                     }
                 },

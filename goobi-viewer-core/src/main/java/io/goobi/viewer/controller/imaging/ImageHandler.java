@@ -32,8 +32,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -124,7 +124,7 @@ public class ImageHandler {
         if (isExternalUrl(path)) {
             url = path;
         } else {
-            url = Helper.getDataFilePath(page.getPi(), DataManager.getInstance().getConfiguration().getMediaFolder(), null, page.getFilepath())
+            url = DataFileTools.getDataFilePath(page.getPi(), DataManager.getInstance().getConfiguration().getMediaFolder(), null, page.getFilepath())
                     .toUri()
                     .toString();
         }

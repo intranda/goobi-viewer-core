@@ -16,13 +16,10 @@
 package io.goobi.viewer.servlets.rest.content;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +31,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,16 +41,14 @@ import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -100,7 +96,6 @@ public class NormdataResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if any.
      */
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/get/{url}/{template}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -109,7 +104,7 @@ public class NormdataResource {
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         logger.trace("getNormData: {}", url);
         if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
         Locale locale = Locale.getDefault();
@@ -129,6 +124,7 @@ public class NormdataResource {
         // logger.debug("norm data locale: {}", locale.toString());
 
         url = BeanUtils.unescapeCriticalUrlChracters(url.trim());
+        logger.trace("url: {}", url);
         String secondUrl = null;
         if (url.contains("$")) {
             String[] urlSplit = url.split("[$]");
@@ -138,13 +134,13 @@ public class NormdataResource {
             }
         }
 
-        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(url);
-        if (marcRecord == null) {
+        Record record = NormDataImporter.getSingleRecord(url);
+        if (record == null) {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        List<NormData> normDataList = marcRecord.getNormDataList();
-        if (normDataList == null) {
+        List<NormData> normDataList = record.getNormDataList();
+        if (normDataList == null || normDataList.isEmpty()) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
         }
@@ -169,18 +165,18 @@ public class NormdataResource {
         // Explorative mode to return all available fields
         if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
             for (NormData normData : normDataList) {
-                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
-            return jsonArray.toJSONString();
+            return jsonArray.toString();
         }
 
         List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
         // Missing template config - add all fields
         if (normdataFields.isEmpty()) {
             for (NormData normData : normDataList) {
-                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
-            return jsonArray.toJSONString();
+            return jsonArray.toString();
         }
         // Use template config
         for (String field : normdataFields) {
@@ -188,22 +184,31 @@ public class NormdataResource {
                 if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
                     continue;
                 }
-                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
         }
 
-        return jsonArray.toJSONString();
+        return jsonArray.toString();
     }
 
-    @SuppressWarnings("unchecked")
-    JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
+    /**
+     * 
+     * @param normData
+     * @param locale
+     * @return
+     * @should add values correctly
+     */
+    static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();
-        String translation = Helper.getTranslation(normData.getKey(), locale);
+        String translation = ViewerResourceBundle.getTranslation(normData.getKey(), locale);
         String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
         for (NormDataValue value : normData.getValues()) {
-            List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
-            if (jsonObj.get(translatedKey) == null) {
-                valueList = new ArrayList<>();
+            JSONArray valueList;
+            try {
+                valueList = (JSONArray) jsonObj.get(translatedKey);
+
+            } catch (JSONException e) {
+                valueList = new JSONArray();
                 jsonObj.put(translatedKey, valueList);
             }
             Map<String, String> valueMap = new HashMap<>();
@@ -227,12 +232,12 @@ public class NormdataResource {
             if (value.getLabel() != null) {
                 valueMap.put("label", value.getLabel());
             }
-            valueList.add(valueMap);
+            valueList.put(valueMap);
             // If no text found, use the identifier
             if (valueMap.get("text") == null) {
                 valueMap.put("text", valueMap.get("identifier"));
             }
-            //                                logger.debug(jsonObj.toJSONString());
+            //                                logger.debug(jsonObj.toString());
         }
 
         return jsonObj;
