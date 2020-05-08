@@ -784,6 +784,10 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
+        lastName = null;
+        securityAnswer = null;
+        securityQuestion = null;
+        
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
@@ -808,6 +812,12 @@ public class UserBean implements Serializable {
             Messages.error("user__security_question_wrong");
             logFailedUserRegistration();
             logger.debug("Wrong security question answer.");
+            return "";
+        }
+        // Check whether the invisible field lastName has been filled (real users cannot do that)
+        if (StringUtils.isNotEmpty(lastName)) {
+            logFailedUserRegistration();
+            logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
         try {

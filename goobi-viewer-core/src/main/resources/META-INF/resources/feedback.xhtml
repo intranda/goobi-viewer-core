@@ -48,11 +48,16 @@
                         </h:inputText>
                     </div>
 					<!-- E-MAIL -->
-					<div class="form-group">
+					<div class="form-group" if="emailGroup">
+                        <h:messages for="feedbackEmail" 
+                            infoClass="cms-module__option-message-status success" 
+                            warnClass="cms-module__option-message-status warning"
+                            errorClass="cms-module__option-message-status danger" />
 						<label for="feedbackEmail" class="col-sm-2 control-label">#{msg.email}:</label>
 						<div class="col-sm-10">
 							<h:inputText id="feedbackEmail" styleClass="form-control" value="#{userBean.feedback.email}" required="true" requiredMessage="#{msg.errFeedbackEmailRequired}">
 								<f:validator validatorId="emailValidator" />
+                                <f:ajax render="emailGroup" />
 							</h:inputText>
 						</div>
 					</div>
