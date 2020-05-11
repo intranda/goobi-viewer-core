@@ -78,17 +78,22 @@
 						</div>
 					</div>
 				</ui:fragment>
-				<!-- SECURITY QUESTION -->
+                <!-- SECURITY QUESTION -->
                 <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
-                    <div class="form-group hidden">
+                    <div class="form-group">
                         <h:messages for="feedbackSecurityQuestion" 
                             infoClass="cms-module__option-message-status success" 
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-                        <label for="feedbackURL" class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
+                        <label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
                         <div class="col-sm-10">
-                            <h:inputText id="feedbackURL" styleClass="form-control" value="#{userBean.securityAnswer}"
-                                required="true" requiredMessage="#{msg.user__security_question_required_msg}" />
+                            <h:inputSecret 
+                                id="feedbackSecurityQuestion" 
+                                styleClass="form-control" 
+                                autocomplete="off"
+                                value="#{userBean.securityAnswer}" 
+                                required="true"
+                                requiredMessage="#{msg.user__security_question_required_msg}" />
                         </div>
                     </div>
                 </ui:fragment>
