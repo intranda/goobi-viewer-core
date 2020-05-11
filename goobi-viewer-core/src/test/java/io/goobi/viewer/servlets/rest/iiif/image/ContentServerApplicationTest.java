@@ -52,9 +52,6 @@ public class ContentServerApplicationTest {
         //    			new File(ContentServerConfiguration.getBaseBathAsString(), "contentServerConfig.xml").isFile());
         File sampleFile = new File("stuff/images and more/multivolume_thumbnail.png");
         sampleFileName = "file://" + sampleFile.getAbsolutePath();
-        sampleFileName = sampleFileName.replaceAll("\\s", "%20");
-        sampleFileName = sampleFileName.replace("\\", "/");
-        //        sampleFileName = new URI(sampleFileName).toString();
 
         requestURI = new URI("http://intranda/viewer/iiif");
 
@@ -82,7 +79,7 @@ public class ContentServerApplicationTest {
     public void testResolveAbsoluteURI() throws ContentLibException, UnsupportedEncodingException {
         ImageResource service = new ImageResource(request, "-", URLEncoder.encode(sampleFileName, "utf-8"));
         Assert.assertEquals(requestURI.toString() + "/image/-/" + URLEncoder.encode(sampleFileName, "utf-8"), service.getResourceURI().toString());
-        Assert.assertEquals(sampleFileName, service.getImageURI().toString());
+        Assert.assertEquals(sampleFileName.replaceAll("\\s", "%20"), service.getImageURI().toString());
     }
 
 }
