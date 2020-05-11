@@ -49,11 +49,11 @@
                     </div>
 					<!-- E-MAIL -->
 					<div class="form-group">
-					    <h:panelGroup  id="emailGroup">
-                            <h:messages for="feedbackEmail" 
-                                infoClass="cms-module__option-message-status success" 
-                                warnClass="cms-module__option-message-status warning"
-                                errorClass="cms-module__option-message-status danger" />
+					    <h:panelGroup id="emailGroup">
+<!--                             <h:messages for="feedbackEmail"  -->
+<!--                                 infoClass="cms-module__option-message-status success"  -->
+<!--                                 warnClass="cms-module__option-message-status warning" -->
+<!--                                 errorClass="cms-module__option-message-status danger" /> -->
 						    <label for="feedbackEmail" class="col-sm-2 control-label">#{msg.email}:</label>
 						    <div class="col-sm-10">
 							    <h:inputText id="feedbackEmail" styleClass="form-control" value="#{userBean.feedback.email}"
@@ -89,11 +89,11 @@
                     <!-- SECURITY QUESTION -->
                      <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
                         <div class="form-group">
-                            <h:messages for="feedbackSecurityQuestion" 
-                                infoClass="cms-module__option-message-status success" 
-                                warnClass="cms-module__option-message-status warning"
-                                errorClass="cms-module__option-message-status danger" />
-                            <label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
+<!--                             <h:messages for="feedbackSecurityQuestion"  -->
+<!--                                 infoClass="cms-module__option-message-status success"  -->
+<!--                                 warnClass="cms-module__option-message-status warning" -->
+<!--                                 errorClass="cms-module__option-message-status danger" /> -->
+                            <label for="feedbackSecurityQuestion" class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
                             <div class="col-sm-10">
                                 <h:inputSecret 
                                     id="feedbackSecurityQuestion" 
