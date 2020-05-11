@@ -1695,6 +1695,50 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
+     * @should delete comments for pi correctly
+     * @should delete comments for user correctly
+     * @should delete comments for pi and user correctly
+     * @should not delete anything if both pi and creator are null
+     */
+    @Override
+    public int deleteComments(String pi, User owner) throws DAOException {
+        if (StringUtils.isEmpty(pi) && owner == null) {
+            return 0;
+        }
+
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(80);
+        sbQuery.append("DELETE FROM Comment o WHERE o.parent IS NULL AND ");
+        if (StringUtils.isNotEmpty(pi)) {
+            sbQuery.append("o.pi = :pi");
+        }
+        if (owner != null) {
+            if (StringUtils.isNotEmpty(pi)) {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append("o.owner = :owner");
+        }
+        
+        try {
+            EntityManager em = factory.createEntityManager();
+            Query q = em.createQuery(sbQuery.toString());
+            if (StringUtils.isNotEmpty(pi)) {
+                q.setParameter("pi", pi);
+            }
+            if (owner != null) {
+                q.setParameter("owner", owner);
+            }
+            em.getTransaction().begin();
+            int rows = q.executeUpdate();
+            em.getTransaction().commit();
+            return rows;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
      * {@inheritDoc}
      *
      * Gets all page numbers (order) within a work with the given pi which contain comments

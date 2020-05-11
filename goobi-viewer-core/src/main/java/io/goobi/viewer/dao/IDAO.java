@@ -540,7 +540,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<UserRole> getAllUserRoles() throws DAOException;
-    
+
     /**
      * <p>
      * getUserRoleCount.
@@ -930,6 +930,15 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteComment(Comment comment) throws DAOException;
+
+    /**
+     * 
+     * @param pi Record identifier
+     * @param owner Comment creator
+     * @return Number of affected rows
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public int deleteComments(String pi, User owner) throws DAOException;
 
     // Search
 
@@ -1976,41 +1985,41 @@ public interface IDAO {
      * Get the {@link GeoMap} of the given mapId
      * 
      * @param mapId
-     * @return  The GeoMap of the given id or else null
+     * @return The GeoMap of the given id or else null
      */
     public GeoMap getGeoMap(Long mapId) throws DAOException;
-    
+
     /**
      * Get all {@link GeoMap}s in database
      * 
-     * @return  A list of all stored GeoMaps
+     * @return A list of all stored GeoMaps
      * @throws DAOException
      */
     public List<GeoMap> getAllGeoMaps() throws DAOException;
-    
+
     /**
      * Add the given map to the database if no map of the same id already exists
      * 
      * @param map
-     * @return  true if successfull
+     * @return true if successfull
      * @throws DAOException
      */
     public boolean addGeoMap(GeoMap map) throws DAOException;
-    
+
     /**
      * Update the given {@link GeoMap} in the database
      * 
      * @param map
-     * @return  true if successfull
+     * @return true if successfull
      * @throws DAOException
      */
     public boolean updateGeoMap(GeoMap map) throws DAOException;
-    
+
     /**
      * Delete the given {@link GeoMap} from the database
      * 
      * @param map
-     * @return  true if successfull
+     * @return true if successfull
      * @throws DAOException
      */
     public boolean deleteGeoMap(GeoMap map) throws DAOException;

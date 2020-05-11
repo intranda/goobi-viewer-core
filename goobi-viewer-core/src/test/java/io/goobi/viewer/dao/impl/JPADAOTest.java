@@ -763,8 +763,57 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteComment(comment));
         Assert.assertNull(DataManager.getInstance().getDao().getComment(1));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size()); // Should cascade to child
-                                                                                            // comments
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size()); // Should cascade to child comments
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies delete comments for pi correctly
+     */
+    @Test
+    public void deleteComments_shouldDeleteCommentsForPiCorrectly() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(4, DataManager.getInstance().getDao().deleteComments("PI 1", null));
+        Assert.assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies delete comments for user correctly
+     */
+    @Test
+    public void deleteComments_shouldDeleteCommentsForUserCorrectly() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments(null, user));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies delete comments for pi and user correctly
+     */
+    @Test
+    public void deleteComments_shouldDeleteCommentsForPiAndUserCorrectly() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments("PI 1", user));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#deleteComments(String,User)
+     * @verifies not delete anything if both pi and creator are null
+     */
+    @Test
+    public void deleteComments_shouldNotDeleteAnythingIfBothPiAndCreatorAreNull() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        Assert.assertEquals(0, DataManager.getInstance().getDao().deleteComments(null, null));
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     // Search

@@ -437,9 +437,11 @@ public class AdminBean implements Serializable {
             return;
         }
 
-        logger.debug("Deleting user: " + user.getDisplayName());
+        logger.debug("Deleting user: {}", user.getDisplayName());
         if (deleteContributions) {
             // TODO delete comments, CS content, etc.
+            int comments = DataManager.getInstance().getDao().deleteComments(null, user);
+            logger.debug("{} comments deleted.", comments);
             if (DataManager.getInstance().getDao().deleteUser(user)) {
                 Messages.info("deletedSuccessfully");
             } else {
