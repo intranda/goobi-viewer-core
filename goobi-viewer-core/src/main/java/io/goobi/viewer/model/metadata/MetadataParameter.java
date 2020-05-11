@@ -16,8 +16,8 @@
 package io.goobi.viewer.model.metadata;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,16 +82,17 @@ public class MetadataParameter implements Serializable {
     private static final long serialVersionUID = 8010945394600637854L;
 
     private MetadataParameterType type;
-    private final String source;
-    private final String key;
-    private final String masterValueFragment;
-    private final String defaultValue;
-    private final String prefix;
-    private final String suffix;
-    private final boolean addUrl;
-    private final boolean topstructValueFallback;
-    private final boolean topstructOnly;
-    private final List<MetadataReplaceRule> replaceRules;
+    private String source;
+    private String key;
+    private String altKey;
+    private String masterValueFragment;
+    private String defaultValue;
+    private String prefix;
+    private String suffix;
+    private boolean addUrl = false;
+    private boolean topstructValueFallback = false;
+    private boolean topstructOnly = false;
+    private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
 
     /*
      * (non-Javadoc)
@@ -141,38 +142,6 @@ public class MetadataParameter implements Serializable {
 
     /**
      * <p>
-     * Constructor for MetadataParameter.
-     * </p>
-     *
-     * @param type a {@link io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType} object.
-     * @param source a {@link java.lang.String} object.
-     * @param key a {@link java.lang.String} object.
-     * @param masterValueFragment a {@link java.lang.String} object.
-     * @param defaultValue a {@link java.lang.String} object.
-     * @param prefix a {@link java.lang.String} object.
-     * @param suffix a {@link java.lang.String} object.
-     * @param addUrl a boolean.
-     * @param topstructValueFallback a boolean.
-     * @param topstructOnly a boolean.
-     * @param replaceRules a {@link java.util.Map} object.
-     */
-    public MetadataParameter(MetadataParameterType type, String source, String key, String masterValueFragment, String defaultValue, String prefix,
-            String suffix, boolean addUrl, boolean topstructValueFallback, boolean topstructOnly, List<MetadataReplaceRule> replaceRules) {
-        this.type = type;
-        this.source = source;
-        this.key = key;
-        this.masterValueFragment = masterValueFragment;
-        this.defaultValue = defaultValue;
-        this.prefix = prefix;
-        this.suffix = suffix;
-        this.replaceRules = replaceRules;
-        this.addUrl = addUrl;
-        this.topstructValueFallback = topstructValueFallback;
-        this.topstructOnly = topstructOnly;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>source</code>.
      * </p>
      *
@@ -180,6 +149,15 @@ public class MetadataParameter implements Serializable {
      */
     public String getSource() {
         return source;
+    }
+
+    /**
+     * @param source the source to set
+     * @return this
+     */
+    public MetadataParameter setSource(String source) {
+        this.source = source;
+        return this;
     }
 
     /**
@@ -199,9 +177,11 @@ public class MetadataParameter implements Serializable {
      * </p>
      *
      * @param type the type to set
+     * @return this
      */
-    public void setType(MetadataParameterType type) {
+    public MetadataParameter setType(MetadataParameterType type) {
         this.type = type;
+        return this;
     }
 
     /**
@@ -216,6 +196,31 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @param key the key to set
+     * @return this
+     */
+    public MetadataParameter setKey(String key) {
+        this.key = key;
+        return this;
+    }
+
+    /**
+     * @return the altKey
+     */
+    public String getAltKey() {
+        return altKey;
+    }
+
+    /**
+     * @param altKey the altKey to set
+     * @return this
+     */
+    public MetadataParameter setAltKey(String altKey) {
+        this.altKey = altKey;
+        return this;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>masterValueFragment</code>.
      * </p>
@@ -224,6 +229,15 @@ public class MetadataParameter implements Serializable {
      */
     public String getMasterValueFragment() {
         return masterValueFragment;
+    }
+
+    /**
+     * @param masterValueFragment the masterValueFragment to set
+     * @return this
+     */
+    public MetadataParameter setMasterValueFragment(String masterValueFragment) {
+        this.masterValueFragment = masterValueFragment;
+        return this;
     }
 
     /**
@@ -238,6 +252,15 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @param defaultValue the defaultValue to set
+     * @return this
+     */
+    public MetadataParameter setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+        return this;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>prefix</code>.
      * </p>
@@ -246,6 +269,15 @@ public class MetadataParameter implements Serializable {
      */
     public String getPrefix() {
         return prefix;
+    }
+
+    /**
+     * @param prefix the prefix to set
+     * @return this
+     */
+    public MetadataParameter setPrefix(String prefix) {
+        this.prefix = prefix;
+        return this;
     }
 
     /**
@@ -260,6 +292,15 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @param suffix the suffix to set
+     * @return this
+     */
+    public MetadataParameter setSuffix(String suffix) {
+        this.suffix = suffix;
+        return this;
+    }
+
+    /**
      * <p>
      * isAddUrl.
      * </p>
@@ -268,6 +309,15 @@ public class MetadataParameter implements Serializable {
      */
     public boolean isAddUrl() {
         return addUrl;
+    }
+
+    /**
+     * @param addUrl the addUrl to set
+     * @return this
+     */
+    public MetadataParameter setAddUrl(boolean addUrl) {
+        this.addUrl = addUrl;
+        return this;
     }
 
     /**
@@ -282,6 +332,15 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @param topstructValueFallback the topstructValueFallback to set
+     * @return this
+     */
+    public MetadataParameter setTopstructValueFallback(boolean topstructValueFallback) {
+        this.topstructValueFallback = topstructValueFallback;
+        return this;
+    }
+
+    /**
      * <p>
      * isTopstructOnly.
      * </p>
@@ -293,6 +352,15 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @param topstructOnly the topstructOnly to set
+     * @return this
+     */
+    public MetadataParameter setTopstructOnly(boolean topstructOnly) {
+        this.topstructOnly = topstructOnly;
+        return this;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>replaceRules</code>.
      * </p>
@@ -301,6 +369,15 @@ public class MetadataParameter implements Serializable {
      */
     public List<MetadataReplaceRule> getReplaceRules() {
         return replaceRules;
+    }
+
+    /**
+     * @param replaceRules the replaceRules to set
+     * @return tis
+     */
+    public MetadataParameter setReplaceRules(List<MetadataReplaceRule> replaceRules) {
+        this.replaceRules = replaceRules;
+        return this;
     }
 
     /** {@inheritDoc} */

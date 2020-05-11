@@ -149,8 +149,8 @@ public class UserBean implements Serializable {
         // Check whether the security question has been answered correct, if configured
         if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
             Messages.error("user__security_question_wrong");
-            logger.debug("Wrong security question answer.");
             logFailedUserRegistration();
+            logger.debug("Wrong security question answer.");
             return "";
         }
         // Check whether the invisible field lastName has been filled (real users cannot do that)
@@ -163,8 +163,8 @@ public class UserBean implements Serializable {
         if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
-            logger.debug("User account already exists for nickname '{}'.", nickName);
             logFailedUserRegistration();
+            logger.debug("User account already exists for nickname '{}'.", nickName);
             return "";
         }
         // Check for existing e-mail addresses
@@ -193,6 +193,8 @@ public class UserBean implements Serializable {
                 }
                 return "user?faces-redirect=true";
             }
+            logFailedUserRegistration();
+            logger.debug("E-mail could not be sent");
             Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null)
                     .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } else {
@@ -782,6 +784,10 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
+        lastName = null;
+        securityAnswer = null;
+        securityQuestion = null;
+        
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
@@ -801,6 +807,17 @@ public class UserBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String submitFeedbackAction() {
+        // Check whether the security question has been answered correct, if configured
+        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
+            Messages.error("user__security_question_wrong");
+            logger.debug("Wrong security question answer.");
+            return "";
+        }
+        // Check whether the invisible field lastName has been filled (real users cannot do that)
+        if (StringUtils.isNotEmpty(lastName)) {
+            logger.debug("Honeypot field entry: {}", lastName);
+            return "";
+        }
         try {
             if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
@@ -1109,10 +1126,16 @@ public class UserBean implements Serializable {
 
     /**
      * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
+     * 
+     * @should not reset securityQuest if not yet answered
      */
     public boolean resetSecurityQuestion() {
         List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
         if (questions.isEmpty()) {
+            return true;
+        }
+        if (securityQuestion != null && !securityQuestion.isAnswered()) {
+            // Do not reset if not set set or not yet answered
             return true;
         }
 

@@ -29,7 +29,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
@@ -168,4 +168,20 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
         //        Assert.assertTrue(bean.getUser().isSuspended());
     }
 
+    /**
+     * @see UserBean#resetSecurityQuestion()
+     * @verifies not reset securityQuest if not yet answered
+     */
+    @Test
+    public void resetSecurityQuestion_shouldNotResetSecurityQuestIfNotYetAnswered() throws Exception {
+        UserBean ub = new UserBean();
+        ub.resetSecurityQuestion();
+        SecurityQuestion sq = ub.getSecurityQuestion();
+        Assert.assertNotNull(sq);
+        Assert.assertFalse(sq.isAnswered());
+        for (int i = 0; i < 10; ++i) {
+            ub.resetSecurityQuestion();
+        }
+        Assert.assertEquals(sq, ub.getSecurityQuestion());
+    }
 }

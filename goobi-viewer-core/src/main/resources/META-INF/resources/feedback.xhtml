@@ -41,14 +41,28 @@
 							<h:inputText id="feedbackName" styleClass="form-control" value="#{userBean.feedback.name}" required="true" requiredMessage="#{msg.errFeedbackNameRequired}" />
 						</div>
 					</div>
+                    <!-- LAST NAME -->
+                    <div class="form-group lastname">
+                        <label for="feedbackLastName" class="control-label">#{msg.nameLast}:</label>
+                            <h:inputText id="feedbackLastName" styleClass="form-control" value="#{userBean.lastName}">
+                        </h:inputText>
+                    </div>
 					<!-- E-MAIL -->
 					<div class="form-group">
-						<label for="feedbackEmail" class="col-sm-2 control-label">#{msg.email}:</label>
-						<div class="col-sm-10">
-							<h:inputText id="feedbackEmail" styleClass="form-control" value="#{userBean.feedback.email}" required="true" requiredMessage="#{msg.errFeedbackEmailRequired}">
-								<f:validator validatorId="emailValidator" />
-							</h:inputText>
-						</div>
+					    <h:panelGroup id="emailGroup">
+<!--                             <h:messages for="feedbackEmail"  -->
+<!--                                 infoClass="cms-module__option-message-status success"  -->
+<!--                                 warnClass="cms-module__option-message-status warning" -->
+<!--                                 errorClass="cms-module__option-message-status danger" /> -->
+						    <label for="feedbackEmail" class="col-sm-2 control-label">#{msg.email}:</label>
+						    <div class="col-sm-10">
+							    <h:inputText id="feedbackEmail" styleClass="form-control" value="#{userBean.feedback.email}"
+							        required="true" requiredMessage="#{msg.errFeedbackEmailRequired}">
+								    <f:validator validatorId="emailValidator" />
+<!--                                     <f:ajax render="emailGroup" /> -->
+							    </h:inputText>
+						  </div>
+						</h:panelGroup>
 					</div>
 					<!-- URL -->
 					<div class="form-group hidden">
@@ -72,7 +86,26 @@
                         </div>
                     </div>
                     </h:panelGroup>
-                    <!-- ACTIONB -->
+                    <!-- SECURITY QUESTION -->
+                     <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
+                        <div class="form-group">
+<!--                             <h:messages for="feedbackSecurityQuestion"  -->
+<!--                                 infoClass="cms-module__option-message-status success"  -->
+<!--                                 warnClass="cms-module__option-message-status warning" -->
+<!--                                 errorClass="cms-module__option-message-status danger" /> -->
+                            <label for="feedbackSecurityQuestion" class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
+                            <div class="col-sm-10">
+                                <h:inputSecret 
+                                    id="feedbackSecurityQuestion" 
+                                    styleClass="form-control" 
+                                    autocomplete="off"
+                                    value="#{userBean.securityAnswer}" 
+                                    required="true"
+                                    requiredMessage="#{msg.user__security_question_required_msg}" />
+                            </div>
+                        </div>
+                    </ui:fragment>
+                    <!-- ACTION -->
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10 text-right">
 							<h:commandButton rendered="#{configurationBean.useReCaptcha}" id="submitFeedbackBtn" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />

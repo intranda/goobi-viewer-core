@@ -23,6 +23,7 @@ public class SecurityQuestion {
 
     private final String questionKey;
     private final Set<String> correctAnswers;
+    private boolean answered = false;
 
     /**
      * Constructor.
@@ -43,8 +44,10 @@ public class SecurityQuestion {
      * @should return true on correct answer and ignore case
      * @should return false on incorrect answer
      * @should return false empty answer
+     * @should mark question as answered
      */
     public boolean isAnswerCorrect(String answer) {
+        answered = true;
         if (StringUtils.isBlank(answer)) {
             return false;
         }
@@ -65,4 +68,12 @@ public class SecurityQuestion {
     public Set<String> getCorrectAnswers() {
         return correctAnswers;
     }
+
+    /**
+     * @return the answered
+     */
+    public boolean isAnswered() {
+        return answered;
+    }
+
 }
