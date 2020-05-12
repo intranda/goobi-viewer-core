@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+ 
+    <composite:interface />
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMember or activeDocumentBean.viewManager.topDocument.anchorChild}">
+        
+            <div id="widgetRelatedGroups" class="widget-related-groups">
+	         
+	             <!-- Group (convolutes, etc.) listing -->
+	             <h:outputText rendered="#{activeDocumentBean.viewManager.topDocument.groupMemberships.size() gt 1}">
+					<div class="widget widget-related-groups__list">
+						<h3>#{msg.recordGroupMemberships}</h3>
+						<ul>
+							<ui:repeat var="groupMembership" value="#{activeDocumentBean.viewManager.topDocument.groupMemberships.entrySet().toArray()}">
+								<li>
+									<a href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/" target="_blank">
+									<h:outputText value="#{msg[activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership.value, 'label__related_groups')]}" />
+									</a>
+								</li>
+							</ui:repeat>
+						</ul>
+					</div>
+				</h:outputText>
+
+                <!-- Group (convolutes, etc.) listing -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMemberships.size() eq 1}">
+					<div class="widget widget-related-groups__series">
+					<ui:param name="groupMembership" value="#{activeDocumentBean.viewManager.topDocument.groupMemberships.entrySet().iterator().next().value}" />
+						<h3>
+							<a href="#{navigationHelper.tocUrl}/#{groupMembership}/1/" target="_blank"> 
+							<h:outputText value="#{msg[activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership, 'label__related_groups')]}" />
+							</a>
+						</h3>
+					</div>
+				</h:panelGroup>
+                 
+                <!-- Extra link to the anchor, if this is a volume -->
+               <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.anchorChild}">
+                   	<div class="widget widget-related-groups__anchor">
+                   		<h3>
+                       		<a href="#{navigationHelper.tocUrl}/#{activeDocumentBean.viewManager.anchorPi}/1/" target="_blank">
+                           	#{msg.anchor}
+                           	</a>
+                       	</h3>
+                  		</div>
+               </h:panelGroup>
+            </div>
+           
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>
