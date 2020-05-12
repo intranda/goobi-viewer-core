@@ -57,6 +57,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 
@@ -458,6 +459,7 @@ public class BrowseElement implements Serializable {
      * 
      * @param structElement
      * @param searchTerms
+     * @param sortFields If manual sorting was used, display the sorting fields
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @should add metadata fields that match search terms
@@ -466,7 +468,8 @@ public class BrowseElement implements Serializable {
      * @should not add ignored fields
      * @should translate configured field values correctly
      */
-    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, Set<String> ignoreFields,
+    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, List<StringPair> sortFields,
+            Set<String> ignoreFields,
             Set<String> translateFields) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
         if (searchTerms == null) {
