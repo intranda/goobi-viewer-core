@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        <composite:attribute name="geoMap" required="true" type="io.goobi.viewer.model.viewer.CollectionView" />
+    </composite:interface>
+    
+	<composite:implementation>
+
+
+		<div id="geomap" class="geomap" />
+		<popover id="geoMapPopoverTemplate">
+		<h4 data-metadata="title"></h4>
+		<span data-metadata="description"></span> </popover>
+		<script>
+        	let geoMap = new viewerJS.GeoMap({
+           		allowMovingFeatures: false,
+           		popover: "#geoMapPopoverTemplate",
+           		language: "#{navigationHelper.localeString}",
+           		popoverOnHover: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+           	});
+           	$(document).ready(() => {                  		    
+            	geoMap.init();
+            	let view = #{cc.attrs.geoMap.initialView};
+       			geoMap.setView(view);
+            	let features = #{cc.attrs.geoMap.featuresAsString};
+           		features.forEach(feature => {
+           		    geoMap.addMarker(feature);
+           		})
+            	geoMap.setView(geoMap.getViewAroundFeatures());
+            })
+		</script>
+	</composite:implementation>
+</ui:composition>

@@ -57,7 +57,7 @@
                   			allowMovingFeatures: false,
                   			popover: "#geoMapPopoverTemplate",
                   			language: "#{navigationHelper.localeString}",
-                  			popoverOnHover: #{cc.attrs.widget.geoMap.type == 'SOLR_QUERY'},
+                  			popoverOnHover: #{cmsPage.getContentItem("geomap").geoMap.type == 'SOLR_QUERY'},
                   		});
                   		$(document).ready(() => {                  		    
 	                  		geoMap.init();
