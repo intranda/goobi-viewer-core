@@ -18,28 +18,13 @@
                 <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         #{cc.attrs.widget.geoMap.title}
+                        <button id="expandMap_#{cc.attrs.widget.geoMapId}" class="btn btn--icon">
+                        	<i class="fa fa-expand"/>
+                        </button>
                     </h3>
 
                     <!-- MAP -->
                     <div id="geomapWidget_#{cc.attrs.widget.geoMapId}" class="widget-geomap__map"></div>
-                </div>
-            </h:panelGroup>
-
-            <!-- FOLDOUT -->
-            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-                <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
-                    <h3>
-                        #{cc.attrs.widget.geoMap.title}
-                        <a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
-                            <h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
-                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                        </a>
-                    </h3>
-
-                    <div id="widgetGeoLocationsCollapse_#{cc.attrs.widget.geoMapId}" class="collapse">
-                        <!-- MAP -->
-                        <div id="geomapWidget_#{cc.attrs.widget.geoMapId}" class="widget-geomap__map"></div>
-                    </div>
                 </div>
             </h:panelGroup>
             <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}">
@@ -49,6 +34,16 @@
             <script type="text/javascript">	  
           //<![CDATA[
             $(document).ready( () => {	
+                
+                $("#expandMap_#{cc.attrs.widget.geoMapId}").on("click", e => {
+                    let oembedUrl = "#{cc.attrs.widget.geoMap.OEmbedURI}";
+                    viewerJS.oembed(oembedUrl)
+                    .then( $node => {
+                        console.log("add node ", $node);
+                        $(".overlay .overlay__wrapper").append($node);
+                        $(".overlay").addClass("active");
+                    })
+                })
                 
             	let geoMap = new viewerJS.GeoMap({
             	    popover: "#geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}",
