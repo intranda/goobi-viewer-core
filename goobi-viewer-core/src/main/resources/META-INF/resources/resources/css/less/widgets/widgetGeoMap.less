@@ -5,7 +5,14 @@
 .widget-geomap {
 	position: relative;
 	display: none;
-	h3 {}
+	h3 {
+		display: flex;
+		justify-content: space-between;
+		.btn--icon {
+			color: white;
+			padding: 0;
+		}
+	}
 	&__map {
 		min-height: 350px;
 		.mapboxgl-popup-content {
