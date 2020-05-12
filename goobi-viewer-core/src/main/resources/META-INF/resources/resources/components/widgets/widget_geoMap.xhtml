@@ -13,22 +13,21 @@
     <composite:implementation>
         <!-- WIDGET GEO LOCATIONS -->
         <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetGeoMap' and cc.attrs.widget.geoMapId > -1) or cc.attrs.widget == null}">
-
             <!-- STANDARD -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
-                <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
+                <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         #{cc.attrs.widget.geoMap.title}
                     </h3>
 
                     <!-- MAP -->
-                    <div id="geomapWidget" class="widget-geomap__map"></div>
+                    <div id="geomapWidget_#{cc.attrs.widget.geoMapId}" class="widget-geomap__map"></div>
                 </div>
             </h:panelGroup>
 
             <!-- FOLDOUT -->
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-                <div id="widgetGeoMap" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
+                <div id="widgetGeoMap_#{cc.attrs.widget.geoMapId}" class="widget widget-geomap #{cc.attrs.widget.cssClass}">
                     <h3>
                         #{cc.attrs.widget.geoMap.title}
                         <a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
@@ -37,13 +36,13 @@
                         </a>
                     </h3>
 
-                    <div id="widgetGeoLocationsCollapse" class="collapse">
+                    <div id="widgetGeoLocationsCollapse_#{cc.attrs.widget.geoMapId}" class="collapse">
                         <!-- MAP -->
-                        <div id="geomapWidget" class="widget-geomap__map"></div>
+                        <div id="geomapWidget_#{cc.attrs.widget.geoMapId}" class="widget-geomap__map"></div>
                     </div>
                 </div>
             </h:panelGroup>
-            <popover id="geoMapPopoverTemplate">
+            <popover id="geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}">
            		<h4 data-metadata="title"></h4>
            		<span data-metadata="description"></span>
            	</popover>
@@ -52,15 +51,15 @@
             $(document).ready( () => {	
                 
             	let geoMap = new viewerJS.GeoMap({
-            	    popover: "#geoMapPopoverTemplate",
-            	    mapId: "geomapWidget",
+            	    popover: "#geoMapPopoverTemplate_#{cc.attrs.widget.geoMapId}",
+            	    mapId: "geomapWidget_#{cc.attrs.widget.geoMapId}",
             	    language: "#{navigationHelper.localeString}",
             	    popoverOnHover: #{cc.attrs.widget.geoMap.type == 'SOLR_QUERY'}
             	});
             	let view = #{cc.attrs.widget.geoMap.initialView};
             	let features = #{cc.attrs.widget.geoMap.featuresAsString};
             	if(features && features.length > 0) {  
-            	    $("#widgetGeoMap").show();
+            	    $("#widgetGeoMap_#{cc.attrs.widget.geoMapId}").show();
 	            	console.log("init map with ", view, features);
 	            	geoMap.init();
 	            	geoMap.setView(view);

@@ -784,6 +784,10 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
+        lastName = null;
+        securityAnswer = null;
+        securityQuestion = null;
+        
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
         feedback = new Feedback();
         if (user != null) {
@@ -803,6 +807,17 @@ public class UserBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String submitFeedbackAction() {
+        // Check whether the security question has been answered correct, if configured
+        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
+            Messages.error("user__security_question_wrong");
+            logger.debug("Wrong security question answer.");
+            return "";
+        }
+        // Check whether the invisible field lastName has been filled (real users cannot do that)
+        if (StringUtils.isNotEmpty(lastName)) {
+            logger.debug("Honeypot field entry: {}", lastName);
+            return "";
+        }
         try {
             if (NetTools.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {

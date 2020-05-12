@@ -232,7 +232,9 @@ public class CMSSidebarElement {
         return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
                 && bothNullOrEqual(getHtml(), ((CMSSidebarElement) o).getHtml())
                 && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
-                && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages());
+                && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages())
+                && bothNullOrEqual(getGeoMapId(), ((CMSSidebarElement) o).getGeoMapId());
+
     }
 
     /**
