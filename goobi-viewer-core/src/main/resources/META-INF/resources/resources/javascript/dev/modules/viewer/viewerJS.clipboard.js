@@ -32,7 +32,6 @@ var viewerJS = ( function( viewer ) {
                 if(!selector) {
                     selector = _defaultSelector;
                 }
-                console.log("init data-copy with selector ", selector);
                 var clipboard = new ClipboardJS( selector );
                 $(selector + "[data-copy-done]").tooltip();
                 
