@@ -17,6 +17,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.FacesException;
 import javax.faces.application.Application;
@@ -34,6 +36,9 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.jsf.DynamicContent;
+import io.goobi.viewer.model.jsf.DynamicContentBuilder;
+import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -44,12 +49,11 @@ import io.goobi.viewer.model.maps.GeoMap;
 @ViewScoped
 public class DynamicBean implements Serializable {
 
+    private static final long serialVersionUID = -6628922677497179970L;
+
     private final static Logger logger = LoggerFactory.getLogger(DynamicBean.class);
     
-    private FacesContext context = FacesContext.getCurrentInstance();
-    private Application application = context.getApplication();
-    private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
-    
+    private List<DynamicContent> components = new ArrayList<>();
     private HtmlPanelGroup formGroup = null;
 
     public void setFormGroup(HtmlPanelGroup group) {
@@ -74,34 +78,27 @@ public class DynamicBean implements Serializable {
     private void loadFormGroup() throws DAOException {
 
         logger.debug("Load form group");
-
-
-        Resource componentResource = context.getApplication().getResourceHandler().createResource("geoMap.xhtml", "components");
-        UIComponent composite = application.createComponent(context, componentResource);
-        composite.setId("geoMapComponent"); // Mandatory for the case composite is part of UIForm! Otherwise JSF can't find inputs.
-
-        // This basically creates <composite:implementation>.
-        UIComponent implementation = application.createComponent(UIPanel.COMPONENT_TYPE);
-        implementation.setRendererType("javax.faces.Group");
-        composite.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, implementation); 
-
         this.formGroup = new HtmlPanelGroup();
-        this.formGroup.getChildren().add(composite);
-        this.formGroup.pushComponentToEL(context, composite); // This makes #{cc} available.
-        try {
-            faceletContext.includeFacelet(implementation, componentResource.getURL());
-        } catch (IOException e) {
-            throw new FacesException(e);
-        } finally {
-            this.formGroup.popComponentFromEL(context);
-        }
-        
-        GeoMap map = DataManager.getInstance().getDao().getAllGeoMaps().get(0);
-        composite.getAttributes().put("geoMap", map);
-//        HtmlOutputText out = new HtmlOutputText();
-//        out.setValue("HALLO WELT");
-//        this.formGroup.getChildren().add(out);
 
+        DynamicContentBuilder builder = new DynamicContentBuilder();
+        for (DynamicContent content : components) {
+            UIComponent component = builder.build(content, this.formGroup);
+            logger.trace("Added dynamic content " + component);
+        }
     }
+    
+    public void addComponent(String id, String type, String...attributes ) {
+        DynamicContentType contentType = DynamicContentType.valueOf(type.toUpperCase());
+        try {            
+            DynamicContent content = new DynamicContent(contentType);
+            content.setId(id);
+            content.setAttributes(attributes);
+            this.components.add(content);
+        } catch(IllegalArgumentException e) {
+            logger.error("Cannot resolve dynamic content type " + type);
+        }
+    }
+
+
 
 }
