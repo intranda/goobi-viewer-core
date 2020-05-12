@@ -2,25 +2,40 @@
    Widget RelatedGroups
    style declarations for widget_RelatedGroups.xhtml
    ==============================================================*/
-   
+
+#widgetRelatedGroups {}
+
 .widget-related-groups {
 	&__list {
-    	h3 {} 
-		a {
-			&:hover,
-			&:focus,
-			&:active {}
+    	h3 {}
 		ul {}
 		li {}
-		}
-	}		
+		a {}
+	}
 	&__series {
-    	h3 {}
+    	h3 {
+    		a {
+	    		color: inherit;
+				&:hover,
+				&:focus,
+				&:active {
+					text-decoration: none;
+	    		}
+    		}
+		}
 	}
 	&__anchor {
-    	h3 {}
-		a {}
-	} 	
+    	h3 {
+    		a {
+	    		color: inherit;
+				&:hover,
+				&:focus,
+				&:active {
+					text-decoration: none;
+	    		}
+    		}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
