@@ -45,6 +45,7 @@ import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.servlets.oembed.OEmbedRecord;
 import io.goobi.viewer.servlets.oembed.OEmbedResponse;
 import io.goobi.viewer.servlets.oembed.PhotoOEmbedResponse;
+import io.goobi.viewer.servlets.oembed.RichOEmbedResponse;
 
 /**
  * Servlet for original content file download.
@@ -141,12 +142,18 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                     return;
             }
 
-            // OEmbedResponse oembedResponse = new RichOEmbedResponse(record);
-            OEmbedResponse oembedResponse = new PhotoOEmbedResponse(record);
+            OEmbedResponse oembedResponse;
+            if(record.isRichResponse()) {
+                oembedResponse = new RichOEmbedResponse(record);
+            } else {                
+                // OEmbedResponse oembedResponse = new RichOEmbedResponse(record);
+                oembedResponse = new PhotoOEmbedResponse(record);
+            }
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(Include.NON_NULL);
             ret = mapper.writeValueAsString(oembedResponse);
             response.getWriter().write(ret);
+            
         } catch (ClientAbortException | SocketException e) {
             logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
         } catch (IOException e) {
@@ -158,31 +165,38 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         }
     }
 
-    static OEmbedRecord parseUrl(String url) throws URISyntaxException, PresentationException, IndexUnreachableException {
-        if (url == null) {
+    static OEmbedRecord parseUrl(String origUrl) throws URISyntaxException, PresentationException, IndexUnreachableException {
+        if (origUrl == null) {
             return null;
         }
 
-        URI uri = new URI(url);
+        URI uri = new URI(origUrl);
         logger.trace(uri.getPath());
-        url = uri.getPath().substring(1);
+        String url = uri.getPath().substring(1);
         url = url.replace("viewer/", "");
 
         String[] urlSplit = url.split("/");
         logger.trace(Arrays.toString(urlSplit));
-        String pi = urlSplit[1];
-        int page = Integer.valueOf(urlSplit[2]);
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
-        if (iddoc == 0) {
-            return null;
+        
+        if(urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
+            
+            return new OEmbedRecord(origUrl);
+            
+        } else {
+            String pi = urlSplit[1];
+            int page = Integer.valueOf(urlSplit[2]);
+            long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
+            if (iddoc == 0) {
+                return null;
+            }
+    
+            OEmbedRecord ret = new OEmbedRecord();
+            StructElement se = new StructElement(iddoc);
+            ret.setStructElement(se);
+            PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
+            ret.setPhysicalElement(pe);
+    
+            return ret;
         }
-
-        OEmbedRecord ret = new OEmbedRecord();
-        StructElement se = new StructElement(iddoc);
-        ret.setStructElement(se);
-        PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
-        ret.setPhysicalElement(pe);
-
-        return ret;
     }
 }

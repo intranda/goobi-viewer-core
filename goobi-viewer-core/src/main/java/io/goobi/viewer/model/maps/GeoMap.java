@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -427,6 +430,27 @@ public class GeoMap {
 
     public boolean hasSolrQuery() {
         return GeoMapType.SOLR_QUERY.equals(this.getType()) && StringUtils.isNotBlank(this.solrQuery);
+    }
+    
+    /**
+     * Link to the html page to render for oembed
+     * @return
+     */
+    public URI getOEmbedLink() {
+        URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/embed/map/" + getId() + "/");
+        return uri;
+    }
+    
+    public URI getOEmbedURI() {
+        try {
+            URI linkURI = getOEmbedLink();
+            String linkURIString = URLEncoder.encode(linkURI.toString(), "utf-8");
+            URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + linkURIString + "&format=json");
+            return uri;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

@@ -49,25 +49,33 @@ public class RichOEmbedResponse extends OEmbedResponse {
         if (record == null) {
             throw new IllegalArgumentException("record may not be null");
         }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div>");
-        MimeType mimeType = MimeType.getByName(record.getPhysicalElement().getMimeType());
-        if (mimeType != null) {
-            switch (mimeType) {
-                case IMAGE:
-                    sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(size)).append("\"><br />");
-                    break;
-                default:
-                    break;
+        if(record.isRichResponse()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<iframe ");
+            sb.append("src='");
+            sb.append(record.getUri());
+            sb.append("'></iframe>");
+            html = sb.toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<div>");
+            MimeType mimeType = MimeType.getByName(record.getPhysicalElement().getMimeType());
+            if (mimeType != null) {
+                switch (mimeType) {
+                    case IMAGE:
+                        sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(size)).append("\"><br />");
+                        break;
+                    default:
+                        break;
+                }
             }
+            sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
+            
+            record.getStructElement().getPi();
+            
+            sb.append("</div>");
+            html = sb.toString();
         }
-        sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
-
-        record.getStructElement().getPi();
-
-        sb.append("</div>");
-        html = sb.toString();
     }
 
     /**

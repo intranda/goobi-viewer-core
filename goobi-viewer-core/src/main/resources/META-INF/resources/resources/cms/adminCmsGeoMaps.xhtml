@@ -43,15 +43,15 @@
 		                    			<div class="entity_list__item__header">
 			                    			<h3>#{map.title}</h3>
 			                    			<div class="entity_list__item__header__tags">
-	<!-- 		                    				<a  -->
-	<!-- 				                               id="oEmbedLink"  -->
-	<!-- 				                               class="label label-default"  -->
-	<!-- 				                               data-copy="oembed"  -->
-	<!-- 				                               data-clipboard-text="#{geoMapBean.getOEmbedLink(map)}"  -->
-	<!-- 				                               data-copy-done="#{msg.copyUrlDone}" -->
-	<!-- 				                               title="#{msg.copyUrl}">  -->
-	<!-- 				                               #{msg.oEmbed} -->
-	<!-- 				                           </a>  -->
+			                    				<a 
+					                               id="oEmbedLink" 
+					                               class="label label-default" 
+					                               data-copy="oembed" 
+					                               data-clipboard-text="#{map.OEmbedLink}" 
+					                               data-copy-done="#{msg.copyUrlDone}"
+					                               title="#{msg.copyUrl}"> 
+					                               #{msg.oEmbed}
+					                           </a> 
 			                    			</div>
 		                    			</div>
 		                    			<div class="entity_list__item__content">
@@ -113,6 +113,9 @@
                 </div>
             </div>
         </ui:fragment>
+        <script>
+        	viewerJS.clipboard.init();
+        </script>
     </ui:define>
 
     <!-- SIDEBAR -->
