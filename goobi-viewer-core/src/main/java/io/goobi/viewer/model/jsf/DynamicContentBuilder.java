@@ -16,7 +16,7 @@
 package io.goobi.viewer.model.jsf;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -150,7 +150,7 @@ public class DynamicContentBuilder {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
                         if (map != null) {
                             
-                            Map<String, String> attributes = new HashMap<>();
+                            Map<String, String> attributes = new LinkedHashMap<>();
                             attributes.put("rel", "alternate");
                             attributes.put("type", "application/json+oembed");
                             attributes.put("href", map.getOEmbedURI().toString());
