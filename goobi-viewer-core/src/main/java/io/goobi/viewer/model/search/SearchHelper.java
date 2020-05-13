@@ -1820,6 +1820,8 @@ public final class SearchHelper {
                         fieldName = fieldName.replace("MD2_", prefix);
                     } else if (fieldName.startsWith("BOOL_")) {
                         fieldName = fieldName.replace("BOOL_", prefix);
+                    } else if (fieldName.startsWith("SORT_")) {
+                        fieldName = fieldName.replace("SORT_", prefix);
                     }
                 }
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");

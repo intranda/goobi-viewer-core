@@ -239,7 +239,9 @@ public class SearchHit implements Comparable<SearchHit> {
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, useThumbnail, searchTerms,
                 BeanUtils.getImageDeliveryBean().getThumbs());
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, sortFields, ignoreAdditionalFields, translateAdditionalFields);
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
+        // Add sorting fields (should be added after all other metadata to avoid duplicates)
+        browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 
         // Determine hit type
         String docType = se.getMetadataValue(SolrConstants.DOCTYPE);

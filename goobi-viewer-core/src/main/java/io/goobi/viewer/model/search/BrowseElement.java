@@ -408,9 +408,11 @@ public class BrowseElement implements Serializable {
         }
 
         // Thumbnail
-        String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
-        if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-            thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
+        if (thumbs != null) {
+            String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
+            if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
+                thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
+            }
         }
 
         //check if we have images
@@ -455,11 +457,52 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * 
+     * @param structElement
+     * @param sortFields If manual sorting was used, display the sorting fields
+     * @param ignoreFields Fields to be skipped
+     * @should add sort fields correctly
+     * @should not add fields on ignore list
+     * @should not add fields already in the list
+     */
+    void addSortFieldsToMetadata(StructElement structElement, List<StringPair> sortFields, Set<String> ignoreFields) {
+        if (sortFields == null || sortFields.isEmpty()) {
+            return;
+        }
+
+        for (StringPair sortField : sortFields) {
+            // Skip fields that are in the ignore list
+            if (ignoreFields != null && ignoreFields.contains(sortField.getOne())) {
+                continue;
+            }
+            // Skip fields that are already in the list
+            boolean skip = false;
+
+            for (Metadata md : metadataList) {
+                if (md.getLabel().equals(sortField.getOne().replace("SORT_", "MD_"))) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip) {
+                continue;
+            }
+            // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+            if (!skip && structElement.getMetadataFields().containsKey(sortField.getOne())) {
+                List<String> fieldValues = structElement.getMetadataFields().get(sortField.getOne());
+                for (String fieldValue : fieldValues) {
+                    metadataList.add(new Metadata(sortField.getOne(), "", fieldValue));
+                    additionalMetadataList.add(new Metadata(sortField.getOne(), "", fieldValue));
+                }
+            }
+        }
+    }
+
+    /**
      * Adds metadata fields that aren't configured in <code>metadataList</code> but match give search terms. Applies highlighting to matched terms.
      * 
      * @param structElement
      * @param searchTerms
-     * @param sortFields If manual sorting was used, display the sorting fields
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @should add metadata fields that match search terms
@@ -468,14 +511,14 @@ public class BrowseElement implements Serializable {
      * @should not add ignored fields
      * @should translate configured field values correctly
      */
-    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, List<StringPair> sortFields,
+    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms,
             Set<String> ignoreFields,
             Set<String> translateFields) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
+
         if (searchTerms == null) {
             return;
         }
-        boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
             // Skip fields that are in the ignore list
             if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
