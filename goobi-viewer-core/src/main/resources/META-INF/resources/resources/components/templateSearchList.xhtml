@@ -128,7 +128,9 @@
 						<div class="col-xs-12 col-sm-8">
 							<div class="custom-control custom-control--select">
 								<select id="sortSelect">
-									<option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
+                                    <option
+                                        value="#{cc.attrs.search.getSortUrl('-', false)}"
+                                        data-sortField="#{msg.searchSortingDropdown_relevance}">#{msg.searchSortingDropdown_relevance}</option>
 									<ui:repeat var="sortField" value="#{configurationBean.sortFields}">
 										<!-- 										<option value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}"> -->
 										<option value="#{cc.attrs.search.getSortUrl(sortField, false)}" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">

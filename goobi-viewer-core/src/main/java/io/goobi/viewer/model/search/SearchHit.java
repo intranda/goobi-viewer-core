@@ -208,6 +208,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param fulltext Optional fulltext (page docs only).
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields Optional fields for (Excel) export purposes.
+     * @param sortFields
      * @param useThumbnail a boolean.
      * @param ignoreAdditionalFields a {@link java.util.Set} object.
      * @param translateAdditionalFields a {@link java.util.Set} object.
@@ -220,7 +221,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
+            Map<String, Set<String>> searchTerms, List<String> exportFields, List<StringPair> sortFields, boolean useThumbnail,
+            Set<String> ignoreAdditionalFields,
             Set<String> translateAdditionalFields, HitType overrideType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments =
@@ -238,6 +240,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 BeanUtils.getImageDeliveryBean().getThumbs());
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
+        // Add sorting fields (should be added after all other metadata to avoid duplicates)
+        browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 
         // Determine hit type
         String docType = se.getMetadataValue(SolrConstants.DOCTYPE);
@@ -564,7 +568,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
-                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields,
+                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
+                                        translateFields,
                                         null);
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
@@ -578,8 +583,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         }
                         {
                             {
-                                SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
-                                        ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
+                                SearchHit childHit =
+                                        createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, null, false,
+                                                ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
                                 if (!DocType.UGC.equals(docType)) {
                                     // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
                                     for (StringPair metadata : childHit.getFoundMetadata()) {
@@ -601,7 +607,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
                             SearchHit childHit =
-                                    createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields, null);
+                                    createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, null, false, ignoreFields, translateFields,
+                                            null);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
