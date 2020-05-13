@@ -8,6 +8,13 @@
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateBlank.html">
 
+    
+    <ui:define name="head">
+        
+        <h:panelGroup binding="#{dynamicBean.headGroup}"></h:panelGroup>
+        
+    </ui:define>
+    
     <ui:define name="content">
         
         <h:panelGroup binding="#{dynamicBean.formGroup}"></h:panelGroup>

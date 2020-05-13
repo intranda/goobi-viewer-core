@@ -39,9 +39,8 @@
                     let oembedUrl = "#{cc.attrs.widget.geoMap.OEmbedURI}";
                     viewerJS.oembed(oembedUrl)
                     .then( $node => {
-                        console.log("add node ", $node);
-                        $(".overlay .overlay__wrapper").append($node);
-                        $(".overlay").addClass("active");
+                        viewerJS.overlay($node)
+                        .then( () => $node.remove());
                     })
                 })
                 

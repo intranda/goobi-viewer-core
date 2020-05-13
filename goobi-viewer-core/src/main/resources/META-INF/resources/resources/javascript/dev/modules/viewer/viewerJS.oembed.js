@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
+ * Loads html from an oembed url and returns it as jquery object
  * 
  * @version 4.7.0
  * @module viewerJS.oembed

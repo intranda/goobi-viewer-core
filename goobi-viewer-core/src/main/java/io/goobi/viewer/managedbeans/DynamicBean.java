@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.faces.FacesException;
 import javax.faces.application.Application;
@@ -55,9 +56,17 @@ public class DynamicBean implements Serializable {
     
     private List<DynamicContent> components = new ArrayList<>();
     private HtmlPanelGroup formGroup = null;
+    private HtmlPanelGroup headGroup = null;
 
     public void setFormGroup(HtmlPanelGroup group) {
         this.formGroup = group;
+    }
+    
+    /**
+     * @param headGroup the headGroup to set
+     */
+    public void setHeadGroup(HtmlPanelGroup headGroup) {
+        this.headGroup = headGroup;
     }
 
     /**
@@ -70,6 +79,29 @@ public class DynamicBean implements Serializable {
         }
         return formGroup;
     }
+    
+    /**
+     * @return the formGroup
+     * @throws DAOException
+     */
+    public HtmlPanelGroup getHeadGroup() throws DAOException {
+        if (headGroup == null) {
+            loadHeadGroup();
+        }
+        return headGroup;
+    }
+
+    /**
+     * 
+     */
+    private void loadHeadGroup() {
+        this.headGroup = new HtmlPanelGroup();
+
+        DynamicContentBuilder builder = new DynamicContentBuilder();
+        for (DynamicContent content : components) {
+             builder.buildHead(content, this.headGroup);
+        }
+    }
 
     /**
      * @throws DAOException
@@ -77,7 +109,6 @@ public class DynamicBean implements Serializable {
      */
     private void loadFormGroup() throws DAOException {
 
-        logger.debug("Load form group");
         this.formGroup = new HtmlPanelGroup();
 
         DynamicContentBuilder builder = new DynamicContentBuilder();

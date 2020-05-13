@@ -71,8 +71,8 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String url = null;
-        String maxWidth = null;
-        String maxHeight = null;
+        Integer maxWidth = null;
+        Integer maxHeight = null;
         String format = "json";
 
         if (request.getParameterMap().size() > 0) {
@@ -85,10 +85,18 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                             url = values[0];
                             break;
                         case "maxWidth":
-                            maxWidth = values[0];
+                            try {
+                                maxWidth = Integer.parseInt(values[0]);                                
+                            } catch(NumberFormatException e) {
+                                logger.warn("'maxWidth' paraneter is not an integer: " + values[0]);
+                            }
                             break;
                         case "maxHeight":
-                            maxHeight = values[0];
+                            try {
+                                maxHeight = Integer.parseInt(values[0]);                                
+                            } catch(NumberFormatException e) {
+                                logger.warn("'maxHeight' paraneter is not an integer: " + values[0]);
+                            }
                             break;
                         case "format":
                             format = values[0];
@@ -144,7 +152,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
             OEmbedResponse oembedResponse;
             if(record.isRichResponse()) {
-                oembedResponse = new RichOEmbedResponse(record);
+                oembedResponse = new RichOEmbedResponse(record, maxWidth, maxHeight);
             } else {                
                 // OEmbedResponse oembedResponse = new RichOEmbedResponse(record);
                 oembedResponse = new PhotoOEmbedResponse(record);

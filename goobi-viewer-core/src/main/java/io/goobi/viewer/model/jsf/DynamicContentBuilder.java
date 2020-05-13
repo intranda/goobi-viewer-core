@@ -16,13 +16,20 @@
 package io.goobi.viewer.model.jsf;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.Resource;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIComponentBase;
 import javax.faces.component.UIPanel;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
 
 import org.slf4j.Logger;
@@ -30,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.DynamicBean;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -100,5 +106,69 @@ public class DynamicContentBuilder {
             parent.popComponentFromEL(context);
         }
         return composite;
+    }
+    
+    private UIComponent createTag(String name, Map<String, String> attributes) {
+        UIComponent component = new UIComponentBase() {
+            
+            @Override
+            public void encodeBegin(FacesContext context) throws IOException {
+                ResponseWriter out = context.getResponseWriter();
+                out.append("\n\n");
+                out.startElement(name, null);
+                for (Entry<String, String> entry : attributes.entrySet()) {
+                    out.writeAttribute(entry.getKey(), entry.getValue(), null);
+                }
+            }
+
+            @Override
+            public void encodeEnd(FacesContext context) throws IOException {
+                ResponseWriter out = context.getResponseWriter();
+                out.endElement(name);
+            }
+            
+            @Override
+            public String getFamily() {
+                return null;
+            }
+        };
+        return component;
+    }
+    
+    /**
+     * @param content
+     * @param headGroup
+     * @return
+     */
+    public Optional<UIComponent> buildHead(DynamicContent content, HtmlPanelGroup parent) {
+        UIComponent component = null;
+        switch (content.getType()) {
+            case GEOMAP:
+                String id = content.getAttribute(0);
+                try {
+                    if (id != null && id.matches("\\d+")) {
+                        GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
+                        if (map != null) {
+                            
+                            Map<String, String> attributes = new HashMap<>();
+                            attributes.put("rel", "alternate");
+                            attributes.put("type", "application/json+oembed");
+                            attributes.put("href", map.getOEmbedURI().toString());
+                            attributes.put("title", "Goobi viewer oEmbed Profile");
+                            component = createTag("link", attributes);
+                            parent.getChildren().add(component);
+                            
+                        } else {
+                            logger.error("Cannot build GeoMap content. No map found with id = " + id);
+                        }
+                    } else {
+                        logger.error("Cannot build GeoMap content. Need map id as first attribute");
+                    }
+                } catch (NumberFormatException | DAOException e) {
+                    logger.error("Error retrieving content from DAO", e);
+                }
+                break;
+        }
+        return Optional.ofNullable(component);
     }
 }
