@@ -18,8 +18,7 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.resetActivePartnerId}" />
-  	                <f:event type="preRenderView" listener="#{userBean.createFeedback}" />
+  	        <f:event type="preRenderView" listener="#{userBean.createFeedback}" />
 		</f:metadata>
 	</ui:define>
 
