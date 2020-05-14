@@ -260,12 +260,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSearchHitsPerPage()
+     * @see Configuration#getSearchHitsPerPageDefaultValue()
      * @verifies return correct value
      */
     @Test
-    public void getSearchHitsPerPage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(15, DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+    public void getSearchHitsPerPageDefaultValue_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(15, DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue());
+    }
+
+    /**
+     * @see Configuration#getSearchHitsPerPageValues()
+     * @verifies return all values
+     */
+    @Test
+    public void getSearchHitsPerPageValues_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().size());
     }
 
     /**
