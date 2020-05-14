@@ -49,6 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
@@ -4583,7 +4584,32 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
+    
+    public List<GeoMapMarker> getGeoMapMarkers() {
+        
+        List<GeoMapMarker> markers = new ArrayList<>();
+        List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("maps.markers.marker");
+        for (HierarchicalConfiguration config : configs) {
+            String name = config.getString(".");
+            if(StringUtils.isNotBlank(name)) {                
+                GeoMapMarker marker = new GeoMapMarker(name);
+                marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
+                marker.setIcon(config.getString("[@icon]", marker.getIcon()));
+                marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
+                marker.setIconRotation(config.getInt("[@iconRotate]", marker.getIconRotation()));
+                marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
+                marker.setNumber(config.getString("[@number]", marker.getNumber()));
+                marker.setPrefix(config.getString("[@prefix]", marker.getPrefix()));
+                marker.setShape(config.getString("[@shape]", marker.getShape()));
+                marker.setSvg(config.getBoolean("[@svg]", marker.isSvg()));
+                markers.add(marker);
+            }
+        }
+        return markers;
 
+        
+    }
+    
     /**
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
      * return null;

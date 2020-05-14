@@ -34,6 +34,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
+import io.goobi.viewer.model.maps.GeoMapMarker;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -52,6 +53,8 @@ public class GeoMapBean implements Serializable {
     private String selectedLanguage;
     
     private List<GeoMap> loadedMaps = null;
+    
+    private GeoMapMarker marker = new GeoMapMarker("default");
     
         
     /**
@@ -210,5 +213,21 @@ public class GeoMapBean implements Serializable {
     public boolean isHasMaps() throws DAOException {
         return !getAllMaps().isEmpty();
     }
+    
+    /**
+     * @return the marker
+     */
+    public GeoMapMarker getMarker() {
+        return marker;
+    }
+    
+    /**
+     * @param marker the marker to set
+     */
+    public void setMarker(GeoMapMarker marker) {
+        this.marker = marker;
+    }
+    
+    
 
 }

@@ -1158,6 +1158,13 @@
     </embedding>
 
 	<maps>
+	<markers>
+	    <marker icon="fa-circle"  markerColor="green-dark" shape="circle">maps__marker_1</marker>
+	    <marker icon="fa-search"  markerColor="red" shape="square">maps__marker_2</marker>
+	    <marker icon="fa-spinner" markerColor="blue-dark" shape="penta" prefix="fa" extraClasses="fa-spin">maps__marker_3</marker>
+	    <marker icon="fa-coffee"  markerColor="pink" shape="star" prefix="fa" iconColor="black" iconRotate="270">maps__marker_4</marker>
+	    <marker icon="fa-number"  number="42" svg="true">maps__marker_5</marker>
+	  </markers>
 	  <mapbox>
 	    <token>some.token</token>
 	  </mapbox>
