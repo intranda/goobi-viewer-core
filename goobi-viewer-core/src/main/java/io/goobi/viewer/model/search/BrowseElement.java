@@ -475,6 +475,10 @@ public class BrowseElement implements Serializable {
             if (ignoreFields != null && ignoreFields.contains(sortField.getOne())) {
                 continue;
             }
+            // Title is already in the header
+            if ("SORT_TITLE".equals(sortField.getOne())) {
+                continue;
+            }
             // Skip fields that are already in the list
             boolean skip = false;
 
