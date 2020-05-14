@@ -132,6 +132,10 @@ var cmsJS = ( function( cms ) {
         $(this.config.viewInput).val(JSON.stringify(this.geoMap.getView()));
     }
     
+    cms.GeoMapEditor.prototype.setMarkerIcon = function(icon) {
+        this.geoMap.setMarkerIcon(icon); 
+    }
+    
     /**
      * Updates the content of the metadata editor with the content of the given geojson object
      * Also scrolls to the top of the metadata edtor (config.metadataArea)
@@ -198,6 +202,7 @@ var cmsJS = ( function( cms ) {
     
     cms.GeoMapEditor.prototype.updateView = function() {
         let view = $(this.config.viewInput).val();
+        
         this.geoMap.setView(view);
         this.geoMap.setView(this.geoMap.getViewAroundFeatures());
     }

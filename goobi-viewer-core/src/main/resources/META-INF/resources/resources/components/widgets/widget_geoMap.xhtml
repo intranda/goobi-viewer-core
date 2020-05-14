@@ -56,11 +56,15 @@
             	    $("#widgetGeoMap_#{cc.attrs.widget.geoMapId}").show();
 	            	console.log("init map with ", view, features);
 	            	geoMap.init();
-	            	geoMap.setView(view);
-	            	features.forEach(feature => {
-	            	    geoMap.addMarker(feature);
-	            	})
-	            	geoMap.setView(geoMap.getViewAroundFeatures());
+	            	geoMap.setMarkerIcon(#{cc.attrs.widget.geoMap.markerAsJSON});
+	            	if(features) {	            	    
+		            	features.forEach(feature => {
+		            	    geoMap.addMarker(feature);
+		            	})
+		            	geoMap.setView(geoMap.getViewAroundFeatures(view.zoom));
+	            	} else {	            	    
+	            		geoMap.setView(view);
+	            	}
             	}
             })
             //]]>

@@ -2750,4 +2750,12 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("fa-circle", markers.get(0).getIcon());
         Assert.assertEquals("fa-search", markers.get(1).getIcon());
     }
+    
+    @Test
+    public void testGetGeoMapMarker() {
+        GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker("maps__marker_2");
+        Assert.assertNotNull(marker);
+        Assert.assertEquals("maps__marker_2", marker.getName());
+        Assert.assertEquals("fa-search", marker.getIcon());
+    }
 }

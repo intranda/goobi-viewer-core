@@ -155,6 +155,38 @@
 		                            </div>
 		                            <div id="typeHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__type__help}</div>
 		                        </div>
+		                        <!-- MARKER -->
+		                        <div class="input_form__option_group">
+		                            <div class="input_form__option_label">
+		                                <label for="mapType">#{msg.cms__geomaps__marker__label}:</label>
+		                            </div>
+		                            <div class="input_form__option_marker">
+		                            <label>*</label>
+		                            </div>
+		                            <div class="input_form__option_control">
+		                            	<div class="custom-control custom-control--select">
+						                    <h:selectOneMenu
+						                        id="mapMarker"
+						                        styleClass="form-control" 
+						                        value="#{geoMapBean.currentMap.marker}"
+						                        required="false" requiredMessage="#{msg.error__type_required}">
+						                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.label__default}"></f:selectItem>
+						                        <f:selectItems 
+						                            value="#{geoMapBean.possibleMarkers}"
+						                            var="marker"
+						                            itemValue="#{marker.name}"
+						                            itemLabel="#{msg[marker.name]}" />
+						                         <f:ajax render="mapPanel"/>
+						                    </h:selectOneMenu>
+						                </div>
+		                            </div>
+		                            <div class="input_form__option_help">
+		                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="markerHelp">
+		                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+		                                </button>
+		                            </div>
+		                            <div id="markerHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__marker__help}</div>
+		                        </div>
 		                        <!-- SOLR QUERY -->
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'SOLR_QUERY'}">
 			                        <div class="input_form__option_group">
@@ -219,6 +251,7 @@
 					            	    mapEditor.init();
 					            	    mapEditor.geoMap.config.popoverOnHover = !editable;
 					            	    mapEditor.setAllowEditFeatures(editable);
+					            	    mapEditor.setMarkerIcon(#{geoMapBean.currentMap.markerAsJSON});
 					            	    mapEditor.updateFeatures();
 					            	    mapEditor.updateView();
 				            	    }

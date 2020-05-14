@@ -53,9 +53,7 @@ public class GeoMapBean implements Serializable {
     private String selectedLanguage;
     
     private List<GeoMap> loadedMaps = null;
-    
-    private GeoMapMarker marker = new GeoMapMarker("default");
-    
+        
         
     /**
      * 
@@ -158,7 +156,6 @@ public class GeoMapBean implements Serializable {
     public void createEmptyCurrentMap() {
         this.currentMap = new GeoMap();
     }
-    
     /**
      * @return the selectedLanguage
      */
@@ -188,9 +185,12 @@ public class GeoMapBean implements Serializable {
         return this.loadedMaps;
     }
 
-    @SuppressWarnings("static-access")
     public Collection<GeoMapType> getPossibleMapTypes() {
         return EnumSet.allOf(GeoMapType.class);
+    }
+    
+    public Collection<GeoMapMarker> getPossibleMarkers() {
+        return DataManager.getInstance().getConfiguration().getGeoMapMarkers();
     }
     
     public boolean hasCurrentFeature() {
@@ -214,20 +214,6 @@ public class GeoMapBean implements Serializable {
         return !getAllMaps().isEmpty();
     }
     
-    /**
-     * @return the marker
-     */
-    public GeoMapMarker getMarker() {
-        return marker;
-    }
-    
-    /**
-     * @param marker the marker to set
-     */
-    public void setMarker(GeoMapMarker marker) {
-        this.marker = marker;
-    }
-    
-    
+
 
 }

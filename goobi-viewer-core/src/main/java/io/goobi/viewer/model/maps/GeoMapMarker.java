@@ -15,18 +15,22 @@
  */
 package io.goobi.viewer.model.maps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @author florian
  *
  */
 public class GeoMapMarker {
 
-    private final String name;
+    private String name;
     private String icon = "";
     private String markerColor = "blue";
     private String shape  = "circle";
     private String extraClasses = "";
-    private String prefix = "";
+    private String prefix = "fa";
     private String iconColor = "white";
     private int iconRotation = 0;
     private String number = "";
@@ -34,6 +38,9 @@ public class GeoMapMarker {
     
     public GeoMapMarker(String name) {
         this.name = name;
+    }
+    
+    public GeoMapMarker() {
     }
 
     /**
@@ -169,7 +176,21 @@ public class GeoMapMarker {
         return name;
     }
     
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
     
+   public String toJSONString() throws JsonProcessingException {
+       ObjectMapper mapper = new ObjectMapper();
+       return mapper.writeValueAsString(this);
+   }
             
+   public static GeoMapMarker fromJSONString(String json) throws JsonMappingException, JsonProcessingException {
+       ObjectMapper mapper = new ObjectMapper();
+       return mapper.readValue(json, GeoMapMarker.class);
+   }
             
 }

@@ -62,12 +62,16 @@
                   		$(document).ready(() => {                  		    
 	                  		geoMap.init();
 	                  		let view = #{cmsPage.getContentItem('geomap').geoMap.initialView};
-		            		geoMap.setView(view);
+		            		geoMap.setMarkerIcon(#{cmsPage.getContentItem('geomap').geoMap.markerAsJSON});
 	                  		let features = #{cmsPage.getContentItem("geomap").geoMap.featuresAsString};
-	                  		features.forEach(feature => {
-	                  		    geoMap.addMarker(feature);
-	                  		})
-	                  		geoMap.setView(geoMap.getViewAroundFeatures());
+	                  		if(features) {	            	    
+	    		            	features.forEach(feature => {
+	    		            	    geoMap.addMarker(feature);
+	    		            	})
+	    		            	geoMap.setView(geoMap.getViewAroundFeatures(view.zoom));
+	    	            	} else {	            	    
+	    	            		geoMap.setView(view);
+	    	            	}
 	                  	})
                     	
                     </script>

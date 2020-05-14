@@ -26,12 +26,16 @@
            	$(document).ready(() => {                  		    
             	geoMap.init();
             	let view = #{cc.attrs.geoMap.initialView};
-       			geoMap.setView(view);
+       			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
             	let features = #{cc.attrs.geoMap.featuresAsString};
-           		features.forEach(feature => {
-           		    geoMap.addMarker(feature);
-           		})
-            	geoMap.setView(geoMap.getViewAroundFeatures());
+            	if(features) {	            	    
+	            	features.forEach(feature => {
+	            	    geoMap.addMarker(feature);
+	            	})
+	            	geoMap.setView(geoMap.getViewAroundFeatures(view.zoom));
+            	} else {	            	    
+            		geoMap.setView(view);
+            	}
             })
 		</script>
 	</composite:implementation>

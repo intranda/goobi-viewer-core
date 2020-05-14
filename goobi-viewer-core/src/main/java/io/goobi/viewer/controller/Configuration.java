@@ -4585,29 +4585,50 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("maps.mapbox.token", "");
     }
     
+    /**
+     * @param marker
+     * @return
+     */
+    public GeoMapMarker getGeoMapMarker(String name) {
+        return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
+    }
+    
     public List<GeoMapMarker> getGeoMapMarkers() {
         
         List<GeoMapMarker> markers = new ArrayList<>();
         List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("maps.markers.marker");
         for (HierarchicalConfiguration config : configs) {
-            String name = config.getString(".");
-            if(StringUtils.isNotBlank(name)) {                
-                GeoMapMarker marker = new GeoMapMarker(name);
-                marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
-                marker.setIcon(config.getString("[@icon]", marker.getIcon()));
-                marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
-                marker.setIconRotation(config.getInt("[@iconRotate]", marker.getIconRotation()));
-                marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
-                marker.setNumber(config.getString("[@number]", marker.getNumber()));
-                marker.setPrefix(config.getString("[@prefix]", marker.getPrefix()));
-                marker.setShape(config.getString("[@shape]", marker.getShape()));
-                marker.setSvg(config.getBoolean("[@svg]", marker.isSvg()));
+            GeoMapMarker marker = readGeoMapMarker(config);
+            if(marker != null) {                
                 markers.add(marker);
             }
         }
         return markers;
 
         
+    }
+
+    /**
+     * @param config
+     * @param marker
+     * @return
+     */
+    public GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
+        GeoMapMarker marker = null;
+        String name = config.getString(".");
+        if(StringUtils.isNotBlank(name)) {                
+            marker = new GeoMapMarker(name);
+            marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
+            marker.setIcon(config.getString("[@icon]", marker.getIcon()));
+            marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
+            marker.setIconRotation(config.getInt("[@iconRotate]", marker.getIconRotation()));
+            marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
+            marker.setNumber(config.getString("[@number]", marker.getNumber()));
+            marker.setPrefix(config.getString("[@prefix]", marker.getPrefix()));
+            marker.setShape(config.getString("[@shape]", marker.getShape()));
+            marker.setSvg(config.getBoolean("[@svg]", marker.isSvg()));
+        }
+        return marker;
     }
     
     /**
@@ -4661,5 +4682,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return licenses;
     }
+
+
 
 }

@@ -99,6 +99,7 @@
 								            	console.log("init map with ", view, features);
 								            	geoMap.init();
 								            	geoMap.setView(view);
+								            	geoMap.setMarkerIcon(#{map.markerAsJSON});
 								            	features.forEach(feature => {
 								            	    geoMap.addMarker(feature);
 								            	})

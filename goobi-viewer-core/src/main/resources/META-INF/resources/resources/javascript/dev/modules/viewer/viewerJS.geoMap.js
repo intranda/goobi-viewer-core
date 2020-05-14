@@ -127,9 +127,11 @@ var viewerJS = ( function( viewer ) {
     
         //init feature layer
         this.locations = L.geoJSON([], {
+            
             pointToLayer: function(geoJsonPoint, latlng) {
                 let marker = L.marker(latlng, {
-                    draggable: this.config.allowMovingFeatures
+                    draggable: this.config.allowMovingFeatures,
+                    icon: this.getMarkerIcon()
                 });
                 marker.id = geoJsonPoint.id;
                 marker.view = geoJsonPoint.view;
@@ -162,6 +164,24 @@ var viewerJS = ( function( viewer ) {
             marker.openPopup
         } catch(e) {
             //swallow
+        }
+    }
+    
+    viewer.GeoMap.prototype.setMarkerIcon = function(icon) {
+        console.log("Set marker type ", icon);
+        this.markerIcon = icon;
+        if(this.markerIcon) {            
+            this.markerIcon.name = "";
+        }
+    }
+    
+    viewer.GeoMap.prototype.getMarkerIcon = function() {
+        if(this.markerIcon) {            
+            let icon = L.ExtraMarkers.icon(this.markerIcon);
+            console.log("icon ", icon, this.markerIcon);
+            return icon;
+        } else {
+            return new L.Icon.Default();
         }
     }
 
