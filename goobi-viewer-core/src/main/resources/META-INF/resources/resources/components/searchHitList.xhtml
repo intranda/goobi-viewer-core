@@ -21,10 +21,10 @@
             <h:panelGroup rendered="#{search.hitsCount > 1}">
                 <div class="search-list__sorting">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-4">
+                        <div class="col-xs-12 col-sm-2">
                             <span class="search-list__label">#{msg.sortBy}:</span>
                         </div>
-                        <div class="col-xs-12 col-sm-8">
+                        <div class="col-xs-12 col-sm-4">
                             <div class="custom-control custom-control--select">
                                 <select id="sortSelect">
                                     <option
@@ -43,6 +43,20 @@
                                         </option>
                                     </ui:repeat>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <span class="search-list__label">#{msg.search__hits_per_page}:</span>
+                        </div>
+                        <div class="col-xs-12 col-sm-2">
+                            <div class="custom-control custom-control--select">
+                                <h:form>
+                                <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}" immediate="true">
+                                    <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}"
+                                        itemLabel="#{value}" itemValue="#{value}" />
+                                    <f:ajax event="change" listener="#{searchBean.hitsPerPageListener}" />
+                                </h:selectOneMenu>
+                                </h:form>
                             </div>
                         </div>
                     </div>

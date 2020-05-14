@@ -314,7 +314,7 @@ public final class SearchHelper {
             ret.add(hit);
             hit.addCMSPageChildren();
             hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
-            logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
+            // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
