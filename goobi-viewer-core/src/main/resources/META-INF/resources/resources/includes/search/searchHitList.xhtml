@@ -27,7 +27,9 @@
                     <div class="col-12 col-sm-8">
                         <div class="custom-control custom-control--select">
                             <select id="sortSelect">
-                                <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
+                                <option
+                                    value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/-/#{search.facets.currentFacetString}/"
+                                    data-sortField="#{msg.searchSortingDropdown_relevance}">#{msg.searchSortingDropdown_relevance}</option>
                                 <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                     <option
                                         value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
