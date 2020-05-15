@@ -82,42 +82,4 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getComment(3));
         Assert.assertNull(DataManager.getInstance().getDao().getComment(4));
     }
-
-    /**
-     * @see AdminBean#deleteUserAction(User,boolean)
-     * @verifies delete all user bookmark lists correctly
-     */
-    @Test
-    public void deleteUserAction_shouldDeleteAllUserBookmarkListsCorrectly() throws Exception {
-        User user = DataManager.getInstance().getDao().getUser(1);
-        Assert.assertNotNull(user);
-        
-        // Delete campaign 
-        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assert.assertNotNull(campaign);
-        DataManager.getInstance().getDao().deleteCampaign(campaign);
-        
-        AdminBean bean = new AdminBean();
-        bean.setEmailConfirmation(user.getEmail());
-
-        Assert.assertFalse(DataManager.getInstance().getDao().getBookmarkLists(user).isEmpty());
-        bean.deleteUserAction(user, true);
-        Assert.assertTrue(DataManager.getInstance().getDao().getBookmarkLists(user).isEmpty());
-    }
-
-    /**
-     * @see AdminBean#deleteUserAction(User,boolean)
-     * @verifies delete all user searches correctly
-     */
-    @Test
-    public void deleteUserAction_shouldDeleteAllUserSearchesCorrectly() throws Exception {
-        User user = DataManager.getInstance().getDao().getUser(1);
-        Assert.assertNotNull(user);
-        AdminBean bean = new AdminBean();
-        bean.setEmailConfirmation(user.getEmail());
-
-        Assert.assertFalse(DataManager.getInstance().getDao().getSearches(user).isEmpty());
-        bean.deleteUserAction(user, true);
-        Assert.assertTrue(DataManager.getInstance().getDao().getSearches(user).isEmpty());
-    }
 }

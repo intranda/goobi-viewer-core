@@ -428,10 +428,7 @@ public class AdminBean implements Serializable {
      * @param user User to be deleted
      * @param deleteContributions If true, all content created by this user will also be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should delete all user groups of which given user is owner
      * @should delete all user comments correctly
-     * @should delete all user bookmark lists correctly
-     * @should delete all user searches correctly
      */
     public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
         if (user == null) {
