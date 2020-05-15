@@ -106,11 +106,9 @@
 	<comments comment_id="1" pi="PI 1" page="1" owner_id="1"
 		date_created="2013-07-15 00:00:00.000000000" text="comment 1 text" />
 	<comments comment_id="2" pi="PI 1" page="1" owner_id="2"
-		date_created="2013-07-15 00:01:00.000000000" text="comment 2 text"
-		parent_id="1" />
+		date_created="2013-07-15 00:01:00.000000000" text="comment 2 text" />
 	<comments comment_id="3" pi="PI 1" page="1" owner_id="1"
-		date_created="2013-07-15 12:00:00.000000000" text="comment 3 text"
-		parent_id="2" />
+		date_created="2013-07-15 12:00:00.000000000" text="comment 3 text" />
 	<comments comment_id="4" pi="PI 1" page="2" owner_id="1"
 		date_created="2013-07-15 12:00:00.000000000" text="comment 4 text" />
 

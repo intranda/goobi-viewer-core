@@ -37,6 +37,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
@@ -90,13 +91,14 @@ public class Comment implements Comparable<Comment> {
     @Column(name = "date_updated")
     private Date dateUpdated;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Comment parent;
+//    @ManyToOne
+//    @JoinColumn(name = "parent_id")
+//    private Comment parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @PrivateOwned
-    private List<Comment> children;
+//    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+//    @PrivateOwned
+//    @CascadeOnDelete
+//    private List<Comment> children;
 
     /**
      * <p>
@@ -124,7 +126,7 @@ public class Comment implements Comparable<Comment> {
         this.page = page;
         this.owner = owner;
         this.text = text;
-        this.parent = parent;
+//        this.parent = parent;
     }
 
     /** {@inheritDoc} */
@@ -398,47 +400,47 @@ public class Comment implements Comparable<Comment> {
         this.dateUpdated = dateUpdated;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>parent</code>.
-     * </p>
-     *
-     * @return the parent
-     */
-    public Comment getParent() {
-        return parent;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>parent</code>.
-     * </p>
-     *
-     * @param parent the parent to set
-     */
-    public void setParent(Comment parent) {
-        this.parent = parent;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>children</code>.
-     * </p>
-     *
-     * @return the children
-     */
-    public List<Comment> getChildren() {
-        return children;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>children</code>.
-     * </p>
-     *
-     * @param children the children to set
-     */
-    public void setChildren(List<Comment> children) {
-        this.children = children;
-    }
+//    /**
+//     * <p>
+//     * Getter for the field <code>parent</code>.
+//     * </p>
+//     *
+//     * @return the parent
+//     */
+//    public Comment getParent() {
+//        return parent;
+//    }
+//
+//    /**
+//     * <p>
+//     * Setter for the field <code>parent</code>.
+//     * </p>
+//     *
+//     * @param parent the parent to set
+//     */
+//    public void setParent(Comment parent) {
+//        this.parent = parent;
+//    }
+//
+//    /**
+//     * <p>
+//     * Getter for the field <code>children</code>.
+//     * </p>
+//     *
+//     * @return the children
+//     */
+//    public List<Comment> getChildren() {
+//        return children;
+//    }
+//
+//    /**
+//     * <p>
+//     * Setter for the field <code>children</code>.
+//     * </p>
+//     *
+//     * @param children the children to set
+//     */
+//    public void setChildren(List<Comment> children) {
+//        this.children = children;
+//    }
 }

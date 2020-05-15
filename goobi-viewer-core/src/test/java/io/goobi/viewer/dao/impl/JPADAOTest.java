@@ -696,20 +696,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("comment 1 text", comment.getText());
         Assert.assertNotNull(comment.getDateCreated());
         Assert.assertNull(comment.getDateUpdated());
-        Assert.assertNull(comment.getParent());
-        Assert.assertEquals(1, comment.getChildren().size());
+        //        Assert.assertNull(comment.getParent());
+        //        Assert.assertEquals(1, comment.getChildren().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(2);
-        Assert.assertEquals(comment, comment2.getParent());
-        Assert.assertEquals(1, comment2.getChildren().size());
+        //        Assert.assertEquals(comment, comment2.getParent());
+        //        Assert.assertEquals(1, comment2.getChildren().size());
     }
 
     @Test
     public void getCommentsForPageTest() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI 1", 1, false);
         Assert.assertEquals(3, comments.size());
-        comments = DataManager.getInstance().getDao().getCommentsForPage("PI 1", 1, true);
-        Assert.assertEquals(1, comments.size());
     }
 
     @Test
@@ -763,7 +761,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteComment(comment));
         Assert.assertNull(DataManager.getInstance().getDao().getComment(1));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size()); // Should cascade to child comments
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**
@@ -788,9 +786,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        Assert.assertEquals(4, DataManager.getInstance().getDao().deleteComments(null, user));
-        // One comment was created by a different user, but it was a child of a comment belonging to this user
-        Assert.assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments(null, user));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**

@@ -1593,9 +1593,9 @@ public class JPADAO implements IDAO {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi AND o.page = :page");
-        if (topLevelOnly) {
-            sbQuery.append(" AND o.parent IS NULL");
-        }
+        //        if (topLevelOnly) {
+        //            sbQuery.append(" AND o.parent IS NULL");
+        //        }
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
@@ -1701,7 +1701,6 @@ public class JPADAO implements IDAO {
      * @should delete comments for pi and user correctly
      * @should not delete anything if both pi and creator are null
      */
-    @SuppressWarnings("unchecked")
     @Override
     public int deleteComments(String pi, User owner) throws DAOException {
         if (StringUtils.isEmpty(pi) && owner == null) {
@@ -1709,10 +1708,54 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        
+
+        //        // Fetch relevant IDs
+        //        StringBuilder sbQuery = new StringBuilder();
+        //        sbQuery.append("SELECT o FROM Comment o WHERE ");
+        //        if (StringUtils.isNotEmpty(pi)) {
+        //            sbQuery.append("o.pi = :pi");
+        //        }
+        //        if (owner != null) {
+        //            if (StringUtils.isNotEmpty(pi)) {
+        //                sbQuery.append(" AND ");
+        //            }
+        //            sbQuery.append("o.owner = :owner");
+        //        }
+        //
+        //        Query q = em.createQuery(sbQuery.toString());
+        //        if (StringUtils.isNotEmpty(pi)) {
+        //            q.setParameter("pi", pi);
+        //        }
+        //        if (owner != null) {
+        //            q.setParameter("owner", owner);
+        //        }
+        //        
+        //        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        //        List<Comment> comments = q.getResultList();
+        //
+        //        if (comments.isEmpty()) {
+        //            return 0;
+        //        }
+        //
+        //        // Delete each manually to ensure cascading
+        //        EntityManager localEm = factory.createEntityManager();
+        //        try {
+        //            localEm.getTransaction().begin();
+        //            int rows = 0;
+        //            for (Comment comment : comments) {
+        //                Comment o = localEm.getReference(Comment.class, comment.getId());
+        //                localEm.remove(o);
+        //                rows++;
+        //            }
+        //            localEm.getTransaction().commit();
+        //            return rows;
+        //        } finally {
+        //            localEm.close();
+        //        }
+
         // Fetch relevant IDs
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append("SELECT o FROM Comment o WHERE ");
+        sbQuery.append("DELETE FROM Comment o WHERE ");
         if (StringUtils.isNotEmpty(pi)) {
             sbQuery.append("o.pi = :pi");
         }
@@ -1723,30 +1766,17 @@ public class JPADAO implements IDAO {
             sbQuery.append("o.owner = :owner");
         }
 
-        Query q = em.createQuery(sbQuery.toString());
-        if (StringUtils.isNotEmpty(pi)) {
-            q.setParameter("pi", pi);
-        }
-        if (owner != null) {
-            q.setParameter("owner", owner);
-        }
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<Comment> comments = q.getResultList();
-
-        if (comments.isEmpty()) {
-            return 0;
-        }
-
-        // Delete each manually to ensure cascading
         EntityManager localEm = factory.createEntityManager();
         try {
-            localEm.getTransaction().begin();
-            int rows = 0;
-            for (Comment comment : comments) {
-                Comment o = localEm.getReference(Comment.class, comment.getId());
-                localEm.remove(o);
-                rows++;
+            Query q = localEm.createQuery(sbQuery.toString());
+            if (StringUtils.isNotEmpty(pi)) {
+                q.setParameter("pi", pi);
             }
+            if (owner != null) {
+                q.setParameter("owner", owner);
+            }
+            localEm.getTransaction().begin();
+            int rows = q.executeUpdate();
             localEm.getTransaction().commit();
             return rows;
         } finally {
