@@ -1,0 +1,56 @@
+/* ==============================================================
+   Widget RelatedGroups
+   style declarations for widget_RelatedGroups.xhtml
+   ==============================================================*/
+#widgetRelatedGroups {}
+
+.widget-related-groups {
+	&__list {
+    	h3 {}
+		ul {}
+		li {}
+		a {}
+	}
+	&__series {
+    	h3 {
+			a { 
+				padding: 0;
+				color: inherit;
+				font-size: inherit;
+				&:hover,
+				&:focus,
+				&:active {
+					color: inherit;
+					text-decoration: none;
+				}
+			}
+    	}
+	}
+	&__anchor {
+    	h3 {
+			a {
+				padding: 0;
+				color: inherit;
+				font-size: inherit;
+				&:hover,
+				&:focus,
+				&:active {
+					color: inherit;
+					text-decoration: none;
+				}
+			}
+    	}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

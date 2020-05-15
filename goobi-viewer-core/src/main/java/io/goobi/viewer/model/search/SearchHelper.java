@@ -226,7 +226,8 @@ public final class SearchHelper {
             }
 
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields, null);
+                    SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
+                            translateFields, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -304,7 +305,9 @@ public final class SearchHelper {
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
-            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
+            SearchHit hit =
+                    SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields, translateFields,
+                            null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -1817,6 +1820,8 @@ public final class SearchHelper {
                         fieldName = fieldName.replace("MD2_", prefix);
                     } else if (fieldName.startsWith("BOOL_")) {
                         fieldName = fieldName.replace("BOOL_", prefix);
+                    } else if (fieldName.startsWith("SORT_")) {
+                        fieldName = fieldName.replace("SORT_", prefix);
                     }
                 }
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");

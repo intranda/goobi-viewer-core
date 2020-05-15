@@ -1171,14 +1171,51 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getSearchHitsPerPage.
+     * getSearchHitsPerPageValues.
+     * </p>
+     *
+     * @should return all values
+     * @return List of configured values
+     */
+    public List<Integer> getSearchHitsPerPageValues() {
+        List<String> values = getLocalList("search.hitsPerPage.value");
+        if (values.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Integer> ret = new ArrayList<>(values.size());
+        for (String value : values) {
+            try {
+                ret.add(Integer.valueOf(value));
+            } catch (NumberFormatException e) {
+                logger.error("Configured hits per page value not a number: {}", value);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * <p>
+     * getSearchHitsPerPageDefaultValue.
      * </p>
      *
      * @should return correct value
-     * @return a int.
+     * @return value element that is marked as default value; 10 if none found
      */
-    public int getSearchHitsPerPage() {
-        return getLocalInt("search.hitsPerPage", 10);
+    public int getSearchHitsPerPageDefaultValue() {
+        List<HierarchicalConfiguration> values = getLocalConfigurationsAt("search.hitsPerPage.value");
+        if (values.isEmpty()) {
+            return 10;
+        }
+        for (Iterator<HierarchicalConfiguration> it = values.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            if (sub.getBoolean("[@default]", false)) {
+                return sub.getInt(".");
+            }
+        }
+
+        return 10;
     }
 
     /**

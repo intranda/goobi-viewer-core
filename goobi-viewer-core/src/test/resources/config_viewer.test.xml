@@ -355,9 +355,14 @@
 	</viewer>
 
 	<search>
-		<!-- hitsPerPage: defines the number of elements that are shown in a search 
-			hitlist or when opening a collection -->
-		<hitsPerPage>15</hitsPerPage>
+        <!-- hitsPerPage: defines selectabled numbers of hits that are shown in a search 
+            hit list or when opening a collection -->
+        <hitsPerPage>
+            <value default="true">15</value>
+            <value>25</value>
+            <value>50</value>
+            <value>100</value>
+        </hitsPerPage>
 		<!-- fulltextFragmentLength: Approximate length of the full-text fragment 
 			displayed in search hits. Default is 200. -->
 		<fulltextFragmentLength>50</fulltextFragmentLength>

@@ -25,7 +25,7 @@
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         
                             <!-- FIRST PAGE -->
-                            <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2 and !(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'end' : 'start'} #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow gt 1}">
                                         <h:outputLink value="#{activeDocumentBean.firstPageUrl}" title="#{msg.firstImage}">
@@ -54,7 +54,7 @@
                             </ui:fragment>
                             
                             <!-- BACK STEP NAVIGATION -->
-                            <ui:fragment rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2 and configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
                                     <ui:fragment rendered="#{configurationBean.pageBrowseStep3Visible}">
                                         <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
                                             <ui:fragment rendered="#{activeDocumentBean.imageToShow ge (configurationBean.pageBrowseStep3 + 1)}">
@@ -127,28 +127,30 @@
                             </ui:fragment>
                             
                             <!-- SELECT TEXT -->
-                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
-                                <li class="image-controls__action select-text">
-                                    <span>#{msg.pageSelectDropdown}</span>
-                                </li>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2}">
+	                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
+	                                <li class="image-controls__action select-text">
+	                                    <span>#{msg.pageSelectDropdown}</span>
+	                                </li>
+	                            </ui:fragment>
+	                            <!-- SELECT -->
+	                            <li class="image-controls__action select">
+	                                <div class="custom-control custom-control--select">
+	                                        <!-- Image view select -->
+	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
+	                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
+	                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+	                                        </h:selectOneMenu>
+	                                        <!-- Full-text view select -->
+	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
+	                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
+	                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+	                                        </h:selectOneMenu>
+	                                </div>
+	                            </li>
                             </ui:fragment>
-                            <!-- SELECT -->
-                            <li class="image-controls__action select">
-                                <div class="custom-control custom-control--select">
-                                        <!-- Image view select -->
-                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
-                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
-                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
-                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
-                                        </h:selectOneMenu>
-                                        <!-- Full-text view select -->
-                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
-                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
-                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
-                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
-                                        </h:selectOneMenu>
-                                </div>
-                            </li>
                             
                             <!-- NEXT PAGE -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
@@ -178,7 +180,7 @@
                             </ui:fragment>
                             
                             <!-- FORWARD STEP NAVIGATION --> 
-                            <ui:fragment rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
+                            <ui:fragment rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.imagesCount gt 2}">
 	                                <ui:fragment rendered="#{configurationBean.pageBrowseStep1Visible}">
 	                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
 	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1)}">
@@ -224,7 +226,7 @@
 	                        </ui:fragment>
 	                        
 	                        <!-- LAST PAGE -->
-	                        <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
+	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2 and !(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                            <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'start' : 'end'} #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
 	                                <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
 	                                    <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
