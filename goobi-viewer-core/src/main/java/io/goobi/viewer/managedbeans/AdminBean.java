@@ -53,15 +53,17 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.security.user.UserTools;
 
 /**
  * Administration backend functions.
@@ -426,27 +428,42 @@ public class AdminBean implements Serializable {
      * @param user User to be deleted
      * @param deleteContributions If true, all content created by this user will also be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should delete all user groups of which given user is owner
+     * @should delete all user comments correctly
+     * @should delete all user bookmark lists correctly
+     * @should delete all user searches correctly
      */
     public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
         if (user == null) {
             return;
         }
-
         if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
             Messages.error("admin__error_email_mismatch");
             return;
         }
-
+        
         logger.debug("Deleting user: {}", user.getDisplayName());
+
         if (deleteContributions) {
-            // TODO delete comments, CS content, etc.
-            int comments = DataManager.getInstance().getDao().deleteComments(null, user);
-            logger.debug("{} comments deleted.", comments);
-            if (DataManager.getInstance().getDao().deleteUser(user)) {
-                Messages.info("deletedSuccessfully");
-            } else {
-                Messages.error("deleteFailure");
+            // Delete owned user groups
+            //            UserTools.deleteUserGroupOwnedByUser(user);
+            if (!user.getUserGroupOwnerships().isEmpty()) {
+                Messages.error("admin__error_delete_user_group_ownerships");
+                return;
             }
+
+            // Delete comments
+            int comments = DataManager.getInstance().getDao().deleteComments(null, user);
+            logger.debug("{} comments of user {} deleted.", comments, user.getId());
+
+            //  TODO Delete crowdsourcing contributions
+        }
+
+        // Finally, delete user (and any user-created data that's not publicly visible)
+        if (UserTools.deleteUser(user)) {
+            Messages.info("deletedSuccessfully");
+        } else {
+            Messages.error("deleteFailure");
         }
     }
 
