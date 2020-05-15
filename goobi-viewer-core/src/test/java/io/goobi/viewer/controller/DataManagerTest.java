@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.controller.AbstractConfiguration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
@@ -148,6 +149,14 @@ public class DataManagerTest {
             @Override
             public Optional<IURLBuilder> getURLBuilder() {
                 return Optional.empty();
+            }
+
+            /* (non-Javadoc)
+             * @see io.goobi.viewer.modules.IModule#deleteUserContributions(io.goobi.viewer.model.security.user.User)
+             */
+            @Override
+            public int deleteUserContributions(User user) {
+                return 0;
             }
         }
         Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
