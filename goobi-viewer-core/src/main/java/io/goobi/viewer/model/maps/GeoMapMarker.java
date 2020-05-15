@@ -32,7 +32,7 @@ public class GeoMapMarker {
     private String extraClasses = "";
     private String prefix = "fa";
     private String iconColor = "white";
-    private int iconRotation = 0;
+    private int iconRotate = 0;
     private String number = "";
     private boolean svg = false;
     
@@ -130,15 +130,15 @@ public class GeoMapMarker {
     /**
      * @return the iconRotation
      */
-    public int getIconRotation() {
-        return iconRotation;
+    public int getIconRotate() {
+        return iconRotate;
     }
 
     /**
      * @param iconRotation the iconRotation to set
      */
-    public void setIconRotation(int iconRotation) {
-        this.iconRotation = iconRotation;
+    public void setIconRotate(int iconRotation) {
+        this.iconRotate = iconRotation;
     }
 
     /**

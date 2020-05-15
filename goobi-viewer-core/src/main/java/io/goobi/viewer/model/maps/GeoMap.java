@@ -479,10 +479,11 @@ public class GeoMap {
     public String getMarkerAsJSON() throws JsonProcessingException {
         if(StringUtils.isNotBlank(marker)) {            
             GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
-            return marker.toJSONString();
-        } else {
-            return null;
+            if(marker != null) {                
+                return marker.toJSONString();
+            }
         }
+        return null;
     }
     
 }

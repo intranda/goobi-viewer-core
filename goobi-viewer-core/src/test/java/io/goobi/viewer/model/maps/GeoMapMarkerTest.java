@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public class GeoMapMarkerTest {
 
     private GeoMapMarker testObject = new GeoMapMarker("test");
-    private String testString = "{\"name\":\"test\",\"icon\":\"\",\"markerColor\":\"blue\",\"shape\":\"circle\",\"extraClasses\":\"\",\"prefix\":\"fa\",\"iconColor\":\"white\",\"iconRotation\":0,\"number\":\"\",\"svg\":false}";   
+    private String testString = "{\"name\":\"test\",\"icon\":\"\",\"markerColor\":\"blue\",\"shape\":\"circle\",\"extraClasses\":\"\",\"prefix\":\"fa\",\"iconColor\":\"white\",\"iconRotate\":0,\"number\":\"\",\"svg\":false}";   
 
     
     /**
@@ -59,7 +59,7 @@ public class GeoMapMarkerTest {
     public void testDeserialize() throws JsonMappingException, JsonProcessingException {
         GeoMapMarker m = GeoMapMarker.fromJSONString(testString);
         Assert.assertEquals(testObject.getName(), m.getName());
-        Assert.assertEquals(testObject.getIconRotation(), m.getIconRotation());
+        Assert.assertEquals(testObject.getIconRotate(), m.getIconRotate());
         Assert.assertEquals(testObject.getShape(), m.getShape());
         Assert.assertEquals(testObject.isSvg(), m.isSvg());
     }

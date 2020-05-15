@@ -176,7 +176,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.getMarkerIcon = function() {
-        if(this.markerIcon) {            
+        if(this.markerIcon) {       
             let icon = L.ExtraMarkers.icon(this.markerIcon);
             console.log("icon ", icon, this.markerIcon);
             return icon;
