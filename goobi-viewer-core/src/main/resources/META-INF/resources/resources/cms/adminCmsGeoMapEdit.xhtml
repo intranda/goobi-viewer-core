@@ -176,7 +176,7 @@
 						                            var="marker"
 						                            itemValue="#{marker.name}"
 						                            itemLabel="#{msg[marker.name]}" />
-						                         <f:ajax render="mapPanel"/>
+						                         <f:ajax execute="mapPanel" render="mapPanel"/>
 						                    </h:selectOneMenu>
 						                </div>
 		                            </div>
@@ -253,7 +253,15 @@
 					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.setMarkerIcon(#{geoMapBean.currentMap.markerAsJSON});
 					            	    mapEditor.updateFeatures();
-					            	    mapEditor.updateView();
+					            	    mapEditor.updateView(window.storedView);
+					            	    
+					            	    viewerJS.jsfAjax.begin.subscribe((e) => {
+					            	        if(e.source.id === "mapMarker") {					            	            
+					            	            window.storedView = mapEditor.geoMap.getView();
+					            	        } else {
+					            	            window.storedView = undefined;
+					            	        }
+					            	    })
 				            	    }
 				            	})
 	                        	</script>

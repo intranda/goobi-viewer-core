@@ -35,6 +35,7 @@ public class GeoMapMarker {
     private int iconRotate = 0;
     private String number = "";
     private boolean svg = false;
+    private boolean shadow = true;
     
     public GeoMapMarker(String name) {
         this.name = name;
@@ -181,6 +182,20 @@ public class GeoMapMarker {
      */
     public void setName(String name) {
         this.name = name;
+    }
+    
+    /**
+     * @return the shadow
+     */
+    public boolean isShadow() {
+        return shadow;
+    }
+    
+    /**
+     * @param shadow the shadow to set
+     */
+    public void setShadow(boolean shadow) {
+        this.shadow = shadow;
     }
     
    public String toJSONString() throws JsonProcessingException {

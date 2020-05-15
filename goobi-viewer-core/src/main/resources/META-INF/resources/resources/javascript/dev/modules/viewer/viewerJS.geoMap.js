@@ -72,7 +72,7 @@ var viewerJS = ( function( viewer ) {
 
     }
     
-    viewer.GeoMap.prototype.init = function() {
+    viewer.GeoMap.prototype.init = function(view, features) {
         if(this.map) {
             this.map.remove();
         }
@@ -114,7 +114,7 @@ var viewerJS = ( function( viewer ) {
             this.map.addLayer(osm);
         }
         
-        this.setView(this.config.initialView);
+//        this.setView(this.config.initialView);
         
         //init map events
         Rx.fromEvent(this.map, "moveend").pipe(RxOp.map(e => this.getView())).subscribe(this.onMapMove);
@@ -157,6 +157,16 @@ var viewerJS = ( function( viewer ) {
             }.bind(this)
         }).addTo(this.map);
 
+        if(features && features.length > 0) {
+            features.forEach(feature => {
+                this.addMarker(feature);
+            })
+            let zoom = view ? view.zoom : this.config.initialView.zoom;
+            this.setView(this.getViewAroundFeatures(zoom));
+        } else if(view){                                                    
+            this.setView(view);
+        }
+        
     }
     
     viewer.GeoMap.prototype.openPopup = function(marker) {
@@ -168,7 +178,6 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.prototype.setMarkerIcon = function(icon) {
-        console.log("Set marker type ", icon);
         this.markerIcon = icon;
         if(this.markerIcon) {            
             this.markerIcon.name = "";
@@ -178,7 +187,9 @@ var viewerJS = ( function( viewer ) {
     viewer.GeoMap.prototype.getMarkerIcon = function() {
         if(this.markerIcon) {       
             let icon = L.ExtraMarkers.icon(this.markerIcon);
-            console.log("icon ", icon, this.markerIcon);
+            if(this.markerIcon.shadow === false) {                
+                icon.options.shadowSize = [0,0];
+            }
             return icon;
         } else {
             return new L.Icon.Default();
@@ -213,8 +224,8 @@ var viewerJS = ( function( viewer ) {
      */
     viewer.GeoMap.prototype.setView = function(view) {
         if(_debug) {
-            console.log("set view to ", view);
         }
+        console.log("set view to ", view);
         if(!view) {
             return;
         } else if(typeof view === "string") {
@@ -249,7 +260,6 @@ var viewerJS = ( function( viewer ) {
         if(features.length == 0) {
             return undefined;
         } else if(features.length == 1) {
-            console.log("view around ", features[0])
             return {
                 "zoom": defaultZoom,
                 "center": features[0].geometry.coordinates

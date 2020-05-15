@@ -97,13 +97,8 @@
 								            	let view = #{map.initialView};
 								            	let features = #{map.featuresAsString};
 								            	console.log("init map with ", view, features);
-								            	geoMap.init();
-								            	geoMap.setView(view);
 								            	geoMap.setMarkerIcon(#{map.markerAsJSON});
-								            	features.forEach(feature => {
-								            	    geoMap.addMarker(feature);
-								            	})
-								            	geoMap.setView(geoMap.getViewAroundFeatures());
+								            	geoMap.init(view, features);
 								            })
 									        </script>
 			                    	</div>

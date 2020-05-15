@@ -4664,6 +4664,7 @@ public final class Configuration extends AbstractConfiguration {
             marker.setPrefix(config.getString("[@prefix]", marker.getPrefix()));
             marker.setShape(config.getString("[@shape]", marker.getShape()));
             marker.setSvg(config.getBoolean("[@svg]", marker.isSvg()));
+            marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
         }
         return marker;
     }

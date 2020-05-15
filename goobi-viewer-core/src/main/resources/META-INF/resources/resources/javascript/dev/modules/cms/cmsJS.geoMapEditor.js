@@ -200,11 +200,21 @@ var cmsJS = ( function( cms ) {
     
 
     
-    cms.GeoMapEditor.prototype.updateView = function() {
-        let view = $(this.config.viewInput).val();
-        
-        this.geoMap.setView(view);
-        this.geoMap.setView(this.geoMap.getViewAroundFeatures());
+    cms.GeoMapEditor.prototype.updateView = function(view) {
+        if(!view) {
+            view = $(this.config.viewInput).val();
+            view = JSON.parse(view);
+            console.log("set stored view ", view);
+            if(this.geoMap.getFeatures().length > 0) {            
+                this.geoMap.setView(this.geoMap.getViewAroundFeatures(view.zoom));
+            } else {           
+                this.geoMap.setView(view);
+            }
+        } else {
+            console.log("restore temp view ", view);
+            this.geoMap.setView(view);
+        }
+       
     }
     
     /**
