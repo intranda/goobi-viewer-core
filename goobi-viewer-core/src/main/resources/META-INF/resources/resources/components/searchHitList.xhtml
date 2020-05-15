@@ -51,11 +51,14 @@
                         <div class="col-xs-12 col-sm-2">
                             <div class="custom-control custom-control--select">
                                 <h:form>
-                                <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}" immediate="true">
-                                    <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}"
-                                        itemLabel="#{value}" itemValue="#{value}" />
-                                    <f:ajax event="change" listener="#{searchBean.hitsPerPageListener}" />
-                                </h:selectOneMenu>
+	                                <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}" immediate="true"
+	                                	onchange="$('[data-hits-per-page]').click()">
+	                                    <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}"
+	                                        itemLabel="#{value}" itemValue="#{value}"   onclick="$('.relaodButton').click()" />
+	                                </h:selectOneMenu>
+	                                <h:commandButton style="display: none" action="#{searchBean.search()}">
+	                                	<f:passThroughAttribute name="data-hits-per-page" value="reload"/>
+	                                </h:commandButton>
                                 </h:form>
                             </div>
                         </div>
