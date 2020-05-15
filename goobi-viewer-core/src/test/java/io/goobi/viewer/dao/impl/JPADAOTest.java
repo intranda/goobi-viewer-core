@@ -788,8 +788,9 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments(null, user));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().deleteComments(null, user));
+        // One comment was created by a different user, but it was a child of a comment belonging to this user
+        Assert.assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**

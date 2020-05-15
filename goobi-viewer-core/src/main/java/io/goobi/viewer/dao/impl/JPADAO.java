@@ -1701,6 +1701,7 @@ public class JPADAO implements IDAO {
      * @should delete comments for pi and user correctly
      * @should not delete anything if both pi and creator are null
      */
+    @SuppressWarnings("unchecked")
     @Override
     public int deleteComments(String pi, User owner) throws DAOException {
         if (StringUtils.isEmpty(pi) && owner == null) {
@@ -1708,8 +1709,10 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        StringBuilder sbQuery = new StringBuilder(80);
-        sbQuery.append("DELETE FROM Comment o WHERE o.parent IS NULL AND ");
+        
+        // Fetch relevant IDs
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("SELECT o FROM Comment o WHERE ");
         if (StringUtils.isNotEmpty(pi)) {
             sbQuery.append("o.pi = :pi");
         }
@@ -1719,22 +1722,35 @@ public class JPADAO implements IDAO {
             }
             sbQuery.append("o.owner = :owner");
         }
-        
+
+        Query q = em.createQuery(sbQuery.toString());
+        if (StringUtils.isNotEmpty(pi)) {
+            q.setParameter("pi", pi);
+        }
+        if (owner != null) {
+            q.setParameter("owner", owner);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<Comment> comments = q.getResultList();
+
+        if (comments.isEmpty()) {
+            return 0;
+        }
+
+        // Delete each manually to ensure cascading
+        EntityManager localEm = factory.createEntityManager();
         try {
-            EntityManager em = factory.createEntityManager();
-            Query q = em.createQuery(sbQuery.toString());
-            if (StringUtils.isNotEmpty(pi)) {
-                q.setParameter("pi", pi);
+            localEm.getTransaction().begin();
+            int rows = 0;
+            for (Comment comment : comments) {
+                Comment o = localEm.getReference(Comment.class, comment.getId());
+                localEm.remove(o);
+                rows++;
             }
-            if (owner != null) {
-                q.setParameter("owner", owner);
-            }
-            em.getTransaction().begin();
-            int rows = q.executeUpdate();
-            em.getTransaction().commit();
+            localEm.getTransaction().commit();
             return rows;
         } finally {
-            em.close();
+            localEm.close();
         }
     }
 
