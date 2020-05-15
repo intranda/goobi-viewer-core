@@ -53,8 +53,6 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -64,6 +62,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.modules.IModule;
 
 /**
  * Administration backend functions.
@@ -438,7 +437,7 @@ public class AdminBean implements Serializable {
             Messages.error("admin__error_email_mismatch");
             return;
         }
-        
+
         logger.debug("Deleting user: {}", user.getDisplayName());
 
         if (deleteContributions) {
@@ -453,7 +452,13 @@ public class AdminBean implements Serializable {
             int comments = DataManager.getInstance().getDao().deleteComments(null, user);
             logger.debug("{} comments of user {} deleted.", comments, user.getId());
 
-            //  TODO Delete crowdsourcing contributions
+            // Delete module contributions
+            for (IModule module : DataManager.getInstance().getModules()) {
+                int count = module.deleteUserContributions(user);
+                if (count > 0) {
+                    logger.debug("Deleted {} user contributions via the '{}' module.", count, module.getName());
+                }
+            }
         }
 
         // Finally, delete user (and any user-created data that's not publicly visible)
