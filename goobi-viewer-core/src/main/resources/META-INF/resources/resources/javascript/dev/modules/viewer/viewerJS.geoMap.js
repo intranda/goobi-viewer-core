@@ -266,7 +266,7 @@ var viewerJS = ( function( viewer ) {
             }
         } else {
             let points = features.map(f => f.geometry.coordinates).map(c =>  L.latLng(c[1], c[0]));
-            let bounds = L.latLngBounds(points);
+            let bounds = L.latLngBounds(points).pad(0.2);
             let center = bounds.getCenter();
             return {
                 "zoom": Math.min(this.map.getBoundsZoom(bounds), defaultZoom),
