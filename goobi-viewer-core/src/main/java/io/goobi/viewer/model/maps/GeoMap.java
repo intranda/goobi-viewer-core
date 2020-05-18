@@ -127,7 +127,7 @@ public class GeoMap {
     private GeoMapType type = null;
 
     @Column(name = "initial_view")
-    private String initialView = "{}";
+    private String initialView = "";
     
     @Column(name = "marker")
     private String marker = null;

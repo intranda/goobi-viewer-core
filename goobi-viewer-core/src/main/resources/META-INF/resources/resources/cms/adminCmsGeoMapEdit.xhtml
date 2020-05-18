@@ -253,13 +253,17 @@
 					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.setMarkerIcon(#{geoMapBean.currentMap.markerAsJSON});
 					            	    mapEditor.updateFeatures();
+					            	    console.log("set view from stored View ", window.storedView);
 					            	    mapEditor.updateView(window.storedView);
 					            	    
 					            	    viewerJS.jsfAjax.begin.subscribe((e) => {
 					            	        if(e.source.id === "mapMarker") {					            	            
 					            	            window.storedView = mapEditor.geoMap.getView();
+					            	            console.log("set stored view ", window.storedView);
 					            	        } else {
 					            	            window.storedView = undefined;
+					            	            console.log("reset stored view ", window.storedView);
+
 					            	        }
 					            	    })
 				            	    }
