@@ -2457,4 +2457,30 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         map1 = DataManager.getInstance().getDao().getAllGeoMaps().stream().filter(map -> map.getId() == 1l).findAny().orElse(null);
         Assert.assertEquals(newVal, map1.getDescription("de").getValue());
     }
+
+    /**
+     * @see JPADAO#deleteCampaignStatisticsForUser(User)
+     * @verifies remove user from creators and reviewers lists correctly
+     */
+    @Test
+    public void deleteCampaignStatisticsForUser_shouldRemoveUserFromCreatorsAndReviewersListsCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
+            Assert.assertTrue(campaign.getStatistics().get("PI 1").getReviewers().contains(user));
+        }
+
+        int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
+        Assert.assertEquals(1, rows);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
+            // User should no longer be among the reviewers
+            Assert.assertFalse(campaign.getStatistics().get("PI 1").getReviewers().contains(user));
+        }
+    }
 }

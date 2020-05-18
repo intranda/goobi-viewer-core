@@ -1734,6 +1734,15 @@ public interface IDAO {
      */
     public boolean deleteCampaign(Campaign campaign) throws DAOException;
 
+    /**
+     * Deletes given user from the lists of annotators and reviewers an all campaign statistics.
+     * 
+     * @param user
+     * @return Number of affected campaigns
+     * @throws DAOException
+     */
+    public int deleteCampaignStatisticsForUser(User user) throws DAOException;
+
     // Misc
 
     /**

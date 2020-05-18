@@ -3139,6 +3139,47 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
+     * @should remove user from creators and reviewers lists correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public int deleteCampaignStatisticsForUser(User user) throws DAOException {
+        if (user == null) {
+            return 0;
+        }
+
+        List<Campaign> campaigns = new ArrayList<>();
+        StringBuilder sbQuery =
+                new StringBuilder("SELECT o FROM CampaignRecordStatistic o WHERE (:user MEMBER OF o.annotators OR :user MEMBER OF o.reviewers)");
+        Query q = em.createQuery(sbQuery.toString());
+        q.setParameter("user", user);
+        List<CampaignRecordStatistic> result = q.getResultList();
+        for (CampaignRecordStatistic statistic : result) {
+            while (statistic.getAnnotators().contains(user)) {
+                statistic.getAnnotators().remove(user);
+            }
+            while (statistic.getReviewers().contains(user)) {
+                statistic.getReviewers().remove(user);
+            }
+            campaigns.add(statistic.getOwner());
+        }
+
+        int count = 0;
+        if (!campaigns.isEmpty()) {
+            for (Campaign campaign : campaigns) {
+                if (updateCampaign(campaign)) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+
+    }
+
     /*
      * (non-Javadoc)
      *

@@ -439,7 +439,6 @@ public class AdminBean implements Serializable {
         }
 
         logger.debug("Deleting user: {}", user.getDisplayName());
-
         if (deleteContributions) {
             // Delete owned user groups
             //            UserTools.deleteUserGroupOwnedByUser(user);
@@ -450,13 +449,17 @@ public class AdminBean implements Serializable {
 
             // Delete comments
             int comments = DataManager.getInstance().getDao().deleteComments(null, user);
-            logger.debug("{} comments of user {} deleted.", comments, user.getId());
+            logger.debug("{} comment(s) of user {} deleted.", comments, user.getId());
+
+            // Delete campaign statistics
+            int campaigns = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
+            logger.debug("Deleted user from the statistics from {} campaign(s)", campaigns);
 
             // Delete module contributions
             for (IModule module : DataManager.getInstance().getModules()) {
                 int count = module.deleteUserContributions(user);
                 if (count > 0) {
-                    logger.debug("Deleted {} user contributions via the '{}' module.", count, module.getName());
+                    logger.debug("Deleted {} user contribution(s) via the '{}' module.", count, module.getName());
                 }
             }
         }

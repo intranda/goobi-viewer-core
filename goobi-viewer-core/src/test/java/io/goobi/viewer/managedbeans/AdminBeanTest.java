@@ -72,14 +72,12 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void deleteUserAction_shouldDeleteAllUserCommentsCorrectly() throws Exception {
-        User user = DataManager.getInstance().getDao().getUser(1);
+        User user = DataManager.getInstance().getDao().getUser(2);
         Assert.assertNotNull(user);
         AdminBean bean = new AdminBean();
         bean.setEmailConfirmation(user.getEmail());
 
         bean.deleteUserAction(user, true);
-        Assert.assertNull(DataManager.getInstance().getDao().getComment(1));
-        Assert.assertNull(DataManager.getInstance().getDao().getComment(3));
-        Assert.assertNull(DataManager.getInstance().getDao().getComment(4));
+        Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
     }
 }
