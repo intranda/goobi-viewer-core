@@ -138,6 +138,8 @@ public class ActiveDocumentBean implements Serializable {
 
     private Boolean deleteRecordKeepTrace;
 
+    private int reloads = 0;
+
     /**
      * Empty constructor.
      */
@@ -247,8 +249,13 @@ public class ActiveDocumentBean implements Serializable {
     public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
             DAOException, ViewerConfigurationException {
         logger.trace("reload({})", pi);
+        reloads++;
         reset();
+        if (reloads > 3) {
+            throw new RecordNotFoundException(pi);
+        }
         setPersistentIdentifier(pi);
+//        setImageToShow(1);
         return open();
     }
 
@@ -519,6 +526,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
 
+            reloads = 0;
             return "";
         }
     }
