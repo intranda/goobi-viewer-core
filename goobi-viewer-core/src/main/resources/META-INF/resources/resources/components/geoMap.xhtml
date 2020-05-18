@@ -5,38 +5,45 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <composite:interface>
-        <composite:attribute name="geoMap" required="true" type="io.goobi.viewer.model.viewer.CollectionView" />
+        <composite:attribute name="geoMap" required="true" type="io.goobi.viewer.model.maps.GeoMap" />
+    	<composite:attribute name="mapId" required="false" default="geomap" />
     </composite:interface>
     
 	<composite:implementation>
 
  
 
-		<div id="geomap" class="geomap" />
-		<popover id="geoMapPopoverTemplate">
+		<div id="#{cc.attrs.mapId}" class="geomap" />
+		<popover id="popoverTemplate_#{cc.attrs.mapId}">
 		<h4 data-metadata="title"></h4>
 		<span data-metadata="description"></span> </popover>
 		<script>
+		(() => {
+
         	let geoMap = new viewerJS.GeoMap({
+        	    mapId: "#{cc.attrs.mapId}",
            		allowMovingFeatures: false,
-           		popover: "#geoMapPopoverTemplate",
+           		popover: "#popoverTemplate_#{cc.attrs.mapId}",
            		language: "#{navigationHelper.localeString}",
            		popoverOnHover: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
            	});
+        	if(#{cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
+                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate()}';
+                geoMap.onFeatureClick.subscribe( (feature) => {
+                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+//                     window.location = queryUrl;
+                    window.open(queryUrl, "_blank");
+                });
+            }
            	$(document).ready(() => {                  		    
-            	geoMap.init();
             	let view = #{cc.attrs.geoMap.initialView};
-       			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
             	let features = #{cc.attrs.geoMap.featuresAsString};
-            	if(features) {	            	    
-	            	features.forEach(feature => {
-	            	    geoMap.addMarker(feature);
-	            	})
-	            	geoMap.setView(geoMap.getViewAroundFeatures(view.zoom));
-            	} else {	            	    
-            		geoMap.setView(view);
-            	}
+       			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
+            	geoMap.init(view, features);
             })
+		    
+		})();
 		</script>
 	</composite:implementation>
 </ui:composition>

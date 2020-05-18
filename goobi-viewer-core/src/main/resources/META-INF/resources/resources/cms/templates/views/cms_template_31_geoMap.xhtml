@@ -47,34 +47,8 @@
                 </ui:fragment>
 				
 				<ui:fragment rendered="#{cmsPage.hasContent('geomap')}">
-                    <div id="geomap" class="tpl-geomap__geomap"/>
-                    <popover id="geoMapPopoverTemplate">
-                   		<h4 data-metadata="title"></h4>
-                   		<span data-metadata="description"></span>
-                   	</popover>
-                    <script>
-                  		let geoMap = new viewerJS.GeoMap({
-                  			allowMovingFeatures: false,
-                  			popover: "#geoMapPopoverTemplate",
-                  			language: "#{navigationHelper.localeString}",
-                  			popoverOnHover: #{cmsPage.getContentItem("geomap").geoMap.type == 'SOLR_QUERY'},
-                  		});
-                  		$(document).ready(() => {                  		    
-	                  		geoMap.init();
-	                  		let view = #{cmsPage.getContentItem('geomap').geoMap.initialView};
-		            		geoMap.setMarkerIcon(#{cmsPage.getContentItem('geomap').geoMap.markerAsJSON});
-	                  		let features = #{cmsPage.getContentItem("geomap").geoMap.featuresAsString};
-	                  		if(features) {	            	    
-	    		            	features.forEach(feature => {
-	    		            	    geoMap.addMarker(feature);
-	    		            	})
-	    		            	geoMap.setView(geoMap.getViewAroundFeatures(view.zoom));
-	    	            	} else {	            	    
-	    	            		geoMap.setView(view);
-	    	            	}
-	                  	})
-                    	
-                    </script>
+					<viewerComponent:geoMap geoMap="#{cmsPage.getContentItem('geomap').geoMap}">
+					</viewerComponent:geoMap>
                 </ui:fragment>
                 
 			</div>

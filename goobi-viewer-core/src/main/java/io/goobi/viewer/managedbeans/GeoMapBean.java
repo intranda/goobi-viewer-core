@@ -197,11 +197,6 @@ public class GeoMapBean implements Serializable {
         return false;
     }
     
-    public String getOEmbedLink(GeoMap map) {
-        //TODO create actual oEmbed link
-        return "dummy link";
-    }
-    
     public boolean isInUse(GeoMap map) throws DAOException {
         return DataManager.getInstance().getDao().getPagesUsingMap(map).size() > 0;
     }
@@ -214,6 +209,10 @@ public class GeoMapBean implements Serializable {
         return !getAllMaps().isEmpty();
     }
     
-
+    public String getCoordinateSearchQueryTemplate() {
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("newSearch5")
+                .getPatternParser().getMappedURL("-", "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"", "1", "-", "-");
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
+    }
 
 }
