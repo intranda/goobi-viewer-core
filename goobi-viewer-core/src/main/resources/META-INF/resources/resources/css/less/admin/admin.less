@@ -3,6 +3,106 @@
    global style declarations for admin_layout.xhtml
    ==============================================================*/
 /* ADMIN LAYOUT */
+
+
+
+
+.admin {
+	&__title-bar {
+		display: flex;
+		align-items: center;
+		padding: 15px;
+	}
+	&__title {
+		margin: 0;
+		padding: 0;
+		font-size: 3.2rem;
+	}	
+	&__title-bar-action {
+		margin-left: 3rem;
+	}
+	&__user-table-paginator {
+		display: flex;
+		width: 100%;
+		justify-content: end;	
+	}
+	&__user-table-filter {
+		margin-bottom: 1rem;
+		display: flex;
+		justify-content: end;
+		.input-group-append {
+			font-size: 1.4rem;
+			font-weight: 400;
+			line-height: 1;
+			color: #555;
+			text-align: center;
+			background-color: #eee;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			display: flex;
+			font-size: 1.6rem;
+			padding: 0 1rem;
+			align-items: center;
+		}
+	}
+	&__user-table-content {
+		background: @white;
+		padding: 0 2rem 0rem 2rem;
+	}
+	&__user-table-title {
+		margin-bottom: 0rem;
+		font-weight: 700;
+		border-bottom: 1px solid @gray;
+		padding: 1rem 0;
+	}
+	&__user-table-sorting {
+		margin-left: 2rem;
+	}
+	&__user-table-entry {
+		transition: background 0.2s ease;
+		padding: 0.5rem 2rem;
+		margin-left: -2rem;
+		margin-right: -2rem;
+		&:hover {
+		    background: @lightgray2;
+		    .admin__user-table-edit-user {
+		    	opacity: 1;
+		    }
+		}
+	}
+	&__user-table-img {
+		padding: 1rem 0;
+		max-width: 60px;
+		img {
+			max-width: 100%;
+		}
+	}
+	&__user-table-name {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding-top: 24px;
+		padding-left: 2rem;
+		align-items: start;
+	}
+	&__user-table-edit-user {
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+}
+	
+
+
+
+
+
+
+
+
+
+
+
+
 .admin {
 	.mx-clearfloats;
 	position: relative;
