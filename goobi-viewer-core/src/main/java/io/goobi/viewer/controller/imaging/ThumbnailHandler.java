@@ -820,7 +820,7 @@ public class ThumbnailHandler {
             String size = getSize(width, height);
             String format = "jpg";
             ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath);
-            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)")) { //match any image-mimetype except jpg and png
+            if (formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg|gif).*)")) { //match any image-mimetype except jpg and png
                 format = formatType.getFileExtension();
             }
             String imageApiUrl = getCMSMediaImageApiUrl();
