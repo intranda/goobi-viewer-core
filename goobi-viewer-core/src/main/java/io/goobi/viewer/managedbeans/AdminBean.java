@@ -36,7 +36,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,6 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
