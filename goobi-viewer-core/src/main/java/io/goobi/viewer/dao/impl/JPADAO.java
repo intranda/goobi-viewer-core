@@ -3170,6 +3170,7 @@ public class JPADAO implements IDAO {
                 statistic.getReviewers().remove(user);
             }
             campaigns.add(statistic.getOwner());
+            // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
             if (annotator) {
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
             }
