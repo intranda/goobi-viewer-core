@@ -70,6 +70,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.security.user.UserTools;
 
 /**
  * JPADAO test suite using H2 DB.
@@ -2482,5 +2483,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             // User should no longer be among the reviewers
             Assert.assertFalse(campaign.getStatistics().get("PI 1").getReviewers().contains(user));
         }
+        
+        int comments = DataManager.getInstance().getDao().deleteComments(null, user);
+        UserTools.deleteUser(user);
     }
 }

@@ -3152,19 +3152,31 @@ public class JPADAO implements IDAO {
         }
 
         List<Campaign> campaigns = new ArrayList<>();
+        Set<String> identifiers = new HashSet<>();
         StringBuilder sbQuery =
                 new StringBuilder("SELECT o FROM CampaignRecordStatistic o WHERE (:user MEMBER OF o.annotators OR :user MEMBER OF o.reviewers)");
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("user", user);
         List<CampaignRecordStatistic> result = q.getResultList();
         for (CampaignRecordStatistic statistic : result) {
+            boolean annotator = false;
+            boolean reviewer = false;
             while (statistic.getAnnotators().contains(user)) {
+                annotator = true;
                 statistic.getAnnotators().remove(user);
             }
             while (statistic.getReviewers().contains(user)) {
+                reviewer = true;
                 statistic.getReviewers().remove(user);
             }
             campaigns.add(statistic.getOwner());
+            if (annotator) {
+                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
+            }
+            if (reviewer) {
+                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
+            }
+            identifiers.add(statistic.getPi());
         }
 
         int count = 0;
