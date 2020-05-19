@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        <composite:attribute name="geoMap" required="true" type="io.goobi.viewer.model.maps.GeoMap" />
+    	<composite:attribute name="mapId" required="false" default="geomap" />
+    	<composite:attribute name="linkTarget" required="false" default="_self" />
+    </composite:interface>
+    
+	<composite:implementation>
+
+ 
+
+		<div id="#{cc.attrs.mapId}" class="geomap" />
+		<popover id="popoverTemplate_#{cc.attrs.mapId}">
+		<h4 data-metadata="title"></h4>
+		<span data-metadata="description"></span> </popover>
+		<script>
+		/**
+		* put this code in anonymous function and execute it limit the scope of declared variables to 
+		* this script only
+		**/
+		(() => {
+
+        	let geoMap = new viewerJS.GeoMap({
+        	    mapId: "#{cc.attrs.mapId}",
+           		allowMovingFeatures: false,
+           		popover: "#popoverTemplate_#{cc.attrs.mapId}",
+           		language: "#{navigationHelper.localeString}",
+           		popoverOnHover: #{cc.attrs.geoMap.type == 'SOLR_QUERY'},
+           	});
+        	if(#{cc.attrs.geoMap.type == 'SOLR_QUERY'}) {
+                let searchUrlTemplate = '#{geoMapBean.getCoordinateSearchQueryTemplate()}';
+                geoMap.onFeatureClick.subscribe( (feature) => {
+                    let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
+                    queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
+//                     window.location = queryUrl;
+                    window.open(queryUrl, "#{cc.attrs.linkTarget}");
+                });
+            }
+           	$(document).ready(() => {                  		    
+            	let view = #{cc.attrs.geoMap.initialView};
+            	let features = #{cc.attrs.geoMap.featuresAsString};
+       			geoMap.setMarkerIcon(#{cc.attrs.geoMap.markerAsJSON});
+            	geoMap.init(view, features);
+            })
+		    
+		})();
+		</script>
+	</composite:implementation>
+</ui:composition>

@@ -5,11 +5,21 @@
 .widget-geomap {
 	position: relative;
 	display: none;
-	h3 {}
-	&__map {
+	h3 {
+		display: flex;
+		justify-content: space-between;
+		.btn--icon {
+			color: white;
+			padding: 0;
+		}
+	}
+	.geomap {
 		min-height: 350px;
 		.mapboxgl-popup-content {
 		    padding: 20px 15px 10px 15px;
+		}
+		.leaflet-popup-content {
+	    	max-width: 200px;
 		}
 		.leaflet-control-container {
 			.leaflet-top {
@@ -21,7 +31,6 @@
 				a {
 					display: inline;
 				}
-				
 			}
 		}
 	}

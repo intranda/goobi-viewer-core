@@ -35,9 +35,28 @@ public class RichOEmbedResponse extends OEmbedResponse {
      */
     public RichOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
         this.type = "rich";
-        this.width = 300;
-        this.height = 450;
-        generateHtml(record, width);
+        this.width = 620;
+        this.height = 350;
+        generateHtml(record, width, height);
+    }
+    
+    /**
+     * Constructor.
+     *
+     * @param record a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public RichOEmbedResponse(OEmbedRecord record, Integer maxWidth, Integer maxHeight) throws ViewerConfigurationException {
+        this.type = "rich";
+        this.width = 620;
+        this.height = 350;
+        if(maxWidth != null) {
+            this.width = Math.min(this.width, maxWidth);
+        }
+        if(maxHeight != null) {
+            this.height = Math.min(this.height, maxHeight);
+        }
+        generateHtml(record, width, height);
     }
 
     /**
@@ -45,29 +64,45 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * @param se
      * @throws ViewerConfigurationException
      */
-    private void generateHtml(OEmbedRecord record, int size) throws ViewerConfigurationException {
+    private void generateHtml(OEmbedRecord record, int width, int height) throws ViewerConfigurationException {
         if (record == null) {
             throw new IllegalArgumentException("record may not be null");
         }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div>");
-        MimeType mimeType = MimeType.getByName(record.getPhysicalElement().getMimeType());
-        if (mimeType != null) {
-            switch (mimeType) {
-                case IMAGE:
-                    sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(size)).append("\"><br />");
-                    break;
-                default:
-                    break;
+        if(record.isRichResponse()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<iframe");
+            sb.append(" src='");
+            sb.append(record.getUri());
+            sb.append("'");
+            sb.append(" width='");
+            sb.append(width);
+            sb.append("'");
+            sb.append(" height='");
+            sb.append(height);
+            sb.append("'");
+            sb.append(" frameborder='0'");
+            sb.append("></iframe>");
+            html = sb.toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<div>");
+            MimeType mimeType = MimeType.getByName(record.getPhysicalElement().getMimeType());
+            if (mimeType != null) {
+                switch (mimeType) {
+                    case IMAGE:
+                        sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(width)).append("\"><br />");
+                        break;
+                    default:
+                        break;
+                }
             }
+            sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
+            
+            record.getStructElement().getPi();
+            
+            sb.append("</div>");
+            html = sb.toString();
         }
-        sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
-
-        record.getStructElement().getPi();
-
-        sb.append("</div>");
-        html = sb.toString();
     }
 
     /**
