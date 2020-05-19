@@ -17,6 +17,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,6 +58,7 @@ import org.apache.solr.common.params.GroupParams;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -1193,6 +1195,7 @@ public final class SearchHelper {
     }
 
     /**
+     * Remove any diacritic characters and replace any non.letter and non-digit characters with space
      * 
      * @param string
      * @return
@@ -1204,9 +1207,10 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-
-        return string.toLowerCase().replaceAll("[^\\p{L}0-9#]", " ");
-        //        return string;
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
+        string =  string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
+        string = Normalizer.normalize(string, Normalizer.Form.NFC);
+        return string;
     }
 
     /**

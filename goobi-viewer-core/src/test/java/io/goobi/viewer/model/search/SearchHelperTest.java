@@ -962,6 +962,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     highlightedPhrase);
         }
     }
+    
+    @Test
+    public void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() throws Exception{
+        String phrase = "Širvintos";
+        Set<String> terms = new HashSet<>();
+        terms.add("sirvintos");
+        String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+        System.out.println(highlightedPhrase);
+        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + phrase + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase);
+    }
 
     /**
      * @see SearchHelper#applyHighlightingToPhrase(String,Set)

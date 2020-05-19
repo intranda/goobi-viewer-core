@@ -170,6 +170,8 @@ public class SearchHit implements Comparable<SearchHit> {
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
+        //Add self to owner hits to avoid adding self to childhits
+        this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
         if (browseElement != null) {
             if (searchTerms != null) {
                 addLabelHighlighting();
@@ -595,9 +597,10 @@ public class SearchHit implements Comparable<SearchHit> {
                                         }
                                     }
                                 }
-
-                                ownerHit.getChildren().add(childHit);
-                                hitsPopulated++;
+//                                if(!(DocType.METADATA.equals(docType) || DocType.EVENT.equals(docType))) {                                    
+                                    ownerHit.getChildren().add(childHit);
+                                    hitsPopulated++;
+//                                }
                             }
                         }
                     }
