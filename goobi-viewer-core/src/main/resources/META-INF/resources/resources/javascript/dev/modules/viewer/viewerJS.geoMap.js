@@ -148,8 +148,8 @@ var viewerJS = ( function( viewer ) {
                     Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
                     Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
                 }
-                
-                marker.bindPopup(() => this.createPopup(marker));
+               
+                marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
                 
                 this.markers.push(marker);    
                 
@@ -171,7 +171,7 @@ var viewerJS = ( function( viewer ) {
     
     viewer.GeoMap.prototype.openPopup = function(marker) {
         try{
-            marker.openPopup
+            marker.openPopup();
         } catch(e) {
             //swallow
         }

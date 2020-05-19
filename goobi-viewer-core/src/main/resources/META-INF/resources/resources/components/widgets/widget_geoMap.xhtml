@@ -37,7 +37,7 @@
             $("#widgetGeoMap_#{cc.attrs.widget.geoMapId}").show();
             $(document).ready( () => {	
                 $("#expandMap_#{cc.attrs.widget.geoMapId}").on("click", e => {
-                    let oembedUrl = "#{cc.attrs.widget.geoMap.OEmbedURI}";
+                    let oembedUrl = "#{cc.attrs.widget.geoMap.getOEmbedURI('_parent')}";
                     viewerJS.oembed(oembedUrl)
                     .then( $node => {
                         viewerJS.overlay($node)

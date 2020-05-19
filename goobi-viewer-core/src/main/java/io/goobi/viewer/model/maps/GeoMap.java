@@ -450,10 +450,17 @@ public class GeoMap {
     }
     
     public URI getOEmbedURI() {
+        return getOEmbedURI(null);
+    }
+    
+    public URI getOEmbedURI(String linkTarget) {
         try {
-            URI linkURI = getOEmbedLink();
-            String linkURIString = URLEncoder.encode(linkURI.toString(), "utf-8");
-            URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + linkURIString + "&format=json");
+            String linkURI = getOEmbedLink().toString();
+            if(StringUtils.isNotBlank(linkTarget)) {
+                linkURI += "?linkTarget=" + linkTarget;
+            }
+            String escLinkURI = URLEncoder.encode(linkURI, "utf-8");
+            URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + escLinkURI + "&format=json");
             return uri;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

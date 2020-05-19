@@ -32,6 +32,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,14 @@ public class DynamicContentBuilder {
                         if (map != null) {
                             composite = loadCompositeComponent(parent, "geoMap.xhtml", "components");
                             composite.getAttributes().put("geoMap", map);
+                            //if query param linkTarget is given, open links from map in that target,
+                            //otherwise open them in a new tab
+                            String linkTarget = content.getAttribute(1);
+                            if(StringUtils.isNotBlank(linkTarget)) {
+                                composite.getAttributes().put("linkTarget", linkTarget);
+                            } else {
+                                composite.getAttributes().put("linkTarget", "_blank");
+                            }
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = " + id);
                         }
