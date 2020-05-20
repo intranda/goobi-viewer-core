@@ -4,6 +4,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:p="http://primefaces.org/ui"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -143,21 +145,22 @@
                                 
                                 <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                 <div id="avatar" class="col-9">
-                                    <h:selectOneRadio value="#{adminBean.currentUser.useGravatar}"> 
-                                    
-                                    	<div class="row no-gutters">
-                                    	<div class="col-6">
-                                        <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
-                                        </div>
-                                        <f:selectItem itemValue="true" itemLabel="#{msg.user__avatar_standard}" />
-                                        
+                                    <div class="row no-gutters">
                                         <div class="col-6">
-                                        <img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
+                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
+                                            <label for="avatarFalse">
+                                                <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
+                                                <span>#{msg.user__avatar_standard}</span>
+                                            </label>
                                         </div>
-                                        <f:selectItem itemValue="false" itemLabel="#{msg.user_useGravatar}" />
+                                        <div class="col-6">
+                                            <img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
+                                            <label for="avatarTrue">
+                                                <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
+                                                <span>#{msg.user_useGravatar}</span>
+                                            </label>
                                         </div>
-                                        
-                                    </h:selectOneRadio>
+                                    </div>
                                 </div>
                             </div>
                             
