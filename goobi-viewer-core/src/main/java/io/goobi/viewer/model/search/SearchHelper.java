@@ -325,13 +325,19 @@ public final class SearchHelper {
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+                    String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
                     if (DocType.METADATA.name().equals(docType)) {
                         // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
                         docType = DocType.DOCSTRCT.name();
                     }
-                    HitType hitType = HitType.getByName(docType);
-                    int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                    hit.getHitTypeCounts().put(hitType, count + 1);
+                    // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
+                    // It will simply be added to the metadata list of the main hit
+                    if(!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {                        
+                        HitType hitType = HitType.getByName(docType);
+                        int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                        hit.getHitTypeCounts().put(hitType, count + 1);
+                    }
                 }
             }
         }
