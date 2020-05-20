@@ -804,6 +804,16 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
+     * resetCurrentLicenseTypeAction.
+     * </p>
+     */
+    public void resetCurrentLicenseTypeAction(String name) {
+        logger.trace("resetCurrentLicenseTypeAction({})", name);
+        currentLicenseType = new LicenseType(name);
+    }
+
+    /**
+     * <p>
      * resetCurrentRoleLicenseAction.
      * </p>
      */
@@ -1607,8 +1617,9 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
-
-        List<String> accessConditions = SearchHelper.getFacetValues(SolrConstants.ACCESSCONDITION + ":[* TO *]", SolrConstants.ACCESSCONDITION, 0);
+        List<String> accessConditions = SearchHelper.getFacetValues(
+                "+" + SolrConstants.ACCESSCONDITION + ":[* TO *] -" + SolrConstants.ACCESSCONDITION + ":" + SolrConstants.OPEN_ACCESS_VALUE,
+                SolrConstants.ACCESSCONDITION, 1);
         Collections.sort(accessConditions);
         return accessConditions;
     }
@@ -1633,6 +1644,7 @@ public class AdminBean implements Serializable {
 
         List<String> ret = new ArrayList<>();
         for (String accessCondition : accessConditions) {
+            logger.trace("ac: " + accessCondition);
             boolean found = false;
             for (LicenseType licenseType : licenseTypes) {
                 if (licenseType.getName().equals(accessCondition)) {
@@ -1647,6 +1659,19 @@ public class AdminBean implements Serializable {
 
         return ret;
 
+    }
+
+    /**
+     * 
+     * @param accessCondition
+     * @return Number of records containing the given access condition value
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SearchHelper.ALL_RECORDS_QUERY + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
     }
 
     public void triggerMessage(String message) {

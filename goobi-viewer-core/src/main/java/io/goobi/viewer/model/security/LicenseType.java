@@ -98,6 +98,20 @@ public class LicenseType implements IPrivilegeHolder {
     @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
     private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
+    
+    /**
+     * Empty constructor.
+     */
+    public LicenseType() {
+    }
+
+    /**
+     * 
+     * @param name License type name
+     */
+    public LicenseType(String name) {
+        this.name = name;
+    }
 
     /*
      * (non-Javadoc)
