@@ -23,11 +23,60 @@
                     <h2 class="admin__content-inner-title">#{msg.admin__licenses}</h2>
 
                     <div class="admin__content-inner-content">
-                    <h:form id="adminLicenseTypesForm" prependId="false">
+                        <h:form id="adminLicenseTypesForm" prependId="false">
 							<h:commandLink action="pretty:adminLicenseType" actionListener="#{adminBean.resetCurrentLicenseTypeAction}" value="#{msg.license_licenseType_addNew}"
 									styleClass="btn btn--default pull-right" />
                                     
                             <div class="clearfix"></div>
+                            
+                            <div>
+                                <h:outputText value="#{msg.admin__licenses_description_text}" />
+                            </div>
+                            
+                            <!-- TODO proper css class -->
+                            <div class="cms-select-template__template">
+                                <h3>admin__licenses_not_configured_licenses</h3>
+                                <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
+                                    <h:outputText>#{accessCondition}</h:outputText>
+                                </ui:repeat>
+                            </div>
+                            
+                           <ui:repeat var="licenseType" value="#{adminBean.allRecordLicenseTypes}">
+                                <div class="cms-select-template__template">
+                                    <h3>#{msg[licenseType.name]}</h3>
+                                    <h:outputText>#{licenseType.description}</h:outputText>
+                                    <br /> #{msg.admin__licenses_record_number}: TODO
+                                    <br />#{msg.admin__licenses_functions}:
+                                                    <ui:fragment rendered="#{licenseType.privList}">
+                                                        <div class="badge badge-dark">#{msg.license_privList}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privViewImages}">
+                                                        <div class="badge badge-dark">#{msg.license_privViewImages}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privViewThumbnails}">
+                                                        <div class="badge badge-dark">#{msg.license_privViewThumbnails}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privViewFulltext}">
+                                                        <div class="badge badge-dark">#{msg.license_privViewFulltext}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privViewVideo}">
+                                                        <div class="badge badge-dark">#{msg.license_privViewVideo}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privViewAudio}">
+                                                        <div class="badge badge-dark">#{msg.license_privViewAudio}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privDownloadPdf}">
+                                                        <div class="badge badge-dark">#{msg.license_privDownloadPdf}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privDownloadPagePdf}">
+                                                        <div class="badge badge-dark">#{msg.license_privDownloadPagePdf}</div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{licenseType.privDownloadOriginalContent}">
+                                                        <div class="badge badge-dark">#{msg.license_privDownloadOriginalContent}</div>
+                                                    </ui:fragment>
+                                                   
+                                </div>
+                            </ui:repeat>
                             
                             <!-- paginator -->
                             <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelLicenseTypes}" />
