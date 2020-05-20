@@ -21,169 +21,151 @@
             <h:form id="adminAllUserForm" prependId="false">
             
 	            <div class="admin__title-bar">
-	            
 	            	<!-- HEADING -->
 	                <h2 class="admin__title">#{msg.admin__users}</h2>
-	                
-	                
 	                <!-- CREATE NEW USER BUTTON -->
 	                <h:commandLink action="pretty:adminUser" actionListener="#{adminBean.resetCurrentUserAction}" value="#{msg.admin_createNewUser}" styleClass="btn btn--default admin__title-bar-action" />
 	            </div>   
-
                 <div class="admin__content-inner-content">
-                    
+					<!-- USER TABLE TOOLS: PAGINATION, FILTER  -->
+					<div class="admin__user-table-tools">
+						<!-- PAGINATOR -->
+						<div class="admin__user-table-paginator"><viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUsers}" /></div>
+						<!-- FILTER -->
+						<div class="admin__user-table-filter"><viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/></div>					
+					</div>
+					
+					<!-- All USERS TABLE -->
+					<div id="new-table-adminallusertable" class="admin__user-table-content">
+						<!-- TITLE ROW -->
+						<div class="row no-gutters admin__user-table-title">
+							<!-- NAME COL -->
+							<div class="col-4 d-flex">
+								<span>#{msg.name}</span>
+								<!-- SORTING -->
+								<div class="sorting-wrapper admin__user-table-sorting">
+									<h:commandLink styleClass="sort"
+										action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
+										<i class="fa fa-angle-down" aria-hidden="true"></i>
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+									<h:commandLink styleClass="sort"
+										action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
+										<i class="fa fa-angle-up" aria-hidden="true"></i>
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+								</div>
+							</div>
+							<!-- LAST LOGIN COL -->
+							<div class="col-2 d-flex">
+								<span>#{msg.lastLoginDate}</span>
+								<!-- SORTING -->
+								<div class="sorting-wrapper admin__user-table-sorting">
+									<h:commandLink styleClass="sort"
+										action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
+										<i class="fa fa-angle-down" aria-hidden="true"></i>
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+									<h:commandLink styleClass="sort"
+										action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'DESCENDING')}">
+										<i class="fa fa-angle-up" aria-hidden="true"></i>
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+								</div>
+							</div>
+							<!-- USER EMAIL COL -->
+							<div class="col-3 d-flex">
+								<span>#{msg.email}</span>
+							</div>
+							<!-- USER GROUPS COL -->
+							<div class="col-3 d-flex">#{msg.userGroups}</div>
+						</div>
+						<!-- INDIVIDUAL USER ROWS -->
+		                	<ui:repeat var="user" value="#{adminBean.pageUsers}">
+								<div class="row no-gutters admin__user-table-entry">
+									<div class="col-4 d-flex">
+										<!-- USER ICON -->
+									    <ui:fragment rendered="#{user.useGravatar}">
+									    	<div class="admin__user-table-img">
+									    		<img src="#{user.getGravatarUrl(48)}" />
+									    	</div>
+									    </ui:fragment>
+									    <ui:fragment rendered="#{!user.useGravatar}">
+									    	<div class="admin__user-table-img">
+									    		<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
+									    	</div>
+									    </ui:fragment>					
+										<!-- USER NAME -->
+										<div class="admin__user-table-name">
+											<span><h:outputText value="#{user.nickName}" /></span>
+											<!-- USER EDIT -->
+											<h:commandLink styleClass="admin__user-table-edit-user"
+												action="pretty:adminUser" title="#{msg.edit}">
+												<f:setPropertyActionListener value="#{user}"
+													target="#{adminBean.currentUser}" />
+												<f:setPropertyActionListener value="#{null}"
+													target="#{adminBean.currentLicense}" />
+							                   #{msg.edit}
+							               </h:commandLink>
+										</div>
+									</div>
+									
+									<div class="col-2 d-flex align-items-center">
+										<span><h:outputText value="#{user.lastLogin}">
+												<f:convertDateTime type="both" dateStyle="short"
+													timeStyle="short" />
+											</h:outputText></span>
+									</div>
 
-				<!-- FILTER -->
-				<div class="admin__user-table-filter"><viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/></div>
-				
-				<!-- PAGINATOR -->
-				<div class="admin__user-table-paginator"><viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUsers}" /></div>
-				
-				<!-- All USERS TABLE -->
-				<div id="new-table-adminallusertable" class="admin__user-table-content">
-				
-				<!-- TITLE ROW -->
-				<div class="row no-gutters admin__user-table-title">
-				
-					<!-- USER IMAGE AND NAME -->
-				 <div class="col-4 d-flex">
-				  <span>#{msg.name}</span>
-				
-				  <!-- SORTING -->
-				  <div class="sorting-wrapper admin__user-table-sorting">
-				      <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
-				          <i class="fa fa-angle-down" aria-hidden="true"></i>
-				          <f:ajax execute="@form" render="@form" />
-				      </h:commandLink>
-				      <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
-				          <i class="fa fa-angle-up" aria-hidden="true"></i>
-				          <f:ajax execute="@form" render="@form" />
-				      </h:commandLink>
-				  </div>      
-				 </div>
-				
-				<!-- LAST LOGIN DATE COL -->
-				 <div class="col-2 d-flex">
-				  <span>#{msg.lastLoginDate}</span>
-				  
-				  <!-- SORTING -->
-				  <div class="sorting-wrapper admin__user-table-sorting">
-				      <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
-				          <i class="fa fa-angle-down" aria-hidden="true"></i>
-				          <f:ajax execute="@form" render="@form" />
-				      </h:commandLink>
-				      <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'DESCENDING')}">
-				          <i class="fa fa-angle-up" aria-hidden="true"></i>
-				          <f:ajax execute="@form" render="@form" />
-				      </h:commandLink>
-				  </div>  
-				 </div>
-				
-				<!-- USER EMAIL COL -->
-				 <div class="col-3 d-flex">
-				  #{msg.email}
-				  
-				  <!-- SORTING -->
-				  <!-- 
-				  <div class="sorting-wrapper">
-				      <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
-				          <i class="fa fa-angle-down" aria-hidden="true"></i>
-				          <f:ajax execute="@form" render="@form" />
-				      </h:commandLink>
-				      <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
-				          <i class="fa fa-angle-up" aria-hidden="true"></i>
-				          <f:ajax execute="@form" render="@form" />
-				      </h:commandLink>
-				  </div> -->
-				  
-				 </div>
-				
-				<!-- USER GROUPS COL -->
-				                 <div class="col-3 d-flex">
-				#{msg.userGroups}                     
-				                 </div>                        
-				                </div>
-                        
-                        
-                        <!-- INDIVIDUAL USER ROWS -->
-                        <ui:repeat var="user" value="#{adminBean.pageUsers}">
-                        <div class="row no-gutters admin__user-table-entry">
-                        
-                        	<div class="col-4 d-flex">
+									<div class="col-3 d-flex align-items-center">
+										<a class="admin__user-table-email" href="mailto:#{user.email}"><h:outputText
+												value="#{user.email}" /></a>
+									</div>
 
-								<!-- 
-							    <ui:fragment rendered="#{user.useGravatar}">
-							    <img src="#{user.getGravatarUrl(48)}" />
-							                </ui:fragment>									  -->
-							    
-			             			<!-- USER ICON -->
-									<div class="admin__user-table-img"><img src="http://www.gravatar.com/avatar/?d=identicon" /></div>
-								
-									<!-- USER NAME -->
-			                        <div class="admin__user-table-name"><h:outputText value="#{user.nickName}" />
-			                        
-			                        <!-- USER EDIT -->
-					               <h:commandLink styleClass="admin__user-table-edit-user" action="pretty:adminUser" title="#{msg.edit}">
-					                   <f:setPropertyActionListener value="#{user}" target="#{adminBean.currentUser}" />
-					                   <f:setPropertyActionListener value="#{null}" target="#{adminBean.currentLicense}" />
-					                   #{msg.edit}
-					               </h:commandLink>
-                            	</div>                 
-                       		</div>
+									<div class="col-3 d-flex align-items-center">
+
+										<h:panelGroup>
+											<!-- Admin -->
+											<ui:fragment rendered="#{user.superuser}">
+												<div class="badge badge-dark">[#{msg.admin}]</div>
+											</ui:fragment>
+											<!-- TODO This might get expensive -->
+
+											<!-- Ownerships -->
+											<ui:repeat var="group" value="#{user.userGroupOwnerships}">
+												<div class="badge badge-danger">&lt;#{group.name}&gt;</div>
+											</ui:repeat>
+
+											<!-- Memberships -->
+											<ui:repeat var="role" value="#{user.userGroupMemberships}">
+												<div class="badge badge-info">(#{role.userGroup.name})</div>
+											</ui:repeat>
+										</h:panelGroup>
+
+									</div>
 
 
-                        <div class="col-2 d-flex align-items-center">
-                        	<span><h:outputText value="#{user.lastLogin}">
-			                    <f:convertDateTime type="both" dateStyle="short" timeStyle="short" />
-			                 </h:outputText></span>
-                        </div>   
-                                         
-                        <div class="col-3 d-flex align-items-center">
-                        <a class="admin__user-table-email" href="mailto:#{user.email}"><h:outputText value="#{user.email}" /></a>
-                        </div> 
-                                               
-                        <div class="col-3 d-flex align-items-center"> 
-                      
-						<h:panelGroup>
-	                       <!-- Admin -->
-						    <ui:fragment rendered="#{user.superuser}"><div class="badge badge-dark">[#{msg.admin}]</div></ui:fragment>
-						    <!-- TODO This might get expensive -->
-						    
-						    <!-- Ownerships -->
-                            <ui:repeat var="group" value="#{user.userGroupOwnerships}">
-                                <div class="badge badge-danger">&lt;#{group.name}&gt;</div>
-                            </ui:repeat>
-                            
-	                        <!-- Memberships -->
-						    <ui:repeat var="role" value="#{user.userGroupMemberships}">
-						        <div class="badge badge-info">(#{role.userGroup.name})</div>
-						    </ui:repeat>
-                        </h:panelGroup>    
-                                                          
-                        </div>                        
-                        
-                        
-                        </div>
-                        
-                        </ui:repeat>
+								</div>
 
-                        </div>
+							</ui:repeat>
+	
+	                        </div>
                 </div>
            	</h:form>
             </h:panelGroup>
         </div>
 
 		<script type="text/javascript">
-		    var dataTableConfig = {
-                dataTablePaginator: "#dataTablePaginator",
-                txtField1: "#txtMoveTo1",
-                txtField2: "#txtMoveTo2",
-                totalCount: "#totalCount",
-                reloadBtn: 'input[id*="cmdMoveTo"]',
-            };   
-        
-            viewerJS.dataTable.init( dataTableConfig );
-        </script>
+			var dataTableConfig = {
+				dataTablePaginator : "#dataTablePaginator",
+				txtField1 : "#txtMoveTo1",
+				txtField2 : "#txtMoveTo2",
+				totalCount : "#totalCount",
+				reloadBtn : 'input[id*="cmdMoveTo"]',
+			};
+
+			viewerJS.dataTable.init(dataTableConfig);
+		</script>
 	</ui:define>
 
     <!-- SIDEBAR -->

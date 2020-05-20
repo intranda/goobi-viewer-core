@@ -4,6 +4,131 @@
    ==============================================================*/
 #widgetAdmin {}
 
+.admin-widget {
+    margin-bottom: 20px;
+    /* ELEMENT */
+    h3 {
+    	margin-right: -15px;
+    	margin-left: -15px;
+    	padding-top: 0;
+    	padding-right: 15px;
+    	padding-bottom: 5px;
+    	padding-left: 15px;
+    	color: @white;
+    	border-bottom: 1px solid @white;
+    }
+    ul {
+        .mx-list-reset;
+    }
+    li {
+    	position: relative;
+    	margin-right: -15px;
+    	margin-left: -15px;
+    	padding-right: 15px;
+    	padding-left: 15px;
+    	&.active {
+    		background-color: @activeblue;
+    		&:after {
+    			content: "";
+    			position: absolute;
+    			display: block;
+    			top: 50%;
+    			right: 0;
+    			width: 0;
+    			height: 0;
+    			margin-top: -6px;
+    			border-width: 6px;
+    			border-style: solid;
+    			border-color: transparent @neutralgray transparent transparent;
+    			z-index: 10;
+    		}
+    	}
+    	&:hover {
+    		background-color: @hoverblue;
+    		&:after {
+    			display: none;
+    		}
+    	}
+    	&.spacer {
+    		margin-bottom: 10px;
+    	}
+    }
+    a {
+    	display: block;
+    	padding: 5px 0;
+    	.fa {
+    		width: 30px;
+    	}
+    }
+    &__roles-link {
+    	padding: 2.5rem 0;
+    }
+}
+
+/* test */
+
+.admin-widget {
+	margin-bottom: 0;
+}
+
+.admin-widget h3 {
+    margin-right: -15px;
+    margin-left: -15px;
+    padding-top: 0;
+    padding-right: 15px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    color: #fff;
+    border-bottom: none;
+    background: #285084;
+    padding: 1.3rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.00rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 0;
+
+}
+
+
+.admin-widget li {
+   padding-top: 0.3rem;
+   padding-bottom: 0.3rem;
+   transition: all 0.2s ease;
+   
+}
+
+
+.admin-widget li.admin-widget__roles-link { 
+    	padding-top: 1.5rem;
+    	padding-bottom: 1.5rem;
+}
+
+
+.admin-widget li:hover {
+    background-color: #235396;
+    padding-left: 1.7rem;
+}
+
+
+.admin-widget li.active {
+    background-color: #235396;
+}
+
+.admin__sidebar-logout {
+    margin-right: -15px;
+    margin-left: -15px;
+    padding-top: 0px;
+    padding-right: 15px;
+    padding-left: 15px;
+    border-top: 1px solid #fff;
+}
+
+
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
