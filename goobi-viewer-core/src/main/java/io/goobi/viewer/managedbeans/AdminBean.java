@@ -81,6 +81,7 @@ public class AdminBean implements Serializable {
     private TableDataProvider<User> lazyModelUsers;
     @Deprecated
     private TableDataProvider<UserGroup> lazyModelUserGroups;
+    @Deprecated
     private TableDataProvider<LicenseType> lazyModelLicenseTypes;
     private TableDataProvider<LicenseType> lazyModelCoreLicenseTypes;
     @Deprecated
