@@ -142,10 +142,19 @@
                                 
                                 <div id="avatar" class="col-9">
                                     <h:selectOneRadio value="#{adminBean.currentUser.useGravatar}"> 
+                                    
+                                    	<div class="row no-gutters">
+                                    	<div class="col-6">
                                         <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
+                                        </div>
                                         <f:selectItem itemValue="false" itemLabel="#{msg.user__avatar_standard}" />
+                                        
+                                        <div class="col-6">
                                         <img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
+                                        </div>
                                         <f:selectItem itemValue="true" itemLabel="#{msg.user_useGravatar}" />
+                                        </div>
+                                        
                                     </h:selectOneRadio>
                                 </div>
                             </div>
@@ -182,14 +191,14 @@
                             
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group admin__default-block">
-                                            <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
+                                            <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}"
                                                     required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
+                                            <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}"
                                                     required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
@@ -208,13 +217,13 @@
                             
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}:" />
+                                            <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}" />
                                             <div class="col-9">
                                                 <h:inputSecret id="adminPasswordOne" styleClass="form-control" value="#{adminBean.passwordOne}" />
                                             </div>
                                         </div>
                                         <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-2 control-label" value="#{msg.newUserPasswordTwo}:" />
+                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-2 control-label" value="#{msg.newUserPasswordTwo}" />
                                             <div class="col-9">
                                                 <h:inputSecret id="adminPasswordTwo" styleClass="form-control" value="#{adminBean.passwordTwo}" />
                                             </div>
@@ -279,7 +288,7 @@
                                 
                                 <div class="form-group form-row">
 										<div class="col-9">
-											<p>#{msg.admin__user_deletion_description}</p>
+											<p>#{msg.admin__user_delete_description}</p>
 										</div>
 								</div>
                                 
@@ -296,7 +305,7 @@
                                     
                                     
                                     <div class="form-group form-row">
-                                        <h:outputLabel for="emailConfirmation" styleClass="col-6 control-label" value="#{msg.user__displayName} *" />
+                                        <h:outputLabel for="emailConfirmation" styleClass="col-6 control-label" value="#{msg.admin__user_delete_email_confirmation}" />
                                         <div class="col-6">
                                             <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation"
                                                 styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
