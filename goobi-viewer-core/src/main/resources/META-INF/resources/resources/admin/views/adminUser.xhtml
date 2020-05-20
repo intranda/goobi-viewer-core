@@ -15,6 +15,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUser')}" />
             <f:event type="preRenderView" listener="#{adminBean.currentUser.backupFields}" />
+	    <f:viewParam name="avatar" value="#{adminBean.currentUser.useGravatar}"/>
         </f:metadata>
     </ui:define>
 
