@@ -192,11 +192,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     public User(String nickname) {
         this.nickName = nickname;
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -307,7 +307,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     public String getDisplayNameObfuscated() {
         String displayName = getDisplayName();
         if (displayName.equals(email) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
-            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null)).append(" (").append(id).append(')').toString();
+            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null))
+                    .append(" (")
+                    .append(id)
+                    .append(')')
+                    .toString();
         }
 
         return displayName;
@@ -608,13 +612,12 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE,
                 recordsForWhichUserMayDeleteOcrPage);
     }
-    
+
     /**
      * 
      * @return true if there are CMS pages or campaigns created by this user; false otherwise
      */
     public boolean isCmsCreator() {
-
 
         return false;
     }
@@ -727,9 +730,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
             gravatar.setDefaultImage(GravatarDefaultImage.GRAVATAR_ICON);
             String url = gravatar.getUrl(email);
-            //            if (url != null) {
-            //                url = url.replace("http:", "");
-            //            }
+            if (url != null) {
+                //                url = url.replace("http:", "");
+                url = url.replace("?d=404", "");
+            }
             return url;
         }
 
