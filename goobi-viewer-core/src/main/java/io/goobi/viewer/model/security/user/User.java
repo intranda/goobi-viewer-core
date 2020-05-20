@@ -728,11 +728,12 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             Gravatar gravatar = new Gravatar();
             gravatar.setSize(size);
             gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
-            gravatar.setDefaultImage(GravatarDefaultImage.GRAVATAR_ICON);
+            gravatar.setDefaultImage(GravatarDefaultImage.IDENTICON);
             String url = gravatar.getUrl(email);
             if (url != null) {
                 //                url = url.replace("http:", "");
                 url = url.replace("?d=404", "");
+
             }
             return url;
         }
