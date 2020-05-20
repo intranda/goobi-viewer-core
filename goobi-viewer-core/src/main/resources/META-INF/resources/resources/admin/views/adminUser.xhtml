@@ -30,33 +30,42 @@
                     <div class="admin__content-inner-content">
     
                     <!-- PROFILE -->
-                    <h:form id="editUser" styleClass="form-horizontal" role="form" prependId="false">
+                    <h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
                         <h3>#{msg.admin__user_profile}</h3>
                         
                         <!-- TODO proper css class -->
-                        <div class="cms-select-template__template">
+                        <div class="admin__default-block">
                         
                         <!-- prevent autocomplete in IE, Chrome and Firefox -->
                         <input type="text" class="hidden" />
                         <input type="password" class="hidden" />
                         
-                        <fieldset disabled="#{!adminBean.currentUser.active}">
-
-                            <div class="form-group">
-                                <h:outputLabel for="displayName" styleClass="col-sm-2 control-label" value="#{msg.user__displayName} *" />
-                                <div class="col-sm-9">
+                        
+                        
+                        <!-- TODO LOGIC FOR DISABLED OR NOT DISABLED -->
+                  		<!--  <fieldset disabled="#{!adminBean.currentUser.active}">-->
+						<fieldset>
+						
+                            <div class="form-group form-row">
+                            
+                                <div class="col-2 control-label admin__form-label">
+                                	<h:outputLabel for="displayName" value="#{msg.user__displayName} *" />
+                                </div>
+                                <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
                                         required="true" requiredMessage="#{msg.loginEnterDisplayName}" />
-                                    <span class="form-group-helptext">#{msg.help__admin_user_displayName}</span>
+                                    <span class="admin__form-help-text">#{msg.help__admin_user_displayName}</span>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
+                                
                             </div>
-                            <div class="form-group">
+                            
                                 <h:panelGroup id="emailGroup">
+                                <div class="form-group form-row">
                                     <div class="cms-module__option-message">
                                         <h:messages for="email" 
                                             infoClass="cms-module__option-message-status success" 
@@ -67,49 +76,71 @@
                                             <i class="fa fa-exclamation" aria-hidden="true"></i>
                                         </div>
                                     </div>
-                                    <h:outputLabel for="email" styleClass="col-sm-2 control-label" value="#{msg.email} *" />
-                                    <div class="col-sm-9">
+                                    
+                                    <div class="col-2 control-label admin__form-label">
+	                                    <h:outputLabel for="email" value="#{msg.email} *" />
+                                    </div>
+                                    
+                                    <div class="col-9 admin__form-input">
                                         <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
                                             styleClass="form-control">
                                             <f:validator validatorId="emailValidator" for="email" />
                                             <f:ajax render="emailGroup" />
                                         </h:inputText>
-                                        <span class="form-group-helptext">#{msg.help__admin_user_email}</span>
+                                        <span class="admin__form-help-text">#{msg.help__admin_user_email}</span>
                                     </div>
-                                    <div class="col-sm-1">
+
+                                    <div class="col-1 admin__form-help-icon">
                                         <button type="button" class="btn btn--clean" data-toggle="helptext">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </button>
                                     </div>
+                                    
+                                       </div>
                                 </h:panelGroup>
+                         
+                            
+                            
+                            <div class="form-group form-row">
+                            
+                            <div class="col-2 control-label admin__form-label">
+                                <h:outputLabel for="firstName" value="#{msg.nameFirst}" />
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="firstName" styleClass="col-sm-2 control-label" value="#{msg.nameFirst}" />
-                                <div class="col-sm-9">
+                            
+                                <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
-                                    <span class="form-group-helptext">#{msg.help__admin_user_firstName}</span>
+                                    <span class="admin__form-help-text">#{msg.help__admin_user_firstName}</span>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="lastName" styleClass="col-sm-2 control-label" value="#{msg.nameLast}" />
-                                <div class="col-sm-9">
+                            
+                            <div class="form-group form-row">
+                            <div class="col-2 control-label admin__form-label">
+                                <h:outputLabel for="lastName" value="#{msg.nameLast}" />
+                            </div>
+                            
+                            <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
-                                    <span class="form-group-helptext">#{msg.help__admin_user_lastName}</span>
-                                </div>
-                                <div class="col-sm-1">
+                                    <span class="admin__form-help-text">#{msg.help__admin_user_lastName}</span>
+                            </div>
+                                <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="avatar" styleClass="col-sm-2 control-label" value="#{msg.user__avatar}" />
-                                <div id="avatar" class="col-sm-9">
+                            
+                            <div class="form-group form-row">
+                                <div class="col-2 control-label admin__form-label">
+                                <h:outputLabel for="avatar" value="#{msg.user__avatar}" />
+                                </div>
+                                
+                                
+                                <div id="avatar" class="col-9">
                                     <h:selectOneRadio value="#{adminBean.currentUser.useGravatar}"> 
                                         <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
                                         <f:selectItem itemValue="false" itemLabel="#{msg.user__avatar_standard}" />
@@ -118,17 +149,25 @@
                                     </h:selectOneRadio>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="gravatar" styleClass="col-sm-2 control-label" value="#{msg.admin_superuser}" />
-                                <div class="col-sm-9">
-                                    <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentUser.superuser}" />
-                                            #{msg.admin_superuserNotice}
-                                        </label>
+                            
+                            <div class="form-group form-row">
+                            
+                            
+                            <div class="col-2 control-label admin__form-label">
+                                <h:outputLabel for="superuser" value="#{msg.admin_superuser}" />
+                            </div>
+                            
+                            
+                                <div class="col-9 admin__form-input">
+                                    <div class="form-check admin__form-checkbox">
+ 
+                                        <h:selectBooleanCheckbox class="form-check-input" type="checkbox" value="#{adminBean.currentUser.superuser}" id="superUser"/><label class="form-check-label" for="superUser">#{msg.admin_superuserNotice}</label>
+                                        
                                     </div>
                                 </div>
-                            </div>
+                                </div>
+                                                 
+                            
                         </fieldset>
                         
                         </div>
@@ -139,10 +178,10 @@
                                 <h3>#{msg.password}</h3>
                             
                                 <!-- TODO proper css class -->
-                                <div class="cms-select-template__template">
+                                <div class="admin__default-block">
                             
                                     <div class="form-horizontal" role="form">
-                                        <div class="form-group cms-select-template__template">
+                                        <div class="form-group admin__default-block">
                                             <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}"
@@ -165,18 +204,18 @@
                                 <h3>#{msg.changePassword}</h3>
                             
                                 <!-- TODO proper css class -->
-                                <div class="cms-select-template__template">
+                                <div class="admin__default-block">
                             
                                     <div class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <h:outputLabel for="adminPasswordOne" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
-                                            <div class="col-sm-8">
+                                        <div class="form-group form-row">
+                                            <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}:" />
+                                            <div class="col-9">
                                                 <h:inputSecret id="adminPasswordOne" styleClass="form-control" value="#{adminBean.passwordOne}" />
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
-                                            <div class="col-sm-8">
+                                        <div class="form-group form-row">
+                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-2 control-label" value="#{msg.newUserPasswordTwo}:" />
+                                            <div class="col-9">
                                                 <h:inputSecret id="adminPasswordTwo" styleClass="form-control" value="#{adminBean.passwordTwo}" />
                                             </div>
                                         </div>
@@ -202,26 +241,26 @@
                         <!-- ACCOUNT ACTIVATION -->
                         <ui:fragment rendered="#{!adminBean.currentUser.active}">
                             <h3>#{msg.admin__user_activation_title}</h3>
-                            
-                            <!-- TODO proper css class -->
-                            <!-- TODO yellow frame -->
-                            <div class="cms-select-template__template">
-                            
-                                #{msg.admin__user_activation_description}
-                                <div class="form-horizontal" role="form">
-                                    <div class="form-group">
-                                        <div class="col-sm-9">
-                                            <div class="checkbox">
-                                                <label> 
-                                                    <h:selectBooleanCheckbox value="#{adminBean.currentUser.active}" />
-                                                    #{msg.admin__user_activation_label}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-right">
+
+								<div class="admin__default-block -warning">
+
+									<div class="form-group form-row">
+										<div class="col-9">
+											<p>#{msg.admin__user_activation_description}</p>
+										</div>
+									</div>
+
+									<div class="form-group form-row">
+										<div class="col-9">
+											<div class="form-check">
+												<h:selectBooleanCheckbox class="form-check-input" value="#{adminBean.currentUser.active}" /><label class="form-check-label"> 
+													#{msg.admin__user_activation_label}
+												</label>
+											</div>
+										</div>
+									</div>
+
+								<div class="text-right">
                                     <h:commandLink id="saveUserActivationButton" styleClass="btn btn--success" value="#{msg.save}"
                                         action="#{adminBean.saveUserAction}" />
                                 </div>
@@ -236,19 +275,29 @@
                             <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
                                 <h3>#{msg.admin__delete_user_account}</h3>
                                 
-                                <!-- TODO proper css class -->
-                                <!-- TODO red frame -->
-                                <div class="cms-select-template__template">
+                                <div class="admin__default-block -danger">
                                 
+                                <div class="form-group form-row">
+										<div class="col-9">
+											<p>#{msg.admin__user_deletion_description}</p>
+										</div>
+								</div>
+                                
+                                
+                                <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
+                                <div class="form-group">
                                     <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
                                         <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
                                         <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}"
                                             itemDisabled="#{adminBean.currentUser.cmsCreator}" />
                                     </h:selectOneRadio>
+                                </div>    
                                     
-                                    <div class="form-group">
-                                        <h:outputLabel for="emailConfirmation" styleClass="col-sm-6 control-label" value="#{msg.user__displayName} *" />
-                                        <div class="col-sm-6">
+                                    
+                                    
+                                    <div class="form-group form-row">
+                                        <h:outputLabel for="emailConfirmation" styleClass="col-6 control-label" value="#{msg.user__displayName} *" />
+                                        <div class="col-6">
                                             <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation"
                                                 styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
                                         </div>

@@ -88,22 +88,40 @@
 		transition: opacity 0.2s ease;
 	}
 }
-	
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 .admin {
+	/* TODO CLEANUP AND CONVERT INTO BOOTSTRAP */
+	td label {
+		padding-left: 0.5rem;
+	}
+	&__form-label {}
+	&__form-input {
+		flex-grow: 1;
+	}
+	&__form-help-icon {}
+	&__form-checkbox {}
+	&__form-help-text {
+		display: none;
+		margin-top: 0.4rem;
+		&.in {
+			display: inline-block;
+		}
+	}
+	&__default-block {
+		margin-bottom: 1.5rem;
+		padding: 2rem;
+		border: 1px solid #ddd;
+		background-color: #fff;
+		&.-danger {
+			border: 2px solid rgba(255, 2, 2, 0.3);
+		}
+		&.-warning {
+			border: 2px solid rgba(243, 208, 70, 0.85);
+		}		
+	}
+	
 	.mx-clearfloats;
 	position: relative;
 	button.btn {
@@ -406,6 +424,8 @@
 		    }
 		}
 	}
+	
+	
 	&__option-message-status {
 	    &.success {
 	    	color: @validSuccess;

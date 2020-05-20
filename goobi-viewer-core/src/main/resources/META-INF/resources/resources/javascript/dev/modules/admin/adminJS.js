@@ -45,3 +45,24 @@ var adminJS = ( function() {
     return admin;
     
 } )( jQuery );
+
+
+
+/* toggle help text for admin forms */
+
+$( document ).ready(function() {
+	$('[data-toggle="helptext"]').click(function() {
+		$(this).closest(".form-group").children('.admin__form-input').children('.admin__form-help-text').toggleClass('in');
+	});
+});
+
+
+
+
+
+
+
+
+
+
+
