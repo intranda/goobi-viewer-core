@@ -1678,6 +1678,14 @@ public class AdminBean implements Serializable {
     public void triggerMessage(String message) {
         logger.debug("Show message " + message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
-
+    }
+    
+    /**
+     * 
+     * @param privilege
+     * @return
+     */
+    public String getMessageKeyForPrivilege(String privilege) {
+        return "license_priv_" + privilege.toLowerCase();
     }
 }

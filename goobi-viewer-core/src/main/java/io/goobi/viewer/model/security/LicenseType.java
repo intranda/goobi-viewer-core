@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -98,7 +99,7 @@ public class LicenseType implements IPrivilegeHolder {
     @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
     private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
-    
+
     /**
      * Empty constructor.
      */
@@ -414,6 +415,16 @@ public class LicenseType implements IPrivilegeHolder {
     public Set<String> getPrivileges() {
         return privileges;
     }
+    
+    /**
+     * Returns the list of available privileges for adding to this license.
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public Set<String> getAvailablePrivileges() {
+        Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        ret.removeAll(privileges);
+        return ret;
+    }
 
     /**
      * <p>
@@ -424,6 +435,24 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public void setPrivileges(Set<String> privileges) {
         this.privileges = privileges;
+    }
+
+    /**
+     * 
+     * @param privilege
+     * @return
+     */
+    public boolean addPrivilege(String privilege) {
+        return privileges.add(privilege);
+    }
+
+    /**
+     * 
+     * @param privilege
+     * @return
+     */
+    public boolean removePrivilege(String privilege) {
+        return privileges.remove(privilege);
     }
 
     /** {@inheritDoc} */
