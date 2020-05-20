@@ -149,12 +149,12 @@
                                     	<div class="col-6">
                                         <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
                                         </div>
-                                        <f:selectItem itemValue="false" itemLabel="#{msg.user__avatar_standard}" />
+                                        <f:selectItem itemValue="true" itemLabel="#{msg.user__avatar_standard}" />
                                         
                                         <div class="col-6">
                                         <img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
                                         </div>
-                                        <f:selectItem itemValue="true" itemLabel="#{msg.user_useGravatar}" />
+                                        <f:selectItem itemValue="false" itemLabel="#{msg.user_useGravatar}" />
                                         </div>
                                         
                                     </h:selectOneRadio>
