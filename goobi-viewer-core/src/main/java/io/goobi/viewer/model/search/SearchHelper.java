@@ -17,6 +17,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,6 +58,7 @@ import org.apache.solr.common.params.GroupParams;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -323,13 +325,19 @@ public final class SearchHelper {
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+                    String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
                     if (DocType.METADATA.name().equals(docType)) {
                         // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
                         docType = DocType.DOCSTRCT.name();
                     }
-                    HitType hitType = HitType.getByName(docType);
-                    int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                    hit.getHitTypeCounts().put(hitType, count + 1);
+                    // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
+                    // It will simply be added to the metadata list of the main hit
+                    if(!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {                        
+                        HitType hitType = HitType.getByName(docType);
+                        int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                        hit.getHitTypeCounts().put(hitType, count + 1);
+                    }
                 }
             }
         }
@@ -1193,6 +1201,7 @@ public final class SearchHelper {
     }
 
     /**
+     * Remove any diacritic characters and replace any non.letter and non-digit characters with space
      * 
      * @param string
      * @return
@@ -1204,9 +1213,10 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-
-        return string.toLowerCase().replaceAll("[^\\p{L}0-9#]", " ");
-        //        return string;
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
+        string =  string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
+        string = Normalizer.normalize(string, Normalizer.Form.NFC);
+        return string;
     }
 
     /**

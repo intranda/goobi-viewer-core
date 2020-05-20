@@ -170,6 +170,8 @@ public class SearchHit implements Comparable<SearchHit> {
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
+        //Add self to owner hits to avoid adding self to childhits
+        this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
         if (browseElement != null) {
             if (searchTerms != null) {
                 addLabelHighlighting();
@@ -565,6 +567,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     case EVENT: {
                         String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
                         SearchHit ownerHit = ownerHits.get(ownerIddoc);
+                        boolean populateHit = false;
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
@@ -574,6 +577,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
+                                populateHit = true;
                                 // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
                             }
                         }
@@ -595,9 +599,13 @@ public class SearchHit implements Comparable<SearchHit> {
                                         }
                                     }
                                 }
-
-                                ownerHit.getChildren().add(childHit);
-                                hitsPopulated++;
+                                if(!(DocType.METADATA.equals(docType))) {                                    
+                                    ownerHit.getChildren().add(childHit);
+                                    populateHit = true;
+                                }
+                                if(populateHit) {                                    
+                                    hitsPopulated++;
+                                }
                             }
                         }
                     }

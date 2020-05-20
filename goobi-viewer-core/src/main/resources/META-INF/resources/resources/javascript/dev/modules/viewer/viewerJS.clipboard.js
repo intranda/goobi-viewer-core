@@ -27,7 +27,7 @@ var viewerJS = ( function( viewer ) {
     
     const _defaultSelector ="[data-copy]";
         
-    viewer.clipboard = {
+    viewer.clipboard = { 
             init : function(selector) {
                 if(!selector) {
                     selector = _defaultSelector;

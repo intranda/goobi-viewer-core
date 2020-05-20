@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
@@ -2748,5 +2749,22 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
         Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
         Assert.assertEquals("", licenses.get(0).getIcon());
+    }
+    
+    @Test
+    public void testGetGeoMapMarkers() {
+        List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
+        Assert.assertEquals(5, markers.size());
+        Assert.assertEquals("maps__marker_1", markers.get(0).getName());
+        Assert.assertEquals("fa-circle", markers.get(0).getIcon());
+        Assert.assertEquals("fa-search", markers.get(1).getIcon());
+    }
+    
+    @Test
+    public void testGetGeoMapMarker() {
+        GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker("maps__marker_2");
+        Assert.assertNotNull(marker);
+        Assert.assertEquals("maps__marker_2", marker.getName());
+        Assert.assertEquals("fa-search", marker.getIcon());
     }
 }

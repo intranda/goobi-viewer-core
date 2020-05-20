@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -47,6 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.controller.DataManager;
@@ -76,6 +81,7 @@ public class GeoMap {
 
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
+    
 
     public static enum GeoMapType {
         SOLR_QUERY,
@@ -121,7 +127,11 @@ public class GeoMap {
     private GeoMapType type = null;
 
     @Column(name = "initial_view")
-    private String initialView = "{}";
+    private String initialView = "";
+    
+    @Column(name = "marker")
+    private String marker = null;
+
 
     /**
      * Empty Constructor
@@ -146,6 +156,7 @@ public class GeoMap {
         this.features = blueprint.features;
         this.initialView = blueprint.initialView;
         this.solrQuery = blueprint.solrQuery;
+        this.marker = blueprint.marker;
 
     }
 
@@ -428,5 +439,58 @@ public class GeoMap {
     public boolean hasSolrQuery() {
         return GeoMapType.SOLR_QUERY.equals(this.getType()) && StringUtils.isNotBlank(this.solrQuery);
     }
-
+    
+    /**
+     * Link to the html page to render for oembed
+     * @return
+     */
+    public URI getOEmbedLink() {
+        URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/embed/map/" + getId() + "/");
+        return uri;
+    }
+    
+    public URI getOEmbedURI() {
+        return getOEmbedURI(null);
+    }
+    
+    public URI getOEmbedURI(String linkTarget) {
+        try {
+            String linkURI = getOEmbedLink().toString();
+            if(StringUtils.isNotBlank(linkTarget)) {
+                linkURI += "?linkTarget=" + linkTarget;
+            }
+            String escLinkURI = URLEncoder.encode(linkURI, "utf-8");
+            URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + escLinkURI + "&format=json");
+            return uri;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * @return the marker
+     */
+    public String getMarker() {
+        return this.marker;
+    }
+    
+    /**
+     * @param marker the marker to set
+     */
+    public void setMarker(String marker) {
+        this.marker = marker;
+    }
+    
+    public String getMarkerAsJSON() throws JsonProcessingException {
+        if(StringUtils.isNotBlank(marker)) {            
+            GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
+            if(marker != null) {                
+                return marker.toJSONString();
+            }
+        }
+        return null;
+    }
+    
 }
