@@ -447,6 +447,12 @@ public class UserGroup implements ILicensee, Serializable {
 
         return ret;
     }
+    
+    public Set<User> getMembersAndOwner() throws DAOException {
+        Set<User> ret = new HashSet<>(getMembers());
+        ret.add(getOwner());
+        return ret;
+    }
 
     /** {@inheritDoc} */
     @Override

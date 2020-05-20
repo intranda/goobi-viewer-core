@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         mapId: "geomap",
         displayLanguage : "de",
@@ -132,6 +132,10 @@ var cmsJS = ( function( cms ) {
         $(this.config.viewInput).val(JSON.stringify(this.geoMap.getView()));
     }
     
+    cms.GeoMapEditor.prototype.setMarkerIcon = function(icon) {
+        this.geoMap.setMarkerIcon(icon); 
+    }
+    
     /**
      * Updates the content of the metadata editor with the content of the given geojson object
      * Also scrolls to the top of the metadata edtor (config.metadataArea)
@@ -196,10 +200,23 @@ var cmsJS = ( function( cms ) {
     
 
     
-    cms.GeoMapEditor.prototype.updateView = function() {
-        let view = $(this.config.viewInput).val();
-        this.geoMap.setView(view);
-        this.geoMap.setView(this.geoMap.getViewAroundFeatures());
+    cms.GeoMapEditor.prototype.updateView = function(view) {
+        if(!view) {
+            view = $(this.config.viewInput).val();
+            if(!view) {
+                view = this.geoMap.config.initialView;
+            } else {                
+                view = JSON.parse(view);
+            }
+            if(this.geoMap.getFeatures().length > 0) {            
+                this.geoMap.setView(this.geoMap.getViewAroundFeatures(view.zoom));
+            } else {           
+                this.geoMap.setView(view);
+            }
+        } else {
+            this.geoMap.setView(view);
+        }
+       
     }
     
     /**

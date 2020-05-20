@@ -34,6 +34,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
+import io.goobi.viewer.model.maps.GeoMapMarker;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -52,7 +53,7 @@ public class GeoMapBean implements Serializable {
     private String selectedLanguage;
     
     private List<GeoMap> loadedMaps = null;
-    
+        
         
     /**
      * 
@@ -155,7 +156,6 @@ public class GeoMapBean implements Serializable {
     public void createEmptyCurrentMap() {
         this.currentMap = new GeoMap();
     }
-    
     /**
      * @return the selectedLanguage
      */
@@ -185,18 +185,16 @@ public class GeoMapBean implements Serializable {
         return this.loadedMaps;
     }
 
-    @SuppressWarnings("static-access")
     public Collection<GeoMapType> getPossibleMapTypes() {
         return EnumSet.allOf(GeoMapType.class);
     }
     
-    public boolean hasCurrentFeature() {
-        return false;
+    public Collection<GeoMapMarker> getPossibleMarkers() {
+        return DataManager.getInstance().getConfiguration().getGeoMapMarkers();
     }
     
-    public String getOEmbedLink(GeoMap map) {
-        //TODO create actual oEmbed link
-        return "dummy link";
+    public boolean hasCurrentFeature() {
+        return false;
     }
     
     public boolean isInUse(GeoMap map) throws DAOException {
@@ -209,6 +207,12 @@ public class GeoMapBean implements Serializable {
     
     public boolean isHasMaps() throws DAOException {
         return !getAllMaps().isEmpty();
+    }
+    
+    public String getCoordinateSearchQueryTemplate() {
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("newSearch5")
+                .getPatternParser().getMappedURL("-", "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"", "1", "-", "-");
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
 }

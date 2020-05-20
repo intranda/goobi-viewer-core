@@ -25,7 +25,6 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
 public class AdminBeanTest extends AbstractDatabaseEnabledTest {

@@ -965,6 +965,14 @@
         <view-id value="/sitelinks.xhtml" />
         <action onPostback="false">#{sitelinkBean.searchAction}</action>
     </url-mapping>
+    
+    <!-- EMBEDDABLE CONTENT -->
+    <url-mapping id="embedGeoMap">
+		<pattern value="/embed/map/#{mapId}/"/>
+        <view-id value="/contentOnly.xhtml" />
+        <query-param name="linkTarget">#{linkTarget}</query-param>
+		<action onPostback="false">#{dynamicBean.addComponent('map', 'geoMap', mapId, linkTarget)}</action>
+	</url-mapping>
 
 	<!-- ERROR -->
 	<url-mapping id="error">

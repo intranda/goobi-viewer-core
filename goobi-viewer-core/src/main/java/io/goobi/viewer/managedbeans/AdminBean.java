@@ -1613,6 +1613,42 @@ public class AdminBean implements Serializable {
         return accessConditions;
     }
 
+    /**
+     * 
+     * @return List of access condition values that have no corresponding license type in the database
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public List<String> getNotConfiguredAccessConditions() throws IndexUnreachableException, PresentationException, DAOException {
+        List<String> accessConditions = getPossibleAccessConditions();
+        if (accessConditions.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> licenseTypes = getAllLicenseTypes();
+        if (licenseTypes.isEmpty()) {
+            return accessConditions;
+        }
+
+        List<String> ret = new ArrayList<>();
+        for (String accessCondition : accessConditions) {
+            boolean found = false;
+            for (LicenseType licenseType : licenseTypes) {
+                if (licenseType.getName().equals(accessCondition)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                ret.add(accessCondition);
+            }
+        }
+
+        return ret;
+
+    }
+
     public void triggerMessage(String message) {
         logger.debug("Show message " + message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
