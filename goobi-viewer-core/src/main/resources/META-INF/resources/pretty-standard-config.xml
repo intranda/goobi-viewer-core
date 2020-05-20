@@ -705,14 +705,14 @@
 		<view-id value="/resources/admin/views/adminIpRange.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminAllLicenseTypes">
+	<url-mapping id="adminAllLicenses">
 		<pattern value="/admin/licenses/" />
-		<view-id value="/resources/admin/views/adminLicenseTypes.xhtml" />
+		<view-id value="/resources/admin/views/adminLicenses.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminLicenseType">
+	<url-mapping id="adminLicense">
 		<pattern value="/admin/license/" />
-		<view-id value="/resources/admin/views/adminLicenseType.xhtml" />
+		<view-id value="/resources/admin/views/adminLicense.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUserComments">
