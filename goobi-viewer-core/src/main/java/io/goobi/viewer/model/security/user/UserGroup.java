@@ -413,6 +413,7 @@ public class UserGroup implements ILicensee, Serializable {
      * 
      * @return
      * @throws DAOException
+     * @should count correctly
      */
     public long getMemberCount() throws DAOException {
         return DataManager.getInstance().getDao().getUserRoleCount(this, null, null);
@@ -437,6 +438,7 @@ public class UserGroup implements ILicensee, Serializable {
      *
      * @return a {@link java.util.Set} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return all members
      */
     public Set<User> getMembers() throws DAOException {
         Set<User> ret = new HashSet<>();
@@ -448,6 +450,12 @@ public class UserGroup implements ILicensee, Serializable {
         return ret;
     }
     
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     * @should return all members and owner
+     */
     public Set<User> getMembersAndOwner() throws DAOException {
         Set<User> ret = new HashSet<>(getMembers());
         ret.add(getOwner());
