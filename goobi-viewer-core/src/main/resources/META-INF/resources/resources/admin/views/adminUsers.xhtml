@@ -94,9 +94,9 @@
 									<!-- USER NAME + EMAIL -->
 									<div class="admin__user-table-data">
 										<span class="admin__user-table-name"><h:outputText value="#{user.nickName}" /></span>
-										<a class="admin__user-table-email" href="mailto:#{user.email}"><h:outputText value="#{user.email}" /></a>
+										<a class="admin__user-table-email -bluelink" href="mailto:#{user.email}"><h:outputText value="#{user.email}" /></a>
 										<!-- USER EDIT -->
-										<h:commandLink styleClass="admin__user-table-edit-user" action="pretty:adminUser" title="#{msg.edit}">
+										<h:commandLink styleClass="admin__user-table-edit-user -bluelink" action="pretty:adminUser" title="#{msg.edit}">
 											<f:setPropertyActionListener value="#{user}" target="#{adminBean.currentUser}" />
 											<f:setPropertyActionListener value="#{null}" target="#{adminBean.currentLicense}" />
 						                   #{msg.edit}
