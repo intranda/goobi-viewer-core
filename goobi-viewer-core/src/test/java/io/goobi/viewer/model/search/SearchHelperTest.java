@@ -969,7 +969,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Set<String> terms = new HashSet<>();
         terms.add("sirvintos");
         String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
-        System.out.println(highlightedPhrase);
+//        System.out.println(highlightedPhrase);
         Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + phrase + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase);
     }
 
