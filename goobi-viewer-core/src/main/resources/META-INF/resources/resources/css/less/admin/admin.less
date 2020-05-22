@@ -532,6 +532,38 @@
 	}
 }
 
+
+/* USER TABLE FADE IN ANIMATION TEST */
+
+.delay-animation(@items, @delay) {
+  .loopingClass(0); // Start loop
+  
+  .loopingClass(@index) when (@index <= @items) {
+    &:nth-child(@{index}) {
+        animation-delay: unit((@index * @delay),s);
+    }
+
+    .loopingClass(@index + 1); // Increment loop
+  }
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admin__user-table-content .admin__user-table-entry { 
+	animation: fadein 0.2s ease-in 0s 1 forwards;
+	opacity: 0;
+    .delay-animation(@numitems, @delay);
+}
+
+@numitems: 16;
+@delay: 0.03;
+
+/* USER TABLE FADE IN ANIMATION TEST EOL */
+
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
