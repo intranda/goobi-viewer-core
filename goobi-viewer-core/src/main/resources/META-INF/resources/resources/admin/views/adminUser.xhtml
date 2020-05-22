@@ -52,7 +52,7 @@
                             <div class="form-group form-row">
                             
                                 <div class="col-2 control-label admin__form-label">
-                                	<h:outputLabel for="displayName" value="#{msg.user__displayName} *" />
+                                	<h:outputLabel for="displayName" value="#{msg.user__displayName}" /><span class="admin__label-required-field">(#{msg.requiredField})</span>
                                 </div>
                                 <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
@@ -81,7 +81,7 @@
                                     </div>
                                     
                                     <div class="col-2 control-label admin__form-label">
-	                                    <h:outputLabel for="email" value="#{msg.email} *" />
+	                                    <h:outputLabel for="email" value="#{msg.email}" /><span class="admin__label-required-field">(#{msg.requiredField})</span>
                                     </div>
                                     
                                     <div class="col-9 admin__form-input">
@@ -141,25 +141,19 @@
                                 <div class="col-2 control-label admin__form-label">
                                 <h:outputLabel for="avatar" value="#{msg.user__avatar}" />
                                 </div>
-                                
-                                
-                                
+                                                     
                                 <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                 <div id="avatar" class="col-9">
                                     <div class="row no-gutters">
                                         <div class="col-6">
-                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
-                                            <label for="avatarFalse">
-                                                <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
-                                                <span>#{msg.user__avatar_standard}</span>
-                                            </label>
+                                            <img class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
+                                            <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
+                                            <label for="avatarFalseOption">#{msg.user__avatar_standard}</label>
                                         </div>
                                         <div class="col-6">
-                                            <img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
-                                            <label for="avatarTrue">
-                                                <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
-                                                <span>#{msg.user_useGravatar}</span>
-                                            </label>
+                                            <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(96)}" />
+                                            <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
+                                            <label for="avatarTrueOption">#{msg.user_useGravatar}</label>
                                         </div>
                                     </div>
                                 </div>

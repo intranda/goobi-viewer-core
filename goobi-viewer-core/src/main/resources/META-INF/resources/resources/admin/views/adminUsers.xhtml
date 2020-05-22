@@ -40,7 +40,7 @@
 						<!-- TITLE ROW -->
 						<div class="row no-gutters admin__user-table-title">
 							<!-- NAME COL -->
-							<div class="col-4 d-flex">
+							<div class="col-6 d-flex">
 								<span>#{msg.name}</span>
 								<!-- SORTING -->
 								<div class="sorting-wrapper admin__user-table-sorting">
@@ -57,7 +57,7 @@
 								</div>
 							</div>
 							<!-- LAST LOGIN COL -->
-							<div class="col-2 d-flex">
+							<div class="col-3 d-flex">
 								<span>#{msg.lastLoginDate}</span>
 								<!-- SORTING -->
 								<div class="sorting-wrapper admin__user-table-sorting">
@@ -73,81 +73,74 @@
 									</h:commandLink>
 								</div>
 							</div>
-							<!-- USER EMAIL COL -->
-							<div class="col-3 d-flex">
-								<span>#{msg.email}</span>
-							</div>
 							<!-- USER GROUPS COL -->
 							<div class="col-3 d-flex">#{msg.userGroups}</div>
 						</div>
 						<!-- INDIVIDUAL USER ROWS -->
-		                	<ui:repeat var="user" value="#{adminBean.pageUsers}">
-								<div class="row no-gutters admin__user-table-entry">
-									<div class="col-4 d-flex">
-										<!-- USER ICON -->
-									    <ui:fragment rendered="#{user.useGravatar}">
-									    	<div class="admin__user-table-img">
-									    		<img src="#{user.getGravatarUrl(48)}" />
-									    	</div>
-									    </ui:fragment>
-									    <ui:fragment rendered="#{!user.useGravatar}">
-									    	<div class="admin__user-table-img">
-									    		<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
-									    	</div>
-									    </ui:fragment>					
-										<!-- USER NAME -->
-										<div class="admin__user-table-name">
-											<span><h:outputText value="#{user.nickName}" /></span>
-											<!-- USER EDIT -->
-											<h:commandLink styleClass="admin__user-table-edit-user"
-												action="pretty:adminUser" title="#{msg.edit}">
-												<f:setPropertyActionListener value="#{user}"
-													target="#{adminBean.currentUser}" />
-												<f:setPropertyActionListener value="#{null}"
-													target="#{adminBean.currentLicense}" />
-							                   #{msg.edit}
-							               </h:commandLink>
-										</div>
+	                	<ui:repeat var="user" value="#{adminBean.pageUsers}">
+							<div class="row no-gutters admin__user-table-entry">
+								<div class="col-6 d-flex">
+									<!-- USER ICON -->
+								    <ui:fragment rendered="#{user.useGravatar}">
+								    	<div class="admin__user-table-img">
+								    		<img src="#{user.getGravatarUrl(48)}" />
+								    	</div>
+								    </ui:fragment>
+								    <ui:fragment rendered="#{!user.useGravatar}">
+								    	<div class="admin__user-table-img">
+								    		<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" />
+								    	</div>
+								    </ui:fragment>					
+									<!-- USER NAME + EMAIL -->
+									<div class="admin__user-table-data">
+										<span class="admin__user-table-name"><h:outputText value="#{user.nickName}" /></span>
+										<a class="admin__user-table-email" href="mailto:#{user.email}"><h:outputText value="#{user.email}" /></a>
+										<!-- USER EDIT -->
+										<h:commandLink styleClass="admin__user-table-edit-user" action="pretty:adminUser" title="#{msg.edit}">
+											<f:setPropertyActionListener value="#{user}" target="#{adminBean.currentUser}" />
+											<f:setPropertyActionListener value="#{null}" target="#{adminBean.currentLicense}" />
+						                   #{msg.edit}
+						               </h:commandLink>
 									</div>
-									
-									<div class="col-2 d-flex align-items-center">
-										<span><h:outputText value="#{user.lastLogin}">
-												<f:convertDateTime type="both" dateStyle="short"
-													timeStyle="short" />
-											</h:outputText></span>
-									</div>
+								</div>
 
-									<div class="col-3 d-flex align-items-center">
-										<a class="admin__user-table-email" href="mailto:#{user.email}"><h:outputText
-												value="#{user.email}" /></a>
-									</div>
 
-									<div class="col-3 d-flex align-items-center">
+								<!-- LAST LOGIN DATE -->
+								<div class="col-3 d-flex align-items-center">
+									<span class="admin__user-table-last-login"><h:outputText value="#{user.lastLogin}">
+											<f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short"
+												timeStyle="short" />
+										</h:outputText></span>
+								</div>
 
-										<h:panelGroup>
-											<!-- Admin -->
-											<ui:fragment rendered="#{user.superuser}">
-												<div class="badge badge-dark">#{msg.admin}</div>
-											</ui:fragment>
-											<!-- TODO This might get expensive -->
 
-											<!-- Ownerships -->
-											<ui:repeat var="group" value="#{user.userGroupOwnerships}">
-												<div class="badge badge-danger">#{group.name}</div>
-											</ui:repeat>
 
-											<!-- Memberships -->
-											<ui:repeat var="role" value="#{user.userGroupMemberships}">
-												<div class="badge badge-info">#{role.userGroup.name}</div>
-											</ui:repeat>
-										</h:panelGroup>
+								<div class="col-3 d-flex align-items-center">
 
-									</div>
+									<h:panelGroup>
+										<!-- Admin -->
+										<ui:fragment rendered="#{user.superuser}">
+											<div class="badge badge-danger admin__user-table-badges">#{msg.admin}</div>
+										</ui:fragment>
+										<!-- TODO This might get expensive -->
 
+										<!-- Ownerships -->
+										<ui:repeat var="group" value="#{user.userGroupOwnerships}">
+											<div class="badge badge-info admin__user-table-badges">#{group.name}</div>
+										</ui:repeat>
+
+										<!-- Memberships -->
+										<ui:repeat var="role" value="#{user.userGroupMemberships}">
+											<div class="badge badge-dark admin__user-table-badges">#{role.userGroup.name}</div>
+										</ui:repeat>
+									</h:panelGroup>
 
 								</div>
 
-							</ui:repeat>
+
+							</div>
+
+						</ui:repeat>
 	
 	                        </div>
                 </div>
