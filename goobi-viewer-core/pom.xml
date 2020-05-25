@@ -106,7 +106,7 @@
 		<jgravatar.version>1.2</jgravatar.version>
 		<joda-time.version>2.10.6</joda-time.version>
 		<jpa.version>2.7.7</jpa.version>
-		<json.version>20190722</json.version>
+		<json.version>20200518</json.version>
 		<jsoup.version>1.13.1</jsoup.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.13</junit.version>
