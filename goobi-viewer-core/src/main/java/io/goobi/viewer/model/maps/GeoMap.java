@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -81,7 +82,6 @@ public class GeoMap {
 
     private static final String METADATA_TAG_TITLE = "Title";
     private static final String METADATA_TAG_DESCRIPTION = "Description";
-    
 
     public static enum GeoMapType {
         SOLR_QUERY,
@@ -128,10 +128,15 @@ public class GeoMap {
 
     @Column(name = "initial_view")
     private String initialView = "";
-    
+
     @Column(name = "marker")
     private String marker = null;
-
+    
+    /**
+     * SOLR-Field to create the marker title from if the features are generated from a SOLR query
+     */
+    @Column(name = "marker_title_field")
+    private String markerTitleField = "MD_VALUE";
 
     /**
      * Empty Constructor
@@ -316,21 +321,13 @@ public class GeoMap {
                     string = "[" + string + "]";
                     return string;
                 case SOLR_QUERY:
-                    List<String> features = getFeaturesFromSolrQuery(getSolrQuery());
-                    List<String> ret = new ArrayList<>(features.size());
-                    for (String featureString : features) {
-                        JSONObject json = new JSONObject(featureString);
-                        String type = json.getString("type");
-                        if ("FeatureCollection".equalsIgnoreCase(type)) {
-                            JSONArray array = json.getJSONArray("features");
-                            if (array != null) {
-                                array.forEach(f -> ret.add(f.toString()));
-                            }
-                        } else if ("Feature".equalsIgnoreCase(type)) {
-                            ret.add(featureString);
-                        }
-                    }
-                    return "[" + ret.stream().collect(Collectors.joining(",")) + "]";
+                    Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery());
+                    String ret = features.stream().distinct()
+                            .map(GeoMapFeature::getJsonObject)
+                            .map(Object::toString)
+                            .collect(Collectors.joining(","));
+                    
+                    return "[" + ret + "]";
                 default:
                     return "[]";
             }
@@ -352,14 +349,14 @@ public class GeoMap {
         }
     }
 
-    public static List<String> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
+    public Collection<GeoMapFeature> getFeaturesFromSolrQuery(String query) throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().search(query);
-        List<String> features = new ArrayList<>();
+        Set<GeoMapFeature> features = new HashSet<>();
         for (SolrDocument doc : docs) {
-            List<JSONObject> docFeatures = new ArrayList<>();
-            docFeatures.addAll(getGeojsonPoints(doc, "MD_GEOJSON_POINT"));
-            docFeatures.addAll(getGeojsonPoints(doc, "NORM_COORDS_GEOJSON"));
-            features.addAll(docFeatures.stream().map(JSONObject::toString).collect(Collectors.toList()));
+            //            List<JSONObject> docFeatures = new ArrayList<>();
+            features.addAll(getGeojsonPoints(doc, "MD_GEOJSON_POINT", getMarkerTitleField(), null));
+            features.addAll(getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", getMarkerTitleField(), null));
+            //            features.addAll(docFeatures.stream().map(JSONObject::toString).collect(Collectors.toList()));
         }
         return features;
     }
@@ -368,8 +365,10 @@ public class GeoMap {
      * @param doc
      * @param docFeatures
      */
-    public static List<JSONObject> getGeojsonPoints(SolrDocument doc, String metadataField) {
-        List<JSONObject> docFeatures = new ArrayList<>();
+    public static Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField, String titleField, String descriptionField) {
+        String title = StringUtils.isBlank(titleField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
+        String desc = StringUtils.isBlank(descriptionField) ? null : SolrSearchIndex.getSingleFieldStringValue(doc, titleField);
+        Set<GeoMapFeature> docFeatures = new HashSet<>();
         List<String> points = SolrSearchIndex.getMetadataValues(doc, metadataField);
         for (String point : points) {
             JSONObject json = new JSONObject(point);
@@ -379,30 +378,20 @@ public class GeoMap {
                 if (array != null) {
                     array.forEach(f -> {
                         if (f instanceof JSONObject) {
-                            docFeatures.add((JSONObject) f);
+                            JSONObject jsonObj = (JSONObject) f;
+                            String jsonString = jsonObj.toString();
+                            GeoMapFeature feature = new GeoMapFeature(jsonString);
+                            feature.setTitle(title);
+                            feature.setDescription(desc);
+                            docFeatures.add(feature);
                         }
                     });
                 }
             } else if ("Feature".equalsIgnoreCase(type)) {
-                docFeatures.add(json);
-            }
-        }
-        for (JSONObject f : docFeatures) {
-            JSONObject properties = f.getJSONObject("properties");
-            if (properties == null) {
-                properties = new JSONObject();
-                f.append("properties", properties);
-            }
-            if (!properties.has("title")) {
-                String label = SolrSearchIndex.getSingleFieldStringValue(doc, "MD_VALUE");
-                if (StringUtils.isBlank(label)) {
-                    label = SolrSearchIndex.getSingleFieldStringValue(doc, "LABEL");
-                    if (StringUtils.isBlank(label)) {
-                        label = SolrSearchIndex.getSingleFieldStringValue(doc, "DOCSTRCT");
-                        label = ViewerResourceBundle.getTranslation(label, null);
-                    }
-                }
-                properties.append("title", label);
+                GeoMapFeature feature = new GeoMapFeature(json.toString());
+                feature.setTitle(title);
+                feature.setDescription(desc);
+                docFeatures.add(feature);
             }
         }
         return docFeatures;
@@ -439,24 +428,25 @@ public class GeoMap {
     public boolean hasSolrQuery() {
         return GeoMapType.SOLR_QUERY.equals(this.getType()) && StringUtils.isNotBlank(this.solrQuery);
     }
-    
+
     /**
      * Link to the html page to render for oembed
+     * 
      * @return
      */
     public URI getOEmbedLink() {
         URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/embed/map/" + getId() + "/");
         return uri;
     }
-    
+
     public URI getOEmbedURI() {
         return getOEmbedURI(null);
     }
-    
+
     public URI getOEmbedURI(String linkTarget) {
         try {
             String linkURI = getOEmbedLink().toString();
-            if(StringUtils.isNotBlank(linkTarget)) {
+            if (StringUtils.isNotBlank(linkTarget)) {
                 linkURI += "?linkTarget=" + linkTarget;
             }
             String escLinkURI = URLEncoder.encode(linkURI, "utf-8");
@@ -465,32 +455,45 @@ public class GeoMap {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        
+
         return null;
     }
-    
+
     /**
      * @return the marker
      */
     public String getMarker() {
         return this.marker;
     }
-    
+
     /**
      * @param marker the marker to set
      */
     public void setMarker(String marker) {
         this.marker = marker;
     }
-    
+
     public String getMarkerAsJSON() throws JsonProcessingException {
-        if(StringUtils.isNotBlank(marker)) {            
+        if (StringUtils.isNotBlank(marker)) {
             GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
-            if(marker != null) {                
+            if (marker != null) {
                 return marker.toJSONString();
             }
         }
         return null;
     }
     
+    /**
+     * @return the markerTitleField
+     */
+    public String getMarkerTitleField() {
+        return markerTitleField;
+    }
+    /**
+     * @param markerTitleField the markerTitleField to set
+     */
+    public void setMarkerTitleField(String markerTitleField) {
+        this.markerTitleField = markerTitleField;
+    }
+
 }
