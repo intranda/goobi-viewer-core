@@ -162,6 +162,7 @@ public class GeoMap {
         this.initialView = blueprint.initialView;
         this.solrQuery = blueprint.solrQuery;
         this.marker = blueprint.marker;
+        this.markerTitleField = blueprint.markerTitleField;
 
     }
 
