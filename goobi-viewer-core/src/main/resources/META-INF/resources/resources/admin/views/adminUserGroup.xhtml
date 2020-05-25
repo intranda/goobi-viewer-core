@@ -21,56 +21,56 @@
             <div id="adminUserGroup">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
-                        <h2 class="admin__content-inner-title">#{msg.admin_userGroup_create_new}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.admin__group_create_new}</h2>
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                        <h2 class="admin__content-inner-title">#{msg.userGroup}: #{adminBean.currentUserGroup.name}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.admin__group}: #{adminBean.currentUserGroup.name}</h2>
                     </h:panelGroup>
 
                     <div class="admin__content-inner-content">
                         <h:form id="editUserGroupGeneral" styleClass="form-horizontal" role="form" prependId="false">
-                            <h3>#{msg.admin__userGroup_general}</h3>
+                            <h3>#{msg.admin__group_general}</h3>
                             
                             <!-- TODO proper css class -->
                             <div class="cms-select-template__template">
 
                             <!-- DATA INPUT -->
-                            <div class="form-group">
-                                <h:outputLabel for="userGroupNameGeneral" styleClass="col-sm-2 control-label" value="#{msg.name} *" />
-                                <div class="col-sm-9">
+                            <div class="form-group form-row">
+                                <h:outputLabel for="userGroupNameGeneral" styleClass="col-2 control-label" value="#{msg.name} *" />
+                                <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUserGroup.name}" id="userGroupNameGeneral" styleClass="form-control" required="true" />
-                                    <span class="form-group-helptext">#{msg.help__admin_userGroup_name}</span>
+                                    <span class="admin__form-help-text">#{msg.admin__user_group_name__help}</span>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="userGroupDescription" styleClass="col-sm-2 control-label" value="#{msg.description}" />
-                                <div class="col-sm-9">
+                            <div class="form-group form-row">
+                                <h:outputLabel for="userGroupDescription" styleClass="col-2 control-label" value="#{msg.description}" />
+                                <div class="col-9 admin__form-input">
                                     <h:inputTextarea value="#{adminBean.currentUserGroup.description}" id="userGroupDescription" styleClass="form-control" />
-                                     <span class="form-group-helptext">#{msg.help__admin_userGroup_description}</span>
+                                     <span class="admin__form-help-text">#{msg.admin__user_group_description__help}</span>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="userGroupOwner" styleClass="col-sm-2 control-label" value="#{msg.userGroup_owner} *" />
-                                <div class="col-sm-9">
+                            <div class="form-group form-row">
+                                <h:outputLabel for="userGroupOwner" styleClass="col-2 control-label" value="#{msg.userGroup_owner} *" />
+                                <div class="col-9 admin__form-input">
                                     <div class="custom-control custom-control--select">
                                         <h:selectOneMenu value="#{adminBean.currentUserGroup.owner}" id="userGroupOwner" converter="userConverter" required="true">
                                             <f:selectItems value="#{adminBean.allUsers}" var="user" itemLabel="#{user.displayName}" />
                                         </h:selectOneMenu>
-                                        <span class="form-group-helptext">#{msg.help__admin_userGroup_owner}</span>
                                     </div>
+                                    <span class="admin__form-help-text">#{msg.admin__user_group_owner__help}</span>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
@@ -86,7 +86,7 @@
             
                             <!-- add member -->
                             #{msg.userGroup_addNewMember}
-                            <div class="form-group">
+                            <div class="form-group form-row">
                             <h:selectOneMenu styleClass="col-sm-10" value="#{adminBean.currentUserRole.user}" id="user"
                                 converter="userConverter" hideNoSelectionOption="false">
                                 <f:selectItem noSelectionOption="true" itemLabel=""></f:selectItem>
