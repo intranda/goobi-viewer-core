@@ -182,7 +182,6 @@
                         </div>
 
                         <!-- PASSWORD -->
-                        <ui:fragment rendered="#{adminBean.currentUser.active}">
                             <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
                                 <h3>#{msg.password}</h3>
                             
@@ -190,14 +189,14 @@
                                 <div class="admin__default-block">
                             
                                     <div class="form-horizontal" role="form">
-                                        <div class="form-group admin__default-block">
+                                        <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}"
                                                     required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}"
@@ -232,8 +231,6 @@
                             
                                 </div>
                             </h:panelGroup>
-                        
-                        </ui:fragment>
                         
                         <!-- SAVE / CANCEL BUTTONS -->
                         <ui:fragment rendered="#{adminBean.currentUser.active}">                        
