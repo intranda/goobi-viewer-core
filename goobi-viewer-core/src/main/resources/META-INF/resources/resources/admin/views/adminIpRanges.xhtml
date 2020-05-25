@@ -19,53 +19,67 @@
         <f:view contentType="text/html" encoding="utf-8">            
             <div id="adminIpRanges">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h2 class="admin__content-inner-title">#{msg.admin__networks}</h2>
+                	<h:form id="adminIpRangesForm" prependId="false">
+		                <div class="admin__title-bar">
+		               	    <!-- HEADING --> 
+		                    <h2 class="admin__title">#{msg.admin__networks}</h2>
+		                    <!-- CREATE NEW IP RANGE BUTTON --> 
+							<h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.admin__ip_range_new}" styleClass="btn btn--default admin__title-bar-action" />                                  
+						</div>
 
-                    <div class="admin__content-inner-content">
-                        <h:form id="adminIpRangesForm" prependId="false">
-                            <h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}"
-                                value="#{msg.admin__ip_range_new}" styleClass="btn btn--default pull-right" />                                  
-                            
-                            <div class="clearfix"></div>
-                            
-                            <div>
+                    	<div class="admin__content-inner-content">
+							<!-- IP RANGE INFO TEXT -->
+                            <p class="admin__ip-range-info-text">
                                 <h:outputText value="#{msg.admin__ip_ranges_description_text}" />
-                            </div>
+                            </p>
                             
+                            <!--  INDIVIDUAL IP RANGES -->
                             <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
-                                <div class="row no-margin">
-                                    <!-- TODO proper css class -->
-                                    <div class="cms-select-template__template">
-                                        <h3>#{ipRange.name}</h3>
-                                        <ui:fragment rendered="#{userGroup.description != ''}">
-                                            #{ipRange.description}
-                                            <br/>
-                                        </ui:fragment>
-                                
-                                        <br />
-                                        #{msg.ipRange}: #{ipRange.subnetMask}
-                                                <!-- delete ip range -->
+                            <div class="admin__ip-range-entry">
+                                    
+                                    <div class="row">
+                                        <h3 class="col-12">#{ipRange.name}</h3>
+                                    </div>
+                                    <!-- IP RANGE DESCRIPTION -->
+                                    <ui:fragment rendered="#{userGroup.description != ''}">
+	                                    <div class="row mb-2">
+	                                    	<p class="col-12 admin__ip-range-description">#{ipRange.description}</p>
+	                                    </div>
+                                    </ui:fragment>
+                                    <!-- IP RANGE SUBNET MASK -->
+                                    <div class="row mb-2">
+                                    	<div class="col-12 admin__ip-range-range">#{msg.ipRange}: #{ipRange.subnetMask}</div>
+									</div>
+									
+									<!-- IP RANGE ACTIONS -->
+									<div class="row justify-content-end admin__ip-range-actions">
+										<div class="col-3 d-flex justify-content-end admin__ip-range-actions">
+                                    	<!-- DELETE IP RANGE -->
                                                 <h:commandLink
-                                                    styleClass="btn btn--icon" 
+                                                    styleClass="btn btn--icon admin__ip-range-delete -redlink" 
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
                                                     action="adminIpRanges" 
                                                     actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
                                                     title="#{msg.delete}">
                                                     #{msg.delete}
                                                 </h:commandLink>
-                                                <!-- edit ip range -->
-                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminIpRange" title="#{msg.edit}">
+                                        <!-- EDIT IP RANGE -->
+                                                <h:commandLink styleClass="btn btn--icon admin__ip-range-edit -bluelink" action="pretty:adminIpRange" title="#{msg.edit}">
                                                     <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" />
                                                     #{msg.edit}
                                                 </h:commandLink> 
-                                    </div>
-                                </div>
+                                    	</div>            
+                                   </div>           
+                                                
+                            </div>
                             </ui:repeat>
                             
-						</h:form>
+
                     </div>
+                </h:form>
                 </h:panelGroup>
-            </div>
+
+                </div>
 
 			<script type="text/javascript">
 			    var dataTableConfig = {

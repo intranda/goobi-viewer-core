@@ -9,10 +9,22 @@
 		color: @blue;
 		&:hover {
 			color: @hoverblue;
+			text-decoration: underline;
 		}
 		&:active {
 			color: @activeblue;
 		}
+		&:focus {}
+	}
+	.-redlink {
+		color: @red;
+		&:hover {
+			color: @red;
+		}
+		&:active {
+			color: @red;
+		}
+		&:focus {}
 	}
 	&__title-bar {
 		display: flex;
@@ -42,7 +54,7 @@
 	}
 	&__user-table-paginator {
 		li {
-			margin-right: 1px;
+			margin-right: 0.5rem;
 			border: none;
 		}
 		a {
@@ -138,6 +150,73 @@
 		margin-right: 1.5rem;
 	}
 	
+	
+	&__form-help-icon {
+	}
+	
+	
+	&__group-content {
+	}
+	&__group-entry {
+		background: @white;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		transition: background 0.2s ease;
+		&:hover {
+			background: @lightgray2;
+			.admin__group-actions {
+				opacity: 1;
+			}
+		}
+		
+	}
+	&__group-actions {
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	&__group-description {
+		margin-bottom: 3rem;
+	}
+	&__group-delete {
+		padding-right: 2rem;
+	}
+	&__group-edit {
+	}
+	&__group-member-entry {
+		transition: background 0.2s ease;
+		padding: 0.4rem 0;
+		&:hover {
+			background: @lightgray2;
+			.admin__group-member-delete {
+				opacity: 1;
+			}
+		}
+	}
+	&__group-member-delete {
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	
+	&__ip-range-entry {
+	    background: #fff;
+	    padding: 1.5rem;
+	    margin-bottom: 2rem;
+	    transition: background .2s ease;
+	    &:hover {
+	    	background: @lightgray2;
+	    	.admin__ip-range-actions {
+	    		opacity: 1;
+	    	}
+	    }
+	}
+	&__ip-range-actions {
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	&__ip-range-delete {
+		padding-right: 2rem;
+	}
+	
 }
 
 
@@ -172,13 +251,12 @@
 	&__default-block {
 		margin-bottom: 1.5rem;
 		padding: 2rem;
-		border: 1px solid #ddd;
 		background-color: #fff;
 		&.-danger {
-			border: 2px solid rgba(255, 2, 2, 0.3);
+			border-top: 5px solid rgba(255, 2, 2, 0.3);
 		}
 		&.-warning {
-			border: 2px solid rgba(243, 208, 70, 0.85);
+			border-top: 5px solid rgba(243, 208, 70, 0.85);
 		}		
 	}
 	
@@ -327,6 +405,7 @@
 		}
 		h3 {
 			font-size: 2.4rem;
+			margin-bottom: 1rem;
 		}
 		&__description {
 			display: block;
@@ -539,7 +618,7 @@
   .loopingClass(0); // Start loop
   
   .loopingClass(@index) when (@index <= @items) {
-    &:nth-child(@{index}) {
+    &:nth-of-type(@{index}) {
         animation-delay: unit((@index * @delay),s);
     }
 
@@ -558,11 +637,24 @@
     .delay-animation(@numitems, @delay);
 }
 
+.admin__group-entry { 
+	animation: fadein 0.2s ease-in 0s 1 forwards;
+	opacity: 0;
+    .delay-animation(@numitems, @delay);
+}
+
+.admin__ip-range-entry { 
+	animation: fadein 0.2s ease-in 0s 1 forwards;
+	opacity: 0;
+    .delay-animation(@numitems, @delay);
+}
+
+
+
 @numitems: 16;
 @delay: 0.03;
 
 /* USER TABLE FADE IN ANIMATION TEST EOL */
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
