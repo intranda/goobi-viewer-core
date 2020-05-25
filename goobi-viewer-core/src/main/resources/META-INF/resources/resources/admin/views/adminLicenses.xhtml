@@ -36,7 +36,7 @@
                                 <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
                                     <br />
                                     #{accessCondition} (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)} #{msg.admin__licenses_record_number})
-                                    <h:commandLink action="pretty:adminLicenseType" actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
+                                    <h:commandLink action="pretty:adminLicense" actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
                                         value="#{msg.admin__licenses_configure_license_now}" styleClass="pull-right" />
                                 </ui:repeat>
                             </div>
