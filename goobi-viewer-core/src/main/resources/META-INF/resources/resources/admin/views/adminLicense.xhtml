@@ -104,7 +104,7 @@
                                     <!-- TODO make sure changes made here are only retained when clicking on SAVE and reverted on cancel -->
                                     <div class="form-group form-row">
                                         <div class="col-sm-6">
-                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.privileges}">
+                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.privilegesCopy}">
                                                 <div class="badge badge-dark">
                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                     <!-- remove button -->

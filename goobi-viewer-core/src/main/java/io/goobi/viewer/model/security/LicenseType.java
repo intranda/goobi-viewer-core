@@ -33,6 +33,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -99,6 +100,9 @@ public class LicenseType implements IPrivilegeHolder {
     @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
     private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
+
+    @Transient
+    private Set<String> privilegesCopy = new HashSet<>();
 
     /**
      * Empty constructor.
@@ -415,14 +419,15 @@ public class LicenseType implements IPrivilegeHolder {
     public Set<String> getPrivileges() {
         return privileges;
     }
-    
+
     /**
      * Returns the list of available privileges for adding to this license.
+     * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
     public Set<String> getAvailablePrivileges() {
         Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
-        ret.removeAll(privileges);
+        ret.removeAll(privilegesCopy);
         return ret;
     }
 
@@ -443,7 +448,7 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     public boolean addPrivilege(String privilege) {
-        return privileges.add(privilege);
+        return privilegesCopy.add(privilege);
     }
 
     /**
@@ -452,7 +457,7 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     public boolean removePrivilege(String privilege) {
-        return privileges.remove(privilege);
+        return privilegesCopy.remove(privilege);
     }
 
     /** {@inheritDoc} */
@@ -958,6 +963,20 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public void setOverridingLicenseTypes(Set<LicenseType> overridingLicenseTypes) {
         this.overridingLicenseTypes = overridingLicenseTypes;
+    }
+
+    /**
+     * @return the privilegesCopy
+     */
+    public Set<String> getPrivilegesCopy() {
+        return privilegesCopy;
+    }
+
+    /**
+     * @param privilegesCopy the privilegesCopy to set
+     */
+    public void setPrivilegesCopy(Set<String> privilegesCopy) {
+        this.privilegesCopy = privilegesCopy;
     }
 
     /**

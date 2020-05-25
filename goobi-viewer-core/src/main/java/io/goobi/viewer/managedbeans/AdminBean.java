@@ -758,18 +758,26 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveLicenseTypeAction() throws DAOException {
-        // String name = getCurrentLicenseType().getName();
-        if (getCurrentLicenseType().getId() != null) {
+        if (currentLicenseType == null) {
+            Messages.error("errSave");
+            return "licenseTypes";
+        }
+
+        if (!currentLicenseType.getPrivileges().equals(currentLicenseType.getPrivilegesCopy())) {
+            currentLicenseType.setPrivileges(currentLicenseType.getPrivilegesCopy());
+        }
+
+        if (currentLicenseType.getId() != null) {
             if (DataManager.getInstance().getDao().updateLicenseType(getCurrentLicenseType())) {
                 Messages.info("updatedSuccessfully");
             } else {
-                Messages.info("errSave");
+                Messages.error("errSave");
             }
         } else {
             if (DataManager.getInstance().getDao().addLicenseType(getCurrentLicenseType())) {
                 Messages.info("addedSuccessfully");
             } else {
-                Messages.info("errSave");
+                Messages.error("errSave");
             }
         }
         setCurrentLicenseType(null);
@@ -1196,7 +1204,8 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
-            logger.debug("setCurrentLicenseType: " + currentLicenseType.getName());
+            logger.debug("setCurrentLicenseType: {}", currentLicenseType.getName());
+            currentLicenseType.setPrivilegesCopy(currentLicenseType.getPrivileges());
         }
         this.currentLicenseType = currentLicenseType;
     }
@@ -1679,7 +1688,7 @@ public class AdminBean implements Serializable {
         logger.debug("Show message " + message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
     }
-    
+
     /**
      * 
      * @param privilege
