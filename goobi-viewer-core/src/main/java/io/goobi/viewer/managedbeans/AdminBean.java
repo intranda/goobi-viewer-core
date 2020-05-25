@@ -417,7 +417,7 @@ public class AdminBean implements Serializable {
         }
         setCurrentUser(null);
 
-        return "adminAllUsers";
+        return "adminUsers";
     }
 
     /**
