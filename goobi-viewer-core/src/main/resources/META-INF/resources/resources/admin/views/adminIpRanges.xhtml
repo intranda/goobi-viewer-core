@@ -19,7 +19,7 @@
         <f:view contentType="text/html" encoding="utf-8">            
             <div id="adminIpRanges">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h2 class="admin__content-inner-title">#{msg.admin__networks}</h2>
+                    <h2 class="admin__content-inner-title">#{msg.admin__ip_ranges}</h2>
 
                     <div class="admin__content-inner-content">
                         <h:form id="adminIpRangesForm" prependId="false">
@@ -33,7 +33,6 @@
                             </div>
                             
                             <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
-                                <div class="row no-margin">
                                     <!-- TODO proper css class -->
                                     <div class="cms-select-template__template">
                                         <h3>#{ipRange.name}</h3>
@@ -59,7 +58,6 @@
                                                     #{msg.edit}
                                                 </h:commandLink> 
                                     </div>
-                                </div>
                             </ui:repeat>
                             
 						</h:form>

@@ -34,7 +34,6 @@
                             </div>
                             
                             <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
-                                <div class="row no-margin">
                                     <!-- TODO proper css class -->
                                     <div class="cms-select-template__template">
                                         <h3>#{userGroup.name}</h3>
@@ -59,7 +58,6 @@
                                             #{msg.edit}
                                         </h:commandLink>
                                     </div>
-                                </div>
                             </ui:repeat>
 
                         </h:form>
