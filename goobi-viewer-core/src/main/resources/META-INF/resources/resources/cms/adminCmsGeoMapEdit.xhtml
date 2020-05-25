@@ -223,6 +223,35 @@
 			                            </div>
 			                            <div id="queryHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__solrquery__help}</div>
 			                        </div>
+			                        <!-- PUPUP CONTENT -->
+			                        <div class="input_form__option_group">
+			                            <div class="input_form__option_label">
+			                                <label for="popupContent">#{msg.cms__geomaps__popup_content__label}:</label>
+			                            </div>
+			                            <div class="input_form__option_marker">
+			                            <label>*</label>
+			                            </div>
+			                            <div class="input_form__option_control">
+			                            	<div class="custom-control custom-control--select">
+							                    <h:selectOneMenu
+							                        id="popupContent"
+							                        styleClass="form-control" 
+							                        value="#{geoMapBean.currentMap.markerTitleField}"
+							                        required="false">
+							                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.cms__geomaps__popup_content__option__none}"></f:selectItem>
+							                        <f:selectItem itemValue="NORM_NAME" itemLabel="#{msg.cms__geomaps__popup_content__option__place}"></f:selectItem>
+							                        <f:selectItem itemValue="MD_VALUE" itemLabel="#{msg.cms__geomaps__popup_content__option__metadata}"></f:selectItem>
+							                        <f:ajax execute="mapPanel" render="mapPanel"/>
+							                    </h:selectOneMenu>
+							                </div>
+			                            </div>
+			                            <div class="input_form__option_help">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="popupContentHelp">
+			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+			                                </button>
+			                            </div>
+			                            <div id="popupContentHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__popup_content__help}</div>
+			                        </div>
 		                        </ui:fragment>
 		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL' or geoMapBean.currentMap.hasSolrQuery()}">
 		                        	<div>#{msg.cms__geomaps__map__help}</div>
@@ -248,22 +277,24 @@
 				            	    if($("#geomap").length > 0) {				            	        
 					            	    console.log("init map");
 					            	    let editable = #{geoMapBean.currentMap.type == 'MANUAL'};
+					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
+					            	    if(!editable) {					            	        
+						            	    if(#{geoMapBean.currentMap.markerTitleField == ''}) {
+						            	        mapEditor.geoMap.config.popover = undefined;
+						            	    }
+					            	    }
 					            	    mapEditor.init();
 					            	    mapEditor.geoMap.config.popoverOnHover = !editable;
 					            	    mapEditor.setAllowEditFeatures(editable);
 					            	    mapEditor.setMarkerIcon(#{geoMapBean.currentMap.markerAsJSON});
 					            	    mapEditor.updateFeatures();
-					            	    console.log("set view from stored View ", window.storedView);
 					            	    mapEditor.updateView(window.storedView);
 					            	    
 					            	    viewerJS.jsfAjax.begin.subscribe((e) => {
-					            	        if(e.source.id === "mapMarker") {					            	            
+					            	        if(e.source.id === "mapMarker" || e.source.id === "popupContent") {					            	            
 					            	            window.storedView = mapEditor.geoMap.getView();
-					            	            console.log("set stored view ", window.storedView);
 					            	        } else {
 					            	            window.storedView = undefined;
-					            	            console.log("reset stored view ", window.storedView);
-
 					            	        }
 					            	    })
 				            	    }

@@ -22,7 +22,7 @@
                 	<h:form id="adminIpRangesForm" prependId="false">
 		                <div class="admin__title-bar">
 		               	    <!-- HEADING --> 
-		                    <h2 class="admin__title">#{msg.admin__networks}</h2>
+		                    <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
 		                    <!-- CREATE NEW IP RANGE BUTTON --> 
 							<h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.admin__ip_range_new}" styleClass="btn btn--default admin__title-bar-action" />                                  
 						</div>
@@ -30,7 +30,7 @@
                     	<div class="admin__content-inner-content">
 							<!-- IP RANGE INFO TEXT -->
                             <p class="admin__ip-range-info-text">
-                                <h:outputText value="#{msg.admin__ip_ranges_description_text}" />
+                                <h:outputText value="#{msg.admin__ip_ranges_description_text}" escape="false" />
                             </p>
                             
                             <!--  INDIVIDUAL IP RANGES -->
@@ -41,7 +41,7 @@
                                         <h3 class="col-12">#{ipRange.name}</h3>
                                     </div>
                                     <!-- IP RANGE DESCRIPTION -->
-                                    <ui:fragment rendered="#{userGroup.description != ''}">
+                                    <ui:fragment rendered="#{ipRange.description != ''}">
 	                                    <div class="row mb-2">
 	                                    	<p class="col-12 admin__ip-range-description">#{ipRange.description}</p>
 	                                    </div>

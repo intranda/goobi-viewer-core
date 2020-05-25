@@ -50,7 +50,7 @@
 												<h:inputText value="#{adminBean.currentUserGroup.name}"
 													id="userGroupNameGeneral" styleClass="form-control"
 													required="true" />
-												<span class="admin__form-help-text">#{msg.help__admin_userGroup_name}</span>
+												<span class="admin__form-help-text">#{msg.admin__user_group_name__help}</span>
 											</div>
 											
 											<div class="col-1 admin__form-help-icon">
@@ -71,7 +71,7 @@
 												<h:inputTextarea
 													value="#{adminBean.currentUserGroup.description}"
 													id="userGroupDescription" styleClass="form-control" />
-												<span class="admin__form-help-text">#{msg.help__admin_userGroup_description}</span>
+												<span class="admin__form-help-text">#{msg.admin__user_group_description__help}</span>
 											</div>
 											
 											<div class="col-1 admin__form-help-icon">
@@ -98,7 +98,7 @@
 														<f:selectItems value="#{adminBean.allUsers}" var="user"
 															itemLabel="#{user.displayName}" />
 													</h:selectOneMenu>
-													<span class="admin__form-help-text">#{msg.help__admin_userGroup_owner}</span>
+													<span class="admin__form-help-text">#{msg.admin__user_group_owner__help}</span>
 											</div>
 
 											<div class="col-1 admin__form-help-icon">

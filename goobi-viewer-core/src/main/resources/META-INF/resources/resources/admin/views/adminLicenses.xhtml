@@ -27,12 +27,12 @@
                             <div class="clearfix"></div>
                             
                             <div>
-                                <h:outputText value="#{msg.admin__licenses_description_text}" />
+                                <h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
                             </div>
                             
                             <!-- TODO proper css class -->
                             <div class="cms-select-template__template">
-                                <h3>admin__licenses_not_configured_licenses</h3>
+                                <h3>#{msg.admin__licenses_not_configured_licenses}</h3>
                                 <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
                                     <br />
                                     #{accessCondition} (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)} #{msg.admin__licenses_record_number})

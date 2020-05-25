@@ -66,7 +66,6 @@ public class UserTools {
      */
     public static int deleteUserGroupOwnedByUser(User owner) throws DAOException {
         List<UserGroup> userGroups = owner.getUserGroupOwnerships();
-        logger.error("user groups: " + userGroups.size());
         if (userGroups.isEmpty()) {
             return 0;
         }

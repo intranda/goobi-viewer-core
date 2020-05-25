@@ -54,12 +54,12 @@
                             <div class="form-group form-row">
                             
                                 <div class="col-2 control-label admin__form-label">
-                                	<h:outputLabel for="displayName" value="#{msg.user__displayName}" /><span class="admin__label-required-field">(#{msg.requiredField})</span>
+                                	<h:outputLabel for="displayName" value="#{msg.admin__user_display_name}" />
                                 </div>
                                 <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
-                                        required="true" requiredMessage="#{msg.loginEnterDisplayName}" />
-                                    <span class="admin__form-help-text">#{msg.help__admin_user_displayName}</span>
+                                        required="false" requiredMessage="#{msg.loginEnterDisplayName}" />
+                                    <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
                                 </div>
                                 <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -92,7 +92,7 @@
                                             <f:validator validatorId="emailValidator" for="email" />
                                             <f:ajax render="emailGroup" />
                                         </h:inputText>
-                                        <span class="admin__form-help-text">#{msg.help__admin_user_email}</span>
+                                        <span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
                                     </div>
 
                                     <div class="col-1 admin__form-help-icon">
@@ -114,7 +114,7 @@
                             
                                 <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
-                                    <span class="admin__form-help-text">#{msg.help__admin_user_firstName}</span>
+                                    <span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
                                 </div>
                                 <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -130,7 +130,7 @@
                             
                             <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
-                                    <span class="admin__form-help-text">#{msg.help__admin_user_lastName}</span>
+                                    <span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
                             </div>
                                 <div class="col-1 admin__form-help-icon">
                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -141,7 +141,7 @@
                             
                             <div class="form-group form-row">
                                 <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="avatar" value="#{msg.user__avatar}" />
+                                <h:outputLabel for="avatar" value="#{msg.admin__user_avatar}" />
                                 </div>
                                                      
                                 <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
@@ -150,12 +150,12 @@
                                         <div class="col-6">
                                             <img class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" />
                                             <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
-                                            <label for="avatarFalseOption">#{msg.user__avatar_standard}</label>
+                                            <label for="avatarFalseOption">#{msg.admin__user_avatar_standard}</label>
                                         </div>
                                         <div class="col-6">
                                             <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(96)}" />
                                             <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
-                                            <label for="avatarTrueOption">#{msg.user_useGravatar}</label>
+                                            <label for="avatarTrueOption">#{msg.admin__user_avatar_gravatar}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -165,15 +165,15 @@
                             
                             
                             <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="superuser" value="#{msg.admin_superuser}" />
+                                <h:outputLabel for="superuser" value="#{msg.admin__user_superuser}" />
                             </div>
                             
                             
                                 <div class="col-9 admin__form-input">
                                     <div class="form-check admin__form-checkbox">
- 
-                                        <h:selectBooleanCheckbox class="form-check-input" type="checkbox" value="#{adminBean.currentUser.superuser}" id="superUser"/><label class="form-check-label" for="superUser">#{msg.admin_superuserNotice}</label>
-                                        
+                                        <h:selectBooleanCheckbox class="form-check-input" type="checkbox" value="#{adminBean.currentUser.superuser}"
+                                        id="superUser" />
+                                        <label class="form-check-label" for="superUser">#{msg.admin__user_superuser_notice}</label>
                                     </div>
                                 </div>
                                 </div>
@@ -184,7 +184,6 @@
                         </div>
 
                         <!-- PASSWORD -->
-                        <ui:fragment rendered="#{adminBean.currentUser.active}">
                             <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
                                 <h3>#{msg.password}</h3>
                             
@@ -192,14 +191,14 @@
                                 <div class="admin__default-block">
                             
                                     <div class="form-horizontal" role="form">
-                                        <div class="form-group admin__default-block">
+                                        <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}"
                                                     required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}"
@@ -235,8 +234,6 @@
                                 </div>
                             </h:panelGroup>
                         
-                        </ui:fragment>
-                        
                         <!-- SAVE / CANCEL BUTTONS -->
                         <ui:fragment rendered="#{adminBean.currentUser.active}">                        
                             <div class="text-right">
@@ -251,7 +248,7 @@
                         
                         <!-- ACCOUNT ACTIVATION -->
                         <ui:fragment rendered="#{!adminBean.currentUser.active}">
-                            <h3>#{msg.admin__user_activation_title}</h3>
+                            <h3>#{msg.admin__user_activation}</h3>
 
 								<div class="admin__default-block -warning">
 
@@ -284,13 +281,13 @@
                         <!-- DELETE USER -->
                         <ui:fragment rendered="#{adminBean.currentUser.id != null}">
                             <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
-                                <h3>#{msg.admin__delete_user_account}</h3>
+                                <h3>#{msg.admin__user_delete}</h3>
                                 
                                 <div class="admin__default-block -danger">
                                 
                                 <div class="form-group form-row">
 										<div class="col-9">
-											<p>#{msg.admin__user_delete_description}</p>
+											<p>#{msg.admin__user_delete_description}:</p>
 										</div>
 								</div>
                                 
@@ -298,8 +295,8 @@
                                 <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                 <div class="form-group">
                                     <h:selectOneRadio value="#{adminBean.deleteUserContributions}" immediate="true"> 
-                                        <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_keep_data}" />
-                                        <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_everything}"
+                                        <f:selectItem itemValue="false" itemLabel="#{msg.admin__user_delete_type_keep_data}" />
+                                        <f:selectItem itemValue="true" itemLabel="#{msg.admin__user_delete_type_everything}"
                                             itemDisabled="#{adminBean.currentUser.cmsCreator}" />
                                     </h:selectOneRadio>
                                 </div>    
@@ -307,7 +304,8 @@
                                     
                                     
                                     <div class="form-group form-row">
-                                        <h:outputLabel for="emailConfirmation" styleClass="col-6 control-label" value="#{msg.admin__user_delete_email_confirmation}" />
+                                        <h:outputLabel for="emailConfirmation" styleClass="col-6 control-label"
+                                            value="#{msg.admin__user_delete_email_confirmation}:" />
                                         <div class="col-6">
                                             <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation"
                                                 styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
@@ -315,7 +313,7 @@
                                     </div>
 
                                     <div class="text-right">
-                                        <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__delete_user_permanently}"
+                                        <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__user_delete_permanently}"
                                             action="#{adminBean.deleteUserAction(user, false)}" />
                                     </div>
                                 </div>
