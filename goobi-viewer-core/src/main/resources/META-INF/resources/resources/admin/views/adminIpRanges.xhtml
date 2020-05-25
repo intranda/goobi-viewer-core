@@ -29,7 +29,7 @@
                             <div class="clearfix"></div>
                             
                             <div>
-                                <h:outputText value="#{msg.admin__ip_ranges_description_text}" />
+                                <h:outputText value="#{msg.admin__ip_ranges_description_text}" escape="false" />
                             </div>
                             
                             <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
@@ -37,7 +37,7 @@
                                     <!-- TODO proper css class -->
                                     <div class="cms-select-template__template">
                                         <h3>#{ipRange.name}</h3>
-                                        <ui:fragment rendered="#{userGroup.description != ''}">
+                                        <ui:fragment rendered="#{ipRange.description != ''}">
                                             #{ipRange.description}
                                             <br/>
                                         </ui:fragment>
