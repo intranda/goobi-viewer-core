@@ -30,7 +30,7 @@
                             <div class="clearfix"></div>
                             
                             <div>
-                                <h:outputText value="#{msg.admin__groups_description_text}" />
+                                <h:outputText value="#{msg.admin__groups_description_text}" escape="false" />
                             </div>
                             
                             <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
