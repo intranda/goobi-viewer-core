@@ -678,19 +678,26 @@
 	<url-mapping id="adminUsers">
 		<pattern value="/admin/users/" />
 		<view-id value="/resources/admin/views/adminUsers.xhtml" />
+		<action onPostback="false">#{adminBean.setCurrentUser(null)}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminUser">
-		<pattern value="/admin/user/" />
-		<view-id value="/resources/admin/views/adminUser.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminUserGroups">
+    <url-mapping id="adminUserEdit">
+        <pattern value="/admin/users/edit/#{userId:adminBean.currentUserId}/" />
+        <view-id value="/resources/admin/views/adminUser.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminUserNew">
+        <pattern value="/admin/users/new/" />
+        <view-id value="/resources/admin/views/adminUser.xhtml" />
+        <action onPostback="false">#{adminBean.resetCurrentUserAction}</action>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+	<url-mapping id="adminGroups">
 		<pattern value="/admin/groups/" />
 		<view-id value="/resources/admin/views/adminUserGroups.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminUserGroup">
+	<url-mapping id="adminGroup">
 		<pattern value="/admin/group/" />
 		<view-id value="/resources/admin/views/adminUserGroup.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>

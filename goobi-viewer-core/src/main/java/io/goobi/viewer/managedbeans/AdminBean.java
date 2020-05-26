@@ -373,7 +373,7 @@ public class AdminBean implements Serializable {
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
             currentUser = copy;
             currentUser.setNickName(copy.getCopy().getNickName());
-            return "adminUser";
+            return "pretty:adminUserEdit";
         }
         currentUser = copy;
         if (getCurrentUser().getId() != null) {
@@ -381,7 +381,7 @@ public class AdminBean implements Serializable {
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
-                    return "adminUser";
+                    return "pretty:adminUserEdit";
                 }
                 currentUser.setNewPassword(passwordOne);
             }
@@ -389,7 +389,7 @@ public class AdminBean implements Serializable {
                 Messages.info("user_saveSuccess");
             } else {
                 Messages.error("errSave");
-                return "adminUser";
+                return "pretty:adminUserEdit";
             }
         } else {
             // New user
@@ -397,14 +397,14 @@ public class AdminBean implements Serializable {
                 // Do not allow the same email address being used for multiple users
                 Messages.error("newUserExist");
                 logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
-                return "adminUser";
+                return "pretty:adminUserEdit";
             }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
                 Messages.error("newUserPasswordOneRequired");
-                return "adminUser";
+                return "pretty:adminUserEdit";
             } else if (!passwordOne.equals(passwordTwo)) {
                 Messages.error("user_passwordMismatch");
-                return "adminUser";
+                return "pretty:adminUserEdit";
             } else {
                 getCurrentUser().setNewPassword(passwordOne);
 
@@ -413,12 +413,12 @@ public class AdminBean implements Serializable {
                 Messages.info("newUserCreated");
             } else {
                 Messages.info("errSave");
-                return "adminUser";
+                return "pretty:adminUserEdit";
             }
         }
         setCurrentUser(null);
 
-        return "adminUsers";
+        return "pretty:adminUsers";
     }
 
     /**
@@ -1119,6 +1119,29 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
+    }
+
+    /**
+     * Returns the user ID of <code>currentUser/code>.
+     * 
+     * return <code>currentUser.id</code> if loaded; -1 if not
+     */
+    public Long getCurrentUserId() {
+        if (currentUser != null) {
+            return currentUser.getId();
+        }
+
+        return -1L;
+    }
+
+    /**
+     * Sets the current user by loading them from the DB via the given user ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentUserId(Long id) throws DAOException {
+        this.currentUser = DataManager.getInstance().getDao().getUser(id);
     }
 
     /**
