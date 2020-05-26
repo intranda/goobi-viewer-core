@@ -25,7 +25,7 @@
 	                <h2 class="admin__title">#{msg.admin__users}</h2>
 	                <!-- CREATE NEW USER BUTTON -->
 	                <h:commandLink action="pretty:adminUser" actionListener="#{adminBean.resetCurrentUserAction}"
-	                    value="#{msg.admin__user_create_new}" styleClass="btn btn--default admin__title-bar-action" />
+	                    value="#{msg.add}" styleClass="btn btn--default admin__title-bar-action" />
 	            </div>   
                 <div class="admin__content-inner-content">
 					<!-- USER TABLE TOOLS: PAGINATION, FILTER  -->
@@ -42,7 +42,7 @@
 						<div class="row no-gutters admin__user-table-title">
 							<!-- NAME COL -->
 							<div class="col-6 d-flex">
-								<span>#{msg.name}</span>
+								<span>#{msg.admin__users}</span>
 								<!-- SORTING -->
 								<div class="sorting-wrapper admin__user-table-sorting">
 									<h:commandLink styleClass="sort"
@@ -75,7 +75,7 @@
 								</div>
 							</div>
 							<!-- USER GROUPS COL -->
-							<div class="col-3 d-flex">#{msg.userGroups}</div>
+							<div class="col-3 d-flex">#{msg.admin__groups}</div>
 						</div>
 						<!-- INDIVIDUAL USER ROWS -->
 	                	<ui:repeat var="user" value="#{adminBean.pageUsers}">

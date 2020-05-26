@@ -112,10 +112,10 @@
 								
 							</div>
 
-							<h3>#{msg.userGroup_members}</h3>
+							<h3>#{msg.admin__user_group_manage_members}</h3>
 							<!-- TODO proper css class -->
 							<div class="admin__default-block">
-								<p class="admin__group-add-member-info-text">#{msg.userGroup_addNewMember}</p>
+								<p class="admin__group-add-member-info-text">#{msg.admin__user_group_manage_members_info_text}</p>
 								
 								<!-- ADD MEMBER TO USER GROUP -->
 								
@@ -137,8 +137,6 @@
 								
 								
 								<div id="editUserGroupMembersTable" class="admin__group-member-list">
-								<p class="admin__group-member-list-info">#{msg.userGroup_list_info}</p>
-								
 								
 								<ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships}">
 									<div class="form-row admin__group-member-entry">
