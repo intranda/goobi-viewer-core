@@ -33,9 +33,10 @@
                                 <h:outputText value="#{msg.admin__ip_ranges_description_text}" escape="false" />
                             </p>
                             
+                            <div class="admin__entry-list">
                             <!--  INDIVIDUAL IP RANGES -->
                             <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
-                            <div class="admin__ip-range-entry">
+                            <div class="admin__boxed-entry -w33">
                                     
                                     <div class="row">
                                         <h3 class="col-12">#{ipRange.name}</h3>
@@ -52,8 +53,8 @@
 									</div>
 									
 									<!-- IP RANGE ACTIONS -->
-									<div class="row justify-content-end admin__ip-range-actions">
-										<div class="col-3 d-flex justify-content-end admin__ip-range-actions">
+									<div class="row justify-content-end admin__boxed-entry-actions">
+										<div class="col-3 d-flex justify-content-end">
                                     	<!-- DELETE IP RANGE -->
                                                 <h:commandLink
                                                     styleClass="btn btn--icon admin__ip-range-delete -redlink" 
@@ -73,6 +74,7 @@
                                                 
                             </div>
                             </ui:repeat>
+                            </div>
                             
 
                     </div>
@@ -95,10 +97,4 @@
 		</f:view>
     </ui:define>
 
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-    	<adminWidget:widget_cms />
-    </ui:define>
 </ui:composition>

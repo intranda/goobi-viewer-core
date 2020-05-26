@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -763,8 +764,9 @@ public class AdminBean implements Serializable {
             return "licenseTypes";
         }
 
+        // Adopt changes made to the privileges
         if (!currentLicenseType.getPrivileges().equals(currentLicenseType.getPrivilegesCopy())) {
-            currentLicenseType.setPrivileges(currentLicenseType.getPrivilegesCopy());
+            currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
         }
 
         if (currentLicenseType.getId() != null) {
@@ -806,6 +808,7 @@ public class AdminBean implements Serializable {
      * resetCurrentLicenseTypeAction.
      * </p>
      */
+    @Deprecated
     public void resetCurrentLicenseTypeAction() {
         logger.trace("resetCurrentLicenseTypeAction");
         currentLicenseType = new LicenseType();
@@ -1205,7 +1208,7 @@ public class AdminBean implements Serializable {
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
             logger.debug("setCurrentLicenseType: {}", currentLicenseType.getName());
-            currentLicenseType.setPrivilegesCopy(currentLicenseType.getPrivileges());
+            currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
         }
         this.currentLicenseType = currentLicenseType;
     }
@@ -1654,7 +1657,6 @@ public class AdminBean implements Serializable {
 
         List<String> ret = new ArrayList<>();
         for (String accessCondition : accessConditions) {
-            logger.trace("ac: " + accessCondition);
             boolean found = false;
             for (LicenseType licenseType : licenseTypes) {
                 if (licenseType.getName().equals(accessCondition)) {

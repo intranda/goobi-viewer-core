@@ -71,72 +71,9 @@
 <!--                                             </td> -->
                                             <td>
                                                 <ul>
-                                                    <h:panelGroup rendered="#{licenseType.privList}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privList}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privViewImages}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privViewImages}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privViewThumbnails}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privViewThumbnails}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privViewFulltext}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privViewFulltext}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privViewVideo}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privViewVideo}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privViewAudio}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privViewAudio}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privDownloadPdf}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privDownloadPdf}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privDownloadPagePdf}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privDownloadPagePdf}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privDownloadOriginalContent}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privDownloadOriginalContent}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privSetRepresentativeImage}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privSetRepresentativeImage}" />
-                                                        </li>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privCmsPages}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privCmsPages}" />
-                                                        </li>
-                                                    </h:panelGroup>
+                                                     <ui:repeat var="priv" value="#{licenseType.privileges}">
+                                                        <div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                     </ui:repeat>
                                                 </ul>
                                             </td>
                                             <td class="admin-table__action">
@@ -168,10 +105,4 @@
         </f:view>
     </ui:define>
 
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-        <adminWidget:widget_cms />
-    </ui:define>
 </ui:composition>
