@@ -443,18 +443,20 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
+     * Adds the given privilege to the working set.
      * 
      * @param privilege
-     * @return
+     * @return true if successful; false otherwise
      */
     public boolean addPrivilege(String privilege) {
         return privilegesCopy.add(privilege);
     }
 
     /**
+     * Removes the given privilege from the working set.
      * 
      * @param privilege
-     * @return
+     * @return true if successful; false otherwise
      */
     public boolean removePrivilege(String privilege) {
         return privilegesCopy.remove(privilege);
