@@ -24,7 +24,8 @@
 		               	    <!-- HEADING --> 
 		                    <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
 		                    <!-- CREATE NEW IP RANGE BUTTON --> 
-							<h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.admin__ip_range_new}" styleClass="btn btn--default admin__title-bar-action" />                                  
+							<h:commandLink action="pretty:adminIpRangeNew"
+							    value="#{msg.admin__ip_range_new}" styleClass="btn btn--default admin__title-bar-action" />                                  
 						</div>
 
                     	<div class="admin__content-inner-content">
@@ -55,20 +56,23 @@
 									<!-- IP RANGE ACTIONS -->
 									<div class="row justify-content-end admin__boxed-entry-actions">
 										<div class="col-3 d-flex justify-content-end">
-                                    	<!-- DELETE IP RANGE -->
-                                                <h:commandLink
-                                                    styleClass="admin__boxed-entry-actions-delete -redlink" 
-                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
-                                                    action="adminIpRanges" 
-                                                    actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
-                                                    title="#{msg.delete}">
-                                                    #{msg.delete}
-                                                </h:commandLink>
-                                        <!-- EDIT IP RANGE -->
-                                                <h:commandLink styleClass="admin__boxed-entry-actions-edit -bluelink" action="pretty:adminIpRange" title="#{msg.edit}">
-                                                    <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" />
-                                                    #{msg.edit}
-                                                </h:commandLink> 
+                                    	    <!-- DELETE IP RANGE -->
+                                            <h:commandLink
+                                                styleClass="admin__boxed-entry-actions-delete -redlink" 
+                                                onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
+                                                action="adminIpRanges" 
+                                                actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
+                                                title="#{msg.delete}">
+                                                #{msg.delete}
+                                            </h:commandLink>
+                                            <!-- EDIT IP RANGE -->
+<!--                                                 <h:commandLink styleClass="admin__boxed-entry-actions-edit -bluelink" -->
+<!--                                                     action="pretty:adminIpRangeEdit" title="#{msg.edit}"> -->
+<!--                                                     <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" /> -->
+<!--                                                     #{msg.edit} -->
+<!--                                                 </h:commandLink>  -->
+                                            <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
+                                                value="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/">#{msg.edit}</h:outputLink>
                                     	</div>            
                                    </div>           
                                                 

@@ -112,13 +112,10 @@
 							</div>
 							<!-- ACTION -->
 							<div class="text-right">
-								<h:commandLink action="adminIpRanges" value="#{msg.cancel}"
+								<h:commandLink action="pretty:adminIpRanges" value="#{msg.cancel}"
 									styleClass="btn" immediate="true">
-									<f:setPropertyActionListener
-										target="#{adminBean.currentIpRange}" value="#{null}" />
 								</h:commandLink>
-								<h:commandLink action="adminIpRanges"
-									actionListener="#{adminBean.saveIpRangeAction}"
+								<h:commandLink action="#{adminBean.saveIpRangeAction}"
 									value="#{msg.save}" styleClass="btn btn--success" />
 							</div>
 						</h:form>

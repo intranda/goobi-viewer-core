@@ -856,22 +856,26 @@ public class AdminBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void saveIpRangeAction() throws DAOException {
+    public String saveIpRangeAction() throws DAOException {
         // String name = getCurrentIpRange().getName();
         if (getCurrentIpRange().getId() != null) {
             if (DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange())) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
+                return "pretty:adminIpRangeEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addIpRange(getCurrentIpRange())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
+                return "pretty:adminIpRangeNew";
             }
         }
         setCurrentIpRange(null);
+
+        return "pretty:adminIpRanges";
     }
 
     /**
@@ -1306,6 +1310,29 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentIpRange(IpRange currentIpRange) {
         this.currentIpRange = currentIpRange;
+    }
+
+    /**
+     * Returns the user ID of <code>currentIpRange/code>.
+     * 
+     * return <code>currentIpRange.id</code> if loaded and has ID; -1 if not
+     */
+    public Long getCurrentIpRangeId() {
+        if (currentIpRange != null && currentIpRange.getId() != null) {
+            return currentIpRange.getId();
+        }
+
+        return -1L;
+    }
+
+    /**
+     * Sets the current IP range by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentIpRangeId(Long id) throws DAOException {
+        this.currentIpRange = DataManager.getInstance().getDao().getIpRange(id);
     }
 
     /**

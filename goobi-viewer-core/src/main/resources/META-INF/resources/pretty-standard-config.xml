@@ -709,14 +709,21 @@
         <action onPostback="false">#{adminBean.resetCurrentUserGroupAction}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-	<url-mapping id="adminAllIpRanges">
-		<pattern value="/admin/networks/" />
+	<url-mapping id="adminIpRanges">
+		<pattern value="/admin/ipranges/" />
 		<view-id value="/resources/admin/views/adminIpRanges.xhtml" />
+		<action onPostback="false">#{adminBean.setCurrentIpRange(null)}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminIpRange">
-		<pattern value="/admin/network/" />
+    <url-mapping id="adminIpRangeEdit">
+        <pattern value="/admin/ipranges/edit/#{ipRangeId:adminBean.currentIpRangeId}/" />
+        <view-id value="/resources/admin/views/adminIpRange.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+	<url-mapping id="adminIpRangeNew">
+		<pattern value="/admin/ipranges/new/" />
 		<view-id value="/resources/admin/views/adminIpRange.xhtml" />
+		<action onPostback="false">#{adminBean.resetCurrentIpRangeAction}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminAllLicenses">
