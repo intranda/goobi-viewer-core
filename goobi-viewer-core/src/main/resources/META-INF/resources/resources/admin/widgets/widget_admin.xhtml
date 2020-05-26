@@ -43,7 +43,7 @@
                                 <span>#{msg.admin__licenses}</span>
                             </h:outputLink>
                         </li>
-                        <li class="admin-widget__roles-link #{navigationHelper.currentPage == 'adminRoles' ? 'active' : '' or
+                        <li class="#{navigationHelper.currentPage == 'adminRoles' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminRole' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRoles')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
