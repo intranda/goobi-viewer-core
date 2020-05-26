@@ -46,11 +46,11 @@
                         <input type="password" class="hidden" />
                         
                         
-                        
+
                         <!-- TODO LOGIC FOR DISABLED OR NOT DISABLED -->
+                        
                   		<!--  <fieldset disabled="#{!adminBean.currentUser.active}">-->
 						<fieldset>
-						
                             <div class="form-group form-row">
                             
                                 <div class="col-2 control-label admin__form-label">
@@ -70,8 +70,16 @@
                             </div>
                             
                                 <h:panelGroup id="emailGroup">
+                                
                                 <div class="form-group form-row">
-                                    <div class="cms-module__option-message">
+  
+                                    <div class="col-2 control-label admin__form-label">
+	                                    <h:outputLabel for="email" value="#{msg.email}" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                    </div>
+                                    
+                                    <div class="col-9 admin__form-input cms-module__option-control">
+                                    
+                                       <div class="cms-module__option-message">
                                         <h:messages for="email" 
                                             infoClass="cms-module__option-message-status success" 
                                             warnClass="cms-module__option-message-status warning"
@@ -82,11 +90,7 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="col-2 control-label admin__form-label">
-	                                    <h:outputLabel for="email" value="#{msg.email}" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
-                                    </div>
                                     
-                                    <div class="col-9 admin__form-input">
                                         <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
                                             styleClass="form-control">
                                             <f:validator validatorId="emailValidator" for="email" />

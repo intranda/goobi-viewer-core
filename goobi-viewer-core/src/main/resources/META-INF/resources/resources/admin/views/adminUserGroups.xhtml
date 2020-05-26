@@ -71,13 +71,13 @@
 													action="adminAllUserGroups"
 													actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
 													title="#{msg.delete}"
-													styleClass="admin__group-delete -redlink">
+													styleClass="admin__boxed-entry-actions-delete -redlink">
 		                                        #{msg.delete}
 		                                    	</h:commandLink>
 												<!-- EDIT USER GROUP-->
 												<h:commandLink action="pretty:adminUserGroup"
 													title="#{msg.edit}"
-													styleClass="admin__group-edit -bluelink">
+													styleClass="admin__boxed-entry-actions-edit -bluelink">
 													<f:setPropertyActionListener value="#{userGroup}"
 														target="#{adminBean.currentUserGroup}" />
 		                                        #{msg.edit}

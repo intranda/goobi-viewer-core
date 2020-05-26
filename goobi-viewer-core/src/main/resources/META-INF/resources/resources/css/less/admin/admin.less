@@ -76,6 +76,12 @@
 			position: absolute;
 			bottom: 1.5rem;
 			right: 2rem;
+			a {
+				font-size: 1.4rem;
+			}
+			a:first-of-type {
+				padding-right: 1.4rem;
+			}
 		}
 	}
 	&__title-bar {
@@ -211,31 +217,31 @@
 	&__group-description {
 		margin-bottom: 3rem;
 	}
-	&__group-delete {
-		padding-right: 2rem;
-	}
-	&__group-edit {
-	}
 	&__group-member-entry {
 		transition: background 0.2s ease;
 		padding: 0.4rem 0;
 		&:hover {
 			background: @lightgray2;
-			.admin__group-member-delete {
+			.admin__group-member-delete-hint {
 				opacity: 1;
 			}
 		}
 	}
 	&__group-member-delete {
-		opacity: 0;
+		&:hover {
+			text-decoration: none;
+		}
+	}
+	&__group-member-delete-hint {
 		transition: opacity 0.2s ease;
+		opacity: 0;
+	}
+	&__group-member-name {
+		color: #212529;
 	}
 	&__ip-range-actions {
 		opacity: 0;
 		transition: opacity 0.2s ease;
-	}
-	&__ip-range-delete {
-		padding-right: 2rem;
 	}
 }
 
@@ -658,20 +664,14 @@
 	opacity: 0;
 }
 
-.admin__group-entry { 
-	animation: fadein 0.2s ease-in 0s 1 forwards;
-	opacity: 0;
-    .delay-animation(@numitems, @delay);
-}
-
-.admin__ip-range-entry { 
+.admin__boxed-entry { 
 	animation: fadein 0.2s ease-in 0s 1 forwards;
 	opacity: 0;
     .delay-animation(@numitems, @delay);
 }
 
 @numitems: 16;
-@delay: 0.03;
+@delay: 0.04;
 
 /* USER TABLE FADE IN ANIMATION TEST EOL */
 
