@@ -186,11 +186,9 @@
                         <!-- PASSWORD -->
                             <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
                                 <h3>#{msg.password}</h3>
-                            
-                                <!-- TODO proper css class -->
+
                                 <div class="admin__default-block">
-					<!-- TODO FIX MESSAGE KEY, HTML AND CSS HERE -->
-					#{msg.admin__user_password_info_text} 
+								<p>#{msg.admin__user_password_info_text}</p>
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}" />
@@ -214,10 +212,8 @@
                             <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
                                 <h3>#{msg.changePassword}</h3>
                             
-                                <!-- TODO proper css class -->
                                 <div class="admin__default-block">
-					<!-- TODO FIX MESSAGE KEY, HTML AND CSS HERE -->
-					#{msg.admin__user_password_info_text} 
+								<p>#{msg.admin__user_password_info_text}</p> 
                             
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
@@ -307,9 +303,9 @@
                                     
                                     
                                     <div class="form-group form-row">
-                                        <h:outputLabel for="emailConfirmation" styleClass="col-6 control-label"
+                                        <h:outputLabel for="emailConfirmation" styleClass="col-4 control-label"
                                             value="#{msg.admin__user_delete_email_confirmation}:" />
-                                        <div class="col-6">
+                                        <div class="col-8">
                                             <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation"
                                                 styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
                                         </div>
