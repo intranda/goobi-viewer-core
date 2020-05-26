@@ -36,9 +36,10 @@
 								<h:outputText value="#{msg.admin__groups_description_text}" escape="false" />
 							</p>
 							
+							<div class="admin__entry-list">
 								<!-- INDIVIDUAL GROUPS -->
 								<ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
-									<div class="admin__group-entry">
+									<div class="admin__boxed-entry -w33">
 										<!-- GROUP NAME -->
 										<div class="row">
 											<h3 class="col-12 admin__group-title">#{userGroup.name}</h3>
@@ -62,8 +63,8 @@
 										</div>
 
 										<!-- GROUP ACTIONS -->
-										<div class="row justify-content-end admin__group-actions">
-											<div class="col-3 d-flex justify-content-end">
+									<div class="row justify-content-end admin__boxed-entry-actions">
+										<div class="col-3 d-flex justify-content-end">
 												<!-- DELETE USER GROUP -->
 												<h:commandLink
 													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
@@ -81,10 +82,11 @@
 														target="#{adminBean.currentUserGroup}" />
 		                                        #{msg.edit}
 		                                    	</h:commandLink>
-											</div>
 										</div>
 									</div>
+									</div>
 								</ui:repeat>
+								</div>
 						</div>
 					</h:form>
 				</h:panelGroup>
