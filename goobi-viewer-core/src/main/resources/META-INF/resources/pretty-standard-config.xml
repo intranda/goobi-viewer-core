@@ -695,13 +695,20 @@
 	<url-mapping id="adminGroups">
 		<pattern value="/admin/groups/" />
 		<view-id value="/resources/admin/views/adminUserGroups.xhtml" />
+		<action onPostback="false">#{adminBean.setCurrentUserGroup(null)}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminGroup">
-		<pattern value="/admin/group/" />
-		<view-id value="/resources/admin/views/adminUserGroup.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
+    <url-mapping id="adminGroupEdit">
+        <pattern value="/admin/groups/edit/#{userGroupId:adminBean.currentUserGroupId}/" />
+        <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminGroupNew">
+        <pattern value="/admin/groups/new/" />
+        <view-id value="/resources/admin/views/adminUserGroup.xhtml" />
+        <action onPostback="false">#{adminBean.resetCurrentUserGroupAction}</action>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	<url-mapping id="adminAllIpRanges">
 		<pattern value="/admin/networks/" />
 		<view-id value="/resources/admin/views/adminIpRanges.xhtml" />

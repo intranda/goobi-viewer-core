@@ -25,7 +25,7 @@
 							<!-- HEADING -->
 							<h2 class="admin__title">#{msg.admin__groups}</h2>
 							<!-- CREATE NEW GROUP BUTTON -->
-							<h:commandLink action="adminUserGroup"
+							<h:commandLink action="pretty:adminGroupNew"
 								actionListener="#{adminBean.resetCurrentUserGroupAction}"
 								value="#{msg.add}"
 								styleClass="btn btn--default admin__title-bar-action" />
@@ -75,13 +75,15 @@
 		                                        #{msg.delete}
 		                                    	</h:commandLink>
 												<!-- EDIT USER GROUP-->
-												<h:commandLink action="pretty:adminUserGroup"
-													title="#{msg.edit}"
-													styleClass="admin__boxed-entry-actions-edit -bluelink">
-													<f:setPropertyActionListener value="#{userGroup}"
-														target="#{adminBean.currentUserGroup}" />
-		                                        #{msg.edit}
-		                                    	</h:commandLink>
+<!-- 												<h:commandLink action="pretty:adminUserGroupEdit" -->
+<!-- 													title="#{msg.edit}" -->
+<!-- 													styleClass="admin__boxed-entry-actions-edit -bluelink"> -->
+<!-- 													<f:setPropertyActionListener value="#{userGroup}" -->
+<!-- 														target="#{adminBean.currentUserGroup}" /> -->
+<!-- 		                                        #{msg.edit} -->
+<!-- 		                                    	</h:commandLink> -->
+                                                <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
+                                                    value="#{navigationHelper.applicationUrl}admin/groups/edit/#{userGroup.id}/">#{msg.edit}</h:outputLink>
 										</div>
 									</div>
 									</div>

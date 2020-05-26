@@ -501,9 +501,9 @@ public class AdminBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void saveUserGroupAction() throws DAOException {
+    public String saveUserGroupAction() throws DAOException {
         if (currentUserGroup == null) {
-            return;
+            return "pretty:adminGroups";
         }
 
         if (getCurrentUserGroup().getId() != null) {
@@ -511,15 +511,19 @@ public class AdminBean implements Serializable {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
+                return "pretty:adminGroupEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
+                return "pretty:adminGroupNew";
             }
         }
         setCurrentUserGroup(null);
+
+        return "pretty:adminGroups";
     }
 
     /**
@@ -1124,10 +1128,10 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentUser/code>.
      * 
-     * return <code>currentUser.id</code> if loaded; -1 if not
+     * return <code>currentUser.id</code> if loaded and has ID; -1 if not
      */
     public Long getCurrentUserId() {
-        if (currentUser != null) {
+        if (currentUser != null && currentUser.getId() != null) {
             return currentUser.getId();
         }
 
@@ -1164,6 +1168,29 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentUserGroup(UserGroup userGroup) {
         this.currentUserGroup = userGroup;
+    }
+
+    /**
+     * Returns the user ID of <code>currentUserGroup/code>.
+     * 
+     * return <code>currentUserGroup.id</code> if loaded and has ID; -1 if not
+     */
+    public Long getCurrentUserGroupId() {
+        if (currentUserGroup != null && currentUserGroup.getId() != null) {
+            return currentUserGroup.getId();
+        }
+
+        return -1L;
+    }
+
+    /**
+     * Sets the current user group by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentUserGroupId(Long id) throws DAOException {
+        this.currentUserGroup = DataManager.getInstance().getDao().getUserGroup(id);
     }
 
     /**

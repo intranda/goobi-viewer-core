@@ -242,7 +242,7 @@
                             <div class="text-right">
                                 <h:commandLink  rendered="#{adminBean.currentUser.id != null}"
                                     id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true">
-                                    <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" />
+<!--                                     <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" /> -->
                                 </h:commandLink>
                                 <h:commandLink id="saveUserButton" styleClass="btn btn--success" value="#{msg.save}"
                                     action="#{adminBean.saveUserAction}" />
