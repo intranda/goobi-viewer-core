@@ -165,7 +165,7 @@
 		border: 1px solid @middlegray;
 		&:hover {
 			//background: @lightgray2;
-			box-shadow: 0 0 3px rgb(51,101,169);
+			box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 			.admin__group-actions {
 				opacity: 1;
 			}
@@ -238,7 +238,10 @@
 	&__form-input {
 		flex-grow: 1;
 	}
-	&__form-help-icon {}
+	&__form-help-icon {
+		display: flex;
+		justify-content: center;
+	}
 	&__form-checkbox {}
 	&__form-help-text {
 		display: none;
@@ -251,7 +254,7 @@
 		}
 	}
 	&__default-block {
-		margin-bottom: 1.5rem;
+		margin-bottom: 3rem;
 		padding: 2rem;
 		background-color: #fff;
 		border: 1px solid @middlegray;
@@ -262,7 +265,7 @@
 			border-top: 5px solid rgba(243, 208, 70, 0.85);
 		}		
 	}
-	
+
 	.mx-clearfloats;
 	position: relative;
 	button.btn {
@@ -634,10 +637,14 @@
   to { opacity: 1; }
 }
 
+@keyframes fadeinall {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .admin__user-table-content .admin__user-table-entry { 
-	animation: fadein 0.2s ease-in 0s 1 forwards;
+	animation: fadeinall 0.3s ease-in 0s 1 forwards;
 	opacity: 0;
-    .delay-animation(@numitems, @delay);
 }
 
 .admin__group-entry { 
@@ -651,8 +658,6 @@
 	opacity: 0;
     .delay-animation(@numitems, @delay);
 }
-
-
 
 @numitems: 16;
 @delay: 0.03;
