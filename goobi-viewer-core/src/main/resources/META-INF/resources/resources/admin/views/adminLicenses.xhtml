@@ -54,33 +54,11 @@
                                         <br />#{msg.license_conditions}: #{licenseType.conditions}
                                     </ui:fragment>
                                     <br />#{msg.admin__license_functions}:
-                                    <ui:fragment rendered="#{licenseType.privList}">
-                                        <div class="badge badge-dark">#{msg.license_privList}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privViewImages}">
-                                        <div class="badge badge-dark">#{msg.license_privViewImages}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privViewThumbnails}">
-                                        <div class="badge badge-dark">#{msg.license_privViewThumbnails}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privViewFulltext}">
-                                        <div class="badge badge-dark">#{msg.license_privViewFulltext}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privViewVideo}">
-                                        <div class="badge badge-dark">#{msg.license_privViewVideo}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privViewAudio}">
-                                        <div class="badge badge-dark">#{msg.license_privViewAudio}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privDownloadPdf}">
-                                        <div class="badge badge-dark">#{msg.license_privDownloadPdf}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privDownloadPagePdf}">
-                                        <div class="badge badge-dark">#{msg.license_privDownloadPagePdf}</div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{licenseType.privDownloadOriginalContent}">
-                                        <div class="badge badge-dark">#{msg.license_privDownloadOriginalContent}</div>
-                                    </ui:fragment>
+                                    
+                                    <ui:repeat var="priv" value="#{licenseType.privileges}">
+                                        <div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                    </ui:repeat>
+                                    
                                     <!-- edit -->
                                     <h:commandLink styleClass="pull-right" action="pretty:adminLicense" title="#{msg.edit}">
                                         <f:setPropertyActionListener value="#{licenseType}" target="#{adminBean.currentLicenseType}" />
