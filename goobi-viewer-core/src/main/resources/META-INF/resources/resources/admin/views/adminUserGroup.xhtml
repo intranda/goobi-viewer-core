@@ -24,19 +24,18 @@
 					rendered="#{userBean.admin and adminBean.currentUserGroup != null}">
 					<div class="admin__title-bar">
 						<h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
-							<h2 class="admin__title">#{msg.admin_userGroup_create_new}</h2>
+							<h2 class="admin__title">#{msg.admin__group_create_new}</h2>
 						</h:panelGroup>
 
 						<h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-							<h2 class="admin__title">#{msg.userGroup}:
-								#{adminBean.currentUserGroup.name}</h2>
+							<h2 class="admin__title">#{msg.admin__group}: #{adminBean.currentUserGroup.name}</h2>
 						</h:panelGroup>
 					</div>
 
 					<div class="admin__content-inner-content">
 						<h:form id="editUserGroupGeneral" styleClass="form-horizontal"
 							role="form" prependId="false">
-							<h3>#{msg.admin__userGroup_general}</h3>
+							<h3>#{msg.admin__group_general}</h3>
 
 							<div class="admin__default-block">
 								<fieldset>
