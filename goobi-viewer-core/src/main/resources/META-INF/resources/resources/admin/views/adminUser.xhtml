@@ -44,17 +44,14 @@
                         <!-- prevent autocomplete in IE, Chrome and Firefox -->
                         <input type="text" class="hidden" />
                         <input type="password" class="hidden" />
-                        
-                        
-
+                                 
                         <!-- TODO LOGIC FOR DISABLED OR NOT DISABLED -->
-                        
                   		<!--  <fieldset disabled="#{!adminBean.currentUser.active}">-->
 						<fieldset>
                             <div class="form-group form-row">
                             
                                 <div class="col-2 control-label admin__form-label">
-                                	<h:outputLabel for="displayName" value="#{msg.admin__user_display_name}" />
+                                	<h:outputLabel for="displayName" value="#{msg.admin__user_display_name}:" />
                                 </div>
                                 <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
@@ -74,7 +71,7 @@
                                 <div class="form-group form-row">
   
                                     <div class="col-2 control-label admin__form-label">
-	                                    <h:outputLabel for="email" value="#{msg.email}" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
+	                                    <h:outputLabel for="email" value="#{msg.email}:" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                     </div>
                                     
                                     <div class="col-9 admin__form-input cms-module__option-control">
@@ -89,7 +86,6 @@
                                             <i class="fa fa-exclamation" aria-hidden="true"></i>
                                         </div>
                                     </div>
-                                    
                                     
                                         <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
                                             styleClass="form-control">
@@ -108,12 +104,10 @@
                                        </div>
                                 </h:panelGroup>
                          
-                            
-                            
                             <div class="form-group form-row">
                             
                             <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="firstName" value="#{msg.nameFirst}" />
+                                <h:outputLabel for="firstName" value="#{msg.nameFirst}:" />
                             </div>
                             
                                 <div class="col-9 admin__form-input">
@@ -129,7 +123,7 @@
                             
                             <div class="form-group form-row">
                             <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="lastName" value="#{msg.nameLast}" />
+                                <h:outputLabel for="lastName" value="#{msg.nameLast}:" />
                             </div>
                             
                             <div class="col-9 admin__form-input">
@@ -145,7 +139,7 @@
                             
                             <div class="form-group form-row">
                                 <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="avatar" value="#{msg.admin__user_avatar}" />
+                                <h:outputLabel for="avatar" value="#{msg.admin__user_avatar}:" />
                                 </div>
                                                      
                                 <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
@@ -169,7 +163,7 @@
                             
                             
                             <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="superuser" value="#{msg.admin__user_superuser}" />
+                                <h:outputLabel for="superuser" value="#{msg.admin__user_superuser}:" />
                             </div>
                             
                             
@@ -195,14 +189,14 @@
 								<p>#{msg.admin__user_password_info_text}</p>
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}" />
+                                            <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}"
                                                     required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
                                             </div>
                                         </div>
                                         <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}" />
+                                            <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
                                             <div class="col-sm-8">
                                                 <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}"
                                                     required="true" requiredMessage="#{msg.newUserPasswordOneRequired}" />
@@ -221,13 +215,13 @@
                             
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}" />
+                                            <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}:" />
                                             <div class="col-9">
                                                 <h:inputSecret id="adminPasswordOne" styleClass="form-control" value="#{adminBean.passwordOne}" />
                                             </div>
                                         </div>
                                         <div class="form-group form-row">
-                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-2 control-label" value="#{msg.newUserPasswordTwo}" />
+                                            <h:outputLabel for="adminPasswordTwo" styleClass="col-2 control-label" value="#{msg.newUserPasswordTwo}:" />
                                             <div class="col-9">
                                                 <h:inputSecret id="adminPasswordTwo" styleClass="form-control" value="#{adminBean.passwordTwo}" />
                                             </div>
@@ -263,7 +257,7 @@
 									<div class="form-group form-row">
 										<div class="col-9">
 											<div class="form-check">
-												<h:selectBooleanCheckbox class="form-check-input" value="#{adminBean.currentUser.active}" /><label class="form-check-label"> 
+												<h:selectBooleanCheckbox class="form-check-input" value="#{adminBean.currentUser.active}" id="userActivation"/><label for="userActivation" class="form-check-label" > 
 													#{msg.admin__user_activation_label}
 												</label>
 											</div>
