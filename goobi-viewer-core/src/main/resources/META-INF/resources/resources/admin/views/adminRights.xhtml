@@ -21,12 +21,12 @@
             <div id="adminLicenseTypes">
                 <h:panelGroup rendered="#{userBean.admin}">
                     <h2 class="admin__content-inner-title">#{msg.admin__rights}</h2>
-                    
-                    <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.setCurrentRoleLicense(null)}"
-                        value="#{msg.add}"/>
-
                     <div class="admin__content-inner-content">
-                        <h:form id="adminLicensesForm" prependId="false">                                    
+                        <h:form id="adminLicensesForm" prependId="false">     
+                                            
+                            <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.newCurrentLicenseAction}"
+                                value="#{msg.add}"/>
+                                                       
                             <div class="clearfix"></div>
                             
                             <div>
