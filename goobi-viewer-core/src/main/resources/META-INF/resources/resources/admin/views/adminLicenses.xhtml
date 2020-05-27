@@ -67,7 +67,7 @@
 										</ui:fragment>
 
 										<div class="row mb-2">
-											<span class="col-3">#{msg.admin__licenses_record_number}:</span><span class="col-9"> #{adminBean.getNumRecordsWithAccessCondition(accessCondition)}</span>
+											<span class="col-3">#{msg.admin__licenses_record_number}:</span><span class="col-9"> #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</span>
 										</div>
 
 										<ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
