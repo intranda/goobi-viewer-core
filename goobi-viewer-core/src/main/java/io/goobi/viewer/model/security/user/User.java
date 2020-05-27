@@ -723,7 +723,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             return url;
         }
 
-        return null;
+        return "//www.gravatar.com/avatar/";
     }
 
     /**
