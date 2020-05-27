@@ -22,8 +22,8 @@
 		                        <span>#{msg.admin__users}</span>
 		                    </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or
-                                     navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
+                        <li class="#{navigationHelper.currentPage == 'adminAllUserGroups' ? 'active' : '' or
+                                     navigationHelper.currentPage == 'adminAllUserGroup' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminAllUserGroups')}/">
                                 <i class="fa fa-users" aria-hidden="true"></i>
                                 <span>#{msg.admin__groups}</span>
@@ -36,7 +36,7 @@
                                 <span>#{msg.admin__ip_ranges}</span>
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : '' or
+                        <li class="#{navigationHelper.currentPage == 'adminLicenses' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminLicenseType' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminAllLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
