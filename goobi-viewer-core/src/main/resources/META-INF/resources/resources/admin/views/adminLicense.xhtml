@@ -72,19 +72,15 @@
                             <h3>#{msg.admin__license_functions}</h3>
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
+
                                     <div class="col-2 control-label admin__form-label">
                                         <h:outputLabel for="openaccess" value="#{msg.openAccess}" />
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <div class="form-check admin__form-checkbox">
-                                            <h:selectBooleanCheckbox id="openaccess" value="#{adminBean.currentLicenseType.openAccess}" />
+                                            <h:selectBooleanCheckbox class="form-check-input" id="openaccess" value="#{adminBean.currentLicenseType.openAccess}" />
+                                            <label class="form-check-label" for="openaccess">#{msg.admin__license_openaccess_notice}</cwlabelspan>
                                         </div>
-                                        <span class="admin__form-help-text">#{msg.help__admin_license_openaccess}</span>
-                                    </div>
-                                    <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
                                     </div>
                                 </div>
                                 
