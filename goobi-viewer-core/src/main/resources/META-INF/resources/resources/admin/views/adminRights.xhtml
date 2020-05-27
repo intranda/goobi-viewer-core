@@ -43,7 +43,7 @@
                                         <h3><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{license.ipRange != null}">
-                                        <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.description}</h3>
+                                        <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
                                     </ui:fragment>
                                     <br />#{msg.admin__right_license_type}: #{msg[license.licenseType.name]}
                                     <br />#{msg.admin__right_additional_functions}:
