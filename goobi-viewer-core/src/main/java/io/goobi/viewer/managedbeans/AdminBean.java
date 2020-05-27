@@ -567,13 +567,13 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * getAllRoleLicenseTypes.
+     * getAllCoreLicenseTypes.
      * </p>
      *
      * @return all license types in the database where core=true
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<LicenseType> getAllRoleLicenseTypes() throws DAOException {
+    public List<LicenseType> getAllCoreLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(true);
     }
 

@@ -747,19 +747,19 @@
         <view-id value="/resources/admin/views/adminLicense.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-	<url-mapping id="adminRoles">
-		<pattern value="/admin/roles/" />
-		<view-id value="/resources/admin/views/adminRoles.xhtml" />
+	<url-mapping id="adminRights">
+		<pattern value="/admin/rights/" />
+		<view-id value="/resources/admin/views/adminRights.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="adminRole">
-        <pattern value="/admin/roles/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
-        <view-id value="/resources/admin/views/adminRole.xhtml" />
+    <url-mapping id="adminRightEdit">
+        <pattern value="/admin/rights/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
+        <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-    <url-mapping id="adminRole">
-        <pattern value="/admin/roles/new/" />
-        <view-id value="/resources/admin/views/adminRole.xhtml" />
+    <url-mapping id="adminRightNew">
+        <pattern value="/admin/rights/new/" />
+        <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminUserComments">
