@@ -8,6 +8,7 @@
 	<rewrite match="/admin/groups/edit/?$" substitute="/admin/groups/"/>
 	<rewrite match="/admin/ipranges/edit/?$" substitute="/admin/ipranges/"/>
 	<rewrite match="/admin/licenses/edit/?$" substitute="/admin/licenses/"/>
+	<rewrite match="/admin/roles/edit/?$" substitute="/admin/roles/"/>
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
 	<rewrite match="/admin/cms/maps/edit/?$" substitute="/admin/cms/maps/"/>
 	
@@ -746,19 +747,24 @@
         <view-id value="/resources/admin/views/adminLicense.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-	<url-mapping id="adminUserComments">
-		<pattern value="/admin/comments/" />
-		<view-id value="/resources/admin/views/adminUserComments.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
 	<url-mapping id="adminRoles">
 		<pattern value="/admin/roles/" />
 		<view-id value="/resources/admin/views/adminRoles.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminRole">
-        <pattern value="/admin/role/" />
+        <pattern value="/admin/roles/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
         <view-id value="/resources/admin/views/adminRole.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminRole">
+        <pattern value="/admin/roles/new/" />
+        <view-id value="/resources/admin/views/adminRole.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminUserComments">
+        <pattern value="/admin/comments/" />
+        <view-id value="/resources/admin/views/adminUserComments.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminCreateRecord">
