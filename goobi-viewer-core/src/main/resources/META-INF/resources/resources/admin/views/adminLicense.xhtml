@@ -19,16 +19,21 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseType">
                 <h:panelGroup rendered="#{userBean.admin  and adminBean.currentLicenseType != null}">
+                
+
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
-                        <h2 class="admin__content-inner-title">
+                    <div class="admin__title-bar">
+                        <h2 class="admin__title">
                             <h:outputText value="#{msg.license_licenseType_addNew}" />
                         </h2>
-
-                        <div id="adminlicenseTypeWrapper" class="admin__content-inner-content">
+					</div>
+					
+					<div class="admin__content-inner-content">
+					
                             <h3>#{msg.general}</h3>
                             
                             <!-- TODO proper css class -->
-                            <div class="cms-select-template__template">
+                            <div class="admin__default-block">
 
                             <div class="form-group form-row">
                                 <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}" />
@@ -64,14 +69,9 @@
                                     </button>
                                 </div>
                             </div>
-                            
                             </div>
-                            
-
                             <h3>#{msg.admin__license_functions}</h3>
-                            
-                            <!-- TODO proper css class -->
-                            <div class="cms-select-template__template">
+                            <div class="admin__default-block">
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
                                         <h:outputLabel for="openaccess" styleClass="col-sm-2 control-label" value="#{msg.openAccess}" />
