@@ -24,12 +24,12 @@
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
                     <div class="admin__title-bar">
                         <h2 class="admin__title">
-                            <h:outputText value="#{msg.license_licenseType_addNew}" />
+                            <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminBean.currentLicenseType.id == null}" />
+                            <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminBean.currentLicenseType.id != null}" />
                         </h2>
-					</div>
+                    </div>
 					
-					<div class="admin__content-inner-content">
-					
+                    <div class="admin__content-inner-content">
                             <h3>#{msg.general}</h3>
                             
                             <div class="admin__default-block">
