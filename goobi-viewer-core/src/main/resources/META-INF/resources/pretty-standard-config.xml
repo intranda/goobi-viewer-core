@@ -4,9 +4,9 @@
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
 	<rewrite match="/(\w+|-)$" trailingSlash="append" />
-	<rewrite match="/admin/users/edit/$?" substitute="/admin/users/"/>
-	<rewrite match="/admin/groups/edit/$?" substitute="/admin/groups/"/>
-	<rewrite match="/admin/ipranges/edit/$?" substitute="/admin/ipranges/"/>
+	<rewrite match="/admin/users/edit/?$" substitute="/admin/users/"/>
+	<rewrite match="/admin/groups/edit/?$" substitute="/admin/groups/"/>
+	<rewrite match="/admin/ipranges/edit/?$" substitute="/admin/ipranges/"/>
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
 	<rewrite match="/admin/cms/maps/edit/?$" substitute="/admin/cms/maps/"/>
 	
