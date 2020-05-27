@@ -13,9 +13,7 @@
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageAdmin('adminLicenses')}" />
 			<f:event type="preRenderView"
-				listener="#{adminBean.resetCurrentLicenseTypeAction}" />
-			<f:event type="preRenderView"
-				listener="#{adminBean.resetCurrentLicenseAction}" />
+				listener="#{adminBean.setCurrentLicenseType(null)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -29,7 +27,7 @@
 					</div>
 					<div class="admin__content-inner-content">
 						<h:form id="adminLicenseTypesForm" prependId="false">
-							<!-- LICENCE INFO TEXT -->
+							<!-- LICENSE INFO TEXT -->
 							<p>
 								<h:outputText value="#{msg.admin__licenses_description_text}"
 									escape="false" />

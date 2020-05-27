@@ -72,6 +72,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -1364,6 +1365,37 @@ public class JPADAO implements IDAO {
             }
         } finally {
             em.close();
+        }
+    }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllLicenses()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<License> getAllLicenses() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT o FROM License o");
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getLicense(java.lang.Long)
+     */
+    @Override
+    public License getLicense(Long id) throws DAOException {
+        preQuery();
+        try {
+            License o = em.find(License.class, id);
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
         }
     }
 

@@ -63,7 +63,7 @@ public enum PageType {
     adminIpRange("admin/ipranges"),
     adminAllLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
-    adminRoles("admin/roles"),
+    adminRights("admin/rights"),
     adminUserComments("admin/comments"),
     adminCreateRecord("admin/record/new"),
     //admin/cms
@@ -406,7 +406,7 @@ public enum PageType {
             case adminIpRange:
             case adminIpRanges:
             case adminLicenseType:
-            case adminRoles:
+            case adminRights:
             case adminUser:
             case adminUserActivity:
             case adminUserComments:

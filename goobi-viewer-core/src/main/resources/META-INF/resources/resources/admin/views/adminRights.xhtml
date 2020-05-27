@@ -10,8 +10,8 @@
     
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRoles')}" />
-            <f:event type="preRenderView" listener="#{adminBean.setCurrentLicenseType(null)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRights')}" />
+            <f:event type="preRenderView" listener="#{adminBean.setCurrentLicense(null)}" />
         </f:metadata>
     </ui:define>
 
@@ -26,7 +26,7 @@
                         value="#{msg.add}"/>
 
                     <div class="admin__content-inner-content">
-                        <h:form id="adminLicenseTypesForm" prependId="false">                                    
+                        <h:form id="adminLicensesForm" prependId="false">                                    
                             <div class="clearfix"></div>
                             
                             <div>
@@ -34,26 +34,30 @@
                             </div>
                             
                            <br />
-                           <ui:repeat var="licenseType" value="#{adminBean.allCoreLicenseTypes}">
+                           <ui:repeat var="license" value="#{adminBean.allLicenses}">
                                 <div class="cms-select-template__template">
-                                    <h3>#{msg[licenseType.name]}</h3>
-                                    <ui:fragment rendered="#{licenseType.description != null and licenseType.description != ''}">
-                                        <h:outputText>#{licenseType.description}</h:outputText>
-                                        <br />
+                                    <ui:fragment rendered="#{license.user != null}">
+                                        <h3><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
                                     </ui:fragment>
-                                    <br />#{msg.admin__role_functions}:
-                                    
-                                    <ui:repeat var="priv" value="#{licenseType.privileges}">
+                                    <ui:fragment rendered="#{license.userGroup != null}">
+                                        <h3><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{license.ipRange != null}">
+                                        <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.description}</h3>
+                                    </ui:fragment>
+                                    <br />#{msg.admin__right_license_type}: #{msg[license.licenseType.name]}
+                                    <br />#{msg.admin__right_additional_functions}:
+                                    <ui:repeat var="priv" value="#{license.privileges}">
                                         <div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                     </ui:repeat>
                                     
                                     <!-- edit -->
                                     <h:outputLink styleClass="pull-right" title="#{msg.edit}"
-                                        value="#{navigationHelper.applicationUrl}admin/roles/edit/#{licenseType.id}/">#{msg.edit}</h:outputLink>
+                                        value="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/">#{msg.edit}</h:outputLink>
                                     <!-- delete -->                                                    
                                     <h:commandLink styleClass="pull-right"
                                         onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-                                        action="#{adminBean.deleteLicenseTypeAction(licenseType)}" title="#{msg.delete}">
+                                        action="#{adminBean.deleteLicenseAction(license)}" title="#{msg.delete}">
                                         #{msg.delete}
                                     </h:commandLink>
                                 </div>

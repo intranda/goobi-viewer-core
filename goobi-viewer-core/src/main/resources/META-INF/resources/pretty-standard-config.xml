@@ -734,7 +734,6 @@
 	<url-mapping id="adminLicenses">
 		<pattern value="/admin/licenses/" />
 		<view-id value="/resources/admin/views/adminLicenses.xhtml" />
-		<action onPostback="false">#{adminBean.setCurrentLicenseType(null)}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminLicenseEdit">

@@ -590,7 +590,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Returns all existing non-core license types minus this one. Required for admin tabs.
+     * Returns all existing non-core license types minus <code>currentLicenseType</code>. Used for overriding license type selection.
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -679,17 +679,6 @@ public class AdminBean implements Serializable {
      * resetCurrentLicenseTypeAction.
      * </p>
      */
-    @Deprecated
-    public void resetCurrentLicenseTypeAction() {
-        logger.trace("resetCurrentLicenseTypeAction");
-        currentLicenseType = new LicenseType();
-    }
-
-    /**
-     * <p>
-     * resetCurrentLicenseTypeAction.
-     * </p>
-     */
     public void resetCurrentLicenseTypeAction(String name) {
         logger.trace("resetCurrentLicenseTypeAction({})", name);
         currentLicenseType = new LicenseType(name);
@@ -703,6 +692,12 @@ public class AdminBean implements Serializable {
     public void resetCurrentRoleLicenseAction() {
         currentLicenseType = new LicenseType();
         currentLicenseType.setCore(true);
+    }
+
+    // License
+
+    public List<License> getAllLicenses() throws DAOException {
+        return DataManager.getInstance().getDao().getAllLicenses();
     }
 
     // IpRange
@@ -1176,8 +1171,30 @@ public class AdminBean implements Serializable {
      * @param currentLicense the currentLicense to set
      */
     public void setCurrentLicense(License currentLicense) {
-        logger.trace("setCurrentLicense: {}", currentLicense);
         this.currentLicense = currentLicense;
+    }
+
+    /**
+     * Returns the user ID of <code>currentLicense/code>.
+     * 
+     * return <code>currentLicense.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentLicenseId() {
+        if (currentLicense != null && currentLicense.getId() != null) {
+            return currentLicense.getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets <code>currentLicense/code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentLicenseId(Long id) throws DAOException {
+        this.currentLicense = DataManager.getInstance().getDao().getLicense(id);
     }
 
     /**
