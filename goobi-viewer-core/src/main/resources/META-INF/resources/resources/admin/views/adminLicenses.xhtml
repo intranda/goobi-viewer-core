@@ -1,91 +1,119 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-    
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenses')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseTypeAction}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
-        </f:metadata>
-    </ui:define>
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-    <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">        
-            <div id="adminLicenseTypes">
-                <h:panelGroup rendered="#{userBean.admin}">
-                    <h2 class="admin__content-inner-title">#{msg.admin__licenses}</h2>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminLicenses')}" />
+			<f:event type="preRenderView"
+				listener="#{adminBean.resetCurrentLicenseTypeAction}" />
+			<f:event type="preRenderView"
+				listener="#{adminBean.resetCurrentLicenseAction}" />
+		</f:metadata>
+	</ui:define>
 
-                    <div class="admin__content-inner-content">
-                        <h:form id="adminLicenseTypesForm" prependId="false">                                    
-                            <div class="clearfix"></div>
-                            
-                            <div>
-                                <h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
-                            </div>
-                            
-                            <!-- TODO proper css class -->
-                            <div class="cms-select-template__template">
-                                <h3>#{msg.admin__licenses_not_configured_licenses}</h3>
-                                <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
-                                    <br />
-                                    #{accessCondition} (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)} #{msg.admin__licenses_record_number})
-                                    <h:commandLink action="pretty:adminLicense" actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
-                                        value="#{msg.admin__licenses_configure_license_now}" styleClass="pull-right" />
-                                </ui:repeat>
-                            </div>
-                            
-                           <br />
-                           <ui:repeat var="licenseType" value="#{adminBean.allRecordLicenseTypes}">
-                                <div class="cms-select-template__template">
-                                    <h3>#{msg[licenseType.name]}</h3>
-                                    <ui:fragment rendered="#{licenseType.description != null and licenseType.description != ''}">
-                                        <h:outputText>#{licenseType.description}</h:outputText>
-                                        <br />
-                                    </ui:fragment>
-                                    <br /> #{msg.admin__licenses_record_number}: #{adminBean.getNumRecordsWithAccessCondition(accessCondition)}
-                                    <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
-                                        <br />#{msg.license_conditions}: #{licenseType.conditions}
-                                    </ui:fragment>
-                                    <br />#{msg.admin__license_functions}:
-                                    
-                                    <ui:repeat var="priv" value="#{licenseType.privileges}">
-                                        <div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
-                                    </ui:repeat>
-                                    
-                                    <!-- edit -->
-                                    <h:commandLink styleClass="pull-right" action="pretty:adminLicense" title="#{msg.edit}">
-                                        <f:setPropertyActionListener value="#{licenseType}" target="#{adminBean.currentLicenseType}" />
-                                        #{msg.edit}
-                                    </h:commandLink> 
-                                    <!-- delete -->                                                    
-                                    <h:commandLink styleClass="pull-right"
-                                        onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-                                        action="adminLicenseTypes" actionListener="#{adminBean.deleteLicenseTypeAction(licenseType)}"
-                                        disabled="#{licenseType.core}" title="#{msg.delete}">
-                                        #{msg.delete}
-                                    </h:commandLink>
-                                </div>
-                            </ui:repeat>
-                            
-                        </h:form>
-						</div>
-                </h:panelGroup>
-            </div>
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="adminLicenseTypes">
+				<h:panelGroup rendered="#{userBean.admin}">
+					<!-- HEADING -->
+					<div class="admin__title-bar">
+						<h2 class="admin__title">#{msg.admin__licenses}</h2>
+					</div>
+					<div class="admin__content-inner-content">
+						<h:form id="adminLicenseTypesForm" prependId="false">
+							<!-- LICENCE INFO TEXT -->
+							<p>
+								<h:outputText value="#{msg.admin__licenses_description_text}"
+									escape="false" />
+							</p>
+							<!-- NOT CONFIGURED LICENSES -->
+							<div class="admin__default-block mb-5 -danger">
+								<div class="row">
+									<h3 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h3>
+								</div>
+								<ui:repeat var="accessCondition"
+									value="#{adminBean.notConfiguredAccessConditions}">
+									<div class="row">
+										<span class="col-10">#{accessCondition}
+											(#{adminBean.getNumRecordsWithAccessCondition(accessCondition)}
+											#{msg.admin__licenses_record_number})</span>
+
+										<h:commandLink action="pretty:adminLicenseNew"
+											actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
+											value="#{msg.admin__licenses_configure_license_now}"
+											styleClass="col-2 text-right" />
+									</div>
+								</ui:repeat>
+							</div>
+
+							<div class="admin__entry-list">
+								<ui:repeat var="licenseType"
+									value="#{adminBean.allRecordLicenseTypes}">
+									<div class="admin__boxed-entry -w50">
+										<h3>#{msg[licenseType.name]}</h3>
+										
+										<ui:fragment rendered="#{licenseType.description != null and licenseType.description != ''}">
+											<div class="row">
+												<h:outputText><p class="col-12">#{licenseType.description}</p></h:outputText>
+											</div>
+										</ui:fragment>
+
+										<div class="row mb-2">
+											<span class="col-3">#{msg.admin__licenses_record_number}:</span><span class="col-9"> #{adminBean.getNumRecordsWithAccessCondition(accessCondition)}</span>
+										</div>
+
+										<ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
+											<div class="row mb-2">
+												<span class="col-3">#{msg.license_conditions}:</span><span class="col-9">#{licenseType.conditions}</span>
+											</div>
+                                    	</ui:fragment>
+
+										<div class="row">
+	                                    	<span class="col-3">#{msg.admin__license_functions}:</span>
+	                                    	<div class="col-9">
+												<ui:repeat var="priv" value="#{licenseType.privileges}">
+													<div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+												</ui:repeat>
+											</div>
+										</div>
+										
+										<div class="row justify-content-end admin__boxed-entry-actions">
+											<div class="col-3 d-flex justify-content-end">
+												<!-- EDIT LICENCE -->
+												<h:outputLink
+													styleClass="admin__boxed-entry-actions-edit -bluelink"
+													title="#{msg.edit}"
+													value="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/">#{msg.edit}</h:outputLink>
+												<!-- DELETE LICENCE -->
+												<h:commandLink
+													styleClass="admin__boxed-entry-actions-delete -redlink"
+													onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
+													action="#{adminBean.deleteLicenseTypeAction(licenseType)}" title="#{msg.delete}">#{msg.delete}</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</ui:repeat>
+							</div>
+						</h:form>
+					</div>
+				</h:panelGroup>
+			</div>
 
 		</f:view>
-    </ui:define>
+	</ui:define>
 
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-    	<adminWidget:widget_cms />
-    </ui:define>
+	<!-- SIDEBAR -->
+	<ui:define name="sidebar">
+		<adminWidget:widget_admin />
+		<adminWidget:widget_crowdsourcing />
+		<adminWidget:widget_cms />
+	</ui:define>
 </ui:composition>

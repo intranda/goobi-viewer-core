@@ -21,7 +21,7 @@
 					rendered="#{userBean.admin == true and adminBean.currentIpRange != null}">
 
 					<div class="admin__title-bar">
-						<h2 class="admin__ip-range-title">
+						<h2 class="admin__title">
 							<h:outputText value="#{msg.admin__ip_range_new}"
 								rendered="#{adminBean.currentIpRange.id == null}" />
 							<h:outputText value="#{msg.admin__ip_range_edit}"
