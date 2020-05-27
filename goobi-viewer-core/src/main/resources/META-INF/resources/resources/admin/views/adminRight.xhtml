@@ -20,19 +20,40 @@
                 <h:panelGroup rendered="#{userBean.admin  and adminBean.currentLicenseType != null}">
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
                         <h2 class="admin__content-inner-title">
-                            <h:outputText value="#{msg.admin__roles_addNewRole}" rendered="#{adminBean.currentLicenseType.id == null}" />
-                            <h:outputText value="#{msg.admin__roles_role}: #{msg[adminBean.currentLicenseType.name]}"
+                            <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
+                            <h:outputText value="#{msg.admin__right_edit}: #{msg[adminBean.currentLicense.name]}"
                                 rendered="#{adminBean.currentLicenseType.id != null}" />
                         </h2>
 
-                        <div id="adminlicenseTypeWrapper" class="admin__content-inner-content">
+                        <div id="adminLicenseWrapper" class="admin__content-inner-content">
                             <h3>#{msg.general}</h3>
                             
                             <div class="form-group">
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                    <h:inputText value="#{adminBean.currentLicenseType.name}" id="name" styleClass="form-control"
+                                    <h:selectOneMenu value="#{adminBean.currentLicense.type}">
+                                        <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                        <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
+                                        <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
+                                        <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
+                                        <f:ajax render="licenseeGroup" />
+                                    </h:selectOneMenu>
+                                    <h:panelGroup id="licenseeGroup">
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user'}" value="#{adminBean.currentLicense.user}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                            <f:selectItems value="#{adminBean.allUsers}" />
+                                        </h:selectOneMenu>
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group'}" value="#{adminBean.currentLicense.userGroup}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                            <f:selectItems value="#{adminBean.allUserGroups}" />
+                                        </h:selectOneMenu>
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange'}" value="#{adminBean.currentLicense.ipRange}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                            <f:selectItems value="#{adminBean.allIpRanges}" />
+                                        </h:selectOneMenu>
+                                    </h:panelGroup>
+                                    <h:inputText value="#{adminBean.currentLicense.name}" id="name" styleClass="form-control"
                                         required="true" requiredMessage="#{msg.nameRequired}" />
                                     <!-- TODO check for duplicates via a validator -->
                                 </div>

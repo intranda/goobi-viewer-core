@@ -767,12 +767,12 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * resetCurrentLicenseAction.
+     * Creates <code>currentLicense</code> to a new instance.
      * </p>
      */
-    public void resetCurrentLicenseAction() {
+    public void newCurrentLicenseAction() {
         logger.trace("resetCurrentLicenseAction");
-        setCurrentLicense(null);
+        currentLicense = new License();
     }
 
     /**
@@ -819,7 +819,7 @@ public class AdminBean implements Serializable {
     public String saveCurrentLicenseAction() throws DAOException {
         logger.trace("saveCurrentLicenseAction");
         String ret = saveLicenseAction(currentLicense);
-        resetCurrentLicenseAction();
+        currentLicense = null;
         return ret;
     }
 

@@ -12,7 +12,6 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsStaticPages')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>

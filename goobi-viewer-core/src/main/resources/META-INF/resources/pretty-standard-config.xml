@@ -752,7 +752,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminRightEdit">
-        <pattern value="/admin/rights/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
+        <pattern value="/admin/rights/edit/#{licenseId:adminBean.currentLicenseId}/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>

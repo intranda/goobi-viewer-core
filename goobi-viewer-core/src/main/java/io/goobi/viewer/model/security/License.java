@@ -37,6 +37,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +162,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @JoinTable(name = "license_crowdsourcing_campaigns", joinColumns = @JoinColumn(name = "license_id"),
             inverseJoinColumns = @JoinColumn(name = "campaign_id"))
     private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
+
+    @Transient
+    private String type;
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -964,5 +968,19 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
         this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 }
