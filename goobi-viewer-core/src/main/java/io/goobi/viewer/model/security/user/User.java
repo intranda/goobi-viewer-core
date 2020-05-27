@@ -718,16 +718,8 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getGravatarUrl(int size) {
         if (StringUtils.isNotEmpty(email)) {
-            Gravatar gravatar = new Gravatar();
-            gravatar.setSize(size);
-            gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
-            gravatar.setDefaultImage(GravatarDefaultImage.IDENTICON);
+            Gravatar gravatar = new Gravatar().setSize(size).setRating(GravatarRating.GENERAL_AUDIENCES).setDefaultImage(GravatarDefaultImage.IDENTICON);
             String url = gravatar.getUrl(email);
-            if (url != null) {
-                //                url = url.replace("http:", "");
-                url = url.replace("?d=404", "");
-
-            }
             return url;
         }
 

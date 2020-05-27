@@ -83,7 +83,8 @@
 									<!-- USER ICON -->
 								    <ui:fragment rendered="#{user.useGravatar}">
 								    	<div class="admin__user-table-img">
-								    		<img src="#{user.getGravatarUrl(48)}" />
+										<!-- TODO REMOVE INLINE CSS-->
+								    		<img src="#{user.getGravatarUrl(64)}" style="padding: 4px;" />
 								    	</div>
 								    </ui:fragment>
 								    <ui:fragment rendered="#{!user.useGravatar}">
