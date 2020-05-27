@@ -37,7 +37,7 @@
 									<div class="form-group form-row">
 										<div class="col-2 control-label admin__form-label">
 											<h:outputLabel for="ipRangeName" value="#{msg.name}" />
-											<span class="admin__label-required-field">(#{msg.requiredField})</span>
+											<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 										</div>
 
 										<div class="col-9 admin__form-input">
@@ -55,8 +55,8 @@
 									<h:panelGroup id="subnetMaskGroup">
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<h:outputLabel for="subnetMask"
-													value="#{msg.admin__ip_range_subnetMask}" />
+												<h:outputLabel for="subnetMask"	value="#{msg.admin__ip_range_subnetMask}" />
+												<span class="admin__label-required-field">(#{msg.form__required_field})</span>
 											</div>
 											<div
 												class="col-9 cms-module__option-control admin__form-input">
