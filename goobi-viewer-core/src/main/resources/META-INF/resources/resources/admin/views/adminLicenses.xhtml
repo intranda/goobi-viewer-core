@@ -96,9 +96,7 @@
 												<h:commandLink
 													styleClass="admin__boxed-entry-actions-delete -redlink"
 													onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-													action="adminLicenseTypes"
-													actionListener="#{adminBean.deleteLicenseTypeAction(licenseType)}"
-													disabled="#{licenseType.core}" title="#{msg.delete}">#{msg.delete}</h:commandLink>
+													action="#{adminBean.deleteLicenseTypeAction(licenseType)}" title="#{msg.delete}">#{msg.delete}</h:commandLink>
 											</div>
 										</div>
 									</div>

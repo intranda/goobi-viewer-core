@@ -801,12 +801,19 @@ public class AdminBean implements Serializable {
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
+    public String deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return "";
+        }
+
         if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
             Messages.info("deletedSuccessfully");
+
         } else {
             Messages.error("deleteFailure");
         }
+
+        return licenseType.isCore() ? "pretty:adminRoles" : "pretty:adminLicenseTypes";
     }
 
     /**
@@ -1268,20 +1275,20 @@ public class AdminBean implements Serializable {
         }
         this.currentLicenseType = currentLicenseType;
     }
-    
+
     /**
      * Returns the user ID of <code>currentLicenseType/code>.
      * 
      * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentLicenseTypeId() {
-        if(currentLicenseType != null && currentLicenseType.getId() != null) {
+        if (currentLicenseType != null && currentLicenseType.getId() != null) {
             return currentLicenseType.getId();
         }
-        
+
         return null;
     }
-    
+
     /**
      * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
      * 
