@@ -62,15 +62,6 @@
 										<!-- GROUP ACTIONS -->
 									<div class="row justify-content-end admin__boxed-entry-actions">
 										<div class="col-3 d-flex justify-content-end">
-												<!-- DELETE USER GROUP -->
-												<h:commandLink
-													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
-													action="adminAllUserGroups"
-													actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
-													title="#{msg.delete}"
-													styleClass="admin__boxed-entry-actions-delete -redlink">
-		                                        #{msg.delete}
-		                                    	</h:commandLink>
 												<!-- EDIT USER GROUP-->
 <!-- 												<h:commandLink action="pretty:adminUserGroupEdit" -->
 <!-- 													title="#{msg.edit}" -->
@@ -81,6 +72,16 @@
 <!-- 		                                    	</h:commandLink> -->
                                                 <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
                                                     value="#{navigationHelper.applicationUrl}admin/groups/edit/#{userGroup.id}/">#{msg.edit}</h:outputLink>
+
+												<!-- DELETE USER GROUP -->
+												<h:commandLink
+													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
+													action="adminAllUserGroups"
+													actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
+													title="#{msg.delete}"
+													styleClass="admin__boxed-entry-actions-delete -redlink">
+		                                        #{msg.delete}
+		                                    	</h:commandLink>
 										</div>
 									</div>
 									</div>

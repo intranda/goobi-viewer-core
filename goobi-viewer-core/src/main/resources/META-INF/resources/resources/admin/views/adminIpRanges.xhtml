@@ -56,6 +56,15 @@
 									<!-- IP RANGE ACTIONS -->
 									<div class="row justify-content-end admin__boxed-entry-actions">
 										<div class="col-3 d-flex justify-content-end">
+                                            <!-- EDIT IP RANGE -->
+<!--                                                 <h:commandLink styleClass="admin__boxed-entry-actions-edit -bluelink" -->
+<!--                                                     action="pretty:adminIpRangeEdit" title="#{msg.edit}"> -->
+<!--                                                     <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" /> -->
+<!--                                                     #{msg.edit} -->
+<!--                                                 </h:commandLink>  -->
+                                            <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
+                                                value="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/">#{msg.edit}</h:outputLink>
+
                                     	    <!-- DELETE IP RANGE -->
                                             <h:commandLink
                                                 styleClass="admin__boxed-entry-actions-delete -redlink" 
@@ -65,14 +74,6 @@
                                                 title="#{msg.delete}">
                                                 #{msg.delete}
                                             </h:commandLink>
-                                            <!-- EDIT IP RANGE -->
-<!--                                                 <h:commandLink styleClass="admin__boxed-entry-actions-edit -bluelink" -->
-<!--                                                     action="pretty:adminIpRangeEdit" title="#{msg.edit}"> -->
-<!--                                                     <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" /> -->
-<!--                                                     #{msg.edit} -->
-<!--                                                 </h:commandLink>  -->
-                                            <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
-                                                value="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/">#{msg.edit}</h:outputLink>
                                     	</div>            
                                    </div>           
                                                 
