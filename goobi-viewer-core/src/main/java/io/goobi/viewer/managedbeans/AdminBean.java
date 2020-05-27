@@ -778,17 +778,19 @@ public class AdminBean implements Serializable {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.error("errSave");
+                return "pretty:adminLicenseEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addLicenseType(getCurrentLicenseType())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.error("errSave");
+                return "pretty:adminLicenseNew";
             }
         }
         setCurrentLicenseType(null);
 
-        return "licenseTypes";
+        return "pretty:adminLicenses";
     }
 
     /**
@@ -1132,14 +1134,14 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentUser/code>.
      * 
-     * return <code>currentUser.id</code> if loaded and has ID; -1 if not
+     * return <code>currentUser.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentUserId() {
         if (currentUser != null && currentUser.getId() != null) {
             return currentUser.getId();
         }
 
-        return -1L;
+        return null;
     }
 
     /**
@@ -1177,18 +1179,18 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentUserGroup/code>.
      * 
-     * return <code>currentUserGroup.id</code> if loaded and has ID; -1 if not
+     * return <code>currentUserGroup.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentUserGroupId() {
         if (currentUserGroup != null && currentUserGroup.getId() != null) {
             return currentUserGroup.getId();
         }
 
-        return -1L;
+        return null;
     }
 
     /**
-     * Sets the current user group by loading it from the DB via the given ID.
+     * Sets <code>currentUserGroup/code> by loading it from the DB via the given ID.
      * 
      * @param id
      * @throws DAOException
@@ -1266,6 +1268,29 @@ public class AdminBean implements Serializable {
         }
         this.currentLicenseType = currentLicenseType;
     }
+    
+    /**
+     * Returns the user ID of <code>currentLicenseType/code>.
+     * 
+     * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
+     */
+    public Long getCurrentLicenseTypeId() {
+        if(currentLicenseType != null && currentLicenseType.getId() != null) {
+            return currentLicenseType.getId();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setCurrentLicenseTypeId(Long id) throws DAOException {
+        this.currentLicenseType = DataManager.getInstance().getDao().getLicenseType(id);
+    }
 
     /**
      * <p>
@@ -1315,18 +1340,18 @@ public class AdminBean implements Serializable {
     /**
      * Returns the user ID of <code>currentIpRange/code>.
      * 
-     * return <code>currentIpRange.id</code> if loaded and has ID; -1 if not
+     * return <code>currentIpRange.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentIpRangeId() {
         if (currentIpRange != null && currentIpRange.getId() != null) {
             return currentIpRange.getId();
         }
 
-        return -1L;
+        return null;
     }
 
     /**
-     * Sets the current IP range by loading it from the DB via the given ID.
+     * Sets <code>currentIpRange/code> by loading it from the DB via the given ID.
      * 
      * @param id
      * @throws DAOException

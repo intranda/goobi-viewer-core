@@ -7,6 +7,7 @@
 	<rewrite match="/admin/users/edit/?$" substitute="/admin/users/"/>
 	<rewrite match="/admin/groups/edit/?$" substitute="/admin/groups/"/>
 	<rewrite match="/admin/ipranges/edit/?$" substitute="/admin/ipranges/"/>
+	<rewrite match="/admin/licenses/edit/?$" substitute="/admin/licenses/"/>
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
 	<rewrite match="/admin/cms/maps/edit/?$" substitute="/admin/cms/maps/"/>
 	
@@ -729,16 +730,22 @@
 		<action onPostback="false">#{adminBean.resetCurrentIpRangeAction}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminAllLicenses">
+	<url-mapping id="adminLicenses">
 		<pattern value="/admin/licenses/" />
 		<view-id value="/resources/admin/views/adminLicenses.xhtml" />
+		<action onPostback="false">#{adminBean.setCurrentLicenseType(null)}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminLicense">
-		<pattern value="/admin/license/" />
+	<url-mapping id="adminLicenseEdit">
+		<pattern value="/admin/licenses/edit/#{licenseTypeId:adminBean.currentLicenseTypeId}/" />
 		<view-id value="/resources/admin/views/adminLicense.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="adminLicenseNew">
+        <pattern value="/admin/licenses/new/" />
+        <view-id value="/resources/admin/views/adminLicense.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	<url-mapping id="adminUserComments">
 		<pattern value="/admin/comments/" />
 		<view-id value="/resources/admin/views/adminUserComments.xhtml" />

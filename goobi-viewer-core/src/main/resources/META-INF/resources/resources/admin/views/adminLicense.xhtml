@@ -155,11 +155,10 @@
                             </div>
 
                             <div class="text-right">
-                                <h:commandLink action="adminLicenses" value="#{msg.cancel}" styleClass="btn" immediate="true">
+                                <h:commandLink action="pretty:adminLicenses" value="#{msg.cancel}" styleClass="btn" immediate="true">
                                     <f:setPropertyActionListener target="#{adminBean.currentLicenseType}" value="#{null}" />
                                 </h:commandLink>
-
-                                <h:commandLink action="adminLicenses" actionListener="#{adminBean.saveLicenseTypeAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                                <h:commandLink action="#{adminBean.saveLicenseTypeAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </div>
                     </h:form>
