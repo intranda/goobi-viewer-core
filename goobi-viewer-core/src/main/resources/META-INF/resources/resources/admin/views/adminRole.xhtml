@@ -11,7 +11,6 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRole')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentRoleLicenseAction}" />
         </f:metadata>
     </ui:define>
 
@@ -22,7 +21,8 @@
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
                         <h2 class="admin__content-inner-title">
                             <h:outputText value="#{msg.admin__roles_addNewRole}" rendered="#{adminBean.currentLicenseType.id == null}" />
-                            <h:outputText value="#{msg.admin__roles_role}: #{msg[adminBean.currentLicenseType.name]}" rendered="#{adminBean.currentLicenseType.id != null}" />
+                            <h:outputText value="#{msg.admin__roles_role}: #{msg[adminBean.currentLicenseType.name]}"
+                                rendered="#{adminBean.currentLicenseType.id != null}" />
                         </h2>
 
                         <div id="adminlicenseTypeWrapper" class="admin__content-inner-content">
