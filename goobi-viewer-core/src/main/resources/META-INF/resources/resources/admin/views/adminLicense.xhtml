@@ -100,27 +100,28 @@
                                     <div class="form-group form-row">
                                         <div class="col-5">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.privilegesCopy}">
-                                                <div class="badge badge-dark admin__license-badge">
-                                                    #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                    <!-- remove button -->
-                                                    <h:commandLink styleClass="admin__license-action"
-                                                        action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
-                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                               <h:commandLink styleClass="admin__license-action"
+                                                   action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
+                                                    <div class="badge badge-dark admin__license-badge">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- remove button -->
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </div>
                                                 </h:commandLink>
-                                                </div>
                                             </ui:repeat>
                                         </div>
                                         <div class="col-1"></div>
                                         <div class="col-5">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.availablePrivileges}">
-                                                <div class="badge badge-dark admin__license-badge">
-                                                    #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                    <!-- add button -->
-                                                    <h:commandLink styleClass="admin__license-action"
-                                                        action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+
+                                                <h:commandLink styleClass="admin__license-action"
+                                                    action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
+                                                    <div class="badge badge-dark admin__license-badge">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- add button -->
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    </div>
                                                 </h:commandLink>
-                                                </div>
                                             </ui:repeat>
                                             <!-- TODO place help text where it actually appears + adapt javascript for this case -->
                                             <span class="admin__form-help-text">#{msg.admin__license_functions__help}</span>
@@ -133,7 +134,10 @@
 
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
-                                    <div class="col-11 admin__form-input">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <h:outputLabel for="overridindlicense" value="#{msg.admin__licenses}" />
+                                    </div>
+                                    <div class="col-9 admin__form-input">
                                         <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
                                             value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
                                             <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
