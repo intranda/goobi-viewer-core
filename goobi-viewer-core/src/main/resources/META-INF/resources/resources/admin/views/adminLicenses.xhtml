@@ -77,12 +77,19 @@
                                     	</ui:fragment>
 
 										<div class="row">
-	                                    	<span class="col-3">#{msg.admin__license_functions}:</span>
-	                                    	<div class="col-9">
-												<ui:repeat var="priv" value="#{licenseType.privileges}">
-													<div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
-												</ui:repeat>
-											</div>
+										    <!-- OPEN ACCESS TEXT -->
+										    <ui:fragment rendered="#{licenseType.openAccess}">
+	                                    	    <span class="col-12">#{msg.admin__license_open_access_desciption_text}</span>
+											</ui:fragment>
+											<!-- FUNCTIONS -->
+                                            <ui:fragment rendered="#{!licenseType.openAccess}">
+                                                <span class="col-3">#{msg.admin__license_functions}:</span>
+                                                <div class="col-9">
+                                                    <ui:repeat var="priv" value="#{licenseType.privileges}">
+                                                       <div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                    </ui:repeat>
+                                                </div>
+                                            </ui:fragment>
 										</div>
 										
 										<div class="row justify-content-end admin__boxed-entry-actions">
