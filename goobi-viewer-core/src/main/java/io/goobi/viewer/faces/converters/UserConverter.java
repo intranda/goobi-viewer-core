@@ -35,9 +35,11 @@ public class UserConverter implements Converter<User> {
     /** {@inheritDoc} */
     @Override
     public final User getAsObject(final FacesContext context, final UIComponent component, final String value) {
-        long id = Long.valueOf(value);
         try {
+            long id = Long.valueOf(value);
             return DataManager.getInstance().getDao().getUser(id);
+        } catch (NumberFormatException e) {
+            return null;
         } catch (DAOException e) {
             return null;
         }

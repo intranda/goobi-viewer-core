@@ -38,7 +38,7 @@
                                         <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
                                         <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
                                         <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
-                                        <f:ajax render="licenseeGroup" />
+                                        <f:ajax render="licenseeGroup infoGroup" />
                                     </h:selectOneMenu>
                                     <h:panelGroup id="licenseeGroup">
                                         <br />
@@ -46,19 +46,19 @@
                                             immediate="true" converter="userConverter">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
-                                            <f:ajax render="licenseTypeGroup" />
+                                            <f:ajax render="licenseTypeGroup infoGroup" />
                                         </h:selectOneMenu>
                                         <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group'}" value="#{adminBean.currentLicense.userGroup}"
                                             immediate="true" converter="userGroupConverter">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems value="#{adminBean.allUserGroups}" />
-                                            <f:ajax render="licenseTypeGroup" />
+                                            <f:ajax render="licenseTypeGroup infoGroup" />
                                         </h:selectOneMenu>
                                         <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange'}" value="#{adminBean.currentLicense.ipRange}"
                                             immediate="true" converter="ipRangeConverter">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
-                                            <f:ajax render="licenseTypeGroup" />
+                                            <f:ajax render="licenseTypeGroup infoGroup" />
                                         </h:selectOneMenu>
                                     </h:panelGroup>
                                     <h:panelGroup id="licenseTypeGroup">
@@ -75,8 +75,7 @@
                             </div>
                             </div>
                             
-                            <h:panelGroup id="infoGroup"
-                                rendered="#{adminBean.currentLicense.licenseType != null and !adminBean.currentLicense.licenseType.core}">
+                            <h:panelGroup id="infoGroup">
                                 <h3>#{msg.information}</h3>
                                 <div class="admin__default-block">
                                     <div class="form-group form-row">
@@ -86,7 +85,7 @@
                                             <h:outputText
                                                 rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
                                             <h:outputText
-                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{ipRange.name} (#{ipRange.subnetMask})</h:outputText>
+                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.name} (#{adminBean.currentLicense.ipRange.subnetMask})</h:outputText>
                                         </div>
                                         <div>
                                             <h:outputText
