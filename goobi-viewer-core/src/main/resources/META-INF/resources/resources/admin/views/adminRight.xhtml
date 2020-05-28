@@ -17,11 +17,11 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseType">
-                <h:panelGroup rendered="#{userBean.admin  and adminBean.currentLicenseType != null}">
+                <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
                         <h2 class="admin__content-inner-title">
                             <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
-                            <h:outputText value="#{msg.admin__right_edit}: #{msg[adminBean.currentLicense.name]}"
+                            <h:outputText value="#{msg.admin__right_edit}"
                                 rendered="#{adminBean.currentLicenseType.id != null}" />
                         </h2>
 
@@ -32,7 +32,7 @@
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                    <h:selectOneMenu value="#{adminBean.currentLicense.type}">
+                                    <h:selectOneMenu value="#{adminBean.currentLicense.type}" immediate="true">
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                         <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
                                         <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
@@ -40,22 +40,37 @@
                                         <f:ajax render="licenseeGroup" />
                                     </h:selectOneMenu>
                                     <h:panelGroup id="licenseeGroup">
-                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user'}" value="#{adminBean.currentLicense.user}">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                        <br />
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user'}" value="#{adminBean.currentLicense.user}"
+                                            immediate="true">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="null" noSelectionOption="true" />
                                             <f:selectItems value="#{adminBean.allUsers}" />
+                                            <f:ajax render="licenseTypeGroup" />
                                         </h:selectOneMenu>
-                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group'}" value="#{adminBean.currentLicense.userGroup}">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group'}" value="#{adminBean.currentLicense.userGroup}"
+                                            immediate="true">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="null" noSelectionOption="true" />
                                             <f:selectItems value="#{adminBean.allUserGroups}" />
+                                            <f:ajax render="licenseTypeGroup" />
                                         </h:selectOneMenu>
-                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange'}" value="#{adminBean.currentLicense.ipRange}">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange'}" value="#{adminBean.currentLicense.ipRange}"
+                                            immediate="true">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="null" noSelectionOption="true" />
                                             <f:selectItems value="#{adminBean.allIpRanges}" />
+                                            <f:ajax render="licenseTypeGroup" />
                                         </h:selectOneMenu>
                                     </h:panelGroup>
-                                    <h:inputText value="#{adminBean.currentLicense.name}" id="name" styleClass="form-control"
-                                        required="true" requiredMessage="#{msg.nameRequired}" />
-                                    <!-- TODO check for duplicates via a validator -->
+                                    <h:panelGroup id="licenseTypeGroup"
+                                        >
+                                        <br />
+                                        <h:selectOneMenu
+                                            rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRage != null}"
+                                            value="#{adminBean.currentLicense.licenseType}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                            <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
+                                        </h:selectOneMenu>
+                                    </h:panelGroup>
+  
                                 </div>
                             </div>
                             <div class="form-group">

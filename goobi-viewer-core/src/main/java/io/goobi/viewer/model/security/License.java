@@ -723,9 +723,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param user the user to set
+     * @should set userGroup and ipRange to null if user not null
+     * @should not set userGroup and ipRange to null if user null
      */
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.userGroup = null;
+            this.ipRange = null;
+        }
     }
 
     /**
@@ -745,9 +751,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param userGroup the userGroup to set
+     * @should set user and ipRange to null if userGroup not null
+     * @should not set user and ipRange to null if userGroup null
      */
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
+        if (userGroup != null) {
+            this.user = null;
+            this.ipRange = null;
+        }
     }
 
     /**
@@ -767,9 +779,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param ipRange the ipRange to set
+     * @should set user and userGroup to null if ipRange not null
+     * @should not set user and userGroup to null if ipRange null
      */
     public void setIpRange(IpRange ipRange) {
         this.ipRange = ipRange;
+        if (ipRange != null) {
+            this.user = null;
+            this.userGroup = null;
+        }
     }
 
     /**
