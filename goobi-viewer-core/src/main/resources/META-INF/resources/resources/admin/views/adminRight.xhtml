@@ -33,29 +33,34 @@
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                    <h:selectOneMenu value="#{adminBean.currentLicense.type}" immediate="true">
+                                    <h:selectOneMenu rendered="#{adminBean.currentLicense.id == null}"
+                                        value="#{adminBean.currentLicense.type}" immediate="true">
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                         <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
                                         <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
                                         <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
                                         <f:ajax render="licenseeGroup infoGroup" />
+                                        <!-- TODO set everything to null on value change -->
                                     </h:selectOneMenu>
                                     <h:panelGroup id="licenseeGroup">
                                         <br />
-                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user'}" value="#{adminBean.currentLicense.user}"
-                                            immediate="true" converter="userConverter">
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
+                                            value="#{adminBean.currentLicense.user}"
+                                            immediate="true" converter="userConverter" disabled="#{adminBean.currentLicense.id != null}">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
                                             <f:ajax render="licenseTypeGroup infoGroup" />
                                         </h:selectOneMenu>
-                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group'}" value="#{adminBean.currentLicense.userGroup}"
-                                            immediate="true" converter="userGroupConverter">
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
+                                            value="#{adminBean.currentLicense.userGroup}"
+                                            immediate="true" converter="userGroupConverter" disabled="#{adminBean.currentLicense.id != null}">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems value="#{adminBean.allUserGroups}" />
                                             <f:ajax render="licenseTypeGroup infoGroup" />
                                         </h:selectOneMenu>
-                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange'}" value="#{adminBean.currentLicense.ipRange}"
-                                            immediate="true" converter="ipRangeConverter">
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
+                                            value="#{adminBean.currentLicense.ipRange}"
+                                            immediate="true" converter="ipRangeConverter" disabled="#{adminBean.currentLicense.id != null}">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
                                             <f:ajax render="licenseTypeGroup infoGroup" />
@@ -64,7 +69,8 @@
                                     <h:panelGroup id="licenseTypeGroup">
                                         <br />
                                         <h:selectOneMenu
-                                            value="#{adminBean.currentLicense.licenseType}" immediate="true" converter="licenseTypeConverter">
+                                            value="#{adminBean.currentLicense.licenseType}" immediate="true" converter="licenseTypeConverter"
+                                                disabled="#{adminBean.currentLicense.id != null}">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
                                             <f:ajax render="infoGroup" />
@@ -103,7 +109,6 @@
                                         </div>
                                     </div>
                                 </div>
-                               
                             </h:panelGroup>
                             
 
