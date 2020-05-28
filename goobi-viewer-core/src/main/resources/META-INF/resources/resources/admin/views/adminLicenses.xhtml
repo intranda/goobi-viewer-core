@@ -86,6 +86,9 @@
                                                     <ui:repeat var="priv" value="#{licenseType.privileges}">
                                                        <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                     </ui:repeat>
+                                                    <ui:repeat var="priv" value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
+                                                       <div class="badge badge-light admin__license-badge -light">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                    </ui:repeat>
                                                 </div>
                                             </ui:fragment>
 										</div>
