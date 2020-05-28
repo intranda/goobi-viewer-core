@@ -16,13 +16,10 @@
 		}
 		&:focus {}
 	}
-
 	.-light {
 		color: #a9a9a9;
 		cursor: default;
 	}
-
-
 	.-redlink {
 		color: @red;
 		&:hover {
@@ -674,13 +671,23 @@
 	}
 }
 
-/* JAN TEST */
-.badge-success {
-	background-color: #008a00;
+
+/* visual connection radio buttons test */
+
+.connected::after {
+    content: "";
+    background-color: #000;
+    position: absolute;
+    width: 3px;
+    height: 13px;
+    top: 17px;
+    left: 5px;
+    display: block;
+    z-index: 0;
 }
-.badge-info {
-	background-color: #008295;
-}
+
+
+
 
 
 /* USER TABLE FADE IN ANIMATION TEST */

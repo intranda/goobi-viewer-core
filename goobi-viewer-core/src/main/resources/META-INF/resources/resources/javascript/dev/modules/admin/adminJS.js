@@ -55,11 +55,11 @@ $( document ).ready(function() {
 	});
 
 // hide license functions if open access checkbox is checked
-	// check if checkbox already set on page load
+	// check if checkbox already checked on page load
 	if ($('#openaccess').prop('checked')) {
 			  $('.admin__license-functions').hide();
 		  }
-	// check if check box status changes
+	// check if checkbox status changes
 	$("#openaccess").change(function(){
 		  if ($(this).is(':checked'))
 		   $('.admin__license-functions').fadeOut('fast');
