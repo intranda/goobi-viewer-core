@@ -151,7 +151,7 @@
                                             <label for="avatarFalseOption">#{msg.admin__user_avatar_standard}</label>
                                         </div>
                                         <div class="col-6">
-                                            <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" style="padding: 4px;" />
+                                            <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" />
                                             <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
                                             <label for="avatarTrueOption">#{msg.admin__user_avatar_gravatar}</label>
                                         </div>

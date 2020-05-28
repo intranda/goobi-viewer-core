@@ -213,6 +213,7 @@
 	&__user-icon {
 		margin-right: 1.5rem;
 		width: 80px;
+		padding: 4px;
 	}
 	&__group-content {
 	}
@@ -253,12 +254,30 @@
 		i {
 			color: @white;
 		}
+		&:hover {
+			text-decoration: none;
+		}
 	}
 	&__license-badge {
 		padding: 0.5rem;
 	}
+	&__license-functions-added {
+		.admin__license-badge {
+			background: #28a745;
+			&:hover {
+				background: lighten(#28a745, 6%);	
+			}
+		}
+	}
+	&__license-functions-available {
+		.admin__license-badge {
+			background: #343a40;
+			&:hover {
+				background: lighten(#343a40, 15%);	
+			}
+		}
+	}	
 }
-
 
 
 .admin {

@@ -47,18 +47,25 @@ var adminJS = ( function() {
 } )( jQuery );
 
 
-
-/* toggle help text for admin forms */
-
 $( document ).ready(function() {
+// toggle help text for admin forms
 	$('[data-toggle="helptext"]').click(function() {
 		$(this).closest(".form-group").children('.admin__form-input').children('.admin__form-help-text').toggleClass('in');
+		$(this).parent().parent().next().next('.admin__license-functions-help').children('.admin__form-help-text').toggleClass('in');
+	});
+
+// hide license functions if open access checkbox is checked
+	// check if checkbox already set on page load
+	if ($('#openaccess').prop('checked')) {
+			  $('.admin__license-functions').hide();
+		  }
+	// check if check box status changes
+	$("#openaccess").change(function(){
+		  if ($(this).is(':checked'))
+		   $('.admin__license-functions').fadeOut('fast');
+		  else $('.admin__license-functions').fadeIn('fast');
 	});
 });
-
-
-
-
 
 
 

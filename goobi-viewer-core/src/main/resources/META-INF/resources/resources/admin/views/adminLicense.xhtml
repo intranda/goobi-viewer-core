@@ -34,14 +34,14 @@
                             <div class="admin__default-block">
 
                             <div class="form-group form-row">
-                                <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}" />
+                                <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}:" />
                                 <div class="col-sm-10">
                                     #{adminBean.currentLicenseType.name}
                                 </div>
                             </div>
                             <div class="form-group form-row">
                                 <div class="col-2 control-label admin__form-label">
-                                    <h:outputLabel for="conditions" value="#{msg.license_conditions}" />
+                                    <h:outputLabel for="conditions" value="#{msg.license_conditions}:" />
                                 </div>
                                 <div class="col-9 admin__form-input">
                                     <h:inputText value="#{adminBean.currentLicenseType.conditions}" id="conditions" styleClass="form-control" />
@@ -55,7 +55,7 @@
                             </div>
                             <div class="form-group form-row">
                                 <div class="col-2 control-label admin__form-label">
-                                    <h:outputLabel for="description" value="#{msg.description}" />
+                                    <h:outputLabel for="description" value="#{msg.description}:" />
                                 </div>
                                 <div class="col-9 admin__form-input">
                                     <h:inputTextarea value="#{adminBean.currentLicenseType.description}" id="description" styleClass="form-control" />
@@ -69,73 +69,82 @@
                             </div>
                             </div>
                             <h3>#{msg.admin__license_functions}</h3>
+							<div class="admin__default-block">
+								<div class="form-group form-row">
+
+									<div class="col-2 control-label admin__form-label">
+										<h:outputLabel for="openaccess" value="#{msg.openAccess}:" />
+									</div>
+									<div class="col-9 admin__form-input">
+										<div class="form-check admin__form-checkbox">
+											<h:selectBooleanCheckbox class="form-check-input"
+												id="openaccess"
+												value="#{adminBean.currentLicenseType.openAccess}" />
+											<label class="form-check-label" for="openaccess">#{msg.admin__license_openaccess_notice}</label>
+										</div>
+									</div>
+								</div>
+								
+								<hr />
+
+								<div class="admin__license-functions">
+									<div class="form-group form-row">
+										<div class="col-5">#{msg.admin__license_functions_added}</div>
+										<div class="col-1"></div>
+										<div class="col-5">#{msg.admin__license_functions_available}</div>
+										<div class="col-1 admin__form-help-icon">
+											<button type="button" class="btn btn--clean"
+												data-toggle="helptext">
+												<i class="fa fa-question-circle" aria-hidden="true"></i>
+											</button>
+										</div>
+									</div>
+									<!-- TODO make sure changes made here are only retained when clicking on SAVE and reverted on cancel -->
+									<div class="form-group form-row">
+										<div class="col-5 admin__license-functions-added">
+											<ui:repeat var="priv"
+												value="#{adminBean.currentLicenseType.privilegesCopy}">
+												<h:commandLink styleClass="admin__license-action"
+													action="#{adminBean.currentLicenseType.removePrivilege(priv)}"
+													title="#{msg.remove}">
+													<div class="badge badge-success admin__license-badge">
+														#{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+														<!-- remove button -->
+														<i class="fa fa-trash" aria-hidden="true"></i>
+													</div>
+												</h:commandLink>
+											</ui:repeat>
+										</div>
+										<div class="col-1"></div>
+										<div class="col-5 admin__license-functions-available">
+											<ui:repeat var="priv"
+												value="#{adminBean.currentLicenseType.availablePrivileges}">
+												<h:commandLink styleClass="admin__license-action"
+													action="#{adminBean.currentLicenseType.addPrivilege(priv)}"
+													title="#{msg.add}">
+													<div class="badge badge-dark admin__license-badge">
+														#{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+														<!-- add button -->
+														<i class="fa fa-plus" aria-hidden="true"></i>
+													</div>
+												</h:commandLink>
+											</ui:repeat>
+										</div>
+									</div>
+
+									<!-- TODO place help text where it actually appears + adapt javascript for this case -->
+									<div class="admin__license-functions-help">
+										<span class="admin__form-help-text">#{msg.admin__license_functions__help}</span>
+									</div>
+								</div>
+							</div>
+
+							<h3>#{msg.admin__license_overriding}</h3>
+
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
-
                                     <div class="col-2 control-label admin__form-label">
-                                        <h:outputLabel for="openaccess" value="#{msg.openAccess}" />
-                                    </div>
-                                    <div class="col-9 admin__form-input">
-                                        <div class="form-check admin__form-checkbox">
-                                            <h:selectBooleanCheckbox class="form-check-input" id="openaccess" value="#{adminBean.currentLicenseType.openAccess}" />
-                                            <label class="form-check-label" for="openaccess">#{msg.admin__license_openaccess_notice}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <hr />
-                                
-                                <div>
-                                    <div class="form-group form-row">
-                                        <div class="col-5">#{msg.admin__license_functions_added}</div>
-                                         <div class="col-1"></div>
-                                        <div class="col-5">#{msg.admin__license_functions_available}</div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <!-- TODO make sure changes made here are only retained when clicking on SAVE and reverted on cancel -->
-                                    <div class="form-group form-row">
-                                        <div class="col-5">
-                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.privilegesCopy}">
-                                               <h:commandLink styleClass="admin__license-action"
-                                                   action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
-                                                    <div class="badge badge-dark admin__license-badge">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                        <!-- remove button -->
-                                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                                    </div>
-                                                </h:commandLink>
-                                            </ui:repeat>
-                                        </div>
-                                        <div class="col-1"></div>
-                                        <div class="col-5">
-                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.availablePrivileges}">
-
-                                                <h:commandLink styleClass="admin__license-action"
-                                                    action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
-                                                    <div class="badge badge-dark admin__license-badge">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                        <!-- add button -->
-                                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </div>
-                                                </h:commandLink>
-                                            </ui:repeat>
-                                            <!-- TODO place help text where it actually appears + adapt javascript for this case -->
-                                            <span class="admin__form-help-text">#{msg.admin__license_functions__help}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <h3>#{msg.admin__license_overriding}</h3>
-
-                            <div class="admin__default-block">
-                                <div class="form-group form-row">
-                                    <div class="col-2 control-label admin__form-label">
-                                        <h:outputLabel for="overridindlicense" value="#{msg.admin__licenses}" />
+                                        <h:outputLabel for="overridindlicense" value="#{msg.admin__licenses}:" />
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
