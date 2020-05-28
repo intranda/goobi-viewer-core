@@ -83,12 +83,12 @@
 								    <ui:fragment rendered="#{user.useGravatar}">
 								    	<div class="admin__user-table-img">
 										<!-- TODO REMOVE INLINE CSS-->
-								    		<img src="#{user.getGravatarUrl(64)}" style="padding: 4px;" />
+								    		<img src="#{user.getGravatarUrl(64)}" style="padding: 4px;" alt="User avatar" />
 								    	</div>
 								    </ui:fragment>
 								    <ui:fragment rendered="#{!user.useGravatar}">
 								    	<div class="admin__user-table-img">
-								    		<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" />
+								    		<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar"/>
 								    	</div>
 								    </ui:fragment>					
 									<!-- USER NAME + EMAIL -->

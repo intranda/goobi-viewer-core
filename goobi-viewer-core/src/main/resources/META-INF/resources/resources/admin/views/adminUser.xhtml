@@ -59,8 +59,9 @@
                                     <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
                                 </div>
                                 <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext" name="inlinehelpicon">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
+					<label for="inlinehelpicon" class="hidden">Inline help toggle indicator icon</label>
                                     </button>
                                 </div>
                                 
@@ -96,8 +97,9 @@
                                     </div>
 
                                     <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" name="inlinehelpicon">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
+					    <label for="inlinehelpicon" class="hidden">Inline help toggle indicator icon</label>
                                         </button>
                                     </div>
                                     
@@ -115,8 +117,9 @@
                                     <span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
                                 </div>
                                 <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext" name="inlinehelpicon">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
+					<label for="inlinehelpicon" class="hidden">Inline help toggle indicator icon</label>
                                     </button>
                                 </div>
                             </div>
@@ -131,8 +134,9 @@
                                     <span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
                             </div>
                                 <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext" name="inlinehelpicon">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
+					<label for="inlinehelpicon" class="hidden">Inline help toggle indicator icon</label>
                                     </button>
                                 </div>
                             </div>
@@ -146,12 +150,12 @@
                                 <div id="avatar" class="col-9">
                                     <div class="row no-gutters">
                                         <div class="col-6">
-                                            <img class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" />
+                                            <img class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar" />
                                             <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
                                             <label for="avatarFalseOption">#{msg.admin__user_avatar_standard}</label>
                                         </div>
                                         <div class="col-6">
-                                            <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" />
+                                            <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" alt="User avatar" />
                                             <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
                                             <label for="avatarTrueOption">#{msg.admin__user_avatar_gravatar}</label>
                                         </div>
