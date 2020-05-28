@@ -620,7 +620,7 @@ public class AdminBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveLicenseTypeAction() throws DAOException {
+    public String savecurrentLicenseTypeAction() throws DAOException {
         if (currentLicenseType == null) {
             Messages.error("errSave");
             return "licenseTypes";
@@ -809,21 +809,6 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
-     * saveCurrentLicenseAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String saveCurrentLicenseAction() throws DAOException {
-        logger.trace("saveCurrentLicenseAction");
-        String ret = saveLicenseAction(currentLicense);
-        currentLicense = null;
-        return ret;
-    }
-
-    /**
      * Adds the current License to the licensee (User, UserGroup or IpRange). It is imperative that the licensee object is refreshed after updating so
      * that a new license object is an ID attached. Otherwise the list of licenses will throw an NPE!
      *
@@ -831,42 +816,55 @@ public class AdminBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveLicenseAction(License license) throws DAOException {
-        logger.trace("saveLicenseAction");
-        if (license == null) {
+    public String saveCurrentLicenseAction() throws DAOException {
+        logger.trace("saveCurrentLicenseAction");
+        if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
         }
-        if (license.getUser() != null) {
+
+        boolean error = false;
+        if (currentLicense.getUser() != null) {
             // User
-            license.getUser().addLicense(license);
-            if (DataManager.getInstance().getDao().updateUser(license.getUser())) {
+            currentLicense.getUser().addLicense(currentLicense);
+            if (DataManager.getInstance().getDao().updateUser(currentLicense.getUser())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
+                error = true;
             }
-        } else if (license.getUserGroup() != null) {
+        } else if (currentLicense.getUserGroup() != null) {
             // UserGroup
-            license.getUserGroup().addLicense(license);
-            if (DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup())) {
+            currentLicense.getUserGroup().addLicense(currentLicense);
+            if (DataManager.getInstance().getDao().updateUserGroup(currentLicense.getUserGroup())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
+                error = true;
             }
-        } else if (license.getIpRange() != null) {
+        } else if (currentLicense.getIpRange() != null) {
             // IpRange
-            logger.trace("ip range id:{} ", license.getIpRange().getId());
-            license.getIpRange().addLicense(license);
-            if (DataManager.getInstance().getDao().updateIpRange(license.getIpRange())) {
+            logger.trace("ip range id:{} ", currentLicense.getIpRange().getId());
+            currentLicense.getIpRange().addLicense(currentLicense);
+            if (DataManager.getInstance().getDao().updateIpRange(currentLicense.getIpRange())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
+                error = true;
             }
         } else {
             logger.trace("nothing");
             Messages.error("license_licenseSaveFailure");
+            error = true;
         }
 
-        return "";
+        if (error) {
+            if (currentLicense.getId() != null) {
+                return "pretty:adminRightEdit";
+            }
+            return "pretty:adminRightNew";
+        }
+
+        return "pretty:adminRights";
     }
 
     /**
@@ -882,20 +880,18 @@ public class AdminBean implements Serializable {
         if (license == null) {
             throw new IllegalArgumentException("license may not be null");
         }
+        
         boolean success = false;
-        String ret = "adminUser";
-        logger.debug("removing license: " + license.getLicenseType().getName());
+        logger.debug("removing license: {}", license.getLicenseType().getName());
         if (license.getUser() != null) {
             license.getUser().removeLicense(license);
             success = DataManager.getInstance().getDao().updateUser(license.getUser());
         } else if (license.getUserGroup() != null) {
             license.getUserGroup().removeLicense(license);
             success = DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup());
-            ret = "adminUserGroup";
         } else if (license.getIpRange() != null) {
             license.getIpRange().removeLicense(license);
             success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
-            ret = "adminIpRange";
         }
 
         if (success) {
@@ -903,9 +899,8 @@ public class AdminBean implements Serializable {
         } else {
             Messages.error("license_deleteFailure");
         }
-        setCurrentLicense(null);
 
-        return ret;
+        return "pretty:adminRights";
     }
 
     // Comments

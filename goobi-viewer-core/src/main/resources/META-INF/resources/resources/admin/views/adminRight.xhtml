@@ -18,7 +18,7 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseType">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
-                    <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
+                    <h:form id="editLicenseForm" styleClass="form-horizontal" role="form" prependId="false">
                         <h2 class="admin__content-inner-title">
                             <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
                             <h:outputText value="#{msg.admin__right_edit}"
@@ -26,8 +26,9 @@
                         </h2>
 
                         <div id="adminLicenseWrapper" class="admin__content-inner-content">
+                        
                             <h3>#{msg.general}</h3>
-                            
+                            <div class="admin__default-block">
                             <div class="form-group">
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
@@ -42,121 +43,74 @@
                                     <h:panelGroup id="licenseeGroup">
                                         <br />
                                         <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user'}" value="#{adminBean.currentLicense.user}"
-                                            immediate="true">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="null" noSelectionOption="true" />
-                                            <f:selectItems value="#{adminBean.allUsers}" />
+                                            immediate="true" converter="userConverter">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
                                             <f:ajax render="licenseTypeGroup" />
                                         </h:selectOneMenu>
                                         <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group'}" value="#{adminBean.currentLicense.userGroup}"
-                                            immediate="true">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="null" noSelectionOption="true" />
+                                            immediate="true" converter="userGroupConverter">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems value="#{adminBean.allUserGroups}" />
                                             <f:ajax render="licenseTypeGroup" />
                                         </h:selectOneMenu>
                                         <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange'}" value="#{adminBean.currentLicense.ipRange}"
-                                            immediate="true">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="null" noSelectionOption="true" />
-                                            <f:selectItems value="#{adminBean.allIpRanges}" />
+                                            immediate="true" converter="ipRangeConverter">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
                                             <f:ajax render="licenseTypeGroup" />
                                         </h:selectOneMenu>
                                     </h:panelGroup>
-                                    <h:panelGroup id="licenseTypeGroup"
-                                        >
+                                    <h:panelGroup id="licenseTypeGroup">
                                         <br />
                                         <h:selectOneMenu
-                                            rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRage != null}"
-                                            value="#{adminBean.currentLicense.licenseType}">
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                            value="#{adminBean.currentLicense.licenseType}" immediate="true" converter="licenseTypeConverter">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
+                                            <f:ajax render="infoGroup" />
                                         </h:selectOneMenu>
                                     </h:panelGroup>
   
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h:outputLabel for="description" styleClass="col-sm-4 control-label" value="#{msg.description}" />
-                                <div class="col-sm-8">
-                                    <h:inputTextarea value="#{adminBean.currentLicenseType.description}" id="description" styleClass="form-control" />
-                                </div>
                             </div>
                             
-                            <!-- default privileges -->
-                            <h3>#{msg.privilegesDefault}</h3>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privSetRepresentativeImage}" />
-                                            #{msg.license_privSetRepresentativeImage}
-                                        </label>
+                            <h:panelGroup id="infoGroup"
+                                rendered="#{adminBean.currentLicense.licenseType != null and !adminBean.currentLicense.licenseType.core}">
+                                <h3>#{msg.information}</h3>
+                                <div class="admin__default-block">
+                                    <div class="form-group form-row">
+                                        <div>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{ipRange.name} (#{ipRange.subnetMask})</h:outputText>
+                                        </div>
+                                        <div>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row">
+                                        <div>
+                                            <h:outputText>#{adminBean.currentLicense.licenseType.name}</h:outputText>
+                                        </div>
+                                        <div>
+                                            <h:outputText>#{adminBean.currentLicense.licenseType.description}</h:outputText>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privDeleteOcrPage}" />
-                                            #{msg.license_privDeleteOcrPage}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privCmsPages}" />
-                                            #{msg.license_privCmsPages}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privCmsMenu}" />
-                                            #{msg.license_privCmsMenu}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privCmsStaticPages}" />
-                                            #{msg.license_privCmsStaticPages}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privCmsCollections}" />
-                                            #{msg.license_privCmsCollections}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-offset-4 col-sm-8">
-                                    <div class="checkbox">
-                                        <label>
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privCmsCategories}" />
-                                            #{msg.license_privCmsCategories}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                               
+                            </h:panelGroup>
+                            
+
                             <div class="text-right">
-                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true">
-                                    <f:setPropertyActionListener target="#{adminBean.currentLicenseType}" value="#{null}" />
-                                </h:commandLink>
-                                <h:commandLink actionListener="#{adminBean.saveLicenseTypeAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                                <h:commandLink action="#{adminBean.saveCurrentLicenseAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </div>
                     </h:form>

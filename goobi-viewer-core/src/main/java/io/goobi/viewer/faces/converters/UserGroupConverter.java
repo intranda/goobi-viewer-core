@@ -22,22 +22,23 @@ import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
- * LicenseTypeConverter class.
+ * UserConverter class.
  * </p>
  */
-@FacesConverter("licenseTypeConverter")
-public class LicenseTypeConverter implements Converter<Object> {
+@FacesConverter("userGroupConverter")
+public class UserGroupConverter implements Converter<UserGroup> {
 
     /** {@inheritDoc} */
     @Override
-    public final Object getAsObject(final FacesContext context, final UIComponent component, final String value) {
-        int id = Integer.valueOf(value);
+    public final UserGroup getAsObject(final FacesContext context, final UIComponent component, final String value) {
+        long id = Long.valueOf(value);
         try {
-            return DataManager.getInstance().getDao().getLicenseType(id);
+            return DataManager.getInstance().getDao().getUserGroup(id);
         } catch (DAOException e) {
             return null;
         }
@@ -45,19 +46,15 @@ public class LicenseTypeConverter implements Converter<Object> {
 
     /** {@inheritDoc} */
     @Override
-    public final String getAsString(final FacesContext context, final UIComponent component, final Object object) {
+    public final String getAsString(final FacesContext context, final UIComponent component, final UserGroup object) {
         if (object == null) {
             return null;
         }
 
-        if (object instanceof LicenseType) {
-            LicenseType licenseType = (LicenseType) object;
-            try {
-                return String.valueOf(licenseType.getId());
-            } catch (NumberFormatException nfe) {
-                return null;
-            }
+        try {
+            return String.valueOf(object.getId());
+        } catch (NumberFormatException nfe) {
+            return null;
         }
-        throw new IllegalArgumentException("Object '" + object.getClass().getName() + "' is not a LicenseType.");
     }
 }

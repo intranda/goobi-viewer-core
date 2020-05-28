@@ -703,7 +703,6 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
-        logger.trace("setLicenseType: {}", licenseType.getName());
     }
 
     /**
