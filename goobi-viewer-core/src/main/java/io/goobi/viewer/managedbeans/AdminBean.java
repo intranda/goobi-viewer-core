@@ -628,6 +628,7 @@ public class AdminBean implements Serializable {
 
         // Adopt changes made to the privileges
         if (!currentLicenseType.getPrivileges().equals(currentLicenseType.getPrivilegesCopy())) {
+            logger.trace("Saving changes to privileges");
             currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
         }
 
@@ -646,7 +647,6 @@ public class AdminBean implements Serializable {
                 return "pretty:adminLicenseNew";
             }
         }
-        setCurrentLicenseType(null);
 
         return "pretty:adminLicenses";
     }
@@ -1118,8 +1118,11 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
-            logger.debug("setCurrentLicenseType: {}", currentLicenseType.getName());
-            currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
+            logger.trace("setCurrentLicenseType: {}", currentLicenseType.getName());
+            // Prepare privileges working copy (but only if the same license type is not already set)
+            if (!currentLicenseType.equals(this.currentLicenseType)) {
+                currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
+            }
         }
         this.currentLicenseType = currentLicenseType;
     }
