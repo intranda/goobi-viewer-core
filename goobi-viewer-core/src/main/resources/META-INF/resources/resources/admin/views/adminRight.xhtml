@@ -33,14 +33,15 @@
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                    <h:selectOneMenu rendered="#{adminBean.currentLicense.id == null}"
-                                        value="#{adminBean.currentLicense.type}" immediate="true">
+                                    <h:selectOneMenu value="#{adminBean.currentLicense.type}"
+                                        immediate="true" disabled="#{adminBean.currentLicense.id != null}">
                                         <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                         <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
                                         <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
                                         <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
                                         <f:ajax render="licenseeGroup infoGroup" />
                                         <!-- TODO set everything to null on value change -->
+                                        
                                     </h:selectOneMenu>
                                     <h:panelGroup id="licenseeGroup">
                                         <br />
@@ -69,6 +70,7 @@
                                     <h:panelGroup id="licenseTypeGroup">
                                         <br />
                                         <h:selectOneMenu
+                                            rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
                                             value="#{adminBean.currentLicense.licenseType}" immediate="true" converter="licenseTypeConverter"
                                                 disabled="#{adminBean.currentLicense.id != null}">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
