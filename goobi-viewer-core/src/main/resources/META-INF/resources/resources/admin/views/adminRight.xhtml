@@ -39,9 +39,11 @@
                                         <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
                                         <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
                                         <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
-                                        <f:ajax render="licenseeGroup infoGroup" />
-                                        <!-- TODO set everything to null on value change -->
-                                        
+                                        <f:ajax render="licenseeGroup infoGroup licenseTypeGroup" />
+                                        <!-- Reset all set licensee values so that the lower menus are reset as well -->
+                                        <f:ajax listener="#{adminBean.currentLicense.setUser(null)}" />
+                                        <f:ajax listener="#{adminBean.currentLicense.setUserGroup(null)}" />
+                                        <f:ajax listener="#{adminBean.currentLicense.setIpRange(null)}" />
                                     </h:selectOneMenu>
                                     <h:panelGroup id="licenseeGroup">
                                         <br />
