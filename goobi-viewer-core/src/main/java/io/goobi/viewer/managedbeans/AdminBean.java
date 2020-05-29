@@ -620,7 +620,7 @@ public class AdminBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String savecurrentLicenseTypeAction() throws DAOException {
+    public String saveCurrentLicenseTypeAction() throws DAOException {
         if (currentLicenseType == null) {
             Messages.error("errSave");
             return "licenseTypes";
