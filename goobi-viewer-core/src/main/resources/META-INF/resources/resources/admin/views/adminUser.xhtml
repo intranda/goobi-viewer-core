@@ -233,7 +233,7 @@
                         
                         <!-- SAVE / CANCEL BUTTONS -->
                         <ui:fragment rendered="#{adminBean.currentUser.active}">                        
-                            <div class="text-right">
+                            <div class="row no-gutters justify-content-end admin__final-actions">
                                 <h:commandLink  rendered="#{adminBean.currentUser.id != null}"
                                     id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true">
                                 </h:commandLink>
