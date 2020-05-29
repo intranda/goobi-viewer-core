@@ -77,7 +77,7 @@
                                                 disabled="#{adminBean.currentLicense.id != null}">
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                             <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
-                                            <f:ajax render="infoGroup" />
+                                            <f:ajax render="infoGroup functionsGroup" />
                                         </h:selectOneMenu>
                                     </h:panelGroup>
   
@@ -85,7 +85,8 @@
                             </div>
                             </div>
                             
-                            <h:panelGroup id="infoGroup">
+                            <!-- TODO this should refresh and display after a license type has been selected -->
+                            <h:panelGroup id="infoGroup" rendered="#{adminBean.currentLicense.licenseType != null}">
                                 <h3>#{msg.information}</h3>
                                 <div class="admin__default-block">
                                     <div class="form-group form-row">
@@ -115,6 +116,8 @@
                                 </div>
                             </h:panelGroup>
                             
+                             <!-- TODO this should refresh and display after a license type has been selected -->
+                            <h:panelGroup id="functionsGroup" rendered="#{adminBean.currentLicense.licenseType != null}">
                             <h3>#{msg.admin__license_functions}</h3>
                             <div class="admin__default-block">        
                                 <div class="admin__license-functions">
@@ -162,6 +165,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </h:panelGroup>
 
                             <div class="text-right">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
