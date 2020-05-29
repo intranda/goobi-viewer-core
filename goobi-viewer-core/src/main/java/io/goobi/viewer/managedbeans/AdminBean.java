@@ -880,7 +880,7 @@ public class AdminBean implements Serializable {
         if (license == null) {
             throw new IllegalArgumentException("license may not be null");
         }
-        
+
         boolean success = false;
         logger.debug("removing license: {}", license.getLicenseType().getName());
         if (license.getUser() != null) {
@@ -1144,7 +1144,7 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentLicenseTypeId(Long id) throws DAOException {
-        this.currentLicenseType = DataManager.getInstance().getDao().getLicenseType(id);
+        setCurrentLicenseType(DataManager.getInstance().getDao().getLicenseType(id));
     }
 
     /**
