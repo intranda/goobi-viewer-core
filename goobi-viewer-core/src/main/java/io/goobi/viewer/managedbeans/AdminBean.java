@@ -821,6 +821,12 @@ public class AdminBean implements Serializable {
         if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
         }
+        
+        // Adopt changes made to the privileges
+        if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {
+            logger.trace("Saving changes to privileges");
+            currentLicense.setPrivileges(new HashSet<>(currentLicense.getPrivilegesCopy()));
+        }
 
         boolean error = false;
         if (currentLicense.getUser() != null) {
@@ -1169,6 +1175,13 @@ public class AdminBean implements Serializable {
      * @param currentLicense the currentLicense to set
      */
     public void setCurrentLicense(License currentLicense) {
+        if (currentLicense != null) {
+            logger.trace("setCurrentLicense: {}", currentLicense.toString());
+            // Prepare privileges working copy (but only if the same license is not already set)
+            if (!currentLicense.equals(this.currentLicense)) {
+                currentLicense.setPrivilegesCopy(new HashSet<>(currentLicense.getPrivileges()));
+            }
+        }
         this.currentLicense = currentLicense;
     }
 
@@ -1192,7 +1205,7 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentLicenseId(Long id) throws DAOException {
-        this.currentLicense = DataManager.getInstance().getDao().getLicense(id);
+        setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
     }
 
     /**

@@ -115,6 +115,53 @@
                                 </div>
                             </h:panelGroup>
                             
+                            <h3>#{msg.admin__license_functions}</h3>
+                            <div class="admin__default-block">        
+                                <div class="admin__license-functions">
+                                    <div class="form-group form-row">
+                                        <div class="col-5">#{msg.admin__license_functions_added}</div>
+                                        <div class="col-1"></div>
+                                        <div class="col-5">#{msg.admin__license_functions_available}</div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean"
+                                                data-toggle="helptext">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row">
+                                        <div class="col-5 admin__license-functions-added">
+                                            <ui:repeat var="priv"
+                                                value="#{adminBean.currentLicense.privilegesCopy}">
+                                                <h:commandLink styleClass="admin__license-action"
+                                                    action="#{adminBean.currentLicense.removePrivilege(priv)}"
+                                                    title="#{msg.remove}">
+                                                    <div class="badge badge-success admin__license-badge">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- remove button -->
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+                                        <div class="col-1"></div>
+                                        <div class="col-5 admin__license-functions-available">
+                                            <ui:repeat var="priv"
+                                                value="#{adminBean.currentLicense.availablePrivileges}">
+                                                <h:commandLink styleClass="admin__license-action"
+                                                    action="#{adminBean.currentLicense.addPrivilege(priv)}"
+                                                    title="#{msg.add}">
+                                                    <div class="badge badge-dark admin__license-badge">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- add button -->
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="text-right">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
