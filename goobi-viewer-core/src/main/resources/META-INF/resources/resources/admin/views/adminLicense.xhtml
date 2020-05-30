@@ -48,7 +48,7 @@
                                     <span class="admin__form-help-text">#{msg.admin__license_conditions__help}</span>
                                 </div>
                                 <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -62,7 +62,7 @@
                                     <span class="admin__form-help-text">#{msg.admin__license_description__help}</span>
                                 </div>
                                 <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -73,7 +73,7 @@
 								<div class="form-row">
 
 									<div class="col-2 control-label admin__form-label">
-										<h:outputLabel for="openaccess" value="#{msg.openAccess}:" />
+										<span>#{msg.openAccess}:</span>
 									</div>
 									<div class="col-9 admin__form-input">
 										<div class="form-check admin__form-checkbox">
@@ -92,8 +92,7 @@
 										<div class="col-1"></div>
 										<div class="col-5">#{msg.admin__license_functions_available}</div>
 										<div class="col-1 admin__form-help-icon">
-											<button type="button" class="btn btn--clean"
-												data-toggle="helptext">
+											<button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
 												<i class="fa fa-question-circle" aria-hidden="true"></i>
 											</button>
 										</div>
@@ -147,13 +146,14 @@
                                     <div class="col-9 admin__form-input">
                                         <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
                                             value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
+					    <f:passThroughAttribute name="aria-label" value="overriding licenses" />
                                             <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                                             <f:ajax render="@none" />
                                         </h:selectManyListbox>
                                         <span class="admin__form-help-text">#{msg.admin__license_overriding__help}</span>
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </button>
                                     </div>
