@@ -34,7 +34,7 @@
                 <!-- DASHBOARD -->
                 <ui:fragment rendered="#{userBean.admin}">
                     <div class="admin__sidebar-dashboard admin-widget">
-                    <h3>#{msg.admin__general_title}</h3>
+                    <div class="admin-widget__header">#{msg.admin__general_title}</div>
                         <ul>
                             <li class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
                                 <a href="#{request.contextPath}/admin/">
@@ -49,8 +49,8 @@
                 <!-- WIDGETS -->
                 <div class="admin__sidebar-widgets">
                     <adminWidget:widget_admin />
-			        <adminWidget:widget_crowdsourcing />
-			        <adminWidget:widget_cms />
+                    <adminWidget:widget_crowdsourcing />
+                    <adminWidget:widget_cms />
                 </div>
 
                 <!-- LOGOUT -->
