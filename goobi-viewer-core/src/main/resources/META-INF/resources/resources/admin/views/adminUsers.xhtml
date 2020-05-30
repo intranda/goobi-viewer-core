@@ -31,7 +31,7 @@
 						<!-- PAGINATOR -->
 						<div class="admin__user-table-paginator"><viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUsers}" /></div>
 						<!-- FILTER -->
-						<div class="admin__user-table-filter"><viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/></div>					
+						<div class="admin__user-table-filter"><viewerComponent:dataTableColumnFilter key="admin__user_search" filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/></div>
 					</div>
 			
 					<!-- All USERS TABLE -->
