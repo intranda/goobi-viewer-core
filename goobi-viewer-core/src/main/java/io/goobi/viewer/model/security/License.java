@@ -17,6 +17,7 @@ package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -166,6 +167,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Transient
     private String type;
 
+    @Transient
+    private Set<String> privilegesCopy = new HashSet<>();
+
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
      * license's start and and dates.
@@ -176,6 +180,26 @@ public class License implements IPrivilegeHolder, Serializable {
     public boolean isValid() {
         Date now = new Date();
         return (start == null || start.before(now)) && (end == null || end.after(now));
+    }
+
+    /**
+     * Adds the given privilege to the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean addPrivilege(String privilege) {
+        return privilegesCopy.add(privilege);
+    }
+
+    /**
+     * Removes the given privilege from the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean removePrivilege(String privilege) {
+        return privilegesCopy.remove(privilege);
     }
 
     /** {@inheritDoc} */
@@ -662,6 +686,27 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * Returns the list of available privileges for adding to this license (using the working copy while editing).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public Set<String> getAvailablePrivileges() {
+        return getAvailablePrivileges(privilegesCopy);
+    }
+
+    /**
+     * Returns the list of available privileges for adding to this license (using the given privileges list).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public Set<String> getAvailablePrivileges(Set<String> privileges) {
+        Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        privileges.toString();
+        ret.removeAll(privileges);
+        return ret;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>id</code>.
      * </p>
@@ -999,5 +1044,19 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * @return the privilegesCopy
+     */
+    public Set<String> getPrivilegesCopy() {
+        return privilegesCopy;
+    }
+
+    /**
+     * @param privilegesCopy the privilegesCopy to set
+     */
+    public void setPrivilegesCopy(Set<String> privilegesCopy) {
+        this.privilegesCopy = privilegesCopy;
     }
 }

@@ -620,7 +620,7 @@ public class AdminBean implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String savecurrentLicenseTypeAction() throws DAOException {
+    public String saveCurrentLicenseTypeAction() throws DAOException {
         if (currentLicenseType == null) {
             Messages.error("errSave");
             return "licenseTypes";
@@ -628,6 +628,7 @@ public class AdminBean implements Serializable {
 
         // Adopt changes made to the privileges
         if (!currentLicenseType.getPrivileges().equals(currentLicenseType.getPrivilegesCopy())) {
+            logger.trace("Saving changes to privileges");
             currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
         }
 
@@ -646,7 +647,6 @@ public class AdminBean implements Serializable {
                 return "pretty:adminLicenseNew";
             }
         }
-        setCurrentLicenseType(null);
 
         return "pretty:adminLicenses";
     }
@@ -821,6 +821,12 @@ public class AdminBean implements Serializable {
         if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
         }
+        
+        // Adopt changes made to the privileges
+        if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {
+            logger.trace("Saving changes to privileges");
+            currentLicense.setPrivileges(new HashSet<>(currentLicense.getPrivilegesCopy()));
+        }
 
         boolean error = false;
         if (currentLicense.getUser() != null) {
@@ -880,7 +886,7 @@ public class AdminBean implements Serializable {
         if (license == null) {
             throw new IllegalArgumentException("license may not be null");
         }
-        
+
         boolean success = false;
         logger.debug("removing license: {}", license.getLicenseType().getName());
         if (license.getUser() != null) {
@@ -1118,8 +1124,11 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentLicenseType(LicenseType currentLicenseType) {
         if (currentLicenseType != null) {
-            logger.debug("setCurrentLicenseType: {}", currentLicenseType.getName());
-            currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
+            logger.trace("setCurrentLicenseType: {}", currentLicenseType.getName());
+            // Prepare privileges working copy (but only if the same license type is not already set)
+            if (!currentLicenseType.equals(this.currentLicenseType)) {
+                currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
+            }
         }
         this.currentLicenseType = currentLicenseType;
     }
@@ -1144,7 +1153,7 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentLicenseTypeId(Long id) throws DAOException {
-        this.currentLicenseType = DataManager.getInstance().getDao().getLicenseType(id);
+        setCurrentLicenseType(DataManager.getInstance().getDao().getLicenseType(id));
     }
 
     /**
@@ -1166,6 +1175,13 @@ public class AdminBean implements Serializable {
      * @param currentLicense the currentLicense to set
      */
     public void setCurrentLicense(License currentLicense) {
+        if (currentLicense != null) {
+            logger.trace("setCurrentLicense: {}", currentLicense.toString());
+            // Prepare privileges working copy (but only if the same license is not already set)
+            if (!currentLicense.equals(this.currentLicense)) {
+                currentLicense.setPrivilegesCopy(new HashSet<>(currentLicense.getPrivileges()));
+            }
+        }
         this.currentLicense = currentLicense;
     }
 
@@ -1189,7 +1205,7 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentLicenseId(Long id) throws DAOException {
-        this.currentLicense = DataManager.getInstance().getDao().getLicense(id);
+        setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
     }
 
     /**
