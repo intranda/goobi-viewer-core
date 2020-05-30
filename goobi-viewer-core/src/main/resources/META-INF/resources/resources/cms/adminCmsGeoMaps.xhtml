@@ -44,8 +44,8 @@
 			                    			<h3>#{map.title}</h3>
 			                    			<div class="entity_list__item__header__tags">
 			                    				<a 
-					                               id="oEmbedLink" 
-					                               class="label label-default" 
+								       id="oEmbedLink#{map.id}" 
+					                               class="badge badge-dark" 
 					                               data-copy="oembed" 
 					                               data-clipboard-text="#{map.OEmbedLink}" 
 					                               data-copy-done="#{msg.copyUrlDone}"
@@ -67,7 +67,7 @@
 			                    				<div class="entity_list__item__content__value">
 			                    					<ui:repeat var="cmsPage" value="#{geoMapBean.getEmbeddingCmsPages(map)}">
 			                    						<div class="entity_list__item__content__subvalue">
-			                    							<a href="#{cmsPage.pageUrl}">#{cmsPage.title}</a>
+			                    							<a href="#{cmsPage.pageUrl}" class="-bluelink">#{cmsPage.title}</a>
 			                    						</div>
 			                    					</ui:repeat>
 			                    				</div>

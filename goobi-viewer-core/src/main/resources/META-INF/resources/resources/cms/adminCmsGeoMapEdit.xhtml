@@ -56,7 +56,7 @@
                         		<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status">
                                     <li role="presentation" class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}">
 <!--                                     <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a> -->
-                                    	<h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}">
+                                    	<h:commandLink action="#{geoMapBean.setSelectedLanguage(language)}" value="#{language}" styleClass="-bluelink">
                                     		<passThroughAttribute name="aria-controls" value="nameLanguage-#{language}"/>
                                     		<passThroughAttribute name="role" value="tab"/>
                                     		<f:ajax render="metadataPanel"></f:ajax>
@@ -83,7 +83,7 @@
 			                                    value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).value}" required="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}" requiredMessage="#{msg.error__title_required}"/>
 			                            </div>
 			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp" aria-label="inline help icon">
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
@@ -100,10 +100,10 @@
 			                            </div>
 			                            <div class="input_form__option_control">
 			                                <h:inputTextarea id="mapDesc" styleClass="form-control"
-			                                    value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}"/>
+								 value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}" aria-label="#{msg.description}"/>
 			                            </div>
 			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="descHelp">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="descHelp" aria-label="inline help icon">
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
@@ -149,7 +149,7 @@
 						                </div>
 		                            </div>
 		                            <div class="input_form__option_help">
-		                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="typeHelp">
+		                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="typeHelp" aria-label="inline help icon">
 		                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 		                                </button>
 		                            </div>
@@ -181,7 +181,7 @@
 						                </div>
 		                            </div>
 		                            <div class="input_form__option_help">
-		                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="markerHelp">
+		                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="markerHelp" aria-label="inline help icon">
 		                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 		                                </button>
 		                            </div>
@@ -217,7 +217,7 @@
 						                    </h:inputText>							                    
 			                            </div>
 			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="queryHelp">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="queryHelp" aria-label="inline help icon">
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
@@ -246,7 +246,7 @@
 							                </div>
 			                            </div>
 			                            <div class="input_form__option_help">
-			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="popupContentHelp">
+			                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="popupContentHelp" aria-label="inline help icon">
 			                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
 			                                </button>
 			                            </div>
