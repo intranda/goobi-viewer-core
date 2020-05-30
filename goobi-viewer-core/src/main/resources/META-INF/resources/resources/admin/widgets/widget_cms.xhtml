@@ -10,7 +10,7 @@
         <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_PAGES')}">
             <div id="widgetCms" class="admin-widget">
                 <h:form id="widgetCmsForm">
-                    <h3>#{msg.admin__cms_title}</h3>
+                    <div class="admin-widget__header">#{msg.admin__cms_title}</div>
 
                     <ul>
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">

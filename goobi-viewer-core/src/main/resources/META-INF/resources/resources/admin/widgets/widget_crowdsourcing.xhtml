@@ -11,7 +11,7 @@
         <h:panelGroup rendered="#{userBean.user.superuser}">
             <div id="widgetCrowdsourcing" class="admin-widget">
                 <h:form id="widgetCmsForm">
-                    <h3>#{msg.admin__crowdsourcing_title}</h3>
+                    <div class="admin-widget__header">#{msg.admin__crowdsourcing_title}</div>
 
                     <ul>
                         <li class="#{navigationHelper.currentPage == 'adminCrowdsourcingCampaigns' ? 'active' : ''}">
