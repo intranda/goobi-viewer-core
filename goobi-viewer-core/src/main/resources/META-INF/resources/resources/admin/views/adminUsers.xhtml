@@ -102,7 +102,10 @@
 <!-- 						                   #{msg.edit} -->
 <!-- 						               </h:commandLink> -->
 						               <h:outputLink styleClass="admin__user-table-edit-user -bluelink" title="#{msg.edit}"
-						                  value="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/">#{msg.edit}</h:outputLink>
+						                  value="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/">
+									<f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{user.email}" />
+							       		#{msg.edit}
+							       </h:outputLink>
 									</div>
 								</div>
 

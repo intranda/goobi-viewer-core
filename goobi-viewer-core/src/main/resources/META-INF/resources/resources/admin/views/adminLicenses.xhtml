@@ -99,12 +99,19 @@
 												<h:outputLink
 													styleClass="admin__boxed-entry-actions-edit -bluelink"
 													title="#{msg.edit}"
-													value="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/">#{msg.edit}</h:outputLink>
+													value="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/">
+														<f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{licenseType.name}" />
+														#{msg.edit}
+												</h:outputLink>
 												<!-- DELETE LICENCE -->
 												<h:commandLink
 													styleClass="admin__boxed-entry-actions-delete -redlink"
 													onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-													action="#{adminBean.deleteLicenseTypeAction(licenseType)}" title="#{msg.delete}">#{msg.delete}</h:commandLink>
+													action="#{adminBean.deleteLicenseTypeAction(licenseType)}" title="#{msg.delete}">
+
+														<f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{licenseType.name}" />
+														#{msg.delete}
+												</h:commandLink>
 											</div>
 										</div>
 									</div>
