@@ -68,7 +68,7 @@
 			//background: @lightgray2;
 			box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 			.admin__boxed-entry-actions {
-				opacity: 1;
+				visibility: visible;
 			}
 			
 		}
@@ -83,8 +83,7 @@
 			max-width: calc(50% - 1rem);
 		}
 		&-actions {
-			transition: opacity 0.2s ease;
-			opacity: 0;
+			visibility: hidden;
 			position: absolute;
 			bottom: 1.5rem;
 			left: 2rem;
@@ -181,7 +180,7 @@
 		&:hover {
 		    background: @lightgray2;
 		    .admin__user-table-edit-user {
-		    	opacity: 1;
+		    	visibility: visible;
 		    }
 		}
 	}
@@ -203,8 +202,7 @@
 		font-size: 1.8rem;
 	}	
 	&__user-table-edit-user {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		visibility: hidden;
 		font-size: 1.4rem;
 	}
 	&__user-table-email {
@@ -226,8 +224,7 @@
 	&__group-content {
 	}
 	&__group-actions {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		visibility: hidden;
 	}
 	&__group-description {
 		margin-bottom: 3rem;
@@ -238,7 +235,7 @@
 		&:hover {
 			background: @lightgray2;
 			.admin__group-member-delete-hint {
-				opacity: 1;
+				visibility: visible;
 			}
 		}
 	}
@@ -248,15 +245,13 @@
 		}
 	}
 	&__group-member-delete-hint {
-		transition: opacity 0.2s ease;
-		opacity: 0;
+		visibility: hidden;
 	}
 	&__group-member-name {
 		color: #212529;
 	}
 	&__ip-range-actions {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		visibility: hidden;
 	}
 	&__license-action {
 		i {
