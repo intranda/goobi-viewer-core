@@ -45,11 +45,13 @@
 								<div class="sorting-wrapper admin__user-table-sorting">
 									<h:commandLink styleClass="sort"
 										action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
+										<f:passThroughAttribute name="aria-label" value="sort ascending" />
 										<i class="fa fa-angle-down" aria-hidden="true"></i>
 										<f:ajax execute="@form" render="@form" />
 									</h:commandLink>
 									<h:commandLink styleClass="sort"
 										action="#{adminBean.lazyModelUsers.sortBy('email', 'DESCENDING')}">
+										<f:passThroughAttribute name="aria-label" value="sort descending" />
 										<i class="fa fa-angle-up" aria-hidden="true"></i>
 										<f:ajax execute="@form" render="@form" />
 									</h:commandLink>
@@ -62,11 +64,13 @@
 								<div class="sorting-wrapper admin__user-table-sorting">
 									<h:commandLink styleClass="sort"
 										action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
+										<f:passThroughAttribute name="aria-label" value="sort ascending" />
 										<i class="fa fa-angle-down" aria-hidden="true"></i>
 										<f:ajax execute="@form" render="@form" />
 									</h:commandLink>
 									<h:commandLink styleClass="sort"
 										action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'DESCENDING')}">
+										<f:passThroughAttribute name="aria-label" value="sort descending" />
 										<i class="fa fa-angle-up" aria-hidden="true"></i>
 										<f:ajax execute="@form" render="@form" />
 									</h:commandLink>

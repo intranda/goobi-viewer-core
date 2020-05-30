@@ -18,7 +18,9 @@
             <div class="form-group">
                 <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
                 <div class="input-group">
-                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}" />
+                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}">
+		    	<f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.key]}" />
+		    </h:inputText>
                     <div class="input-group-append">
                         <!-- MESSAGE KEY GIVEN -->
                         <ui:fragment rendered="#{cc.attrs.key != 'empty'}">
