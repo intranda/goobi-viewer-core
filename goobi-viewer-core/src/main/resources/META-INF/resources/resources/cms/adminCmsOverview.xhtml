@@ -15,14 +15,19 @@
         </f:metadata>
     </ui:define>
     
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
-
 	<ui:define name="content">
         <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <div id="cmsOverview">
-                    <h2 class="admin__content-inner-title">#{msg.cms_overview}</h2>
+                <div class="admin__title-bar">
+                        <!-- HEADING -->
+                        <h2 class="admin__content-inner-title">#{msg.cms_overview}</h2>
+                        <!-- CREATE NEW PAGE BUTTON -->
+			<ui:fragment rendered="#{userBean.user.cmsAdmin}">
+	                        <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/" styleClass="btn btn--default admin__title-bar-action">
+	                                <span>#{msg.add}</span>
+	                        </h:outputLink>
+			</ui:fragment>
+                </div>
 
                     <div class="admin__content-inner-content">
                         <div id="cmsOverviewWrapper" class="sortable-table-wrapper">
@@ -52,10 +57,12 @@
                                                 <!-- SORTING -->
                                                 <div class="sorting-wrapper">
                                                     <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
+                                                        <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                                                         <f:ajax execute="@form" render="@form" />
                                                     </h:commandLink>
                                                     <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'DESCENDING')}">
+                                                        <f:passThroughAttribute name="aria-label" value="sort descending" />
                                                         <i class="fa fa-angle-up" aria-hidden="true"></i>
                                                         <f:ajax execute="@form" render="@form" />
                                                     </h:commandLink>
@@ -120,6 +127,7 @@
                                                     </h:commandLink>
                                                     <h:panelGroup rendered="#{page.published}">
                                                         <h:outputLink styleClass="btn btn--icon" value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}" target="_blank">
+							    <f:passThroughAttribute name="aria-label" value="#{msg.cms_pageView}: #{page.title}" />
                                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                                         </h:outputLink>
                                                     </h:panelGroup>
@@ -136,9 +144,6 @@
                                         </ui:repeat>
                                     </tbody>
                                 </table>
-
-                                <!-- paginator -->
-                                <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
 
                                 <!-- delete page modal -->
                                 <div id="deletePageModal" class="modal fade" tabindex="-1" role="dialog">
