@@ -15,13 +15,13 @@
         </f:metadata>
     </ui:define>
     
-	<ui:define name="content">
+    <ui:define name="content">
+      <div id="cmsOverview">
         <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
 	<h:form id="cmsOverviewForm" prependId="false">
-            <div id="cmsOverview">
                 <div class="admin__title-bar">
                         <!-- HEADING -->
-                        <h2 class="admin__content-inner-title">#{msg.cms_overview}</h2>
+                        <h2 class="admin__title">#{msg.cms_overview}</h2>
                         <!-- CREATE NEW PAGE BUTTON -->
 			<ui:fragment rendered="#{userBean.user.cmsAdmin}">
 	                        <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/" styleClass="btn btn--default admin__title-bar-action">
@@ -42,9 +42,6 @@
 
 
                         <div id="cmsOverviewWrapper" class="sortable-table-wrapper">
-                                <!-- paginator -->
-                                <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
-
                                 <table id="cmsOverviewTable" class="table table-striped table-bordered admin-table">
                                     <thead>
                                         <tr>
