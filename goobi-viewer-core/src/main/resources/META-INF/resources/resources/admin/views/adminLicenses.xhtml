@@ -29,8 +29,7 @@
 						<h:form id="adminLicenseTypesForm" prependId="false">
 							<!-- LICENSE INFO TEXT -->
 							<p>
-								<h:outputText value="#{msg.admin__licenses_description_text}"
-									escape="false" />
+								<h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
 							</p>
 							<!-- NOT CONFIGURED LICENSES -->
                                             		<ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
@@ -40,13 +39,12 @@
 								</div>
                                                                 <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
                                                                         <h:commandLink action="pretty:adminLicenseNew"
-                                                                                actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
-                                                                                styleClass="-bluelink">
-                                                                                <div class="row admin__list-hovered-entry">
+										       actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}">
+                                                                                <div class="row admin__license-unconfigured-entry">
                                                                                         <div class="col-10 -textlink">#{accessCondition}
                                                                                                 (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)}
                                                                                                 #{msg.admin__licenses_record_number})</div>
-                                                                                        <div class="col-2 d-flex justify-content-end">
+                                                                                        <div class="col-2 d-flex justify-content-end" -bluelink>
                                                                                                 <span>#{msg.admin__licenses_configure_license_now}</span>
                                                                                         </div>
                                                                                 </div>
