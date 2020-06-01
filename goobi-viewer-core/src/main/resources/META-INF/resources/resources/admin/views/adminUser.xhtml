@@ -1,13 +1,13 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
@@ -15,7 +15,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUser')}" />
             <f:event type="preRenderView" listener="#{adminBean.currentUser.backupFields}" />
-	    <f:viewParam name="avatar" value="#{adminBean.currentUser.useGravatar}"/>
+            <f:viewParam name="avatar" value="#{adminBean.currentUser.useGravatar}"/>
         </f:metadata>
     </ui:define>
 
@@ -24,169 +24,148 @@
             <div id="adminUser">
                 <h:panelGroup rendered="#{userBean.admin == true and adminBean.currentUser != null}">
                     <div class="admin__title-bar">
-	                    <ui:fragment rendered="#{adminBean.currentUser.id == null}">
-	                    	<h2 class="admin__title">#{msg.admin__user_create_new}</h2>
-	                    </ui:fragment>
-	                    <ui:fragment rendered="#{adminBean.currentUser.id != null}">
-	                        <h2 class="admin__title">#{msg.admin__user_edit}</h2>
-	                    </ui:fragment>
-                	</div>
+                        <ui:fragment rendered="#{adminBean.currentUser.id == null}">
+                            <h2 class="admin__title">#{msg.admin__user_create_new}</h2>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{adminBean.currentUser.id != null}">
+                            <h2 class="admin__title">#{msg.admin__user_edit}</h2>
+                        </ui:fragment>
+                    </div>
 
                     <div class="admin__content-inner-content">
-    
-                    <!-- PROFILE -->
-                    <h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
-                        <h3>#{msg.admin__user_profile}</h3>
-                        
-                        <!-- TODO proper css class -->
-                        <div class="admin__default-block">
-                        
-                        <!-- prevent autocomplete in IE, Chrome and Firefox -->
-                        <input type="text" class="hidden" />
-                        <input type="password" class="hidden" />
-                                 
-                        <!-- TODO LOGIC FOR DISABLED OR NOT DISABLED -->
-                  		<!--  <fieldset disabled="#{!adminBean.currentUser.active}">-->
-						<fieldset>
-                            <div class="form-group form-row">
-                            
-                                <div class="col-2 control-label admin__form-label">
-                                	<h:outputLabel for="displayName" value="#{msg.admin__user_display_name}:" />
-                                </div>
-                                <div class="col-9 admin__form-input">
-                                    <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
-                                        required="false" requiredMessage="#{msg.loginEnterDisplayName}" />
-                                    <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
-                                </div>
-                                <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                
-                            </div>
-                            
-                                <h:panelGroup id="emailGroup">
-                                
-                                <div class="form-group form-row">
-  
-                                    <div class="col-2 control-label admin__form-label">
-	                                    <h:outputLabel for="email" value="#{msg.email}:" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
-                                    </div>
-                                    
-                                    <div class="col-9 admin__form-input cms-module__option-control">
-                                    
-                                       <div class="cms-module__option-message">
-                                        <h:messages for="email" 
-                                            infoClass="cms-module__option-message-status success" 
-                                            warnClass="cms-module__option-message-status warning"
-                                            errorClass="cms-module__option-message-status danger" />
-                                        <div class="cms-module__option-message-mark">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <!-- PROFILE -->
+                        <h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
+                            <h3>#{msg.admin__user_profile}</h3>
+                            <div class="admin__default-block">
+
+                                <!-- prevent autocomplete in IE, Chrome and Firefox -->
+                                <input type="text" class="hidden" />
+                                <input type="password" class="hidden" />
+
+                                <fieldset>
+                                    <!-- USER DISPLAY NAME -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <h:outputLabel for="displayName" value="#{msg.admin__user_display_name}:" />
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
+                                                required="false" requiredMessage="#{msg.loginEnterDisplayName}" />
+                                            <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
                                         </div>
                                     </div>
-                                    
-                                        <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
-                                            styleClass="form-control">
-                                            <f:validator validatorId="emailValidator" for="email" />
-                                            <f:ajax render="emailGroup" />
-                                        </h:inputText>
-                                        <span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
-                                    </div>
 
-                                    <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                    
-                                       </div>
-                                </h:panelGroup>
-                         
-                            <div class="form-group form-row">
-                            
-                            <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="firstName" value="#{msg.nameFirst}:" />
-                            </div>
-                            
-                                <div class="col-9 admin__form-input">
-                                    <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
-                                    <span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
-                                </div>
-                                <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group form-row">
-                            <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="lastName" value="#{msg.nameLast}:" />
-                            </div>
-                            
-                            <div class="col-9 admin__form-input">
-                                    <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
-                                    <span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
-                            </div>
-                                <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group form-row">
-                                <div class="col-2 control-label admin__form-label">
-                                <h:outputLabel for="avatar" value="#{msg.admin__user_avatar}:" />
-                                </div>
-                                                     
-                                <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
-                                <div id="avatar" class="col-9">
-                                    <div class="row no-gutters">
-                                        <div class="col-6">
-                                            <img class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar" />
-                                            <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
-                                            <label for="avatarFalseOption">#{msg.admin__user_avatar_standard}</label>
+                                    <!-- USER EMAIL ADDRESS -->
+                                    <h:panelGroup id="emailGroup">
+                                        <div class="form-group form-row">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <h:outputLabel for="email" value="#{msg.email}:" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                            </div>
+                                            <div class="col-9 admin__form-input cms-module__option-control">
+                                                <div class="cms-module__option-message">
+                                                    <h:messages for="email"
+                                                        infoClass="cms-module__option-message-status success"
+                                                        warnClass="cms-module__option-message-status warning"
+                                                        errorClass="cms-module__option-message-status danger" />
+                                                    <div class="cms-module__option-message-mark">
+                                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                    </div>
+                                                </div>
+                                                <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" immediate="true" required="true"
+                                                    styleClass="form-control">
+                                                    <f:validator validatorId="emailValidator" for="email" />
+                                                    <f:ajax render="emailGroup" />
+                                                </h:inputText>
+                                                <span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-6">
-                                            <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" alt="User avatar" />
-                                            <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
-                                            <label for="avatarTrueOption">#{msg.admin__user_avatar_gravatar}</label>
+                                    </h:panelGroup>
+
+                                    <!-- USER FIRST NAME -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <h:outputLabel for="firstName" value="#{msg.nameFirst}:" />
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
+                                            <span class="admin__form-help-text">#{msg.admin__user_first_name__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group form-row">
-                            
-                            
-                            <div class="col-2 control-label admin__form-label">
-				    <span>#{msg.admin__user_superuser}:</span>
-                            </div>
-                            
-                            
-                                <div class="col-9 admin__form-input">
-                                    <div class="form-check admin__form-checkbox">
-                                        <h:selectBooleanCheckbox class="form-check-input" type="checkbox" value="#{adminBean.currentUser.superuser}"
-                                        id="superUser" />
-                                        <label class="form-check-label" for="superUser">#{msg.admin__user_superuser_notice}</label>
+
+                                    <!-- USER LAST NAME -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <h:outputLabel for="lastName" value="#{msg.nameLast}:" />
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                                <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
+                                                <span class="admin__form-help-text">#{msg.admin__user_last_name__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                </div>
-                                                 
-                            
-                        </fieldset>
-                        
-                        </div>
 
-                        <!-- PASSWORD -->
-                            <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
-                                <h3>#{msg.password}</h3>
+                                    <!-- USER AVATAR -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <h:outputLabel for="avatar" value="#{msg.admin__user_avatar}:" />
+                                        </div>
+                                        <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
+                                        <div id="avatar" class="col-9">
+                                            <div class="row no-gutters">
+                                                <div class="col-6">
+                                                    <img class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar" />
+                                                    <input type="radio" jsf:id="avatarFalseOption" pt:name="avatar" value="false" pt:checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
+                                                    <label for="avatarFalseOption">#{msg.admin__user_avatar_standard}</label>
+                                                </div>
+                                                <div class="col-6">
+                                                    <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" alt="User avatar" />
+                                                    <input type="radio" jsf:id="avatarTrueOption" pt:name="avatar" value="true" pt:checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
+                                                    <label for="avatarTrueOption">#{msg.admin__user_avatar_gravatar}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    <!-- USER ADMIN RIGHTS -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <span>#{msg.admin__user_superuser}:</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <div class="form-check admin__form-checkbox">
+                                                <h:selectBooleanCheckbox class="form-check-input" type="checkbox" value="#{adminBean.currentUser.superuser}" id="superUser" />
+                                                <label class="form-check-label" for="superUser">#{msg.admin__user_superuser_notice}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <!-- PASSWORD NEW USER -->
+                            <ui:fragment rendered="#{adminBean.currentUser.id == null}">
                                 <div class="admin__default-block">
-								<p>#{msg.admin__user_password_info_text}</p>
+                                    <h3>#{msg.password}</h3>
+                                    <p>#{msg.admin__user_create_password_info_text}</p>
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
@@ -203,16 +182,14 @@
                                             </div>
                                         </div>
                                     </div>
-                            
                                 </div>
-                            </h:panelGroup>
+                            </ui:fragment>
 
-                            <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
-                                <h3>#{msg.changePassword}</h3>
-                            
+                            <!-- PASSWORD CHANGE FOR EXISTING USER -->
+                            <ui:fragment rendered="#{adminBean.currentUser.id != null}">
                                 <div class="admin__default-block">
-								<p>#{msg.admin__user_password_info_text}</p> 
-                            
+                                    <h3>#{msg.changePassword}</h3>
+                                    <p>#{msg.admin__user_password_info_text}</p>
                                     <div class="form-horizontal" role="form">
                                         <div class="form-group form-row">
                                             <h:outputLabel for="adminPasswordOne" styleClass="col-2 control-label" value="#{msg.newUserPasswordOne}:" />
@@ -227,86 +204,65 @@
                                             </div>
                                         </div>
                                     </div>
-                            
                                 </div>
-                            </h:panelGroup>
-                        
-                        <!-- SAVE / CANCEL BUTTONS -->
-                        <ui:fragment rendered="#{adminBean.currentUser.active}">                        
-                            <div class="row no-gutters justify-content-end admin__final-actions">
-                                <h:commandLink  rendered="#{adminBean.currentUser.id != null}"
-                                    id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true">
-                                </h:commandLink>
-                                <h:commandLink id="saveUserButton" styleClass="btn btn--success" value="#{msg.save}"
-                                    action="#{adminBean.saveUserAction}" />
-                            </div>
-                        </ui:fragment>
-                        
-                        <!-- ACCOUNT ACTIVATION -->
-                        <ui:fragment rendered="#{!adminBean.currentUser.active}">
-                            <h3>#{msg.admin__user_activation}</h3>
+                            </ui:fragment>
 
-								<div class="admin__default-block -warning">
-
-									<div class="form-group form-row">
-										<div class="col-9">
-											<p>#{msg.admin__user_activation_description}</p>
-										</div>
-									</div>
-
-									<div class="form-group form-row">
-										<div class="col-9">
-											<div class="form-check">
-												<h:selectBooleanCheckbox class="form-check-input" value="#{adminBean.currentUser.active}" id="userActivation"/><label for="userActivation" class="form-check-label" > 
-													#{msg.admin__user_activation_label}
-												</label>
-											</div>
-										</div>
-									</div>
-
-								<div class="text-right">
-                                    <h:commandLink id="saveUserActivationButton" styleClass="btn btn--success" value="#{msg.save}"
-                                        action="#{adminBean.saveUserAction}" />
+                            <!-- SAVE / CANCEL BUTTONS FOR EXISTING USERS -->
+                            <ui:fragment rendered="#{adminBean.currentUser.active}">
+                                <div class="row no-gutters justify-content-end admin__final-actions">
+                                    <h:commandLink  rendered="#{adminBean.currentUser.id != null}" id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
+                                    <h:commandLink id="saveUserButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
                                 </div>
-                                
-                            </div>
-                        </ui:fragment>
-                        
+                            </ui:fragment>
+
+                            <!-- ACCOUNT ACTIVATION -->
+                            <ui:fragment rendered="#{!adminBean.currentUser.active}">
+                                <h3>#{msg.admin__user_activation}</h3>
+                                   <div class="admin__default-block -warning">
+                                       <p>#{msg.admin__user_activation_description}</p>
+                                       <div class="form-group form-row">
+                                           <div class="col-9">
+                                               <div class="form-check">
+                                                   <h:selectBooleanCheckbox class="form-check-input" value="#{adminBean.currentUser.active}" id="userActivation"/>
+                                                <label for="userActivation" class="form-check-label" >#{msg.admin__user_activation_label}</label>
+                                               </div>
+                                           </div>
+                                       </div>
+                                </div>
+                                <!-- SAVE / CANCEL BUTTONS FOR NEW USER -->
+                                <div class="row no-gutters justify-content-end admin__final-actions">
+                                    <h:commandLink id="cancelNewUserCreationnButton" styleClass="btn" value="#{msg.cancel}" action="pretty:adminUsers" immediate="true" />
+                                    <h:commandLink id="saveNewUserCreationButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
+                                </div>
+                            </ui:fragment>
                         </h:form>
-                        
+
                         <!-- DELETE USER -->
                         <ui:fragment rendered="#{adminBean.currentUser.id != null}">
                             <h:form id="deleteUser" styleClass="form-horizontal" role="form" prependId="false">
                                 <h3>#{msg.admin__user_delete}</h3>
-                                
                                 <div class="admin__default-block -danger">
-                                
                                     <p>#{msg.admin__user_delete_description}:</p>
-                                    
                                     <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                     <div class="form-group">
-                                    	<div class="form-check connected-top">
-                                                <input class="form-check-input" type="radio" jsf:id="keepDataOption" pt:name="avatar" value="true" pt:checked="#{!adminBean.deleteUserContributions ? 'false' : null}" />
-                                                <label class="form-check-label" for="keepDataOption">#{msg.admin__user_delete_type_keep_data}</label>
-                                    	</div>
-                                        <div class="form-check connected-bottom">
-                                                <input class="form-check-input" type="radio" jsf:id="deleteDataOption" pt:name="avatar" value="true" pt:checked="#{adminBean.deleteUserContributions ? 'true' : null}"/>
-                                                <label class="form-check-label" for="deleteDataOption">#{msg.admin__user_delete_type_everything}</label>
+                                        <div class="form-check connected-top">
+                                            <input class="form-check-input" type="radio" jsf:id="keepDataOption" pt:name="avatar" value="true" pt:checked="#{!adminBean.deleteUserContributions ? 'false' : null}" />
+                                            <label class="form-check-label" for="keepDataOption">#{msg.admin__user_delete_type_keep_data}</label>
                                         </div>
-                                    </div>  
-                                
-                                    <div class="form-group form-row">
-                                        <h:outputLabel for="emailConfirmation" styleClass="col-4 control-label"
-                                            value="#{msg.admin__user_delete_email_confirmation}:" />
-                                        <div class="col-8">
-                                            <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation"
-                                                styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
+                                        <div class="form-check connected-bottom">
+                                            <input class="form-check-input" type="radio" jsf:id="deleteDataOption" pt:name="avatar" value="true" pt:checked="#{adminBean.deleteUserContributions ? 'true' : null}"/>
+                                            <label class="form-check-label" for="deleteDataOption">#{msg.admin__user_delete_type_everything}</label>
                                         </div>
                                     </div>
-
+                                    <div class="form-group form-row">
+                                        <h:outputLabel for="emailConfirmation" styleClass="col-4 control-label" value="#{msg.admin__user_delete_email_confirmation}:" />
+                                        <div class="col-8">
+                                            <h:inputText value="#{adminBean.emailConfirmation}" id="emailConfirmation" label="emailConfirmation" 
+                                            styleClass="form-control" required="true" requiredMessage="#{msg.admin__error_email_mismatch}" />
+                                        </div>
+                                    </div>
                                     <div class="text-right">
-                                        <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__user_delete_permanently}"
-                                            action="#{adminBean.deleteUserAction(user, false)}" />
+                                        <h:commandLink id="deleteUserButton" styleClass="btn btn--danger" value="#{msg.admin__user_delete_permanently}"  action="#{adminBean.deleteUserAction(user, false)}" />
                                     </div>
                                 </div>
                             </h:form>
@@ -316,5 +272,4 @@
             </div>
         </f:view>
     </ui:define>
-
 </ui:composition>
