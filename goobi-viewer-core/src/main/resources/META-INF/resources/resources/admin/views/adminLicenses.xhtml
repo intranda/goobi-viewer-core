@@ -33,6 +33,7 @@
 									escape="false" />
 							</p>
 							<!-- NOT CONFIGURED LICENSES -->
+                                            		<ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
 							<div class="admin__default-block mb-5 -danger">
 								<div class="row">
 									<h3 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h3>
@@ -51,6 +52,7 @@
 									</div>
 								</ui:repeat>
 							</div>
+                                            		</ui:fragment>
 
 							<div class="admin__entry-list">
 								<ui:repeat var="licenseType"
