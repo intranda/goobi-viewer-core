@@ -38,19 +38,20 @@
 								<div class="row">
 									<h3 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h3>
 								</div>
-								<ui:repeat var="accessCondition"
-									value="#{adminBean.notConfiguredAccessConditions}">
-									<div class="row">
-										<span class="col-10">#{accessCondition}
-											(#{adminBean.getNumRecordsWithAccessCondition(accessCondition)}
-											#{msg.admin__licenses_record_number})</span>
-
-										<h:commandLink action="pretty:adminLicenseNew"
-											actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
-											value="#{msg.admin__licenses_configure_license_now}"
-											styleClass="col-2 text-right -bluelink" />
-									</div>
-								</ui:repeat>
+                                                                <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
+                                                                        <h:commandLink action="pretty:adminLicenseNew"
+                                                                                actionListener="#{adminBean.resetCurrentLicenseTypeAction(accessCondition)}"
+                                                                                styleClass="-bluelink">
+                                                                                <div class="row admin__list-hovered-entry">
+                                                                                        <div class="col-10 -textlink">#{accessCondition}
+                                                                                                (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)}
+                                                                                                #{msg.admin__licenses_record_number})</div>
+                                                                                        <div class="col-2 d-flex justify-content-end">
+                                                                                                <span>#{msg.admin__licenses_configure_license_now}</span>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </h:commandLink>
+                                                                </ui:repeat>
 							</div>
                                             		</ui:fragment>
 
