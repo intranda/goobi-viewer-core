@@ -24,7 +24,9 @@
 							<!-- HEADING -->
 							<h2 class="admin__title">#{msg.admin__groups}</h2>
 							<!-- CREATE NEW GROUP BUTTON -->
-							<h:commandLink action="pretty:adminGroupNew" value="#{msg.add}" styleClass="btn btn--default admin__title-bar-action" />
+	                				<h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroupNew')}/" styleClass="btn btn--default admin__title-bar-action">
+	                				        <span>#{msg.add}</span>
+	                				</h:outputLink>
 						</div>
 						<div class="admin__content-inner-content">
 							<!-- INFO TEXT -->

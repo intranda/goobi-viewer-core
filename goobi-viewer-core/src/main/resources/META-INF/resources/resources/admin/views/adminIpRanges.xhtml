@@ -23,8 +23,9 @@
 		               	    <!-- HEADING --> 
 		                    <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
 		                    <!-- CREATE NEW IP RANGE BUTTON --> 
-							<h:commandLink action="pretty:adminIpRangeNew"
-							    value="#{msg.add}" styleClass="btn btn--default admin__title-bar-action" />                                  
+	                	    <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRangeNew')}/" styleClass="btn btn--default admin__title-bar-action">
+	                	            <span>#{msg.add}</span>
+	                	    </h:outputLink>
 						</div>
 
                     	<div class="admin__content-inner-content">
