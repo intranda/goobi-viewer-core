@@ -46,7 +46,7 @@
                                     <!-- USER DISPLAY NAME -->
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="displayName" value="#{msg.admin__user_display_name}:" />
+                                            <label for="displayName">#{msg.admin__user_display_name}:</label>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                             <h:inputText value="#{adminBean.currentUser.nickName}" id="displayName" label="displayName" styleClass="form-control"
@@ -64,7 +64,7 @@
                                     <h:panelGroup id="emailGroup">
                                         <div class="form-group form-row">
                                             <div class="col-2 control-label admin__form-label">
-                                                <h:outputLabel for="email" value="#{msg.email}:" /><span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                                <label for="email">#{msg.email}: </label><span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                             </div>
                                             <div class="col-9 admin__form-input cms-module__option-control">
                                                 <div class="cms-module__option-message">
@@ -95,7 +95,7 @@
                                     <!-- USER FIRST NAME -->
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="firstName" value="#{msg.nameFirst}:" />
+                                            <label for="firstName">#{msg.nameFirst}:</label>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                             <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
@@ -111,7 +111,7 @@
                                     <!-- USER LAST NAME -->
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="lastName" value="#{msg.nameLast}:" />
+                                            <label for="lastName">#{msg.nameLast}:</label>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                                 <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
@@ -127,7 +127,7 @@
                                     <!-- USER AVATAR -->
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="avatar" value="#{msg.admin__user_avatar}:" />
+                                            <label for="avatar">#{msg.admin__user_avatar}:</label>
                                         </div>
                                         <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                         <div id="avatar" class="col-9">

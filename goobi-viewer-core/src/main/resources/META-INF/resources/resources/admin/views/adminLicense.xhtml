@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
-                                        <h:outputLabel for="conditions" value="#{msg.license_conditions}:" />
+                                        <label for="conditions">#{msg.license_conditions}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <h:inputText value="#{adminBean.currentLicenseType.conditions}" id="conditions" styleClass="form-control" />
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
-                                        <h:outputLabel for="description" value="#{msg.description}:" />
+                                        <label for="description">#{msg.description}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <h:inputTextarea value="#{adminBean.currentLicenseType.description}" id="description" styleClass="form-control" />
@@ -129,7 +129,7 @@
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
-                                        <h:outputLabel for="overridindlicense" value="#{msg.admin__licenses}:" />
+                                        <label for="overridindlicense">#{msg.admin__licenses}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter" value="#{adminBean.currentLicenseType.overridingLicenseTypes}">

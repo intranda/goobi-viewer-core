@@ -37,7 +37,7 @@
                                 <fieldset>
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="userGroupNameGeneral" value="#{msg.name}:" />
+                                            <label for="userGroupNameGeneral">#{msg.name}:</label>
                                             <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
                                         <div class="col-9 admin__form-input">
@@ -55,7 +55,7 @@
 
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="userGroupDescription" value="#{msg.description}:" />
+                                            <label for="userGroupDescription">#{msg.description}:</label>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                             <h:inputTextarea value="#{adminBean.currentUserGroup.description}" id="userGroupDescription" styleClass="form-control" />
@@ -70,7 +70,7 @@
 
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
-                                            <h:outputLabel for="userGroupOwner" value="#{msg.userGroup_owner}:" />
+                                            <label for="userGroupOwner">#{msg.userGroup_owner}:</label>
                                             <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
                                         <div class="col-9 admin__form-input">
