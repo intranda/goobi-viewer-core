@@ -59,7 +59,6 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -333,7 +332,7 @@ public final class SearchHelper {
                     }
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
-                    if(!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {                        
+                    if (!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {
                         HitType hitType = HitType.getByName(docType);
                         int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                         hit.getHitTypeCounts().put(hitType, count + 1);
@@ -397,7 +396,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, BeanUtils.getNavigationHelper(), true, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -408,7 +407,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper) throws IndexUnreachableException {
-        return getAllSuffixes(null, navigationHelper, true, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(BeanUtils.getRequest(), navigationHelper, true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -420,7 +419,7 @@ public final class SearchHelper {
      */
     public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper)
             throws IndexUnreachableException {
-        return getAllSuffixes(null, navigationHelper, true, false, addDiscriminatorValueSuffix);
+        return getAllSuffixes(BeanUtils.getRequest(), navigationHelper, true, false, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -1214,7 +1213,7 @@ public final class SearchHelper {
             return null;
         }
         string = Normalizer.normalize(string, Normalizer.Form.NFD);
-        string =  string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
+        string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
         string = Normalizer.normalize(string, Normalizer.Form.NFC);
         return string;
     }
@@ -2177,7 +2176,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
-        return buildFinalQuery(rawQuery, aggregateHits, BeanUtils.getNavigationHelper());
+        return buildFinalQuery(rawQuery, aggregateHits, BeanUtils.getNavigationHelper(), null);
     }
 
     /**
@@ -2185,11 +2184,14 @@ public final class SearchHelper {
      *
      * @param rawQuery a {@link java.lang.String} object.
      * @param aggregateHits a boolean.
+     * @param nh
+     * @param request
      * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, NavigationHelper nh) throws IndexUnreachableException {
+    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, NavigationHelper nh, HttpServletRequest request)
+            throws IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
         if (aggregateHits) {
             sbQuery.append("{!join from=PI_TOPSTRUCT to=PI}");
@@ -2197,7 +2199,10 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
-        String suffixes = getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), nh);
+        String suffixes = getAllSuffixes(request, nh, true,
+                true,
+                DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
+
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -2228,7 +2233,7 @@ public final class SearchHelper {
      * exportSearchAsExcel.
      * </p>
      *
-     * @param query Complete query with suffixes.
+     * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param sortFields a {@link java.util.List} object.
      * @param filterQueries a {@link java.util.List} object.
@@ -2244,7 +2249,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
+    public static SXSSFWorkbook exportSearchAsExcel(String finalQuery, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
@@ -2281,7 +2286,7 @@ public final class SearchHelper {
         }
 
         List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
-        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries);
+        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
         for (int i = 0; i < totalBatches; ++i) {
@@ -2294,9 +2299,10 @@ public final class SearchHelper {
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch;
             if (aggregateHits) {
-                batch = searchWithAggregation(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
+                batch = searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields,
+                        locale);
             } else {
-                batch = searchWithFulltext(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale,
+                batch = searchWithFulltext(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale,
                         request);
             }
             for (SearchHit hit : batch) {

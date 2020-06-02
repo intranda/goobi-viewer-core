@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -121,12 +122,15 @@ public class SearchDownloadResource {
     @Produces({ "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
     public ExcelStreamingOutput downloadAsExcel(@Context HttpServletResponse response, @Context HttpServletRequest request)
             throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
+        SearchBean searchBean = BeanUtils.getSearchBean();
+        if (searchBean == null) {
+            throw new WebApplicationException("SearchBean unavailable");
+        }
         String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString());
         List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
         Map<String, Set<String>> searchTerms = searchBean.getSearchTerms();
 
-        final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
+        final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits(),BeanUtils.getNavigationHelper(), request);
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition",
