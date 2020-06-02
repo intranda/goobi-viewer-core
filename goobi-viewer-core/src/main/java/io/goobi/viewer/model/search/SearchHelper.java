@@ -2134,7 +2134,6 @@ public final class SearchHelper {
                 sbQuery.append(docstructWhitelistFilterQuery);
             } else {
                 sbQuery.append(ALL_RECORDS_QUERY);
-                // sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
             }
 
         }
@@ -2282,7 +2281,7 @@ public final class SearchHelper {
         }
 
         List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
-        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(query);
+        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
         for (int i = 0; i < totalBatches; ++i) {

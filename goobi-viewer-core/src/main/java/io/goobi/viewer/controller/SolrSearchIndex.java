@@ -925,6 +925,22 @@ public final class SolrSearchIndex {
     }
 
     /**
+     * Returns the number of hits for the given query and filter queries without actually returning any documents.
+     * 
+     * @param query
+     * @param filterQueries
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public long getHitCount(String query, List<String> filterQueries) throws IndexUnreachableException, PresentationException {
+        QueryResponse qr =
+                search(query, 0, 0, null, null, null,
+                        filterQueries, null);
+        return qr.getResults().getNumFound();
+    }
+
+    /**
      * Retrieves the repository name for the record with the given PI and persists it in a map. This method is package private to discourage clients
      * from constructing data file paths manually instead of using Helper methods.
      * 
