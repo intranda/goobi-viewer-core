@@ -24,7 +24,15 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  *
  * @author Florian Alpers
  */
-public class QueryListFunctionality implements Functionality {
+public class QueryListFunctionality extends SearchFunctionality {
+
+    /**
+     * @param pageFacetString
+     * @param baseUrl
+     */
+    public QueryListFunctionality(String pageFacetString, String baseUrl) {
+        super(pageFacetString, baseUrl);
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)

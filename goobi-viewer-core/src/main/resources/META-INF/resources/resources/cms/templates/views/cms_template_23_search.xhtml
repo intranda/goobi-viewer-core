@@ -51,59 +51,13 @@
     					</ui:fragment>
 					</h:panelGroup>
                     
-                    <!-- SEARCH LIST OPTIONS -->
-                    <ui:fragment rendered="#{cmsPage.getContentItem('search').functionality.searchPerformed}">
-                       <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                
-                   </ui:fragment>
-
-                    <h:panelGroup id="searchArea">
-                        <!-- SEARCH STANDARD -->
-                        <ui:fragment rendered="#{searchBean.activeSearchType == 0}">
-                            <ui:include src="/resources/includes/search/searchStandard.xhtml">
-                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}" />
-                                <ui:param name="title" value="#{cmsPage.getContentItemText('text')}"/>
-                                <ui:param name="renderOnSearchTypeChange" value="cmsTextContent"/>
-                            </ui:include>
-                        </ui:fragment>
-
-                        <!-- SEARCH ADVANCED -->
-                        <ui:fragment rendered="#{searchBean.activeSearchType == 1 and !searchBean.showReducedSearchOptions}">
-                            <ui:include src="/resources/includes/search/searchAdvanced.xhtml">
-                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}" />
-                            </ui:include>
-                        </ui:fragment>
-
-                        <!-- ADVANCED SEARCH INFO -->
-                        <ui:fragment rendered="#{searchBean.activeSearchType == 1 and searchBean.showReducedSearchOptions}">
-                            <div class="search-list__adv-search-info">
-                                <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
-
-                                <!-- ADVANCED SEARCH -->
-                                <div class="search-list__adv-search-info-back text-right">
-                                    <h:commandLink value="#{msg.searchAdvancedBack}" action="#{searchBean.setShowReducedSearchOptions(false)}">
-                                        <f:ajax render="searchArea" />
-                                    </h:commandLink>
-                                </div>
-                            </div>
-                        </ui:fragment>
-
-                        <!-- CALENDAR SEARCH INFO -->
-                        <ui:fragment rendered="#{searchBean.activeSearchType == 3 and !searchBean.showReducedSearchOptions}">
-                            <div class="search-list__adv-search-info">
-                                (
-                                <h:outputText value="#{msg.date}: " escape="false" />
-                                <h:outputText value="#{calendarBean.currentDate}">
-                                    <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                                </h:outputText>
-                                )
-
-                                <!-- CALENDAR SEARCH -->
-                                <div class="search-list__adv-search-info-back text-right">
-                                    <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
-                                </div>
-                            </div>
-                        </ui:fragment>
-                    </h:panelGroup>
+                    <!-- SEARCH HEADER -->
+                     <ui:include src="/resources/includes/search/searchHeader.xhtml">
+                        <ui:param name="search" value="#{cmsPage.getContentItem('search').functionality}"/>
+                        <ui:param name="searchType" value="#{cmsPage.getContentItem('search').functionality.activeSearchType}"></ui:param>
+				    	<ui:param name="renderOnSearchTypeChange" value="#{cmsTextContent}"></ui:param> 
+				 		<ui:param name="title" value="#{cmsPage.getContentItemText('text')}"></ui:param>
+                     </ui:include>
 
                     <!-- SEARCH LIST -->
                     <div class="search-list">
