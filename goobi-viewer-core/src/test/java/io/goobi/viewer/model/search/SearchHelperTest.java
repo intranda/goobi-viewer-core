@@ -962,9 +962,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     highlightedPhrase);
         }
     }
-    
+
     @Test
-    public void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() throws Exception{
+    public void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() throws Exception {
         String phrase = "Širvintos";
         Set<String> terms = new HashSet<>();
         terms.add("sirvintos");
@@ -1147,12 +1147,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         NavigationHelper nh = new NavigationHelper();
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh, null);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
         nh.setSubThemeDiscriminatorValue("subtheme1");
-        finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        finalQuery = SearchHelper.buildFinalQuery(query, false, nh,
+                null);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(4, docs.size());
     }

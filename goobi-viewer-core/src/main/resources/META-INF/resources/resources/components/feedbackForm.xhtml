@@ -14,17 +14,8 @@
 	<composite:interface />
 
     <composite:implementation>
-		<!-- reCAPTCHA API -->
-		<h:panelGroup rendered="#{configurationBean.useReCaptcha}">
-			<script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
-			<script>
-				function enableBtn() {
-				    $( '[id*="submitFeedbackBtn"]' ).attr( "disabled", false );
-				}
-            </script>
-		</h:panelGroup>
 
-		<div id="feedback" class="view-feedback">
+
 			<h:form id="feedbackForm" styleClass="form-horizontal" prependId="false">
 				<!-- NAME -->
                 <div class="form-group">
@@ -70,14 +61,6 @@
 						<h:inputTextarea id="feedbackMessage" styleClass="form-control" value="#{userBean.feedback.message}" required="true" requiredMessage="#{msg.errFeedbackMessageRequired}" />
 					</div>
 				</div>
-                <!-- RECAPTCHA -->
-				<ui:fragment rendered="#{configurationBean.useReCaptcha}">
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<div class="g-recaptcha" data-sitekey="#{configurationBean.reCaptchaSiteKey}" data-callback="enableBtn"></div>
-						</div>
-					</div>
-				</ui:fragment>
                 <!-- SECURITY QUESTION -->
                 <ui:fragment rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
                     <div class="form-group">
@@ -85,8 +68,10 @@
                             infoClass="cms-module__option-message-status success" 
                             warnClass="cms-module__option-message-status warning"
                             errorClass="cms-module__option-message-status danger" />
-                        <label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg[userBean.securityQuestion.questionKey]}:</label>
-                        <div class="col-sm-10">
+                            <label for="feedbackSecurityQuestion"  class="col-sm-2 control-label">#{msg.user__security_question}:</label>
+                        
+                        <div class="col-sm-10 composite-control">
+                        <span  class="control-label">#{msg[userBean.securityQuestion.questionKey]}:</span>
                             <h:inputSecret 
                                 id="feedbackSecurityQuestion" 
                                 styleClass="form-control" 
@@ -100,18 +85,9 @@
                 <!-- ACTION -->
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10 text-right">
-                        <!-- USE RECAPTCHA -->
-                        <ui:fragment rendered="#{configurationBean.useReCaptcha}">
-    						<h:commandButton id="submitFeedbackBtn" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
-                            <script type="text/javascript">
-                            	$( '[id*="submitFeedbackBtn"]' ).attr( "disabled", true );
-                            </script>
-                        </ui:fragment>
-						<!-- DON'T USE RECAPTCHA -->
-                        <h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+                        <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
 					</div>
 				</div>
 			</h:form>
-		</div>
 	</composite:implementation>
 </ui:composition>

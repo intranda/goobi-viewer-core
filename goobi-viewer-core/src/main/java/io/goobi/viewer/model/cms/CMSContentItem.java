@@ -135,7 +135,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         public Functionality createFunctionality(CMSContentItem item) {
             switch (this) {
                 case SOLRQUERY:
-                    return new QueryListFunctionality();
+                    return new QueryListFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
                 case TOC:
                     return new TocFunctionality(item.getTocPI());
                 case SEARCH:
