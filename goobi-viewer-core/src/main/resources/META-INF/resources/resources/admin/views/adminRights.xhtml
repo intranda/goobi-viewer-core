@@ -45,10 +45,14 @@
                                     <ui:fragment rendered="#{license.ipRange != null}">
                                         <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
                                     </ui:fragment>
+                                    
                                     <br />#{msg.admin__right_license_type}: #{msg[license.licenseType.name]}
                                     <br />#{msg.admin__right_additional_functions}:
                                     <ui:repeat var="priv" value="#{license.privileges}">
-                                        <div class="badge badge-dark">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                        <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                    </ui:repeat>
+                                    <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
+                                        <div class="badge badge-light admin__license-badge -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                     </ui:repeat>
                                     
                                     <!-- edit -->
