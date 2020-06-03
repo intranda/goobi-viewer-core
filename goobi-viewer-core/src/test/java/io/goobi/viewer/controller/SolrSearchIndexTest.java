@@ -124,7 +124,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assert.assertNotNull(doc);
         List<String> values = SolrSearchIndex.getMetadataValues(doc, SolrConstants.DATEUPDATED);
-        Assert.assertTrue(values.size() >= 6);
+        Assert.assertTrue(values.size() >= 2);
     }
 
     /**
