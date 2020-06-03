@@ -12,19 +12,18 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
-
+	<ui:param name="showSortingOptions" value="#{showSortingOptions != null ? showSortingOptions : true}"></ui:param>
     <!-- THIS INCLUDE MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
     <!-- SEARCH LIST HITS -->
     <div class="search-list__hits">
         <!-- SEARCH LIST SORTING -->
-        <h:panelGroup rendered="#{search.hitsCount > 1}">
+        <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
             <div class="search-list__sorting">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-4">
-                        <span class="search-list__label">#{msg.sortBy}:</span>
-                    </div>
-                    <div class="col-xs-12 col-sm-8">
+                    <div class="search-list__sorting__item">
+                        <div class="search-list__sorting__label">
+                        	<label for="sortSelect">#{msg.sortBy}:</label>
+                        </div>
                         <div class="custom-control custom-control--select">
                             <select id="sortSelect">
                                 <option
@@ -45,8 +44,24 @@
                             </select>
                         </div>
                     </div>
+                    <div class="search-list__sorting__item">
+                        <div class="search-list__sorting__label">
+                        	<label for="hitsPerPageSelect">#{msg.search__hits_per_page}:</label>
+                        </div>
+                        <div class="custom-control custom-control--select">
+                            <h:form>
+                             <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}" immediate="true"
+                             	onchange="$('[data-hits-per-page]').click()">
+                                 <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}"
+                                     itemLabel="#{value}" itemValue="#{value}"   onclick="$('.relaodButton').click()" />
+                             </h:selectOneMenu>
+                             <h:commandButton style="display: none" action="#{search.search()}">
+                             	<f:passThroughAttribute name="data-hits-per-page" value="reload"/>
+                             </h:commandButton>
+                            </h:form>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
             <div class="clearfix"></div>
         </h:panelGroup>
