@@ -702,7 +702,12 @@ public class License implements IPrivilegeHolder, Serializable {
     public Set<String> getAvailablePrivileges(Set<String> privileges) {
         Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
         privileges.toString();
+        // Remove existing privileges
         ret.removeAll(privileges);
+        // Remove privileges inherited from the license type
+        if (licenseType != null) {
+            ret.removeAll(licenseType.getPrivileges());
+        }
         return ret;
     }
 
