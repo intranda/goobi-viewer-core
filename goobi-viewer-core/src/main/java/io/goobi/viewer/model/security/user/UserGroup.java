@@ -411,6 +411,15 @@ public class UserGroup implements ILicensee, Serializable {
     
     /**
      * 
+     * @return true if group has members; false otherwise
+     * @throws DAOException 
+     */
+    public boolean isHasMembers() throws DAOException {
+        return getMemberCount() > 0;
+    }
+    
+    /**
+     * 
      * @return
      * @throws DAOException
      * @should count correctly

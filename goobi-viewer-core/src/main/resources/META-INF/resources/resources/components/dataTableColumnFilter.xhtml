@@ -9,6 +9,7 @@
     <!-- interface options -->
     <composite:interface>
         <composite:attribute name="filter" required="true" />
+        <composite:attribute name="key" required="false" default="empty" />
     </composite:interface>
 
     <!-- component content -->
@@ -17,12 +18,24 @@
             <div class="form-group">
                 <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
                 <div class="input-group">
-                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}" />
+                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}">
+                        <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.key]}" />
+                    </h:inputText>
                     <div class="input-group-append">
-                        <h:commandLink id="#{cc.attrs.filter.column}Btn" styleClass="btn btn--icon btn-filter">
-                            <i class="fa fa-filter" aria-hidden="true"></i>
-                            <f:ajax execute="@form" render="@form" />
-                        </h:commandLink>
+                        <!-- MESSAGE KEY GIVEN -->
+                        <ui:fragment rendered="#{cc.attrs.key != 'empty'}">
+                            <h:commandLink id="#{cc.attrs.filter.column}BtnText" styleClass="btn btn--icon btn-filter">
+                                #{msg[cc.attrs.key]}
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandLink>
+                        </ui:fragment>
+                        <!-- NO MESSAGE KEY, USE ICON INSTEAD -->
+                        <ui:fragment rendered="#{cc.attrs.key == 'empty'}">
+                            <h:commandLink id="#{cc.attrs.filter.column}BtnIcon" styleClass="btn btn--icon btn-filter">
+                                <i class="fa fa-filter" aria-hidden="true"></i>
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandLink>
+                        </ui:fragment>
                     </div>
                 </div>
             </div>

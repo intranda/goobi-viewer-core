@@ -1,0 +1,181 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRole')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminLicenseType">
+                <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
+                    <h:form id="editLicenseForm" styleClass="form-horizontal" role="form" prependId="false">
+                        <h2 class="admin__content-inner-title">
+                            <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
+                            <h:outputText value="#{msg.admin__right_edit}"
+                                rendered="#{adminBean.currentLicenseType.id != null}" />
+                        </h2>
+
+                        <div id="adminLicenseWrapper" class="admin__content-inner-content">
+                        
+                            <h3>#{msg.general}</h3>
+                            <div class="admin__default-block">
+                            <div class="form-group">
+                                <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
+                                <div class="col-sm-8">
+                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                    <h:selectOneMenu value="#{adminBean.currentLicense.type}"
+                                        immediate="true" disabled="#{adminBean.currentLicense.id != null}">
+                                        <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
+                                        <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
+                                        <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
+                                        <f:selectItem itemLabel="#{msg.ipRange}" itemValue="iprange" />
+                                        <f:ajax render="licenseeGroup infoGroup licenseTypeGroup" />
+                                        <!-- Reset all set licensee values so that the lower menus are reset as well -->
+                                        <f:ajax listener="#{adminBean.currentLicense.setUser(null)}" />
+                                        <f:ajax listener="#{adminBean.currentLicense.setUserGroup(null)}" />
+                                        <f:ajax listener="#{adminBean.currentLicense.setIpRange(null)}" />
+                                    </h:selectOneMenu>
+                                    <h:panelGroup id="licenseeGroup">
+                                        <br />
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
+                                            value="#{adminBean.currentLicense.user}"
+                                            immediate="true" converter="userConverter" disabled="#{adminBean.currentLicense.id != null}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
+                                            <f:ajax render="licenseTypeGroup infoGroup" />
+                                        </h:selectOneMenu>
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
+                                            value="#{adminBean.currentLicense.userGroup}"
+                                            immediate="true" converter="userGroupConverter" disabled="#{adminBean.currentLicense.id != null}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems value="#{adminBean.allUserGroups}" />
+                                            <f:ajax render="licenseTypeGroup infoGroup" />
+                                        </h:selectOneMenu>
+                                        <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
+                                            value="#{adminBean.currentLicense.ipRange}"
+                                            immediate="true" converter="ipRangeConverter" disabled="#{adminBean.currentLicense.id != null}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
+                                            <f:ajax render="licenseTypeGroup infoGroup" />
+                                        </h:selectOneMenu>
+                                    </h:panelGroup>
+                                    <h:panelGroup id="licenseTypeGroup">
+                                        <br />
+                                        <h:selectOneMenu
+                                            rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
+                                            value="#{adminBean.currentLicense.licenseType}" immediate="true" converter="licenseTypeConverter"
+                                                disabled="#{adminBean.currentLicense.id != null}">
+                                            <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
+                                            <f:ajax render="infoGroup functionsGroup" />
+                                        </h:selectOneMenu>
+                                    </h:panelGroup>
+  
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <!-- TODO this should refresh and display after a license type has been selected -->
+                            <h:panelGroup id="infoGroup" rendered="#{adminBean.currentLicense.licenseType != null}">
+                                <h3>#{msg.information}</h3>
+                                <div class="admin__default-block">
+                                    <div class="form-group form-row">
+                                        <div>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.name} (#{adminBean.currentLicense.ipRange.subnetMask})</h:outputText>
+                                        </div>
+                                        <div>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
+                                            <h:outputText
+                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row">
+                                        <div>
+                                            <h:outputText>#{adminBean.currentLicense.licenseType.name}</h:outputText>
+                                        </div>
+                                        <div>
+                                            <h:outputText>#{adminBean.currentLicense.licenseType.description}</h:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                            
+                             <!-- TODO this should refresh and display after a license type has been selected -->
+                            <h:panelGroup id="functionsGroup" rendered="#{adminBean.currentLicense.licenseType != null}">
+                            <h3>#{msg.admin__license_functions}</h3>
+                            <div class="admin__default-block">        
+                                <div class="admin__license-functions">
+                                    <div class="form-group form-row">
+                                        <div class="col-5">#{msg.admin__license_functions_added}</div>
+                                        <div class="col-1"></div>
+                                        <div class="col-5">#{msg.admin__license_functions_available}</div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean"
+                                                data-toggle="helptext">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row">
+                                        <div class="col-5 admin__license-functions-added">
+                                            <ui:repeat var="priv"
+                                                value="#{adminBean.currentLicense.privilegesCopy}">
+                                                <h:commandLink styleClass="admin__license-action"
+                                                    action="#{adminBean.currentLicense.removePrivilege(priv)}"
+                                                    title="#{msg.remove}">
+                                                    <div class="badge badge-success admin__license-badge">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- remove button -->
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+                                        <div class="col-1"></div>
+                                        <div class="col-5 admin__license-functions-available">
+                                            <ui:repeat var="priv"
+                                                value="#{adminBean.currentLicense.availablePrivileges}">
+                                                <h:commandLink styleClass="admin__license-action"
+                                                    action="#{adminBean.currentLicense.addPrivilege(priv)}"
+                                                    title="#{msg.add}">
+                                                    <div class="badge badge-dark admin__license-badge">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        <!-- add button -->
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    </div>
+                                                </h:commandLink>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </h:panelGroup>
+
+                            <div class="text-right">
+                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                                <h:commandLink action="#{adminBean.saveCurrentLicenseAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
+
+</ui:composition>

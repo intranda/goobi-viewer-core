@@ -16,6 +16,10 @@
 		}
 		&:focus {}
 	}
+	.-light {
+		color: #a9a9a9;
+		cursor: default;
+	}
 	.-redlink {
 		color: @red;
 		&:hover {
@@ -25,6 +29,87 @@
 			color: @red;
 		}
 		&:focus {}
+	}
+	.-textlink {
+		color: initial;
+		text-decoration: none;
+		cursor: pointer;
+		&:hover {
+			color: initial;
+			text-decoration: none;
+			cursor: pointer;
+		}
+		&:active {
+			color: initial;
+			text-decoration: none;
+			cursor: pointer;
+		}
+		&:focus {}
+	}
+	&__default-block {
+		margin-bottom: 3rem;
+		padding: 2rem;
+		background-color: #fff;
+		border: 1px solid @middlegray;
+		&.-danger {
+			border-top: 5px solid rgba(255, 2, 2, 0.3);
+		}
+		&.-warning {
+			border-top: 5px solid rgba(243, 208, 70, 0.85);
+		}		
+	}
+	&__final-actions {
+		margin-top: -1rem;
+	}
+	&__entry-list {
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		&::after {
+		    content: '';
+		    flex: 0 0 calc(33.3333% - 2rem);
+		    width: calc(33.3333% - 2rem);
+		    max-width: calc(33.3333% - 2rem);
+		}
+	}
+	&__boxed-entry {
+		background: @white;
+		padding: 2rem;
+		padding-bottom: 3.5rem;
+		margin-bottom: 2rem;
+		transition: background 0.2s ease;
+		border: 1px solid @middlegray;
+		position: relative;
+		&:hover {
+			//background: @lightgray2;
+			box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+			.admin__boxed-entry-actions {
+				visibility: visible;
+			}
+			
+		}
+		&.-w33 {
+			flex: 0 0 calc(33.3333% - 1.5rem);
+			width: calc(33.3333% - 1.5rem);
+			max-width: calc(33.3333% - 1.5rem);
+		}
+		&.-w50 {
+			flex: 0 0 calc(50% - 1rem);
+			width: calc(50% - 1rem);
+			max-width: calc(50% - 1rem);
+		}
+		&-actions {
+			visibility: hidden;
+			position: absolute;
+			bottom: 1.5rem;
+			left: 2rem;
+			a {
+				font-size: 1.4rem;
+			}
+			a:first-of-type {
+				padding-right: 1.4rem;
+			}
+		}
 	}
 	&__title-bar {
 		display: flex;
@@ -44,7 +129,7 @@
 	}
 	&__label-required-field {
 		padding-left: 0.5rem;
-		color: @middlegray;
+		//color: @middlegray;
 		font-size: 1.2rem;
 	}
 	&__user-table-tools {
@@ -81,7 +166,7 @@
 			color: #555;
 			text-align: center;
 			background-color: #eee;
-			border: 1px solid #ccc;
+			border: 1px solid @middlegray;
 			border-radius: 4px;
 			display: flex;
 			font-size: 1.6rem;
@@ -92,6 +177,7 @@
 	&__user-table-content {
 		background: @white;
 		padding: 0 2rem 0rem 2rem;
+		border: 1px solid @middlegray;
 	}
 	&__user-table-title {
 		margin-bottom: 0rem;
@@ -110,7 +196,7 @@
 		&:hover {
 		    background: @lightgray2;
 		    .admin__user-table-edit-user {
-		    	opacity: 1;
+		    	visibility: visible;
 		    }
 		}
 	}
@@ -132,8 +218,8 @@
 		font-size: 1.8rem;
 	}	
 	&__user-table-edit-user {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		visibility: hidden;
+		font-size: 1.4rem;
 	}
 	&__user-table-email {
 		font-style: italic;
@@ -148,79 +234,78 @@
 	}
 	&__user-icon {
 		margin-right: 1.5rem;
+		width: 80px;
+		padding: 4px;
 	}
-	
-	
-	&__form-help-icon {
-	}
-	
-	
 	&__group-content {
 	}
-	&__group-entry {
-		background: @white;
-		padding: 1.5rem;
-		margin-bottom: 2rem;
-		transition: background 0.2s ease;
-		border: 1px solid @middlegray;
-		&:hover {
-			//background: @lightgray2;
-			box-shadow: 0 0 3px rgb(51,101,169);
-			.admin__group-actions {
-				opacity: 1;
-			}
-		}
-		
-	}
 	&__group-actions {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		visibility: hidden;
 	}
 	&__group-description {
 		margin-bottom: 3rem;
-	}
-	&__group-delete {
-		padding-right: 2rem;
-	}
-	&__group-edit {
 	}
 	&__group-member-entry {
 		transition: background 0.2s ease;
 		padding: 0.4rem 0;
 		&:hover {
 			background: @lightgray2;
-			.admin__group-member-delete {
-				opacity: 1;
+			.admin__group-member-delete-hint {
+				visibility: visible;
 			}
 		}
 	}
 	&__group-member-delete {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		&:hover {
+			text-decoration: none;
+		}
 	}
-	
-	&__ip-range-entry {
-	    background: #fff;
-	    padding: 1.5rem;
-	    margin-bottom: 2rem;
-	    transition: background .2s ease;
-	    &:hover {
-	    	background: @lightgray2;
-	    	.admin__ip-range-actions {
-	    		opacity: 1;
-	    	}
-	    }
+	&__group-member-delete-hint {
+		visibility: hidden;
+	}
+	&__group-member-name {
+		color: #212529;
 	}
 	&__ip-range-actions {
-		opacity: 0;
-		transition: opacity 0.2s ease;
+		visibility: hidden;
 	}
-	&__ip-range-delete {
-		padding-right: 2rem;
+	&__license-action {
+		i {
+			color: @white;
+		}
+		&:hover {
+			text-decoration: none;
+		}
 	}
-	
-}
+	&__license-badge {
+		padding: 0.5rem;
+	}
+	&__license-functions-added {
+		.admin__license-badge {
+			background: #008a00;
+			&:hover {
+				background: lighten(#008a00, 6%);	
+			}
+		}
+	}
+	&__license-functions-available {
+		.admin__license-badge {
+			background: #343a40;
+			&:hover {
+				background: lighten(#343a40, 15%);	
+			}
+		}
+	}	
+	&__license-unconfigured-entry {
+		transition: background 0.2s ease;
+		padding: 0.4rem 0;
+		&:hover {
+			background: @lightgray2;
+			text-decoration: none;
+		}
+	}
 
+}
 
 
 .admin {
@@ -238,7 +323,11 @@
 	&__form-input {
 		flex-grow: 1;
 	}
-	&__form-help-icon {}
+	&__form-help-icon {
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+	}
 	&__form-checkbox {}
 	&__form-help-text {
 		display: none;
@@ -250,21 +339,14 @@
 			display: inline-block;
 		}
 	}
-	&__default-block {
-		margin-bottom: 1.5rem;
-		padding: 2rem;
-		background-color: #fff;
-		border: 1px solid @middlegray;
-		&.-danger {
-			border-top: 5px solid rgba(255, 2, 2, 0.3);
-		}
-		&.-warning {
-			border-top: 5px solid rgba(243, 208, 70, 0.85);
-		}		
-	}
-	
+
+
+
+
+
 	.mx-clearfloats;
 	position: relative;
+	font-size: 1.4rem;
 	button.btn {
 		&:active, 
 		&:focus, 
@@ -360,7 +442,7 @@
 		}
 	}
 	&__content-background {
-		background-color: @neutralgray;
+		background-color: @neutralgray2;
 		position: fixed;
 		top: 0;
 		bottom: -120px;
@@ -615,6 +697,50 @@
 }
 
 
+/* visual connection radio buttons test */
+
+.connected-top {
+    background-image: url(../../images/backend/radio_choice_top.svg);
+    background-repeat: no-repeat;
+    background-size: 54px 1254px;
+    padding-left: 74px;
+    padding-top: 10px;
+    margin-bottom: 3px;
+    background-position: 0% top;
+    padding-bottom: 10px;
+}
+
+.connected-bottom {
+    padding-left: 75px;
+    background-repeat: no-repeat;
+    background-image: url(../../images/backend/radio_choice_bottom.svg);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-position: 0% top;
+    background-size: 53px 100px;
+}
+
+input[type="radio"]:checked+label {
+    font-weight: bold;
+}
+
+
+.connected::after {
+    content: "";
+    background-color: #000;
+    position: absolute;
+    width: 3px;
+    height: 13px;
+    top: 17px;
+    left: 5px;
+    display: block;
+    z-index: 0;
+}
+
+
+
+
+
 /* USER TABLE FADE IN ANIMATION TEST */
 
 .delay-animation(@items, @delay) {
@@ -629,33 +755,32 @@
   }
 }
 
+/* 
 @keyframes fadein {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
+@keyframes fadeinall {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .admin__user-table-content .admin__user-table-entry { 
+	animation: fadeinall 0.3s ease-in 0s 1 forwards;
+	opacity: 0;
+}
+
+.admin__boxed-entry { 
 	animation: fadein 0.2s ease-in 0s 1 forwards;
 	opacity: 0;
     .delay-animation(@numitems, @delay);
 }
-
-.admin__group-entry { 
-	animation: fadein 0.2s ease-in 0s 1 forwards;
-	opacity: 0;
-    .delay-animation(@numitems, @delay);
-}
-
-.admin__ip-range-entry { 
-	animation: fadein 0.2s ease-in 0s 1 forwards;
-	opacity: 0;
-    .delay-animation(@numitems, @delay);
-}
-
-
 
 @numitems: 16;
-@delay: 0.03;
+@delay: 0.04;
+
+*/
 
 /* USER TABLE FADE IN ANIMATION TEST EOL */
 

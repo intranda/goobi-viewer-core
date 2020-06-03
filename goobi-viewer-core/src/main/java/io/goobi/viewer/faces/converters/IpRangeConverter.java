@@ -22,24 +22,22 @@ import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.IpRange;
 
 /**
  * <p>
  * UserConverter class.
  * </p>
  */
-@FacesConverter("userConverter")
-public class UserConverter implements Converter<User> {
+@FacesConverter("ipRangeConverter")
+public class IpRangeConverter implements Converter<IpRange> {
 
     /** {@inheritDoc} */
     @Override
-    public final User getAsObject(final FacesContext context, final UIComponent component, final String value) {
+    public final IpRange getAsObject(final FacesContext context, final UIComponent component, final String value) {
+        long id = Long.valueOf(value);
         try {
-            long id = Long.valueOf(value);
-            return DataManager.getInstance().getDao().getUser(id);
-        } catch (NumberFormatException e) {
-            return null;
+            return DataManager.getInstance().getDao().getIpRange(id);
         } catch (DAOException e) {
             return null;
         }
@@ -47,7 +45,7 @@ public class UserConverter implements Converter<User> {
 
     /** {@inheritDoc} */
     @Override
-    public final String getAsString(final FacesContext context, final UIComponent component, final User object) {
+    public final String getAsString(final FacesContext context, final UIComponent component, final IpRange object) {
         if (object == null) {
             return null;
         }

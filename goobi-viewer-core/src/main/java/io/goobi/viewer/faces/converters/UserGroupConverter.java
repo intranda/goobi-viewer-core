@@ -22,22 +22,22 @@ import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
  * UserConverter class.
  * </p>
  */
-@FacesConverter("userConverter")
-public class UserConverter implements Converter<User> {
+@FacesConverter("userGroupConverter")
+public class UserGroupConverter implements Converter<UserGroup> {
 
     /** {@inheritDoc} */
     @Override
-    public final User getAsObject(final FacesContext context, final UIComponent component, final String value) {
+    public final UserGroup getAsObject(final FacesContext context, final UIComponent component, final String value) {
         try {
             long id = Long.valueOf(value);
-            return DataManager.getInstance().getDao().getUser(id);
+            return DataManager.getInstance().getDao().getUserGroup(id);
         } catch (NumberFormatException e) {
             return null;
         } catch (DAOException e) {
@@ -47,7 +47,7 @@ public class UserConverter implements Converter<User> {
 
     /** {@inheritDoc} */
     @Override
-    public final String getAsString(final FacesContext context, final UIComponent component, final User object) {
+    public final String getAsString(final FacesContext context, final UIComponent component, final UserGroup object) {
         if (object == null) {
             return null;
         }

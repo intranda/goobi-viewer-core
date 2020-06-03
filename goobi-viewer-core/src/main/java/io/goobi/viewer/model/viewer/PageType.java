@@ -56,14 +56,17 @@ public enum PageType {
     //admin
     admin("admin"),
     adminAllUsers("admin/users"),
-    adminUser("admin/user"),
+    adminUser("admin/users"),
+    adminUserNew("admin/users/new"),
     adminAllUserGroups("admin/groups"),
-    adminUserGroup("admin/group"),
-    adminIpRanges("admin/networks"),
-    adminIpRange("admin/network"),
+    adminUserGroup("admin/groups"),
+    adminUserGroupNew("/admin/groups/new"),
+    adminIpRanges("admin/ipranges"),
+    adminIpRange("admin/ipranges"),
+    adminIpRangeNew("admin/ipranges/new"),
     adminAllLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
-    adminRoles("admin/roles"),
+    adminRights("admin/rights"),
     adminUserComments("admin/comments"),
     adminCreateRecord("admin/record/new"),
     //admin/cms
@@ -79,6 +82,7 @@ public enum PageType {
     adminCmsEditCollection("admin/cms/collections/edit"),
     adminCmsGeoMaps("admin/cms/maps"),
     adminCmsGeoMapEdit("admin/cms/maps/edit"),
+    adminCmsGeoMapNew("admin/cms/maps/new"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
@@ -406,7 +410,7 @@ public enum PageType {
             case adminIpRange:
             case adminIpRanges:
             case adminLicenseType:
-            case adminRoles:
+            case adminRights:
             case adminUser:
             case adminUserActivity:
             case adminUserComments:

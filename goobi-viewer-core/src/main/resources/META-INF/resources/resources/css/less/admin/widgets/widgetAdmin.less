@@ -7,8 +7,8 @@
 .admin-widget {
     margin-bottom: 20px;
     /* ELEMENT */
-    h3 {
-    	margin-right: -15px;
+    &__header { 
+    	margin-right: -15px; 
     	margin-left: -15px;
     	padding-top: 0;
     	padding-right: 15px;
@@ -45,9 +45,6 @@
     	}
     	&:hover {
     		background-color: @hoverblue;
-    		&:after {
-    			display: none;
-    		}
     	}
     	&.spacer {
     		margin-bottom: 10px;
@@ -65,6 +62,8 @@
     }
 }
 
+
+
 /* test */
 
 .admin-widget {
@@ -75,27 +74,22 @@
 .admin-widget ul {
 }
 
-.admin-widget h3 {
+.admin-widget__header {
     margin-right: -15px;
     margin-left: -15px;
-    padding-top: 0;
-    padding-right: 15px;
-    padding-bottom: 5px;
-    padding-left: 15px;
     color: #fff;
     border-bottom: none;
-    padding: 1.3rem 1.5rem;
+    padding: 2rem 1.5rem 0.5rem 1.5rem;
     font-weight: 400;
     letter-spacing: 0.00rem;
     text-transform: uppercase;
     margin-bottom: 0;
+    font-size: 1.4rem;
 
 }
 
 
 .admin-widget li {
-   padding-top: 0.3rem;
-   padding-bottom: 0.3rem;
    transition: all 0.2s ease;
    padding-left: 2.5rem;
    

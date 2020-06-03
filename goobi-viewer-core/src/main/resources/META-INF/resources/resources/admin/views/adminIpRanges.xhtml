@@ -11,7 +11,6 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminIpRanges')}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentIpRangeAction}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>
 
@@ -19,80 +18,70 @@
         <f:view contentType="text/html" encoding="utf-8">            
             <div id="adminIpRanges">
                 <h:panelGroup rendered="#{userBean.admin}">
-                	<h:form id="adminIpRangesForm" prependId="false">
-		                <div class="admin__title-bar">
-		               	    <!-- HEADING --> 
-		                    <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
-		                    <!-- CREATE NEW IP RANGE BUTTON --> 
-							<h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.admin__ip_range_new}" styleClass="btn btn--default admin__title-bar-action" />                                  
-						</div>
+                    <h:form id="adminIpRangesForm" prependId="false">
+                        <div class="admin__title-bar">
+                            <!-- HEADING --> 
+                            <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
+                            <!-- CREATE NEW IP RANGE BUTTON --> 
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRangeNew')}/" styleClass="btn btn--default admin__title-bar-action">
+                                <span>#{msg.add}</span>
+                            </h:outputLink>
+                        </div>
 
-                    	<div class="admin__content-inner-content">
-							<!-- IP RANGE INFO TEXT -->
+                        <div class="admin__content-inner-content">
+                            <!-- IP RANGE INFO TEXT -->
                             <p class="admin__ip-range-info-text">
                                 <h:outputText value="#{msg.admin__ip_ranges_description_text}" escape="false" />
                             </p>
                             
-                            <!--  INDIVIDUAL IP RANGES -->
-                            <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
-                            <div class="admin__ip-range-entry">
-                                    
-                                    <div class="row">
-                                        <h3 class="col-12">#{ipRange.name}</h3>
-                                    </div>
-                                    <!-- IP RANGE DESCRIPTION -->
-                                    <ui:fragment rendered="#{ipRange.description != ''}">
-	                                    <div class="row mb-2">
-	                                    	<p class="col-12 admin__ip-range-description">#{ipRange.description}</p>
-	                                    </div>
-                                    </ui:fragment>
-                                    <!-- IP RANGE SUBNET MASK -->
-                                    <div class="row mb-2">
-                                    	<div class="col-12 admin__ip-range-range">#{msg.ipRange}: #{ipRange.subnetMask}</div>
-									</div>
-									
-									<!-- IP RANGE ACTIONS -->
-									<div class="row justify-content-end admin__ip-range-actions">
-										<div class="col-3 d-flex justify-content-end admin__ip-range-actions">
-                                    	<!-- DELETE IP RANGE -->
+                            <div class="admin__entry-list">
+                                <!--  INDIVIDUAL IP RANGES -->
+                                <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
+                                    <div class="admin__boxed-entry -w33">
+                                        <div class="row">
+                                            <h3 class="col-12">#{ipRange.name}</h3>
+                                        </div>
+                                        <!-- IP RANGE DESCRIPTION -->
+                                        <ui:fragment rendered="#{ipRange.description != ''}">
+                                            <div class="row mb-2">
+                                                <p class="col-12 admin__ip-range-description">#{ipRange.description}</p>
+                                            </div>
+                                        </ui:fragment>
+                                        <!-- IP RANGE SUBNET MASK -->
+                                        <div class="row mb-2">
+                                            <div class="col-12 admin__ip-range-range">#{msg.ipRange}: #{ipRange.subnetMask}</div>
+                                        </div>
+                                        
+                                        <!-- IP RANGE ACTIONS -->
+                                        <div class="row justify-content-end admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex justify-content-end">
+                                                <h:outputLink
+                                                    styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
+                                                    value="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/">
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{ipRange.name}" />
+                                                    #{msg.edit}
+                                                </h:outputLink>
+
+                                                <!-- DELETE IP RANGE -->
                                                 <h:commandLink
-                                                    styleClass="btn btn--icon admin__ip-range-delete -redlink" 
+                                                    styleClass="admin__boxed-entry-actions-delete -redlink" 
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
                                                     action="adminIpRanges" 
                                                     actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
                                                     title="#{msg.delete}">
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{ipRange.name}" />
                                                     #{msg.delete}
                                                 </h:commandLink>
-                                        <!-- EDIT IP RANGE -->
-                                                <h:commandLink styleClass="btn btn--icon admin__ip-range-edit -bluelink" action="pretty:adminIpRange" title="#{msg.edit}">
-                                                    <f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" />
-                                                    #{msg.edit}
-                                                </h:commandLink> 
-                                    	</div>            
-                                   </div>           
-                                                
+                                            </div>            
+                                        </div>           
+                                    </div>
+                                </ui:repeat>
                             </div>
-                            </ui:repeat>
-                            
-
-                    </div>
-                </h:form>
+                        </div>
+                    </h:form>
                 </h:panelGroup>
-
-                </div>
-
-			<script type="text/javascript">
-			    var dataTableConfig = {
-	                dataTablePaginator: "#dataTablePaginator",
-	                txtField1: "#txtMoveTo1",
-	                txtField2: "#txtMoveTo2",
-	                totalCount: "#totalCount",
-	                reloadBtn: 'input[id*="cmdMoveTo"]',
-	            };   
-	        
-	            viewerJS.dataTable.init( dataTableConfig );
-            </script>
-		</f:view>
+            </div>
+        </f:view>
     </ui:define>
 
 </ui:composition>

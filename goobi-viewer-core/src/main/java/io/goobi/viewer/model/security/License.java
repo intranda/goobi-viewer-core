@@ -17,6 +17,7 @@ package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +164,12 @@ public class License implements IPrivilegeHolder, Serializable {
             inverseJoinColumns = @JoinColumn(name = "campaign_id"))
     private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
 
+    @Transient
+    private String type;
+
+    @Transient
+    private Set<String> privilegesCopy = new HashSet<>();
+
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
      * license's start and and dates.
@@ -172,6 +180,26 @@ public class License implements IPrivilegeHolder, Serializable {
     public boolean isValid() {
         Date now = new Date();
         return (start == null || start.before(now)) && (end == null || end.after(now));
+    }
+
+    /**
+     * Adds the given privilege to the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean addPrivilege(String privilege) {
+        return privilegesCopy.add(privilege);
+    }
+
+    /**
+     * Removes the given privilege from the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean removePrivilege(String privilege) {
+        return privilegesCopy.remove(privilege);
     }
 
     /** {@inheritDoc} */
@@ -658,6 +686,27 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * Returns the list of available privileges for adding to this license (using the working copy while editing).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public Set<String> getAvailablePrivileges() {
+        return getAvailablePrivileges(privilegesCopy);
+    }
+
+    /**
+     * Returns the list of available privileges for adding to this license (using the given privileges list).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public Set<String> getAvailablePrivileges(Set<String> privileges) {
+        Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        privileges.toString();
+        ret.removeAll(privileges);
+        return ret;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>id</code>.
      * </p>
@@ -699,7 +748,6 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
-        logger.trace("setLicenseType: {}", licenseType.getName());
     }
 
     /**
@@ -719,9 +767,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param user the user to set
+     * @should set userGroup and ipRange to null if user not null
+     * @should not set userGroup and ipRange to null if user null
      */
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.userGroup = null;
+            this.ipRange = null;
+        }
     }
 
     /**
@@ -741,9 +795,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param userGroup the userGroup to set
+     * @should set user and ipRange to null if userGroup not null
+     * @should not set user and ipRange to null if userGroup null
      */
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
+        if (userGroup != null) {
+            this.user = null;
+            this.ipRange = null;
+        }
     }
 
     /**
@@ -763,9 +823,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param ipRange the ipRange to set
+     * @should set user and userGroup to null if ipRange not null
+     * @should not set user and userGroup to null if ipRange null
      */
     public void setIpRange(IpRange ipRange) {
         this.ipRange = ipRange;
+        if (ipRange != null) {
+            this.user = null;
+            this.userGroup = null;
+        }
     }
 
     /**
@@ -964,5 +1030,33 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
         this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the privilegesCopy
+     */
+    public Set<String> getPrivilegesCopy() {
+        return privilegesCopy;
+    }
+
+    /**
+     * @param privilegesCopy the privilegesCopy to set
+     */
+    public void setPrivilegesCopy(Set<String> privilegesCopy) {
+        this.privilegesCopy = privilegesCopy;
     }
 }

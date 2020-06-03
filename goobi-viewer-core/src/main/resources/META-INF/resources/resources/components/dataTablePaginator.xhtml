@@ -1,4 +1,4 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -19,12 +19,14 @@
             <ul>
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveFirst}" disabled="#{cc.attrs.tableValues.firstPage}">
+                        <f:passThroughAttribute name="aria-label" value="first page" />
                         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
                     </h:commandLink>
                 </li>
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMovePrevious}" disabled="#{cc.attrs.tableValues.firstPage}">
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <f:passThroughAttribute name="aria-label" value="previous page" />
                         <h:outputText value=" #{msgs.pagePrevious}" />
                     </h:commandLink>
                 </li>
@@ -39,17 +41,19 @@
                     <span id="totalCount" class="data-table-paginator__total-count">
                         #{msg.of} #{cc.attrs.tableValues.pageNumberLast}
                     </span>
-                    
-                    <!-- GO TO PAGE --> 
+
+                    <!-- GO TO PAGE -->
                     <h:commandButton action="#{navigationHelper.reload()}" id="cmdMoveTo" class="btn btn--clean" />
                 </li>
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveNext}" disabled="#{cc.attrs.tableValues.lastPage}">
+                        <f:passThroughAttribute name="aria-label" value="next page" />
                         <i class="fa fa-angle-right" aria-hidden="true"></i>
                     </h:commandLink>
                 </li>
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveLast}" disabled="#{cc.attrs.tableValues.lastPage}">
+                        <f:passThroughAttribute name="aria-label" value="last page" />
                         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                     </h:commandLink>
                 </li>

@@ -41,6 +41,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -730,6 +731,29 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException;
+
+    // License
+
+    /**
+     * <p>
+     * getAllLicenses.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<License> getAllLicenses() throws DAOException;
+
+    /**
+     * <p>
+     * getLicense.
+     * </p>
+     *
+     * @param id a long.
+     * @return a {@link io.goobi.viewer.model.security.getLicense} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public License getLicense(Long id) throws DAOException;
 
     // IpRange
 

@@ -11,7 +11,6 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCreatePage')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
             <f:event type="preRenderView" listener="#{cmsBean.loadTemplates()}" />
         </f:metadata>
     </ui:define>
@@ -19,7 +18,7 @@
     <ui:define name="content">
         <h:panelGroup id="cmsSelectTemplateAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <div id="cmsSelectTemplate" class="cms-select-template">
-                    <h2 class="admin__content-inner-title">#{msg.cms_createPage} - #{msg.cms_selectTemplate}</h2>
+                    <h2 class="admin__content-inner-title">#{msg.cms_createPage}</h2>
                     
                     <div class="admin__content-inner-content">
                         <div id="cmsSelectTemplateWrapper" class="cms-select-template__wrapper">
@@ -27,28 +26,22 @@
                                 <ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}" var="template">
                                     <div class="row no-margin">
                                         <!-- TEMPLATE -->
-                                        <div class="cms-select-template__template">
-                                            <div class="col-12 col-sm-12 col-md-2">
-                                                <!-- ICON -->
-                                                <div class="cms-select-template__image">
-                                                    <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}" src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-fluid" />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-12 col-md-10">
-                                                <!-- DESCRIPTION -->
-                                                <div class="cms-select-template__description">
-                                                    <h3>#{msg[template.name]}</h3>
-                                                    <p>#{msg[template.description]}</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 no-padding">
-                                                <div class="col-2 no-padding">
-                                                    <!-- THEME TEMPLATE MARKER -->
-                                                    <ui:fragment rendered="#{template.themeTemplate}">
-                                                        <div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
-                                                    </ui:fragment>
-                                                </div>
-                                                <div class="col-10">
+                                        <div class="col-12 cms-select-template__template">
+	                                    <div class="row">
+	                                        <div class="col-12 col-sm-12 col-md-1">
+	                                            <!-- ICON -->
+	                                            <div class="cms-select-template__image">
+	                                                <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}" src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-fluid" />
+	                                            </div>
+	                                        </div>
+	                                        <div class="col-12 col-sm-12 col-md-9">
+	                                            <!-- DESCRIPTION -->
+	                                            <div class="cms-select-template__description">
+	                                                <h3>#{msg[template.name]}</h3>
+	                                                <p>#{msg[template.description]}</p>
+	                                            </div>
+	                                        </div>
+                                                <div class="col-2">
                                                     <!-- ACTION -->
                                                     <div class="cms-select-template__action">
                                                         <h:commandLink action="pretty:adminCmsCreatePage" value="#{msg.cms_createPageWithTemplate}"
@@ -57,6 +50,10 @@
                                                             <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
                                                         </h:commandLink>
                                                     </div>
+                                                    <!-- THEME TEMPLATE MARKER -->
+                                                    <ui:fragment rendered="#{template.themeTemplate}">
+                                                        <div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
+                                                    </ui:fragment>
                                                 </div>
                                             </div>
                                         </div>
@@ -69,10 +66,4 @@
         </h:panelGroup>
     </ui:define>
 
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-        <adminWidget:widget_cms />
-    </ui:define>
 </ui:composition>

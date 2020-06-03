@@ -421,13 +421,22 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * Returns the list of available privileges for adding to this license.
+     * Returns the list of available privileges for adding to this license (using the working copy while editing).
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
     public Set<String> getAvailablePrivileges() {
+        return getAvailablePrivileges(privilegesCopy);
+    }
+    
+    /**
+     * Returns the list of available privileges for adding to this license (using the given privileges list).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public Set<String> getAvailablePrivileges(Set<String> privileges) {
         Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
-        ret.removeAll(privilegesCopy);
+        ret.removeAll(privileges);
         return ret;
     }
 
@@ -443,18 +452,20 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
+     * Adds the given privilege to the working set.
      * 
      * @param privilege
-     * @return
+     * @return true if successful; false otherwise
      */
     public boolean addPrivilege(String privilege) {
         return privilegesCopy.add(privilege);
     }
 
     /**
+     * Removes the given privilege from the working set.
      * 
      * @param privilege
-     * @return
+     * @return true if successful; false otherwise
      */
     public boolean removePrivilege(String privilege) {
         return privilegesCopy.remove(privilege);
