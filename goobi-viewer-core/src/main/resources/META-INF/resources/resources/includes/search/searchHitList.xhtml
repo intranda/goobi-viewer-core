@@ -21,9 +21,9 @@
         <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
             <div class="search-list__sorting">
                     <div class="search-list__sorting__item">
-                        <span class="search-list__label">#{msg.sortBy}:</span>
-                    </div>
-                    <div class="search-list__sorting__item">
+                        <div class="search-list__sorting__label">
+                        	<label for="sortSelect">#{msg.sortBy}:</label>
+                        </div>
                         <div class="custom-control custom-control--select">
                             <select id="sortSelect">
                                 <option
@@ -45,9 +45,9 @@
                         </div>
                     </div>
                     <div class="search-list__sorting__item">
-                        <span class="search-list__label">#{msg.search__hits_per_page}:</span>
-                    </div>
-                    <div class="search-list__sorting__item">
+                        <div class="search-list__sorting__label">
+                        	<label for="hitsPerPageSelect">#{msg.search__hits_per_page}:</label>
+                        </div>
                         <div class="custom-control custom-control--select">
                             <h:form>
                              <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}" immediate="true"
@@ -61,7 +61,7 @@
                             </h:form>
                         </div>
                     </div>
-            </div>
+                </div>
 
             <div class="clearfix"></div>
         </h:panelGroup>

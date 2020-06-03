@@ -169,12 +169,22 @@
     /* SORTING */
     &__sorting {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         margin-bottom: 20px;
         &__item {
-        	padding-left: 20px;
+        	display: grid;
+        	grid-template-columns: auto auto;
+        	grid-column-gap: 20px;
+        	align-items: center;
         	form {
         		height: 100%;
+        	}
+        }
+        &__label {
+        	label {        		
+	        	white-space: nowrap;
+	        	font-weight: normal;
+	        	margin: 0;
         	}
         }
     }
