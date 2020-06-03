@@ -282,7 +282,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return a {@link java.lang.String} object.
      */
     public String getDisplayName() {
-        if (StringUtils.isNotEmpty(nickName)) {
+        if (StringUtils.isNotBlank(nickName)) {
             return nickName;
         }
         if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {

@@ -351,19 +351,20 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
      *
      * @see io.goobi.viewer.dao.IDAO#getUserByNickname(java.lang.String)
+     * @should return null if nickname empty
      */
-    /** {@inheritDoc} */
     @Override
     public User getUserByNickname(String nickname) throws DAOException {
+        if (StringUtils.isBlank(nickname)) {
+            return null;
+        }
+        
         preQuery();
         Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
-        if (nickname != null) {
-            q.setParameter("nickname", nickname.trim().toUpperCase());
-        }
+        q.setParameter("nickname", nickname.trim().toUpperCase());
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         try {
             User o = (User) q.getSingleResult();
@@ -384,7 +385,6 @@ public class JPADAO implements IDAO {
      *
      * @see io.goobi.viewer.dao.IDAO#addUser(io.goobi.viewer.model.user.User)
      */
-    /** {@inheritDoc} */
     @Override
     public boolean addUser(User user) throws DAOException {
         preQuery();
@@ -1367,7 +1367,6 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAllLicenses()

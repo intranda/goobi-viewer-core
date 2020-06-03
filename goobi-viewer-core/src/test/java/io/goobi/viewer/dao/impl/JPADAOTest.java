@@ -2483,8 +2483,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             // User should no longer be among the reviewers
             Assert.assertFalse(campaign.getStatistics().get("PI 1").getReviewers().contains(user));
         }
-        
+
         int comments = DataManager.getInstance().getDao().deleteComments(null, user);
         UserTools.deleteUser(user);
+    }
+
+    /**
+     * @see JPADAO#getUserByNickname(String)
+     * @verifies return null if nickname empty
+     */
+    @Test
+    public void getUserByNickname_shouldReturnNullIfNicknameEmpty() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getUserByNickname(""));
     }
 }

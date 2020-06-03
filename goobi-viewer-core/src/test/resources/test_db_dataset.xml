@@ -10,7 +10,7 @@
 		use_gravatar="0" />
     <users user_id="3" email="3@users.org" password_hash="abcdef3"
         active="true" suspended="true" superuser="false" last_name="last 3"
-        first_name="first 3" nickname="nick 3" comments="no comments 3" score="-1"
+        first_name="first 3" comments="no comments 3" score="-1"
         use_gravatar="0" />
 
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_1" />

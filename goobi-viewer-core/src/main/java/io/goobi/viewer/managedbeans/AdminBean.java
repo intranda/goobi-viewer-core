@@ -226,6 +226,9 @@ public class AdminBean implements Serializable {
         // Copy of the copy contains the previous nickname, in case the chosen one is already taken
         copy.setCopy(currentUser.getCopy().clone());
         // Do not allow the same nickname being used for multiple users
+        if (currentUser.getNickName() != null) {
+            currentUser.setNickName(currentUser.getNickName().trim());
+        }
         User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(currentUser.getNickName()); // This basically resets all changes
         if (nicknameOwner != null && nicknameOwner.getId() != currentUser.getId()) {
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
@@ -331,7 +334,7 @@ public class AdminBean implements Serializable {
             Messages.info("deletedSuccessfully");
             return "pretty:adminUsers";
         }
-        
+
         Messages.error("deleteFailure");
         return "";
     }
@@ -825,7 +828,7 @@ public class AdminBean implements Serializable {
         if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
         }
-        
+
         // Adopt changes made to the privileges
         if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {
             logger.trace("Saving changes to privileges");
