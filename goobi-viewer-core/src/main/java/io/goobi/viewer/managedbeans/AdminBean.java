@@ -289,13 +289,15 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should delete all user comments correctly
      */
-    public void deleteUserAction(User user, boolean deleteContributions) throws DAOException {
+    public String deleteUserAction(User user, boolean deleteContributions) throws DAOException {
         if (user == null) {
-            return;
+            return "";
         }
+        logger.trace("email confirmation: " + emailConfirmation);
+        logger.trace("email actual: " + user.getEmail());
         if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
             Messages.error("admin__error_email_mismatch");
-            return;
+            return "";
         }
 
         logger.debug("Deleting user: {}", user.getDisplayName());
@@ -304,7 +306,7 @@ public class AdminBean implements Serializable {
             //            UserTools.deleteUserGroupOwnedByUser(user);
             if (!user.getUserGroupOwnerships().isEmpty()) {
                 Messages.error("admin__error_delete_user_group_ownerships");
-                return;
+                return "";
             }
 
             // Delete comments
@@ -327,9 +329,11 @@ public class AdminBean implements Serializable {
         // Finally, delete user (and any user-created data that's not publicly visible)
         if (UserTools.deleteUser(user)) {
             Messages.info("deletedSuccessfully");
-        } else {
-            Messages.error("deleteFailure");
+            return "pretty:adminUsers";
         }
+        
+        Messages.error("deleteFailure");
+        return "";
     }
 
     /**
