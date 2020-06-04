@@ -7,7 +7,7 @@
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-    
+
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRights')}" />
@@ -16,70 +16,81 @@
     </ui:define>
 
     <ui:define name="content">
-    
-        <f:view contentType="text/html" encoding="utf-8">        
+        <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseTypes">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h2 class="admin__content-inner-title">#{msg.admin__rights}</h2>
-                    <div class="admin__content-inner-content">
-                        <h:form id="adminLicensesForm" prependId="false">     
-                                            
-                            <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.newCurrentLicenseAction}"
-                                value="#{msg.add}"/>
-                                                       
-                            <div class="clearfix"></div>
-                            
-                            <div>
-                                <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
-                            </div>
-                            
-                           <br />
-                           <ui:repeat var="license" value="#{adminBean.allLicenses}">
-                                <div class="cms-select-template__template">
-                                    <ui:fragment rendered="#{license.user != null}">
-                                        <h3><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{license.userGroup != null}">
-                                        <h3><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{license.ipRange != null}">
-                                        <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
-                                    </ui:fragment>
-                                    
-                                    <br />#{msg.admin__right_license_type}: #{msg[license.licenseType.name]}
-                                    <br />#{msg.admin__right_additional_functions}:
-                                    <!-- Privileges added to this license -->
-                                    <ui:repeat var="priv" value="#{license.privileges}">
-                                        <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
-                                    </ui:repeat>
-                                    <!-- Privileges inherited from the selected license type -->
-                                    <ui:repeat var="priv" value="#{license.licenseType.privileges}">
-                                        <div class="badge badge-secondary admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
-                                    </ui:repeat>
-                                    <!-- All other privileges -->
-                                    <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
-                                        <div class="badge badge-light admin__license-badge -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
-                                    </ui:repeat>
-                                    
-                                    <!-- edit -->
-                                    <h:outputLink styleClass="pull-right" title="#{msg.edit}"
-                                        value="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/">#{msg.edit}</h:outputLink>
-                                    <!-- delete -->                                                    
-                                    <h:commandLink styleClass="pull-right"
-                                        onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-                                        action="#{adminBean.deleteLicenseAction(license)}" title="#{msg.delete}">
-                                        #{msg.delete}
-                                    </h:commandLink>
-                                </div>
-                            </ui:repeat>
-                            
-                        </h:form>
+                    <h:form id="adminLicensesForm" prependId="false">
+                        <div class="admin__title-bar">
+                            <h2 class="admin__title">#{msg.admin__rights}</h2>
+                            <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.newCurrentLicenseAction}" styleClass="btn btn--default admin__title-bar-action">
+                                <span>#{msg.add}</span>
+                            </h:commandLink>
                         </div>
+
+                        <div class="admin__content-inner-content">
+                            <p>
+                                <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
+                            </p>
+
+                           <div class="admin__entry-list">
+                               <ui:repeat var="license" value="#{adminBean.allLicenses}">
+                                    <!-- TODO inline css -->
+                                    <div class="admin__boxed-entry" style="width: 100%;">
+                                        <!-- TITLE -->
+                                        <ui:fragment rendered="#{license.user != null}">
+                                            <h3><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{license.userGroup != null}">
+                                            <h3><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{license.ipRange != null}">
+                                            <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
+                                        </ui:fragment>
+                                    
+                                        <div class="row mb-2">
+                                            <span class="col-3">#{msg.admin__right_license_type}:</span><span class="col-9">#{msg[license.licenseType.name]}</span>
+                                        </div>
+
+                                        <div class="row mb-2">
+                                            <span class="col-3">#{msg.admin__right_additional_functions}:</span>
+                                            <div class="col-9">
+                                                <!-- Privileges added to this license -->
+                                                <ui:repeat var="priv" value="#{license.privileges}">
+                                                    <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                </ui:repeat>
+                                                <!-- Privileges inherited from the selected license type -->
+                                                <ui:repeat var="priv" value="#{license.licenseType.privileges}">
+                                                    <div class="badge badge-secondary admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                </ui:repeat>
+                                                <!-- All other privileges -->
+                                                <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
+                                                    <div class="badge badge-light admin__license-badge -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row justify-content-end admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex justify-content-end">
+                                                <!-- EDIT RIGHT -->
+                                                <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
+                                                    value="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/">#{msg.edit}</h:outputLink>
+
+                                                <!-- DELETE RIGHT -->
+                                                <h:commandLink styleClass="admin__boxed-entry-actions-delete -redlink"
+                                                    onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
+                                                    action="#{adminBean.deleteLicenseAction(license)}" title="#{msg.delete}">
+                                                    #{msg.delete}
+                                                </h:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </h:form>
                 </h:panelGroup>
             </div>
-
         </f:view>
-    
     </ui:define>
-
 </ui:composition>
