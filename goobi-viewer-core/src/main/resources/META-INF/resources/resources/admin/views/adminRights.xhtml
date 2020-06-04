@@ -48,13 +48,13 @@
                                     
                                     <br />#{msg.admin__right_license_type}: #{msg[license.licenseType.name]}
                                     <br />#{msg.admin__right_additional_functions}:
-                                    <!-- Privileges inherited from the selected license type -->
-                                    <ui:repeat var="priv" value="#{license.licenseType.privileges}">
-                                        <div class="badge badge-secondary admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
-                                    </ui:repeat>
                                     <!-- Privileges added to this license -->
                                     <ui:repeat var="priv" value="#{license.privileges}">
                                         <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                    </ui:repeat>
+                                    <!-- Privileges inherited from the selected license type -->
+                                    <ui:repeat var="priv" value="#{license.licenseType.privileges}">
+                                        <div class="badge badge-secondary admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                     </ui:repeat>
                                     <!-- All other privileges -->
                                     <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
