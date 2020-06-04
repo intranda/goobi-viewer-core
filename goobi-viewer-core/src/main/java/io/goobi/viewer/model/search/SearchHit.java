@@ -170,9 +170,9 @@ public class SearchHit implements Comparable<SearchHit> {
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
-        //Add self to owner hits to avoid adding self to childhits
-        this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
         if (browseElement != null) {
+            // Add self to owner hits to avoid adding self to child hits
+            this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
             if (searchTerms != null) {
                 addLabelHighlighting();
             } else {
@@ -272,7 +272,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
-        hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
+        hit.populateFoundMetadata(doc, browseElement.getExistingMetadataValues(), ignoreAdditionalFields, translateAdditionalFields);
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -599,11 +599,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                         }
                                     }
                                 }
-                                if(!(DocType.METADATA.equals(docType))) {                                    
-                                    ownerHit.getChildren().add(childHit);
-                                    populateHit = true;
-                                }
-                                if(populateHit) {                                    
+                                //                                if (!(DocType.METADATA.equals(docType))) {
+                                ownerHit.getChildren().add(childHit);
+                                populateHit = true;
+                                //                                }
+                                if (populateHit) {
                                     hitsPopulated++;
                                 }
                             }
@@ -645,6 +645,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param ownerMetadataValues List of metadata field+value combos that the owner already has
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @should add field values pairs that match search terms
@@ -654,13 +655,12 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should not add field values that equal the label
      * @should translate configured field values correctly
      */
-    public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
-        // logger.trace("populateFoundMetadata");
+    public void populateFoundMetadata(SolrDocument doc, Set<String> ownerMetadataValues, Set<String> ignoreFields, Set<String> translateFields) {
+        logger.trace("populateFoundMetadata: {}", searchTerms);
         if (searchTerms == null) {
             return;
         }
 
-        //        boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
             // Skip fields that are in the ignore list
             if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
@@ -668,9 +668,10 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             switch (termsFieldName) {
                 case SolrConstants.DEFAULT:
+                case SolrConstants.NORMDATATERMS:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
-                        if (!(docFieldName.startsWith("MD_") || docFieldName.equals("NORM_ALTNAME"))
+                        if (!(docFieldName.startsWith("MD_") || docFieldName.startsWith("NORM_"))
                                 || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
                             continue;
                         }
@@ -681,6 +682,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
                             if (fieldValue.equals(browseElement.getLabel())) {
+                                continue;
+                            }
+                            if (ownerMetadataValues.contains(docFieldName + ":" + fieldValue)) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
@@ -698,7 +702,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if ("NORM_ALTNAME".equals(docFieldName)) {
                                     break;
                                 }
-                                // logger.trace("found {}:{}", docFieldName, fieldValue);
+                                logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
                             }
                         }
                     }
@@ -710,6 +714,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
                             if (fieldValue.equals(browseElement.getLabel())) {
+                                continue;
+                            }
+                            if (ownerMetadataValues.contains(termsFieldName + ":" + fieldValue)) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));

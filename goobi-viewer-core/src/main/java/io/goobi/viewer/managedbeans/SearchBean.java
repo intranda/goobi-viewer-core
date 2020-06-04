@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
@@ -711,7 +710,6 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setSortString(sortString);
         currentSearch.setFacetString(facets.getCurrentFacetString());
 
-        logger.trace("hits per page: " + hitsPerPage);
         // Add search hit aggregation parameters, if enabled
         if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
             String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator)

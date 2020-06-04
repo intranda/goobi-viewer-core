@@ -446,28 +446,28 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies remove truncation
-     */
-    @Test
-    public void extractSearchTermsFromQuery_shouldRemoveTruncation() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
-        Assert.assertEquals(1, result.size());
-        {
-            Set<String> terms = result.get("MD_A");
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("foo"));
-        }
-    }
-
-    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies throw IllegalArgumentException if query is null
      */
     @Test(expected = IllegalArgumentException.class)
     public void extractSearchTermsFromQuery_shouldThrowIllegalArgumentExceptionIfQueryIsNull() throws Exception {
         SearchHelper.extractSearchTermsFromQuery(null, null);
+    }
+    
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies not remove truncation
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldNotRemoveTruncation() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
+        Assert.assertEquals(1, result.size());
+        {
+            Set<String> terms = result.get("MD_A");
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("*foo*"));
+        }
     }
 
     /**
@@ -480,13 +480,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2", suffix);
     }
 
-    /**
-     * @see SearchHelper#populateCollectionBlacklistFilterSuffixes(String)
-     * @verifies populate all mode correctly
-     */
-    @Test
-    public void populateCollectionBlacklistFilterSuffixes_shouldPopulateAllModeCorrectly() throws Exception {
-    }
 
     /**
      * @see SearchHelper#checkCollectionInBlacklist(String,List)
@@ -773,6 +766,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
         Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+    }
+    
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map,boolean)
+     * @verifies not escape truncation
+     */
+    @Test
+    public void generateExpandQuery_shouldNotEscapeTruncation() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo*", })));
+        Assert.assertEquals(" +(DEFAULT:foo*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
     /**
