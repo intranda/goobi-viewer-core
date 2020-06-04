@@ -110,15 +110,15 @@
                                         <!-- ACTIONS -->
                                         <div>
                                             <!-- SHOW -->
-                                            <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" title="#{comment.pi}" styleClass="admin__user-table-edit-user -bluelink">
-                                                #{msg.show}
-                                            </h:outputLink>
+                                            <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" title="#{msg.show} record" styleClass="admin__user-table-edit-user -bluelink">
+                                                <f:passThroughAttribute name="style" value="padding-right: 1.4rem;" />
+                                                <f:passThroughAttribute name="target" value="_blank" />
+                                                #{msg.show}</h:outputLink>
 
                                             <!-- DELETE -->
                                             <h:commandLink styleClass="admin__user-table-edit-user -redlink"
                                                 onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{adminBean.deleteCommentAction(comment)}" title="#{msg.delete}">
-                                                #{msg.delete}
+                                                action="#{adminBean.deleteCommentAction(comment)}" title="#{msg.delete}">#{msg.delete}
                                             </h:commandLink>
                                         </div>
                                     </div>
