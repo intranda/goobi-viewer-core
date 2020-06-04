@@ -173,7 +173,8 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, iddoc);
         doc.addField(SolrConstants.PI_TOPSTRUCT, UUID.randomUUID());
         doc.addField("LABEL", doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.GERMAN, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
+        SearchHit hit =
+                SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", null, null, null, false, null, null, SearchHit.HitType.DOCSTRCT);
         hit.getBrowseElement().setLabelShort(new SimpleMetadataValue(iddoc));
         hit.setSolrDoc(doc);
         return hit;

@@ -114,7 +114,7 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private List<Metadata> metadataList = null;
     @JsonIgnore
-    private final Set<String> existingMetadataValues = new HashSet<>();
+    private final Set<String> existingMetadataFields = new HashSet<>();
     /**
      * List of just the metadata fields that were added because they contained search terms (for use where not the entire metadata list is desired).
      */
@@ -319,7 +319,7 @@ public class BrowseElement implements Serializable {
                         }
                         md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
-                        existingMetadataValues.add(md.getLabel() + ":" + value);
+                        existingMetadataFields.add(md.getLabel());
                         count++;
                     }
                 }
@@ -582,7 +582,8 @@ public class BrowseElement implements Serializable {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
                                 additionalMetadataList.add(new Metadata(docFieldName, "", highlightedValue));
-                                existingMetadataValues.add(docFieldName + ":" + fieldValue);
+                                existingMetadataFields.add(docFieldName);
+                                logger.trace("added existing field: {}", docFieldName);
                             }
                         }
                     }
@@ -611,7 +612,7 @@ public class BrowseElement implements Serializable {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                                 additionalMetadataList.add(new Metadata(termsFieldName, "", highlightedValue));
-                                existingMetadataValues.add(termsFieldName + ":" + fieldValue);
+                                existingMetadataFields.add(termsFieldName);
                             }
                         }
                     }
@@ -1237,10 +1238,10 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * @return the existingMetadataValues
+     * @return the existingMetadataFields
      */
-    public Set<String> getExistingMetadataValues() {
-        return existingMetadataValues;
+    public Set<String> getExistingMetadataFields() {
+        return existingMetadataFields;
     }
 
     /**

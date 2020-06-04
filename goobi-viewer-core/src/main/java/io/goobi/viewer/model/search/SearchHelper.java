@@ -227,7 +227,7 @@ public final class SearchHelper {
             }
 
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
+                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
                             translateFields, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
@@ -307,7 +307,8 @@ public final class SearchHelper {
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields, translateFields,
+                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields,
+                            translateFields,
                             null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
@@ -1154,7 +1155,7 @@ public final class SearchHelper {
             String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
-                logger.trace("highlighted value: {}", highlightedValue);
+                // logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
@@ -1194,7 +1195,7 @@ public final class SearchHelper {
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
-        logger.trace("highlighted term: {}", highlightedTerm);
+        // logger.trace("highlighted term: {}", highlightedTerm);
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
