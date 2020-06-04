@@ -16,17 +16,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <!-- reCAPTCHA API -->
-            <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
-            <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
-                <script>
-                    function enableBtn() {
-                        document.getElementById( "submitFeedbackBtn" ).disabled = false;
-                    }
-                </script>
-            </h:panelGroup>
                 
-            <div id="feedback" class="view-feedback">
                 <h2>#{msg.feedbackTitle}</h2>
 
                 <p>
@@ -34,7 +24,6 @@
                 </p>
 
 				<viewerComponent:feedbackForm />
-            </div>
         </f:view>
     </ui:define>
 
