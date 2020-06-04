@@ -67,7 +67,7 @@ public class Bookmark implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Bookmark.class);
 
     private static final String[] FIELDS =
-            { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI };
+            { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.ISWORK, SolrConstants.ISANCHOR };
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
