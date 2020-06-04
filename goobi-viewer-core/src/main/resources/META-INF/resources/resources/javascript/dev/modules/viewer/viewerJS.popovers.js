@@ -39,7 +39,7 @@ var viewerJS = ( function( viewer ) {
     const _clickOutside = "click-outside";
     const _popoverOnShowAttribute = "data-popover-onshow";
     const _popoverOnCloseAttribute = "data-popover-onclose";
-        
+    const _popoverWidth = 250; //rounded max-width of bootstrap-popovers
     
     viewer.popovers = {
             
@@ -155,6 +155,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     function _createPopoverConfig($trigger, $popover) {
+        
         let config = {
                 html: true,
                 content: $popover.get(0),
@@ -164,6 +165,12 @@ var viewerJS = ( function( viewer ) {
         let placement = $trigger.attr(_popoverPlacementAttribute);
         if(placement) {
             config.placement = placement;
+        } else {
+            //default placement is right. But without sufficient space, place the popover left
+            let windowRight = $(window).width();
+            let triggerPos = $trigger.offset().left;
+            let remainingSpace = windowRight - triggerPos - _popoverWidth;
+            config.placement = remainingSpace < 0 ? "left" : "right";
         }
         
         let onShow = $trigger.attr(_popoverOnShowAttribute);
