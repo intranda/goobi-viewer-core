@@ -18,6 +18,7 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -709,6 +710,11 @@ public class License implements IPrivilegeHolder, Serializable {
             ret.removeAll(licenseType.getPrivileges());
         }
         return ret;
+    }
+    
+    public List<String> getAvailableSubthemes() {
+        // TODO
+        return Collections.emptyList();
     }
 
     /**
