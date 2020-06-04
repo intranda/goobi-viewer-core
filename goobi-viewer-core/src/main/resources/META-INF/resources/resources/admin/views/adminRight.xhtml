@@ -313,20 +313,6 @@
                                 <!-- Record-related functions -->
                                 <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
                                 <div class="admin__license-functions">
-                                    <!-- Privileges inherited from the selected license type --> 
-                                    <div class="form-group form-row">
-                                        <div class="col-12">#{msg.admin__license_inherited_functions}</div>
-                                    </div>
-                                    <div class="form-group form-row">
-                                        <div class="col-12">
-                                            <ui:repeat var="priv"
-                                                value="#{adminBean.currentLicense.licenseType.privileges}">
-                                                    <div class="badge badge-secondary admin__license-badge">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                    </div>
-                                            </ui:repeat>
-                                        </div>
-                                    </div>
                                     <div class="form-group form-row">
                                         <div class="col-5">#{msg.admin__license_functions_added}</div>
                                         <div class="col-1"></div>
@@ -340,7 +326,13 @@
                                     </div>
                                     <div class="form-group form-row">
                                         <!-- Privileges already added to this license -->
-                                        <div class="col-5 admin__license-functions-added">
+                                        <div class="col-5">
+                                            <!-- Privileges inherited from the selected license type -->
+                                            <ui:repeat var="priv" value="#{adminBean.currentLicense.licenseType.privileges}">
+                                                <div class="badge badge-secondary admin__license-badge">
+                                                    #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                </div>
+                                            </ui:repeat>
                                             <ui:repeat var="priv"
                                                 value="#{adminBean.currentLicense.privilegesCopy}">
                                                 <h:commandLink styleClass="admin__license-action"
