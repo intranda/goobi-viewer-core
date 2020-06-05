@@ -77,7 +77,7 @@
             urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
         <div class="clearfix"></div>
         
-        <h:form id="searchListHitsForm" prependId="false">
+        <h:form class="search-list__hits__list" id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
                 <div class="search-list__hit">
                     <!-- COinS IMPLEMENTATION -->

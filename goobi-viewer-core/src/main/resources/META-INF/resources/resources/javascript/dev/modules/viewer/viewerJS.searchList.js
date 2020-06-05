@@ -233,7 +233,11 @@ var viewerJS = ( function( viewer ) {
                 
                 // get data and render hits if data is valid
                 _promise.then( function( data ) {
-                    if ( data.hitsDisplayed < _defaults.hitsPerCall ) {
+                    console.log("load data ", data);
+                    if(data.hitsDisplayed == 0) {
+                        //any hits are hidden. Hide whole subhits section
+                        currBtn.hide();
+                    } else if ( data.hitsDisplayed < _defaults.hitsPerCall ) {
                         // render child hits into the DOM
                         _renderChildHits( data, currBtn );
                         // set current button active, remove loader and show content

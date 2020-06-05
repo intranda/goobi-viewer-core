@@ -26,7 +26,7 @@
             <!-- USER LOGIN BODY -->
             <div class="user-login__body">
                 <!-- USER LOGIN BODY LOGIN SELECT -->
-                <h:form id="selectLoginForm" prependId="false" rendered="#{userBean.authenticationProviders.size() > 1}">
+                <h:form id="selectLoginForm" prependId="false" rendered="#{userBean.showAuthenticationProviderSelection()}">
 	                <div id="userLoginSelectLoginWrapper" class="user-login__body-login-select">
 	                    <div class="form-group">
 	                        <label for="userLoginSelectLogin" class="control-label">#{msg.login__select_login_title}</label>
