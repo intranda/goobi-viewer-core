@@ -1,0 +1,9 @@
+resourcePackages:
+- io.goobi.viewer.servlets.rest
+prettyPrint: true
+openAPI:
+   info:
+      version: "4.7"
+      title: Goobi viewer REST API endpoints and schemas
+      description: All endpoints available...
+      
