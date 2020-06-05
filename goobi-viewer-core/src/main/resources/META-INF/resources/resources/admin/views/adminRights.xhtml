@@ -22,6 +22,12 @@
                     <h:form id="adminLicensesForm" prependId="false">
                         <div class="admin__title-bar">
                             <h2 class="admin__title">#{msg.admin__rights}</h2>
+                            <!-- TODO: CHECK IF WE CAN USE THIS CODE OR IF WE NEED pretty: AND actionListener, ADD ANOTHER - AT btn-default -->
+                            <!--
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminRightsNew')}/" styleClass="btn btn-default admin__title-bar-action">
+                                    <span>#{msg.add}</span>
+                            </h:outputLink> 
+                            -->
                             <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.newCurrentLicenseAction}" styleClass="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
                             </h:commandLink>

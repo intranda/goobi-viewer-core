@@ -40,7 +40,6 @@ public enum PageType {
     viewThumbs("thumbs"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
-    //    viewOverview("overview"),
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
@@ -67,6 +66,7 @@ public enum PageType {
     adminAllLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
     adminRights("admin/rights"),
+    adminRightsNew("admin/rights/new"),
     adminUserComments("admin/comments"),
     adminCreateRecord("admin/record/new"),
     //admin/cms
@@ -159,7 +159,6 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-                //            case viewOverview:
             case viewThumbs:
             case viewToc:
                 return true;
@@ -185,7 +184,6 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-                //            case viewOverview:
             case viewThumbs:
             case viewToc:
             case viewObject:
@@ -404,17 +402,21 @@ public enum PageType {
             case adminCmsOverview:
             case adminCmsSelectTemplate:
             case adminCmsStaticPages:
-	    case adminCreateRecord:
+	        case adminCreateRecord:
             case adminCrowdsourcingAnnotations:
             case adminCrowdsourcingCampaigns:
             case adminIpRange:
             case adminIpRanges:
+            case adminIpRangeNew:
             case adminLicenseType:
             case adminRights:
+            case adminRightsNew:
             case adminUser:
+            case adminUserNew:
             case adminUserActivity:
             case adminUserComments:
             case adminUserGroup:
+            case adminUserGroupNew:
             case editContent:
             case editHistory:
             case editOcr:
