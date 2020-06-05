@@ -17,6 +17,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -226,7 +227,8 @@ public final class SearchHelper {
             }
 
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields, null);
+                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
+                            translateFields, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
@@ -304,29 +306,37 @@ public final class SearchHelper {
 
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
-            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
+            SearchHit hit =
+                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields,
+                            translateFields,
+                            null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
             }
             ret.add(hit);
             hit.addCMSPageChildren();
             hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
-            logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
+            // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
-                    // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+                    String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
                     if (DocType.METADATA.name().equals(docType)) {
                         // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
                         docType = DocType.DOCSTRCT.name();
                     }
+                    // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
+                    // It will simply be added to the metadata list of the main hit
+                    //                    if (!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {
                     HitType hitType = HitType.getByName(docType);
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
+                    //                    }
                 }
             }
         }
@@ -386,7 +396,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, BeanUtils.getNavigationHelper(), true, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -397,7 +407,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper) throws IndexUnreachableException {
-        return getAllSuffixes(null, navigationHelper, true, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(BeanUtils.getRequest(), navigationHelper, true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -409,7 +419,7 @@ public final class SearchHelper {
      */
     public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix, NavigationHelper navigationHelper)
             throws IndexUnreachableException {
-        return getAllSuffixes(null, navigationHelper, true, false, addDiscriminatorValueSuffix);
+        return getAllSuffixes(BeanUtils.getRequest(), navigationHelper, true, false, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -1014,6 +1024,7 @@ public final class SearchHelper {
                 if (searchTerm.length() == 0) {
                     continue;
                 }
+                searchTerm = SearchHelper.removeTruncation(searchTerm);
                 //                logger.trace("term: {}", searchTerm);
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
@@ -1139,11 +1150,12 @@ public final class SearchHelper {
             if (term.length() < 2) {
                 continue;
             }
+            term = SearchHelper.removeTruncation(term);
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
-                logger.trace("highlighted value: {}", highlightedValue);
+                // logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
@@ -1183,13 +1195,14 @@ public final class SearchHelper {
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
-        logger.trace("highlighted term: {}", highlightedTerm);
+        // logger.trace("highlighted term: {}", highlightedTerm);
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
     }
 
     /**
+     * Remove any diacritic characters and replace any non.letter and non-digit characters with space
      * 
      * @param string
      * @return
@@ -1201,9 +1214,10 @@ public final class SearchHelper {
         if (string == null) {
             return null;
         }
-
-        return string.toLowerCase().replaceAll("[^\\p{L}0-9#]", " ");
-        //        return string;
+        string = Normalizer.normalize(string, Normalizer.Form.NFD);
+        string = string.toLowerCase().replaceAll("\\p{M}", "").replaceAll("[^\\p{L}0-9#]", " ");
+        string = Normalizer.normalize(string, Normalizer.Form.NFC);
+        return string;
     }
 
     /**
@@ -1585,7 +1599,7 @@ public final class SearchHelper {
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
-     * @should remove truncation
+     * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
      * @return a {@link java.util.Map} object.
      */
@@ -1611,8 +1625,7 @@ public final class SearchHelper {
 
         // Extract phrases and add them directly
         {
-            // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE
-            // eventually
+            // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
             String queryCopy = query;
             Matcher mPhrases = patternPhrase.matcher(queryCopy);
             while (mPhrases.find()) {
@@ -1670,14 +1683,6 @@ public final class SearchHelper {
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
-                    // Remove left truncation
-                    if (value.charAt(0) == '*' && value.length() > 1) {
-                        value = value.substring(1);
-                    }
-                    // Remove right truncation
-                    if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
-                        value = value.substring(0, value.length() - 1);
-                    }
                     if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<String>());
@@ -1700,6 +1705,23 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    public static String removeTruncation(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
+        }
+
+        // Remove left truncation
+        if (value.charAt(0) == '*' && value.length() > 1) {
+            value = value.substring(1);
+        }
+        // Remove right truncation
+        if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
+            value = value.substring(0, value.length() - 1);
+        }
+
+        return value;
     }
 
     /**
@@ -1817,6 +1839,8 @@ public final class SearchHelper {
                         fieldName = fieldName.replace("MD2_", prefix);
                     } else if (fieldName.startsWith("BOOL_")) {
                         fieldName = fieldName.replace("BOOL_", prefix);
+                    } else if (fieldName.startsWith("SORT_")) {
+                        fieldName = fieldName.replace("SORT_", prefix);
                     }
                 }
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
@@ -1863,6 +1887,7 @@ public final class SearchHelper {
      * @should skip reserved fields
      * @should escape reserved characters
      * @should not escape asterisks
+     * @should not escape truncation
      * @should add quotation marks if phraseSearch is true
      * @return a {@link java.lang.String} object.
      */
@@ -1906,6 +1931,7 @@ public final class SearchHelper {
                     }
                     if (!"*".equals(term)) {
                         term = ClientUtils.escapeQueryChars(term);
+                        term = term.replace("\\*", "*");
                         if (phraseSearch) {
                             term = "\"" + term + "\"";
                         }
@@ -2119,7 +2145,6 @@ public final class SearchHelper {
                 sbQuery.append(docstructWhitelistFilterQuery);
             } else {
                 sbQuery.append(ALL_RECORDS_QUERY);
-                // sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
             }
 
         }
@@ -2163,7 +2188,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String buildFinalQuery(String rawQuery, boolean aggregateHits) throws IndexUnreachableException {
-        return buildFinalQuery(rawQuery, aggregateHits, BeanUtils.getNavigationHelper());
+        return buildFinalQuery(rawQuery, aggregateHits, BeanUtils.getNavigationHelper(), null);
     }
 
     /**
@@ -2171,11 +2196,14 @@ public final class SearchHelper {
      *
      * @param rawQuery a {@link java.lang.String} object.
      * @param aggregateHits a boolean.
+     * @param nh
+     * @param request
      * @should add join statement if aggregateHits true
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, NavigationHelper nh) throws IndexUnreachableException {
+    public static String buildFinalQuery(String rawQuery, boolean aggregateHits, NavigationHelper nh, HttpServletRequest request)
+            throws IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
         if (aggregateHits) {
             sbQuery.append("{!join from=PI_TOPSTRUCT to=PI}");
@@ -2183,7 +2211,10 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/Join
         }
         sbQuery.append("+(").append(rawQuery).append(")");
-        String suffixes = getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), nh);
+        String suffixes = getAllSuffixes(request, nh, true,
+                true,
+                DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
+
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -2214,7 +2245,7 @@ public final class SearchHelper {
      * exportSearchAsExcel.
      * </p>
      *
-     * @param query Complete query with suffixes.
+     * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param sortFields a {@link java.util.List} object.
      * @param filterQueries a {@link java.util.List} object.
@@ -2230,7 +2261,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
+    public static SXSSFWorkbook exportSearchAsExcel(String finalQuery, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
@@ -2267,7 +2298,7 @@ public final class SearchHelper {
         }
 
         List<String> exportFields = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
-        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(query);
+        long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
         int batchSize = 100;
         int totalBatches = (int) Math.ceil((double) totalHits / batchSize);
         for (int i = 0; i < totalBatches; ++i) {
@@ -2280,9 +2311,10 @@ public final class SearchHelper {
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch;
             if (aggregateHits) {
-                batch = searchWithAggregation(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
+                batch = searchWithAggregation(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields,
+                        locale);
             } else {
-                batch = searchWithFulltext(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale,
+                batch = searchWithFulltext(finalQuery, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale,
                         request);
             }
             for (SearchHit hit : batch) {

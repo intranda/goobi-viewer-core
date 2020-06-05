@@ -1,0 +1,75 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:p="http://primefaces.org/ui" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+
+    <ui:param name="search" value="#{search != null ? search : searchBean}"></ui:param>
+    <ui:param name="searchType" value="#{searchType != null ? searchType : search.activeSearchType}"></ui:param>
+    <ui:param name="renderOnSearchTypeChange" value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}"></ui:param> 
+ 	<ui:param name="title" value="#{title != null ? title : ''}"></ui:param>
+ 
+	 <!-- SEARCH LIST OPTIONS -->
+	<ui:fragment rendered="#{search.searchPerformed}">
+	    <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                
+	</ui:fragment>
+
+	<h:panelGroup id="searchArea">
+	     <!-- SEARCH STANDARD -->
+	    <ui:fragment rendered="#{searchType == 0}">
+	        <ui:include src="/resources/includes/search/searchStandard.xhtml">
+	            <ui:param name="searchParam" value="#{search}" />
+	            <ui:param name="title" value="#{title}"/>
+	            <ui:param name="renderOnSearchTypeChange" value="#{renderOnSearchTypeChange}"/>
+	        </ui:include>
+	    </ui:fragment>
+	
+	    <!-- SEARCH ADVANCED -->
+	    <ui:fragment rendered="#{searchType == 1 and !searchBean.showReducedSearchOptions}">
+	        <ui:include src="/resources/includes/search/searchAdvanced.xhtml">
+	            <ui:param name="searchParam" value="#{search}" />
+	        </ui:include>
+	    </ui:fragment>
+	
+	    <!-- ADVANCED SEARCH INFO -->
+	    <ui:fragment rendered="#{searchType == 1 and searchBean.showReducedSearchOptions}">
+	        <div class="search-list__adv-search-info">
+	            <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+	
+	            <!-- ADVANCED SEARCH -->
+	            <div class="search-list__adv-search-info-back text-right">
+	                <h:commandLink value="#{msg.searchAdvancedBack}" action="#{searchBean.setShowReducedSearchOptions(false)}">
+	                    <f:ajax render="searchArea" />
+	                </h:commandLink>
+	            </div>
+	        </div>
+	    </ui:fragment>
+	
+	    <!-- CALENDAR SEARCH INFO -->
+	    <ui:fragment rendered="#{searchType == 3 and !searchBean.showReducedSearchOptions}">
+	        <div class="search-list__adv-search-info">
+	            (
+	            <h:outputText value="#{msg.date}: " escape="false" />
+	            <h:outputText value="#{calendarBean.currentDate}">
+	                <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+	            </h:outputText>
+	            )
+	
+	            <!-- CALENDAR SEARCH -->
+	            <div class="search-list__adv-search-info-back text-right">
+	                <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+	            </div>
+	        </div>
+	    </ui:fragment>
+	</h:panelGroup>
+</ui:composition>
+                    
+                    

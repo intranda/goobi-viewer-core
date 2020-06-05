@@ -72,7 +72,7 @@ var viewerJS = ( function( viewer ) {
 
     }
     
-    viewer.GeoMap.prototype.init = function() {
+    viewer.GeoMap.prototype.init = function(view, features) {
         if(this.map) {
             this.map.remove();
         }
@@ -114,7 +114,7 @@ var viewerJS = ( function( viewer ) {
             this.map.addLayer(osm);
         }
         
-        this.setView(this.config.initialView);
+//        this.setView(this.config.initialView);
         
         //init map events
         Rx.fromEvent(this.map, "moveend").pipe(RxOp.map(e => this.getView())).subscribe(this.onMapMove);
@@ -127,9 +127,11 @@ var viewerJS = ( function( viewer ) {
     
         //init feature layer
         this.locations = L.geoJSON([], {
+            
             pointToLayer: function(geoJsonPoint, latlng) {
                 let marker = L.marker(latlng, {
-                    draggable: this.config.allowMovingFeatures
+                    draggable: this.config.allowMovingFeatures,
+                    icon: this.getMarkerIcon()
                 });
                 marker.id = geoJsonPoint.id;
                 marker.view = geoJsonPoint.view;
@@ -146,8 +148,8 @@ var viewerJS = ( function( viewer ) {
                     Rx.fromEvent(marker, "mouseover").subscribe(() => marker.openPopup());
                     Rx.fromEvent(marker, "mouseout").subscribe(() => marker.closePopup());
                 }
-                
-                marker.bindPopup(() => this.createPopup(marker));
+               
+                marker.bindPopup(() => this.createPopup(marker),{closeButton: !this.config.popoverOnHover});
                 
                 this.markers.push(marker);    
                 
@@ -155,13 +157,42 @@ var viewerJS = ( function( viewer ) {
             }.bind(this)
         }).addTo(this.map);
 
+        if(features && features.length > 0) {
+            features.forEach(feature => {
+                this.addMarker(feature);
+            })
+            let zoom = view ? view.zoom : this.config.initialView.zoom;
+            this.setView(this.getViewAroundFeatures(zoom));
+        } else if(view){                                                    
+            this.setView(view);
+        }
+        
     }
     
     viewer.GeoMap.prototype.openPopup = function(marker) {
         try{
-            marker.openPopup
+            marker.openPopup();
         } catch(e) {
             //swallow
+        }
+    }
+    
+    viewer.GeoMap.prototype.setMarkerIcon = function(icon) {
+        this.markerIcon = icon;
+        if(this.markerIcon) {            
+            this.markerIcon.name = "";
+        }
+    }
+    
+    viewer.GeoMap.prototype.getMarkerIcon = function() {
+        if(this.markerIcon) {       
+            let icon = L.ExtraMarkers.icon(this.markerIcon);
+            if(this.markerIcon.shadow === false) {                
+                icon.options.shadowSize = [0,0];
+            }
+            return icon;
+        } else {
+            return new L.Icon.Default();
         }
     }
 
@@ -182,7 +213,8 @@ var viewerJS = ( function( viewer ) {
             $popover.find("[data-metadata='description']").html(desc);
             $popover.css("display", "block");
             return $popover.get(0);
-        } else {
+        } else if(this.config.popover){
+            console.log("empty marker message ", this.config.popover);
             return this.config.emptyMarkerMessage;
         }
     }
@@ -200,6 +232,7 @@ var viewerJS = ( function( viewer ) {
         } else if(typeof view === "string") {
             view = JSON.parse(view);
         }
+        view.zoom = Math.max(view.zoom, 1);
         if(view.center) {
             let center = L.latLng(view.center[1], view.center[0]);
             if(view.zoom) {
@@ -229,14 +262,13 @@ var viewerJS = ( function( viewer ) {
         if(features.length == 0) {
             return undefined;
         } else if(features.length == 1) {
-            console.log("view around ", features[0])
             return {
                 "zoom": defaultZoom,
                 "center": features[0].geometry.coordinates
             }
         } else {
             let points = features.map(f => f.geometry.coordinates).map(c =>  L.latLng(c[1], c[0]));
-            let bounds = L.latLngBounds(points);
+            let bounds = L.latLngBounds(points).pad(0.2);
             let center = bounds.getCenter();
             return {
                 "zoom": Math.min(this.map.getBoundsZoom(bounds), defaultZoom),

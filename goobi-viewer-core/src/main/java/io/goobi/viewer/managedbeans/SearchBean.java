@@ -116,7 +116,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private UserBean userBean;
 
     /** Max number of search hits to be displayed on one page. */
-    private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPage();
+    private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
     /**
      * Currently selected search type (regular, advanced, timeline, ...). This property is not private so it can be altered in unit tests (the setter
      * checks the config and may prevent setting certain values).
@@ -494,7 +494,9 @@ public class SearchBean implements SearchInterface, Serializable {
             if (sb.length() > 0) {
                 switch (advancedSearchGroupOperator) {
                     case 0:
-                        sbInfo.append(' ').append(ViewerResourceBundle.getTranslation("searchOperator_AND", BeanUtils.getLocale())).append("\n<br />");
+                        sbInfo.append(' ')
+                                .append(ViewerResourceBundle.getTranslation("searchOperator_AND", BeanUtils.getLocale()))
+                                .append("\n<br />");
                         break;
                     case 1:
                         sbInfo.append(' ').append(ViewerResourceBundle.getTranslation("searchOperator_OR", BeanUtils.getLocale())).append("\n<br />");
@@ -647,7 +649,8 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Add discriminator subquery, if set and configured to be part of the visible query
-        if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery() && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
+        if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()
+                && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
             try {
                 String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
                         DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
@@ -669,6 +672,13 @@ public class SearchBean implements SearchInterface, Serializable {
 
         logger.debug("advanced query: {}", sb.toString());
         return sb.toString();
+    }
+
+    public void hitsPerPageListener()
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        logger.trace("hitsPerPageListener");
+        //        setHitsPerPage(hitsPerPage);
+        executeSearch();
     }
 
     /**
@@ -1058,7 +1068,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             // Add discriminator subquery, if set and configurated to be part of the visible query
-            if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery() && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
+            if (DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()
+                    && DataManager.getInstance().getConfiguration().isSubthemeFilterQueryVisible()) {
                 try {
                     String discriminatorValueSubQuery = SearchHelper.getDiscriminatorFieldFilterSuffix(navigationHelper,
                             DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
@@ -1988,6 +1999,8 @@ public class SearchBean implements SearchInterface, Serializable {
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
         logger.trace("exportSearchAsExcelAction");
         final FacesContext facesContext = FacesContext.getCurrentInstance();
+        String currentQuery = SearchHelper.prepareQuery(searchString);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         Locale locale = navigationHelper.getLocale();
 
         downloadReady = new FutureTask<>(new Callable<Boolean>() {
@@ -1995,7 +2008,7 @@ public class SearchBean implements SearchInterface, Serializable {
             @Override
             public Boolean call() throws InterruptedException, ViewerConfigurationException {
                 if (!facesContext.getResponseComplete()) {
-                    final SXSSFWorkbook wb = buildExcelSheet(facesContext, locale);
+                    final SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, locale);
                     if (wb == null) {
                         return Boolean.FALSE;
                     } else if (Thread.interrupted()) {
@@ -2075,6 +2088,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * @param facesContext
+     * @param finalQuery Complete query with suffixes.
+     * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param locale
      * @return
      * @throws InterruptedException
@@ -2083,12 +2098,11 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws DAOException
      * @throws PresentationException
      */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, Locale locale) throws InterruptedException, ViewerConfigurationException {
+    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, Locale locale)
+            throws InterruptedException, ViewerConfigurationException {
         try {
-            String currentQuery = SearchHelper.prepareQuery(searchString);
-            final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
             Map<String, String> params = SearchHelper.generateQueryParams();
-            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, currentSearch.getSortFields(),
+            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
                     DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {
@@ -2129,16 +2143,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param hitsPerPage the hitsPerPage to set
      */
     public void setHitsPerPage(int hitsPerPage) {
+        logger.trace("setHitsPerPage: {}", hitsPerPage);
         this.hitsPerPage = hitsPerPage;
-    }
-
-    /**
-     * <p>
-     * resetHitsPerPage.
-     * </p>
-     */
-    public void resetHitsPerPage() {
-        setHitsPerPage(DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
     }
 
     /**
@@ -2340,7 +2346,8 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append(SearchHelper.ALL_RECORDS_QUERY)
-                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), BeanUtils.getNavigationHelper(), true, true,
+                        DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {

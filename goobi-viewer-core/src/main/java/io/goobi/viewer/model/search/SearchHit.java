@@ -62,6 +62,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -171,6 +172,8 @@ public class SearchHit implements Comparable<SearchHit> {
         this.searchTerms = searchTerms;
         this.locale = locale;
         if (browseElement != null) {
+            // Add self to owner hits to avoid adding self to child hits
+            this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
             if (searchTerms != null) {
                 addLabelHighlighting();
             } else {
@@ -204,10 +207,12 @@ public class SearchHit implements Comparable<SearchHit> {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param ownerAlreadyHasMetadata
      * @param locale a {@link java.util.Locale} object.
      * @param fulltext Optional fulltext (page docs only).
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields Optional fields for (Excel) export purposes.
+     * @param sortFields
      * @param useThumbnail a boolean.
      * @param ignoreAdditionalFields a {@link java.util.Set} object.
      * @param translateAdditionalFields a {@link java.util.Set} object.
@@ -219,8 +224,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
+    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata, Locale locale,
+            String fulltext,
+            Map<String, Set<String>> searchTerms, List<String> exportFields, List<StringPair> sortFields, boolean useThumbnail,
+            Set<String> ignoreAdditionalFields,
             Set<String> translateAdditionalFields, HitType overrideType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments =
@@ -238,6 +245,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 BeanUtils.getImageDeliveryBean().getThumbs());
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
+        // Add sorting fields (should be added after all other metadata to avoid duplicates)
+        browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 
         // Determine hit type
         String docType = se.getMetadataValue(SolrConstants.DOCTYPE);
@@ -266,7 +275,8 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
-        hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
+        hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata,
+                ignoreAdditionalFields, translateAdditionalFields);
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -561,14 +571,17 @@ public class SearchHit implements Comparable<SearchHit> {
                     case EVENT: {
                         String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
                         SearchHit ownerHit = ownerHits.get(ownerIddoc);
+                        boolean populateHit = false;
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
-                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields,
+                                ownerHit = createSearchHit(ownerDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
+                                        translateFields,
                                         null);
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
+                                populateHit = true;
                                 // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
                             }
                         }
@@ -577,20 +590,29 @@ public class SearchHit implements Comparable<SearchHit> {
                             continue;
                         }
                         {
-                            {
-                                SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
-                                        ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
-                                if (!DocType.UGC.equals(docType)) {
-                                    // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                                    for (StringPair metadata : childHit.getFoundMetadata()) {
-                                        // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                                        if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                            ownerHit.getFoundMetadata().add(metadata);
-                                        }
+                            SearchHit childHit =
+                                    createSearchHit(childDoc, ownerDocs.get(ownerIddoc), ownerHit.getBrowseElement().getExistingMetadataFields(),
+                                            locale, fulltext, searchTerms, null, null,
+                                            false,
+                                            ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
+                            // Skip grouped metadata child hits that have no additional (unique) metadata to display
+                            if (DocType.METADATA.equals(docType) && childHit.getFoundMetadata().isEmpty()) {
+                                continue;
+                            }
+                            if (!DocType.UGC.equals(docType)) {
+                                // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                                for (StringPair metadata : childHit.getFoundMetadata()) {
+                                    // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                                    if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                        ownerHit.getFoundMetadata().add(metadata);
                                     }
                                 }
-
-                                ownerHit.getChildren().add(childHit);
+                            }
+                            //                                if (!(DocType.METADATA.equals(docType))) {
+                            ownerHit.getChildren().add(childHit);
+                            populateHit = true;
+                            //                                }
+                            if (populateHit) {
                                 hitsPopulated++;
                             }
                         }
@@ -601,7 +623,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
                             SearchHit childHit =
-                                    createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields, null);
+                                    createSearchHit(childDoc, null, null, locale, fulltext, searchTerms, null, null, false, ignoreFields,
+                                            translateFields,
+                                            null);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
@@ -630,6 +654,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param ownerAlreadyHasFields List of metadata field+value combos that the owner already has
      * @param ignoreFields Fields to be skipped
      * @param translateFields Fields to be translated
      * @should add field values pairs that match search terms
@@ -639,13 +664,12 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should not add field values that equal the label
      * @should translate configured field values correctly
      */
-    public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
-        // logger.trace("populateFoundMetadata");
+    public void populateFoundMetadata(SolrDocument doc, Set<String> ownerAlreadyHasFields, Set<String> ignoreFields, Set<String> translateFields) {
+        logger.trace("populateFoundMetadata: {}", searchTerms);
         if (searchTerms == null) {
             return;
         }
 
-        //        boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
             // Skip fields that are in the ignore list
             if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
@@ -653,15 +677,30 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             switch (termsFieldName) {
                 case SolrConstants.DEFAULT:
+                case SolrConstants.NORMDATATERMS:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
-                        if (!(docFieldName.startsWith("MD_") || docFieldName.equals("NORM_ALTNAME"))
+                        if (!(docFieldName.startsWith("MD_") || docFieldName.startsWith("NORM_"))
                                 || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
                             continue;
                         }
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
                             continue;
                         }
+                        // Prevent showing child hit metadata that's already displayed on the parent hit
+                        if (ownerAlreadyHasFields != null) {
+                            switch (browseElement.getDocType()) {
+                                case METADATA:
+                                    if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                        logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
+                                        continue;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
                         List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
@@ -683,7 +722,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if ("NORM_ALTNAME".equals(docFieldName)) {
                                     break;
                                 }
-                                // logger.trace("found {}:{}", docFieldName, fieldValue);
+                                // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
                             }
                         }
                     }
@@ -697,6 +736,20 @@ public class SearchHit implements Comparable<SearchHit> {
                             if (fieldValue.equals(browseElement.getLabel())) {
                                 continue;
                             }
+                            // Prevent showing child hit metadata that's already displayed on the parent hit
+                            if (ownerAlreadyHasFields != null) {
+                                switch (browseElement.getDocType()) {
+                                    case METADATA:
+                                        if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                            logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
+                                            continue;
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting

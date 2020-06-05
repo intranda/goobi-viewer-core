@@ -732,7 +732,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isSidebarTocVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarTocVisible();
     }
-    
+
     /**
      * <p>
      * isSidebarOpacLinkVisible.
@@ -1377,7 +1377,7 @@ public class ConfigurationBean implements Serializable {
      * @return number of allowed metadata parameters for metadata configuration
      */
     public int getMetadataParamNumber() {
-        return DataManager.getInstance().getConfiguration().getMetadataParamNumber(); 
+        return DataManager.getInstance().getConfiguration().getMetadataParamNumber();
     }
 
     /**
@@ -1454,9 +1454,17 @@ public class ConfigurationBean implements Serializable {
     public boolean isAggregateSearchHits() {
         return DataManager.getInstance().getConfiguration().isAggregateHits();
     }
-    
+
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public List<Integer> getSearchHitsPerPageValues() {
+        return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
     }
 
 }

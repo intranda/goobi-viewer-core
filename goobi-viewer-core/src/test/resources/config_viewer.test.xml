@@ -355,9 +355,14 @@
 	</viewer>
 
 	<search>
-		<!-- hitsPerPage: defines the number of elements that are shown in a search 
-			hitlist or when opening a collection -->
-		<hitsPerPage>15</hitsPerPage>
+        <!-- hitsPerPage: defines selectabled numbers of hits that are shown in a search 
+            hit list or when opening a collection -->
+        <hitsPerPage>
+            <value default="true">15</value>
+            <value>25</value>
+            <value>50</value>
+            <value>100</value>
+        </hitsPerPage>
 		<!-- fulltextFragmentLength: Approximate length of the full-text fragment 
 			displayed in search hits. Default is 200. -->
 		<fulltextFragmentLength>50</fulltextFragmentLength>
@@ -1158,6 +1163,13 @@
     </embedding>
 
 	<maps>
+	<markers>
+	    <marker icon="fa-circle"  markerColor="green-dark" shape="circle">maps__marker_1</marker>
+	    <marker icon="fa-search"  markerColor="red" shape="square">maps__marker_2</marker>
+	    <marker icon="fa-spinner" markerColor="blue-dark" shape="penta" prefix="fa" extraClasses="fa-spin">maps__marker_3</marker>
+	    <marker icon="fa-coffee"  markerColor="pink" shape="star" prefix="fa" iconColor="black" iconRotate="270">maps__marker_4</marker>
+	    <marker icon="fa-number"  number="42" svg="true">maps__marker_5</marker>
+	  </markers>
 	  <mapbox>
 	    <token>some.token</token>
 	  </mapbox>

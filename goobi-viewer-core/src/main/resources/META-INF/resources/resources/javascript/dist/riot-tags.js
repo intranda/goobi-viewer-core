@@ -77,8 +77,9 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.buttonFilesSelected = function(e) {
+            this.files = [];
             for (var f of e.target.files) {
-
+                console.log("selected file "+ f.name);
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;
@@ -105,6 +106,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
+                console.log("upload file ", i, this.files[i])
                 uploads.push(Q(this.uploadFile(i)));
             }
 

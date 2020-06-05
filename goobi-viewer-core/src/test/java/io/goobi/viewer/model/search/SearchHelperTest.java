@@ -113,7 +113,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // First, make sure the collection blacklist always comes from the same config file;
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
-        Assert.assertEquals(51, collections.size());
+        Assert.assertTrue(collections.size() > 40);
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
         //        for (String key : keys) {
@@ -446,28 +446,28 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies remove truncation
-     */
-    @Test
-    public void extractSearchTermsFromQuery_shouldRemoveTruncation() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
-        Assert.assertEquals(1, result.size());
-        {
-            Set<String> terms = result.get("MD_A");
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("foo"));
-        }
-    }
-
-    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies throw IllegalArgumentException if query is null
      */
     @Test(expected = IllegalArgumentException.class)
     public void extractSearchTermsFromQuery_shouldThrowIllegalArgumentExceptionIfQueryIsNull() throws Exception {
         SearchHelper.extractSearchTermsFromQuery(null, null);
+    }
+    
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies not remove truncation
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldNotRemoveTruncation() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
+        Assert.assertEquals(1, result.size());
+        {
+            Set<String> terms = result.get("MD_A");
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("*foo*"));
+        }
     }
 
     /**
@@ -480,13 +480,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2", suffix);
     }
 
-    /**
-     * @see SearchHelper#populateCollectionBlacklistFilterSuffixes(String)
-     * @verifies populate all mode correctly
-     */
-    @Test
-    public void populateCollectionBlacklistFilterSuffixes_shouldPopulateAllModeCorrectly() throws Exception {
-    }
 
     /**
      * @see SearchHelper#checkCollectionInBlacklist(String,List)
@@ -774,6 +767,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
         Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
+    
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map,boolean)
+     * @verifies not escape truncation
+     */
+    @Test
+    public void generateExpandQuery_shouldNotEscapeTruncation() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo*", })));
+        Assert.assertEquals(" +(DEFAULT:foo*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+    }
 
     /**
      * @see SearchHelper#generateExpandQuery(List,Map)
@@ -963,6 +969,15 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
+    @Test
+    public void applyHighlightingToPhrase_shouldIgnoreDiacriticsForHightlighting() throws Exception {
+        String phrase = "Širvintos";
+        Set<String> terms = new HashSet<>();
+        terms.add("sirvintos");
+        String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + phrase + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase);
+    }
+
     /**
      * @see SearchHelper#applyHighlightingToPhrase(String,Set)
      * @verifies skip single character terms
@@ -1137,12 +1152,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         NavigationHelper nh = new NavigationHelper();
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, nh, null);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
         nh.setSubThemeDiscriminatorValue("subtheme1");
-        finalQuery = SearchHelper.buildFinalQuery(query, false, nh);
+        finalQuery = SearchHelper.buildFinalQuery(query, false, nh,
+                null);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(4, docs.size());
     }

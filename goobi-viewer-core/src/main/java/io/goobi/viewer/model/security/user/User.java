@@ -59,6 +59,7 @@ import com.timgroup.jgravatar.GravatarRating;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -192,11 +193,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     public User(String nickname) {
         this.nickName = nickname;
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -281,22 +282,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @return a {@link java.lang.String} object.
      */
     public String getDisplayName() {
-        String displayName = "";
-        // if (StringUtils.isNotEmpty(lastName) || StringUtils.isNotEmpty(firstName)) {
-        // if (StringUtils.isNotEmpty(firstName)) {
-        // displayName = firstName;
-        // }
-        // if (StringUtils.isNotEmpty(lastName)) {
-        // displayName += " " + lastName;
-        // }
-        // } else
         if (StringUtils.isNotEmpty(nickName)) {
-            displayName = nickName;
-        } else {
-            displayName = email;
+            return nickName;
+        }
+        if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
+            return email;
         }
 
-        return displayName;
+        return NetTools.scrambleEmailAddress(email);
     }
 
     /**
@@ -306,8 +299,12 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public String getDisplayNameObfuscated() {
         String displayName = getDisplayName();
-        if (displayName.equals(email) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
-            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null)).append(" (").append(id).append(')').toString();
+        if (!displayName.equals(nickName) && BeanUtils.getUserBean() != null && !BeanUtils.getUserBean().isAdmin()) {
+            return new StringBuilder().append(ViewerResourceBundle.getTranslation("user_anonymous", null))
+                    .append(" (")
+                    .append(id)
+                    .append(')')
+                    .toString();
         }
 
         return displayName;

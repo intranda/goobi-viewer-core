@@ -175,4 +175,49 @@ public class FacetItemTest extends AbstractTest {
     public void getEscapedValue_shouldPreserveLeadingAndTrailingQuotationMarks() throws Exception {
         Assert.assertEquals("\"IsWithin\\(foobar\\)\\ disErrPct=0\"", FacetItem.getEscapedValue("\"IsWithin(foobar) disErrPct=0\""));
     }
+
+    /**
+     * @see FacetItem#compareTo(FacetItem)
+     * @verifies return plus if count less than other count
+     */
+    @Test
+    public void compareTo_shouldReturnPlusIfCountLessThanOtherCount() throws Exception {
+        FacetItem facetItem1 = new FacetItem("field:foo", false).setCount(1);
+        FacetItem facetItem2 = new FacetItem("field:foo", false).setCount(2);
+        Assert.assertEquals(1, facetItem1.compareTo(facetItem2));
+    }
+
+    /**
+     * @see FacetItem#compareTo(FacetItem)
+     * @verifies return minus if count more than other count
+     */
+    @Test
+    public void compareTo_shouldReturnMinusIfCountMoreThanOtherCount() throws Exception {
+        FacetItem facetItem1 = new FacetItem("field:foo", false).setCount(2);
+        FacetItem facetItem2 = new FacetItem("field:foo", false).setCount(1);
+        Assert.assertEquals(-1, facetItem1.compareTo(facetItem2));
+    }
+
+    /**
+     * @see FacetItem#compareTo(FacetItem)
+     * @verifies compare by label if count equal
+     */
+    @Test
+    public void compareTo_shouldCompareByLabelIfCountEqual() throws Exception {
+        {
+            FacetItem facetItem1 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
+            FacetItem facetItem2 = new FacetItem("field:bar", false).setLabel("bar").setCount(1);
+            Assert.assertTrue(facetItem1.compareTo(facetItem2) > 0);
+        }
+        {
+            FacetItem facetItem1 = new FacetItem("field:bar", false).setLabel("bar").setCount(1);
+            FacetItem facetItem2 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
+            Assert.assertTrue(facetItem1.compareTo(facetItem2) < 0);
+        }
+        {
+            FacetItem facetItem1 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
+            FacetItem facetItem2 = new FacetItem("field:foo", false).setLabel("foo").setCount(1);
+            Assert.assertEquals(0, facetItem1.compareTo(facetItem2));
+        }
+    }
 }

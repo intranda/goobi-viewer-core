@@ -145,11 +145,16 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Compares this item's count to the other item's count. Larger count means the item is sorted before the other item.
+     * 
+     * @should return plus if count less than other count
+     * @should return minus if count more than other count
+     * @should compare by label if count equal
+     */
     @Override
     public int compareTo(FacetItem facetItem) {
-        //                return facetItem.getTranslatedLabel().toLowerCase().compareTo(translatedLabel.toLowerCase());
-        return count > facetItem.getCount() ? +1 : count < facetItem.getCount() ? -1 : 0;
+        return count > facetItem.getCount() ? -1 : count < facetItem.getCount() ? +1 : (label != null ? label.compareTo(facetItem.getLabel()) : 0);
     }
 
     /**
@@ -207,7 +212,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
             FacetItem facetItem =
-                    new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), values.get(value), hierarchical);
+                    new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), values.get(value),
+                            hierarchical);
             if (!priorityValues.isEmpty() && priorityValues.contains(value)) {
                 priorityValueMap.put(value, facetItem);
             } else {
@@ -233,7 +239,6 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 break;
             default:
                 Collections.sort(retList); // sort by count
-                Collections.reverse(retList);
 
         }
         // Add priority values at the beginning
@@ -247,7 +252,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             }
             retList.addAll(regularValues);
         }
-        // logger.debug("filters: " + retList.size());
+        // logger.debug("filters: {}", retList.size());
         return retList;
     }
 
@@ -312,7 +317,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 label += SolrConstants._DRILLDOWN_SUFFIX;
             }
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
-            retList.add(new FacetItem(field, link, label, ViewerResourceBundle.getTranslation(label, locale), values.get(String.valueOf(value)), hierarchical));
+            retList.add(new FacetItem(field, link, label, ViewerResourceBundle.getTranslation(label, locale), values.get(String.valueOf(value)),
+                    hierarchical));
         }
 
         // logger.debug("filters: " + retList.size());
@@ -541,9 +547,11 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * </p>
      *
      * @param label the label to set
+     * @return this
      */
-    public void setLabel(String label) {
+    public FacetItem setLabel(String label) {
         this.label = label;
+        return this;
     }
 
     /**
@@ -585,9 +593,11 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * </p>
      *
      * @param count the count to set
+     * @return this
      */
-    public void setCount(long count) {
+    public FacetItem setCount(long count) {
         this.count = count;
+        return this;
     }
 
     /**

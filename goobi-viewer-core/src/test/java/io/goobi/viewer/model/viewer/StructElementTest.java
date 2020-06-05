@@ -166,7 +166,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getFirstVolumeFieldValue_shouldReturnCorrectValue() throws Exception {
-        StructElement element = new StructElement(1578150825557L);
+        StructElement element = new StructElement(1591177104955L);
         Assert.assertEquals("306653648_1891", element.getFirstVolumeFieldValue(SolrConstants.PI));
     }
 

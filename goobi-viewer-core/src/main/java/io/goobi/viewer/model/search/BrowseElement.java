@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +58,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 
@@ -94,7 +96,7 @@ public class BrowseElement implements Serializable {
     private String volumeNo = null;
     /** StructElementStubs for hierarchy URLs. */
     @JsonIgnore
-    private List<StructElementStub> structElements = new ArrayList<>();
+    private final List<StructElementStub> structElements = new ArrayList<>();
     @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
@@ -111,6 +113,8 @@ public class BrowseElement implements Serializable {
     private NavigationHelper navigationHelper;
     @JsonIgnore
     private List<Metadata> metadataList = null;
+    @JsonIgnore
+    private final Set<String> existingMetadataFields = new HashSet<>();
     /**
      * List of just the metadata fields that were added because they contained search terms (for use where not the entire metadata list is desired).
      */
@@ -315,6 +319,7 @@ public class BrowseElement implements Serializable {
                         }
                         md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
+                        existingMetadataFields.add(md.getLabel());
                         count++;
                     }
                 }
@@ -407,9 +412,11 @@ public class BrowseElement implements Serializable {
         }
 
         // Thumbnail
-        String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
-        if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
-            thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
+        if (thumbs != null) {
+            String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
+            if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
+                thumbnailUrl = StringTools.intern(sbThumbnailUrl.toString());
+            }
         }
 
         //check if we have images
@@ -454,6 +461,52 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * 
+     * @param structElement
+     * @param sortFields If manual sorting was used, display the sorting fields
+     * @param ignoreFields Fields to be skipped
+     * @should add sort fields correctly
+     * @should not add fields on ignore list
+     * @should not add fields already in the list
+     */
+    void addSortFieldsToMetadata(StructElement structElement, List<StringPair> sortFields, Set<String> ignoreFields) {
+        if (sortFields == null || sortFields.isEmpty()) {
+            return;
+        }
+
+        for (StringPair sortField : sortFields) {
+            // Skip fields that are in the ignore list
+            if (ignoreFields != null && ignoreFields.contains(sortField.getOne())) {
+                continue;
+            }
+            // Title is already in the header
+            if ("SORT_TITLE".equals(sortField.getOne())) {
+                continue;
+            }
+            // Skip fields that are already in the list
+            boolean skip = false;
+
+            for (Metadata md : metadataList) {
+                if (md.getLabel().equals(sortField.getOne().replace("SORT_", "MD_"))) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip) {
+                continue;
+            }
+            // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+            if (!skip && structElement.getMetadataFields().containsKey(sortField.getOne())) {
+                List<String> fieldValues = structElement.getMetadataFields().get(sortField.getOne());
+                for (String fieldValue : fieldValues) {
+                    metadataList.add(new Metadata(sortField.getOne(), "", fieldValue));
+                    additionalMetadataList.add(new Metadata(sortField.getOne(), "", fieldValue));
+                }
+            }
+        }
+    }
+
+    /**
      * Adds metadata fields that aren't configured in <code>metadataList</code> but match give search terms. Applies highlighting to matched terms.
      * 
      * @param structElement
@@ -466,13 +519,14 @@ public class BrowseElement implements Serializable {
      * @should not add ignored fields
      * @should translate configured field values correctly
      */
-    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, Set<String> ignoreFields,
+    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms,
+            Set<String> ignoreFields,
             Set<String> translateFields) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
+
         if (searchTerms == null) {
             return;
         }
-        boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
             // Skip fields that are in the ignore list
             if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
@@ -528,6 +582,8 @@ public class BrowseElement implements Serializable {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
                                 additionalMetadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                existingMetadataFields.add(docFieldName);
+                                logger.trace("added existing field: {}", docFieldName);
                             }
                         }
                     }
@@ -556,6 +612,7 @@ public class BrowseElement implements Serializable {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                                 additionalMetadataList.add(new Metadata(termsFieldName, "", highlightedValue));
+                                existingMetadataFields.add(termsFieldName);
                             }
                         }
                     }
@@ -824,17 +881,6 @@ public class BrowseElement implements Serializable {
      */
     public int getImageNo() {
         return imageNo;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>structElements</code>.
-     * </p>
-     *
-     * @param structElements the structElements to set
-     */
-    public void setStructElements(List<StructElementStub> structElements) {
-        this.structElements = structElements;
     }
 
     /**
@@ -1189,6 +1235,13 @@ public class BrowseElement implements Serializable {
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
+    }
+
+    /**
+     * @return the existingMetadataFields
+     */
+    public Set<String> getExistingMetadataFields() {
+        return existingMetadataFields;
     }
 
     /**

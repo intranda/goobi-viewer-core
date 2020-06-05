@@ -168,8 +168,25 @@
     }
     /* SORTING */
     &__sorting {
-        float: right;
+        display: flex;
+        justify-content: space-between;
         margin-bottom: 20px;
+        &__item {
+        	display: grid;
+        	grid-template-columns: auto auto;
+        	grid-column-gap: 20px;
+        	align-items: center;
+        	form {
+        		height: 100%;
+        	}
+        }
+        &__label {
+        	label {        		
+	        	white-space: nowrap;
+	        	font-weight: normal;
+	        	margin: 0;
+        	}
+        }
     }
     /* ADVANCED SEARCH INFO */
     &__adv-search-info {

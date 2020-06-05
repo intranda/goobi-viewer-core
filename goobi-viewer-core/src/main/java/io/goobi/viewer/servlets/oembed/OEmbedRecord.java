@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.servlets.oembed;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -27,6 +31,19 @@ public class OEmbedRecord {
 
     private StructElement structElement;
     private PhysicalElement physicalElement;
+    private URI uri = null;
+
+    /**
+     * @param origUrl
+     * @throws URISyntaxException 
+     */
+    public OEmbedRecord(String uri) throws URISyntaxException {
+        this.uri = PathConverter.toURI(uri);
+    }
+    
+    public OEmbedRecord() {
+        
+    }
 
     /**
      * <p>
@@ -71,5 +88,22 @@ public class OEmbedRecord {
     public void setPhysicalElement(PhysicalElement physicalElement) {
         this.physicalElement = physicalElement;
     }
-
+    
+    public boolean isRichResponse() {
+        return this.uri != null;
+    }
+    
+    /**
+     * @return the uri
+     */
+    public URI getUri() {
+        return uri;
+    }
+    
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(URI uri) {
+        this.uri = uri;
+    }
 }
