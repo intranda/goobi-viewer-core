@@ -143,13 +143,16 @@
                                                 <h:outputLabel for="name" styleClass="control-label"
                                                     value="#{msg.admin__license_allowed_subthemes_label}:" />
                                             </div>
-                                            <div class="col-5">
-                                                <ui:repeat var="subtheme" value="#{adminBean.currentLicense.subthemeDiscriminatorValues}">
-                                                    <div class="badge badge-secondary admin__license-badge">
-                                                        #{msg[subtheme]}
-                                                    </div>
+                                            <div id="selected_subthemes" class="col-5">
+                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                    <ui:fragment rendered="#{selectable.selected}">
+                                                        <div class="badge badge-secondary admin__license-badge">
+                                                            #{msg[selectable.value]}
+                                                        </div>
+                                                    </ui:fragment>
                                                 </ui:repeat>
                                             </div>
+
                                             <div class="col-1 admin__form-help-icon">
                                                 <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                     <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -158,11 +161,28 @@
                                             <div class="col-sm-6" />
                                             <div class="col-sm-5 admin__form-input">
                                                 <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectManyMenu value="#{adminBean.currentLicense.subthemeDiscriminatorValues}" immediate="true">
-                                                    <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                                    <!-- TODO method with available values -->
-                                                    <f:selectItems var="subtheme" value="#{adminBean.currentLicense.availableSubthemes}" />
-                                                </h:selectManyMenu>
+                                                
+                                                <div class="page-metadata-item__categories-selectable-categories">
+                                                    <div class="page-metadata-item__categories-selectable-categories-select">
+                                                        <div class="cms-module__option-dropdown">
+                                                            <div class="cms-module__option-dropdown-trigger"
+                                                                data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                            <ul>
+                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                                    <li>
+                                                                        <label>
+                                                                            <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                <f:ajax render="metadata_component:selected_subthemes" />
+                                                                            </h:selectBooleanCheckbox>
+                                                                            #{msg[selectable.value]}
+                                                                        </label>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
                                                 <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
                                             </div>
                                             <div class="col-sm-1" />
@@ -173,11 +193,13 @@
                                                 <h:outputLabel for="name" styleClass="control-label"
                                                     value="#{msg.admin__license_allowed_categories_label}:" />
                                             </div>
-                                            <div class="col-sm-5">
-                                                <ui:repeat var="cat" value="#{adminBean.currentLicense.allowedCategories}">
-                                                    <div class="badge badge-secondary admin__license-badge">
-                                                        #{msg[cat.name]}
-                                                    </div>
+                                            <div id="selected_categories" class="col-sm-5">
+                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                    <ui:fragment rendered="#{selectable.selected}">
+                                                        <div class="badge badge-secondary admin__license-badge">
+                                                            #{msg[selectable.value.name]}
+                                                        </div>
+                                                    </ui:fragment>
                                                 </ui:repeat>
                                             </div>
                                             <div class="col-1 admin__form-help-icon">
@@ -188,11 +210,27 @@
                                             <div class="col-sm-6" />
                                             <div class="col-sm-5 admin__form-input">
                                                 <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectManyMenu value="#{adminBean.currentLicense.allowedCategories}" immediate="true">
-                                                    <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                                    <!-- TODO method with available values -->
-                                                    <f:selectItems var="cat" value="#{adminBean.currentLicense.availableSubthemes}" />
-                                                </h:selectManyMenu>
+
+                                            <div class="page-metadata-item__categories-selectable-categories">
+                                                <div class="page-metadata-item__categories-selectable-categories-select">
+                                                    <div class="cms-module__option-dropdown">
+                                                        <div class="cms-module__option-dropdown-trigger"
+                                                            data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                        <ul>
+                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                                <li>
+                                                                    <label>
+                                                                        <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                            <f:ajax render="metadata_component:selected_categories" />
+                                                                        </h:selectBooleanCheckbox>
+                                                                        #{msg[selectable.value.name]}
+                                                                    </label>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                 </div>
+                                            </div>
                                                 <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
                                             </div>
                                             <div class="col-sm-1" />
@@ -203,11 +241,13 @@
                                                 <h:outputLabel for="name" styleClass="control-label"
                                                     value="#{msg.admin__license_allowed_cms_templates_label}:" />
                                             </div>
-                                            <div class="col-sm-5">
-                                                <ui:repeat var="template" value="#{adminBean.currentLicense.allowedCmsTemplates}">
-                                                    <div class="badge badge-secondary admin__license-badge">
-                                                        #{msg[template]}
-                                                    </div>
+                                            <div id="selected_templates" class="col-sm-5">
+                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                    <ui:fragment rendered="#{selectable.selected}">
+                                                        <div class="badge badge-secondary admin__license-badge">
+                                                            #{msg[selectable.value]}
+                                                        </div>
+                                                    </ui:fragment>
                                                 </ui:repeat>
                                             </div>
                                             <div class="col-1 admin__form-help-icon">
@@ -218,6 +258,28 @@
                                             <div class="col-sm-6" />
                                             <div class="col-sm-5 admin__form-input">
                                                 <h:message for="name"  errorClass="alert alert-danger" />
+                                                
+                                                <div class="page-metadata-item__categories-selectable-categories">
+                                                    <div class="page-metadata-item__categories-selectable-categories-select">
+                                                        <div class="cms-module__option-dropdown">
+                                                            <div class="cms-module__option-dropdown-trigger"
+                                                                data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                            <ul>
+                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                                    <li>
+                                                                        <label>
+                                                                            <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                <f:ajax render="metadata_component:selected_templates" />
+                                                                            </h:selectBooleanCheckbox>
+                                                                            #{msg[selectable.value]}
+                                                                        </label>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
                                                 <h:selectManyMenu value="#{adminBean.currentLicense.allowedCmsTemplates}" immediate="true">
                                                     <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                                     <!-- TODO method with available values -->

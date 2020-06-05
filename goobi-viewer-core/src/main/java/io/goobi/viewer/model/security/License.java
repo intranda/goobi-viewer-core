@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -44,7 +45,12 @@ import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
@@ -170,6 +176,15 @@ public class License implements IPrivilegeHolder, Serializable {
 
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
+
+    @Transient
+    private List<Selectable<String>> selectableSubthemes = null;
+
+    @Transient
+    private List<Selectable<CMSCategory>> selectableCategories = null;
+
+    @Transient
+    private List<Selectable<String>> selectableTemplates = null;
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -711,10 +726,56 @@ public class License implements IPrivilegeHolder, Serializable {
         }
         return ret;
     }
-    
+
     public List<String> getAvailableSubthemes() {
         // TODO
         return Collections.emptyList();
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<Selectable<String>> getSelectableSubthemes() throws DAOException {
+        if (selectableSubthemes == null) {
+            List<String> allSubthemes = new ArrayList<>(); // TODO
+            selectableSubthemes =
+                    allSubthemes.stream()
+                            .map(sub -> new Selectable<>(sub, this.subthemeDiscriminatorValues.contains(sub)))
+                            .collect(Collectors.toList());
+        }
+        return selectableSubthemes;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+        if (selectableCategories == null) {
+            List<CMSCategory> allCategories = DataManager.getInstance().getDao().getAllCategories();
+            selectableCategories =
+                    allCategories.stream().map(cat -> new Selectable<>(cat, this.allowedCategories.contains(cat))).collect(Collectors.toList());
+        }
+        return selectableCategories;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<Selectable<String>> getSelectableTemplates() throws DAOException {
+        if (selectableTemplates == null) {
+            List<CMSPageTemplate> allTemplates = BeanUtils.getCmsBean().getTemplates();
+            selectableTemplates =
+                    allTemplates.stream()
+                            .map(template -> new Selectable<>(template.getName(), this.allowedCmsTemplates.contains(template.getName())))
+                            .collect(Collectors.toList());
+        }
+        return selectableTemplates;
     }
 
     /**
