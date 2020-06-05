@@ -736,9 +736,20 @@ public class SearchHit implements Comparable<SearchHit> {
                             if (fieldValue.equals(browseElement.getLabel())) {
                                 continue;
                             }
-                            if (ownerAlreadyHasFields.contains(browseElement.getLabel())) {
-                                continue;
+                            // Prevent showing child hit metadata that's already displayed on the parent hit
+                            if (ownerAlreadyHasFields != null) {
+                                switch (browseElement.getDocType()) {
+                                    case METADATA:
+                                        if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                            logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
+                                            continue;
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
+                            
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields, keeping the highlighting
