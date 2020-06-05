@@ -39,6 +39,7 @@ public class ViewerApplication extends ResourceConfig {
         register(MultiPartFeature.class);
         packages(true, "io.goobi.viewer.servlets.rest");
         packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
+        packages(true, "io.swagger");
 
     }
 
