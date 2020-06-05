@@ -62,6 +62,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -223,7 +224,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata, Locale locale, String fulltext,
+    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata, Locale locale,
+            String fulltext,
             Map<String, Set<String>> searchTerms, List<String> exportFields, List<StringPair> sortFields, boolean useThumbnail,
             Set<String> ignoreAdditionalFields,
             Set<String> translateAdditionalFields, HitType overrideType)
@@ -589,7 +591,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         }
                         {
                             SearchHit childHit =
-                                    createSearchHit(childDoc, ownerDocs.get(ownerIddoc), ownerHit.getBrowseElement().getExistingMetadataFields(), locale, fulltext, searchTerms, null, null,
+                                    createSearchHit(childDoc, ownerDocs.get(ownerIddoc), ownerHit.getBrowseElement().getExistingMetadataFields(),
+                                            locale, fulltext, searchTerms, null, null,
                                             false,
                                             ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
                             // Skip grouped metadata child hits that have no additional (unique) metadata to display
@@ -684,11 +687,20 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
                             continue;
                         }
-                        logger.trace("child hit label: {}", browseElement.getLabel());
-                        if (ownerAlreadyHasFields != null && ownerAlreadyHasFields.contains(browseElement.getLabel())) {
-                            logger.trace("child hit label {} already exists", browseElement.getLabel());
-                            continue;
+                        // Prevent showing child hit metadata that's already displayed on the parent hit
+                        if (ownerAlreadyHasFields != null) {
+                            switch (browseElement.getDocType()) {
+                                case METADATA:
+                                    if (ownerAlreadyHasFields.contains(doc.getFieldValue(SolrConstants.LABEL))) {
+                                        logger.trace("child hit metadata field {} already exists", browseElement.getLabel());
+                                        continue;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
+
                         List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
