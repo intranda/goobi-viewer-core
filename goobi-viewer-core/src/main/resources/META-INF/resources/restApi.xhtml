@@ -21,12 +21,23 @@
         <div id="swagger-container"></div>
         
         <script>
-        
+	        fetch("#{request.contextPath}/rest/openapi.json")
+	        .then(res => res.json())
+	        .then(json => {
+	            json.servers = [
+	                {
+	                    url: "#{request.contextPath}"
+	                }
+	            ]
+	          return json;
+	        })
+	        .then(json => {
+	            SwaggerUIBundle({
+	        	    dom_id: '#swagger-container',
+	        	    spec: json,
+	        	  });
+	        })
         	
-        	SwaggerUIBundle({
-        	    dom_id: '#swagger-container',
-        	    url: "/viewer/rest/openapi.json"
-        	  })
         
         </script>
         
