@@ -19,39 +19,40 @@
         <div id="cmsOverview">
             <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
                 <h:form id="cmsOverviewForm" prependId="false">
+
                     <div class="admin__title-bar">
-                        <!-- HEADING -->
+                        <!-- TITLE -->
                         <h2 class="admin__title">#{msg.cms_overview}</h2>
-                        <!-- CREATE NEW PAGE BUTTON -->
+                        <!-- CREATE NEW PAGE -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/" styleClass="btn btn--default admin__title-bar-action">
+                            <a href="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/" class="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
-                            </h:outputLink>
+                            </a>
                         </ui:fragment>
                     </div>
-                                           
+
+
                     <div class="admin__content-inner-content">
-                        <!-- USER TABLE TOOLS: PAGINATION, FILTER  -->
                         <div class="admin__user-table-tools">
                             <!-- PAGINATOR -->
-                            <div class="admin__user-table-paginator"><viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" /></div>
-                            <!-- FILTER -->    
+                            <div class="admin__user-table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
+                            </div>
+                            <!-- FILTER -->
                             <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__user-table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__cms_page_search" filter="#{cmsBean.lazyModelPages.getFilter('CMSPageLanguageVersion', 'title_menuTitle')}"/>
-                            </div>                           
-                        </div>             
-                                           
-                                               
-                                               
-                        <!-- ALL PAGES TABLE -->   
+                            </div>
+                        </div>
+
+
+                        <!-- ALL PAGES TABLE -->
                         <!-- TODO ADOPT CLASS NAMES -->
                         <div id="cmsOverviewWrapper" class="admin__user-table-content">
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__user-table-title">
-                                <!-- TYPE COL -->
-                                <div class="col-6 d-flex ">#{msg.cms_templateType}</div>
-
+                                <!-- PAGE COL -->
+                                <div class="col-6 d-flex ">#{msg.page}</div>
 
                                 <!-- CLASSIFICATIONS COL -->
                                 <div class="col-2 d-flex">
@@ -75,6 +76,7 @@
                                         </h:commandLink>
                                     </div>
                                 </div>
+
                                 <!-- TRANSLATIONS COL -->
                                 <div class="col-2 d-flex">
                                     <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
@@ -83,7 +85,9 @@
                                 </div>
                             </div>
 
+
                             <!-- INDIVIDUAL PAGE ROWS -->
+                            <!-- TODO CSS TALKS ABOUT USER TABLE, SHOULD BE GENERIC ADMIN TABLE -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
                                 <div class="row no-gutters admin__user-table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
                                     <div class="col-6 d-flex">
@@ -94,13 +98,13 @@
                                             <img class="admin__user-table-img" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
                                         </ui:fragment>
 
-                                        <!-- TODO INLINE CSS -->
                                         <div class="admin__user-table-data">
                                             <span class="admin__user-table-name">#{page.title}</span>
                                             <ui:fragment rendered="#{page.title != page.menuTitle}">
                                                 <span>#{page.menuTitle}</span>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{page.subThemeDiscriminatorValue != ''}">
+                                            <!-- TODO INLINE CSS -->
                                                 <span style="font-style:italic;">(#{page.subThemeDiscriminatorValue})</span>
                                             </ui:fragment>
                                             <div>
@@ -109,6 +113,7 @@
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                 </h:commandLink>
                                                 <ui:fragment rendered="#{page.published}">
+                                                    <!-- TODO INLINE CSS -->
                                                     <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__user-table-edit-user -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}" style="padding-right:1.4rem;">#{msg.cms_pagePreview}</a>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
