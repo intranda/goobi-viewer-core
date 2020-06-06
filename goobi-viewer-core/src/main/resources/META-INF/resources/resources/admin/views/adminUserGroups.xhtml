@@ -21,19 +21,19 @@
                 <h:panelGroup rendered="#{userBean.admin}">
                     <h:form id="adminAllUserGroupsForm" prependId="false">
                         <div class="admin__title-bar">
-                            <!-- HEADING -->
+                            <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__groups}</h2>
-                            <!-- CREATE NEW GROUP BUTTON -->
-                            <h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroupNew')}/" styleClass="btn btn--default admin__title-bar-action">
-                                <span>#{msg.add}</span>
-                            </h:outputLink>
+                            <!-- CREATE NEW GROUP -->
+                            <a href="#{navigationHelper.getPageUrl('adminUserGroupNew')}/" class="btn btn--default admin__title-bar-action">
+                                #{msg.add}
+                            </a>
                         </div>
                         <div class="admin__content-inner-content">
                             <!-- INFO TEXT -->
                             <p class="admin__group-info-text">
                                 <h:outputText value="#{msg.admin__groups_description_text}" escape="false" />
                             </p>
-                            
+
                             <div class="admin__entry-list">
                                 <!-- INDIVIDUAL GROUPS -->
                                 <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">

@@ -15,17 +15,17 @@
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">            
+        <f:view contentType="text/html" encoding="utf-8">
             <div id="adminIpRanges">
                 <h:panelGroup rendered="#{userBean.admin}">
                     <h:form id="adminIpRangesForm" prependId="false">
                         <div class="admin__title-bar">
-                            <!-- HEADING --> 
+                            <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__ip_ranges}</h2>
-                            <!-- CREATE NEW IP RANGE BUTTON --> 
-                            <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRangeNew')}/" styleClass="btn btn--default admin__title-bar-action">
-                                <span>#{msg.add}</span>
-                            </h:outputLink>
+                            <!-- CREATE NEW IP RANGE -->
+                            <a href="#{navigationHelper.getPageUrl('adminIpRangeNew')}/" class="btn btn--default admin__title-bar-action">
+                                #{msg.add}
+                            </a>
                         </div>
 
                         <div class="admin__content-inner-content">
@@ -33,7 +33,7 @@
                             <p class="admin__ip-range-info-text">
                                 <h:outputText value="#{msg.admin__ip_ranges_description_text}" escape="false" />
                             </p>
-                            
+
                             <div class="admin__entry-list">
                                 <!--  INDIVIDUAL IP RANGES -->
                                 <ui:repeat var="ipRange" value="#{adminBean.allIpRanges}">
@@ -51,7 +51,7 @@
                                         <div class="row mb-2">
                                             <div class="col-12 admin__ip-range-range">#{msg.ipRange}: #{ipRange.subnetMask}</div>
                                         </div>
-                                        
+
                                         <!-- IP RANGE ACTIONS -->
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
@@ -64,16 +64,16 @@
 
                                                 <!-- DELETE IP RANGE -->
                                                 <h:commandLink
-                                                    styleClass="admin__boxed-entry-actions-delete -redlink" 
+                                                    styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
-                                                    action="adminIpRanges" 
+                                                    action="adminIpRanges"
                                                     actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
                                                     title="#{msg.delete}">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{ipRange.name}" />
                                                     #{msg.delete}
                                                 </h:commandLink>
-                                            </div>            
-                                        </div>           
+                                            </div>
+                                        </div>
                                     </div>
                                 </ui:repeat>
                             </div>

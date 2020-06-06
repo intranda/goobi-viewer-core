@@ -19,12 +19,12 @@
             <h:panelGroup rendered="#{userBean.admin}">
             <h:form id="adminAllUserForm" prependId="false">
                 <div class="admin__title-bar">
-                    <!-- HEADING -->
+                    <!-- TITLE -->
                     <h2 class="admin__title">#{msg.admin__users}</h2>
-                    <!-- CREATE NEW USER BUTTON -->
-                    <h:outputLink value="#{navigationHelper.getPageUrl('adminUserNew')}/" styleClass="btn btn--default admin__title-bar-action">
-                            <span>#{msg.add}</span>
-                    </h:outputLink>
+                    <!-- CREATE NEW USER -->
+                    <a href="#{navigationHelper.getPageUrl('adminUserNew')}/" class="btn btn--default admin__title-bar-action">
+                        #{msg.add}
+                    </a>
                 </div>
 
                 <div class="admin__content-inner-content">

@@ -3,7 +3,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -21,12 +21,13 @@
                 <h:panelGroup rendered="#{userBean.admin}">
                     <h:form id="adminLicensesForm" prependId="false">
                         <div class="admin__title-bar">
+                            <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__rights}</h2>
                             <!-- TODO: CHECK IF WE CAN USE THIS CODE OR IF WE NEED pretty: AND actionListener, ADD ANOTHER - AT btn-default -->
                             <!--
-                            <h:outputLink value="#{navigationHelper.getPageUrl('adminRightsNew')}/" styleClass="btn btn-default admin__title-bar-action">
-                                    <span>#{msg.add}</span>
-                            </h:outputLink> 
+                            <a href="#{navigationHelper.getPageUrl('adminRightsNew')}/" class="btn btn-default admin__title-bar-action">
+                                #{msg.add}
+                            </a>
                             -->
                             <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.newCurrentLicenseAction}" styleClass="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
@@ -52,7 +53,7 @@
                                         <ui:fragment rendered="#{license.ipRange != null}">
                                             <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
                                         </ui:fragment>
-                                    
+
                                         <div class="row mb-2">
                                             <span class="col-3">#{msg.admin__right_license_type}:</span><span class="col-9">#{msg[license.licenseType.name]}</span>
                                         </div>
