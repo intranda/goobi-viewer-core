@@ -38,9 +38,9 @@
 
                         <ui:repeat var="page" value="#{cmsBean.staticPages}">
                             <div class="row no-gutters admin__user-table-entry">
-								<!-- TODO INLINE CSS -->
+                                <!-- TODO INLINE CSS -->
                                 <div class="col-3 d-flex" style="min-height:42px;">
-									<!-- TODO INLINE CSS -->
+                                    <!-- TODO INLINE CSS -->
                                     <div class="admin__user-table-data" style="padding-left:0px;">
                                         <span>#{msg[page.pageName]}</span>
                                         <ui:fragment rendered="#{page.hasCmsPage}">
@@ -52,13 +52,13 @@
                                 <div class="col-6 d-flex align-items-center">
                                     <div class="custom-control custom-control--select">
                                         <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
-                                            <f:selectItem itemValue="" itemLabel="#{msg.select}" itemDisabled="true" />
                                             <f:selectItem itemValue="" itemLabel="#{msg.none}" />
                                             <f:selectItems
                                                 value="#{cmsBean.getAvailableCmsPages(page)}"
                                                 var="availablePage" itemValue="#{availablePage}"
                                                 itemLabel="#{availablePage.title}" />
                                             <f:ajax event="change" render="@form" />
+                                            <f:passThroughAttribute name="aria-label" value="#{msg.cms__static_pages__overridden_cms_page}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
