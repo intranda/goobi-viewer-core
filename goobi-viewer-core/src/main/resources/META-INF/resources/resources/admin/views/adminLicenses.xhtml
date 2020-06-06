@@ -26,9 +26,8 @@
                     <div class="admin__content-inner-content">
                         <h:form id="adminLicenseTypesForm" prependId="false">
                             <!-- LICENSE INFO TEXT -->
-                            <p>
-                                <h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
-                            </p>
+                            <!-- TODO INLINE CSS -->
+                            <div style="margin-bottom: 1.6rem;"><h:outputText value="#{msg.admin__licenses_description_text}" escape="false" /></div>
 
                             <!-- NOT CONFIGURED LICENSES -->
                             <ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
