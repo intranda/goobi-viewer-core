@@ -18,105 +18,106 @@
 
     <ui:define name="content">
         <ui:fragment id="cmsCategoriesAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}">
-            <div id="adminCmsCategories" class="admin-cms-categories">
-                <h2 class="admin__content-inner-title">#{msg.admin__categories}</h2>
-        
+            <div id="adminCmsCategories">
+                <div class="admin__title-bar">
+                    <h2 class="admin__title">#{msg.admin__categories}</h2>
+                </div>
+
                 <div class="admin__content-inner-content">
-                    <div class="admin-cms-categories__wrapper">
-                        <!-- CREATE / EDIT -->
-                        <div class="admin-cms-categories__edit">
-                            <!-- CREATE -->
-                            <div class="admin-cms-categories__create">
-                                <h:form id="adminCategoryCreateForm" prependId="false">
-    	                            <ui:fragment rendered="#{!categories.editing}">
-    		                            <h4>#{msg.admin__category_create_new}</h4>
-    	                            </ui:fragment>
-    	                            <ui:fragment rendered="#{categories.editing}">
-    	                            	<h4>#{msg.admin__category_edit}</h4>
-    	                            </ui:fragment>
-                                
-                                    <!-- TITLE -->
-                                    <div class="cms-module__option-group">
-                                        <div class="cms-module__option-label cms-module__option-label--fullwidth">
-                                            <label for="createCategoryTitle">#{msg.admin__category_title}:</label>
-                                        </div>
-                                        <div class="cms-module__option-control">
-                                            <h:inputText id="createCategoryTitle" styleClass="form-control" value="#{categories.categoryName}"/>
-                                            <span class="cms-module__option-control-helptext static">#{msg.inline_help__create_category_title}</span>
-                                        </div>
-                                        <div class="cms-module__option-help static">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-        
-                                    <!-- DESCRIPTION -->
-                                    <div class="cms-module__option-group">
-                                        <div class="cms-module__option-label cms-module__option-label--fullwidth">
-                                            <label for="createCategoryDescription">#{msg.admin__category_description}:</label>
-                                        </div>
-                                        <div class="cms-module__option-control">
-                                            <h:inputTextarea id="createCategoryDescription" styleClass="form-control" value="#{categories.categoryDescription}"/>
-                                            <span class="cms-module__option-control-helptext static">#{msg.inline_help__create_category_description}</span>
-                                        </div>
-                                        <div class="cms-module__option-help static">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- ACTION -->
-                                    <div class="admin-cms-categories__create-action">
-                                        <h:commandLink type="button" class="btn btn--full" action="#{categories.save()}">
-                                            #{categories.editing ? msg.save : msg.admin__category_create_new}
-                                        </h:commandLink>
-                                        <h:commandLink rendered="#{categories.editing}" type="button" class="btn btn--cancel" action="#{categories.cancel()}">
-                                            #{msg.cancel}
-                                        </h:commandLink>
-                                    </div>
-                                </h:form>
+                    <p>Lorem ipsum dolor sit amet...</p>
+
+                    <!-- LIST -->
+                    <!-- TODO INLINE CSS -->
+                    <div class="admin__user-table-content" style="margin-bottom:3rem;">
+                        <h:form id="adminCategoryListForm" prependId="false">
+                            <div class="row no-gutters admin__user-table-title">
+                                <div class="col-4 d-flex">#{msg.admin__category_title}</div>
+                                <div class="col-8 d-flex">#{msg.admin__category_description}</div>
                             </div>
-                        </div>
-    
-                        <!-- LIST -->
-                        <!-- TODO: eventuell noch eine weiter Spalte "Zuweisung", damit die Kategorie Seiten oder Medien zugewiesen werden kann. -->
-                        <div class="admin-cms-categories__list">
-                            <h:form id="adminCategoryListForm" prependId="false">
-                                <table class="cms-module__table table table-striped table-bordered admin-table #{categories.editing ? 'invisible' : ''}">
-                                    <thead>
-                                        <tr>
-                                            <th>#{msg.admin__category_title}</th>
-                                            <th>#{msg.admin__category_description}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ui:repeat var="category" value="#{categories.allCategories}">
-                                            <tr>
-                                                <td class="admin-cms-categories__name">
-                                                    #{category.name}
-                                                    <div class="cms-module__actions">
-                                                        <h:commandLink type="button" class="btn btn--clean" action="#{categories.edit(category)}">
-                                                        	#{msg.button__edit}
-                                                        	<f:ajax render="@all" />
-                                                        </h:commandLink>
-                                                        <h:commandLink type="button" class="btn btn--clean delete" action="#{categories.delete(category)}">
-                                                        	#{msg.button__delete}
-                                                        	<f:ajax render="@all" />
-                                                        </h:commandLink>
-                                                    </div>
-                                                </td>
-                                                <td>#{category.description}</td>
-                                            </tr>
-                                        </ui:repeat>
-                                    </tbody>
-                                </table>
-                            </h:form>
-                        </div>
+                            <ui:repeat var="category" value="#{categories.allCategories}">
+                                <div class="row no-gutters admin__user-table-entry">
+                                    <div class="col-4 d-flex">
+                                        <!-- TODO INLINE CSS -->
+                                        <div class="admin__user-table-data" style="padding-left:0">
+                                            <span>#{category.name}</span>
+                                            <div>
+                                                <h:commandLink type="button" class="admin__user-table-edit-user -bluelink" action="#{categories.edit(category)}">
+                                                    #{msg.button__edit}
+                                                    <f:ajax render="@all" />
+                                                    <f:passThroughAttribute name="style" value="margin-right:1.4rem;" />
+                                                </h:commandLink>
+                                                <h:commandLink type="button" class="admin__user-table-edit-user -redlink" action="#{categories.delete(category)}">
+                                                    #{msg.button__delete}
+                                                    <f:ajax render="@all" />
+                                                </h:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8 d-flex">#{category.description}</div>
+                                </div>
+                            </ui:repeat>
+                        </h:form>
                     </div>
+
+                    <!-- CREATE / EDIT -->
+                    <h:form id="adminCategoryCreateForm" prependId="false">
+                        <ui:fragment rendered="#{!categories.editing}">
+                            <h3>#{msg.admin__category_create_new}</h3>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{categories.editing}">
+                            <h3>#{msg.admin__category_edit}</h3>
+                        </ui:fragment>
+
+
+                        <div class="admin__default-block">
+                            <fieldset>
+                                <!-- TITLE -->
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="createCategoryTitle">#{msg.admin__category_title}:</label>
+                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <h:inputText id="createCategoryTitle" styleClass="form-control" value="#{categories.categoryName}"/>
+                                        <span class="admin__form-help-text">#{msg.inline_help__create_category_title}</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- DESCRIPTION -->
+                                <div class="form-group form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="createCategoryDescription">#{msg.admin__category_description}:</label>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <h:inputTextarea id="createCategoryDescription" styleClass="form-control" value="#{categories.categoryDescription}"/>
+                                        <span class="admin__form-help-text">#{msg.inline_help__create_category_description}</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <!-- ACTION -->
+                        <div class="row no-gutters justify-content-end admin__final-actions">
+                            <h:commandLink rendered="#{categories.editing}" type="button" class="btn btn--cancel" action="#{categories.cancel()}">
+                                #{msg.cancel}
+                            </h:commandLink>
+                            <h:commandLink type="button" class="btn btn--success" action="#{categories.save()}">
+                                #{msg.save}
+                            </h:commandLink>
+                        </div>
+                    </h:form>
                 </div>
             </div>
         </ui:fragment>
     </ui:define>
 </ui:composition>
+
