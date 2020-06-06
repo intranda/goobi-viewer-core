@@ -97,25 +97,24 @@
                                         <!-- TODO INLINE CSS -->
                                         <div class="admin__user-table-data">
                                             <span class="admin__user-table-name">#{page.title}</span>
-                                            <span>#{page.menuTitle}</span>
-                                            <span style="font-style:italic;">(Subtheme)</span>
+                                            <ui:fragment rendered="#{page.title != page.menuTitle}">
+                                                <span>#{page.menuTitle}</span>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{page.subThemeDiscriminatorValue != ''}">
+                                                <span style="font-style:italic;">(#{page.subThemeDiscriminatorValue})</span>
+                                            </ui:fragment>
                                             <div>
-                                                <h:commandLink styleClass="admin__user-table-edit-user -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
-                                                    #{msg.edit}
+                                                <h:commandLink styleClass="admin__user-table-edit-user -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">#{msg.edit}
                                                     <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                 </h:commandLink>
                                                 <ui:fragment rendered="#{page.published}">
-                                                    <h:outputLink styleClass="admin__user-table-edit-user -bluelink" value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}" target="_blank">
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_pageView}: #{page.title}" />
-                                                        #{msg.cms_pagePreview}
-                                                    </h:outputLink>
+                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__user-table-edit-user -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}" style="padding-right:1.4rem;">#{msg.cms_pagePreview}</a>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
-                                                    <h:commandLink styleClass="admin__user-table-edit-user -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
+                                                    <h:commandLink styleClass="admin__user-table-edit-user -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">#{msg.cms_pageMetadata_delete}
                                                         <f:passThroughAttribute name="data-toggle" value="modal" />
                                                         <f:passThroughAttribute name="data-target" value="#deletePageModal" />
-                                                        #{msg.cms_pageMetadata_delete}
                                                         <f:ajax render="@none" />
                                                     </h:commandLink>
                                                 </ui:fragment>
