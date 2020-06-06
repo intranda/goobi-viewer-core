@@ -47,116 +47,112 @@
                         <!-- ALL PAGES TABLE -->   
                         <!-- TODO ADOPT CLASS NAMES -->
                         <div id="cmsOverviewWrapper" class="admin__user-table-content">
-                                                   
-                               <!-- TITLE ROW -->
-                               <div class="row no-gutters admin__user-table-title">
-
-                                   <!-- TYPE COL -->
-                                   <div class="col-6 d-flex ">#{msg.cms_templateType}</div>
+                            <!-- TITLE ROW -->
+                            <div class="row no-gutters admin__user-table-title">
+                                <!-- TYPE COL -->
+                                <div class="col-6 d-flex ">#{msg.cms_templateType}</div>
 
 
-                                   <!-- CLASSIFICATIONS COL -->
-                                   <div class="col-2 d-flex">
-                                       #{msg.admin__cms_categories}
-                                   </div>
-
-                                   <!-- DATE COL -->
-                                   <div class="col-2 d-flex">
-                                       #{msg.cms_pageMetadata_lastEdited}
-                                       <!-- SORTING -->
-                                       <div class="sorting-wrapper">
-                                           <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
-                                               <f:passThroughAttribute name="aria-label" value="sort ascending" />
-                                               <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                               <f:ajax execute="@form" render="@form" />
-                                           </h:commandLink>
-                                           <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'DESCENDING')}">
-                                               <f:passThroughAttribute name="aria-label" value="sort descending" />
-                                               <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                               <f:ajax execute="@form" render="@form" />
-                                           </h:commandLink>
-                                       </div>
-                                   </div>
-                                   <!-- TRANSLATIONS COL -->
-                                   <div class="col-2 d-flex">
-                                       <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                           <div class="col-2 d-flex">#{locale.language}</div>
-                                       </c:forEach>
-                                   </div>
+                                <!-- CLASSIFICATIONS COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.admin__cms_categories}
                                 </div>
 
-                                <!-- INDIVIDUAL PAGE ROWS -->
-                               <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                   <div class="row no-gutters admin__user-table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
-                                       <div class="col-6 d-flex">
+                                <!-- DATE COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.cms_pageMetadata_lastEdited}
+                                    <!-- SORTING -->
+                                    <div class="sorting-wrapper admin__user-table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                                <!-- TRANSLATIONS COL -->
+                                <div class="col-2 d-flex">
+                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
+                                        <div class="col-2 d-flex">#{locale.language}</div>
+                                    </c:forEach>
+                                </div>
+                            </div>
 
-                                           <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
-                                               <img alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
-                                           </ui:fragment>
-                                           <ui:fragment rendered="#{page.validityStatus != 'VALID'}">
-                                               <img alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
-                                           </ui:fragment>
-                                            <div style="flex-direction:column; padding-left: 20px;">
-                                                   <div style="font-size:18px; padding-bottom:5px;">#{page.title}</div>
-                                                   <div>#{page.menuTitle}</div>
-                                                   <div style="font-style:italic;">(Subtheme)</div>
+                            <!-- INDIVIDUAL PAGE ROWS -->
+                            <ui:repeat var="page" value="#{cmsBean.displayedPages}">
+                                <div class="row no-gutters admin__user-table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
+                                    <div class="col-6 d-flex">
+                                        <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
+                                            <img class="admin__user-table-img" alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{page.validityStatus != 'VALID'}">
+                                            <img class="admin__user-table-img" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
+                                        </ui:fragment>
 
-                                                   <h:commandLink styleClass="admin__user-table-edit-user -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
-                                                       #{msg.edit}
-                                                       <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
-                                                       <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
-                                                   </h:commandLink>
-                                                   <h:panelGroup rendered="#{page.published}">
-                                                       <h:outputLink styleClass="admin__user-table-edit-user -bluelink" value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}" target="_blank">
-                                                           <f:passThroughAttribute name="aria-label" value="#{msg.cms_pageView}: #{page.title}" />
-                                                           #{msg.cms_pageView}
-                                                       </h:outputLink>
-                                                   </h:panelGroup>
-                                                   <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
-                                                       <h:commandLink styleClass="admin__user-table-edit-user -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
-                                                           <f:passThroughAttribute name="data-toggle" value="modal" />
-                                                           <f:passThroughAttribute name="data-target" value="#deletePageModal" />
-                                                           #{msg.cms_pageMetadata_delete}
-                                                           <f:ajax render="@none" />
-                                                       </h:commandLink>
-                                                   </h:panelGroup>
+                                        <!-- TODO INLINE CSS -->
+                                        <div class="admin__user-table-data">
+                                            <span style="admin__user-table-name">#{page.title}</span>
+                                            <span>#{page.menuTitle}</span>
+                                            <span style="font-style:italic;">(Subtheme)</span>
+
+                                            <h:commandLink styleClass="admin__user-table-edit-user -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
+                                                #{msg.edit}
+                                                <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
+                                                <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
+                                            </h:commandLink>
+                                            <h:panelGroup rendered="#{page.published}">
+                                                <h:outputLink styleClass="admin__user-table-edit-user -bluelink" value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}" target="_blank">
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_pageView}: #{page.title}" />
+                                                    #{msg.cms_pagePreview}
+                                                </h:outputLink>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
+                                                <h:commandLink styleClass="admin__user-table-edit-user -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
+                                                    <f:passThroughAttribute name="data-toggle" value="modal" />
+                                                    <f:passThroughAttribute name="data-target" value="#deletePageModal" />
+                                                    #{msg.cms_pageMetadata_delete}
+                                                    <f:ajax render="@none" />
+                                                </h:commandLink>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center">
+                                        <ui:repeat value="#{page.categories}" var="category">
+                                            <!-- TODO INLINE CSS, LETS MAKE THIS THE DEFAULT VISUALIZATION EVERYWHERE FOR CATEGORIES-->
+                                            <div class="badge" style="color: #8947CC; border: 1px solid #8947CC; border-radius: 0; font-weight:normal; margin-right:.5rem;">#{category.name}</div>
+                                        </ui:repeat>
+                                    </div>
+                                     <div class="col-2 d-flex align-items-center">
+                                        <h:outputText value="#{page.dateUpdated}">
+                                            <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                        </h:outputText>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center">
+                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
+                                            <div class="col-2 d-flex">
+                                                <!-- LANGUAGE COMPLETE -->
+                                                <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
+                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                                                </ui:fragment>
+
+                                                <!-- LANGUAGE INCOMPLETE -->
+                                                <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
+                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                                                </ui:fragment>
                                             </div>
-                                       </div>
-                                       <div class="col-2 d-flex">
-                                           <ul>
-                                               <ui:repeat value="#{page.categories}" var="category">
-                                                   <li>
-                                                       <h:outputText value="#{category.name} " />
-                                                   </li>
-                                               </ui:repeat>
-                                           </ul>
-                                       </div>
-                                       <div class="col-2 d-flex">
-                                           <h:outputText value="#{page.dateUpdated}">
-                                               <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
-                                           </h:outputText>
-                                       </div>
-                                       <div class="col-2 d-flex">
-                                           <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                               <div class="col-2 d-flex">
-                                                   <!-- LANGUAGE COMPLETE -->
-                                                   <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
-                                                       <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                                                   </ui:fragment>
-
-                                                   <!-- LANGUAGE INCOMPLETE -->
-                                                   <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
-                                                       <i class="fa fa-square-o" aria-hidden="true"></i>
-                                                   </ui:fragment>
-                                               </div>
-                                           </c:forEach>
-                                       </div>
-
-                                   </div>
-                               </ui:repeat>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </ui:repeat>
 
 
                             <!-- delete page modal -->
+                            <!-- TODO remove modal and replace confirmation with javascript browser confirm -->
                             <div id="deletePageModal" class="modal fade" tabindex="-1" role="dialog">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
