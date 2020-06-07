@@ -146,7 +146,7 @@
                                             <div id="selected_subthemes" class="col-5">
                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                        <div class="badge badge-secondary admin__license-badge">
+                                                        <div class="badge badge-secondary">
                                                             #{msg[selectable.value]}
                                                         </div>
                                                     </ui:fragment>
@@ -196,7 +196,7 @@
                                             <div id="selected_categories" class="col-sm-5">
                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                        <div class="badge badge-secondary admin__license-badge">
+                                                        <div class="badge badge-violet">
                                                             #{msg[selectable.value.name]}
                                                         </div>
                                                     </ui:fragment>
@@ -244,7 +244,7 @@
                                             <div id="selected_templates" class="col-sm-5">
                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                        <div class="badge badge-secondary admin__license-badge">
+                                                        <div class="badge badge-secondary">
                                                             #{msg[selectable.value]}
                                                         </div>
                                                     </ui:fragment>
@@ -374,7 +374,7 @@
                                 
                                 <!-- Record-related functions -->
                                 <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
-                                <div class="admin__license-functions">
+                                <div class="admin__license-functions admin__license-functions-added">
                                     <div class="form-group form-row">
                                         <div class="col-5">#{msg.admin__license_functions_added}</div>
                                         <div class="col-1"></div>
@@ -388,10 +388,10 @@
                                     </div>
                                     <div class="form-group form-row">
                                         <!-- Privileges already added to this license -->
-                                        <div class="col-5">
+                                        <div class="col-5 badge-hover">
                                             <!-- Privileges inherited from the selected license type -->
                                             <ui:repeat var="priv" value="#{adminBean.currentLicense.licenseType.privileges}">
-                                                <div class="badge badge-secondary admin__license-badge">
+                                                <div class="badge badge-secondary">
                                                     #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                 </div>
                                             </ui:repeat>
@@ -400,7 +400,7 @@
                                                 <h:commandLink styleClass="admin__license-action"
                                                     action="#{adminBean.currentLicense.removePrivilege(priv)}"
                                                     title="#{msg.remove}">
-                                                    <div class="badge badge-success admin__license-badge">
+                                                    <div class="badge badge-success">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- remove button -->
                                                         <i class="fa fa-trash" aria-hidden="true"></i>
@@ -410,13 +410,13 @@
                                         </div>
                                         <div class="col-1"></div>
                                         <!-- Privileges available to add -->
-                                        <div class="col-5 admin__license-functions-available">
+                                        <div class="col-5 badge-hover">
                                             <ui:repeat var="priv"
                                                 value="#{adminBean.currentLicense.availablePrivileges}">
                                                 <h:commandLink styleClass="admin__license-action"
                                                     action="#{adminBean.currentLicense.addPrivilege(priv)}"
                                                     title="#{msg.add}">
-                                                    <div class="badge badge-dark admin__license-badge">
+                                                    <div class="badge badge-dark">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
                                                         <i class="fa fa-plus" aria-hidden="true"></i>

@@ -80,10 +80,10 @@
                                                 <dt class="col-sm-3">#{msg.admin__license_functions}:</dt>
                                                 <dd class="col-sm-9">
                                                     <ui:repeat var="priv" value="#{licenseType.privileges}">
-                                                       <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                       <div class="badge badge-success">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                     </ui:repeat>
                                                     <ui:repeat var="priv" value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
-                                                       <div class="badge badge-light admin__license-badge -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+                                                       <div class="badge badge-light -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                     </ui:repeat>
                                                 </dd>
                                             </ui:fragment>

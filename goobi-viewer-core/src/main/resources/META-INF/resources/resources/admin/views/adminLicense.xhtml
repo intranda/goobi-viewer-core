@@ -92,10 +92,10 @@
                                         </div>
                                     </div>
                                     <div class="form-group form-row">
-                                        <div class="col-5 admin__license-functions-added">
+                                        <div class="col-5 badge-hover">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.privilegesCopy}">
                                                 <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
-                                                    <div class="badge badge-success admin__license-badge">
+                                                    <div class="badge badge-success">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- remove button -->
                                                         <i class="fa fa-trash" aria-hidden="true"></i>
@@ -104,10 +104,10 @@
                                             </ui:repeat>
                                         </div>
                                         <div class="col-1"></div>
-                                        <div class="col-5 admin__license-functions-available">
+                                        <div class="col-5 badge-hover">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.availablePrivileges}">
                                                 <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
-                                                    <div class="badge badge-dark admin__license-badge">
+                                                    <div class="badge badge-dark">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
                                                         <i class="fa fa-plus" aria-hidden="true"></i>

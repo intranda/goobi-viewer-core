@@ -49,19 +49,48 @@
 		&:focus {}
 	}
 
-    .-violetbadge {
-        color: #8947CC;
-        border: 1px solid #8947CC;
+    .badge {
         border-radius: 0;
         font-weight: normal;
         margin-right: .5rem;
         text-transform: uppercase;
-    }
-
-    .-empty {
-        &:after {
-            content: '.';
-            visibility: hidden;
+        background-color: @white;
+        &-violet {
+            color: #8947CC;
+            border: 1px solid #8947CC;
+        }
+        &-info {
+            color: #008295;
+            border: 1px solid #008295;
+        }
+        &-dark {
+            color: #343a40;
+            border: 1px solid #343a40;
+        }
+        &-danger {
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        &-success {
+            color: #008a00;
+            border: 1px solid #008a00;
+        }
+        &-secondary {
+            color: #74422B;
+            border: 1px solid #74422B;
+        }
+        &-hover {
+            .badge-success {
+	            &:hover {
+		    	    color: @black;
+		        }
+            }
+		    .badge-dark {
+		    	&:hover {
+                    background-color: #F5F5F5;
+		    		color: @black;
+		    	}
+		    }
         }
     }
 
@@ -344,32 +373,10 @@
 		visibility: hidden;
 	}
 	&__license-action {
-		i {
-			color: @white;
-		}
 		&:hover {
 			text-decoration: none;
 		}
 	}
-	&__license-badge {
-		padding: 0.5rem;
-	}
-	&__license-functions-added {
-		.admin__license-badge {
-			background: #008a00;
-			&:hover {
-				background: lighten(#008a00, 6%);	
-			}
-		}
-	}
-	&__license-functions-available {
-		.admin__license-badge {
-			background: #343a40;
-			&:hover {
-				background: lighten(#343a40, 15%);	
-			}
-		}
-	}	
 	&__license-unconfigured-entry {
 		transition: background 0.2s ease;
 		padding: 0.4rem 0;
