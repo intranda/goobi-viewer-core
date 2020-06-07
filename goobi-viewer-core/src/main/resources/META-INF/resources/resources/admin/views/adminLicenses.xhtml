@@ -67,18 +67,18 @@
                                         </ui:fragment>
                                         <!-- DATA -->
                                         <dl class="row">
-                                            <dt class="col-sm-3">#{msg.admin__licenses_record_number}:</dt>
-                                            <dd class="col-sm-9">#{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</dd>
+                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
+                                            <dd class="col-sm-8">#{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</dd>
 
                                             <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
-                                                <dt class="col-sm-3">#{msg.license_conditions}:</dt>
-                                                <dd class="col-sm-9">#{licenseType.conditions}</dd>
+                                                <dt class="col-sm-4">#{msg.license_conditions}:</dt>
+                                                <dd class="col-sm-8">#{licenseType.conditions}</dd>
                                             </ui:fragment>
 
                                             <!-- FUNCTIONS -->
                                             <ui:fragment rendered="#{!licenseType.openAccess}">
-                                                <dt class="col-sm-3">#{msg.admin__license_functions}:</dt>
-                                                <dd class="col-sm-9">
+                                                <dt class="col-sm-4">#{msg.admin__license_functions}:</dt>
+                                                <dd class="col-sm-8">
                                                     <ui:repeat var="priv" value="#{licenseType.privileges}">
                                                        <div class="badge badge-success">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                     </ui:repeat>

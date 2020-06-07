@@ -57,12 +57,12 @@
                                         </div>
                                         <!-- DATA -->
                                         <dl class="row">
-                                            <dt class="col-sm-3">#{msg.admin__right_license_type}:</dt>
-                                            <dd class="col-sm-9">#{msg[license.licenseType.name]}</dd>
+                                            <dt class="col-sm-4">#{msg.admin__right_license_type}:</dt>
+                                            <dd class="col-sm-8">#{msg[license.licenseType.name]}</dd>
 
                                             <!-- FUNCTIONS -->
-                                            <dt class="col-sm-3">#{msg.admin__right_functions}:</dt>
-                                            <dd class="col-sm-9">
+                                            <dt class="col-sm-4">#{msg.admin__right_functions}:</dt>
+                                            <dd class="col-sm-8">
                                                 <!-- Added to this license -->
                                                 <ui:repeat var="priv" value="#{license.privileges}">
                                                     <div class="badge badge-success">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
