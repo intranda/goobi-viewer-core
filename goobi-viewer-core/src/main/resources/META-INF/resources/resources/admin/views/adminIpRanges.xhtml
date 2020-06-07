@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="admin__content-inner-content">
-                            <!-- IP RANGE INFO TEXT -->
+                            <!-- INFO TEXT -->
                             <div class="admin__info-text">
                                 <h:outputText value="#{msg.admin__ip_ranges_description_text}" escape="false" />
                             </div>
@@ -41,20 +41,21 @@
                                         <div class="row">
                                             <h3 class="col-12">#{ipRange.name}</h3>
                                         </div>
-                                        <!-- IP RANGE DESCRIPTION -->
+                                        <!-- DESCRIPTION -->
                                         <ui:fragment rendered="#{ipRange.description != ''}">
-                                            <div class="row mb-2">
-                                                <p class="col-12 admin__ip-range-description">#{ipRange.description}</p>
+                                            <div class="row">
+                                                <p class="col-12 admin__boxed-entry-description">#{ipRange.description}</p>
                                             </div>
                                         </ui:fragment>
-                                        <!-- IP RANGE SUBNET MASK -->
-                                        <div class="row mb-2">
-                                            <div class="col-12 admin__ip-range-range">#{msg.ipRange}: #{ipRange.subnetMask}</div>
-                                        </div>
-
-                                        <!-- IP RANGE ACTIONS -->
+                                        <!-- DATA -->
+                                        <dl class="row">
+                                            <dt class="col-sm-3">#{msg.ipRange}:</dt>
+                                            <dd class="col-sm-9">#{ipRange.subnetMask}</dd>
+                                        </dl>
+                                        <!-- ACTIONS -->
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
+                                                <!-- EDIT -->
                                                 <h:outputLink
                                                     styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
                                                     value="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/">
@@ -62,7 +63,7 @@
                                                     #{msg.edit}
                                                 </h:outputLink>
 
-                                                <!-- DELETE IP RANGE -->
+                                                <!-- DELETE -->
                                                 <h:commandLink
                                                     styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"

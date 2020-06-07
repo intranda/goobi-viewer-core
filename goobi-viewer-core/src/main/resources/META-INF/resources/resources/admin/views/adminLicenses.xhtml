@@ -25,7 +25,7 @@
                     </div>
                     <div class="admin__content-inner-content">
                         <h:form id="adminLicenseTypesForm" prependId="false">
-                            <!-- LICENSE INFO TEXT -->
+                            <!-- INFO TEXT -->
                             <div class="admin__info-text">
                                 <h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
                             </div>
@@ -52,48 +52,52 @@
                             </ui:fragment>
 
                             <div class="admin__entry-list">
+                                <!-- INDIVIDUAL LICENSES -->
                                 <ui:repeat var="licenseType" value="#{adminBean.allRecordLicenseTypes}">
                                     <div class="admin__boxed-entry -w50">
-                                        <h3>#{msg[licenseType.name]}</h3>
-
+                                        <!-- NAME -->
+                                        <div class="row">
+                                            <h3 class="col-12">#{msg[licenseType.name]}</h3>
+                                        </div>
+                                        <!-- DESCRIPTION-->
                                         <ui:fragment rendered="#{licenseType.description != null and licenseType.description != ''}">
                                             <div class="row">
-                                                <h:outputText><p class="col-12">#{licenseType.description}</p></h:outputText>
+                                                <p class="col-12 admin__boxed-entry-description">#{licenseType.description}</p>
                                             </div>
                                         </ui:fragment>
+                                        <!-- DATA -->
+                                        <dl class="row">
+                                            <dt class="col-sm-3">#{msg.admin__licenses_record_number}:</dt>
+                                            <dd class="col-sm-9">#{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</dd>
 
-                                        <div class="row mb-2">
-                                            <span class="col-3">#{msg.admin__licenses_record_number}:</span><span class="col-9"> #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</span>
-                                        </div>
-
-                                        <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
-                                            <div class="row mb-2">
-                                                <span class="col-3">#{msg.license_conditions}:</span><span class="col-9">#{licenseType.conditions}</span>
-                                            </div>
-                                        </ui:fragment>
-
-                                        <div class="row mb-2">
-                                            <!-- OPEN ACCESS TEXT -->
-                                            <ui:fragment rendered="#{licenseType.openAccess}">
-                                                <span class="col-12">#{msg.admin__license_open_access_desciption_text}</span>
+                                            <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
+                                                <dt class="col-sm-3">#{msg.license_conditions}:</dt>
+                                                <dd class="col-sm-9">#{licenseType.conditions}</dd>
                                             </ui:fragment>
+
                                             <!-- FUNCTIONS -->
                                             <ui:fragment rendered="#{!licenseType.openAccess}">
-                                                <span class="col-3">#{msg.admin__license_functions}:</span>
-                                                <div class="col-9">
+                                                <dt class="col-sm-3">#{msg.admin__license_functions}:</dt>
+                                                <dd class="col-sm-9">
                                                     <ui:repeat var="priv" value="#{licenseType.privileges}">
                                                        <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                     </ui:repeat>
                                                     <ui:repeat var="priv" value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
                                                        <div class="badge badge-light admin__license-badge -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                     </ui:repeat>
-                                                </div>
+                                                </dd>
                                             </ui:fragment>
-                                        </div>
+                                        </dl>
 
+                                        <!-- OPEN ACCESS TEXT -->
+                                        <ui:fragment rendered="#{licenseType.openAccess}">
+                                            <div class="row col-12">#{msg.admin__license_open_access_desciption_text}</div>
+                                        </ui:fragment>
+
+                                        <!-- ACTIONS -->
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
-                                                <!-- EDIT LICENCE -->
+                                                <!-- EDIT -->
                                                 <h:outputLink
                                                     styleClass="admin__boxed-entry-actions-edit -bluelink"
                                                     title="#{msg.edit}"
@@ -101,7 +105,8 @@
                                                         <f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{licenseType.name}" />
                                                         #{msg.edit}
                                                 </h:outputLink>
-                                                <!-- DELETE LICENCE -->
+
+                                                <!-- DELETE -->
                                                 <h:commandLink
                                                     styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"

@@ -38,37 +38,34 @@
                                 <!-- INDIVIDUAL GROUPS -->
                                 <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
                                     <div class="admin__boxed-entry -w33">
-                                        <!-- GROUP NAME -->
+                                        <!-- NAME -->
                                         <div class="row">
-                                            <h3 class="col-12 admin__group-title">#{userGroup.name}</h3>
+                                            <h3 class="col-12">#{userGroup.name}</h3>
                                         </div>
-                                        <!-- GROUP DESCRIPTION -->
+                                        <!-- DESCRIPTION -->
                                         <ui:fragment rendered="#{userGroup.description != ''}">
                                             <div class="row">
-                                                <p class="col-12 admin__group-description">#{userGroup.description}</p>
+                                                <p class="col-12 admin__boxed-entry-description">#{userGroup.description}</p>
                                             </div>
                                         </ui:fragment>
-                                        <!-- GROUP MEMBER COUNT -->
-                                        <div class="row mb-2">
-                                            <div class="col-12 admin__group-member-count">#{msg.userGroup_members}:
-                                                #{userGroup.memberCount}</div>
-                                        </div>
-                                        <!-- GROUP OWNER -->
-                                        <div class="row mb-2">
-                                            <div class="col-12 admin__group-owner">#{msg.owner}:
-                                                #{userGroup.owner.displayName}</div>
-                                        </div>
-                                        <!-- GROUP ACTIONS -->
+                                        <!-- DATA -->
+                                        <dl class="row">
+                                            <dt class="col-sm-3">#{msg.userGroup_members}:</dt>
+                                            <dd class="col-sm-9">#{userGroup.memberCount}</dd>
+                                            <dt class="col-sm-3">#{msg.owner}:</dt>
+                                            <dd class="col-sm-9">#{userGroup.owner.displayName}</dd>
+                                        </dl>
+                                        <!-- ACTIONS -->
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
-                                                <!-- EDIT USER GROUP-->
+                                                <!-- EDIT-->
                                                 <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
                                                     value="#{navigationHelper.applicationUrl}admin/groups/edit/#{userGroup.id}/">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{userGroup.name}" />
                                                     #{msg.edit}
                                                 </h:outputLink>
 
-                                                <!-- DELETE USER GROUP -->
+                                                <!-- DELETE -->
                                                 <h:commandLink rendered="#{!userGroup.hasMembers}"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
                                                     action="adminAllUserGroups"

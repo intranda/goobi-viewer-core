@@ -42,49 +42,50 @@
 
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminBean.allLicenses}">
-                                    <!-- TODO inline css -->
-                                    <div class="admin__boxed-entry" style="width: 100%;">
-                                        <!-- TITLE -->
-                                        <ui:fragment rendered="#{license.user != null}">
-                                            <h3><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{license.userGroup != null}">
-                                            <h3><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{license.ipRange != null}">
-                                            <h3><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
-                                        </ui:fragment>
-
-                                        <div class="row mb-2">
-                                            <span class="col-3">#{msg.admin__right_license_type}:</span><span class="col-9">#{msg[license.licenseType.name]}</span>
+                                    <div class="admin__boxed-entry -w50">
+                                        <!-- NAME -->
+                                        <div class="row">
+                                            <ui:fragment rendered="#{license.user != null}">
+                                                <h3 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{license.userGroup != null}">
+                                                <h3 class="col-12"><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{license.ipRange != null}">
+                                                <h3 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
+                                            </ui:fragment>
                                         </div>
+                                        <!-- DATA -->
+                                        <dl class="row">
+                                            <dt class="col-sm-3">#{msg.admin__right_license_type}:</dt>
+                                            <dd class="col-sm-9">#{msg[license.licenseType.name]}</dd>
 
-                                        <div class="row mb-2">
-                                            <span class="col-3">#{msg.admin__right_functions}:</span>
-                                            <div class="col-9">
-                                                <!-- Privileges added to this license -->
+                                            <!-- FUNCTIONS -->
+                                            <dt class="col-sm-3">#{msg.admin__right_functions}:</dt>
+                                            <dd class="col-sm-9">
+                                                <!-- Added to this license -->
                                                 <ui:repeat var="priv" value="#{license.privileges}">
                                                     <div class="badge badge-success admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                 </ui:repeat>
-                                                <!-- Privileges inherited from the selected license type -->
+                                                <!-- Inherited from the selected license type -->
                                                 <ui:repeat var="priv" value="#{license.licenseType.privileges}">
                                                     <div class="badge badge-secondary admin__license-badge">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                 </ui:repeat>
-                                                <!-- All other privileges -->
+                                                <!-- All other -->
                                                 <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
                                                     <div class="badge badge-light admin__license-badge -light" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                 </ui:repeat>
-                                            </div>
-                                        </div>
+                                            </dd>
+                                        </dl>
 
-
+                                        <!-- ACTIONS -->
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
-                                                <!-- EDIT RIGHT -->
+                                                <!-- EDIT -->
                                                 <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
                                                     value="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/">#{msg.edit}</h:outputLink>
 
-                                                <!-- DELETE RIGHT -->
+                                                <!-- DELETE -->
                                                 <h:commandLink styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
                                                     action="#{adminBean.deleteLicenseAction(license)}" title="#{msg.delete}">
