@@ -58,6 +58,14 @@
         text-transform: uppercase;
     }
 
+    .-empty {
+        &:after {
+            content: '.';
+            visibility: hidden;
+        }
+    }
+
+
     &__info-text {
         margin-bottom: 3rem;
     }
@@ -128,6 +136,11 @@
 		}
 	    &-description {
 	    	margin-bottom: 3rem;
+
+            &-empty {
+                font-style: italic;
+                color: @middlegray;
+            }
 	    }
 	}
 	&__title-bar {

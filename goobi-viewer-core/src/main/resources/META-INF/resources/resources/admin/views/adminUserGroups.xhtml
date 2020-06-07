@@ -43,11 +43,14 @@
                                             <h3 class="col-12">#{userGroup.name}</h3>
                                         </div>
                                         <!-- DESCRIPTION -->
-                                        <ui:fragment rendered="#{userGroup.description != ''}">
-                                            <div class="row">
+                                        <div class="row">
+                                            <ui:fragment rendered="#{userGroup.description ne ''}">
                                                 <p class="col-12 admin__boxed-entry-description">#{userGroup.description}</p>
-                                            </div>
-                                        </ui:fragment>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{userGroup.description eq ''}">
+                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.description})</p>
+                                            </ui:fragment>
+                                        </div>
                                         <!-- DATA -->
                                         <dl class="row">
                                             <dt class="col-sm-3">#{msg.userGroup_members}:</dt>
