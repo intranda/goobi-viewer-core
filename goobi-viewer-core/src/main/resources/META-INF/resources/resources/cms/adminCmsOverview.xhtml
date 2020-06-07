@@ -33,24 +33,23 @@
 
 
                     <div class="admin__content-inner-content">
-                        <div class="admin__user-table-tools">
+                        <div class="admin__table-tools">
                             <!-- PAGINATOR -->
-                            <div class="admin__user-table-paginator">
+                            <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
                             </div>
                             <!-- FILTER -->
                             <!-- TODO add categories and subtheme to this filter, too -->
-                            <div class="admin__user-table-filter">
+                            <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__cms_page_search" filter="#{cmsBean.lazyModelPages.getFilter('CMSPageLanguageVersion', 'title_menuTitle')}"/>
                             </div>
                         </div>
 
 
                         <!-- ALL PAGES TABLE -->
-                        <!-- TODO ADOPT CLASS NAMES -->
-                        <div id="cmsOverviewWrapper" class="admin__user-table-content">
+                        <div id="cmsOverviewWrapper" class="admin__table-content">
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__user-table-title">
+                            <div class="row no-gutters admin__table-title">
                                 <!-- PAGE COL -->
                                 <div class="col-6 d-flex ">#{msg.page}</div>
 
@@ -63,7 +62,7 @@
                                 <div class="col-2 d-flex">
                                     #{msg.cms_pageMetadata_lastEdited}
                                     <!-- SORTING -->
-                                    <div class="sorting-wrapper admin__user-table-sorting">
+                                    <div class="sorting-wrapper admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -87,19 +86,18 @@
 
 
                             <!-- INDIVIDUAL PAGE ROWS -->
-                            <!-- TODO CSS TALKS ABOUT USER TABLE, SHOULD BE GENERIC ADMIN TABLE -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                <div class="row no-gutters admin__user-table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
+                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
                                     <div class="col-6 d-flex">
                                         <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
-                                            <img class="admin__user-table-img" alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
+                                            <img class="admin__table-img" alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
                                         </ui:fragment>
                                         <ui:fragment rendered="#{page.validityStatus != 'VALID'}">
-                                            <img class="admin__user-table-img" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
+                                            <img class="admin__table-img" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
                                         </ui:fragment>
 
-                                        <div class="admin__user-table-data">
-                                            <span class="admin__user-table-name">#{page.title}</span>
+                                        <div class="admin__table-data">
+                                            <span class="admin__table-name">#{page.title}</span>
                                             <ui:fragment rendered="#{page.title != page.menuTitle}">
                                                 <span>#{page.menuTitle}</span>
                                             </ui:fragment>
@@ -108,7 +106,7 @@
                                                 <span style="font-style:italic;">(#{page.subThemeDiscriminatorValue})</span>
                                             </ui:fragment>
                                             <div>
-                                                <h:commandLink styleClass="admin__user-table-edit-user -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">#{msg.edit}
+                                                <h:commandLink styleClass="admin__table-action-link -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">#{msg.edit}
                                                     <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                     <!-- TODO INLINE CSS -->
@@ -116,10 +114,10 @@
                                                 </h:commandLink>
                                                 <ui:fragment rendered="#{page.published}">
                                                     <!-- TODO INLINE CSS -->
-                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__user-table-edit-user -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}" style="padding-right:1.4rem;">#{msg.cms_pagePreview}</a>
+                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}" style="padding-right:1.4rem;">#{msg.cms_pagePreview}</a>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
-                                                    <h:commandLink styleClass="admin__user-table-edit-user -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">#{msg.cms_pageMetadata_delete}
+                                                    <h:commandLink styleClass="admin__table-action-link -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">#{msg.cms_pageMetadata_delete}
                                                         <f:passThroughAttribute name="data-toggle" value="modal" />
                                                         <f:passThroughAttribute name="data-target" value="#deletePageModal" />
                                                         <f:ajax render="@none" />
@@ -130,7 +128,6 @@
                                     </div>
                                     <div class="col-2 d-flex align-items-center">
                                         <ui:repeat value="#{page.categories}" var="category">
-                                            <!-- TODO INLINE CSS, LETS MAKE THIS THE DEFAULT VISUALIZATION EVERYWHERE FOR CATEGORIES-->
                                             <div class="badge -violetbadge">#{category.name}</div>
                                         </ui:repeat>
                                     </div>

@@ -28,27 +28,26 @@
                 </div>
 
                 <div class="admin__content-inner-content">
-                    <!-- USER TABLE TOOLS: PAGINATION, FILTER  -->
-                    <div class="admin__user-table-tools">
+                    <div class="admin__table-tools">
                         <!-- PAGINATOR -->
-                        <div class="admin__user-table-paginator">
+                        <div class="admin__table-paginator">
                             <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUsers}" />
                         </div>
                         <!-- FILTER -->
-                        <div class="admin__user-table-filter">
+                        <div class="admin__table-filter">
                             <viewerComponent:dataTableColumnFilter key="admin__user_search" filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/>
                         </div>
                     </div>
 
                     <!-- All USERS TABLE -->
-                    <div id="new-table-adminallusertable" class="admin__user-table-content">
+                    <div id="new-table-adminallusertable" class="admin__table-content">
                         <!-- TITLE ROW -->
-                        <div class="row no-gutters admin__user-table-title">
+                        <div class="row no-gutters admin__table-title">
                             <!-- NAME COL -->
                             <div class="col-6 d-flex">
                                 <span>#{msg.admin__users}</span>
                                 <!-- SORTING -->
-                                <div class="sorting-wrapper admin__user-table-sorting">
+                                <div class="sorting-wrapper admin__table-sorting">
                                     <h:commandLink styleClass="sort"
                                         action="#{adminBean.lazyModelUsers.sortBy('email', 'ASCENDING')}">
                                         <f:passThroughAttribute name="aria-label" value="sort ascending" />
@@ -67,7 +66,7 @@
                             <div class="col-3 d-flex">
                                 <span>#{msg.lastLoginDate}</span>
                                 <!-- SORTING -->
-                                <div class="sorting-wrapper admin__user-table-sorting">
+                                <div class="sorting-wrapper admin__table-sorting">
                                     <h:commandLink styleClass="sort"
                                         action="#{adminBean.lazyModelUsers.sortBy('lastLogin', 'ASCENDING')}">
                                         <f:passThroughAttribute name="aria-label" value="sort ascending" />
@@ -89,29 +88,29 @@
 
                         <!-- INDIVIDUAL USER ROWS -->
                         <ui:repeat var="user" value="#{adminBean.pageUsers}">
-                            <div class="row no-gutters admin__user-table-entry">
+                            <div class="row no-gutters admin__table-entry">
                                 <div class="col-6 d-flex">
                                     <!-- USER ICON -->
                                     <ui:fragment rendered="#{user.useGravatar}">
-                                        <div class="admin__user-table-img">
+                                        <div class="admin__table-img">
                                             <!-- TODO REMOVE INLINE CSS-->
                                             <img src="#{user.getGravatarUrl(64)}" style="padding: 4px;" alt="User avatar" />
                                         </div>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{!user.useGravatar}">
-                                        <div class="admin__user-table-img">
+                                        <div class="admin__table-img">
                                             <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar"/>
                                         </div>
                                     </ui:fragment>
                                     <!-- USER NAME + EMAIL -->
-                                    <div class="admin__user-table-data">
-                                        <span class="admin__user-table-name">
+                                    <div class="admin__table-data">
+                                        <span class="admin__table-name">
                                             <h:outputText value="#{user.nickName}" />
                                         </span>
-                                        <a class="admin__user-table-email -bluelink" href="mailto:#{user.email}">
+                                        <a class="admin__table-email -bluelink" href="mailto:#{user.email}">
                                             <h:outputText value="#{user.email}" />
                                         </a>
-                                        <h:outputLink styleClass="admin__user-table-edit-user -bluelink" title="#{msg.edit}"
+                                        <h:outputLink styleClass="admin__table-action-link -bluelink" title="#{msg.edit}"
                                           value="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/">
                                            <f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{user.email}" />
                                            #{msg.edit}
@@ -121,7 +120,7 @@
 
                                 <!-- LAST LOGIN DATE -->
                                 <div class="col-3 d-flex align-items-center">
-                                    <span class="admin__user-table-last-login">
+                                    <span class="admin__table-last-login">
                                         <h:outputText value="#{user.lastLogin}">
                                             <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
                                         </h:outputText>
@@ -133,18 +132,18 @@
                                     <h:panelGroup>
                                         <!-- Admin -->
                                         <ui:fragment rendered="#{user.superuser}">
-                                            <div class="badge badge-danger admin__user-table-badges">#{msg.admin}</div>
+                                            <div class="badge badge-danger admin__table-badges">#{msg.admin}</div>
                                         </ui:fragment>
 
                                         <!-- TODO This might get expensive -->
                                         <!-- Ownerships -->
                                         <ui:repeat var="group" value="#{user.userGroupOwnerships}">
-                                            <div class="badge badge-info admin__user-table-badges">#{group.name}</div>
+                                            <div class="badge badge-info admin__table-badges">#{group.name}</div>
                                         </ui:repeat>
 
                                         <!-- Memberships -->
                                         <ui:repeat var="role" value="#{user.userGroupMemberships}">
-                                            <div class="badge badge-dark admin__user-table-badges">#{role.userGroup.name}</div>
+                                            <div class="badge badge-dark admin__table-badges">#{role.userGroup.name}</div>
                                         </ui:repeat>
                                     </h:panelGroup>
                                 </div>

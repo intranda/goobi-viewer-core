@@ -23,29 +23,28 @@
                     </div>
 
                     <div class="admin__content-inner-content">
-                        <div class="admin__user-table-tools">
+                        <div class="admin__table-tools">
                             <!-- PAGINATOR -->
-                            <div class="admin__user-table-paginator">
+                            <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelComments}" />
                             </div>
                             <!-- FILTER -->
-                            <div class="admin__user-table-filter">
+                            <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter key="admin__comment_search" filter="#{adminBean.lazyModelComments.getFilter('text')}" />
                             </div>
                         </div>
 
 
                         <!-- ALL COMMENTS TABLE -->
-                        <!-- TODO ADOPT CLASS NAMES -->
-                        <div id="adminUserCommentsTable" class="admin__user-table-content">
+                        <div id="adminUserCommentsTable" class="admin__table-content">
 
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__user-table-title">
+                            <div class="row no-gutters admin__table-title">
 
                                 <!-- COMMENT COL -->
                                 <div class="col-8 d-flex">
                                     #{msg.Comment}
-                                    <div class="sorting-wrapper admin__user-table-sorting">
+                                    <div class="sorting-wrapper admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -62,7 +61,7 @@
                                 <!-- USER COL -->
                                 <div class="col-2 d-flex">
                                     Benutzer
-                                    <div class="sorting-wrapper admin__user-table-sorting">
+                                    <div class="sorting-wrapper admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('owner', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -79,7 +78,7 @@
                                 <!-- DATE COL -->
                                 <div class="col-2 d-flex">
                                     #{msg.date}
-                                    <div class="sorting-wrapper admin__user-table-sorting">
+                                    <div class="sorting-wrapper admin__table-sorting">
                                         <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'ASCENDING')}">
                                             <f:passThroughAttribute name="aria-label" value="sort ascending" />
                                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -98,7 +97,7 @@
 
                             <!-- INDIVIDUAL USER ROWS -->
                             <ui:repeat var="comment" value="#{adminBean.pageComments}">
-                                <div class="row no-gutters admin__user-table-entry">
+                                <div class="row no-gutters admin__table-entry">
                                     <div class="col-8 d-flex" style="flex-direction:column;">
                                         <!-- COMMENT -->
                                         <h:outputText value="#{comment.text}" />
@@ -106,13 +105,13 @@
                                         <!-- ACTIONS -->
                                         <div>
                                             <!-- SHOW -->
-                                            <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" title="#{msg.show} record" styleClass="admin__user-table-edit-user -bluelink">
+                                            <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" title="#{msg.show} record" styleClass="admin__table-action-link -bluelink">
                                                 <f:passThroughAttribute name="style" value="padding-right: 1.4rem;" />
                                                 <f:passThroughAttribute name="target" value="_blank" />
                                                 #{msg.show}</h:outputLink>
 
                                             <!-- DELETE -->
-                                            <h:commandLink styleClass="admin__user-table-edit-user -redlink"
+                                            <h:commandLink styleClass="admin__table-action-link -redlink"
                                                 onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
                                                 action="#{adminBean.deleteCommentAction(comment)}" title="#{msg.delete}">#{msg.delete}
                                             </h:commandLink>

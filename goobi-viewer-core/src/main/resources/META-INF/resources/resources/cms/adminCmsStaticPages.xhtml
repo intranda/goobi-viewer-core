@@ -29,22 +29,22 @@
                 <!-- STATIC PAGES TABLE -->
                 <h:form id="cmsStaticPageForm" prependId="false">
 					<!-- TODO INLINE CSS -->
-                    <div class="admin__user-table-content" style="margin-bottom:2rem;">
-                        <div class="row no-gutters admin__user-table-title">
+                    <div class="admin__table-content" style="margin-bottom:2rem;">
+                        <div class="row no-gutters admin__table-title">
                             <div class="col-3 d-flex">#{msg.cms__static_pages__name}</div>
                             <div class="col-3 d-flex">#{msg.cms__static_pages__url}</div>
                             <div class="col-6 d-flex">#{msg.cms__static_pages__overridden_cms_page}</div>
                         </div>
 
                         <ui:repeat var="page" value="#{cmsBean.staticPages}">
-                            <div class="row no-gutters admin__user-table-entry">
+                            <div class="row no-gutters admin__table-entry">
                                 <!-- TODO INLINE CSS -->
                                 <div class="col-3 d-flex" style="min-height:42px;">
                                     <!-- TODO INLINE CSS -->
-                                    <div class="admin__user-table-data" style="padding-left:0px;">
+                                    <div class="admin__table-data" style="padding-left:0px;">
                                         <span>#{msg[page.pageName]}</span>
                                         <ui:fragment rendered="#{page.hasCmsPage}">
-                                            <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__user-table-edit-user -bluelink" title="#{msg.cms_pageView}" target="_blank" rel="noopener">#{msg.button__preview}</a>
+                                            <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link -bluelink" title="#{msg.cms_pageView}" target="_blank" rel="noopener">#{msg.button__preview}</a>
                                         </ui:fragment>
                                     </div>
                                 </div>
