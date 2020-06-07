@@ -102,8 +102,7 @@
                                                 <span>#{page.menuTitle}</span>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{page.subThemeDiscriminatorValue != ''}">
-                                            <!-- TODO INLINE CSS -->
-                                                <span style="font-style:italic;">(#{page.subThemeDiscriminatorValue})</span>
+                                                <span class"font-italic">(#{page.subThemeDiscriminatorValue})</span>
                                             </ui:fragment>
                                             <div>
                                                 <h:commandLink styleClass="admin__table-action-link -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">#{msg.edit}
