@@ -23,8 +23,10 @@
             </div>
 
             <div class="admin__content-inner-content">
-                <!-- HELP TEXT -->
-                <p>#{msg.cms__static_pages__info_text}</p>
+                <!-- INFO TEXT -->
+                <div class="admin__info-text">
+                    <h:outputText value="#{msg.cms__static_pages__info_text}" escape="false" />
+                </div>
 
                 <!-- STATIC PAGES TABLE -->
                 <h:form id="cmsStaticPageForm" prependId="false">

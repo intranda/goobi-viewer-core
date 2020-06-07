@@ -35,8 +35,10 @@
                         </div>
 
                         <div class="admin__content-inner-content">
-                            <!-- TODO INLINE CSS -->
-                            <div style="margin-bottom: 1.6rem;"><h:outputText value="#{msg.admin__roles_description_text}" escape="false" /></div>
+                            <!-- INFO TEXT -->
+                            <div class="admin__info-text">
+                                <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
+                            </div>
 
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminBean.allLicenses}">
