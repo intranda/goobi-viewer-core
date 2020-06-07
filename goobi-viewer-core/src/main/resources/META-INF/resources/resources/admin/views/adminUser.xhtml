@@ -134,7 +134,7 @@
                                         <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                         <div id="avatar" class="col-9 admin__user-avatar">
                                             <div class="row no-gutters">
-                                                <div class="col-1">
+                                                <div class="col-2">
 													<input type="radio" id="avatarFalseOption" name="avatar" value="false" checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
                                                     <label for="avatarFalseOption">
                                                         <img style="padding: 0;" class="admin__user-icon" src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar" />
@@ -142,14 +142,14 @@
                                                     </label>
                                                 </div>
                                                 <div class="col-2"></div>
-                                                <div class="col-1">
+                                                <div class="col-2">
                                                     <input class="d-none" type="radio" id="avatarTrueOption" name="avatar" value="true" checked="#{adminBean.currentUser.useGravatar ? 'true' : null}"/>
                                                     <label for="avatarTrueOption">
                                                         <img class="admin__user-icon" src="#{adminBean.currentUser.getGravatarUrl(64)}" alt="User avatar" />
                                                         <div>#{msg.admin__user_avatar_gravatar}</div>
                                                     </label>
 												</div>
-                                                <div class="col-8"></div>
+                                                <div class="col-6"></div>
                                             </div>
                                         </div>
                                     </div>
