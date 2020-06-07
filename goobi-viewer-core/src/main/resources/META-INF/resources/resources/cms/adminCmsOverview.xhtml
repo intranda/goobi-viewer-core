@@ -109,12 +109,9 @@
                                                 <h:commandLink styleClass="admin__table-action-link -bluelink" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">#{msg.edit}
                                                     <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
-                                                    <!-- TODO INLINE CSS -->
-                                                    <f:passThroughAttribute name="style" value="padding-right:1.4rem;" />
                                                 </h:commandLink>
                                                 <ui:fragment rendered="#{page.published}">
-                                                    <!-- TODO INLINE CSS -->
-                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}" style="padding-right:1.4rem;">#{msg.cms_pagePreview}</a>
+                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}">#{msg.cms_pagePreview}</a>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
                                                     <h:commandLink styleClass="admin__table-action-link -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">#{msg.cms_pageMetadata_delete}

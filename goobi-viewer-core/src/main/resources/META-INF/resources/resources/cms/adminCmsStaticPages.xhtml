@@ -42,8 +42,7 @@
                             <div class="row no-gutters admin__table-entry">
                                 <!-- TODO INLINE CSS -->
                                 <div class="col-3 d-flex" style="min-height:42px;">
-                                    <!-- TODO INLINE CSS -->
-                                    <div class="admin__table-data" style="padding-left:0px;">
+                                    <div class="admin__table-data">
                                         <span>#{msg[page.pageName]}</span>
                                         <ui:fragment rendered="#{page.hasCmsPage}">
                                             <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link -bluelink" title="#{msg.cms_pageView}" target="_blank" rel="noopener">#{msg.button__preview}</a>
