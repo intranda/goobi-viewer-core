@@ -117,7 +117,7 @@
 		<poi.version>4.1.2</poi.version>
 		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
 		<primefaces.version>8.0</primefaces.version>
-		<rome.version>1.13.0</rome.version>
+		<rome.version>1.13.1</rome.version>
 		<rs-api.version>2.1.1</rs-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.30</slf4j.version>
