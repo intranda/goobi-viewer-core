@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
@@ -468,6 +470,16 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * Resets all working copies of lists of various privileges.
+     */
+    public void resetTempData() {
+        privilegesCopy.clear();
+        selectableSubthemes = null;
+        selectableCategories = null;
+        selectableTemplates = null;
+    }
+
+    /**
      * Returns the list of available record privileges for adding to this license (using the working copy while editing).
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
@@ -512,19 +524,16 @@ public class License implements IPrivilegeHolder, Serializable {
         return ret;
     }
 
-    public List<String> getAvailableSubthemes() {
-        // TODO
-        return Collections.emptyList();
-    }
-
     /**
      * 
      * @return
      * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public List<Selectable<String>> getSelectableSubthemes() throws DAOException {
+    public List<Selectable<String>> getSelectableSubthemes() throws PresentationException, IndexUnreachableException {
         if (selectableSubthemes == null) {
-            List<String> allSubthemes = new ArrayList<>(); // TODO
+            List<String> allSubthemes = BeanUtils.getCmsBean().getSubthemeDiscriminatorValues();
             selectableSubthemes =
                     allSubthemes.stream()
                             .map(sub -> new Selectable<>(sub, this.subthemeDiscriminatorValues.contains(sub)))

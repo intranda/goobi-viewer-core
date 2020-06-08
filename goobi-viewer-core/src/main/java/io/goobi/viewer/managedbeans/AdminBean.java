@@ -685,11 +685,11 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * resetCurrentLicenseTypeAction.
+     * newCurrentLicenseTypeAction.
      * </p>
      */
-    public void resetCurrentLicenseTypeAction(String name) {
-        logger.trace("resetCurrentLicenseTypeAction({})", name);
+    public void newCurrentLicenseTypeAction(String name) {
+        logger.trace("newCurrentLicenseTypeAction({})", name);
         currentLicenseType = new LicenseType(name);
     }
 
@@ -780,8 +780,8 @@ public class AdminBean implements Serializable {
      * </p>
      */
     public void newCurrentLicenseAction() {
-        logger.trace("resetCurrentLicenseAction");
-        currentLicense = new License();
+        logger.trace("newCurrentLicenseAction");
+        setCurrentLicense(new License());
     }
 
     /**
@@ -791,8 +791,11 @@ public class AdminBean implements Serializable {
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public String saveCurrentLicenseAction() throws DAOException {
+    public String saveCurrentLicenseAction() throws DAOException,IndexUnreachableException, PresentationException {
         logger.trace("saveCurrentLicenseAction");
         if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
@@ -1181,6 +1184,7 @@ public class AdminBean implements Serializable {
         if (currentLicense != null) {
             logger.trace("setCurrentLicense: {}", currentLicense.toString());
             // Prepare privileges working copy (but only if the same license is not already set)
+            currentLicense.resetTempData();
             if (!currentLicense.equals(this.currentLicense)) {
                 currentLicense.setPrivilegesCopy(new HashSet<>(currentLicense.getPrivileges()));
             }
