@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -51,13 +50,10 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -787,39 +783,6 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>
-     * resetCurrentLicenseForUserAction.
-     * </p>
-     */
-    public void resetCurrentLicenseForUserAction() {
-        logger.trace("resetCurrentLicenseForUserAction");
-        currentLicense = new License();
-        currentLicense.setUser(getCurrentUser());
-    }
-
-    /**
-     * <p>
-     * resetCurrentLicenseForUserGroupAction.
-     * </p>
-     */
-    public void resetCurrentLicenseForUserGroupAction() {
-        logger.trace("resetCurrentLicenseForUserGroupAction");
-        currentLicense = new License();
-        currentLicense.setUserGroup(getCurrentUserGroup());
-    }
-
-    /**
-     * <p>
-     * resetCurrentLicenseForIpRangeAction.
-     * </p>
-     */
-    public void resetCurrentLicenseForIpRangeAction() {
-        logger.trace("resetCurrentLicenseForIpRangeAction");
-        currentLicense = new License();
-        currentLicense.setIpRange(getCurrentIpRange());
-    }
-
-    /**
      * Adds the current License to the licensee (User, UserGroup or IpRange). It is imperative that the licensee object is refreshed after updating so
      * that a new license object is an ID attached. Otherwise the list of licenses will throw an NPE!
      *
@@ -876,9 +839,9 @@ public class AdminBean implements Serializable {
 
         if (error) {
             if (currentLicense.getId() != null) {
-                return "pretty:adminRightEdit";
+                return "pretty:adminRightsEdit";
             }
-            return "pretty:adminRightNew";
+            return "pretty:adminRightsNew";
         }
 
         return "pretty:adminRights";

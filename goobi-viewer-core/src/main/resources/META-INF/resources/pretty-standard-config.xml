@@ -740,14 +740,15 @@
 		<view-id value="/resources/admin/views/adminRights.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="adminRightEdit">
+    <url-mapping id="adminRightsEdit">
         <pattern value="/admin/rights/edit/#{licenseId:adminBean.currentLicenseId}/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-    <url-mapping id="adminRightNew">
+    <url-mapping id="adminRightsNew">
         <pattern value="/admin/rights/new/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
+        <action onPostback="false">#{adminBean.newCurrentLicenseAction}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminUserComments">

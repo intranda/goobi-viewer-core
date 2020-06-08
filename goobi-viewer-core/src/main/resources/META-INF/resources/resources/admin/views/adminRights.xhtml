@@ -23,15 +23,7 @@
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h2 class="admin__title">#{msg.admin__rights}</h2>
-                            <!-- TODO: CHECK IF WE CAN USE THIS CODE OR IF WE NEED pretty: AND actionListener, ADD ANOTHER - AT btn-default -->
-                            <!--
-                            <a href="#{navigationHelper.getPageUrl('adminRightsNew')}/" class="btn btn-default admin__title-bar-action">
-                                #{msg.add}
-                            </a>
-                            -->
-                            <h:commandLink action="pretty:adminRightNew" actionListener="#{adminBean.newCurrentLicenseAction}" styleClass="btn btn--default admin__title-bar-action">
-                                <span>#{msg.add}</span>
-                            </h:commandLink>
+                            <a href="#{navigationHelper.getPageUrl('adminRightsNew')}/" class="btn btn--default admin__title-bar-action">#{msg.add}</a>
                         </div>
 
                         <div class="admin__content-inner-content">
