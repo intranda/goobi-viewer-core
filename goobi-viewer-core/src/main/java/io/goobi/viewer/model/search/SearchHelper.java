@@ -227,7 +227,7 @@ public final class SearchHelper {
             }
 
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
+                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields, true, ignoreFields,
                             translateFields, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
@@ -307,7 +307,8 @@ public final class SearchHelper {
             // Create main hit
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields, translateFields,
+                    SearchHit.createSearchHit(doc, null, null, locale, null, searchTerms, exportFields, sortFields, true, ignoreFields,
+                            translateFields,
                             null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
@@ -322,7 +323,6 @@ public final class SearchHelper {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
-                    // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
                     String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
                     String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
@@ -332,11 +332,11 @@ public final class SearchHelper {
                     }
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
-                    if (!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {
-                        HitType hitType = HitType.getByName(docType);
-                        int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                        hit.getHitTypeCounts().put(hitType, count + 1);
-                    }
+                    //                    if (!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {
+                    HitType hitType = HitType.getByName(docType);
+                    int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                    hit.getHitTypeCounts().put(hitType, count + 1);
+                    //                    }
                 }
             }
         }
@@ -1024,6 +1024,7 @@ public final class SearchHelper {
                 if (searchTerm.length() == 0) {
                     continue;
                 }
+                searchTerm = SearchHelper.removeTruncation(searchTerm);
                 //                logger.trace("term: {}", searchTerm);
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
@@ -1149,11 +1150,12 @@ public final class SearchHelper {
             if (term.length() < 2) {
                 continue;
             }
+            term = SearchHelper.removeTruncation(term);
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
-                logger.trace("highlighted value: {}", highlightedValue);
+                // logger.trace("highlighted value: {}", highlightedValue);
             }
         }
 
@@ -1193,7 +1195,7 @@ public final class SearchHelper {
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
-        logger.trace("highlighted term: {}", highlightedTerm);
+        // logger.trace("highlighted term: {}", highlightedTerm);
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
@@ -1597,7 +1599,7 @@ public final class SearchHelper {
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
-     * @should remove truncation
+     * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
      * @return a {@link java.util.Map} object.
      */
@@ -1623,8 +1625,7 @@ public final class SearchHelper {
 
         // Extract phrases and add them directly
         {
-            // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE
-            // eventually
+            // Use a copy of the query because the original query gets shortened after every match, causing an IOOBE eventually
             String queryCopy = query;
             Matcher mPhrases = patternPhrase.matcher(queryCopy);
             while (mPhrases.find()) {
@@ -1682,14 +1683,6 @@ public final class SearchHelper {
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
-                    // Remove left truncation
-                    if (value.charAt(0) == '*' && value.length() > 1) {
-                        value = value.substring(1);
-                    }
-                    // Remove right truncation
-                    if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
-                        value = value.substring(0, value.length() - 1);
-                    }
                     if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<String>());
@@ -1712,6 +1705,23 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    public static String removeTruncation(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
+        }
+
+        // Remove left truncation
+        if (value.charAt(0) == '*' && value.length() > 1) {
+            value = value.substring(1);
+        }
+        // Remove right truncation
+        if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
+            value = value.substring(0, value.length() - 1);
+        }
+
+        return value;
     }
 
     /**
@@ -1877,6 +1887,7 @@ public final class SearchHelper {
      * @should skip reserved fields
      * @should escape reserved characters
      * @should not escape asterisks
+     * @should not escape truncation
      * @should add quotation marks if phraseSearch is true
      * @return a {@link java.lang.String} object.
      */
@@ -1920,6 +1931,7 @@ public final class SearchHelper {
                     }
                     if (!"*".equals(term)) {
                         term = ClientUtils.escapeQueryChars(term);
+                        term = term.replace("\\*", "*");
                         if (phraseSearch) {
                             term = "\"" + term + "\"";
                         }

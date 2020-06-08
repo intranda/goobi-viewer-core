@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class BrowseElement implements Serializable {
     private String volumeNo = null;
     /** StructElementStubs for hierarchy URLs. */
     @JsonIgnore
-    private List<StructElementStub> structElements = new ArrayList<>();
+    private final List<StructElementStub> structElements = new ArrayList<>();
     @JsonIgnore
     private boolean anchor = false;
     @JsonIgnore
@@ -112,6 +113,8 @@ public class BrowseElement implements Serializable {
     private NavigationHelper navigationHelper;
     @JsonIgnore
     private List<Metadata> metadataList = null;
+    @JsonIgnore
+    private final Set<String> existingMetadataFields = new HashSet<>();
     /**
      * List of just the metadata fields that were added because they contained search terms (for use where not the entire metadata list is desired).
      */
@@ -316,6 +319,7 @@ public class BrowseElement implements Serializable {
                         }
                         md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
+                        existingMetadataFields.add(md.getLabel());
                         count++;
                     }
                 }
@@ -578,6 +582,8 @@ public class BrowseElement implements Serializable {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
                                 additionalMetadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                existingMetadataFields.add(docFieldName);
+                                logger.trace("added existing field: {}", docFieldName);
                             }
                         }
                     }
@@ -606,6 +612,7 @@ public class BrowseElement implements Serializable {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                                 additionalMetadataList.add(new Metadata(termsFieldName, "", highlightedValue));
+                                existingMetadataFields.add(termsFieldName);
                             }
                         }
                     }
@@ -874,17 +881,6 @@ public class BrowseElement implements Serializable {
      */
     public int getImageNo() {
         return imageNo;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>structElements</code>.
-     * </p>
-     *
-     * @param structElements the structElements to set
-     */
-    public void setStructElements(List<StructElementStub> structElements) {
-        this.structElements = structElements;
     }
 
     /**
@@ -1239,6 +1235,13 @@ public class BrowseElement implements Serializable {
      */
     public void setMetadataList(List<Metadata> metadataList) {
         this.metadataList = metadataList;
+    }
+
+    /**
+     * @return the existingMetadataFields
+     */
+    public Set<String> getExistingMetadataFields() {
+        return existingMetadataFields;
     }
 
     /**

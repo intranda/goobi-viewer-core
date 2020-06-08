@@ -1006,6 +1006,12 @@ public class UserBean implements Serializable {
     public IAuthenticationProvider getXserviceAuthenticationProvider() {
         return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
     }
+    
+    public boolean showAuthenticationProviderSelection() {
+        return getAuthenticationProviders().stream()
+                .filter(p -> "local".equalsIgnoreCase(p.getType()) || "userPassword".equalsIgnoreCase(p.getType()))
+                .count() > 1;
+    }
 
     /**
      * <p>

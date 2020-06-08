@@ -1946,22 +1946,6 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('restapipoints', '<div if="{this.json}"><p each="{path in Object.keys(this.json.paths)}">{path}</p></div>', '', '', function(opts) {
-
-this.on("mount", () => {
-
-    fetch("http://localhost:8082/viewer/rest/openapi.json")
-    .then(res => res.json())
-    .then(json => this.initPaths(json.paths))
-    .then(() => this.update());
-
-})
-
-this.initPaths = function(json) {
-
-}.bind(this)
-
-});
 riot.tag2('timematrix', '<div class="timematrix__objects"><div each="{image in imageList}" class="timematrix__content"><div id="imageMap" class="timematrix__img"><a href="{image.url}"><img riot-src="{image.mediumimage}" class="timematrix__image" data-viewer-thumbnail="thumbnail" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'"><div class="timematrix__text"><p if="{image.title}" name="timetext" class="timetext">{image.title[0]}</p></div></a></div></div></div>', '', '', function(opts) {
 
 		 this.on( 'mount', function() {
