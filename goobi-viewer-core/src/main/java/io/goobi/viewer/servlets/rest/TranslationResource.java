@@ -24,6 +24,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,9 @@ import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.bookmarks.BookmarkResource;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>
@@ -59,9 +63,17 @@ public class TranslationResource {
     @GET
     @Path("/translate/{keys}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public TranslationList getTranslations(@PathParam("keys") String keys) {
+    @Operation(summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
+    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
+    @ApiResponse(responseCode = "400", description = "No keys passed")
+    public TranslationList getTranslations(
+            @PathParam("keys") @Parameter(description = "A '$' separated list of message keys") String keys) {
         logger.trace("getTranslations: {}", keys);
 
+        if(StringUtils.isBlank(keys)) {
+            throw new IllegalArgumentException("Must provide keys parameter");
+        }
+        
         String[] keyArray = keys.split("\\$");
         List<Translation> translations = new ArrayList<>();
         for (String key : keyArray) {
