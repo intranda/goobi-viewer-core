@@ -702,7 +702,7 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * Returns the list of available privileges for adding to this license (using the working copy while editing).
+     * Returns the list of available record privileges for adding to this license (using the working copy while editing).
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
@@ -711,15 +711,34 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * Returns the list of available privileges for adding to this license (using the given privileges list).
+     * Returns the list of available record privileges for adding to this license (using the given privileges list).
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
     public Set<String> getAvailablePrivileges(Set<String> privileges) {
-        Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
-        privileges.toString();
+        if (licenseType != null && licenseType.isCmsType()) {
+            return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
+        }
+        return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+    }
+
+    /**
+     * 
+     * @param excludePrivileges
+     * @param sourcePrivileges
+     * @return
+     */
+    Set<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {
+        if (excludePrivileges == null) {
+            throw new IllegalArgumentException("excludePrivileges may not be null");
+        }
+        if (sourcePrivileges == null || sourcePrivileges.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<String> ret = new HashSet<>(sourcePrivileges);
         // Remove existing privileges
-        ret.removeAll(privileges);
+        ret.removeAll(excludePrivileges);
         // Remove privileges inherited from the license type
         if (licenseType != null) {
             ret.removeAll(licenseType.getPrivileges());

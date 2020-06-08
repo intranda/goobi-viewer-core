@@ -57,6 +57,8 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
     /** Constant <code>PRIV_SET_REPRESENTATIVE_IMAGE="SET_REPRESENTATIVE_IMAGE"</code> */
     public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
+
+    // CMS privileges
     /** Constant <code>PRIV_CMS_PAGES="CMS_PAGES"</code> */
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
     /** Constant <code>PRIV_CMS_ALL_SUBTHEMES="CMS_ALL_SUBTHEMES"</code> */
@@ -73,6 +75,11 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
     /** Constant <code>PRIV_CMS_CATEGORIES="CMS_CATEGORIES"</code> */
     public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
+    public static final String[] PRIVS_CMS =
+            { PRIV_CMS_PAGES, PRIV_CMS_ALL_SUBTHEMES, PRIV_CMS_ALL_CATEGORIES, PRIV_CMS_ALL_TEMPLATES, PRIV_CMS_MENU, PRIV_CMS_STATIC_PAGES,
+                    PRIV_CMS_COLLECTIONS,
+                    PRIV_CMS_CATEGORIES };
+
     /** Constant <code>PRIV_CROWDSOURCING_ALL_CAMPAIGNS="CROWDSOURCING_ALL_CAMPAIGNS"</code> */
     public static final String PRIV_CROWDSOURCING_ALL_CAMPAIGNS = "CROWDSOURCING_ALL_CAMPAIGNS";
     /** Constant <code>PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN="CROWDSOURCING_ANNOTATE_CAMPAIGN"</code> */
