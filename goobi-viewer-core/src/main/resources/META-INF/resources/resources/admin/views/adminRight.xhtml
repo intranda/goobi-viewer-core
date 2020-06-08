@@ -279,12 +279,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
-                                                <h:selectManyMenu value="#{adminBean.currentLicense.allowedCmsTemplates}" immediate="true">
-                                                    <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                                    <!-- TODO method with available values -->
-                                                    <f:selectItems var="subtheme" value="#{adminBean.currentLicense.availableSubthemes}" />
-                                                </h:selectManyMenu>
                                                 <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
                                             </div>
                                             <div class="col-sm-1" />
@@ -317,7 +311,7 @@
                                             </div>
                                             <div class="col-sm-5 admin__form-input">
                                                 <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                 </h:selectOneRadio>
@@ -357,7 +351,7 @@
                                             </div>
                                             <div class="col-sm-5 admin__form-input">
                                                 <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                 </h:selectOneRadio>

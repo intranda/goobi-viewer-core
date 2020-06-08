@@ -224,241 +224,6 @@ public class License implements IPrivilegeHolder, Serializable {
         return privileges.contains(privilege);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivList() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_LIST);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivList(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_LIST);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_LIST);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewImages() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewImages(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewThumbnails() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewThumbnails(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewFulltext() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewFulltext(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewVideo() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewVideo(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewAudio() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewAudio(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadPdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadPdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadPagePdf()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadPagePdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadPagePdf(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadPagePdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadOriginalContent() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.user.IPrivilegeHolder#setPrivDownloadOriginalContent(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadOriginalContent(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        }
-
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadMetadata()
-     */
-    @Override
-    public boolean isPrivDownloadMetadata() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadMetadata(boolean)
-     */
-    @Override
-    public void setPrivDownloadMetadata(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivGenerateIiifManifest()
-     */
-    @Override
-    public boolean isPrivGenerateIiifManifest() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivIiifManifest(boolean)
-     */
-    @Override
-    public void setPrivGenerateIiifManifest(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDeleteOcrPage() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDeleteOcrPage(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDeleteOcrPage(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivSetRepresentativeImage() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivSetRepresentativeImage(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-        }
-    }
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCms()
      */
@@ -475,9 +240,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
 
@@ -497,9 +262,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsAllSubthemes(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
         }
     }
 
@@ -519,9 +284,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsAllCategories(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
         }
     }
 
@@ -541,9 +306,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsAllTemplates(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         }
     }
 
@@ -562,10 +327,11 @@ public class License implements IPrivilegeHolder, Serializable {
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsMenu(boolean priv) {
+        logger.trace("setPrivCmsMenu: {}", priv);
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_MENU);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_MENU);
         }
     }
 
@@ -585,9 +351,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         }
     }
 
@@ -607,9 +373,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         }
     }
 
@@ -629,9 +395,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         }
     }
 
@@ -651,9 +417,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
         }
     }
 
@@ -673,9 +439,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
         }
     }
 
@@ -695,9 +461,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         }
     }
 
