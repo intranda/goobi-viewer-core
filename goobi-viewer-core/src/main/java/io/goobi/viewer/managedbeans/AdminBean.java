@@ -54,6 +54,8 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -796,10 +798,37 @@ public class AdminBean implements Serializable {
             throw new IllegalArgumentException("license may not be null");
         }
 
-        // Adopt changes made to the privileges
+        // Sync changes made to the privileges
         if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {
             logger.trace("Saving changes to privileges");
             currentLicense.setPrivileges(new HashSet<>(currentLicense.getPrivilegesCopy()));
+        }
+        // Sync changes made to allowed subthemes
+        if (currentLicense.getSelectableSubthemes() != null && !currentLicense.getSelectableSubthemes().isEmpty()) {
+            currentLicense.getSubthemeDiscriminatorValues().clear();
+            for (Selectable<String> selectable : currentLicense.getSelectableSubthemes()) {
+                if (selectable.isSelected()) {
+                    currentLicense.getSubthemeDiscriminatorValues().add(selectable.getValue());
+                }
+            }
+        }
+        // Sync changes made to allowed categories
+        if (currentLicense.getSelectableCategories() != null && !currentLicense.getSelectableCategories().isEmpty()) {
+            currentLicense.getAllowedCategories().clear();
+            for (Selectable<CMSCategory> selectable : currentLicense.getSelectableCategories()) {
+                if (selectable.isSelected()) {
+                    currentLicense.getAllowedCategories().add(selectable.getValue());
+                }
+            }
+        }
+        // Sync changes made to allowed templates
+        if (currentLicense.getSelectableTemplates() != null && !currentLicense.getSelectableTemplates().isEmpty()) {
+            currentLicense.getAllowedCmsTemplates().clear();
+            for (Selectable<String> selectable : currentLicense.getSelectableTemplates()) {
+                if (selectable.isSelected()) {
+                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue());
+                }
+            }
         }
 
         boolean error = false;
