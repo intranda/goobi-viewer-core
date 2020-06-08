@@ -97,6 +97,9 @@
 
     &__info-text {
         margin-bottom: 3rem;
+        .badge {
+        	margin-right: 0;
+        }
     }
 
 	&__default-block {
@@ -230,7 +233,6 @@
 			border: 1px solid @middlegray;
 			border-radius: 4px;
 			display: flex;
-			font-size: 1.6rem;
 			padding: 0 1rem;
 			align-items: center;
 		}
@@ -385,7 +387,26 @@
 			text-decoration: none;
 		}
 	}
-
+	&__search-input-wrapper {
+		position: relative;
+	}
+	&__search-input {
+		padding-right: 2.5rem;
+		width: 250px;
+	}
+	&__search-clear {
+		display: none;
+		cursor: pointer;
+		padding: 1rem;
+		position: absolute;
+		right: 5px;
+		top: 0;
+		font-size: 1.6rem;
+		line-height: 1.1rem;
+	}
+	&__search-action {
+		font-size: 1.4rem;
+	}
 
 
 }

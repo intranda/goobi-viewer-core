@@ -18,10 +18,13 @@
             <div class="form-group">
                 <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
                 <div class="input-group">
-                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}">
-                        <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.key]}" />
-                    </h:inputText>
-                    <div class="input-group-append">
+                	<div class="admin__search-input-wrapper">
+	                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input admin__search-input" value="#{cc.attrs.filter.value}">
+	                        <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.key]}" />
+	                    </h:inputText>
+	                    <div class="admin__search-clear">x</div>
+                    </div>
+                    <div class="input-group-append admin__search-action">
                         <!-- MESSAGE KEY GIVEN -->
                         <ui:fragment rendered="#{cc.attrs.key != 'empty'}">
                             <h:commandLink id="#{cc.attrs.filter.column}BtnText" styleClass="btn btn--icon btn-filter">
@@ -40,5 +43,21 @@
                 </div>
             </div>
         </div>
+        <!-- FILTER INPUT SCRIPT - ADDED HERE BECAUSE OF COMPONENT RELOAD-->
+        <script type="text/javascript">
+		$( document ).ready(function() {
+			/* check for input value and show clear button */
+	        if(!$('.admin__search-input').val() == ''){
+				$('.admin__search-clear').show();
+	        }
+			$('.admin__search-clear').click(function(){
+				/* clear value on click*/
+		    $('.admin__search-input').val("");
+			    /* trigger empty search on click */
+			    $('.admin__search-action a').click();
+			});
+		});
+		</script>
     </composite:implementation>
 </ui:composition>
+
