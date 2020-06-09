@@ -67,6 +67,8 @@ public class CMSPageTemplate implements Serializable {
 
     private boolean themeTemplate = false;
 
+    private boolean enabled = true;
+
     /**
      * Loads a page template from the given template file and returns the template object.
      *
@@ -472,6 +474,20 @@ public class CMSPageTemplate implements Serializable {
      */
     public void setThemeTemplate(boolean themeTemplate) {
         this.themeTemplate = themeTemplate;
+    }
+
+    /**
+     * @return the enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**

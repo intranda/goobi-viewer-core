@@ -360,6 +360,27 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * 
+     * @param enabled
+     * @return
+     */
+    public List<CMSPageTemplate> getTemplates(boolean enabled) {
+        List<CMSPageTemplate> all = getTemplates();
+        if (all.isEmpty()) {
+            return all;
+        }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(all.size());
+        for (CMSPageTemplate template : getTemplates()) {
+            if (template.isEnabled() == enabled) {
+                ret.add(template);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns a filtered page template list for the given user, unless the user is a superuser. Other CMS admins get a list matching the template ID
      * list attached to ther CMS license.
      *
