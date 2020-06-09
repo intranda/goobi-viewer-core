@@ -156,11 +156,13 @@ module.exports = function (grunt) {
                             "tinymce/skins" : "tinymce/",
                             "tinymce/themes" : "tinymce/",
                             "tinymce/tinymce.min.js" : "tinymce/",
-                            "leaflet/dist/leaflet.js" : "leaflet/"
+                            "leaflet/dist/leaflet.js" : "leaflet/",
+                            "swagger-ui-dist/swagger-ui-bundle.js" : "swagger/"
                         },
                         css : {
                             "leaflet/dist/leaflet.css" : "leaflet/",
-                            "leaflet/dist/images" : "leaflet"
+                            "leaflet/dist/images" : "leaflet",
+                            "swagger-ui-dist/swagger-ui.css" : "swagger/"
                         }
                     }
                 },

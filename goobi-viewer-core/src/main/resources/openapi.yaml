@@ -1,0 +1,15 @@
+resourcePackages:
+- io.goobi.viewer.servlets.rest
+prettyPrint: true
+openAPI:
+   info:
+      title: Goobi viewer API.
+      description: This documentation describes the Goobi viewer API.
+      license:
+          name: GPL2 or later
+          url: https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE
+ignoredRoutes:
+   - /footer
+   - /{type}
+   - /status
+   - /redirect/toFirstWork

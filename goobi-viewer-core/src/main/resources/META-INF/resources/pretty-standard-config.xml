@@ -959,6 +959,12 @@
 		<action onPostback="false">#{dynamicBean.addComponent('map', 'geoMap', mapId, linkTarget)}</action>
 	</url-mapping>
 
+	<!-- Swagger OpenApi -->
+	<url-mapping id="swagger">
+		<pattern value="/api/swagger/" />
+		<view-id value="/restApi.xhtml" />
+	</url-mapping>
+	
 	<!-- ERROR -->
 	<url-mapping id="error">
 		<pattern value="/error/" />
