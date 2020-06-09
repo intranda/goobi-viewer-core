@@ -13,64 +13,56 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import io.goobi.viewer.exceptions.RestApiException;
+package io.goobi.viewer.api.rest.model;
 
 /**
  * <p>
- * ErrorMessage class.
+ * SuccessMessage class.
  * </p>
  *
  * @author Florian Alpers
  */
-public class ErrorMessage {
+public class SuccessMessage {
 
-    private final int status;
+    private final boolean success;
     private final String message;
-    private final String stackTrace;
 
     /**
      * <p>
-     * Constructor for ErrorMessage.
+     * Constructor for SuccessMessage.
      * </p>
      *
-     * @param status a int.
+     * @param success a boolean.
      * @param message a {@link java.lang.String} object.
-     * @param stackTrace a {@link java.lang.String} object.
      */
-    public ErrorMessage(int status, String message, String stackTrace) {
+    public SuccessMessage(boolean success, String message) {
         super();
-        this.status = status;
+        this.success = success;
         this.message = message;
-        this.stackTrace = stackTrace;
     }
 
     /**
      * <p>
-     * Constructor for ErrorMessage.
+     * Constructor for SuccessMessage.
      * </p>
      *
-     * @param exception a {@link io.goobi.viewer.exceptions.RestApiException} object.
+     * @param success a boolean.
      */
-    public ErrorMessage(RestApiException exception) {
-        this.status = exception.getStatusCode();
-        this.message = exception.getMessage();
-        this.stackTrace = getStackTrace(exception);
+    public SuccessMessage(boolean success) {
+        super();
+        this.success = success;
+        this.message = "";
     }
 
     /**
      * <p>
-     * Getter for the field <code>status</code>.
+     * isSuccess.
      * </p>
      *
-     * @return the status
+     * @return the success
      */
-    public int getStatus() {
-        return status;
+    public boolean isSuccess() {
+        return success;
     }
 
     /**
@@ -85,21 +77,20 @@ public class ErrorMessage {
     }
 
     /**
-     * <p>
-     * Getter for the field <code>stackTrace</code>.
-     * </p>
+     * {@inheritDoc}
      *
-     * @return the stackTrace
+     * Two success messages are equal, of their success properties are equal
      */
-    public String getStackTrace() {
-        return stackTrace;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass().equals(this.getClass())) {
+            return this.success == ((SuccessMessage) obj).success;
+        } else {
+            return false;
+        }
     }
 
-    private String getStackTrace(RestApiException exception) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        exception.printStackTrace(writer);
-        String st = stringWriter.toString();
-        return st;
-    }
 }

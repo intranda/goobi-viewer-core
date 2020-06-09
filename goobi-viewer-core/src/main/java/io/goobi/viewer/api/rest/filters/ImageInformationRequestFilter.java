@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.iiif.image;
+package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 import java.util.List;

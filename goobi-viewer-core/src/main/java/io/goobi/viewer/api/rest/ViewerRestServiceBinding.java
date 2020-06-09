@@ -13,38 +13,19 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest;
+package io.goobi.viewer.api.rest;
 
-import javax.ws.rs.ApplicationPath;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import javax.ws.rs.NameBinding;
 
 /**
  * <p>
- * ViewerApplication class.
+ * ViewerRestServiceBinding class.
  * </p>
  */
-@ApplicationPath("rest")
-@ViewerRestServiceBinding
-public class ViewerApplication extends ResourceConfig {
-
-    /**
-     * <p>
-     * Constructor for ViewerApplication.
-     * </p>
-     */
-    public ViewerApplication() {
-        super();
-        register(MultiPartFeature.class);
-        packages(true, "io.goobi.viewer.servlets.rest");
-        packages(true, "io.goobi.viewer.api.rest.filters");
-        packages(true, "io.goobi.viewer.api.rest.exceptions");
-        packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
-        packages(true, "io.swagger");
-
-    }
-
+@NameBinding
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ViewerRestServiceBinding {
 }

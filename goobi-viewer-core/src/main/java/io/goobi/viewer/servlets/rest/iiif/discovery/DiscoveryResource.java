@@ -27,10 +27,10 @@ import javax.ws.rs.core.MediaType;
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * Provides REST services according to the IIIF discovery API specfication (https://iiif.io/api/discovery/0.1/). This class implements two resources:

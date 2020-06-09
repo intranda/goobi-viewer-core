@@ -13,15 +13,20 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest;
+package io.goobi.viewer.api.rest.v1.localization;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +39,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.messages.MessagesTranslation;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.misc.Translation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>
@@ -44,7 +52,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  *
  * @author florian
  */
-@Path("/messages")
+@Path("/localization/translations")
 @ViewerRestServiceBinding
 public class TranslationResource {
 
@@ -59,22 +67,23 @@ public class TranslationResource {
      * @return a {@link io.goobi.viewer.servlets.rest.TranslationResource.TranslationList} object.
      */
     @GET
-    @Path("/translate/{keys}")
     @Produces({ MediaType.APPLICATION_JSON })
-//    @Operation(tags= {"translation", "viewer"}, summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
-//    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
-//    @ApiResponse(responseCode = "400", description = "No keys passed")
+    @Operation(tags= {"localization"}, summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
+    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
+    @ApiResponse(responseCode = "400", description = "No keys passed")
     public TranslationList getTranslations(
-            @PathParam("keys") @Parameter(description = "A '$' separated list of message keys") String keys) {
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") String keys) {
         logger.trace("getTranslations: {}", keys);
 
+        Collection<String> keysCollection;
         if(StringUtils.isBlank(keys)) {
-            throw new IllegalArgumentException("Must provide keys parameter");
+            throw new IllegalArgumentException("Must provide query parameter 'keys'");
+        } else {
+            keysCollection = Arrays.asList(keys.split("\\s*,\\s*"));
         }
         
-        String[] keyArray = keys.split("\\$");
         List<Translation> translations = new ArrayList<>();
-        for (String key : keyArray) {
+        for (String key : keysCollection) {
             translations.addAll(MessagesTranslation.getTranslations(key));
         }
         return new TranslationList(translations);

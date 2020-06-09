@@ -1,5 +1,5 @@
 resourcePackages:
-- io.goobi.viewer.servlets.rest
+- io.goobi.viewer.api.rest
 prettyPrint: true
 openAPI:
    info:

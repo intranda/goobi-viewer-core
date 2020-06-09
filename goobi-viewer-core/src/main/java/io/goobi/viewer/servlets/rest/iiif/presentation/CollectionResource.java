@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.servlets.rest.iiif.presentation;
 
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.GET;
@@ -29,13 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.viewer.BrowseDcElement;
-import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
 /**
  * IIIF REST resource providing a collection object as defined in the IIIF presentation api

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.glossaries;
+package io.goobi.viewer.api.rest.v1.localization;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,6 +34,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * <p>
@@ -42,7 +44,7 @@ import io.goobi.viewer.model.glossary.GlossaryManager;
  *
  * @author Florian Alpers
  */
-@Path("/vocabularies")
+@Path("/localization/vocabularies")
 @ViewerRestServiceBinding
 public class GlossaryResource {
 
@@ -62,8 +64,8 @@ public class GlossaryResource {
      * @throws java.io.IOException if any.
      */
     @GET
-    @Path("/list")
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags= {"localization"}, summary = "Get a list of all glossaries")
     public List<Glossary> listVocabularies() throws IOException {
         return new GlossaryManager().getGlossaries();
     }
@@ -81,7 +83,8 @@ public class GlossaryResource {
     @GET
     @Path("/{filename}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getVocabulary(@PathParam("filename") String filename) throws IOException, ContentNotFoundException {
+    @Operation(tags= {"localization"}, summary = "Get glossary from a glossary file")
+    public String getVocabulary(@PathParam("filename") @Parameter(description="Glossary filename") String filename) throws IOException, ContentNotFoundException {
         return new GlossaryManager().getGlossaryAsJson(filename);
 
     }

@@ -1,4 +1,4 @@
-package io.goobi.viewer.servlets.rest;
+package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 
