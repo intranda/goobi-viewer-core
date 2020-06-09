@@ -124,7 +124,7 @@
 		<solr.version>4.10.4</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<stax-api.version>1.0-2</stax-api.version>
-		<tomcat.version>9.0.36</tomcat.version>
+        <swagger.version>2.1.2</swagger.version>
 		<!-- Using a weld.version >3.0.5.Final will result in problems with the hotswap agent -->
 		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
 		<!-- This needs to be added explicitly because otherwise Solr will use
@@ -537,6 +537,18 @@
 			<artifactId>saml-client</artifactId>
 			<version>${saml-client.version}</version>
 		</dependency>
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-jaxrs2</artifactId>
+          <version>${swagger.version}</version>
+        </dependency>
+<!--
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+          <version>${swagger.version}</version>
+        </dependency>
+-->
 	</dependencies>
 
 

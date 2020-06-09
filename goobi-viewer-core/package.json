@@ -45,6 +45,7 @@
   "dependencies": {
     "pixl-xml": "^1.0.13",
     "tinymce": "~5.2.2",
-    "leaflet": "*"
+    "leaflet": "*",
+    "swagger-ui-dist": "*"
   }
 }
