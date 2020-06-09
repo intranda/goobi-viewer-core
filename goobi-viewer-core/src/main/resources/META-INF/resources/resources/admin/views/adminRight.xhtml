@@ -2,6 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml" 
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
     xmlns:p="http://primefaces.org/ui"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -138,6 +139,7 @@
                                 <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
                                     <div class="admin__license-functions">
                                         <!-- Subthemes -->
+                                        <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableSubthemes) > 0}">
                                         <div class="form-group form-row">
                                             <div class="col-sm-6">
                                                 <h:outputLabel for="name" styleClass="control-label"
@@ -187,6 +189,7 @@
                                             </div>
                                             <div class="col-sm-1" />
                                         </div>
+                                        </ui:fragment>
                                         <!-- Categories -->
                                         <div class="form-group form-row">
                                             <div class="col-sm-6">
