@@ -21,7 +21,7 @@
         <div id="swagger-container"></div>
         
         <script>
-	        fetch("#{request.contextPath}/rest/openapi.json")
+	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
 	            json.servers = [
