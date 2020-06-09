@@ -26,7 +26,7 @@
 	        .then(json => {
 	            json.servers = [
 	                {
-	                    url: "#{configurationBean.restApiUrl}"
+	                    url: "#{request.contextPath}"
 	                }
 	            ]
 	          return json;

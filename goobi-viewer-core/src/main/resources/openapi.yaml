@@ -9,7 +9,7 @@ openAPI:
           name: GPL2 or later
           url: https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE
 ignoredRoutes:
-   - /footer
-   - /{type}
-   - /status
-   - /redirect/toFirstWork
+   - /rest/footer
+   - /rest/{type}
+   - /rest/status
+   - /rest/redirect/toFirstWork
