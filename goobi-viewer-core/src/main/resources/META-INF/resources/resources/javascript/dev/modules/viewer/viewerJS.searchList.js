@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     var _promise = null;
     var _childHits = null;
     var _searchListStyle = '';
@@ -367,9 +367,13 @@ var viewerJS = ( function( viewer ) {
             
             // build child hits
             if ( child.hasChildren ) {
+                console.log("children", child.children);
                 $.each( child.children, function( subChildren, subChild ) {
                     hitSetText.append( _renderSubChildHits( subChild.browseElement, subChild.type, subChild.translatedType ) );
                 } );
+            } else {
+                console.log("no children ", child);
+                hitSetText.append( _renderSubChildHits( child.browseElement, child.type, child.translatedType ) );
             }
             
             // append complete set
