@@ -14,8 +14,8 @@
 
     <!-- component content -->
     <composite:implementation>
-        <div class="column-filter-wrapper">
-            <div class="form-group">
+        <div class="admin__table-filter-inner">
+            <div class="form-group mb-0">
                 <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
                 <div class="input-group">
                 	<div class="admin__search-input-wrapper">
@@ -56,6 +56,9 @@
 			    /* trigger empty search on click */
 			    $('.admin__search-action a').click();
 			});
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p class="">#{msg.hitsZero}</p>');
+			}
 		});
 		</script>
     </composite:implementation>
