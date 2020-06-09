@@ -902,6 +902,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * @return the type
      */
     public String getType() {
+        if (type == null) {
+            if (user != null) {
+                type = "user";
+            } else if (userGroup != null) {
+                type = "group";
+            } else if (ipRange != null) {
+                type = "iprange";
+            }
+        }
         return type;
     }
 
