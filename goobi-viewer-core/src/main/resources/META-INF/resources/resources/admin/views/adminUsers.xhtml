@@ -102,19 +102,15 @@
                                             <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_goobi_person.png" alt="User avatar"/>
                                         </div>
                                     </ui:fragment>
-                                    <!-- USER NAME + EMAIL -->
                                     <div class="admin__table-data">
-                                        <span class="admin__table-name">
-                                            <h:outputText value="#{user.nickName}" />
-                                        </span>
-                                        <a class="admin__table-email -bluelink" href="mailto:#{user.email}">
-                                            <h:outputText value="#{user.email}" />
-                                        </a>
-                                        <h:outputLink styleClass="admin__table-action-link -bluelink" title="#{msg.edit}"
-                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/">
-                                           <f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{user.email}" />
+                                        <!-- USER NAME -->
+                                        <span class="admin__table-name">#{user.nickName}</span>
+                                        <!-- USER EMAIL -->
+                                        <a href="mailto:#{user.email}" class="admin__table-email -textlink">#{user.email}</a>
+                                        <!-- EDIT -->
+                                        <a href="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/" class="admin__table-action-link -bluelink" title="#{msg.edit}: #{user.email}">
                                            #{msg.edit}
-                                        </h:outputLink>
+                                        </a>
                                     </div>
                                 </div>
 
