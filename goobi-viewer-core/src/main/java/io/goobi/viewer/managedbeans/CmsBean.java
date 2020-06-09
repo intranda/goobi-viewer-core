@@ -1186,6 +1186,29 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public String getSelectedPageId() {
+        if (selectedPage == null) {
+            return null;
+        }
+
+        return String.valueOf(selectedPage.getId());
+    }
+
+    /**
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setSelectedPageId(String id) throws DAOException {
+        logger.trace("setSelectedPageId: {}", id);
+        CMSPage page = findPage(id);
+        setSelectedPage(page);
+    }
+
+    /**
      * <p>
      * Getter for the field <code>currentPage</code>.
      * </p>
