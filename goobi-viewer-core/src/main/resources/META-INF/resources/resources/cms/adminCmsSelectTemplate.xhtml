@@ -44,7 +44,7 @@
                                                 <div class="col-2">
                                                     <!-- ACTION -->
                                                     <div class="cms-select-template__action">
-                                                        <h:commandLink action="pretty:adminCmsCreatePage" value="#{msg.cms_createPageWithTemplate}"
+                                                        <h:commandLink action="pretty:adminCmsNewPage" value="#{msg.cms_createPageWithTemplate}"
                                                             styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}">
                                                             <f:setPropertyActionListener value="#{cmsBean.createNewPage(template)}" target="#{cmsBean.selectedPage}" />
                                                             <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />

@@ -775,20 +775,20 @@
 		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsSelectTemplate">
-		<pattern value="/admin/cms/pages/create/" />
+		<pattern value="/admin/cms/pages/templates/" />
 		<view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.loadTemplates}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsCreatePage">
-		<pattern value="/admin/cms/pages/create/" />
-		<view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="adminCmsEditPage">
         <pattern value="/admin/cms/pages/edit/#{selectedPageId:cmsBean.selectedPageId}/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{cmsBean.setEditMode(true)}</action>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsNewPage">
+        <pattern value="/admin/cms/pages/new/" />
+        <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="adminCmsStaticPages">

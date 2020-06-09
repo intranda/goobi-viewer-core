@@ -72,8 +72,8 @@ public enum PageType {
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
-    adminCmsSelectTemplate("admin/cms/pages/new"),
-    adminCmsCreatePage("admin/cms/pages/create"),
+    adminCmsSelectTemplate("admin/cms/pages/templates"),
+    adminCmsNewPage("admin/cms/pages/new"),
     adminCmsCategories("admin/cms/categories"),
     adminCmsStaticPages("admin/cms/pages/mapping"),
     adminCmsMedia("admin/cms/media"),
@@ -395,7 +395,7 @@ public enum PageType {
             case adminCms:
             case adminCmsCategories:
             case adminCmsCollections:
-            case adminCmsCreatePage:
+            case adminCmsNewPage:
             case adminCmsEditCollection:
             case adminCmsMedia:
             case adminCmsMenuItems:
