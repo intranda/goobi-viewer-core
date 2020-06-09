@@ -26,16 +26,17 @@
 	        .then(json => {
 	            json.servers = [
 	                {
-	                    url: "#{request.contextPath}"
+	                    url: "#{configurationBean.restApiUrl}"
 	                }
 	            ]
 	          return json;
 	        })
 	        .then(json => {
-	            SwaggerUIBundle({
+	            const ui = SwaggerUIBundle({
 	        	    dom_id: '#swagger-container',
 	        	    spec: json,
 	        	  });
+	            ui.specActions.updateSpec(string);
 	        })
         	
         

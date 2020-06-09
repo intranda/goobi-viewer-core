@@ -63,9 +63,9 @@ public class TranslationResource {
     @GET
     @Path("/translate/{keys}")
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
-    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
-    @ApiResponse(responseCode = "400", description = "No keys passed")
+//    @Operation(tags= {"translation", "viewer"}, summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
+//    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
+//    @ApiResponse(responseCode = "400", description = "No keys passed")
     public TranslationList getTranslations(
             @PathParam("keys") @Parameter(description = "A '$' separated list of message keys") String keys) {
         logger.trace("getTranslations: {}", keys);
