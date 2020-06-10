@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -1212,7 +1213,9 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentLicenseId(Long id) throws DAOException {
-        setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
+        if(ObjectUtils.notEqual(getCurrentLicenseId(), id)) {            
+            setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
+        }
     }
 
     /**

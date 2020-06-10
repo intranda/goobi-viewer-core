@@ -168,7 +168,7 @@
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_subthemes_label}:</label>
                                                     </div>
-                                                    <div class="col-7" id="selected_subthemes">
+                                                    <h:panelGroup layout="block" class="col-7" id="selected_subthemes">
                                                         <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
                                                             <ui:fragment rendered="#{selectable.selected}">
                                                                 <div class="badge badge-secondary">
@@ -176,7 +176,7 @@
                                                                 </div>
                                                             </ui:fragment>
                                                         </ui:repeat>
-                                                    </div>
+                                                    </h:panelGroup>
 
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -195,7 +195,7 @@
                                                                             <li>
                                                                                 <label>
                                                                                     <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                        <f:ajax render="metadata_component:selected_subthemes" />
+                                                                                        <f:ajax render="selected_subthemes" />
                                                                                     </h:selectBooleanCheckbox>
                                                                                     #{msg[selectable.value]}
                                                                                 </label>
@@ -219,7 +219,7 @@
                                                     <h:outputLabel for="name" styleClass="control-label"
                                                         value="#{msg.admin__license_allowed_categories_label}:" />
                                                 </div>
-                                                <div id="selected_categories" class="col-sm-7">
+                                                <h:panelGroup layout="block" id="selected_categories" class="col-sm-7">
                                                     <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
                                                         <ui:fragment rendered="#{selectable.selected}">
                                                             <div class="badge badge-violet">
@@ -227,7 +227,7 @@
                                                             </div>
                                                         </ui:fragment>
                                                     </ui:repeat>
-                                                </div>
+                                                </h:panelGroup>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -247,7 +247,7 @@
                                                                     <li>
                                                                         <label>
                                                                             <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                <f:ajax render="metadata_component:selected_categories" />
+                                                                                <f:ajax render="selected_categories" />
                                                                             </h:selectBooleanCheckbox>
                                                                             #{msg[selectable.value.name]}
                                                                         </label>
@@ -267,7 +267,7 @@
                                                     <h:outputLabel for="name" styleClass="control-label"
                                                         value="#{msg.admin__license_allowed_cms_templates_label}:" />
                                                 </div>
-                                                <div id="selected_templates" class="col-sm-7">
+                                                <h:panelGroup layout="block" id="selected_templates" class="col-sm-7">
                                                     <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                         <ui:fragment rendered="#{selectable.selected}">
                                                             <div class="badge badge-secondary">
@@ -275,7 +275,7 @@
                                                             </div>
                                                         </ui:fragment>
                                                     </ui:repeat>
-                                                </div>
+                                                </h:panelGroup>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -295,7 +295,7 @@
                                                                         <li>
                                                                             <label>
                                                                                 <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                    <f:ajax render="metadata_component:selected_templates" />
+                                                                                    <f:ajax render="selected_templates" />
                                                                                 </h:selectBooleanCheckbox>
                                                                                 #{msg[selectable.value]}
                                                                             </label>
