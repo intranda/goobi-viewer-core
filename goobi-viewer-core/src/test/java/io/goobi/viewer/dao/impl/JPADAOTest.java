@@ -2496,4 +2496,26 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getUserByNickname_shouldReturnNullIfNicknameEmpty() throws Exception {
         Assert.assertNull(DataManager.getInstance().getDao().getUserByNickname(""));
     }
+
+    /**
+     * @see JPADAO#getCountPagesUsingCategory(CMSCategory)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCountPagesUsingCategory_shouldReturnCorrectValue() throws Exception {
+        CMSCategory cat = DataManager.getInstance().getDao().getCategory(4L);
+        Assert.assertNotNull(cat);
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCountPagesUsingCategory(cat));
+    }
+
+    /**
+     * @see JPADAO#getCountMediaItemsUsingCategory(CMSCategory)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCountMediaItemsUsingCategory_shouldReturnCorrectValue() throws Exception {
+        CMSCategory cat = DataManager.getInstance().getDao().getCategory(1L);
+        Assert.assertNotNull(cat);
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
+    }
 }

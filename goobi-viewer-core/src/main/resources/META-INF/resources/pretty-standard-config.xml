@@ -828,6 +828,17 @@
         <view-id value="/resources/cms/adminCmsCategories.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminCmsNewCategory">
+        <pattern value="/admin/cms/categories/new/" />
+        <view-id value="/resources/cms/adminCmsCategory.xhtml" />
+        <action onPostback="false">#{cmsCategoriesBean.endEditing}</action>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsEditCategory">
+        <pattern value="/admin/cms/categories/edit/#{selectedCategoryId:cmsCategoriesBean.selectedCategoryId}/" />
+        <view-id value="/resources/cms/adminCmsCategory.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     <!-- CMS GeoMaps -->
     <url-mapping id="adminCmsGeoMaps">
         <pattern value="/admin/cms/maps/" />

@@ -1542,6 +1542,22 @@ public interface IDAO {
     public List<CMSCategory> getAllCategories() throws DAOException;
 
     /**
+     * 
+     * @param category
+     * @return
+     * @throws DAOException
+     */
+    public long getCountPagesUsingCategory(CMSCategory category) throws DAOException;
+    
+    /**
+     * 
+     * @param category
+     * @return
+     * @throws DAOException
+     */
+    public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException;
+    
+    /**
      * <p>
      * addCategory.
      * </p>

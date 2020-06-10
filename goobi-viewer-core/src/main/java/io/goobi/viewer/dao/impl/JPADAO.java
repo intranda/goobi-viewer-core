@@ -3697,6 +3697,47 @@ public class JPADAO implements IDAO {
         List<CMSCategory> list = q.getResultList();
         return list;
     }
+    
+
+    
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCountPagesUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * @should return correct value
+     */
+    @Override
+    public long getCountPagesUsingCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT COUNT(o) FROM CMSPage o WHERE :category MEMBER OF o.categories");
+        q.setParameter("category", category);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCountMediaItemsUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * @should return correct value
+     */
+    @Override
+    public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT COUNT(o) FROM CMSMediaItem o WHERE :category MEMBER OF o.categories");
+        q.setParameter("category", category);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
 
     /**
      * {@inheritDoc}

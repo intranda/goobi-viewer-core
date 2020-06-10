@@ -13,6 +13,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCategories')}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
+            <f:event type="preRenderView" listener="#{cmsCategoriesBean.endEditing}" />
         </f:metadata>
     </ui:define>
 
@@ -21,7 +22,7 @@
             <div id="adminCmsCategories">
                 <div class="admin__title-bar">
                     <h2 class="admin__title">#{msg.admin__categories}</h2>
-                    <a href="#" class="btn btn--default admin__title-bar-action">
+                    <a href="#{navigationHelper.applicationUrl}admin/cms/categories/new/" class="btn btn--default admin__title-bar-action">
                         #{msg.add}
                     </a>
                 </div>
@@ -39,17 +40,18 @@
                                 <div class="col-4 d-flex">#{msg.admin__category_title}</div>
                                 <div class="col-8 d-flex">#{msg.admin__category_description}</div>
                             </div>
-                            <ui:repeat var="category" value="#{categories.allCategories}">
+                            <ui:repeat var="category" value="#{cmsCategoriesBean.allCategories}">
                                 <div class="row no-gutters admin__table-entry">
                                     <div class="col-4 d-flex">
                                         <div class="admin__table-data">
                                             <span>#{category.name}</span>
                                             <div>
-                                                <h:commandLink type="button" class="admin__table-action-link -bluelink" action="#{categories.edit(category)}">
-                                                    #{msg.button__edit}
-                                                    <f:ajax render="@all" />
-                                                </h:commandLink>
-                                                <h:commandLink type="button" class="admin__table-action-link -redlink" action="#{categories.delete(category)}">
+                                                <!-- EDIT -->
+                                                <h:outputLink styleClass="admin__table-action-link -bluelink" title="#{msg.edit}"
+                                                    value="#{navigationHelper.applicationUrl}admin/cms/categories/edit/#{category.id}/">#{msg.edit}</h:outputLink>
+                                                <!-- DELETE -->
+                                                <h:commandLink rendered="#{!category.inUse}" type="button" class="admin__table-action-link -redlink"
+                                                    action="#{cmsCategoriesBean.deleteCategoryAction(category)}">
                                                     #{msg.button__delete}
                                                     <f:ajax render="@all" />
                                                 </h:commandLink>
@@ -61,63 +63,6 @@
                             </ui:repeat>
                         </h:form>
                     </div>
-
-                    <!-- CREATE / EDIT -->
-                    <h:form id="adminCategoryCreateForm" prependId="false">
-                        <ui:fragment rendered="#{!categories.editing}">
-                            <h3>#{msg.admin__category_create_new}</h3>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{categories.editing}">
-                            <h3>#{msg.admin__category_edit}</h3>
-                        </ui:fragment>
-
-
-                        <div class="admin__default-block">
-                            <fieldset>
-                                <!-- TITLE -->
-                                <div class="form-group form-row">
-                                    <div class="col-2 control-label admin__form-label">
-                                        <label for="createCategoryTitle">#{msg.admin__category_title}:</label>
-                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
-                                    </div>
-                                    <div class="col-9 admin__form-input">
-                                        <h:inputText id="createCategoryTitle" styleClass="form-control" value="#{categories.categoryName}"/>
-                                        <span class="admin__form-help-text">#{msg.inline_help__create_category_title}</span>
-                                    </div>
-                                    <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- DESCRIPTION -->
-                                <div class="form-group form-row">
-                                    <div class="col-2 control-label admin__form-label">
-                                        <label for="createCategoryDescription">#{msg.admin__category_description}:</label>
-                                    </div>
-                                    <div class="col-9 admin__form-input">
-                                        <h:inputTextarea id="createCategoryDescription" styleClass="form-control" value="#{categories.categoryDescription}"/>
-                                        <span class="admin__form-help-text">#{msg.inline_help__create_category_description}</span>
-                                    </div>
-                                    <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-
-                        <!-- ACTION -->
-                        <div class="row no-gutters justify-content-end admin__final-actions">
-                            <h:commandLink rendered="#{categories.editing}" type="button" class="btn btn--cancel" action="#{categories.cancel()}">
-                                #{msg.cancel}
-                            </h:commandLink>
-                            <h:commandLink type="button" class="btn btn--success" action="#{categories.save()}">
-                                #{msg.save}
-                            </h:commandLink>
-                        </div>
-                    </h:form>
                 </div>
             </div>
         </ui:fragment>

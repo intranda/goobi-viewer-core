@@ -54,16 +54,16 @@ public enum PageType {
     sitelinks("sitelinks"),
     //admin
     admin("admin"),
-    adminAllUsers("admin/users"),
+    adminUsers("admin/users"),
     adminUser("admin/users"),
     adminUserNew("admin/users/new"),
-    adminAllUserGroups("admin/groups"),
+    adminUserGroups("admin/groups"),
     adminUserGroup("admin/groups"),
     adminUserGroupNew("/admin/groups/new"),
     adminIpRanges("admin/ipranges"),
     adminIpRange("admin/ipranges"),
     adminIpRangeNew("admin/ipranges/new"),
-    adminAllLicenseTypes("admin/licenses"),
+    adminLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
     adminRights("admin/rights"),
     adminRightsNew("admin/rights/new"),
@@ -75,6 +75,7 @@ public enum PageType {
     adminCmsSelectTemplate("admin/cms/pages/templates"),
     adminCmsNewPage("admin/cms/pages/new"),
     adminCmsCategories("admin/cms/categories"),
+    adminCmsNewCategory("admin/cms/categories/new"),
     adminCmsStaticPages("admin/cms/pages/mapping"),
     adminCmsMedia("admin/cms/media"),
     adminCmsMenuItems("admin/cms/menus"),
@@ -389,11 +390,12 @@ public enum PageType {
     public boolean isRestricted() {
         switch (this) {
             case admin:
-            case adminAllLicenseTypes:
-            case adminAllUserGroups:
-            case adminAllUsers:
+            case adminLicenseTypes:
+            case adminUserGroups:
+            case adminUsers:
             case adminCms:
             case adminCmsCategories:
+            case adminCmsNewCategory:
             case adminCmsCollections:
             case adminCmsNewPage:
             case adminCmsEditCollection:
@@ -402,7 +404,7 @@ public enum PageType {
             case adminCmsOverview:
             case adminCmsSelectTemplate:
             case adminCmsStaticPages:
-	        case adminCreateRecord:
+            case adminCreateRecord:
             case adminCrowdsourcingAnnotations:
             case adminCrowdsourcingCampaigns:
             case adminIpRange:
