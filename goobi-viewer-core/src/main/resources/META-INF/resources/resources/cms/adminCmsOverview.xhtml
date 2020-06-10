@@ -17,7 +17,7 @@
 
     <ui:define name="content">
         <div id="cmsOverview">
-            <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
+            <h:panelGroup id="cmsOverviewAccessControl" rendered="#{userBean.user.cmsAdmin}">
                 <h:form id="cmsOverviewForm" prependId="false">
 
                     <div class="admin__title-bar">

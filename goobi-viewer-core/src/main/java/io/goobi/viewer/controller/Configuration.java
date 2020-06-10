@@ -3977,18 +3977,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isCmsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCmsEnabled() {
-        return getLocalBoolean("cms.enabled", false);
-    }
-
-    /**
-     * <p>
      * useCustomNavBar.
      * </p>
      *
@@ -4621,7 +4609,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     /**
      * @param marker
      * @return
@@ -4629,20 +4617,19 @@ public final class Configuration extends AbstractConfiguration {
     public GeoMapMarker getGeoMapMarker(String name) {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
     }
-    
+
     public List<GeoMapMarker> getGeoMapMarkers() {
-        
+
         List<GeoMapMarker> markers = new ArrayList<>();
         List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("maps.markers.marker");
         for (HierarchicalConfiguration config : configs) {
             GeoMapMarker marker = readGeoMapMarker(config);
-            if(marker != null) {                
+            if (marker != null) {
                 markers.add(marker);
             }
         }
         return markers;
 
-        
     }
 
     /**
@@ -4650,10 +4637,10 @@ public final class Configuration extends AbstractConfiguration {
      * @param marker
      * @return
      */
-    public GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
+    public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
         GeoMapMarker marker = null;
         String name = config.getString(".");
-        if(StringUtils.isNotBlank(name)) {                
+        if (StringUtils.isNotBlank(name)) {
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
             marker.setIcon(config.getString("[@icon]", marker.getIcon()));
@@ -4668,7 +4655,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return marker;
     }
-    
+
     /**
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
      * return null;
@@ -4720,7 +4707,5 @@ public final class Configuration extends AbstractConfiguration {
 
         return licenses;
     }
-
-
 
 }
