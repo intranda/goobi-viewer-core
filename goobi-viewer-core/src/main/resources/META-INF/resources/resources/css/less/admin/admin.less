@@ -636,6 +636,52 @@
 }
 
 
+
+.switch {
+    position: relative;
+    width: 140px;
+    border: 1px solid #3365a9;
+    color: #000;
+    font-size: 16px;
+    display: flex;
+    
+    &-option {
+		position: relative;
+		display: inline-block;
+		width: 50%;
+		height: 100%;
+    }
+
+	&-option label {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+		font-weight: normal;
+		text-align: center;
+		transition: transform 0.4s, color 0.4s, background-color 0.4s;
+	}
+	&-option input[type="radio"] {
+		appearance: none;
+		width: 0;
+		height: 0;
+		opacity: 0;
+	}
+	&-option input[type="radio"]:focus {
+		outline: 0;
+		outline-offset: 0;
+	}
+	&-option input[type="radio"]:checked ~ label {
+		background-color: #3365a9;
+		color: #fff;
+		font-weight: normal;
+	}
+
+}
+
+
 /* TODO CLEANUP AND INTEGRATE, BEM, BOOTSTRAP */
 
 .input_form {
