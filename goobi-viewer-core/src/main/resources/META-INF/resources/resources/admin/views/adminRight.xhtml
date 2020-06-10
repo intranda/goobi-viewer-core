@@ -166,17 +166,17 @@
                                                  <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
                                              </h:outputText>
                                         </dd>
+                                        <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
+                                        <dd class="col-8">
+                                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
+                                                #{msg[adminBean.currentLicense.licenseType.description]}
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
+                                                 <!-- TODO INLINE CSS -->
+                                                <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                            </ui:fragment>
+                                        </dd>
                                     </dl>
-                                    <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
-                                    <dd class="col-8">
-                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
-                                            #{msg[adminBean.currentLicense.licenseType.description]}
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
-                                             <!-- TODO INLINE CSS -->
-                                            <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
-                                        </ui:fragment>
-                                    </dd>
                                 </div>
                             </h:panelGroup>
 
