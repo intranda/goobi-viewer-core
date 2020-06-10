@@ -1,12 +1,12 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
@@ -47,8 +47,9 @@
                                             <span>#{category.name}</span>
                                             <div>
                                                 <!-- EDIT -->
-                                                <h:outputLink styleClass="admin__table-action-link -bluelink" title="#{msg.edit}"
-                                                    value="#{navigationHelper.applicationUrl}admin/cms/categories/edit/#{category.id}/">#{msg.edit}</h:outputLink>
+                                                <a href="#{navigationHelper.applicationUrl}admin/cms/categories/edit/#{category.id}/"
+                                                   class="admin__table-action-link -bluelink"
+                                                   aria-label="#{msg.edit}: #{category.name}">#{msg.edit}</a>
                                                 <!-- DELETE -->
                                                 <h:commandLink rendered="#{!category.inUse}" type="button" class="admin__table-action-link -redlink"
                                                     action="#{cmsCategoriesBean.deleteCategoryAction(category)}">
