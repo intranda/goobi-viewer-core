@@ -47,6 +47,7 @@ import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -2517,5 +2518,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSCategory cat = DataManager.getInstance().getDao().getCategory(1L);
         Assert.assertNotNull(cat);
         Assert.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
+    }
+
+    /**
+     * @see JPADAO#getCMSPageTemplateEnabled(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCMSPageTemplateEnabled_shouldReturnCorrectValue() throws Exception {
+       CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
+       Assert.assertNotNull(o);
+       Assert.assertFalse(o.isEnabled());
     }
 }

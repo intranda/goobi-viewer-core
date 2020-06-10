@@ -32,6 +32,8 @@ import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -1142,6 +1144,14 @@ public interface IDAO {
 
     // CMS
 
+    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException;
+
+    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
+
+    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
+
+    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException;
+
     /**
      * <p>
      * getAllCMSPages.
@@ -1548,7 +1558,7 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getCountPagesUsingCategory(CMSCategory category) throws DAOException;
-    
+
     /**
      * 
      * @param category
@@ -1556,7 +1566,7 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException;
-    
+
     /**
      * <p>
      * addCategory.

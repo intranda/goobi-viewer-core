@@ -19,6 +19,7 @@
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSPage</class>
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
@@ -85,6 +86,7 @@
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSPage</class>
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>

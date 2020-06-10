@@ -363,8 +363,9 @@ public class CmsBean implements Serializable {
      * 
      * @param enabled
      * @return
+     * @throws DAOException 
      */
-    public List<CMSPageTemplate> getTemplates(boolean enabled) {
+    public List<CMSPageTemplate> getTemplates(boolean enabled) throws DAOException {
         List<CMSPageTemplate> all = getTemplates();
         if (all.isEmpty()) {
             return all;
@@ -372,7 +373,7 @@ public class CmsBean implements Serializable {
 
         List<CMSPageTemplate> ret = new ArrayList<>(all.size());
         for (CMSPageTemplate template : getTemplates()) {
-            if (template.isEnabled() == enabled) {
+            if (template.getEnabled().isEnabled() == enabled) {
                 ret.add(template);
             }
         }
@@ -394,6 +395,17 @@ public class CmsBean implements Serializable {
         }
 
         return user.getAllowedTemplates(getTemplates());
+    }
+
+    /**
+     * Persists the enabled/disabled status of all CMS tempaltes in the DB.
+     * 
+     * @return
+     * @throws DAOException 
+     */
+    public String saveTemplatesAction() throws DAOException {
+        DataManager.getInstance().getDao().saveCMSPageTemplateEnabledStatuses(getTemplates());
+        return "pretty:adminCmsSelectTemplate";
     }
 
     /**

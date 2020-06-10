@@ -63,6 +63,8 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -361,7 +363,7 @@ public class JPADAO implements IDAO {
         if (StringUtils.isBlank(nickname)) {
             return null;
         }
-        
+
         preQuery();
         Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
         q.setParameter("nickname", nickname.trim().toUpperCase());
@@ -2168,6 +2170,93 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCMSTemplateEnabled(java.lang.String)
+     * @should return correct value
+     */
+    @Override
+    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
+        q.setParameter("templateId", templateId);
+        q.setFlushMode(FlushModeType.COMMIT);
+        try {
+            CMSPageTemplateEnabled o = (CMSPageTemplateEnabled) q.getSingleResult();
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
+     */
+    @Override
+    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(o);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
+     */
+    @Override
+    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(o);
+            em.getTransaction().commit();
+            // Refresh the object from the DB
+            if (this.em.contains(o)) {
+                this.em.refresh(o);
+            }
+            return true;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * @see io.goobi.viewer.dao.IDAO#saveCMSTemplateEnabledStatuses(java.util.List)
+     * @should update rows correctly
+     */
+    @Override
+    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException {
+        if (templates == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (CMSPageTemplate template : templates) {
+            if (template.getEnabled().getId() != null) {
+                updateCMSPageTemplateEnabled(template.getEnabled());
+            } else {
+                addCMSPageTemplateEnabled(template.getEnabled());
+            }
+            count++;
+        }
+
+        return count;
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -3697,9 +3786,6 @@ public class JPADAO implements IDAO {
         List<CMSCategory> list = q.getResultList();
         return list;
     }
-    
-
-    
 
     /**
      * @see io.goobi.viewer.dao.IDAO#getCountPagesUsingCategory(io.goobi.viewer.model.cms.CMSCategory)

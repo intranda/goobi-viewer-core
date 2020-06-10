@@ -51,7 +51,7 @@
                                                         <h:commandLink action="pretty:adminCmsNewPage" value="#{msg.disable}"
                                                             styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}"
                                                             immediate="true">
-                                                            <f:setPropertyActionListener value="#{false}" target="#{template.enabled}" />
+                                                            <f:setPropertyActionListener value="#{false}" target="#{template.enabled.enabled}" />
                                                             <f:ajax render="templateLists"></f:ajax>
                                                         </h:commandLink>
                                                     </div>
@@ -90,7 +90,7 @@
                                                         <h:commandLink action="pretty:adminCmsNewPage" value="#{msg.enable}"
                                                             styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}"
                                                             immediate="true">
-                                                            <f:setPropertyActionListener value="#{true}" target="#{template.enabled}" />
+                                                            <f:setPropertyActionListener value="#{true}" target="#{template.enabled.enabled}" />
                                                             <f:ajax render="templateLists"></f:ajax>
                                                         </h:commandLink>
                                                     </div>
@@ -105,6 +105,11 @@
                                 </ui:repeat>
                                 
                                 </h:panelGroup>
+                                
+                                <div class="text-right">
+                                    <h:commandLink action="pretty:adminCmsSelectTemplate" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                                    <h:commandLink action="#{cmsBean.saveTemplatesAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                                </div>
                                 
                             </h:form>
                         </div>

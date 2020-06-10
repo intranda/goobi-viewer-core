@@ -30,7 +30,9 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
@@ -67,7 +69,7 @@ public class CMSPageTemplate implements Serializable {
 
     private boolean themeTemplate = false;
 
-    private boolean enabled = true;
+    private CMSPageTemplateEnabled enabled;
 
     /**
      * Loads a page template from the given template file and returns the template object.
@@ -478,15 +480,23 @@ public class CMSPageTemplate implements Serializable {
 
     /**
      * @return the enabled
+     * @throws DAOException
      */
-    public boolean isEnabled() {
+    public CMSPageTemplateEnabled getEnabled() throws DAOException {
+        if (enabled == null) {
+            enabled = DataManager.getInstance().getDao().getCMSPageTemplateEnabled(id);
+        }
+        if (enabled == null) {
+            enabled = new CMSPageTemplateEnabled();
+        }
+         
         return enabled;
     }
 
     /**
      * @param enabled the enabled to set
      */
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(CMSPageTemplateEnabled enabled) {
         this.enabled = enabled;
     }
 
