@@ -27,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.messages.MessagesTranslation;
@@ -65,6 +67,7 @@ public class TranslationResource {
      *
      * @param keys a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.servlets.rest.TranslationResource.TranslationList} object.
+     * @throws IllegalRequestException 
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
@@ -72,12 +75,12 @@ public class TranslationResource {
     @ApiResponse(responseCode = "200", description = "Return translations for given keys")
     @ApiResponse(responseCode = "400", description = "No keys passed")
     public TranslationList getTranslations(
-            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") String keys) {
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") String keys) throws IllegalRequestException {
         logger.trace("getTranslations: {}", keys);
 
         Collection<String> keysCollection;
         if(StringUtils.isBlank(keys)) {
-            throw new IllegalArgumentException("Must provide query parameter 'keys'");
+            throw new IllegalRequestException("Must provide query parameter 'keys'");
         } else {
             keysCollection = Arrays.asList(keys.split("\\s*,\\s*"));
         }

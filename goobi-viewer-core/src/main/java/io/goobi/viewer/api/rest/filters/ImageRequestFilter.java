@@ -74,7 +74,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         if (servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
             mediaType = MediaType.TEXT_XML;
         }
-
+        
         try {
 
             String requestPath = servletRequest.getRequestURI();
@@ -84,6 +84,10 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
             String imageName = pathSegments.get(1);
+            
+            pi = (String) servletRequest.getAttribute("pi");
+            imageName = (String) servletRequest.getAttribute("filename");
+            
             imageName = StringTools.decodeUrl(imageName);
             String size;
             String region;

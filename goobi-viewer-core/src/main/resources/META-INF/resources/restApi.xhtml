@@ -26,12 +26,19 @@
 	        .then(json => {
 	            json.servers = [
 	                {
-	                    url: "#{request.contextPath}"
+	                    url: "#{request.contextPath}",
+// 	                    variables:  {
+// 	                        basePath: {
+// 	                            "default": "/api/v2"
+// 	                        }
+// 	                    }
 	                }
-	            ]
-	          return json;
+	            ];	          
+	            return json;
 	        })
+
 	        .then(json => {
+	            console.log("init SwaggerUIBundle with ", json);
 	            const ui = SwaggerUIBundle({
 	        	    dom_id: '#swagger-container',
 	        	    spec: json,
