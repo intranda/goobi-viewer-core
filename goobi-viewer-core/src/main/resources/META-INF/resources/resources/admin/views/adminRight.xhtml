@@ -1,12 +1,12 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
@@ -17,27 +17,33 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="adminLicenseType">
+            <div id="adminRight">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
                     <h:form id="editLicenseForm" styleClass="form-horizontal" role="form" prependId="false">
-                        <h2 class="admin__content-inner-title">
-                            <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
-                            <h:outputText value="#{msg.admin__right_edit}"
-                                rendered="#{adminBean.currentLicenseType.id != null}" />
-                        </h2>
+                        <div class="admin__title-bar">
+                            <h2 class="admin__title">
+                                <!-- TODO -->
+                                <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
+                                <h:outputText value="#{msg.admin__right_edit}" rendered="#{adminBean.currentLicenseType.id != null}" />
+                                Recht bearbeiten
+                            </h2>
+                        </div>
 
                         <div id="adminLicenseWrapper" class="admin__content-inner-content">
-                        
+                            <!-- FIRST BLOCK GENERAL -->
                             <h3>#{msg.general}</h3>
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <h:outputLabel for="name" styleClass="control-label" value="#{msg.admin__license_licensee_type_select_label}:" />
                                     </div>
-                                    <div class="col-sm-6">
-                                        <h:message for="name"  errorClass="alert alert-danger" />
-                                        <h:selectOneMenu value="#{adminBean.currentLicense.type}"
-                                            immediate="true" disabled="#{adminBean.currentLicense.id != null}">
+                                    <div class="col-sm-8">
+                                        <h:selectOneMenu
+                                            value="#{adminBean.currentLicense.type}"
+                                            styleClass="form-control"
+                                            immediate="true"
+                                            disabled="#{adminBean.currentLicense.id != null}" >
+
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                             <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
                                             <f:selectItem itemLabel="#{msg.userGroup}" itemValue="group" />
@@ -50,29 +56,45 @@
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
+
                                 <h:panelGroup id="licenseeGroup">
                                     <div class="form-group form-row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <h:outputLabel for="name" styleClass="control-label" value="#{msg.admin__license_licensee_select_label}:" />
                                         </div>
-                                        <div class="col-sm-6">
-                                            <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
+                                        <div class="col-sm-8">
+                                            <h:selectOneMenu
+                                                rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
                                                 value="#{adminBean.currentLicense.user}"
-                                                immediate="true" converter="userConverter" disabled="#{adminBean.currentLicense.id != null}">
+                                                styleClass="form-control"
+                                                immediate="true"
+                                                converter="userConverter"
+                                                disabled="#{adminBean.currentLicense.id != null}">
+
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
                                                 <f:ajax render="licenseTypeGroup infoGroup" />
                                             </h:selectOneMenu>
-                                            <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
+                                            <h:selectOneMenu
+                                                rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
                                                 value="#{adminBean.currentLicense.userGroup}"
-                                                immediate="true" converter="userGroupConverter" disabled="#{adminBean.currentLicense.id != null}">
+                                                styleClass="form-control"
+                                                immediate="true"
+                                                converter="userGroupConverter"
+                                                disabled="#{adminBean.currentLicense.id != null}">
+
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems value="#{adminBean.allUserGroups}" />
                                                 <f:ajax render="licenseTypeGroup infoGroup" />
                                             </h:selectOneMenu>
-                                            <h:selectOneMenu rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
+                                            <h:selectOneMenu
+                                                rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
                                                 value="#{adminBean.currentLicense.ipRange}"
-                                                immediate="true" converter="ipRangeConverter" disabled="#{adminBean.currentLicense.id != null}">
+                                                styleClass="form-control"
+                                                immediate="true"
+                                                converter="ipRangeConverter"
+                                                disabled="#{adminBean.currentLicense.id != null}">
+
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
                                                 <f:ajax render="licenseTypeGroup infoGroup" />
@@ -82,14 +104,18 @@
                                 </h:panelGroup>
                                 <h:panelGroup id="licenseTypeGroup">
                                     <div class="form-group form-row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <h:outputLabel for="name" styleClass="control-label" value="#{msg.admin__license_license_type_select_label}:" />
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-8">
                                             <h:selectOneMenu
                                                 rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
-                                                value="#{adminBean.currentLicense.licenseType}" immediate="true" converter="licenseTypeConverter"
-                                                    disabled="#{adminBean.currentLicense.id != null}">
+                                                value="#{adminBean.currentLicense.licenseType}"
+                                                styleClass="form-control"
+                                                immediate="true"
+                                                converter="licenseTypeConverter"
+                                                disabled="#{adminBean.currentLicense.id != null}">
+
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
                                                 <f:ajax render="infoGroup functionsGroup" />
@@ -98,333 +124,330 @@
                                     </div>
                                 </h:panelGroup>
                             </div>
-                            
+
+
+
+                            <!-- SECOND BLOCK INFORMATION -->
                             <!-- TODO this should refresh and display after a license type has been selected -->
                             <h:panelGroup id="infoGroup" rendered="#{adminBean.currentLicense.licenseType != null}">
                                 <h3>#{msg.information}</h3>
                                 <div class="admin__default-block">
-                                    <div class="form-group form-row">
-                                        <div>
-                                            <h:outputText
-                                                rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
-                                            <h:outputText
-                                                rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
-                                            <h:outputText
-                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.name} (#{adminBean.currentLicense.ipRange.subnetMask})</h:outputText>
-                                        </div>
-                                        <div>
-                                            <h:outputText
-                                                rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
-                                            <h:outputText
-                                                rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
-                                        </div>
-                                    </div>
-                                    <div class="form-group form-row">
-                                        <div>
-                                            <h:outputText>#{adminBean.currentLicense.licenseType.name}</h:outputText>
-                                        </div>
-                                        <div>
-                                            <h:outputText>#{adminBean.currentLicense.licenseType.description}</h:outputText>
-                                        </div>
-                                    </div>
+                                    <dl class="row">
+                                       <dt class="col-4">
+                                           <h:outputText rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
+                                           <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
+                                           <h:outputText rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.name}</h:outputText>
+                                       </dt>
+                                       <dd class="col-8">
+                                           <h:outputText rendered="#{adminBean.currentLicense.user != null}">TODO SHOW USER INFORMATION HERE, SEE MOCKUP </h:outputText>
+                                           <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
+                                           <h:outputText rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
+                                       </dd>
+                                    </dl>
+                                    <dl class="row">
+                                        <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
+                                        <dd class="col-8">#{msg[adminBean.currentLicense.licenseType.description]}</dd>
+                                    </dl>
                                 </div>
                             </h:panelGroup>
-                            
-                             <!-- TODO this should refresh and display after a license type has been selected -->
+
+
+
+                            <!-- THIRD BLOCK FUNCTIONS -->
+                            <!-- TODO this should refresh and display after a license type has been selected -->
                             <h:panelGroup id="functionsGroup" rendered="#{adminBean.currentLicense.licenseType != null}">
-                            <h3>#{msg.admin__license_functions}</h3>
-                            <div class="admin__default-block">
-                            
-                                <!-- Core functions -->
-                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
-                                    <div class="admin__license-functions">
-                                        <!-- Subthemes -->
-                                        <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableSubthemes) > 0}">
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_allowed_subthemes_label}:" />
-                                            </div>
-                                            <div id="selected_subthemes" class="col-5">
-                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
-                                                    <ui:fragment rendered="#{selectable.selected}">
-                                                        <div class="badge badge-secondary">
-                                                            #{msg[selectable.value]}
-                                                        </div>
-                                                    </ui:fragment>
-                                                </ui:repeat>
-                                            </div>
+                                <h3>#{msg.admin__license_functions}</h3>
+                                <div class="admin__default-block">
 
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                            <div class="col-sm-6" />
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
-                                                
+                                    <!-- Core functions -->
+                                    <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
+                                        <div class="admin__license-functions">
+                                            <!-- Subthemes -->
+                                            <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableSubthemes) > 0}">
+                                                <div class="form-group form-row">
+                                                    <div class="col-4">
+                                                        <label for="name" class="control-label">#{msg.admin__license_allowed_subthemes_label}:</label>
+                                                    </div>
+                                                    <div class="col-7" id="selected_subthemes">
+                                                        <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                            <ui:fragment rendered="#{selectable.selected}">
+                                                                <div class="badge badge-secondary">
+                                                                    #{msg[selectable.value]}
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </ui:repeat>
+                                                    </div>
+
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="col-sm-4" />
+                                                    <div class="col-sm-7 admin__form-input">
+                                                        <div class="page-metadata-item__categories-selectable-categories">
+                                                            <div class="page-metadata-item__categories-selectable-categories-select">
+                                                                <div class="cms-module__option-dropdown">
+                                                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                                    <ul>
+                                                                        <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                                            <li>
+                                                                                <label>
+                                                                                    <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                        <f:ajax render="metadata_component:selected_subthemes" />
+                                                                                    </h:selectBooleanCheckbox>
+                                                                                    #{msg[selectable.value]}
+                                                                                </label>
+                                                                            </li>
+                                                                        </ui:repeat>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
+                                                    </div>
+                                                    <div class="col-sm-1" />
+                                                </div>
+                                            </ui:fragment>
+
+
+                                            <!-- Categories -->
+                                            <div class="form-group form-row">
+                                                <div class="col-sm-4">
+                                                    <h:outputLabel for="name" styleClass="control-label"
+                                                        value="#{msg.admin__license_allowed_categories_label}:" />
+                                                </div>
+                                                <div id="selected_categories" class="col-sm-7">
+                                                    <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                        <ui:fragment rendered="#{selectable.selected}">
+                                                            <div class="badge badge-violet">
+                                                                #{msg[selectable.value.name]}
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </ui:repeat>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="col-sm-4" />
+                                                <div class="col-sm-7 admin__form-input">
+                                                    <h:message for="name"  errorClass="alert alert-danger" />
+
                                                 <div class="page-metadata-item__categories-selectable-categories">
                                                     <div class="page-metadata-item__categories-selectable-categories-select">
                                                         <div class="cms-module__option-dropdown">
                                                             <div class="cms-module__option-dropdown-trigger"
                                                                 data-toggle="option-dropdown">#{msg.admin__category_select}</div>
                                                             <ul>
-                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
                                                                     <li>
                                                                         <label>
                                                                             <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                <f:ajax render="metadata_component:selected_subthemes" />
+                                                                                <f:ajax render="metadata_component:selected_categories" />
                                                                             </h:selectBooleanCheckbox>
-                                                                            #{msg[selectable.value]}
+                                                                            #{msg[selectable.value.name]}
                                                                         </label>
                                                                     </li>
                                                                 </ui:repeat>
                                                             </ul>
                                                         </div>
-                                                    </div>
+                                                     </div>
                                                 </div>
-                                                
-                                                <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
+                                                    <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
+                                                </div>
+                                                <div class="col-sm-1" />
                                             </div>
-                                            <div class="col-sm-1" />
-                                        </div>
-                                        </ui:fragment>
-                                        <!-- Categories -->
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_allowed_categories_label}:" />
-                                            </div>
-                                            <div id="selected_categories" class="col-sm-5">
-                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
-                                                    <ui:fragment rendered="#{selectable.selected}">
-                                                        <div class="badge badge-violet">
-                                                            #{msg[selectable.value.name]}
-                                                        </div>
-                                                    </ui:fragment>
-                                                </ui:repeat>
-                                            </div>
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                            <div class="col-sm-6" />
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
+                                            <!-- CMS templates -->
+                                            <div class="form-group form-row">
+                                                <div class="col-sm-4">
+                                                    <h:outputLabel for="name" styleClass="control-label"
+                                                        value="#{msg.admin__license_allowed_cms_templates_label}:" />
+                                                </div>
+                                                <div id="selected_templates" class="col-sm-7">
+                                                    <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                        <ui:fragment rendered="#{selectable.selected}">
+                                                            <div class="badge badge-secondary">
+                                                                #{msg[selectable.value]}
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </ui:repeat>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="col-sm-4" />
+                                                <div class="col-sm-7 admin__form-input">
+                                                    <h:message for="name"  errorClass="alert alert-danger" />
 
-                                            <div class="page-metadata-item__categories-selectable-categories">
-                                                <div class="page-metadata-item__categories-selectable-categories-select">
-                                                    <div class="cms-module__option-dropdown">
-                                                        <div class="cms-module__option-dropdown-trigger"
-                                                            data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                                                        <ul>
-                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
-                                                                <li>
-                                                                    <label>
-                                                                        <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                            <f:ajax render="metadata_component:selected_categories" />
-                                                                        </h:selectBooleanCheckbox>
-                                                                        #{msg[selectable.value.name]}
-                                                                    </label>
-                                                                </li>
-                                                            </ui:repeat>
-                                                        </ul>
-                                                    </div>
-                                                 </div>
-                                            </div>
-                                                <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
-                                            </div>
-                                            <div class="col-sm-1" />
-                                        </div>
-                                        <!-- CMS templates -->
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_allowed_cms_templates_label}:" />
-                                            </div>
-                                            <div id="selected_templates" class="col-sm-5">
-                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
-                                                    <ui:fragment rendered="#{selectable.selected}">
-                                                        <div class="badge badge-secondary">
-                                                            #{msg[selectable.value]}
+                                                    <div class="page-metadata-item__categories-selectable-categories">
+                                                        <div class="page-metadata-item__categories-selectable-categories-select">
+                                                            <div class="cms-module__option-dropdown">
+                                                                <div class="cms-module__option-dropdown-trigger"
+                                                                    data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                                <ul>
+                                                                    <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                                        <li>
+                                                                            <label>
+                                                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                    <f:ajax render="metadata_component:selected_templates" />
+                                                                                </h:selectBooleanCheckbox>
+                                                                                #{msg[selectable.value]}
+                                                                            </label>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
                                                         </div>
-                                                    </ui:fragment>
+                                                    </div>
+                                                    <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
+                                                </div>
+                                                <div class="col-sm-1" />
+                                            </div>
+                                            <!-- CMS edit menus -->
+                                            <div class="form-group form-row">
+                                                <div class="col-sm-4">
+                                                    <h:outputLabel for="name" styleClass="control-label"
+                                                        value="#{msg.admin__license_function_cms_edit_menu_label}" />
+                                                </div>
+                                                <div class="col-sm-7 admin__form-input">
+                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    </h:selectOneRadio>
+                                                    <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_menu__help}</span>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- CMS override static pages -->
+                                            <div class="form-group form-row">
+                                                <div class="col-sm-4">
+                                                    <h:outputLabel for="name" styleClass="control-label"
+                                                        value="#{msg.admin__license_function_cms_static_pages_label}" />
+                                                </div>
+                                                <div class="col-sm-7 admin__form-input">
+                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    </h:selectOneRadio>
+                                                    <span class="admin__form-help-text">#{msg.admin__license_function_cms_static_pages__help}</span>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- CMS edit categories -->
+                                            <div class="form-group form-row">
+                                                <div class="col-sm-4">
+                                                    <h:outputLabel for="name" styleClass="control-label"
+                                                        value="#{msg.admin__license_function_cms_edit_categories_label}" />
+                                                </div>
+                                                <div class="col-sm-7 admin__form-input">
+                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    </h:selectOneRadio>
+                                                    <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_categories__help}</span>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- CMS edit collections -->
+                                            <div class="form-group form-row">
+                                                <div class="col-sm-4">
+                                                    <h:outputLabel for="name" styleClass="control-label"
+                                                        value="#{msg.admin__license_function_cms_edit_collections_label}" />
+                                                </div>
+                                                <div class="col-sm-7 admin__form-input">
+                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
+                                                        <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                        <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    </h:selectOneRadio>
+                                                    <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_collections__help}</span>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+
+                                    <!-- Record-related functions -->
+                                    <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
+                                    <div class="admin__license-functions admin__license-functions-added">
+                                        <div class="form-group form-row">
+                                            <div class="col-5">#{msg.admin__license_functions_added}</div>
+                                            <div class="col-1"></div>
+                                            <div class="col-5">#{msg.admin__license_functions_available}</div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean"
+                                                    data-toggle="helptext">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group form-row">
+                                            <!-- Privileges already added to this license -->
+                                            <div class="col-5 badge-hover">
+                                                <!-- Privileges inherited from the selected license type -->
+                                                <ui:repeat var="priv" value="#{adminBean.currentLicense.licenseType.privileges}">
+                                                    <div class="badge badge-secondary">
+                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                    </div>
+                                                </ui:repeat>
+                                                <ui:repeat var="priv"
+                                                    value="#{adminBean.currentLicense.privilegesCopy}">
+                                                    <h:commandLink styleClass="admin__license-action"
+                                                        action="#{adminBean.currentLicense.removePrivilege(priv)}"
+                                                        title="#{msg.remove}">
+                                                        <div class="badge badge-success">
+                                                            #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                            <!-- remove button -->
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        </div>
+                                                    </h:commandLink>
                                                 </ui:repeat>
                                             </div>
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                            <div class="col-sm-6" />
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
-                                                
-                                                <div class="page-metadata-item__categories-selectable-categories">
-                                                    <div class="page-metadata-item__categories-selectable-categories-select">
-                                                        <div class="cms-module__option-dropdown">
-                                                            <div class="cms-module__option-dropdown-trigger"
-                                                                data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                                                            <ul>
-                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
-                                                                    <li>
-                                                                        <label>
-                                                                            <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                <f:ajax render="metadata_component:selected_templates" />
-                                                                            </h:selectBooleanCheckbox>
-                                                                            #{msg[selectable.value]}
-                                                                        </label>
-                                                                    </li>
-                                                                </ui:repeat>
-                                                            </ul>
+                                            <div class="col-1"></div>
+                                            <!-- Privileges available to add -->
+                                            <div class="col-5 badge-hover">
+                                                <ui:repeat var="priv"
+                                                    value="#{adminBean.currentLicense.availablePrivileges}">
+                                                    <h:commandLink styleClass="admin__license-action"
+                                                        action="#{adminBean.currentLicense.addPrivilege(priv)}"
+                                                        title="#{msg.add}">
+                                                        <div class="badge badge-dark">
+                                                            #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                            <!-- add button -->
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
-                                            </div>
-                                            <div class="col-sm-1" />
-                                        </div>
-                                        <!-- CMS edit menus -->
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_function_cms_edit_menu_label}" />
-                                            </div>
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
-                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                </h:selectOneRadio>
-                                                <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_menu__help}</span>
-                                            </div>
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <!-- CMS override static pages -->
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_function_cms_static_pages_label}" />
-                                            </div>
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
-                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                </h:selectOneRadio>
-                                                <span class="admin__form-help-text">#{msg.admin__license_function_cms_static_pages__help}</span>
-                                            </div>
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <!-- CMS edit categories -->
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_function_cms_edit_categories_label}" />
-                                            </div>
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
-                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                </h:selectOneRadio>
-                                                <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_categories__help}</span>
-                                            </div>
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <!-- CMS edit collections -->
-                                        <div class="form-group form-row">
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="name" styleClass="control-label"
-                                                    value="#{msg.admin__license_function_cms_edit_collections_label}" />
-                                            </div>
-                                            <div class="col-sm-5 admin__form-input">
-                                                <h:message for="name"  errorClass="alert alert-danger" />
-                                                <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
-                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                </h:selectOneRadio>
-                                                <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_collections__help}</span>
-                                            </div>
-                                            <div class="col-1 admin__form-help-icon">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
+                                                    </h:commandLink>
+                                                </ui:repeat>
                                             </div>
                                         </div>
                                     </div>
                                 </ui:fragment>
-                                
-                                <!-- Record-related functions -->
-                                <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
-                                <div class="admin__license-functions admin__license-functions-added">
-                                    <div class="form-group form-row">
-                                        <div class="col-5">#{msg.admin__license_functions_added}</div>
-                                        <div class="col-1"></div>
-                                        <div class="col-5">#{msg.admin__license_functions_available}</div>
-                                        <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean"
-                                                data-toggle="helptext">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="form-group form-row">
-                                        <!-- Privileges already added to this license -->
-                                        <div class="col-5 badge-hover">
-                                            <!-- Privileges inherited from the selected license type -->
-                                            <ui:repeat var="priv" value="#{adminBean.currentLicense.licenseType.privileges}">
-                                                <div class="badge badge-secondary">
-                                                    #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                </div>
-                                            </ui:repeat>
-                                            <ui:repeat var="priv"
-                                                value="#{adminBean.currentLicense.privilegesCopy}">
-                                                <h:commandLink styleClass="admin__license-action"
-                                                    action="#{adminBean.currentLicense.removePrivilege(priv)}"
-                                                    title="#{msg.remove}">
-                                                    <div class="badge badge-success">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                        <!-- remove button -->
-                                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                                    </div>
-                                                </h:commandLink>
-                                            </ui:repeat>
-                                        </div>
-                                        <div class="col-1"></div>
-                                        <!-- Privileges available to add -->
-                                        <div class="col-5 badge-hover">
-                                            <ui:repeat var="priv"
-                                                value="#{adminBean.currentLicense.availablePrivileges}">
-                                                <h:commandLink styleClass="admin__license-action"
-                                                    action="#{adminBean.currentLicense.addPrivilege(priv)}"
-                                                    title="#{msg.add}">
-                                                    <div class="badge badge-dark">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
-                                                        <!-- add button -->
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </div>
-                                                </h:commandLink>
-                                            </ui:repeat>
-                                        </div>
-                                    </div>
                                 </div>
-                                </ui:fragment>
-                            </div>
                             </h:panelGroup>
 
                             <div class="text-right">
