@@ -317,8 +317,10 @@
                                                 </div>
                                                 <div class="col-sm-7 admin__form-input">
                                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                    <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                     </h:selectOneRadio>
                                                     <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_menu__help}</span>
@@ -337,8 +339,10 @@
                                                 </div>
                                                 <div class="col-sm-7 admin__form-input">
                                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                    <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                     </h:selectOneRadio>
                                                     <span class="admin__form-help-text">#{msg.admin__license_function_cms_static_pages__help}</span>
@@ -357,8 +361,10 @@
                                                 </div>
                                                 <div class="col-sm-7 admin__form-input">
                                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
+                                                    <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                     </h:selectOneRadio>
                                                     <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_categories__help}</span>
@@ -377,8 +383,10 @@
                                                 </div>
                                                 <div class="col-sm-7 admin__form-input">
                                                     <h:message for="name"  errorClass="alert alert-danger" />
-                                                    <h:selectOneRadio value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
+                                                    <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    </h:selectOneRadio>
+                                                    <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
                                                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                     </h:selectOneRadio>
                                                     <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_collections__help}</span>
