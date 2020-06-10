@@ -1,12 +1,12 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
@@ -20,20 +20,19 @@
         <ui:fragment id="cmsCategoriesAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}">
             <div id="adminCmsCategories">
                 <div class="admin__title-bar">
-                    <h2 class="admin__title">#{msg.admin__category_new}</h2>
+                    <ui:fragment rendered="#{!cmsCategoriesBean.editing}">
+                        <h2 class="admin__title">#{msg.admin__category_new}</h2>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{cmsCategoriesBean.editing}">
+                        <h2 class="admin__title">#{msg.admin__category_edit}</h2>
+                    </ui:fragment>
                 </div>
 
                 <div class="admin__content-inner-content">
- 
+
                     <!-- CREATE / EDIT -->
                     <h:form id="adminCategoryCreateForm" prependId="false">
-                        <ui:fragment rendered="#{!cmsCategoriesBean.editing}">
-                            <h3>#{msg.admin__category_create_new}</h3>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{cmsCategoriesBean.editing}">
-                            <h3>#{msg.admin__category_edit}</h3>
-                        </ui:fragment>
-
+                        <h3>#{msg.admin__category_general}</h3>
 
                         <div class="admin__default-block">
                             <fieldset>
@@ -72,16 +71,9 @@
                         </div>
 
                         <!-- ACTION -->
-                        <div class="row no-gutters justify-content-end admin__final-actions">
-                            <!-- CANCEL -->
-                            <h:commandLink rendered="#{cmsCategoriesBean.editing}" type="button" class="btn btn--cancel"
-                                action="#{cmsCategoriesBean.cancelAction}">
-                                #{msg.cancel}
-                            </h:commandLink>
-                            <!-- SAVE -->
-                            <h:commandLink type="button" class="btn btn--success" action="#{cmsCategoriesBean.saveCategoryAction}">
-                                #{msg.save}
-                            </h:commandLink>
+                       <div class="text-right">
+                            <h:commandLink action="#{cmsCategoriesBean.cancelAction}" value="#{msg.cancel}" styleClass="btn btn--cancel" immediate="true" />
+                            <h:commandLink action="#{cmsCategoriesBean.saveCategoryAction}" value="#{msg.save}" styleClass="btn btn--success" />
                         </div>
                     </h:form>
                 </div>
