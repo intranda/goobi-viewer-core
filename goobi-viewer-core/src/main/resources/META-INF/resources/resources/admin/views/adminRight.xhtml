@@ -35,7 +35,7 @@
                             <div class="admin__default-block">
                                 <div class="form-group form-row">
                                     <div class="col-sm-4">
-                                        <h:outputLabel for="name" styleClass="control-label" value="#{msg.admin__license_licensee_type_select_label}:" />
+                                        <label for="currentLicense.type" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
                                     </div>
                                     <div class="col-sm-8">
                                         <h:selectOneMenu
@@ -43,6 +43,9 @@
                                             styleClass="form-control"
                                             immediate="true"
                                             disabled="#{adminBean.currentLicense.id != null}" >
+
+                                            <f:passThroughAttribute name="name" value="currentLicense.type" />
+                                            <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
 
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                             <f:selectItem itemLabel="#{msg.user}" itemValue="user" />
@@ -60,7 +63,7 @@
                                 <h:panelGroup id="licenseeGroup">
                                     <div class="form-group form-row">
                                         <div class="col-sm-4">
-                                            <h:outputLabel for="name" styleClass="control-label" value="#{msg.admin__license_licensee_select_label}:" />
+                                            <label for="currentLicense.licensee" class="control-label">#{msg.admin__license_licensee_select_label}:</label>
                                         </div>
                                         <div class="col-sm-8">
                                             <h:selectOneMenu
@@ -70,6 +73,9 @@
                                                 immediate="true"
                                                 converter="userConverter"
                                                 disabled="#{adminBean.currentLicense.id != null}">
+
+                                                <f:passThroughAttribute name="name" value="currentLicense.licensee" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
 
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
@@ -83,6 +89,9 @@
                                                 converter="userGroupConverter"
                                                 disabled="#{adminBean.currentLicense.id != null}">
 
+                                                <f:passThroughAttribute name="name" value="currentLicense.licensee" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
+
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems value="#{adminBean.allUserGroups}" />
                                                 <f:ajax render="licenseTypeGroup infoGroup" />
@@ -95,6 +104,9 @@
                                                 converter="ipRangeConverter"
                                                 disabled="#{adminBean.currentLicense.id != null}">
 
+                                                <f:passThroughAttribute name="name" value="currentLicense.licensee" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
+
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
                                                 <f:ajax render="licenseTypeGroup infoGroup" />
@@ -106,7 +118,7 @@
                                 <h:panelGroup id="licenseTypeGroup">
                                     <div class="form-group form-row">
                                         <div class="col-sm-4">
-                                            <h:outputLabel for="name" styleClass="control-label" value="#{msg.admin__license_license_type_select_label}:" />
+                                            <label for="currentLicense.licenseType" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
                                         </div>
                                         <div class="col-sm-8">
                                             <h:selectOneMenu
@@ -116,6 +128,9 @@
                                                 immediate="true"
                                                 converter="licenseTypeConverter"
                                                 disabled="#{adminBean.currentLicense.id != null}">
+
+                                                <f:passThroughAttribute name="name" value="currentLicense.licenseType" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
 
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
