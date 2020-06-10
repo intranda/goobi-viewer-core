@@ -193,7 +193,7 @@
                                 </div>
                                 </ui:fragment>
                             </h:panelGroup>
-							
+
 
 
                             <!-- THIRD BLOCK FUNCTIONS -->
@@ -226,7 +226,6 @@
                                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                         </button>
                                                     </div>
-
                                                     <div class="col-sm-4" />
                                                     <div class="col-sm-7 admin__form-input">
                                                         <div class="page-metadata-item__categories-selectable-categories">
@@ -248,7 +247,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
                                                     </div>
                                                     <div class="col-sm-1" />
@@ -258,108 +256,106 @@
 
                                             <!-- Categories -->
                                             <div class="form-group form-row">
-                                                <div class="col-sm-4">
-                                                    <h:outputLabel for="name" styleClass="control-label"
-                                                        value="#{msg.admin__license_allowed_categories_label}:" />
+                                                <div class="col-4">
+                                                    <label for="name" class="control-label">#{msg.admin__license_allowed_categories_label}:</label>
                                                 </div>
-                                                <h:panelGroup layout="block" id="selected_categories" class="col-sm-7">
-                                                    <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
-                                                        <ui:fragment rendered="#{selectable.selected}">
-                                                            <div class="badge badge-violet">
-                                                                #{msg[selectable.value.name]}
+                                                <div class="col-7 admin__form-input">
+                                                    <div>
+                                                        <h:panelGroup layout="block" id="selected_categories">
+                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                                <ui:fragment rendered="#{selectable.selected}">
+                                                                    <div class="badge badge-violet">
+                                                                        #{msg[selectable.value.name]}
+                                                                    </div>
+                                                                </ui:fragment>
+                                                            </ui:repeat>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div>
+                                                        <div class="page-metadata-item__categories-selectable-categories">
+                                                            <div class="page-metadata-item__categories-selectable-categories-select">
+                                                                <div class="cms-module__option-dropdown">
+                                                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                                    <ul>
+                                                                        <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                                            <li>
+                                                                                <label>
+                                                                                    <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                        <f:ajax render="selected_categories" />
+                                                                                    </h:selectBooleanCheckbox>
+                                                                                    #{msg[selectable.value.name]}
+                                                                                </label>
+                                                                            </li>
+                                                                        </ui:repeat>
+                                                                    </ul>
+                                                                </div>
                                                             </div>
-                                                        </ui:fragment>
-                                                    </ui:repeat>
-                                                </h:panelGroup>
-                                                <div class="col-1 admin__form-help-icon">
-                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                    </button>
-                                                </div>
-                                                <div class="col-sm-4" />
-                                                <div class="col-sm-7 admin__form-input">
-                                                    <h:message for="name"  errorClass="alert alert-danger" />
-
-                                                <div class="page-metadata-item__categories-selectable-categories">
-                                                    <div class="page-metadata-item__categories-selectable-categories-select">
-                                                        <div class="cms-module__option-dropdown">
-                                                            <div class="cms-module__option-dropdown-trigger"
-                                                                data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                                                            <ul>
-                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
-                                                                    <li>
-                                                                        <label>
-                                                                            <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                <f:ajax render="selected_categories" />
-                                                                            </h:selectBooleanCheckbox>
-                                                                            #{msg[selectable.value.name]}
-                                                                        </label>
-                                                                    </li>
-                                                                </ui:repeat>
-                                                            </ul>
                                                         </div>
-                                                     </div>
-                                                </div>
+                                                    </div>
                                                     <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
                                                 </div>
-                                                <div class="col-sm-1" />
-                                            </div>
-                                            <!-- CMS templates -->
-                                            <div class="form-group form-row">
-                                                <div class="col-sm-4">
-                                                    <h:outputLabel for="name" styleClass="control-label"
-                                                        value="#{msg.admin__license_allowed_cms_templates_label}:" />
-                                                </div>
-                                                <h:panelGroup layout="block" id="selected_templates" class="col-sm-7">
-                                                    <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
-                                                        <ui:fragment rendered="#{selectable.selected}">
-                                                            <div class="badge badge-secondary">
-                                                                #{msg[selectable.value]}
-                                                            </div>
-                                                        </ui:fragment>
-                                                    </ui:repeat>
-                                                </h:panelGroup>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                     </button>
                                                 </div>
-                                                <div class="col-sm-4" />
-                                                <div class="col-sm-7 admin__form-input">
-                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                            </div>
 
-                                                    <div class="page-metadata-item__categories-selectable-categories">
-                                                        <div class="page-metadata-item__categories-selectable-categories-select">
-                                                            <div class="cms-module__option-dropdown">
-                                                                <div class="cms-module__option-dropdown-trigger"
-                                                                    data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                                                                <ul>
-                                                                    <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
-                                                                        <li>
-                                                                            <label>
-                                                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                                                    <f:ajax render="selected_templates" />
-                                                                                </h:selectBooleanCheckbox>
-                                                                                #{msg[selectable.value]}
-                                                                            </label>
-                                                                        </li>
-                                                                    </ui:repeat>
-                                                                </ul>
+                                            <!-- CMS templates -->
+                                            <div class="form-group form-row">
+                                                <div class="col-4">
+                                                    <label for="name" class="control-label">#{msg.admin__license_allowed_cms_templates_label}:</label>
+                                                </div>
+                                                <div class="col-7 admin__form-input">
+                                                    <div>
+                                                        <h:panelGroup layout="block" id="selected_templates">
+                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                                <ui:fragment rendered="#{selectable.selected}">
+                                                                    <div class="badge badge-secondary">
+                                                                        #{msg[selectable.value]}
+                                                                    </div>
+                                                                </ui:fragment>
+                                                            </ui:repeat>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div>
+                                                        <div class="page-metadata-item__categories-selectable-categories">
+                                                            <div class="page-metadata-item__categories-selectable-categories-select">
+                                                                <div class="cms-module__option-dropdown">
+                                                                    <div class="cms-module__option-dropdown-trigger"
+                                                                        data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                                                    <ul>
+                                                                        <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                                            <li>
+                                                                                <label>
+                                                                                    <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                                                        <f:ajax render="selected_templates" />
+                                                                                    </h:selectBooleanCheckbox>
+                                                                                    #{msg[selectable.value]}
+                                                                                </label>
+                                                                            </li>
+                                                                        </ui:repeat>
+                                                                    </ul>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
                                                 </div>
-                                                <div class="col-sm-1" />
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
                                             </div>
+
+
                                             <!-- CMS edit menus -->
                                             <div class="form-group form-row">
-                                                <div class="col-sm-4">
-                                                    <h:outputLabel for="name" styleClass="control-label"
-                                                        value="#{msg.admin__license_function_cms_edit_menu_label}" />
+                                                <div class="col-4">
+                                                    <label for="name" class="control-label">#{msg.admin__license_function_cms_edit_menu_label}</label>
                                                 </div>
-                                                <div class="col-sm-7 admin__form-input">
-                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                <div class="col-7 admin__form-input">
                                                     <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                     </h:selectOneRadio>
@@ -374,14 +370,13 @@
                                                     </button>
                                                 </div>
                                             </div>
+
                                             <!-- CMS override static pages -->
                                             <div class="form-group form-row">
                                                 <div class="col-sm-4">
-                                                    <h:outputLabel for="name" styleClass="control-label"
-                                                        value="#{msg.admin__license_function_cms_static_pages_label}" />
+                                                    <label for="name" class="control-label">#{msg.admin__license_function_cms_static_pages_label}</label>
                                                 </div>
-                                                <div class="col-sm-7 admin__form-input">
-                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                <div class="col admin__form-input">
                                                     <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                     </h:selectOneRadio>
@@ -396,14 +391,13 @@
                                                     </button>
                                                 </div>
                                             </div>
+
                                             <!-- CMS edit categories -->
                                             <div class="form-group form-row">
                                                 <div class="col-sm-4">
-                                                    <h:outputLabel for="name" styleClass="control-label"
-                                                        value="#{msg.admin__license_function_cms_edit_categories_label}" />
+                                                    <label for="name" class="control-label">#{msg.admin__license_function_cms_edit_categories_label}</label>
                                                 </div>
-                                                <div class="col-sm-7 admin__form-input">
-                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                <div class="col-7 admin__form-input">
                                                     <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                     </h:selectOneRadio>
@@ -418,14 +412,13 @@
                                                     </button>
                                                 </div>
                                             </div>
+
                                             <!-- CMS edit collections -->
                                             <div class="form-group form-row">
-                                                <div class="col-sm-4">
-                                                    <h:outputLabel for="name" styleClass="control-label"
-                                                        value="#{msg.admin__license_function_cms_edit_collections_label}" />
+                                                <div class="col-4">
+                                                    <label for="name" class="control-label">#{msg.admin__license_function_cms_edit_collections_label}</label>
                                                 </div>
-                                                <div class="col-sm-7 admin__form-input">
-                                                    <h:message for="name"  errorClass="alert alert-danger" />
+                                                <div class="col admin__form-input">
                                                     <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
                                                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                     </h:selectOneRadio>
