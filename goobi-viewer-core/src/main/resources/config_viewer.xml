@@ -1346,8 +1346,6 @@
 	</userComments>
 
 	<cms>
-		<!-- enabled: enables cms functionality globally (default is false) -->
-		<enabled>true</enabled>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 
 			menu, configurable with cms-functionality (default is false) -->
 		<useCustomNavBar>true</useCustomNavBar>

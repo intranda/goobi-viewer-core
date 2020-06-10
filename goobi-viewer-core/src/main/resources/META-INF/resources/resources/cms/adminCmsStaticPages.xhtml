@@ -17,7 +17,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsStaticPages" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}">
+        <h:panelGroup id="cmsStaticPages" rendered="#{userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}">
             <div class="admin__title-bar">
                 <h2 class="admin__title">#{msg.cms_staticPages}</h2>
             </div>

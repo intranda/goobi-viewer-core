@@ -338,35 +338,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isCmsEnabledStatic.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public static boolean isCmsEnabledStatic() {
-        return DataManager.getInstance().getConfiguration().isCmsEnabled();
-    }
-
-    /**
-     * <p>
-     * isCmsEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isCmsEnabled() {
-        return isCmsEnabledStatic();
-    }
-
-    /**
-     * <p>
      * isUseCustomNavBar.
      * </p>
      *
      * @return a boolean.
      */
     public boolean isUseCustomNavBar() {
-        return isCmsEnabledStatic() && DataManager.getInstance().getConfiguration().useCustomNavBar();
+        return DataManager.getInstance().getConfiguration().useCustomNavBar();
     }
 
     /**

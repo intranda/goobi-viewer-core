@@ -18,7 +18,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
-        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
             <div id="cmsEditCollection" class="cms-edit-collection">
                 <h:form id="cmsEditCollectionForm" prependId="false">
                     <h2 class="admin__content-inner-title">#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>

@@ -7,7 +7,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_PAGES')}">
+        <h:panelGroup rendered="#{userBean.user.isHasCmsPrivilege('CMS_PAGES')}">
             <div id="widgetCms" class="admin-widget">
                 <h:form id="widgetCmsForm">
                     <div class="admin-widget__header">#{msg.admin__cms_title}</div>

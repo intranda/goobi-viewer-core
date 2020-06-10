@@ -20,7 +20,7 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <div id="adminCmsMedia" class="admin-cms-media">
-            <ui:fragment rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
+            <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                 <!-- MEDIA ITEM OVERLAY -->
                 <div class="admin-cms-media__overlay"></div>
             
