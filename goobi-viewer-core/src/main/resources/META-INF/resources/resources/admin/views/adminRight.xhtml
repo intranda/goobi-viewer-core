@@ -22,10 +22,8 @@
                     <h:form id="editLicenseForm" styleClass="form-horizontal" role="form" prependId="false">
                         <div class="admin__title-bar">
                             <h2 class="admin__title">
-                                <!-- TODO -->
                                 <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
                                 <h:outputText value="#{msg.admin__right_edit}" rendered="#{adminBean.currentLicenseType.id != null}" />
-                                Recht bearbeiten
                             </h2>
                         </div>
 
