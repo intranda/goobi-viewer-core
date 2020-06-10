@@ -132,7 +132,7 @@
 
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                                 <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{licenseType.name}" />
-                                                <f:ajax render="infoGroup :functionsGroup" />
+                                                <f:ajax render="infoGroup functionsGroup" />
                                             </h:selectOneMenu>
                                         </div>
                                     </div>
@@ -142,7 +142,6 @@
 
 
                             <!-- SECOND BLOCK INFORMATION -->
-                            <!-- TODO this should refresh and display after a license type has been selected -->
                             <h:panelGroup id="infoGroup">
                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
                                 <h3>#{msg.information}</h3>
@@ -198,7 +197,6 @@
 
 
                             <!-- THIRD BLOCK FUNCTIONS -->
-                            <!-- TODO this should refresh and display after a license type has been selected -->
                             <h:panelGroup id="functionsGroup">
                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
                                 <h3>#{msg.admin__license_functions}</h3>
