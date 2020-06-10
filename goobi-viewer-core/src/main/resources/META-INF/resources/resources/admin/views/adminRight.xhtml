@@ -134,29 +134,49 @@
                                 <h3>#{msg.information}</h3>
                                 <div class="admin__default-block">
                                     <dl class="row">
-                                       <dt class="col-4">
+                                        <dt class="col-4">
                                            <h:outputText rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
                                            <h:outputText rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.name}</h:outputText>
-                                       </dt>
-                                       <dd class="col-8">
-                                           <h:outputText rendered="#{adminBean.currentLicense.user != null}">
-                                               #{msg.admin__user_contact}: #{adminBean.currentLicense.user.email} 
-                                               <ui:fragment rendered="#{adminBean.currentLicense.user.lastLogin != null}">
-                                                   ; #{msg.lastLoginDate}:
-                                                   <h:outputText value="#{adminBean.currentLicense.user.lastLogin}">
-                                                       <f:convertDateTime pattern="yyyy-MM-dd" />
-                                                   </h:outputText>
-                                               </ui:fragment>
-                                           </h:outputText>
-                                           <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
-                                           <h:outputText rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
-                                       </dd>
+                                        </dt>
+                                        <dd class="col-8">
+                                            <!-- USER -->
+                                             <h:outputText rendered="#{adminBean.currentLicense.user != null}">
+                                                #{msg.admin__user_contact}: #{adminBean.currentLicense.user.email}
+                                                <ui:fragment rendered="#{adminBean.currentLicense.user.lastLogin != null}">
+                                                    | #{msg.lastLoginDate}:
+                                                    <h:outputText value="#{adminBean.currentLicense.user.lastLogin}">
+                                                        <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
+                                                        <f:convertDateTime pattern="dd. MMMMMMMMMMMMMMM YYYY" />
+                                                    </h:outputText>
+                                                </ui:fragment>
+                                            </h:outputText>
+
+                                            <!-- USER GROUP -->
+                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup.description ne ''}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
+                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup.description eq ''}">
+                                                 <!-- TODO INLINE CSS -->
+                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                             </h:outputText>
+
+                                            <!-- IP RANGE -->
+                                            <h:outputText rendered="#{adminBean.currentLicense.ipRange.description ne ''}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
+                                            <h:outputText rendered="#{adminBean.currentLicense.ipRange.description eq ''}">
+                                                 <!-- TODO INLINE CSS -->
+                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                             </h:outputText>
+                                        </dd>
                                     </dl>
-                                    <dl class="row">
-                                        <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
-                                        <dd class="col-8">#{msg[adminBean.currentLicense.licenseType.description]}</dd>
-                                    </dl>
+                                    <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
+                                    <dd class="col-8">
+                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
+                                            #{msg[adminBean.currentLicense.licenseType.description]}
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
+                                             <!-- TODO INLINE CSS -->
+                                            <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                        </ui:fragment>
+                                    </dd>
                                 </div>
                             </h:panelGroup>
 
