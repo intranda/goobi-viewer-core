@@ -15,8 +15,10 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -425,18 +427,21 @@ public class LicenseType implements IPrivilegeHolder {
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
-    public Set<String> getAvailablePrivileges() {
+    public List<String> getAvailablePrivileges() {
         return getAvailablePrivileges(privilegesCopy);
     }
 
     /**
      * Returns the list of available privileges for adding to this license (using the given privileges list).
      * 
+     * @param privileges Privileges to be removed from the returned list
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
-    public Set<String> getAvailablePrivileges(Set<String> privileges) {
-        Set<String> ret = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
-        ret.removeAll(privileges);
+    public List<String> getAvailablePrivileges(Set<String> privileges) {
+        List<String> ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+        if (privileges != null) {
+            ret.removeAll(privileges);
+        }
         return ret;
     }
 

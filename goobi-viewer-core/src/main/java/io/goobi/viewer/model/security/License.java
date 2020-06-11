@@ -484,7 +484,7 @@ public class License implements IPrivilegeHolder, Serializable {
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
-    public Set<String> getAvailablePrivileges() {
+    public List<String> getAvailablePrivileges() {
         return getAvailablePrivileges(privilegesCopy);
     }
 
@@ -493,7 +493,7 @@ public class License implements IPrivilegeHolder, Serializable {
      * 
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
-    public Set<String> getAvailablePrivileges(Set<String> privileges) {
+    public List<String> getAvailablePrivileges(Set<String> privileges) {
         if (licenseType != null && licenseType.isCmsType()) {
             return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
         }
@@ -506,15 +506,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * @param sourcePrivileges
      * @return
      */
-    Set<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {
+    List<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {
         if (excludePrivileges == null) {
             throw new IllegalArgumentException("excludePrivileges may not be null");
         }
         if (sourcePrivileges == null || sourcePrivileges.isEmpty()) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
 
-        Set<String> ret = new HashSet<>(sourcePrivileges);
+        List<String> ret = new ArrayList<>(sourcePrivileges);
         // Remove existing privileges
         ret.removeAll(excludePrivileges);
         // Remove privileges inherited from the license type
