@@ -45,6 +45,20 @@ public class CMSPageTemplateEnabled {
     private boolean enabled = true;
 
     /**
+     * Zero argument constructor for JPA.
+     */
+    public CMSPageTemplateEnabled() {
+    }
+    
+    /**
+     * 
+     * @param templateId
+     */
+    public CMSPageTemplateEnabled(String templateId) {
+        this.templateId = templateId;
+    }
+
+    /**
      * @return the id
      */
     public Long getId() {

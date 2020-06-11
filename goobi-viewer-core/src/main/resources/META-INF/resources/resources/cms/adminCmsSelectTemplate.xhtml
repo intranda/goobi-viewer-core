@@ -31,7 +31,8 @@
 	                                        <div class="col-12 col-sm-12 col-md-1">
 	                                            <!-- ICON -->
 	                                            <div class="cms-select-template__image">
-	                                                <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}" src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-fluid" />
+	                                                <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}"
+	                                                    src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-fluid" />
 	                                            </div>
 	                                        </div>
 	                                        <div class="col-12 col-sm-12 col-md-9">
@@ -46,7 +47,8 @@
                                                     <div class="cms-select-template__action">
                                                         <h:commandLink action="pretty:adminCmsNewPage" value="#{msg.cms_createPageWithTemplate}"
                                                             styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}">
-                                                            <f:setPropertyActionListener value="#{cmsBean.createNewPage(template)}" target="#{cmsBean.selectedPage}" />
+                                                            <f:setPropertyActionListener value="#{cmsBean.createNewPage(template)}"
+                                                                target="#{cmsBean.selectedPage}" />
                                                             <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
                                                         </h:commandLink>
                                                     </div>
@@ -61,10 +63,12 @@
                                 </ui:repeat>
 
                                 <!-- TODO INLINE CSS -->
-                                <!-- TODO: add rendered statement that this link is only visible with administrator privileges -->
-                                <div class="row no-gutters justify-content-end admin__final-actions" style="margin-top: 2rem;">
-                                        <a href="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/" class="-bluelink">#{msg.admin__cms_templates_manage_label}</a>
-                                </div>
+                                <ui:fragment rendered="#{userBean.user.superuser}">
+                                    <div class="row no-gutters justify-content-end admin__final-actions" style="margin-top: 2rem;">
+                                        <a href="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/"
+                                            class="-bluelink">#{msg.admin__cms_templates_manage_label}</a>
+                                    </div>
+                                </ui:fragment>
 
                             </h:form>
                         </div>

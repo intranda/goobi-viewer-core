@@ -387,14 +387,15 @@ public class CmsBean implements Serializable {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return List of CMS templates whose IDs are among allowed template IDs
+     * @throws DAOException 
      */
-    public List<CMSPageTemplate> getAllowedTemplates(User user) {
+    public List<CMSPageTemplate> getAllowedTemplates(User user) throws DAOException {
         logger.trace("getAllowedTemplates");
         if (user == null) {
             return Collections.emptyList();
         }
 
-        return user.getAllowedTemplates(getTemplates());
+        return user.getAllowedTemplates(getTemplates(true));
     }
 
     /**

@@ -487,7 +487,7 @@ public class CMSPageTemplate implements Serializable {
             enabled = DataManager.getInstance().getDao().getCMSPageTemplateEnabled(id);
         }
         if (enabled == null) {
-            enabled = new CMSPageTemplateEnabled();
+            enabled = new CMSPageTemplateEnabled(id);
         }
          
         return enabled;
