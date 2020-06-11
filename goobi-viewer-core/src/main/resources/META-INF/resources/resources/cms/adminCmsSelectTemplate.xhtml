@@ -20,8 +20,6 @@
             <div id="cmsSelectTemplate" class="cms-select-template">
                     <h2 class="admin__content-inner-title">#{msg.cms_createPage}</h2>
                     
-                    <h:outputLink value="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/">#{msg.admin__cms_templates_manage_label}</h:outputLink>
-                    
                     <div class="admin__content-inner-content">
                         <div id="cmsSelectTemplateWrapper" class="cms-select-template__wrapper">
                             <h:form id="cmsSelectTemplateForm" prependId="false">
@@ -61,6 +59,13 @@
                                         </div>
                                     </div>
                                 </ui:repeat>
+
+                                <!-- TODO INLINE CSS -->
+                                <!-- TODO: add rendered statement that this link is only visible with administrator privileges -->
+                                <div class="row no-gutters justify-content-end admin__final-actions" style="margin-top: 2rem;">
+                                        <a href="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/" class="-bluelink">#{msg.admin__cms_templates_manage_label}</a>
+                                </div>
+
                             </h:form>
                         </div>
                     </div>
