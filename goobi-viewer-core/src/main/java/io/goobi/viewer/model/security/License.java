@@ -525,6 +525,30 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * Returns a sorted list (according to the static array of privileges, either for records or CMS) based on the given set of privileges.
+     * 
+     * @param privileges Listed privileges
+     * @param sourcePrivileges List containing the desired order
+     * @return Sorted list of privileges contained in <code>privileges</code>
+     */
+    public List<String> getSortedPrivileges(Set<String> privileges) {
+        if (privileges == null || privileges.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> orderList = (licenseType != null && licenseType.isCmsType()) ? Arrays.asList(IPrivilegeHolder.PRIVS_CMS)
+                : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD);
+        List<String> ret = new ArrayList<>(orderList.size());
+        for (String priv : orderList) {
+            if (privileges.contains(priv)) {
+                ret.add(priv);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * 
      * @return
      * @throws DAOException

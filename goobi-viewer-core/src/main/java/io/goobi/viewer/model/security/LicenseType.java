@@ -446,6 +446,22 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
+     * Returns a sorted list (according to PRIVS_RECORD) based on the given set of privileges.
+     * 
+     * @return Sorted list of privileges contained in <code>privileges</code>
+     */
+    public List<String> getSortedPrivileges(Set<String> privileges) {
+        List<String> ret = new ArrayList<>(IPrivilegeHolder.PRIVS_RECORD.length);
+        for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
+            if (privileges.contains(priv)) {
+                ret.add(priv);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * Setter for the field <code>privileges</code>.
      * </p>

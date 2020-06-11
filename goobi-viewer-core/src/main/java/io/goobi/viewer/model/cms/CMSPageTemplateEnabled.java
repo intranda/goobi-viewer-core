@@ -22,12 +22,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Persistence class for the enabled/disabled status of a CMSPageTemplate (which is itself not persisted in the DB).
  */
 @Entity
 @Table(name = "cms_page_template_enabled")
 public class CMSPageTemplateEnabled {
+    
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(CMSPageTemplateEnabled.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +84,7 @@ public class CMSPageTemplateEnabled {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        logger.trace("setEnabled: {}", enabled);
     }
 
 }

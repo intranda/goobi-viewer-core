@@ -56,11 +56,11 @@
                                             <dt class="col-sm-4">#{msg.admin__right_functions}:</dt>
                                             <dd class="col-sm-8">
                                                 <!-- Added to this license -->
-                                                <ui:repeat var="priv" value="#{license.privileges}">
+                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.privileges)}">
                                                     <div class="badge badge-success">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                 </ui:repeat>
                                                 <!-- Inherited from the selected license type -->
-                                                <ui:repeat var="priv" value="#{license.licenseType.privileges}">
+                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.licenseType.privileges)}">
                                                     <div class="badge badge-secondary">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
                                                 </ui:repeat>
                                                 <!-- All other -->

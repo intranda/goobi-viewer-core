@@ -65,6 +65,7 @@
                                 </div>
                             </div>
 
+                            <!-- FUNCTIONS -->
                             <h3>#{msg.admin__license_functions}</h3>
                             <div class="admin__default-block">
                                 <div class="form-row">
@@ -93,7 +94,7 @@
                                     </div>
                                     <div class="form-group form-row">
                                         <div class="col-5 badge-hover">
-                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.privilegesCopy}">
+                                            <ui:repeat var="priv" value="#{adminBean.currentLicenseType.getSortedPrivileges(adminBean.currentLicenseType.privilegesCopy)}">
                                                 <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
                                                     <div class="badge badge-success">
                                                         #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
