@@ -215,7 +215,7 @@
                                                             <h:panelGroup layout="block" class="col-7" id="selected_subthemes">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                                        <div class="badge badge-secondary">
+                                                                        <div class="badge badge-dark">
                                                                             #{msg[selectable.value]}
                                                                         </div>
                                                                     </ui:fragment>
@@ -310,7 +310,7 @@
                                                             <h:panelGroup layout="block" id="selected_templates">
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                                        <div class="badge badge-secondary">
+                                                                        <div class="badge badge-primary">
                                                                             #{msg[selectable.value]}
                                                                         </div>
                                                                     </ui:fragment>
