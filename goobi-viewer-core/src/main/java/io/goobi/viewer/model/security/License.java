@@ -474,7 +474,8 @@ public class License implements IPrivilegeHolder, Serializable {
                 : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD);
         List<String> ret = new ArrayList<>(orderList.size());
         for (String priv : orderList) {
-            if (privileges.contains(priv)) {
+            // Skip PRIV_CMS_PAGES
+            if (privileges.contains(priv) && !IPrivilegeHolder.PRIV_CMS_PAGES.equals(priv)) {
                 ret.add(priv);
             }
         }

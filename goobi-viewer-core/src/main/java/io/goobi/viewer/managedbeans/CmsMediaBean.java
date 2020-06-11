@@ -526,24 +526,26 @@ public class CmsMediaBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveMedia(CMSMediaItem media, List<Selectable<CMSCategory>> categories) throws DAOException {
-        if (media != null) {
-            if (categories != null) {
-                if (BeanUtils.getUserBean().getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()
-                        || categories.stream().anyMatch(Selectable::isSelected)) {
-                    for (Selectable<CMSCategory> category : categories) {
-                        if (category.isSelected()) {
-                            media.addCategory(category.getValue());
-                        } else {
-                            media.removeCategory(category.getValue());
-                        }
-                    }
-                } else {
-                    Messages.error(null, "admin__media_save_error_must_have_category", media.toString());
-                }
-
-            }
-            saveMedia(media);
+        if (media == null) {
+            return;
         }
+        
+        if (categories != null) {
+            if (BeanUtils.getUserBean().getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()
+                    || categories.stream().anyMatch(Selectable::isSelected)) {
+                for (Selectable<CMSCategory> category : categories) {
+                    if (category.isSelected()) {
+                        media.addCategory(category.getValue());
+                    } else {
+                        media.removeCategory(category.getValue());
+                    }
+                }
+            } else {
+                Messages.error(null, "admin__media_save_error_must_have_category", media.toString());
+            }
+
+        }
+        saveMedia(media);
     }
 
     /**
