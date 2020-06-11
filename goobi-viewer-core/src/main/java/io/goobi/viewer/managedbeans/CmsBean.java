@@ -2088,6 +2088,26 @@ public class CmsBean implements Serializable {
         }
         return null;
     }
+    
+    /**
+     * 
+     * @param page
+     * @return true if the given CMS page is mapped to any static page; otherwise
+     * @throws DAOException 
+     */
+    public boolean isMappedToStaticPage(CMSPage page) throws DAOException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
+
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if (staticPage.isHasCmsPage() && staticPage.getCmsPage().equals(page)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * @return

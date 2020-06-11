@@ -104,6 +104,9 @@
                                             <ui:fragment rendered="#{page.subThemeDiscriminatorValue != ''}">
                                                 <span class="font-italic">(#{page.subThemeDiscriminatorValue})</span>
                                             </ui:fragment>
+                                            <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
+                                                <span class="font-italic">(STATIC)</span>
+                                            </ui:fragment>
                                             <div>
                                                 <!-- EDIT -->
                                                 <h:outputLink styleClass="admin__table-action-link -bluelink" title="#{msg.edit}"
