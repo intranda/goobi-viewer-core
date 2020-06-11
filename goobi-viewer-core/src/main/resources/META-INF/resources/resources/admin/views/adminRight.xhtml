@@ -354,17 +354,14 @@
                                                         <label for="name" class="control-label">#{msg.admin__license_function_cms_edit_menu_label}</label>
                                                     </div>
                                                     <div class="col-7 admin__form-input">
-                                                        <div class="switch">
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
-                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
-                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
+                                                        <div class="switch switch--horizontal">
+                                                            <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
                                                         <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_menu__help}</span>
                                                     </div>
@@ -381,17 +378,14 @@
                                                         <label for="name" class="control-label">#{msg.admin__license_function_cms_static_pages_label}</label>
                                                     </div>
                                                     <div class="col admin__form-input">
-                                                        <div class="switch">
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
-                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
-                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
+                                                        <div class="switch switch--horizontal">
+                                                            <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
                                                         <span class="admin__form-help-text">#{msg.admin__license_function_cms_static_pages__help}</span>
                                                     </div>
@@ -408,17 +402,14 @@
                                                         <label for="name" class="control-label">#{msg.admin__license_function_cms_edit_categories_label}</label>
                                                     </div>
                                                     <div class="col-7 admin__form-input">
-                                                        <div class="switch">
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
-                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
-                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
+                                                        <div class="switch switch--horizontal">
+                                                            <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
                                                         <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_categories__help}</span>
                                                     </div>
@@ -435,17 +426,14 @@
                                                         <label for="name" class="control-label">#{msg.admin__license_function_cms_edit_collections_label}</label>
                                                     </div>
                                                     <div class="col admin__form-input">
-                                                        <div class="switch">
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
-                                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
-                                                            <div class="switch-option">
-                                                                <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
-                                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                </h:selectOneRadio>
-                                                            </div>
+                                                        <div class="switch switch--horizontal">
+                                                            <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                         </div>
                                                         <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_collections__help}</span>
                                                     </div>
