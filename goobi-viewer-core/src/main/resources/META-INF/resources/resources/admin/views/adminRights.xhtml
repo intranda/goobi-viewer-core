@@ -55,6 +55,18 @@
                                             <!-- FUNCTIONS -->
                                             <dt class="col-sm-4">#{msg.admin__right_functions}:</dt>
                                             <dd class="col-sm-8">
+                                                <!-- Allowed subthemes -->
+                                                <ui:repeat var="subtheme" value="#{license.subthemeDiscriminatorValues}">
+                                                    <div class="badge badge-dark">#{msg[subtheme]}</div>
+                                                </ui:repeat>
+                                                <!-- Allowed categories -->
+                                                <ui:repeat var="cat" value="#{license.allowedCategories}">
+                                                    <div class="badge badge-violet">#{msg[cat.name]}</div>
+                                                </ui:repeat>
+                                                <!-- Allowed categories -->
+                                                <ui:repeat var="template" value="#{license.allowedCmsTemplates}">
+                                                    <div class="badge badge-primary">#{msg[template]}</div>
+                                                </ui:repeat>
                                                 <!-- Added to this license -->
                                                 <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.privileges)}">
                                                     <div class="badge badge-success">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
