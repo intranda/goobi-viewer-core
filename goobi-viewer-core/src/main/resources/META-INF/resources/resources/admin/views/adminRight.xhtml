@@ -167,14 +167,14 @@
                                             <h:outputText rendered="#{adminBean.currentLicense.userGroup.description ne ''}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
                                             <h:outputText rendered="#{adminBean.currentLicense.userGroup.description eq ''}">
                                                  <!-- TODO INLINE CSS -->
-                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                              </h:outputText>
 
                                             <!-- IP RANGE -->
                                             <h:outputText rendered="#{adminBean.currentLicense.ipRange.description ne ''}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
                                             <h:outputText rendered="#{adminBean.currentLicense.ipRange.description eq ''}">
                                                  <!-- TODO INLINE CSS -->
-                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                              </h:outputText>
                                         </dd>
                                         <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
@@ -184,7 +184,7 @@
                                             </ui:fragment>
                                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
                                                  <!-- TODO INLINE CSS -->
-                                                <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.description})</span>
+                                                <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                             </ui:fragment>
                                         </dd>
                                     </dl>
