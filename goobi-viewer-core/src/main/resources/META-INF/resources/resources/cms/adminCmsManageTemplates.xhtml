@@ -26,7 +26,7 @@
                             
                                 <h:panelGroup id="templateLists">
                             
-                                <h3 class="admin__content-inner-title">#{msg.admin__cms_template_visible}</h3>
+                                <h3>#{msg.admin__cms_template_visible}</h3>
                                 <ui:repeat value="#{cmsBean.getTemplates(true)}" var="template">
                                     <div class="row no-margin">
                                         <!-- TEMPLATE -->
@@ -65,7 +65,7 @@
                                     </div>
                                 </ui:repeat>
                                 
-                                <h3 class="admin__content-inner-title">#{msg.admin__cms_template_invisible}</h3>
+                                <h3>#{msg.admin__cms_template_invisible}</h3>
                                 <ui:repeat value="#{cmsBean.getTemplates(false)}" var="template">
                                     <div class="row no-margin">
                                         <!-- TEMPLATE -->
