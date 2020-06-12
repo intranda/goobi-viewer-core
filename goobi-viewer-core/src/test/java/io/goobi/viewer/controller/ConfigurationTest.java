@@ -92,6 +92,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getBrowsingMenuSortingIgnoreLeadingChars()
+     * @verifies return correct value
+     */
+    @Test
+    public void getBrowsingMenuSortingIgnoreLeadingChars_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(".[]", DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
+    }
+
+    /**
      * @see Configuration#getCollectionBlacklist()
      * @verifies return all configured elements
      */
@@ -2750,7 +2759,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
         Assert.assertEquals("", licenses.get(0).getIcon());
     }
-    
+
     @Test
     public void testGetGeoMapMarkers() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
@@ -2759,7 +2768,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("fa-circle", markers.get(0).getIcon());
         Assert.assertEquals("fa-search", markers.get(1).getIcon());
     }
-    
+
     @Test
     public void testGetGeoMapMarker() {
         GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker("maps__marker_2");

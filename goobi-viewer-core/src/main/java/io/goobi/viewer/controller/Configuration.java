@@ -789,6 +789,15 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getBrowsingMenuSortingIgnoreLeadingChars() {
+        return getLocalString("metadata.browsingMenu.sorting.ignoreLeadingChars");
+    }
 
     /**
      * <p>

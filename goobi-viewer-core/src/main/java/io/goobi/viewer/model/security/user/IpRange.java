@@ -151,7 +151,7 @@ public class IpRange implements ILicensee, Serializable {
             }
             return subnet.isInRange(inIp);
         } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
+            // logger.error(e.getMessage());
         }
 
         return false;

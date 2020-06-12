@@ -81,6 +81,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
+import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
 import io.goobi.viewer.model.viewer.StringPair;
 
@@ -1436,9 +1437,10 @@ public final class SearchHelper {
             filterQueries.addAll(bmfc.getFilterQueries());
         }
 
+        logger.debug("getFilteredTerms startsWith: {}", startsWith);
         String query = buildFinalQuery(sbQuery.toString(), false);
-        if (logger.isDebugEnabled()) {
-            logger.debug("getFilteredTerms query: {}", query);
+        logger.debug("getFilteredTerms query: {}", query);
+        if (logger.isTraceEnabled()) {
             for (String fq : filterQueries) {
                 logger.trace("getFilteredTerms filter query: {}", fq);
             }
@@ -1561,6 +1563,11 @@ public final class SearchHelper {
             String compareTerm = term;
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
+            }
+            if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
+                // Exclude leading characters from filters explicitly configured to be ignored
+                compareTerm = BrowseTermComparator.normalizeString(compareTerm,
+                        DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
             if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
                 continue;

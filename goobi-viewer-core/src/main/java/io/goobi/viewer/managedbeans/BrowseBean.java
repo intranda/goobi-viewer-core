@@ -370,16 +370,25 @@ public class BrowseBean implements Serializable {
 
                 // Populate the list of available starting characters with ones that actually exist in the complete terms list
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
-                    logger.debug("Populating search term filters for field '{}'...", browsingMenuField);
+                    logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
                     availableStringFilters.put(browsingMenuField, new ArrayList<String>());
                     for (BrowseTerm term : terms) {
-                        String firstChar;
+                        String rawTerm;
                         if (StringUtils.isNotEmpty(term.getSortTerm())) {
-                            firstChar = term.getSortTerm().substring(0, 1).toUpperCase();
+                            rawTerm = term.getSortTerm();
                         } else {
-                            firstChar = term.getTerm().substring(0, 1).toUpperCase();
+                            rawTerm = term.getTerm();
                         }
-                        // logger.debug(term.getTerm() + ": " + firstChar);
+                        String firstChar;
+                        if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
+                            // Exclude leading characters from filters explicitly configured to be ignored
+                            firstChar = BrowseTermComparator.normalizeString(rawTerm,
+                                    DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim()
+                                    .substring(0, 1)
+                                    .toUpperCase();
+                        } else {
+                            firstChar = rawTerm.substring(0, 1).toUpperCase();
+                        }
                         if (!availableStringFilters.get(browsingMenuField).contains(firstChar) && !"-".equals(firstChar)) {
                             availableStringFilters.get(browsingMenuField).add(firstChar);
                         }

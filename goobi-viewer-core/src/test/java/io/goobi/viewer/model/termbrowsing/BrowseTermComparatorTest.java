@@ -68,4 +68,22 @@ public class BrowseTermComparatorTest {
                 new BrowseTermComparator(Locale.ENGLISH).compare(new BrowseTerm("ger", null, new MultiLanguageMetadataValue(translations1)),
                         new BrowseTerm("eng", null, new MultiLanguageMetadataValue(translations2))));
     }
+
+    /**
+     * @see BrowseTermComparator#normalizeString(String,String)
+     * @verifies use ignoreChars if provided
+     */
+    @Test
+    public void normalizeString_shouldUseIgnoreCharsIfProvided() throws Exception {
+        Assert.assertEquals("#.foo", BrowseTermComparator.normalizeString("[.]#.foo", ".[]"));
+    }
+
+    /**
+     * @see BrowseTermComparator#normalizeString(String,String)
+     * @verifies remove first char if non alphanum if ignoreChars not provided
+     */
+    @Test
+    public void normalizeString_shouldRemoveFirstCharIfNonAlphanumIfIgnoreCharsNotProvided() throws Exception {
+        Assert.assertEquals(".]#.foo", BrowseTermComparator.normalizeString("[.]#.foo", null));
+    }
 }
