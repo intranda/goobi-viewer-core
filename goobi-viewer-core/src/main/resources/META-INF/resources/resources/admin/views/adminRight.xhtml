@@ -200,6 +200,13 @@
                                     <h3>#{msg.admin__license_functions}</h3>
                                     <div class="admin__default-block">
 
+                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.name == 'licenseType_setRepresentativeImage' or
+                                                                 adminBean.currentLicense.licenseType.name == 'licenseType_deleteOcrPage' or
+                                                                 adminBean.currentLicense.licenseType.name == 'licenseType_crowdsourcing_campaigns'}">
+                                            #{msg.admin__right_functions_not_available}
+                                        </ui:fragment>
+
+
                                         <!-- CORE FUNCTIONS -->
                                         <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
                                             <div class="admin__license-functions">
