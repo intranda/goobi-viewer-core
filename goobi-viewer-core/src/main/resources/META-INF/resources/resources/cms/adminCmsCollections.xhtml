@@ -58,10 +58,10 @@
                                 <!-- CONTROL -->
                                 <div class="col-9 admin__form-input">
                                     <h:inputText id="SolrFieldInput" name="SolrFieldInput" styleClass="form-control" value="#{cmsCollectionsBean.solrFieldValue}" />
-                                    <h:commandLink action="#{cmsCollectionsBean.addCollection()}" title="#{msg.cms_collections_solrFieldValue}">
-                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                        <f:passThroughAttribute name="data-placement" value="top" />
+                                    <h:commandLink action="#{cmsCollectionsBean.addCollection()}" styleClass="-bluelink">
+                                        #{msg.add}
+                                        <f:passThroughAttribute name="aria-label" value="{msg.cms_collections_solrFieldValue}" />
+                                        <f:passThroughAttribute name="style" value="margin-left:3rem;" />
                                         <f:ajax execute="@form" render="@all" />
                                     </h:commandLink>
                                     <span class="admin__form-help-text">#{msg.admin__cms_collections_add_field_value}</span>
@@ -96,36 +96,50 @@
 
 
                         <!-- COLLECTION LIST -->
-                        <div class="admin__table-content">
-                            <div class="row no-gutters admin__table-title">
-                                <div class="col-2 d-flex">#{msg.cms_collections_fieldValue}</div>
-                                <div class="col-2 d-flex">#{msg.cms_collections_label}</div>
-                                <div class="col-2 d-flex">#{msg.cms_collections_description}</div>
-                                <div class="col-2 d-flex">#{msg.cms_collections_link}</div>
-                                <div class="col-2 d-flex">#{msg.cms_collections_image}</div>
-                                <div class="col-2 d-flex justify-content-center">#{msg.cms_collections_actions}</div>
-                            </div>
+                        <div class="admin__entry-list">
                             <ui:repeat var="collection" value="#{cmsCollectionsBean.collections}">
-                                <div class="row no-gutters admin__table-entry">
-                                    <div class="col-2 d-flex">#{collection.solrFieldValue}</div>
-                                    <div class="col-2 d-flex">#{collection.label}</div>
-                                    <div class="col-2 d-flex">#{collection.description}</div>
-                                    <div class="col-2 d-flex">
-                                        <a href="#{collection.linkURI}" class="-bluelink" target="_blank">#{collection.collectionUrl}</a>
+                                <div class="admin__boxed-entry -w33">
+                                    <div class="row">
+                                        <div class="col-9">
+                                            <div class="row">
+                                                <h3 class="col-12">
+                                                    <ui:fragment rendered="#{collection.solrFieldValue eq collection.label}">#{collection.solrFieldValue}</ui:fragment>
+                                                    <ui:fragment rendered="#{collection.solrFieldValue ne collection.label}">#{collection.label}</ui:fragment>
+                                                </h3>
+                                            </div>
+
+                                            <div>
+                                                <dl class="row">
+                                                    <dt class="col-sm-4">#{msg.cms_collections_fieldValue}:</dt>
+                                                    <dd class="col-sm-8">#{collection.solrFieldValue}</dd>
+
+                                                    <dt class="col-sm-4">#{msg.cms_collections_label}:</dt>
+                                                    <dd class="col-sm-8">#{collection.label}</dd>
+
+                                                    <dt class="col-sm-4">#{msg.cms_collections_description}:</dt>
+                                                    <dd class="col-sm-8">#{collection.description}</dd>
+
+                                                    <dt class="col-sm-4">#{msg.cms_collections_link}:</dt>
+                                                    <dd class="col-sm-8"><a href="#{collection.linkURI}" class="-bluelink" target="_blank">#{collection.collectionUrl}</a></dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <img src="#{collection.iconURI}" class="img-fluid" alt="" />
+                                        </div>
                                     </div>
-                                    <div class="col-2 d-flex">
-                                        <img src="#{collection.iconURI}" class="img-fluid" alt="" />
-                                    </div>
-                                    <div class="col-2 d-flex justify-content-center">
-                                        <h:commandLink styleClass="-bluelink" action="#{cmsCollectionsBean.editCollection(collection)}" aria-label="#{msg.cms_collection_edit}: #{collection.solrFieldValue}">
-                                            <f:passThroughAttribute name="style" value="padding-right:1.4rem;" />
-                                            #{msg.edit}
-                                        </h:commandLink>
-                                        <h:commandLink styleClass="-redlink" action="#{cmsCollectionsBean.deleteCollection(collection)}"
-                                            aria-label="#{msg.cms_collection_delete}: #{collection.solrFieldValue}"
-                                            onclick="if ( !confirm( &quot;#{msg.cms_deleteCollection_confirmation}&quot; ) ) { return false };">
-                                            #{msg.delete}
-                                        </h:commandLink>
+                                    <div class="row admin__boxed-entry-actions">
+                                        <div class="col-3 d-flex">
+                                            <h:commandLink styleClass="-bluelink" action="#{cmsCollectionsBean.editCollection(collection)}" aria-label="#{msg.cms_collection_edit}: #{collection.solrFieldValue}">
+                                                <f:passThroughAttribute name="style" value="padding-right:1.4rem;" />
+                                                #{msg.edit}
+                                            </h:commandLink>
+                                            <h:commandLink styleClass="-redlink" action="#{cmsCollectionsBean.deleteCollection(collection)}"
+                                                aria-label="#{msg.cms_collection_delete}: #{collection.solrFieldValue}"
+                                                onclick="if ( !confirm( &quot;#{msg.cms_deleteCollection_confirmation}&quot; ) ) { return false };">
+                                                #{msg.delete}
+                                            </h:commandLink>
+                                        </div>
                                     </div>
                                 </div>
                             </ui:repeat>
