@@ -44,7 +44,7 @@
                                     <div class="admin__table-data">
                                         <span>#{msg[page.pageName]}</span>
                                         <ui:fragment rendered="#{page.hasCmsPage}">
-                                            <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link -bluelink" title="#{msg.cms_pageView}" target="_blank" rel="noopener">#{msg.button__preview}</a>
+                                        <a href="#{cmsBean.getUrl(page.cmsPage)}" class="admin__table-action-link -bluelink" target="_blank" rel="noopener" aria-label="#{msg.button__preview}: #{msg[page.pageName]}">#{msg.button__preview}</a>
                                         </ui:fragment>
                                     </div>
                                 </div>

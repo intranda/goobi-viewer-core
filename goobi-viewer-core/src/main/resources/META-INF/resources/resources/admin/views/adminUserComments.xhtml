@@ -105,15 +105,13 @@
                                         <!-- ACTIONS -->
                                         <div>
                                             <!-- SHOW -->
-                                            <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" title="#{msg.show} record" styleClass="admin__table-action-link -bluelink">
-                                                <f:passThroughAttribute name="style" value="padding-right: 1.4rem;" />
-                                                <f:passThroughAttribute name="target" value="_blank" />
-                                                #{msg.show}</h:outputLink>
+                                            <!-- TODO INLINE CSS -->
+                                            <a href="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" class="admin__table-action-link -bluelink" style="padding-right: 1.4rem;" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.pi}/#{comment.page})">#{msg.show}</a>
 
                                             <!-- DELETE -->
                                             <h:commandLink styleClass="admin__table-action-link -redlink"
                                                 onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                action="#{adminBean.deleteCommentAction(comment)}" title="#{msg.delete}">#{msg.delete}
+                                                action="#{adminBean.deleteCommentAction(comment)}">#{msg.delete}
                                             </h:commandLink>
                                         </div>
                                     </div>

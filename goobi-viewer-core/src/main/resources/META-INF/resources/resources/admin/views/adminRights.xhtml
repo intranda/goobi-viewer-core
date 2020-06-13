@@ -86,13 +86,12 @@
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
                                                 <!-- EDIT -->
-                                                <h:outputLink styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
-                                                    value="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/">#{msg.edit}</h:outputLink>
+                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit -bluelink" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayName} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
                                                 <h:commandLink styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-                                                    action="#{adminBean.deleteLicenseAction(license)}" title="#{msg.delete}">
+                                                    action="#{adminBean.deleteLicenseAction(license)}">
                                                     #{msg.delete}
                                                 </h:commandLink>
                                             </div>

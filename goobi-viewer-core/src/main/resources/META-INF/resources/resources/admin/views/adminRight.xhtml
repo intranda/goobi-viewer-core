@@ -143,7 +143,8 @@
                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
                                 <h3>#{msg.information}</h3>
                                 <div class="admin__default-block">
-                                    <dl class="row">
+                                    <!-- TODO INLINE CSS -->
+                                    <dl class="row" style="margin-bottom: 0px;">
                                         <dt class="col-4">
                                            <h:outputText rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>

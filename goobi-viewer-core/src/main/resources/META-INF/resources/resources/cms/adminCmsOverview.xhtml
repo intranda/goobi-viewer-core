@@ -115,10 +115,10 @@
                                             </ui:fragment>
                                             <div>
                                                 <!-- EDIT -->
-                                                <h:outputLink styleClass="admin__table-action-link -bluelink" title="#{msg.edit}"
-                                                    value="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/">#{msg.edit}</h:outputLink>
+                                                <a href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/" class="admin__table-action-link -bluelink" aria-label="#{msg.edit}: #{page.title}">#{msg.edit}</a>
                                                 <!-- PREVIEW -->
-                                                <ui:fragment rendered="#{page.published}"><a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link -bluelink" title="#{msg.cms_pagePreview}" aria-label="#{msg.cms_pageView}: #{page.title}">#{msg.cms_pagePreview}</a>
+                                                <ui:fragment rendered="#{page.published}">
+                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link -bluelink" aria-label="#{msg.cms_pageView}: #{page.title}">#{msg.cms_pagePreview}</a>
                                                 </ui:fragment>
                                                 <!-- DELETE -->
                                                 <ui:fragment rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">

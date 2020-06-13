@@ -59,20 +59,14 @@
                                         <div class="row admin__boxed-entry-actions">
                                             <div class="col-3 d-flex">
                                                 <!-- EDIT -->
-                                                <h:outputLink
-                                                    styleClass="admin__boxed-entry-actions-edit -bluelink" title="#{msg.edit}"
-                                                    value="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/">
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg.edit}: #{ipRange.name}" />
-                                                    #{msg.edit}
-                                                </h:outputLink>
+                                                <a href="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/" class="admin__boxed-entry-actions-edit -bluelink" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
                                                 <h:commandLink
                                                     styleClass="admin__boxed-entry-actions-delete -redlink"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
                                                     action="adminIpRanges"
-                                                    actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
-                                                    title="#{msg.delete}">
+                                                    actionListener="#{adminBean.deleteIpRangeAction(ipRange)}">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{ipRange.name}" />
                                                     #{msg.delete}
                                                 </h:commandLink>
