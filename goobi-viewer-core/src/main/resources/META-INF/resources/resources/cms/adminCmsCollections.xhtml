@@ -2,6 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:p="http://primefaces.org/ui"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -28,24 +29,26 @@
                 <div class="admin__content-inner-content">
                     <h:form id="cmsCollectionsForm" prependId="false">
                         <div class="admin__default-block">
-                            <div class="form-group form-row">
-                                <!-- COLLECTION FIELD -->
-                                <div class="col-2 control-label admin__form-label">
-                                    <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
-                                </div>
+                            <div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'}">
+                                <div class="form-group form-row">
+                                    <!-- COLLECTION FIELD -->
+                                    <div class="col-2 control-label admin__form-label">
+                                        <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
+                                    </div>
 
-                                <!-- CONTROL -->
-                                <div class="col-9 admin__form-input">
-                                    <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
-                                        <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
-                                        <f:ajax render="@form"></f:ajax>
-                                    </h:selectOneMenu>
-                                    <span class="admin__form-help-text">#{msg.admin__cms_collections_select_field}</span>
-                                </div>
-                                <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
+                                    <!-- CONTROL -->
+                                    <div class="col-9 admin__form-input">
+                                        <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
+                                            <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
+                                            <f:ajax render="@form"></f:ajax>
+                                        </h:selectOneMenu>
+                                        <span class="admin__form-help-text">#{msg.admin__cms_collections_select_field}</span>
+                                    </div>
+                                    <div class="col-1 admin__form-help-icon">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -58,13 +61,6 @@
                                 <!-- CONTROL -->
                                 <div class="col-9 admin__form-input">
                                     <h:inputText id="SolrFieldInput" name="SolrFieldInput" styleClass="form-control" value="#{cmsCollectionsBean.solrFieldValue}" />
-                                    <h:commandLink action="#{cmsCollectionsBean.addCollection()}" styleClass="-bluelink">
-                                        #{msg.add}
-                                        <f:passThroughAttribute name="aria-label" value="{msg.cms_collections_solrFieldValue}" />
-                                        <f:passThroughAttribute name="style" value="margin-left:3rem;" />
-                                        <f:ajax execute="@form" render="@all" />
-                                    </h:commandLink>
-                                    <span class="admin__form-help-text">#{msg.admin__cms_collections_add_field_value}</span>
 
                                     <script type="text/javascript">
                                         $( '#SolrFieldInput' ).autocomplete( {
@@ -86,10 +82,13 @@
                                         } ).bind('focus', function(){ $(this).autocomplete("search", "-") } );
                                     </script>
                                 </div>
-                                <div class="col-1 admin__form-help-icon">
-                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
+                                <div class="col-1 align-self-center d-flex justify-content-center admin__form-action-link">
+                                    <h:commandLink action="#{cmsCollectionsBean.addCollection()}" styleClass="-bluelink">
+                                        #{msg.add}
+                                        <f:passThroughAttribute name="aria-label" value="{msg.cms_collections_solrFieldValue}" />
+                                        <f:passThroughAttribute name="style" value="margin-left:3rem;" />
+                                        <f:ajax execute="@form" render="@all" />
+                                    </h:commandLink>
                                 </div>
                             </div>
                         </div>
@@ -108,21 +107,38 @@
                                                 </h3>
                                             </div>
 
-                                            <div>
-                                                <dl class="row">
-                                                    <dt class="col-sm-4">#{msg.cms_collections_fieldValue}:</dt>
-                                                    <dd class="col-sm-8">#{collection.solrFieldValue}</dd>
+                                            <!-- HINT IF NO CONFIGURATION AVAILABLE -->
+                                            <ui:fragment rendered="#{collection.solrFieldValue eq collection.label and collection.description eq '' and collection.linkURI == null}">
+                                                <!-- TODO INLINE CSS -->
+                                                <p class="col-12 admin__boxed-entry-description-empty" style="padding-left:0;">(#{msg.cms_collections_no_configuration_available})</p>
+                                            </ui:fragment>
 
-                                                    <dt class="col-sm-4">#{msg.cms_collections_label}:</dt>
-                                                    <dd class="col-sm-8">#{collection.label}</dd>
+                                            <!-- ONLY RENDER IF ANY OF THE INLINE VALUES EXIST -->
+                                            <ui:fragment rendered="#{collection.solrFieldValue ne collection.label or collection.description ne '' or collection.linkURI != null}">
+                                                <div>
+                                                    <dl class="row">
+                                                        <ui:fragment rendered="#{collection.solrFieldValue ne collection.label}">
+                                                            <dt class="col-sm-4">#{msg.cms_collections_fieldValue}:</dt>
+                                                            <dd class="col-sm-8">#{collection.solrFieldValue}</dd>
+                                                        </ui:fragment>
 
-                                                    <dt class="col-sm-4">#{msg.cms_collections_description}:</dt>
-                                                    <dd class="col-sm-8">#{collection.description}</dd>
+                                                        <ui:fragment rendered="#{collection.solrFieldValue ne collection.label}">
+                                                            <dt class="col-sm-4">#{msg.cms_collections_label}:</dt>
+                                                            <dd class="col-sm-8">#{collection.label}</dd>
+                                                        </ui:fragment>
 
-                                                    <dt class="col-sm-4">#{msg.cms_collections_link}:</dt>
-                                                    <dd class="col-sm-8"><a href="#{collection.linkURI}" class="-bluelink" target="_blank">#{collection.collectionUrl}</a></dd>
-                                                </dl>
-                                            </div>
+                                                        <ui:fragment rendered="#{collection.description ne ''}">
+                                                        <dt class="col-sm-4">#{msg.cms_collections_description}:</dt>
+                                                            <dd class="col-sm-8">#{collection.description}</dd>
+                                                        </ui:fragment>
+
+                                                        <ui:fragment rendered="#{collection.linkURI != null}">
+                                                            <dt class="col-sm-4">#{msg.cms_collections_link}:</dt>
+                                                            <dd class="col-sm-8"><a href="#{collection.linkURI}" class="-bluelink" target="_blank">#{collection.collectionUrl}</a></dd>
+                                                        </ui:fragment>
+                                                    </dl>
+                                                </div>
+                                            </ui:fragment>
                                         </div>
                                         <div class="col-3">
                                             <img src="#{collection.iconURI}" class="img-fluid" alt="" />
