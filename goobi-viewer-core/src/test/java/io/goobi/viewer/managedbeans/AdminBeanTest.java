@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -78,5 +81,20 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
         bean.deleteUserAction(user, true);
         Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
+    }
+
+    /**
+     * @see AdminBean#getGroupedLicenseTypeSelectItems()
+     * @verifies group license types in select item groups correctly
+     */
+    @Test
+    public void getGroupedLicenseTypeSelectItems_shouldGroupLicenseTypesInSelectItemGroupsCorrectly() throws Exception {
+        AdminBean bean = new AdminBean();
+        bean.init();
+
+        List<SelectItem> items = bean.getGroupedLicenseTypeSelectItems();
+        Assert.assertEquals(2, items.size());
+        Assert.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
+        Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }
 }

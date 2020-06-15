@@ -29,6 +29,8 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -555,6 +557,51 @@ public class AdminBean implements Serializable {
 
     /**
      * 
+     * @return Two SelectItemGroups for core and regular license types
+     * @throws DAOException
+     * @should group license types in select item groups correctly
+     */
+    public List<SelectItem> getGroupedLicenseTypeSelectItems() throws DAOException {
+        List<LicenseType> licenseTypes = getAllLicenseTypes();
+        if (licenseTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> list1 = new ArrayList<>();
+        List<LicenseType> list2 = new ArrayList<>();
+        for (LicenseType licenseType : licenseTypes) {
+            if (licenseType.isCore()) {
+                list1.add(licenseType);
+            } else {
+                list2.add(licenseType);
+            }
+        }
+
+        List<SelectItem> ret = new ArrayList<>(licenseTypes.size());
+        {
+            SelectItemGroup group1 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
+            SelectItem[] array1 = new SelectItem[list1.size()];
+            for (int i = 0; i < array1.length; ++i) {
+                array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
+            }
+            group1.setSelectItems(array1);
+            ret.add(group1);
+        }
+        {
+            SelectItemGroup group2 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
+            SelectItem[] array2 = new SelectItem[list2.size()];
+            for (int i = 0; i < array2.length; ++i) {
+                array2[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
+            }
+            group2.setSelectItems(array2);
+            ret.add(group2);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
      * @param core
      * @return all license types in the database where this.core=core
      * @throws DAOException
@@ -796,7 +843,7 @@ public class AdminBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public String saveCurrentLicenseAction() throws DAOException,IndexUnreachableException, PresentationException {
+    public String saveCurrentLicenseAction() throws DAOException, IndexUnreachableException, PresentationException {
         logger.trace("saveCurrentLicenseAction");
         if (currentLicense == null) {
             throw new IllegalArgumentException("license may not be null");
@@ -1213,7 +1260,7 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public void setCurrentLicenseId(Long id) throws DAOException {
-        if(ObjectUtils.notEqual(getCurrentLicenseId(), id)) {            
+        if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
             setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
         }
     }
