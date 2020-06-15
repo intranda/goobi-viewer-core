@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 
@@ -762,6 +763,24 @@ public class LicenseType implements IPrivilegeHolder {
         if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
             logger.error("Could not add static license type '{}'.", licenseTypeName);
         }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getFilterQueryPart() {
+        StringBuilder query = new StringBuilder();
+        String processedConditions = getProcessedConditions();
+        if (StringUtils.isNotBlank(processedConditions)) {
+            // Do not append empty sub-query
+            query.append(" (").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"');
+            query.append(" AND ").append(processedConditions).append(')');
+        } else {
+            query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"');
+        }
+
+        return query.toString();
     }
 
     /* (non-Javadoc)

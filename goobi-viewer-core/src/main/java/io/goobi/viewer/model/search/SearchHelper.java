@@ -941,29 +941,34 @@ public final class SearchHelper {
      */
     public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
             throws IndexUnreachableException, PresentationException, DAOException {
+        // No restrictions for admins
         if (user != null && user.isSuperuser()) {
+            return "";
+        }
+        // No restrictions for localhost, if so configured
+        if (NetTools.isIpAddressLocalhost(ipAddress)
+                && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
         }
 
         StringBuilder query = new StringBuilder();
         query.append(" +(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
 
-        for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
+        Set<String> usedLicenseTypes = new HashSet<>();
+        for (LicenseType licenseType : DataManager.getInstance().getDao().getAllLicenseTypes()) {
             // Static licenses are irrelevant
             if (licenseType.isCore()) {
                 continue;
             }
 
+            if (usedLicenseTypes.contains(licenseType.getName())) {
+                continue;
+            }
+
             // License type contains listing privilege
             if (licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
-                String processedConditions = licenseType.getProcessedConditions();
-                if (StringUtils.isNotBlank(processedConditions)) {
-                    // Do not append empty sub-query
-                    query.append(" (").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-                    query.append(" AND ").append(processedConditions).append(')');
-                } else {
-                    query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-                }
+                query.append(licenseType.getFilterQueryPart());
+                usedLicenseTypes.add(licenseType.getName());
                 continue;
             }
 
@@ -971,16 +976,21 @@ public final class SearchHelper {
                     new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
+                query.append(licenseType.getFilterQueryPart());
+                usedLicenseTypes.add(licenseType.getName());
             } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
                 for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
+                    if (usedLicenseTypes.contains(overridingLicenseType.getName())) {
+                        continue;
+                    }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                             new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
                             null)) {
+                        query.append(overridingLicenseType.getFilterQueryPart());
+                        usedLicenseTypes.add(overridingLicenseType.getName());
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
                                 overridingLicenseType.getName(), licenseType.getName());
-                        query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(overridingLicenseType.getName()).append('"');
                         break;
                     }
                 }

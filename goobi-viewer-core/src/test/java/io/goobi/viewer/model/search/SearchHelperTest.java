@@ -185,10 +185,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
-        //        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
-        //                + ":\"license type 3 name\" -" + SolrConstants.ACCESSCONDITION
-        //                + ":\"license type 4 name\" -(ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020])", suffix);
-        Assert.assertEquals(" +(ACCESSCONDITION:\"OPENACCESS\" (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
+        Assert.assertEquals(
+                " +(ACCESSCONDITION:\"OPENACCESS\" ACCESSCONDITION:\"license type 2 name\" (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
                 suffix);
     }
 
@@ -200,7 +198,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
-        Assert.assertTrue(!suffix.contains("license type 1 name"));
+        Assert.assertEquals(
+                " +(ACCESSCONDITION:\"OPENACCESS\" (ACCESSCONDITION:\"license type 1 name\" AND YEAR:[* TO 3000]) ACCESSCONDITION:\"license type 2 name\""
+                        + " (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
+                suffix);
     }
 
     /**
@@ -220,8 +221,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfIpRangeHasLicensePrivilege() throws Exception {
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "127.0.0.1");
-        Assert.assertEquals("", suffix);
+        {
+            // Localhost with full access enabled
+            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "127.0.0.1");
+            Assert.assertEquals("", suffix);
+        }
+        {
+            // Regular IP address
+            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4");
+            Assert.assertEquals(
+                    " +(ACCESSCONDITION:\"OPENACCESS\" ACCESSCONDITION:\"license type 2 name\" ACCESSCONDITION:\"license type 3 name\""
+                            + " (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
+                    suffix);
+        }
     }
 
     /**

@@ -855,7 +855,7 @@ public class AccessConditionUtils {
             } else {
                 // Check IP range
                 if (StringUtils.isNotEmpty(remoteAddress)) {
-                    if ((NetTools.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || NetTools.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
+                    if (NetTools.isIpAddressLocalhost(remoteAddress)
                             && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                         logger.debug("Access granted to localhost");
                         accessMap.put(key, Boolean.TRUE);
