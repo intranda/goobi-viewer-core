@@ -58,81 +58,77 @@
                                 </div>
 
                                 <!-- LICENSEE SELECTION -->
-                                <h:panelGroup id="licenseeGroup">
-                                    <div class="form-group form-row">
-                                        <div class="col-sm-4">
-                                            <label for="currentLicense.licensee" class="control-label">#{msg.admin__license_licensee_select_label}:</label>
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <h:selectOneMenu
-                                                rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
-                                                value="#{adminBean.currentLicense.user}"
-                                                styleClass="form-control"
-                                                immediate="true"
-                                                converter="userConverter"
-                                                disabled="#{adminBean.currentLicense.id != null}">
+                                <h:panelGroup id="licenseeGroup" layout="block" styleClass="form-group form-row">
+                                     <div class="col-sm-4">
+                                         <label for="currentLicense.licensee" class="control-label">#{msg.admin__license_licensee_select_label}:</label>
+                                     </div>
+                                     <div class="col-sm-8">
+                                         <h:selectOneMenu
+                                             rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
+                                             value="#{adminBean.currentLicense.user}"
+                                             styleClass="form-control"
+                                             immediate="true"
+                                             converter="userConverter"
+                                             disabled="#{adminBean.currentLicense.id != null}">
 
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
+                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
 
-                                                <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                                <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
-                                                <f:ajax render="licenseTypeGroup infoGroup" />
-                                            </h:selectOneMenu>
-                                            <h:selectOneMenu
-                                                rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
-                                                value="#{adminBean.currentLicense.userGroup}"
-                                                styleClass="form-control"
-                                                immediate="true"
-                                                converter="userGroupConverter"
-                                                disabled="#{adminBean.currentLicense.id != null}">
+                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
+                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                         </h:selectOneMenu>
+                                         <h:selectOneMenu
+                                             rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
+                                             value="#{adminBean.currentLicense.userGroup}"
+                                             styleClass="form-control"
+                                             immediate="true"
+                                             converter="userGroupConverter"
+                                             disabled="#{adminBean.currentLicense.id != null}">
 
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
+                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
 
-                                                <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                                <f:selectItems value="#{adminBean.allUserGroups}" />
-                                                <f:ajax render="licenseTypeGroup infoGroup" />
-                                            </h:selectOneMenu>
-                                            <h:selectOneMenu
-                                                rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
-                                                value="#{adminBean.currentLicense.ipRange}"
-                                                styleClass="form-control"
-                                                immediate="true"
-                                                converter="ipRangeConverter"
-                                                disabled="#{adminBean.currentLicense.id != null}">
+                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                             <f:selectItems value="#{adminBean.allUserGroups}" />
+                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                         </h:selectOneMenu>
+                                         <h:selectOneMenu
+                                             rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
+                                             value="#{adminBean.currentLicense.ipRange}"
+                                             styleClass="form-control"
+                                             immediate="true"
+                                             converter="ipRangeConverter"
+                                             disabled="#{adminBean.currentLicense.id != null}">
 
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
+                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
 
-                                                <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                                <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
-                                                <f:ajax render="licenseTypeGroup infoGroup" />
-                                            </h:selectOneMenu>
-                                        </div>
-                                    </div>
+                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                             <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
+                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                         </h:selectOneMenu>
+                                     </div>
                                 </h:panelGroup>
 
                                 <!-- LICENSE TYPE SELECTION -->
-                                <h:panelGroup id="licenseTypeGroup">
-                                    <div class="form-group form-row">
-                                        <div class="col-sm-4">
-                                            <label for="currentLicense.licenseType" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <h:selectOneMenu
-                                                rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
-                                                value="#{adminBean.currentLicense.licenseType}"
-                                                styleClass="form-control"
-                                                immediate="true"
-                                                converter="licenseTypeConverter"
-                                                disabled="#{adminBean.currentLicense.id != null}">
+                                <h:panelGroup id="licenseTypeGroup" layout="block" styleClass="form-group form-row">
+                                     <div class="col-sm-4">
+                                         <label for="currentLicense.licenseType" class="control-label">#{msg.admin__license_license_type_select_label}:</label>
+                                     </div>
+                                     <div class="col-sm-8">
+                                         <h:selectOneMenu
+                                             rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null}"
+                                             value="#{adminBean.currentLicense.licenseType}"
+                                             styleClass="form-control"
+                                             immediate="true"
+                                             converter="licenseTypeConverter"
+                                             disabled="#{adminBean.currentLicense.id != null}">
 
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
+                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
 
-                                                <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                                <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{msg[licenseType.name]}" />
-                                                <f:ajax render="infoGroup functionsGroup" />
-                                            </h:selectOneMenu>
-                                        </div>
-                                    </div>
+                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                             <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{msg[licenseType.name]}" />
+                                             <f:ajax render="infoGroup functionsGroup" />
+                                         </h:selectOneMenu>
+                                     </div>
                                 </h:panelGroup>
                             </div>
 
