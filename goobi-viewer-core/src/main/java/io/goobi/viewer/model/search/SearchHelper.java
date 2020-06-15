@@ -928,25 +928,42 @@ public final class SearchHelper {
     /**
      * Constructs a personal search query filter suffix for the given user and IP address.
      *
-     * @should construct suffix correctly
-     * @should construct suffix correctly if user has license privilege
-     * @should construct suffix correctly if user has overriding license privilege
-     * @should construct suffix correctly if ip range has license privilege
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should construct suffix correctly
+     * @should construct suffix correctly if user has license privilege
+     * @should construct suffix correctly if user has overriding license privilege
+     * @should construct suffix correctly if ip range has license privilege
      */
     public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
             throws IndexUnreachableException, PresentationException, DAOException {
-        StringBuilder query = new StringBuilder();
+        if (user != null && user.isSuperuser()) {
+            return "";
+        }
 
-        //        List<String> relevantLicenseTypes = new ArrayList<>();
+        StringBuilder query = new StringBuilder();
+        query.append(" +(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
+
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
-            // Consider only license types that do not allow listing by default and are not static licenses
-            if (licenseType.isCore() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+            // Static licenses are irrelevant
+            if (licenseType.isCore()) {
+                continue;
+            }
+
+            // License type contains listing privilege
+            if (licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+                String processedConditions = licenseType.getProcessedConditions();
+                if (StringUtils.isNotBlank(processedConditions)) {
+                    // Do not append empty sub-query
+                    query.append(" (").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
+                    query.append(" AND ").append(processedConditions).append(')');
+                } else {
+                    query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
+                }
                 continue;
             }
 
@@ -954,37 +971,23 @@ public final class SearchHelper {
                     new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                continue;
+                query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
             } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
-                boolean skip = false;
                 for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                             new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
                             null)) {
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
                                 overridingLicenseType.getName(), licenseType.getName());
-                        skip = true;
+                        query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(overridingLicenseType.getName()).append('"');
                         break;
                     }
                 }
-                if (skip) {
-                    continue;
-                }
             }
-            if (licenseType.getProcessedConditions() != null) {
-                String processedConditions = licenseType.getProcessedConditions();
-                // Do not append empty subquery
-                if (StringUtils.isNotBlank(processedConditions)) {
-                    query.append(" -(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-                    query.append(" AND ").append(processedConditions).append(')');
-                } else {
-                    query.append(" -").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-                }
-            } else {
-                query.append(" -").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-            }
+
         }
+        query.append(')');
 
         return query.toString();
     }

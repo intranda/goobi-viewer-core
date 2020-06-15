@@ -185,9 +185,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
-        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
-                + ":\"license type 3 name\" -" + SolrConstants.ACCESSCONDITION
-                + ":\"license type 4 name\" -(ACCESSCONDITION:\"restriction on access\" AND -MDNUM_PUBLICRELEASEYEAR:[* TO 2020])", suffix);
+        //        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
+        //                + ":\"license type 3 name\" -" + SolrConstants.ACCESSCONDITION
+        //                + ":\"license type 4 name\" -(ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020])", suffix);
+        Assert.assertEquals(" +(ACCESSCONDITION:\"OPENACCESS\" (ACCESSCONDITION:\"restriction on access\" AND MDNUM_PUBLICRELEASEYEAR:[* TO 2020]))",
+                suffix);
     }
 
     /**
@@ -453,7 +455,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void extractSearchTermsFromQuery_shouldThrowIllegalArgumentExceptionIfQueryIsNull() throws Exception {
         SearchHelper.extractSearchTermsFromQuery(null, null);
     }
-    
+
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies not remove truncation
@@ -479,7 +481,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String suffix = SearchHelper.generateCollectionBlacklistFilterSuffix(SolrConstants.DC);
         Assert.assertEquals(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2", suffix);
     }
-
 
     /**
      * @see SearchHelper#checkCollectionInBlacklist(String,List)
@@ -767,7 +768,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
         Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
-    
 
     /**
      * @see SearchHelper#generateExpandQuery(List,Map,boolean)
@@ -975,7 +975,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Set<String> terms = new HashSet<>();
         terms.add("sirvintos");
         String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
-//        System.out.println(highlightedPhrase);
+        //        System.out.println(highlightedPhrase);
         Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + phrase + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase);
     }
 
