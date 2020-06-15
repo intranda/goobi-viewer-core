@@ -267,7 +267,14 @@
 		}
 		&.-warning {
 			border-top: 5px solid rgba(243, 208, 70, 0.85);
-		}		
+		}
+		&-description {
+	    	margin-bottom: 3rem;
+            &-empty {
+                font-style: italic;
+                color: @middlegray;
+            }
+	    }	
 	}
 	&__final-actions {
 		margin-top: -1rem;
@@ -736,8 +743,12 @@
 	}
 }
 
-// overwritten bootstrap margin
+// overwritten bootstrap margin for desc list elements
 .admin dl dd:last-of-type {
+	margin-bottom: 0;
+}
+
+.admin dl:last-of-type {
 	margin-bottom: 0;
 }
 

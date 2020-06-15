@@ -140,8 +140,7 @@
                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
                                 <h3>#{msg.information}</h3>
                                 <div class="admin__default-block">
-                                    <!-- TODO INLINE CSS -->
-                                    <dl class="row" style="margin-bottom: 0px;">
+                                    <dl class="row">
                                         <dt class="col-4">
                                            <h:outputText rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
@@ -164,16 +163,14 @@
                                             <!-- USER GROUP -->
                                             <h:outputText rendered="#{adminBean.currentLicense.userGroup.description ne ''}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
                                             <h:outputText rendered="#{adminBean.currentLicense.userGroup.description eq ''}">
-                                                 <!-- TODO INLINE CSS -->
-                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                             </h:outputText>
+                                            	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                            </h:outputText>
 
                                             <!-- IP RANGE -->
                                             <h:outputText rendered="#{adminBean.currentLicense.ipRange.description ne ''}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
                                             <h:outputText rendered="#{adminBean.currentLicense.ipRange.description eq ''}">
-                                                 <!-- TODO INLINE CSS -->
-                                                 <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                             </h:outputText>
+                                            	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                            </h:outputText>
                                         </dd>
                                         <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
                                         <dd class="col-8">
@@ -181,8 +178,7 @@
                                                 #{msg[adminBean.currentLicense.licenseType.description]}
                                             </ui:fragment>
                                             <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
-                                                 <!-- TODO INLINE CSS -->
-                                                <span style="font-style: italic; color: #ccc" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                             </ui:fragment>
                                         </dd>
                                     </dl>
