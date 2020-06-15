@@ -790,7 +790,7 @@ public class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static Map<String, Boolean> checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
+    static Map<String, Boolean> checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, String query, List<Path> files)
             throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
