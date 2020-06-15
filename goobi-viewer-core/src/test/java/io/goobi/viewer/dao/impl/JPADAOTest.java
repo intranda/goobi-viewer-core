@@ -512,7 +512,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(ipRange);
         Assert.assertEquals(Long.valueOf(1), ipRange.getId());
         Assert.assertEquals("localhost", ipRange.getName());
-        Assert.assertEquals("127.0.0.1/24", ipRange.getSubnetMask());
+        Assert.assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
         Assert.assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
@@ -522,7 +522,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(ipRange);
         Assert.assertEquals(Long.valueOf(1), ipRange.getId());
         Assert.assertEquals("localhost", ipRange.getName());
-        Assert.assertEquals("127.0.0.1/24", ipRange.getSubnetMask());
+        Assert.assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
         Assert.assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
