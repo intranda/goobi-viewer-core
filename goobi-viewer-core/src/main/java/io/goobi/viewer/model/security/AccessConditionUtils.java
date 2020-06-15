@@ -767,7 +767,7 @@ public class AccessConditionUtils {
 
     /**
      * <p>
-     * checkAccessPermission.
+     * Base method for checking access permissions of various types.
      * </p>
      *
      * @param allLicenseTypes a {@link java.util.List} object.
@@ -794,89 +794,93 @@ public class AccessConditionUtils {
             String privilegeName, User user, String remoteAddress, String query, List<Path> files)
             throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
-        // If OPENACCESS is the only condition, allow immediately
+
         Map<String, Boolean> accessMap = new HashMap<>();
         if (files != null) {
             files.forEach(file -> accessMap.put(file.toString(), Boolean.FALSE));
         } else {
             accessMap.put("", Boolean.FALSE);
         }
+        // If no access condition given, allow immediately (though this should never be the case)
         if (requiredAccessConditions.isEmpty()) {
             logger.trace("No required access conditions given, access granted.");
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
             return accessMap;
         }
+        // If OPENACCESS is the only condition, allow immediately
         if (isFreeOpenAccess(requiredAccessConditions, allLicenseTypes)) {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
             return accessMap;
         }
-        // If no license types are configured or no privilege name is given, allow immediately
+        // If no license types are configured or no privilege name is given, deny immediately
         if (allLicenseTypes == null || !StringUtils.isNotEmpty(privilegeName)) {
             logger.trace("No license types or no privilege name given.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
+            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.FALSE));
             return accessMap;
         }
 
         Map<String, List<LicenseType>> licenseMap = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap);
+        // If no relevant license types found (configured), deny all
         if (licenseMap.isEmpty()) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
-        } else {
-            for (String key : licenseMap.keySet()) {
-                List<LicenseType> relevantLicenseTypes = licenseMap.get(key);
-                requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
-                if (relevantLicenseTypes.isEmpty()) {
-                    logger.trace("No relevant license types.");
-                    accessMap.put(key, Boolean.TRUE);
-                }
+            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.FALSE));
+            return accessMap;
+        }
 
-                // If all relevant license types allow the requested privilege by default, allow access
-                boolean licenseTypeAllowsPriv = true;
-                // Check whether *all* relevant license types allow the requested privilege by default
-                for (LicenseType licenseType : relevantLicenseTypes) {
-                    requiredAccessConditions.add(licenseType.getName());
-                    if (!licenseType.getPrivileges().contains(privilegeName)) {
-                        // logger.debug("LicenseType '" + licenseType.getName() + "' does not allow the action '" + privilegeName
-                        // + "' by default.");
-                        licenseTypeAllowsPriv = false;
-                    }
+        for (String key : licenseMap.keySet()) {
+            List<LicenseType> relevantLicenseTypes = licenseMap.get(key);
+            requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
+            if (relevantLicenseTypes.isEmpty()) {
+                // No relevant license types for this file, set to false and continue
+                logger.trace("No relevant license types.");
+                accessMap.put(key, Boolean.FALSE);
+                continue;
+            }
+
+            // If all relevant license types allow the requested privilege by default, allow access
+            boolean licenseTypeAllowsPriv = true;
+            // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
+            for (LicenseType licenseType : relevantLicenseTypes) {
+                requiredAccessConditions.add(licenseType.getName());
+                if (!licenseType.getPrivileges().contains(privilegeName)) {
+                    logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
+                    licenseTypeAllowsPriv = false;
                 }
-                if (licenseTypeAllowsPriv) {
-                    logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
-                    accessMap.put(key, Boolean.TRUE);
-                } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
-                    logger.trace("Privilege '{}' is OpenAccess", privilegeName);
-                    accessMap.put(key, Boolean.TRUE);
-                } else {
-                    // Check IP range
-                    if (StringUtils.isNotEmpty(remoteAddress)) {
-                        if ((NetTools.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || NetTools.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
-                                && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                            logger.debug("Access granted to localhost");
+            }
+            if (licenseTypeAllowsPriv) {
+                logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
+                accessMap.put(key, Boolean.TRUE);
+            } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
+                logger.trace("Privilege '{}' is OpenAccess", privilegeName);
+                accessMap.put(key, Boolean.TRUE);
+            } else {
+                // Check IP range
+                if (StringUtils.isNotEmpty(remoteAddress)) {
+                    if ((NetTools.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || NetTools.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress))
+                            && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                        logger.debug("Access granted to localhost");
+                        accessMap.put(key, Boolean.TRUE);
+                        continue;
+                    }
+                    // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+                    for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                        // logger.debug("ip range: " + ipRange.getSubnetMask());
+                        if (ipRange.matchIp(remoteAddress)
+                                && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
+                            logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
                             accessMap.put(key, Boolean.TRUE);
                             continue;
                         }
-                        // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                        for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                            // logger.debug("ip range: " + ipRange.getSubnetMask());
-                            if (ipRange.matchIp(remoteAddress)
-                                    && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
-                                logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                                accessMap.put(key, Boolean.TRUE);
-                                continue;
-                            }
-                        }
                     }
+                }
 
-                    // If not within an allowed IP range, check the current user's satisfied access conditions
+                // If not within an allowed IP range, check the current user's satisfied access conditions
 
-                    if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                        accessMap.put(key, Boolean.TRUE);
-                    }
+                if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                    accessMap.put(key, Boolean.TRUE);
                 }
             }
         }
 
-        // logger.trace("not allowed");
         return accessMap;
     }
 
