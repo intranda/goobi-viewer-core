@@ -15,18 +15,12 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import java.util.Collections;
-
 import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.controller.DataManager;
-import io.swagger.v3.oas.integration.SwaggerConfiguration;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.servers.Server;
 
 /**
  * <p>

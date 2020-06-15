@@ -13,9 +13,11 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v1;
+package io.goobi.viewer.api.rest.v1.records.media;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -32,7 +34,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
  * @author florian
  *
  */
-@Path("/records/{pi}/images/{filename}")
+@Path("/records/{pi}/media/images/{filename}")
 @ContentServerBinding
 @CORSBinding
 public class ViewerImageResource extends ImageResource {
@@ -48,10 +50,16 @@ public class ViewerImageResource extends ImageResource {
         request.setAttribute("filename", filename);
         
         String info = request.getPathInfo();
-        String basePath = "/records/{pi}/images/{filename}".replace("{pi}", pi).replace("{filename}", filename);
+        String basePath = "/records/{pi}/media/images/{filename}".replace("{pi}", pi).replace("{filename}", filename);
         info = info.replace(basePath, "");
-        if(StringUtils.isNotBlank(cs))
-        // TODO Auto-generated constructor stub
+        List<String> parts = Arrays.stream(info.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        if(parts.size() == 4) {
+            //image request
+            request.setAttribute("region", parts.get(0));
+            request.setAttribute("size", parts.get(1));
+            request.setAttribute("rotation", parts.get(2));
+            request.setAttribute("format", parts.get(3));
+        }
     }
 
 }

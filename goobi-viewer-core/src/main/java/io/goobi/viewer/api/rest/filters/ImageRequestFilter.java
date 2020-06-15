@@ -77,30 +77,40 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         
         try {
 
-            String requestPath = servletRequest.getRequestURI();
-            requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
-            // logger.trace("Filtering request {}", requestPath);
-            StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
-            List<String> pathSegments = tokenizer.getTokenList();
-            String pi = pathSegments.get(0);
-            String imageName = pathSegments.get(1);
-            
-            pi = (String) servletRequest.getAttribute("pi");
-            imageName = (String) servletRequest.getAttribute("filename");
-            
-            imageName = StringTools.decodeUrl(imageName);
             String size;
             String region;
             String rotation;
-            if (pathSegments.size() > 4) {
-                region = pathSegments.get(2);
-                size = pathSegments.get(3);
-                rotation = pathSegments.get(4);
+            String pi;
+            String imageName;
+            if(servletRequest.getAttribute("pi") != null) {
+                //read parameters 
+                pi = (String) servletRequest.getAttribute("pi");
+                imageName = (String) servletRequest.getAttribute("filename");
+                size = (String) servletRequest.getAttribute("size");
+                region = (String) servletRequest.getAttribute("region");
+                rotation = (String) servletRequest.getAttribute("rotation");
             } else {
-                size = "max";
-                region = "full";
-                rotation = "0";
+                String requestPath = servletRequest.getRequestURI();
+                requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
+                // logger.trace("Filtering request {}", requestPath);
+                StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
+                List<String> pathSegments = tokenizer.getTokenList();
+                pi = pathSegments.get(0);
+                imageName = pathSegments.get(1);
+                imageName = StringTools.decodeUrl(imageName);
+                
+                if (pathSegments.size() > 4) {
+                    region = pathSegments.get(2);
+                    size = pathSegments.get(3);
+                    rotation = pathSegments.get(4);
+                } else {
+                    size = "max";
+                    region = "full";
+                    rotation = "0";
+                }
             }
+            
+            
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
                 //if page order is given for image filename, forward to url with correct filename
                 return;

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -36,7 +38,10 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndEntryImpl;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedOutput;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -47,9 +52,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.search.SearchFacets;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * <p>
@@ -713,4 +722,113 @@ public class RSSFeed {
         }
         return imageUrl;
     }
+    
+    /**
+     * @param language
+     * @param maxHits
+     * @param query
+     * @param facets
+     * @param searchOperator
+     * @return
+     * @throws ContentLibException
+     */
+    public static Channel createRssResponse(String language, Integer maxHits, String subtheme, String query, String facets, HttpServletRequest servletRequest)
+            throws ContentLibException {
+        try {
+            if(maxHits == null) {
+                maxHits = Integer.MAX_VALUE;
+            }
+            if(language == null) {
+                language = servletRequest.getLocale().getLanguage();
+            }
+            query = createQuery(query, null, subtheme, servletRequest, true);
+            if(StringUtils.isNotBlank(query)) {
+                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits());
+            }
+            
+            // Optional faceting
+            List<String> filterQueries = null;
+            if (StringUtils.isNotBlank(facets)) {
+                SearchFacets searchFacets = new SearchFacets();
+                searchFacets.setCurrentFacetString(facets);
+                filterQueries = searchFacets.generateFacetFilterQueries(0, true);
+            }
+            
+            Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                    query, filterQueries, maxHits, language);
+            return rss;
+        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+            throw new ContentLibException(e.toString());
+        }
+    }
+    
+    public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, HttpServletRequest servletRequest)
+            throws ContentLibException {
+        try {
+            if(maxHits == null) {
+                maxHits = Integer.MAX_VALUE;
+            }
+            if(language == null) {
+                language = servletRequest.getLocale().getLanguage();
+            }
+            query = createQuery(query, null, subtheme, servletRequest, true);
+            if(StringUtils.isNotBlank(query)) {
+                query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits());
+            }
+            
+            // Optional faceting
+            List<String> filterQueries = null;
+            if (StringUtils.isNotBlank(facets)) {
+                SearchFacets searchFacets = new SearchFacets();
+                searchFacets.setCurrentFacetString(facets);
+                filterQueries = searchFacets.generateFacetFilterQueries(0, true);
+            }
+            
+            SyndFeedOutput output = new SyndFeedOutput();
+            return output
+                    .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language));
+
+        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
+            throw new ContentLibException(e.toString());
+        }
+    }
+    
+    private static String createQuery(String query, Long bookshelfId, String partnerId, HttpServletRequest servletRequest, boolean addSuffixes)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        // Build query, if none given
+        if (StringUtils.isEmpty(query)) {
+            if (bookshelfId != null) {
+                // Bookshelf RSS feed
+                BookmarkList bookshelf = DataManager.getInstance().getDao().getBookmarkList(bookshelfId);
+                if (bookshelf == null) {
+                    throw new PresentationException("Requested bookshelf not found: " + bookshelfId);
+                }
+                if (!bookshelf.isIsPublic()) {
+                    throw new PresentationException("Requested bookshelf not public: " + bookshelfId);
+                }
+                query = bookshelf.generateSolrQueryForItems();
+            } else {
+                // Main RSS feed
+                query = SolrConstants.ISWORK + ":true";
+            }
+        }
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("(").append(query).append(")");
+
+        if (StringUtils.isNotBlank(partnerId)) {
+            sbQuery.append(" AND ")
+                    .append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                    .append(':')
+                    .append(partnerId.trim());
+        }
+
+        if (addSuffixes) {
+            sbQuery.append(
+                    SearchHelper.getAllSuffixes(servletRequest, null, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+        }
+
+        return sbQuery.toString();
+    }
+    
 }
