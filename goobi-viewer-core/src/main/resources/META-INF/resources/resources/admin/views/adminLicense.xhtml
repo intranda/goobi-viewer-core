@@ -83,16 +83,14 @@
                                 <div class="admin__license-functions">
                                     <hr />
                                     <div class="form-group form-row">
-                                        <div class="col-5">#{msg.admin__license_functions_added}</div>
-                                        <div class="col-1"></div>
-                                        <div class="col-5">#{msg.admin__license_functions_available}</div>
+                                        <div class="col-5 mb-3">#{msg.admin__license_functions_added}</div>
+                                        <div class="col-1 mb-3"></div>
+                                        <div class="col-5 mb-3">#{msg.admin__license_functions_available}</div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                             </button>
                                         </div>
-                                    </div>
-                                    <div class="form-group form-row">
                                         <div class="col-5 badge-hover">
                                             <ui:repeat var="priv" value="#{adminBean.currentLicenseType.getSortedPrivileges(adminBean.currentLicenseType.privilegesCopy)}">
                                                 <h:commandLink styleClass="admin__license-action" action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
@@ -116,11 +114,11 @@
                                                 </h:commandLink>
                                             </ui:repeat>
                                         </div>
-                                    </div>
-
-                                    <div class="admin__license-functions-help">
-                                        <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
-                                    </div>
+	                                    <div class="col-12 admin__license-functions-help">
+	                                        <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
+	                                    </div>
+									</div>
+                                    
                                 </div>
                             </div>
 

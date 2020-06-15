@@ -425,6 +425,7 @@
 		flex: 0 0 80px;
 		img {
 			max-width: 100%;
+			max-height: 80px;
 		}
 	}
 	&__table-data {
@@ -435,7 +436,15 @@
 	}
 	&__table-name {
 		font-size: 1.8rem;
-	}	
+		.badge {
+			margin-left:10px;
+			background-color:#ffc107;
+			color:#212529;
+			border-radius:5px;
+			font-size:1.2rem;
+			vertical-align:middle;
+		}
+	}
 	&__table-action-link {
 		opacity: 0;
 		font-size: 1.4rem;
@@ -530,11 +539,6 @@
 			text-decoration: none;
 		}
 	}
-    &__license-functions {
-        .form-row {
-            margin-bottom: 2rem;
-        }
-    }
 	&__license-unconfigured-entry {
 		transition: background 0.2s ease;
 		padding: 0.4rem 0;
@@ -737,10 +741,8 @@
 	margin-bottom: 0;
 }
 
-
-
 /* TODO CLEANUP AND INTEGRATE, BEM, BOOTSTRAP */
-
+/* 
 .input_form {
 	background: white;
 	display: grid;
@@ -852,7 +854,7 @@
 			display: none;
 		}
 	}
-}
+}*/
 
 /* VISUALLY CONNECTED RADIO BUTTONS */
 .connected-top {

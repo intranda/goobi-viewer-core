@@ -77,10 +77,12 @@
                                 </div>
 
                                 <!-- TRANSLATIONS COL -->
-                                <div class="col-2 d-flex">
-                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                        <div class="col-2 d-flex">#{locale.language}</div>
-                                    </c:forEach>
+                                <div class="col-2">
+	                                <div class="row">
+	                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
+	                                        <div class="col-2 d-flex">#{locale.language}</div>
+	                                    </c:forEach>
+	                                </div>
                                 </div>
                             </div>
 
@@ -90,18 +92,20 @@
                                 <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
                                     <div class="col-6 d-flex">
                                         <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
-                                            <img class="admin__table-img" alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
+                                        	<div class="admin__table-img align-self-center">
+                                            	<img alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
+                                            </div>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{page.validityStatus != 'VALID'}">
-                                            <img class="admin__table-img" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
+                                            <img class="admin__table-img align-self-center" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
                                         </ui:fragment>
 
                                         <div class="admin__table-data">
                                             <span class="admin__table-name">
                                                 #{page.title}
 												<ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                                    <!-- TODO INLINE CSS AND MESSAGE -->
-                                                    <span class="badge badge-warning" style="margin-left:10px;background-color:#ffc107;color:#212529;border-radius:5px;font-size:1.2rem;vertical-align:middle;" data-toggle="tooltip" data-placement="top" data-original-title="Diese Seite ist auf eine statische Seite gemappt.">
+                                                    <!-- TODO MESSAGE KEY -->
+                                                    <span class="badge badge-warning" data-toggle="tooltip" data-placement="top" data-original-title="Diese Seite ist auf eine statische Seite gemappt.">
                                                         <i class="fa fa-cogs" aria-hidden="true"></i>
                                                     </span>
                                                 </ui:fragment>
@@ -127,7 +131,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex align-items-center">
+                                    <div class="col-2 d-flex align-items-center align-content-center flex-wrap">
                                         <ui:repeat value="#{page.categories}" var="category">
                                             <div class="badge badge-violet">#{category.name}</div>
                                         </ui:repeat>
@@ -137,20 +141,22 @@
                                             <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
                                         </h:outputText>
                                     </div>
-                                    <div class="col-2 d-flex align-items-center">
-                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                            <div class="col-2 d-flex">
-                                                <!-- LANGUAGE COMPLETE -->
-                                                <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
-                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                                                </ui:fragment>
-
-                                                <!-- LANGUAGE INCOMPLETE -->
-                                                <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
-                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
-                                                </ui:fragment>
-                                            </div>
-                                        </c:forEach>
+                                    <div class="col-2 d-flex flex-column justify-content-center">
+	                                    <div class="row">
+	                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
+	                                            <div class="col-2">
+	                                                <!-- LANGUAGE COMPLETE -->
+	                                                <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
+	                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
+	                                                </ui:fragment>
+	
+	                                                <!-- LANGUAGE INCOMPLETE -->
+	                                                <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
+	                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
+	                                                </ui:fragment>
+	                                            </div>
+	                                        </c:forEach>
+	                                    </div>
                                     </div>
                                 </div>
                             </ui:repeat>

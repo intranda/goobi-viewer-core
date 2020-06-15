@@ -455,16 +455,14 @@
                                         <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
                                             <div class="admin__license-functions admin__license-functions-added">
                                                 <div class="form-group form-row">
-                                                    <div class="col-5">#{msg.admin__license_functions_added}</div>
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5">#{msg.admin__license_functions_available}</div>
+                                                    <div class="col-5 mb-3">#{msg.admin__license_functions_added}</div>
+                                                    <div class="col-1 mb-3"></div>
+                                                    <div class="col-5 mb-3">#{msg.admin__license_functions_available}</div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                         </button>
                                                     </div>
-                                                </div>
-                                                <div class="form-group form-row">
                                                     <!-- Privileges already added to this license -->
                                                     <div class="col-5 badge-hover">
                                                         <!-- Privileges inherited from the selected license type -->
@@ -495,17 +493,16 @@
                                                             </h:commandLink>
                                                         </ui:repeat>
                                                     </div>
-                                                </div>
-                                                <div class="admin__license-functions-help">
-                                                    <!-- We use the same inline help here at rights as for licenses because it is a long text and describes the same content -->
-                                                    <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
+	                                                <div class="col-12 admin__license-functions-help">
+	                                                    <!-- We use the same inline help here at rights as for licenses because it is a long text and describes the same content -->
+	                                                    <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
+	                                                </div>    
                                                 </div>
                                             </div>
                                         </ui:fragment>
                                     </div>
                                 </ui:fragment>
                             </h:panelGroup>
-
                             <div class="text-right">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn" immediate="true" />
                                 <h:commandLink action="#{adminBean.saveCurrentLicenseAction}" value="#{msg.save}" styleClass="btn btn--success" />
