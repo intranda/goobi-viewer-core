@@ -53,6 +53,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
      * @should compare correctly
      * @should use sort term if provided
      * @should use translated term if provided
+     * @should sort accented vowels after plain vowels
      */
     @Override
     public int compare(BrowseTerm o1, BrowseTerm o2) {

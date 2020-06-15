@@ -68,6 +68,17 @@ public class BrowseTermComparatorTest {
                 new BrowseTermComparator(Locale.ENGLISH).compare(new BrowseTerm("ger", null, new MultiLanguageMetadataValue(translations1)),
                         new BrowseTerm("eng", null, new MultiLanguageMetadataValue(translations2))));
     }
+    
+
+    /**
+     * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
+     * @verifies sort accented vowels after plain vowels
+     */
+    @Test
+    public void compare_shouldSortAccentedVowelsAfterPlainVowels() throws Exception {
+//        Assert.assertEquals(1, new BrowseTermComparator(null).compare(new BrowseTerm("Ávila", null, null), new BrowseTerm("Azcárate", null, null)));
+        Assert.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("arm", null, null), new BrowseTerm("árm", null, null)));
+    }
 
     /**
      * @see BrowseTermComparator#normalizeString(String,String)
