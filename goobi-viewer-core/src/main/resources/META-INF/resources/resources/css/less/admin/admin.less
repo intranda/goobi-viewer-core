@@ -259,6 +259,9 @@
 		padding: 2rem;
 		background-color: #fff;
 		border: 1px solid @middlegray;
+		.form-row:last-of-type {
+			margin-bottom: 0;
+		}
 		&.-danger {
 			border-top: 5px solid rgba(255, 2, 2, 0.3);
 		}
@@ -313,7 +316,7 @@
 			transition: opacity 0.2s ease;
 			a {
 				font-size: 1.4rem;
-				margin: 0 0.7rem;
+				margin: 0 0.9rem;
 				&:first-of-type {
 					margin-left: 0;
 				}
@@ -419,7 +422,7 @@
 	&__table-img {
 		padding: 1rem 0;
         margin-right: 2rem;
-		max-width: 80px;
+		flex: 0 0 80px;
 		img {
 			max-width: 100%;
 		}
@@ -444,7 +447,7 @@
 	}
 	
 	&__table-badges {
-		margin-right: 0.5rem;
+		overflow: hidden;
 	}
 	&__table-last-login {
 		font-size: 1.4rem;
@@ -630,6 +633,13 @@
 	&__form-label {}
 	&__form-input {
 		flex-grow: 1;
+		.ui-autocomplete {
+			border: 1px solid #ced4da;
+			background: white;
+			overflow-x: hidden;
+			overflow-y: scroll;
+			height: 400px;
+		}
 	}
 	&__form-help-icon {
 		display: flex;
