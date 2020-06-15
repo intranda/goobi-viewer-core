@@ -125,7 +125,8 @@
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
 
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="licenseType" value="#{adminBean.allLicenseTypes}" itemLabel="#{msg[licenseType.name]}" />
+                                             <f:selectItems var="item" value="#{adminBean.groupedLicenseTypeSelectItems}"
+                                                    itemLabel="#{msg[item.value.name]}" itemValue="#{item.value}"/>
                                              <f:ajax render="infoGroup functionsGroup" />
                                          </h:selectOneMenu>
                                      </div>
