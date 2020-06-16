@@ -955,12 +955,7 @@ public final class SearchHelper {
         query.append(" +(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
 
         Set<String> usedLicenseTypes = new HashSet<>();
-        for (LicenseType licenseType : DataManager.getInstance().getDao().getAllLicenseTypes()) {
-            // Static licenses are irrelevant
-            if (licenseType.isCore()) {
-                continue;
-            }
-
+        for (LicenseType licenseType : DataManager.getInstance().getDao().getRecordLicenseTypes()) {
             if (usedLicenseTypes.contains(licenseType.getName())) {
                 continue;
             }

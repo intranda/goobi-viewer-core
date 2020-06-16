@@ -639,13 +639,13 @@ public interface IDAO {
 
     /**
      * <p>
-     * getNonOpenAccessLicenseTypes.
+     * getRecordLicenseTypes.
      * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException;
+    public List<LicenseType> getRecordLicenseTypes() throws DAOException;
 
     /**
      * <p>

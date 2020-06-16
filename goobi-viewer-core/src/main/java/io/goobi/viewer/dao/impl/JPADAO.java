@@ -1173,12 +1173,11 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException {
+    public List<LicenseType> getRecordLicenseTypes() throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.openAccess = :openAccess AND lt.core = false");
-            q.setParameter("openAccess", false);
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.core = false");
             q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();

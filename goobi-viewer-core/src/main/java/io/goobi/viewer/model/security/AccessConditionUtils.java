@@ -194,12 +194,12 @@ public class AccessConditionUtils {
      * @param identifier Work identifier (PI).
      * @param fileName Image file name. For all files of a record, use "*".
      * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
      * @param privilegeName a {@link java.lang.String} object.
+     * @return true if access is granted; false otherwise.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
+    static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
         if (StringUtils.isEmpty(identifier)) {
@@ -239,7 +239,7 @@ public class AccessConditionUtils {
             Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
-                boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
+                boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), query[0]);
                 ret.put(pageFileName, access);
             }
@@ -254,13 +254,13 @@ public class AccessConditionUtils {
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param privilegeName a {@link java.lang.String} object.
+     * @return true if access is granted; false otherwise.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    protected static boolean checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
+    static boolean checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
@@ -276,7 +276,7 @@ public class AccessConditionUtils {
                 }
             }
             Map<String, Boolean> ret = new HashMap<>(page.getAccessConditions().size());
-            boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), page.getAccessConditions(),
+            boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), query);
             return access;
         } catch (PresentationException e) {
@@ -338,7 +338,7 @@ public class AccessConditionUtils {
                         user = userBean.getUser();
                     }
                 }
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
+                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -403,7 +403,7 @@ public class AccessConditionUtils {
                     }
 
                     long start = System.nanoTime();
-                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes();
+                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
                     for (SolrDocument doc : results) {
                         Set<String> requiredAccessConditions = new HashSet<>();
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -502,7 +502,7 @@ public class AccessConditionUtils {
                 }
 
                 Map<String, Boolean> lokalAccessMap =
-                        checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
+                        checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                                 IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, NetTools.getIpAddress(request), sbQuery.toString(), files);
                 accessMap.putAll(lokalAccessMap);
             } catch (PresentationException e) {
@@ -558,7 +558,7 @@ public class AccessConditionUtils {
                         user = userBean.getUser();
                     }
                 }
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
+                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -591,7 +591,7 @@ public class AccessConditionUtils {
                 user = userBean.getUser();
             }
         }
-        return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions, privilegeName, user,
+        return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), query);
     }
 
@@ -775,20 +775,18 @@ public class AccessConditionUtils {
      * @param privilegeName The particular privilege to check.
      * @param user Logged in user.
      * @param query Solr query describing the resource in question.
-     * @should return true if required access conditions empty
-     * @should return true if required access conditions contain only open access
-     * @should return true if all license types allow privilege by default
-     * @should return false if not all license types allow privilege by default
-     * @should return true if ip range allows access
-     * @should not return true if no ip range matches
-     *
-     *         TODO user license checks
      * @param remoteAddress a {@link java.lang.String} object.
      * @param files a {@link java.util.List} object.
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if required access conditions empty
+     * @should return true if required access conditions contain only open access
+     * @should return true if all license types allow privilege by default
+     * @should return false if not all license types allow privilege by default
+     * @should return true if ip range allows access
+     * @should not return true if no ip range matches
      */
     static Map<String, Boolean> checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, String query, List<Path> files)
@@ -840,8 +838,9 @@ public class AccessConditionUtils {
             boolean licenseTypeAllowsPriv = true;
             // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
             for (LicenseType licenseType : relevantLicenseTypes) {
+                logger.trace("relevant license type: " + licenseType.getName());
                 requiredAccessConditions.add(licenseType.getName());
-                if (!licenseType.getPrivileges().contains(privilegeName)) {
+                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()) {
                     logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
                     licenseTypeAllowsPriv = false;
                 }
@@ -933,7 +932,7 @@ public class AccessConditionUtils {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }
 
-        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
+//         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace(licenseType.getName());
@@ -962,7 +961,6 @@ public class AccessConditionUtils {
 
             String filenameConditions = licenseType.getFilenameConditions();
             if (StringUtils.isNotBlank(filenameConditions)) {
-
                 for (String path : accessMap.keySet()) {
                     if (StringUtils.isNotBlank(path)) {
                         List<LicenseType> types = ret.get(path);
