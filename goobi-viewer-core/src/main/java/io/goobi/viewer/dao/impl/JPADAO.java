@@ -1170,7 +1170,9 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @should only return non open access license types
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<LicenseType> getRecordLicenseTypes() throws DAOException {

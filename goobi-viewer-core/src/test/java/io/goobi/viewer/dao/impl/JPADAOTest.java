@@ -914,15 +914,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getOpenAccessLicenseTypes()
+     * @see JPADAO#getRecordLicenseTypes()
      * @verifies only return non open access license types
      */
     @Test
-    public void getOpenAccessLicenseTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
+    public void getRecordTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
         List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
-        Assert.assertEquals(4, licenseTypes.size());
+        Assert.assertEquals(5, licenseTypes.size());
         Assert.assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
-        Assert.assertEquals(Long.valueOf(3), licenseTypes.get(1).getId());
+        Assert.assertEquals(Long.valueOf(6), licenseTypes.get(4).getId());
     }
 
     @Test
