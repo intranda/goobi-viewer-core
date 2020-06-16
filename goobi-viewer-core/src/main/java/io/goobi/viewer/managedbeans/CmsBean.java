@@ -2114,7 +2114,7 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      * @should return pages in specified order
      */
-    private static List<CMSStaticPage> createStaticPageList() throws DAOException {
+    static List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
