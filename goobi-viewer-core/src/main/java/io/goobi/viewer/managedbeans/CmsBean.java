@@ -2110,21 +2110,26 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * @return
+     * @return List of static pages in the order specified in the PageType enum
      * @throws DAOException
+     * @should return pages in specified order
      */
     private static List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
+        
+        List<CMSStaticPage> ret = new ArrayList<>(pageTypesForCMS.size());
         for (PageType pageType : pageTypesForCMS) {
             CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
-            if (!staticPages.contains(newPage)) {
-                staticPages.add(newPage);
+            if (staticPages.contains(newPage)) {
+                ret.add(staticPages.get(staticPages.indexOf(newPage)));
+            } else {
+                ret.add(newPage);
             }
         }
 
-        return staticPages;
+        return ret;
     }
 
     /**

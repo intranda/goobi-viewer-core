@@ -43,15 +43,13 @@ public enum PageType {
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
-    search("search", PageTypeHandling.cms),
     searchlist("searchlist"),
-    advancedSearch("searchadvanced", PageTypeHandling.cms),
     calendarsearch("searchcalendar"),
     term("term"),
-    browse("browse", PageTypeHandling.cms),
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
+    user("user"),
     //admin
     admin("admin"),
     adminUsers("admin/users"),
@@ -90,19 +88,23 @@ public enum PageType {
     adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations"),
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
-    //crowdsourcing/annotation
-    crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
-    crowsourcingAnnotation("campaigns/.../annotate"),
-    crowsourcingReview("campaigns/.../review"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
+    
+    // The order of page types handled by CMS here determines the listing order of static pages
     index("index", PageTypeHandling.cms),
-    bookmarks("bookmarks", PageTypeHandling.cms),
-    user("user"),
+    search("search", PageTypeHandling.cms),
+    advancedSearch("searchadvanced", PageTypeHandling.cms),
+    browse("browse", PageTypeHandling.cms),
     privacy("privacy", PageTypeHandling.cms),
     feedback("feedback", PageTypeHandling.cms),
+    crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
+    bookmarks("bookmarks", PageTypeHandling.cms),
+    crowsourcingAnnotation("campaigns/.../annotate"),
+    crowsourcingReview("campaigns/.../review"),
+    
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
