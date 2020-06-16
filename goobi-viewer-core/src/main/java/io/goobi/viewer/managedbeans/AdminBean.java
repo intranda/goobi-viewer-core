@@ -51,6 +51,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
@@ -310,8 +311,12 @@ public class AdminBean implements Serializable {
 
         logger.debug("Deleting user: {}", user.getDisplayName());
         if (deleteContributions) {
+            // Delete all public content created by this user
+
             // Delete owned user groups
             //            UserTools.deleteUserGroupOwnedByUser(user);
+
+            // Prevent deletion if user owns user groups
             if (!user.getUserGroupOwnerships().isEmpty()) {
                 Messages.error("admin__error_delete_user_group_ownerships");
                 return "";
@@ -332,6 +337,33 @@ public class AdminBean implements Serializable {
                     logger.debug("Deleted {} user contribution(s) via the '{}' module.", count, module.getName());
                 }
             }
+        } else if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress())) {
+            // Move all public content to an anonymous user
+            User anon = DataManager.getInstance().getDao().getUserByEmail("viewer@intranda.com");
+            if (anon != null) {
+
+                // TODO Move comments
+
+                // TODO Move campaign statistics
+
+                // Move module contributions
+                for (IModule module : DataManager.getInstance().getModules()) {
+                    int count = module.moveUserContributions(user, anon);
+                    if (count > 0) {
+                        logger.debug("Anonymized {} user contribution(s) via the '{}' module.", count, module.getName());
+                    }
+                }
+
+            } else {
+                logger.error("Anonymous user could not be found");
+                Messages.error("deleteFailure");
+                return "";
+            }
+
+        } else {
+            logger.error("Anonymous user e-mail address not configured.");
+            Messages.error("deleteFailure");
+            return "";
         }
 
         // Finally, delete user (and any user-created data that's not publicly visible)

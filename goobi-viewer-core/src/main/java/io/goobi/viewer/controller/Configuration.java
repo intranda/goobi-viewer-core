@@ -1946,6 +1946,18 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getAnonymousUserEmailAddress.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAnonymousUserEmailAddress() {
+        return getLocalString("user.anonymousUserEmailAddress");
+    }
+
+    /**
+     * <p>
      * isDisplayCollectionBrowsing.
      * </p>
      *

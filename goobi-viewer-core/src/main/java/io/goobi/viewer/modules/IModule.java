@@ -150,6 +150,15 @@ public interface IModule {
     public int deleteUserContributions(User user);
 
     /**
+     * Moves all content created by the given user to a different user.
+     * 
+     * @param user Source user
+     * @param toUser Destination user
+     * @return
+     */
+    public int moveUserContributions(User user, User toUser);
+
+    /**
      * <p>
      * getURLBuilder.
      * </p>

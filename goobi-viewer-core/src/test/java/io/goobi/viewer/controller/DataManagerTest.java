@@ -158,6 +158,14 @@ public class DataManagerTest {
             public int deleteUserContributions(User user) {
                 return 0;
             }
+
+            /* (non-Javadoc)
+             * @see io.goobi.viewer.modules.IModule#moveUserContributions(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
+             */
+            @Override
+            public int moveUserContributions(User user, User toUser) {
+                return 0;
+            }
         }
         Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
         Assert.assertFalse(DataManager.getInstance().registerModule(new TestModule()));

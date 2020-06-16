@@ -146,6 +146,10 @@
 		<smtpSenderName>Goobi viewer</smtpSenderName>
 		<smtpSecurity>SSL</smtpSecurity>
 		<feedbackEmailAddress>viewer@intranda.com</feedbackEmailAddress>
+		
+		<!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
+		    It will as an anonymous owner of user-created date in case the original user is deleted and their public data is kept. -->
+		<anonymousUserEmailAddress></anonymousUserEmailAddress>
 	</user>
 
 	<performance>
