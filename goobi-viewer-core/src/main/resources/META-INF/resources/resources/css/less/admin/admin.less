@@ -302,7 +302,7 @@
 		background: @white;
 		padding: 2rem;
 		padding-bottom: 3.5rem;
-		margin-bottom: 2rem;
+		margin-bottom: 2.25rem;
 		transition: background 0.2s ease;
 		border: 1px solid @middlegray;
 		position: relative;
@@ -313,6 +313,9 @@
 				opacity: 1.0;
 			}
 		}
+		&.-no-actions {
+			padding-bottom: 2em;
+		}
 		&.-w33 {
 			flex: 0 0 calc(33.3333% - 1.5rem);
 			width: calc(33.3333% - 1.5rem);
@@ -322,6 +325,17 @@
 			flex: 0 0 calc(50% - 1rem);
 			width: calc(50% - 1rem);
 			max-width: calc(50% - 1rem);
+		}
+		&.-w66 {
+			flex: 0 0 calc(66.6666% - 0.75rem);
+			width: calc(66.6666% - 0.75rem);
+			max-width: calc(66.6666% - 0.75rem);
+		}
+		&.-danger {
+			border-top: 5px solid rgba(255, 2, 2, 0.3);
+		}
+		&.-warning {
+			border-top: 5px solid rgba(243, 208, 70, 0.85);
 		}
 		&-actions {
 			opacity: 0.0;
@@ -410,6 +424,10 @@
 		padding: 0 2rem 0rem 2rem;
 		border: 1px solid @middlegray;
         margin-bottom: 2rem;
+        &.-slim {
+        	border: none;
+        	padding: 0;
+        }
 	}
 	&__table-title {
 		margin-bottom: 0rem;
@@ -672,6 +690,13 @@
 			display: inline-block;
 		}
 	}
+	&__dashboard-user-icon {
+		position: absolute;
+		max-width: 100%;
+		top: 0;
+		padding: 1rem;
+		right: 15px;
+	}
 	// fancy radio switch selection for CMS rights management
 	&__radio-switch {
 	    position: relative;
@@ -761,7 +786,7 @@
 }
 
 /* TODO CLEANUP AND INTEGRATE, BEM, BOOTSTRAP */
-/* 
+
 .input_form {
 	background: white;
 	display: grid;
@@ -873,7 +898,7 @@
 			display: none;
 		}
 	}
-}*/
+}
 
 /* VISUALLY CONNECTED RADIO BUTTONS */
 .connected-top {
