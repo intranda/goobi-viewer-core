@@ -57,7 +57,7 @@ public enum PageType {
     adminUserNew("admin/users/new"),
     adminUserGroups("admin/groups"),
     adminUserGroup("admin/groups"),
-    adminUserGroupNew("/admin/groups/new"),
+    adminUserGroupNew("admin/groups/new"),
     adminIpRanges("admin/ipranges"),
     adminIpRange("admin/ipranges"),
     adminIpRangeNew("admin/ipranges/new"),
