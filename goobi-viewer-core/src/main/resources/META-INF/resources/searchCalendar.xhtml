@@ -38,37 +38,34 @@
 						<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
 							<!-- SEARCH CALENDAR INPUT -->
 							<div class="search-calendar__input">
-								<div class="form-horizontal">
-									<div class="form-group">
-										<label for="selectyear" class="col-sm-4 control-label">#{msg.selectYear}</label>
-										<div class="col-sm-8">
-											<div class="custom-control custom-control--select">
-												<h:selectOneMenu 
-													id="selectyear" 
-													styleClass="form-control"
-													value="#{calendarBean.selectYear}" 
-													immediate="true"
-													onchange="submit();">
-													<f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
-													<f:selectItems 
-														var="year"
-														itemLabel="#{year.name}, #{msg.currentHitsForYear}: #{year.hits}"
-														itemValue="#{year.name}"
-														value="#{calendarBean.allActiveYears}" />
-												</h:selectOneMenu>
-											</div>
+								<div class="form-group form-row">
+									<label for="selectyear" class="col-12 col-md-4 align-self-center font-weight-bold control-label mb-0">#{msg.selectYear}</label>
+									<div class="col-12 col-md-8">
+										<div class="custom-control custom-control--select">
+											<h:selectOneMenu 
+												id="selectyear" 
+												styleClass="form-control"
+												value="#{calendarBean.selectYear}" 
+												immediate="true"
+												onchange="submit();">
+												<f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
+												<f:selectItems 
+													var="year"
+													itemLabel="#{year.name}, #{msg.currentHitsForYear}: #{year.hits}"
+													itemValue="#{year.name}"
+													value="#{calendarBean.allActiveYears}" />
+											</h:selectOneMenu>
 										</div>
 									</div>
 								</div>
 							</div>
-
 
 							<!-- SEARCH CALENDAR MONTHS -->
 							<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
 								<div class="search-calendar__months">
 									<div class="row">
 										<ui:repeat var="month" value="#{calendarBean.monthList}">
-											<div class="col-xs-12 col-sm-6 col-md-4">
+											<div class="col-12 col-sm-6 col-md-4">
 												<div class="search-calendar__month">
 													<!-- MONTH TITLE -->
 													<div class="search-calendar__month-title">
@@ -98,6 +95,7 @@
 																			styleClass="search-calendar__month-day-link"
 																			tabindex="0" 
 																			role="button">
+																			<f:passThroughAttribute name="data-placement" value="bottom" />
 																			<f:passThroughAttribute name="data-toggle" value="popover" />
 																			<f:passThroughAttribute name="data-content" value="#{day.hits} #{msg.currentHitsForDay}" />
 																		</h:commandLink>
