@@ -768,6 +768,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAnonymousUserEmailAddress()
+     * @verifies return correct value
+     */
+    @Test
+    public void getAnonymousUserEmailAddress_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("we.are@anonymous.lulz", DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
+
+    /**
      * @see Configuration#getSolrUrl()
      * @verifies return correct value
      */

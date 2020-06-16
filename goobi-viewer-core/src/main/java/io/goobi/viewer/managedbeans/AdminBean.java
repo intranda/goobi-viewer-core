@@ -309,18 +309,15 @@ public class AdminBean implements Serializable {
             return "";
         }
 
+        // Prevent deletion if user owns user groups
+        if (!user.getUserGroupOwnerships().isEmpty()) {
+            Messages.error("admin__error_delete_user_group_ownerships");
+            return "";
+        }
+
         logger.debug("Deleting user: {}", user.getDisplayName());
         if (deleteContributions) {
             // Delete all public content created by this user
-
-            // Delete owned user groups
-            //            UserTools.deleteUserGroupOwnedByUser(user);
-
-            // Prevent deletion if user owns user groups
-            if (!user.getUserGroupOwnerships().isEmpty()) {
-                Messages.error("admin__error_delete_user_group_ownerships");
-                return "";
-            }
 
             // Delete comments
             int comments = DataManager.getInstance().getDao().deleteComments(null, user);
@@ -339,10 +336,12 @@ public class AdminBean implements Serializable {
             }
         } else if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress())) {
             // Move all public content to an anonymous user
-            User anon = DataManager.getInstance().getDao().getUserByEmail("viewer@intranda.com");
+            User anon = UserTools.checkAndCreateAnonymousUser();
             if (anon != null) {
 
                 // TODO Move comments
+                int comments = DataManager.getInstance().getDao().changeCommentsOwner(user, anon);
+                logger.debug("{} comment(s) of user {} anonymized.", comments, user.getId());
 
                 // TODO Move campaign statistics
 

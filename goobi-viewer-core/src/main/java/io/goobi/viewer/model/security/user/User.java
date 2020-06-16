@@ -189,11 +189,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         // the emptiness inside
     }
 
-    public User(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
+    /**
+     * 
+     * @param nickname
+     */
     public User(String nickname) {
         this.nickName = nickname;
     }
@@ -1171,9 +1170,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param passwordHash the passwordHash to set
+     * @return this
      */
-    public void setPasswordHash(String passwordHash) {
+    public User setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+        return this;
     }
 
     /**
@@ -1215,9 +1216,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param lastLogin the lastLogin to set
+     * @param this
      */
-    public void setLastLogin(Date lastLogin) {
+    public User setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
+        return this;
     }
 
     /**
@@ -1237,9 +1240,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param active the active to set
+     * @return this
      */
-    public void setActive(boolean active) {
+    public User setActive(boolean active) {
         this.active = active;
+        return this;
     }
 
     /**
@@ -1259,9 +1264,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param suspended the suspended to set
+     * @return this
      */
-    public void setSuspended(boolean suspended) {
+    public User setSuspended(boolean suspended) {
         this.suspended = suspended;
+        return this;
     }
 
     /**
@@ -1281,9 +1288,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param nickName the nickName to set
+     * @return this
      */
-    public void setNickName(String nickName) {
+    public User setNickName(String nickName) {
         this.nickName = nickName;
+        return this;
     }
 
     /**
@@ -1303,9 +1312,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param lastName the lastName to set
+     * @return this
      */
-    public void setLastName(String lastName) {
+    public User setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
 
     /**
@@ -1325,9 +1336,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param firstName the firstName to set
+     * @return this
      */
-    public void setFirstName(String firstName) {
+    public User setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
 
     /**
@@ -1358,10 +1371,12 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param email the email to set
+     * @return this
      */
-    public void setEmail(String email) {
+    public User setEmail(String email) {
         logger.trace("setEmail: {}", email);
         this.email = email;
+        return this;
     }
 
     /**
@@ -1392,9 +1407,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param comments the comments to set
+     * @return this
      */
-    public void setComments(String comments) {
+    public User setComments(String comments) {
         this.comments = comments;
+        return this;
     }
 
     /**
@@ -1414,9 +1431,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param score the score to set
+     * @return this
      */
-    public void setScore(long score) {
+    public User setScore(long score) {
         this.score = score;
+        return this;
     }
 
     /**
@@ -1436,9 +1455,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param useGravatar the useGravatar to set
+     * @return this
      */
-    public void setUseGravatar(boolean useGravatar) {
+    public User setUseGravatar(boolean useGravatar) {
         this.useGravatar = useGravatar;
+        return this;
     }
 
     /**
@@ -1530,9 +1551,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param superuser the superuser to set
+     * @return this
      */
-    public void setSuperuser(boolean superuser) {
+    public User setSuperuser(boolean superuser) {
         this.superuser = superuser;
+        return this;
     }
 
     /**

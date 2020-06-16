@@ -966,6 +966,16 @@ public interface IDAO {
      */
     public int deleteComments(String pi, User owner) throws DAOException;
 
+    /**
+     * Changes ownership of all comments from <code>fromUser</code> to <code>toUser</code>.
+     * 
+     * @param fromUser
+     * @param toUser
+     * @return
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public int changeCommentsOwner(User fromUser, User toUser) throws DAOException;
+
     // Search
 
     /**
