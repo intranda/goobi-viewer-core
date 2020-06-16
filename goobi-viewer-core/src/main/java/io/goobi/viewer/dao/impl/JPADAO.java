@@ -1729,6 +1729,26 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @see io.goobi.viewer.dao.IDAO#changeCommentsOwner(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
+     * @should update rows correctly
+     */
+    @Override
+    public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
+        if (fromUser == null || fromUser.getId() == null) {
+            throw new IllegalArgumentException("fromUser may not be null or not yet persisted");
+        }
+        if (toUser == null || toUser.getId() == null) {
+            throw new IllegalArgumentException("fromUser may not be null or not yet persisted");
+        }
+
+        preQuery();
+        return em.createQuery("UPDATE Comment o set o.owner = :newOwner WHERE o.owner = :oldOwner")
+                .setParameter("oldOwner", fromUser)
+                .setParameter("newOwner", toUser)
+                .executeUpdate();
+    }
+
+    /**
      * @see io.goobi.viewer.dao.IDAO#deleteComments(java.lang.String, io.goobi.viewer.model.security.user.User)
      * @should delete comments for pi correctly
      * @should delete comments for user correctly
@@ -2209,7 +2229,7 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
-        
+
         return true;
     }
 

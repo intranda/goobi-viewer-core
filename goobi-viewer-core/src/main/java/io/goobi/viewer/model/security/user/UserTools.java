@@ -17,11 +17,13 @@ package io.goobi.viewer.model.security.user;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 
@@ -132,5 +134,31 @@ public class UserTools {
         logger.debug("{} saved searches of user {} deleted.", count, owner.getId());
 
         return count;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public static User checkAndCreateAnonymousUser() throws DAOException {
+        String email = DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress();
+        if (!EmailValidator.validateEmailAddress(email)) {
+            logger.warn("'anonymousUserEmailAddress' not configured or contains an invalid address"
+                    + " - unable to keep anonymous contributions of deleted users.");
+            return null;
+        }
+
+        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        if (user == null) {
+            user = new User().setEmail(email).setSuperuser(false).setSuspended(true);
+            if (DataManager.getInstance().getDao().addUser(user)) {
+                logger.info("Added anonymous user '{}'.", email);
+            }
+        } else {
+            logger.trace("Anonymous '{}' already exists.", email);
+        }
+
+        return user;
     }
 }
