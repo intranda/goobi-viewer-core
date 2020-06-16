@@ -966,7 +966,7 @@ public final class SearchHelper {
             }
 
             // License type contains listing privilege
-            if (licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
                 query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
                 continue;
