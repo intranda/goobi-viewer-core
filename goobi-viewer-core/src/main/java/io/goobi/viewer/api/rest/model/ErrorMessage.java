@@ -33,6 +33,12 @@ public class ErrorMessage {
     private final String message;
     private final String stackTrace;
 
+    public ErrorMessage() {
+        status = 0;
+        message = null;
+        stackTrace = null;
+    }
+    
     /**
      * <p>
      * Constructor for ErrorMessage.

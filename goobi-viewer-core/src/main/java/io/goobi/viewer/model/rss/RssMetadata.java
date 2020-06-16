@@ -35,6 +35,12 @@ public class RssMetadata {
     private final String label;
     private final String value;
 
+    public RssMetadata() {
+        link = null;
+        label = null;
+        value = null;
+    }
+    
     /**
      * <p>
      * Constructor for RssMetadata.

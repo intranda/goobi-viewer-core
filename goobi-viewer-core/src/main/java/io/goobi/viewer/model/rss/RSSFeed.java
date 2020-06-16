@@ -741,7 +741,7 @@ public class RSSFeed {
             if(language == null) {
                 language = servletRequest.getLocale().getLanguage();
             }
-            query = createQuery(query, null, subtheme, servletRequest, true);
+            query = createQuery(query, null, subtheme, servletRequest, false);
             if(StringUtils.isNotBlank(query)) {
                 query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits());
             }
@@ -771,7 +771,7 @@ public class RSSFeed {
             if(language == null) {
                 language = servletRequest.getLocale().getLanguage();
             }
-            query = createQuery(query, null, subtheme, servletRequest, true);
+            query = createQuery(query, null, subtheme, servletRequest, false);
             if(StringUtils.isNotBlank(query)) {
                 query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits());
             }
