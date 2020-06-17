@@ -64,6 +64,3 @@ $( document ).ready(function() {
 		  else $('.admin__license-functions').fadeIn('fast');
 	});
 });
-
-
-
