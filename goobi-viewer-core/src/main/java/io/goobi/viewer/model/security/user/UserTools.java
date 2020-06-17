@@ -150,7 +150,11 @@ public class UserTools {
 
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         if (user == null) {
-            user = new User().setEmail(email).setNickName("Anonymous").setSuperuser(false).setSuspended(true);
+            user = new User();
+            user.setEmail(email);
+            user.setNickName("Anonymous");
+            user.setSuperuser(false);
+            user.setSuspended(true);
             if (DataManager.getInstance().getDao().addUser(user)) {
                 logger.info("Added anonymous user '{}'.", email);
             }
