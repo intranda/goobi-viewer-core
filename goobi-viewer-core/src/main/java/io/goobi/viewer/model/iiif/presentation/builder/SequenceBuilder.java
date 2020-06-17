@@ -53,6 +53,7 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -98,20 +99,8 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public SequenceBuilder(HttpServletRequest request) {
-        super(request);
-    }
-
-    /**
-     * <p>
-     * Constructor for SequenceBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public SequenceBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
+    public SequenceBuilder(IApiUrlManager apiUrlManager) {
+        super(apiUrlManager);
     }
 
     /**

@@ -38,6 +38,7 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
@@ -72,20 +73,8 @@ public class StructureBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public StructureBuilder(HttpServletRequest request) {
-        super(request);
-    }
-
-    /**
-     * <p>
-     * Constructor for StructureBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public StructureBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
+    public StructureBuilder(IApiUrlManager apiUrlManager) {
+        super(apiUrlManager);
     }
 
     /**

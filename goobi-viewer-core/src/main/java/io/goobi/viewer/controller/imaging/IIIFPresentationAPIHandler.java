@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -44,7 +45,7 @@ public class IIIFPresentationAPIHandler {
      * @throws java.net.URISyntaxException if any.
      */
     public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
-        this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getIIIFApiUrl())) {
+        this.builder = new AbstractBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getIIIFApiUrl())) {
         };
     }
 

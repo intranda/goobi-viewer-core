@@ -49,6 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -79,20 +80,8 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public ManifestBuilder(HttpServletRequest request) {
-        super(request);
-    }
-
-    /**
-     * <p>
-     * Constructor for ManifestBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public ManifestBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
+    public ManifestBuilder(IApiUrlManager apiUrlManager) {
+        super(apiUrlManager);
     }
 
     /**
@@ -213,7 +202,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
             /*VIEWER*/
             try {
-                LinkingContent viewerPage = new LinkingContent(new URI(getServletURI() + ele.getUrl()));
+                LinkingContent viewerPage = new LinkingContent(new URI(this.apiUrlManager.getApplicationUrl() + "/" + ele.getUrl()));
                 viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
                 manifest.addRendering(viewerPage);
             } catch (URISyntaxException e) {
@@ -229,7 +218,7 @@ public class ManifestBuilder extends AbstractBuilder {
                         .filter(page -> page.isPublished())
                         .forEach(page -> {
                             try {
-                                LinkingContent cmsPage = new LinkingContent(new URI(getServletURI() + page.getUrl()));
+                                LinkingContent cmsPage = new LinkingContent(new URI(this.apiUrlManager.getApplicationUrl() + "/" + page.getUrl()));
                                 //                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
                                 //                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
                                 //                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));

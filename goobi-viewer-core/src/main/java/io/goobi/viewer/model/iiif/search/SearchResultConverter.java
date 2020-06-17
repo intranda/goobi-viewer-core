@@ -59,6 +59,8 @@ import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -99,7 +101,7 @@ public class SearchResultConverter {
      * @param pageNo The page number of generated resources
      */
     public SearchResultConverter(URI requestURI, URI restApiURI, String pi, Integer pageNo) {
-        this.presentationBuilder = new AbstractBuilder(requestURI, restApiURI) {
+        this.presentationBuilder = new AbstractBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
         };
         this.pi = pi;
         this.pageNo = pageNo;
@@ -492,7 +494,7 @@ public class SearchResultConverter {
         Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
         Integer thumbPageNo = SolrSearchIndex.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
         String id = pi + "/" + (StringUtils.isNotBlank(logId) ? (logId + "/") : "") + metadataField;
-        OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, id));
+        OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(id));
         anno.setMotivation(Motivation.DESCRIBING);
         if (thumbPageNo != null) {
             anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));

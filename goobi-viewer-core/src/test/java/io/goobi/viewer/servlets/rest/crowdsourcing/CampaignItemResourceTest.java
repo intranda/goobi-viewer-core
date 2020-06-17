@@ -39,6 +39,7 @@ import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -75,7 +76,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         Assert.assertNotNull(item);
         Assert.assertEquals(campaign, item.getCampaign());
 
-        URI manifestUrl = new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()))
+        URI manifestUrl = new ManifestBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()))
                 .getManifestURI("PPN1234");
         Assert.assertEquals(manifestUrl, item.getSource());
     }
@@ -119,7 +120,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
             throws ContentNotFoundException, URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
         String pi = "PI_10";
         URI manifestUrl =
-                new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
+                new ManifestBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
 
         WebAnnotation anno = new WebAnnotation();

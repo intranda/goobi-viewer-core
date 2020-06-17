@@ -58,6 +58,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -601,7 +603,7 @@ public class ManifestResource extends AbstractResource {
 
     private StructureBuilder getStructureBuilder() {
         if (this.structureBuilder == null) {
-            this.structureBuilder = new StructureBuilder(this.servletRequest);
+            this.structureBuilder = new StructureBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return this.structureBuilder;
     }
@@ -615,7 +617,7 @@ public class ManifestResource extends AbstractResource {
      */
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
-            this.manifestBuilder = new ManifestBuilder(servletRequest);
+            this.manifestBuilder = new ManifestBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return manifestBuilder;
     }
@@ -629,7 +631,7 @@ public class ManifestResource extends AbstractResource {
      */
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
-            this.sequenceBuilder = new SequenceBuilder(servletRequest);
+            this.sequenceBuilder = new SequenceBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return sequenceBuilder;
     }
@@ -643,7 +645,7 @@ public class ManifestResource extends AbstractResource {
      */
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
-            this.layerBuilder = new LayerBuilder(servletRequest);
+            this.layerBuilder = new LayerBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         }
         return layerBuilder;
     }

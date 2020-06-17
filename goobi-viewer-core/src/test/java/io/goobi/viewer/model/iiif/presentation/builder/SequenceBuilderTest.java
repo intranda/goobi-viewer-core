@@ -37,6 +37,7 @@ import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -61,8 +62,8 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
-        ManifestBuilder manifestBuilder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-        SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
+        ManifestBuilder manifestBuilder = new ManifestBuilder(new ApiUrlManager("https://viewer.goobi.io/rest/"));
+        SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrlManager("https://viewer.goobi.io/rest/"));
 
         List<StructElement> docs = manifestBuilder.getDocumentWithChildren(PI);
         if (docs.isEmpty()) {

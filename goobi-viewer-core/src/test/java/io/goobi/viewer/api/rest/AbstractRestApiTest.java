@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.servlet.HttpServletRequestImpl;
 import org.glassfish.grizzly.servlet.HttpServletResponseImpl;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -50,6 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.servlets.rest.utils.SessionResource;
 
@@ -102,7 +104,17 @@ public abstract class AbstractRestApiTest extends JerseyTest {
 
     @Override
     protected DeploymentContext configureDeployment() {
-        ResourceConfig config = new io.goobi.viewer.api.rest.v1.Application();
+        ApiUrlManager apiUrlManager = new ApiUrlManager("");
+        AbstractBinder binder = new AbstractBinder() {
+            
+            @Override
+            protected void configure() {
+                bind(apiUrlManager).to(IApiUrlManager.class);
+                
+            }
+        };
+        
+        ResourceConfig config = new io.goobi.viewer.api.rest.v1.Application(binder);
         return ServletDeploymentContext.forServlet(new ServletContainer(config)).build();
     }
 

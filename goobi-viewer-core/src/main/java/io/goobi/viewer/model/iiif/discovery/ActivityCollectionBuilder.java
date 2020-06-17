@@ -37,6 +37,8 @@ import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
+import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -56,36 +58,15 @@ public class ActivityCollectionBuilder {
     private final static String[] SOLR_FIELDS = { SolrConstants.PI, SolrConstants.DATEUPDATED, SolrConstants.DATECREATED, SolrConstants.DATEDELETED };
     private final static String[] FACET_FIELDS = { SolrConstants.DATEUPDATED, SolrConstants.DATECREATED };
 
-    private final URI servletURI;
-    private final URI requestURI;
-    private final Optional<HttpServletRequest> request;
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
     private Date startDate = null;
+    private final IApiUrlManager apiUrlManager;
 
-    /**
-     * Constructs the builder from a {@link javax.servlet.http.HttpServletRequest}
-     *
-     * @param request The request to which to respond (for URI creation)
-     */
-    public ActivityCollectionBuilder(HttpServletRequest request) {
-        this.request = Optional.ofNullable(request);
-        this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-        this.requestURI = URI.create(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
+    public ActivityCollectionBuilder(ApiUrlManager apiUrlManager) {
+        this.apiUrlManager = apiUrlManager;
     }
-
-    /**
-     * Constructs the builder from specific URIs; used to testing
-     *
-     * @param servletUri The URI of the containing server
-     * @param requestURI The URI called by the request
-     */
-    public ActivityCollectionBuilder(URI servletUri, URI requestURI) {
-        this.request = Optional.empty();
-        this.servletURI = servletUri;
-        this.requestURI = requestURI;
-    }
-
+    
     /**
      * Creates a An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained
      * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
@@ -196,8 +177,8 @@ public class ActivityCollectionBuilder {
      * @return the URI for the collection request
      */
     public URI getCollectionURI() {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities");
-        return URI.create(sb.toString());
+        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_CHANGES);
+        return URI.create(urlString);
     }
 
     /**
@@ -207,8 +188,8 @@ public class ActivityCollectionBuilder {
      * @return the URI to request a specific collection page
      */
     public URI getPageURI(int no) {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities/").append(no);
-        return URI.create(sb.toString());
+        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_CHANGES_PAGE, Integer.toString(no));
+        return URI.create(urlString);
     }
 
     private int getLastPageNo() throws PresentationException, IndexUnreachableException {
@@ -254,27 +235,9 @@ public class ActivityCollectionBuilder {
 
     private IPresentationModelElement createObject(SolrDocument doc) {
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
-        URI uri = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
+        URI uri = URI.create(this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_MANIFEST, pi));
         Manifest manifest = new Manifest(uri);
         return manifest;
-    }
-
-    /**
-     * @return The requested url before any presentation specific parts. Generally the rest api url. Includes a trailing slash
-     */
-    private URI getBaseUrl() {
-
-        String request = requestURI.toString();
-        if (!request.contains("/iiif/")) {
-            return requestURI;
-        }
-        request = request.substring(0, request.indexOf("/iiif/") + 1);
-        try {
-            return new URI(request);
-        } catch (URISyntaxException e) {
-            return requestURI;
-        }
-
     }
 
     private int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {

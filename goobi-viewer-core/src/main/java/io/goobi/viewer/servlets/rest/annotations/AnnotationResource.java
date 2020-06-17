@@ -42,6 +42,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -97,8 +98,7 @@ public class AnnotationResource {
             }
             return anno;
         } else { 
-            AbstractBuilder builder = new AbstractBuilder(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()),
-                    URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
+            AbstractBuilder builder = new AbstractBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl())) {};
             IAnnotation anno = builder.getCrowdsourcingAnnotation(id.toString());
             if(anno != null) {                
                 return anno;

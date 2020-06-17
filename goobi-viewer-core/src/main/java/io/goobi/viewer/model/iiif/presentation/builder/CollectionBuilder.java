@@ -42,6 +42,7 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -88,21 +89,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public CollectionBuilder(HttpServletRequest request) throws URISyntaxException {
-        super(request);
+    public CollectionBuilder(IApiUrlManager apiUrlManager) throws URISyntaxException {
+        super(apiUrlManager);
     }
 
-    /**
-     * <p>
-     * Constructor for CollectionBuilder.
-     * </p>
-     *
-     * @param servletUri a {@link java.net.URI} object.
-     * @param requestURI a {@link java.net.URI} object.
-     */
-    public CollectionBuilder(URI servletUri, URI requestURI) {
-        super(servletUri, requestURI);
-    }
 
     /**
      * <p>
@@ -289,7 +279,7 @@ public class CollectionBuilder extends AbstractBuilder {
 
 
                 LinkingContent rss =
-                        new LinkingContent(absolutize(baseElement.getRssUrl(getRequest().orElse(null))), new SimpleMetadataValue(RSS_FEED_LABEL));
+                        new LinkingContent(absolutize(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.addRelated(rss);
 
                 //              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
@@ -312,7 +302,7 @@ public class CollectionBuilder extends AbstractBuilder {
         }
         return collection;
     }
-    
+
     /**
      * Add a taglist service to the collection and all subcollections. 
      * The taglist service provides a list of

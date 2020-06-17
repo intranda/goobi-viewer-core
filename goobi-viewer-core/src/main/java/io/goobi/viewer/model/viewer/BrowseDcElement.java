@@ -367,19 +367,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * <p>
-     * getRssUrl.
-     * </p>
-     *
-     * @param request HttpServletRequest
-     * @return RSS feed URL for this collection
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getRssUrl(HttpServletRequest request) throws ViewerConfigurationException {
-        return buildRssUrl();
-    }
-
-    /**
      * 
      * @param servletPath
      * @return RSS feed URL for this collection

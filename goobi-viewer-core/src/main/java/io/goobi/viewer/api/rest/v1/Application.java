@@ -17,10 +17,15 @@ package io.goobi.viewer.api.rest.v1;
 
 import javax.ws.rs.ApplicationPath;
 
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.sun.faces.config.rules.ApplicationRule;
+
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * <p>
@@ -38,7 +43,31 @@ public class Application extends ResourceConfig {
      */
     public Application() {
         super();
+        AbstractBinder binder = new AbstractBinder() {
+            
+            @Override
+            protected void configure() {
+                String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+                apiUrl = apiUrl.replace("/rest", "/api/v1");
+                bind(new ApiUrlManager(apiUrl)).to(IApiUrlManager.class);
+            }
+        };
+        this.init(binder);
+    }
+
+    /**
+     * Constructor with custom injection binder for tests
+     * 
+     * @param binder
+     */
+    public Application(AbstractBinder binder) {
+        super();
+        this.init(binder);
+    }
+    
+    private void init(AbstractBinder injectionBinder) {
         register(MultiPartFeature.class);
+        register(injectionBinder);
         packages(true, "io.goobi.viewer.api.rest.v1");
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
