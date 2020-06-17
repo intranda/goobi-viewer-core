@@ -101,7 +101,7 @@ var cmsJS = ( function( cms ) {
             rssItemRow = $( '<div />' ).addClass( 'row' );
             
             // left
-            rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
+            rssItemColLeft = $( '<div />' ).addClass( 'col-3' );
             rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
             rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
             rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
@@ -111,7 +111,7 @@ var cmsJS = ( function( cms ) {
             rssItemColLeft.append( rssItemDocTypeH3 ).append( rssItemImageWrapper );
             
             // right
-            rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
+            rssItemColRight = $( '<div />' ).addClass( 'col-9' );
             
             // create item title
             rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
