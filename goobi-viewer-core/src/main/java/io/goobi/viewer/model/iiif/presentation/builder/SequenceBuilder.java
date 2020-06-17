@@ -150,7 +150,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
             }
-            if(canvas != null) {                
+            if (canvas != null) {
                 sequence.addCanvas(canvas);
             }
         }
@@ -162,7 +162,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        if(sequence.getCanvases() != null) {            
+        if (sequence.getCanvases() != null) {
             addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
         }
 
@@ -234,7 +234,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
                 annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
                 if (populate) {
-                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
+                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
                     for (Comment comment : comments) {
                         OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);

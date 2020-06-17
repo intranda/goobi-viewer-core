@@ -1516,7 +1516,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Comment> getComments() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, true);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
         Collections.sort(comments);
         //        Collections.reverse(comments);
         return comments;

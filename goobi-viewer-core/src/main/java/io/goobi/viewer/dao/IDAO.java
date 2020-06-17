@@ -895,11 +895,10 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
-     * @param topLevelOnly a boolean.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getCommentsForPage(String pi, int page, boolean topLevelOnly) throws DAOException;
+    public List<Comment> getCommentsForPage(String pi, int page) throws DAOException;
 
     /**
      * <p>
@@ -907,11 +906,10 @@ public interface IDAO {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @param topLevelOnly a boolean.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException;
+    public List<Comment> getCommentsForWork(String pi) throws DAOException;
 
     /**
      * <p>

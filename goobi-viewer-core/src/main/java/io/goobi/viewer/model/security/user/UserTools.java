@@ -17,7 +17,6 @@ package io.goobi.viewer.model.security.user;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,12 +150,12 @@ public class UserTools {
 
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         if (user == null) {
-            user = new User().setEmail(email).setSuperuser(false).setSuspended(true);
+            user = new User().setEmail(email).setNickName("Anonymous").setSuperuser(false).setSuspended(true);
             if (DataManager.getInstance().getDao().addUser(user)) {
                 logger.info("Added anonymous user '{}'.", email);
             }
         } else {
-            logger.trace("Anonymous '{}' already exists.", email);
+            logger.trace("Anonymous user '{}' already exists.", email);
         }
 
         return user;

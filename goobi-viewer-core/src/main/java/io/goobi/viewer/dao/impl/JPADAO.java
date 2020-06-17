@@ -1623,13 +1623,10 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Comment> getCommentsForPage(String pi, int page, boolean topLevelOnly) throws DAOException {
+    public List<Comment> getCommentsForPage(String pi, int page) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi AND o.page = :page");
-        //        if (topLevelOnly) {
-        //            sbQuery.append(" AND o.parent IS NULL");
-        //        }
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
@@ -1641,13 +1638,10 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException {
+    public List<Comment> getCommentsForWork(String pi) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(80);
         sbQuery.append("SELECT o FROM Comment o WHERE o.pi = :pi");
-        if (topLevelOnly) {
-            sbQuery.append(" AND o.parent IS NULL");
-        }
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setFlushMode(FlushModeType.COMMIT);
@@ -1742,10 +1736,18 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-        return em.createQuery("UPDATE Comment o set o.owner = :newOwner WHERE o.owner = :oldOwner")
-                .setParameter("oldOwner", fromUser)
-                .setParameter("newOwner", toUser)
-                .executeUpdate();
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            emLocal.getTransaction().begin();
+            int rows = emLocal.createQuery("UPDATE Comment o set o.owner = :newOwner WHERE o.owner = :oldOwner")
+                    .setParameter("oldOwner", fromUser)
+                    .setParameter("newOwner", toUser)
+                    .executeUpdate();
+            emLocal.getTransaction().commit();
+            return rows;
+        } finally {
+            emLocal.close();
+        }
     }
 
     /**
@@ -1820,21 +1822,21 @@ public class JPADAO implements IDAO {
             sbQuery.append("o.owner = :owner");
         }
 
-        EntityManager localEm = factory.createEntityManager();
+        EntityManager emLocal = factory.createEntityManager();
         try {
-            Query q = localEm.createQuery(sbQuery.toString());
+            Query q = emLocal.createQuery(sbQuery.toString());
             if (StringUtils.isNotEmpty(pi)) {
                 q.setParameter("pi", pi);
             }
             if (owner != null) {
                 q.setParameter("owner", owner);
             }
-            localEm.getTransaction().begin();
+            emLocal.getTransaction().begin();
             int rows = q.executeUpdate();
-            localEm.getTransaction().commit();
+            emLocal.getTransaction().commit();
             return rows;
         } finally {
-            localEm.close();
+            emLocal.close();
         }
     }
 

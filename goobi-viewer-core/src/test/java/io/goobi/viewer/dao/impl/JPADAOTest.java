@@ -708,7 +708,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getCommentsForPageTest() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI 1", 1, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI 1", 1);
         Assert.assertEquals(3, comments.size());
     }
 
@@ -814,6 +814,27 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Assert.assertEquals(0, DataManager.getInstance().getDao().deleteComments(null, null));
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+    }
+
+    /**
+     * @see JPADAO#changeCommentsOwner(User,User)
+     * @verifies update rows correctly
+     */
+    @Test
+    public void changeCommentsOwner_shouldUpdateRowsCorrectly() throws Exception {
+        User oldOwner = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(oldOwner);
+        User newOwner = DataManager.getInstance().getDao().getUser(3);
+        Assert.assertNotNull(newOwner);
+
+        Assert.assertEquals(3, DataManager.getInstance().getDao().changeCommentsOwner(oldOwner, newOwner));
+
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork("PI 1");
+        Assert.assertEquals(4, comments.size());
+        Assert.assertEquals(newOwner, comments.get(0).getOwner());
+        Assert.assertNotEquals(newOwner, comments.get(1).getOwner());
+        Assert.assertEquals(newOwner, comments.get(2).getOwner());
+        Assert.assertEquals(newOwner, comments.get(3).getOwner());
     }
 
     // Search
@@ -2526,8 +2547,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPageTemplateEnabled_shouldReturnCorrectValue() throws Exception {
-       CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
-       Assert.assertNotNull(o);
-       Assert.assertFalse(o.isEnabled());
+        CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
+        Assert.assertNotNull(o);
+        Assert.assertFalse(o.isEnabled());
     }
 }

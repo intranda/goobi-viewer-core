@@ -178,7 +178,7 @@ public class WebAnnotationResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page);
 
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi + "/" + page);
 
@@ -219,7 +219,7 @@ public class WebAnnotationResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi);
 
