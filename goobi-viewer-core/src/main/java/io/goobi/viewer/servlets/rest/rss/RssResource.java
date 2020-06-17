@@ -330,9 +330,10 @@ public class RssResource {
             }
             filterQueries = searchFacets.generateFacetFilterQueries(Integer.valueOf(advancedSearchGroupOperator), true);
         }
+        int rssFeedItems = DataManager.getInstance().getConfiguration().getRssFeedItems();
         SyndFeedOutput output = new SyndFeedOutput();
         return output
-                .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language));
+                .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language, rssFeedItems));
     }
 
     /**

@@ -93,9 +93,9 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SyndFeed createRss(String rootPath, String query)
+    public static SyndFeed createRss(String rootPath, String query, int maxItems)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return createRss(rootPath, query, null, null);
+        return createRss(rootPath, query, null, null, maxItems);
     }
 
     /**
@@ -129,7 +129,7 @@ public class RSSFeed {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language)
+    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
@@ -161,10 +161,9 @@ public class RSSFeed {
 
         List<SyndEntry> entries = new ArrayList<>();
 
-        int rssFeedItems = DataManager.getInstance().getConfiguration().getRssFeedItems();
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
-                .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                .search(query, 0, maxItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
                         getFieldsWithTranslation(locale), filterQueries, null)
                 .getResults();
         if (docs == null || docs.isEmpty()) {
@@ -736,7 +735,7 @@ public class RSSFeed {
             throws ContentLibException {
         try {
             if(maxHits == null) {
-                maxHits = Integer.MAX_VALUE;
+                maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
             }
             if(language == null) {
                 language = servletRequest.getLocale().getLanguage();
@@ -766,7 +765,7 @@ public class RSSFeed {
             throws ContentLibException {
         try {
             if(maxHits == null) {
-                maxHits = Integer.MAX_VALUE;
+                maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
             }
             if(language == null) {
                 language = servletRequest.getLocale().getLanguage();
@@ -786,7 +785,7 @@ public class RSSFeed {
             
             SyndFeedOutput output = new SyndFeedOutput();
             return output
-                    .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language));
+                    .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language, maxHits));
 
         } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
             throw new ContentLibException(e.toString());
