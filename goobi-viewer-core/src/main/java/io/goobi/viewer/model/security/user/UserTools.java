@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.modules.IModule;
@@ -142,6 +141,7 @@ public class UserTools {
      * 
      * @param user
      * @throws DAOException
+     * @should delete all user public content correctly
      */
     public static void deleteUserPublicContributions(User user) throws DAOException {
         if (user == null) {
@@ -170,6 +170,7 @@ public class UserTools {
      * 
      * @param user
      * @throws DAOException
+     * @should anonymize all user public content correctly
      */
     public static boolean anonymizeUserPublicContributions(User user) throws DAOException {
         User anon = UserTools.checkAndCreateAnonymousUser();

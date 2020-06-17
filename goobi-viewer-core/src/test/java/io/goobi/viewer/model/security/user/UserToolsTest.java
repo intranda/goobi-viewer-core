@@ -15,14 +15,18 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 
 public class UserToolsTest extends AbstractDatabaseEnabledTest {
-    
+
     /**
      * @see UserTools#deleteBookmarkListsForUser(User)
      * @verifies delete all bookmark lists owned by user
@@ -63,5 +67,48 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
 
         UserTools.deleteUserGroupOwnedByUser(user);
         Assert.assertNull(DataManager.getInstance().getDao().getUserGroup(1));
+    }
+
+    /**
+     * @see UserTools#deleteUserPublicContributions(User)
+     * @verifies delete all user public content correctly
+     */
+    @Test
+    public void deleteUserPublicContributions_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        UserTools.deleteUserPublicContributions(user);
+
+        // Comments
+        Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
+
+        // Campaign statistics
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        Assert.assertEquals(1, statistics.size());
+        Assert.assertTrue(statistics.get(0).getReviewers().isEmpty());
+        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
+    }
+    
+
+    /**
+     * @see UserTools#anonymizeUserPublicContributions(User)
+     * @verifies anonymize all user public content correctly
+     */
+    @Test
+    public void anonymizeUserPublicContributions_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        Assert.assertTrue(UserTools.anonymizeUserPublicContributions(user));
+
+        // Comments
+        Comment comment = DataManager.getInstance().getDao().getComment(2);
+        Assert.assertNotNull(comment);
+        Assert.assertNotEquals(user, comment.getOwner());
+
+        // Campaign statistics
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        Assert.assertEquals(1, statistics.size());
+        Assert.assertEquals(1, statistics.get(0).getReviewers().size());
+        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
     }
 }

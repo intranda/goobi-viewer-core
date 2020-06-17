@@ -69,7 +69,6 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.security.user.UserTools;
-import io.goobi.viewer.modules.IModule;
 
 /**
  * Administration backend functions.
@@ -296,7 +295,8 @@ public class AdminBean implements Serializable {
      * @param user User to be deleted
      * @param deleteContributions If true, all content created by this user will also be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should delete all user comments correctly
+     * @should delete all user public content correctly
+     * @should anonymize all user public content correctly
      */
     public String deleteUserAction(User user, boolean deleteContributions) throws DAOException {
         if (user == null) {

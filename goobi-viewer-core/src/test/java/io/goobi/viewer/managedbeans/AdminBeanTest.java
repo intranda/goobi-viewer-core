@@ -28,6 +28,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.security.user.User;
 
 public class AdminBeanTest extends AbstractDatabaseEnabledTest {
@@ -70,17 +71,50 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminBean#deleteUserAction(User,boolean)
-     * @verifies delete all user comments correctly
+     * @verifies delete all user public content correctly
      */
     @Test
-    public void deleteUserAction_shouldDeleteAllUserCommentsCorrectly() throws Exception {
+    public void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assert.assertNotNull(user);
         AdminBean bean = new AdminBean();
         bean.setEmailConfirmation(user.getEmail());
 
         bean.deleteUserAction(user, true);
+
+        // Comments
         Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
+
+        // Campaign statistics
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        Assert.assertEquals(1, statistics.size());
+        Assert.assertTrue(statistics.get(0).getReviewers().isEmpty());
+        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
+    }
+
+    /**
+     * @see AdminBean#deleteUserAction(User,boolean)
+     * @verifies anonymize all user public content correctly
+     */
+    @Test
+    public void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        AdminBean bean = new AdminBean();
+        bean.setEmailConfirmation(user.getEmail());
+
+        bean.deleteUserAction(user, false);
+
+        // Comments
+        Comment comment = DataManager.getInstance().getDao().getComment(2);
+        Assert.assertNotNull(comment);
+        Assert.assertNotEquals(user, comment.getOwner());
+
+        // Campaign statistics
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        Assert.assertEquals(1, statistics.size());
+        Assert.assertEquals(1, statistics.get(0).getReviewers().size());
+        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
     }
 
     /**
