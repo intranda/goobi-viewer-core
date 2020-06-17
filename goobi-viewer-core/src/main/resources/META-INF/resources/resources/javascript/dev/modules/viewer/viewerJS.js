@@ -269,6 +269,15 @@ var viewerJS = (function () {
             case 'Safari':
                 break;
         } 
+        
+        // hide second scrollbar if modal is too long
+		$(document.body).on("show.bs.modal", function () {
+			$(window.document).find("html").addClass("modal-open");
+		});
+		$(document.body).on("hide.bs.modal", function () {
+			$(window.document).find("html").removeClass("modal-open");
+		});
+     
 	// EOL viewerJS function
     };
 
