@@ -539,6 +539,13 @@ public class AdminBean implements Serializable {
         }
 
         logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
+        // If this the user group is not yet persisted, add it to DB first
+        if (currentUserRole.getUserGroup() != null && currentUserRole.getUserGroup().getId() == null) {
+            if (!DataManager.getInstance().getDao().addUserGroup(currentUserRole.getUserGroup())) {
+                Messages.info("errSave");
+                return;
+            }
+        }
         if (getCurrentUserRole().getId() != null) {
             // existing
             if (DataManager.getInstance().getDao().updateUserRole(getCurrentUserRole())) {
