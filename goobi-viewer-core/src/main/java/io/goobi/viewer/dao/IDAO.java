@@ -1800,6 +1800,15 @@ public interface IDAO {
      * @throws DAOException
      */
     public int deleteCampaignStatisticsForUser(User user) throws DAOException;
+    
+    /**
+     * Replaced <code>fromUser</code> with <code>toUser</code> in the lists of annotators and reviewers an all campaign statistics.
+     * @param fromUser
+     * @param toUser
+     * @return
+     * @throws DAOException
+     */
+    public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException;
 
     // Misc
 

@@ -2509,6 +2509,38 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         int comments = DataManager.getInstance().getDao().deleteComments(null, user);
         UserTools.deleteUser(user);
     }
+    
+
+    /**
+     * @see JPADAO#changeCampaignStatisticContributors(User,User)
+     * @verifies replace user in creators and reviewers lists correctly
+     */
+    @Test
+    public void changeCampaignStatisticContributors_shouldReplaceUserInCreatorsAndReviewersListsCorrectly() throws Exception {
+        User fromUser = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(fromUser);
+        User toUser = DataManager.getInstance().getDao().getUser(3);
+        Assert.assertNotNull(toUser);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
+            Assert.assertTrue(campaign.getStatistics().get("PI 1").getReviewers().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI 1").getReviewers().contains(toUser));
+        }
+
+        int rows = DataManager.getInstance().getDao().changeCampaignStatisticContributors(fromUser, toUser);
+        Assert.assertEquals(1, rows);
+        {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+            Assert.assertNotNull(campaign);
+            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
+            // Only toUser should be among the reviewers
+            Assert.assertFalse(campaign.getStatistics().get("PI 1").getReviewers().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI 1").getReviewers().contains(toUser));
+        }
+
+    }
 
     /**
      * @see JPADAO#getUserByNickname(String)

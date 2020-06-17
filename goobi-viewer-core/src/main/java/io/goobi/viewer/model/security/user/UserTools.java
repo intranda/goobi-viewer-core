@@ -23,8 +23,10 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.modules.IModule;
 
 public class UserTools {
 
@@ -133,6 +135,65 @@ public class UserTools {
         logger.debug("{} saved searches of user {} deleted.", count, owner.getId());
 
         return count;
+    }
+
+    /**
+     * Deletes all public content created by this the given user.
+     * 
+     * @param user
+     * @throws DAOException
+     */
+    public static void deleteUserPublicContributions(User user) throws DAOException {
+        if (user == null) {
+            return;
+        }
+
+        // Delete comments
+        int comments = DataManager.getInstance().getDao().deleteComments(null, user);
+        logger.debug("{} comment(s) of user {} deleted.", comments, user.getId());
+
+        // Delete campaign statistics
+        int campaigns = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
+        logger.debug("Deleted user from the statistics from {} campaign(s)", campaigns);
+
+        // Delete module contributions
+        for (IModule module : DataManager.getInstance().getModules()) {
+            int count = module.deleteUserContributions(user);
+            if (count > 0) {
+                logger.debug("Deleted {} user contribution(s) via the '{}' module.", count, module.getName());
+            }
+        }
+    }
+
+    /**
+     * Moves all public content from the given user to an anonymous user.
+     * 
+     * @param user
+     * @throws DAOException
+     */
+    public static boolean anonymizeUserPublicContributions(User user) throws DAOException {
+        User anon = UserTools.checkAndCreateAnonymousUser();
+        if (anon == null) {
+            logger.error("Anonymous user could not be found");
+            return false;
+        }
+
+        // Move comments
+        int comments = DataManager.getInstance().getDao().changeCommentsOwner(user, anon);
+        logger.debug("{} comment(s) of user {} anonymized.", comments, user.getId());
+
+        // Move campaign statistics
+        int campaigns = DataManager.getInstance().getDao().changeCampaignStatisticContributors(user, anon);
+        logger.debug("Anonymized user in the statistics from {} campaign(s)", campaigns);
+
+        // Move module contributions
+        for (IModule module : DataManager.getInstance().getModules()) {
+            int count = module.moveUserContributions(user, anon);
+            if (count > 0) {
+                logger.debug("Anonymized {} user contribution(s) via the '{}' module.", count, module.getName());
+            }
+        }
+        return true;
     }
 
     /**
