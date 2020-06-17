@@ -259,7 +259,7 @@ public final class SolrSearchIndex {
         } catch (RemoteSolrException e) {
             if (isQuerySyntaxError(e)) {
                 logger.error("{}; Query: {}", e.getMessage(), solrQuery.getQuery(), e);
-                throw new PresentationException("Bad query.");
+                throw new PresentationException("Bad query: " + e.getMessage());
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             logger.error(e.toString(), e);
@@ -1283,7 +1283,9 @@ public final class SolrSearchIndex {
      */
     public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
-                || e.getMessage().startsWith("Invalid Number") || e.getMessage().startsWith("undefined field"));
+                || e.getMessage().startsWith("Invalid Number") 
+                || e.getMessage().startsWith("undefined field")
+                || e.getMessage().startsWith("can not sort on multivalued field"));
     }
 
     /**
