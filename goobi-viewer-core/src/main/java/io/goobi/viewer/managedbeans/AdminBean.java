@@ -240,7 +240,7 @@ public class AdminBean implements Serializable {
             Messages.error(ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
             currentUser = copy;
             currentUser.setNickName(copy.getCopy().getNickName());
-            return "pretty:adminUserEdit";
+            return "";
         }
         currentUser = copy;
         if (getCurrentUser().getId() != null) {
@@ -248,7 +248,7 @@ public class AdminBean implements Serializable {
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
-                    return "pretty:adminUserEdit";
+                    return "";
                 }
                 currentUser.setNewPassword(passwordOne);
             }
@@ -256,7 +256,7 @@ public class AdminBean implements Serializable {
                 Messages.info("user_saveSuccess");
             } else {
                 Messages.error("errSave");
-                return "pretty:adminUserEdit";
+                return "";
             }
         } else {
             // New user
@@ -264,14 +264,14 @@ public class AdminBean implements Serializable {
                 // Do not allow the same email address being used for multiple users
                 Messages.error("newUserExist");
                 logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
-                return "pretty:adminUserEdit";
+                return "";
             }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
                 Messages.error("newUserPasswordOneRequired");
-                return "pretty:adminUserEdit";
+                return "";
             } else if (!passwordOne.equals(passwordTwo)) {
                 Messages.error("user_passwordMismatch");
-                return "pretty:adminUserEdit";
+                return "";
             } else {
                 getCurrentUser().setNewPassword(passwordOne);
 
@@ -280,7 +280,7 @@ public class AdminBean implements Serializable {
                 Messages.info("newUserCreated");
             } else {
                 Messages.info("errSave");
-                return "pretty:adminUserEdit";
+                return "";
             }
         }
         setCurrentUser(null);
