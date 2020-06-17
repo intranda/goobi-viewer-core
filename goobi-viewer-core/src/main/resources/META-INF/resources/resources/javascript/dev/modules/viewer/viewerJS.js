@@ -270,7 +270,7 @@ var viewerJS = (function () {
                 break;
         } 
         
-        // hide second scrollbar if modal is too long
+        // hide second scrollbar if modal is too long, bootstrap adaption
 		$(document.body).on("show.bs.modal", function () {
 			$(window.document).find("html").addClass("modal-open");
 		});
