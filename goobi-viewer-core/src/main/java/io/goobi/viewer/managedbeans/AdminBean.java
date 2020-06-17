@@ -318,47 +318,13 @@ public class AdminBean implements Serializable {
         logger.debug("Deleting user: {}", user.getDisplayName());
         if (deleteContributions) {
             // Delete all public content created by this user
-
-            // Delete comments
-            int comments = DataManager.getInstance().getDao().deleteComments(null, user);
-            logger.debug("{} comment(s) of user {} deleted.", comments, user.getId());
-
-            // Delete campaign statistics
-            int campaigns = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
-            logger.debug("Deleted user from the statistics from {} campaign(s)", campaigns);
-
-            // Delete module contributions
-            for (IModule module : DataManager.getInstance().getModules()) {
-                int count = module.deleteUserContributions(user);
-                if (count > 0) {
-                    logger.debug("Deleted {} user contribution(s) via the '{}' module.", count, module.getName());
-                }
-            }
+            UserTools.deleteUserPublicContributions(user);
         } else if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress())) {
             // Move all public content to an anonymous user
-            User anon = UserTools.checkAndCreateAnonymousUser();
-            if (anon != null) {
-
-                // TODO Move comments
-                int comments = DataManager.getInstance().getDao().changeCommentsOwner(user, anon);
-                logger.debug("{} comment(s) of user {} anonymized.", comments, user.getId());
-
-                // TODO Move campaign statistics
-
-                // Move module contributions
-                for (IModule module : DataManager.getInstance().getModules()) {
-                    int count = module.moveUserContributions(user, anon);
-                    if (count > 0) {
-                        logger.debug("Anonymized {} user contribution(s) via the '{}' module.", count, module.getName());
-                    }
-                }
-
-            } else {
-                logger.error("Anonymous user could not be found");
+            if (!UserTools.anonymizeUserPublicContributions(user)) {
                 Messages.error("deleteFailure");
                 return "";
             }
-
         } else {
             logger.error("Anonymous user e-mail address not configured.");
             Messages.error("deleteFailure");

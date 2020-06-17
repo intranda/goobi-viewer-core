@@ -3335,6 +3335,65 @@ public class JPADAO implements IDAO {
         return count;
 
     }
+    
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
+     * @should replace user in creators and reviewers lists correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
+        if (fromUser == null || toUser == null) {
+            return 0;
+        }
+
+        List<Campaign> campaigns = new ArrayList<>();
+        Set<String> identifiers = new HashSet<>();
+        StringBuilder sbQuery =
+                new StringBuilder("SELECT o FROM CampaignRecordStatistic o WHERE (:fromUser MEMBER OF o.annotators OR :fromUser MEMBER OF o.reviewers)");
+        Query q = em.createQuery(sbQuery.toString());
+        q.setParameter("fromUser", fromUser);
+        List<CampaignRecordStatistic> result = q.getResultList();
+        for (CampaignRecordStatistic statistic : result) {
+            boolean annotator = false;
+            boolean reviewer = false;
+            while (statistic.getAnnotators().contains(fromUser)) {
+                annotator = true;
+                int index = statistic.getAnnotators().indexOf(fromUser);
+                statistic.getAnnotators().remove(index);
+                statistic.getAnnotators().add(index, toUser);
+            }
+            while (statistic.getReviewers().contains(fromUser)) {
+                reviewer = true;
+                int index = statistic.getReviewers().indexOf(fromUser);
+                statistic.getReviewers().remove(index);
+                statistic.getReviewers().add(index, toUser);
+            }
+            campaigns.add(statistic.getOwner());
+            // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
+            if (annotator) {
+                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
+            }
+            if (reviewer) {
+                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
+            }
+            identifiers.add(statistic.getPi());
+        }
+
+        int count = 0;
+        if (!campaigns.isEmpty()) {
+            for (Campaign campaign : campaigns) {
+                if (updateCampaign(campaign)) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+
+    }
+
 
     /*
      * (non-Javadoc)
