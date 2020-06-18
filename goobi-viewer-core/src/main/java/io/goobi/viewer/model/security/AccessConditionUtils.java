@@ -799,6 +799,11 @@ public class AccessConditionUtils {
         } else {
             accessMap.put("", Boolean.FALSE);
         }
+        // If user ist superuser, allow immediately
+        if (user != null && user.isSuperuser()) {
+            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
+            return accessMap;
+        }
         // If no access condition given, allow immediately (though this should never be the case)
         if (requiredAccessConditions.isEmpty()) {
             logger.trace("No required access conditions given, access granted.");
@@ -838,7 +843,6 @@ public class AccessConditionUtils {
             boolean licenseTypeAllowsPriv = true;
             // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
             for (LicenseType licenseType : relevantLicenseTypes) {
-                logger.trace("relevant license type: " + licenseType.getName());
                 requiredAccessConditions.add(licenseType.getName());
                 if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()) {
                     logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
@@ -932,7 +936,7 @@ public class AccessConditionUtils {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }
 
-//         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
+        //         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace(licenseType.getName());
