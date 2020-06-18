@@ -582,9 +582,6 @@
 				is not consistent used in RSS feed, search, tag clouds etc. and hits from 
 				this collection may appear there as well. -->
 			<blacklist>
-				<!-- mode: defines where the blacklist shall be applied (values: all, 
-					dclist). Default is "all". -->
-				<mode>dcList</mode>
 				<!-- <collection>varia</collection> -->
 			</blacklist>
 

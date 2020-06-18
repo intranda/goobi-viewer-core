@@ -870,24 +870,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * getCollectionBlacklistMode.
-     * </p>
-     *
-     * @param field a {@link java.lang.String} object.
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCollectionBlacklistMode(String field) {
-        HierarchicalConfiguration collection = getCollectionConfiguration(field);
-        if (collection == null) {
-            return "all";
-        }
-
-        return collection.getString("blacklist.mode", "all");
-    }
-
-    /**
      * Returns collection names to be omitted from search results, listings etc.
      *
      * @param field a {@link java.lang.String} object.
