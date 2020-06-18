@@ -99,7 +99,8 @@ public class AdminBean implements Serializable {
     private String passwordOne = "";
     private String passwordTwo = "";
     private String emailConfirmation = "";
-    private boolean deleteUserContributions = false;
+    private boolean deleteUserContributions =
+            EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress()) ? false : true;
 
     /**
      * <p>

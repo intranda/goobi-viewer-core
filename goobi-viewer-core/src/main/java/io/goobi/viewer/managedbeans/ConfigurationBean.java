@@ -50,6 +50,7 @@ import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
@@ -1445,4 +1446,11 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
     }
 
+    /**
+     * 
+     * @return true if user.anonymousUserEmailAddress is configured and valid; false otherwise
+     */
+    public boolean isAnonymousUserEmailAddressValid() {
+        return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
 }
