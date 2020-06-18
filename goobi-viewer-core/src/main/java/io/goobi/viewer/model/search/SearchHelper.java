@@ -564,7 +564,6 @@ public final class SearchHelper {
         Map<String, CollectionResult> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
-
             if (StringUtils.isNotBlank(filterQuery)) {
                 sbQuery.append(filterQuery);
             }
@@ -572,7 +571,7 @@ public final class SearchHelper {
                 if (sbQuery.length() > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
+                sbQuery.append("+(").append(getDocstrctWhitelistFilterQuery()).append(')');
             }
             sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(
                     DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery(), BeanUtils.getNavigationHelper()));
