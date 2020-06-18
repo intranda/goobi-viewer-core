@@ -187,22 +187,18 @@ public final class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        SolrQuery solrQuery = new SolrQuery(query);
-        solrQuery.setStart(first);
-        solrQuery.setRows(rows);
+        SolrQuery solrQuery = new SolrQuery(query).setStart(first).setRows(rows);
 
         if (sortFields != null && !sortFields.isEmpty()) {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
-                    // logger.trace("Added sorting field: {}", sortField);
                 }
             }
         }
         if (facetFields != null && !facetFields.isEmpty()) {
             for (String facetField : facetFields) {
-                // logger.trace("adding facet field: {}", sortField);
                 if (StringUtils.isNotEmpty(facetField)) {
                     solrQuery.addFacetField(facetField);
                     // TODO only do this once, perhaps?
@@ -211,12 +207,10 @@ public final class SolrSearchIndex {
                     }
                 }
             }
-            solrQuery.setFacetMinCount(1);
-            solrQuery.setFacetLimit(-1); // no limit
+            solrQuery.setFacetMinCount(1).setFacetLimit(-1); // no limit
         }
         if (fieldList != null && !fieldList.isEmpty()) {
             for (String field : fieldList) {
-                // logger.trace("adding result field: " + field);
                 if (StringUtils.isNotEmpty(field)) {
                     solrQuery.addField(field);
                 }
@@ -238,10 +232,10 @@ public final class SolrSearchIndex {
         try {
             // logger.trace("Solr query URL: {}", solrQuery.getQuery());
             // logger.debug("range: {} - {}", first, first + rows);
-            // logger.debug("facetFields: " + facetFields);
-            // logger.debug("fieldList: " + fieldList);
+            // logger.debug("facetFields: {}", facetFields);
+            // logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = server.query(solrQuery);
-            // logger.debug("found: " + resp.getResults().getNumFound());
+            // logger.debug("found: {}", resp.getResults().getNumFound());
             // logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
@@ -265,16 +259,6 @@ public final class SolrSearchIndex {
             logger.error(e.toString(), e);
             throw new IndexUnreachableException(e.getMessage());
         }
-
-        // SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span class=\"highlight\">", "</span>");
-        //
-        // Highlighter highlighter = new Highlighter(formatter, queryScorer);
-        // Fragmenter fragmenter = new SimpleFragmenter(200);
-        // highlighter.setTextFragmenter(fragmenter);
-        //
-        // TokenStream tokenStream = new StandardAnalyzer().tokenStream(ConstantsRetrieval.FIELD_DOC_CONTENT, new StringReader(text));
-        //
-        // formattedText = highlighter.getBestFragments(tokenStream, text, 5, "...");
     }
 
     /**
@@ -501,17 +485,18 @@ public final class SolrSearchIndex {
         Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
 
-        SolrQuery solrQuery = new SolrQuery(query);
+        List<String> termlist = new ArrayList<>();
+        Map<String, Long> frequencyMap = new HashMap<>();
+        SolrQuery solrQuery =
+                new SolrQuery(query).setRows(DataManager.getInstance().getConfiguration().getTagCloudSampleSize(fieldName)).addField(fieldName);
         try {
-            List<String> termlist = new ArrayList<>();
-            Map<String, Long> frequencyMap = new HashMap<>();
-
-            solrQuery.setRows(DataManager.getInstance().getConfiguration().getTagCloudSampleSize(fieldName));
-            solrQuery.addField(fieldName);
             QueryResponse resp = server.query(solrQuery);
             logger.trace("query done");
             for (SolrDocument doc : resp.getResults()) {
                 Collection<Object> values = doc.getFieldValues(fieldName);
+                if (values == null) {
+                    continue;
+                }
                 for (Object o : values) {
                     String terms = String.valueOf(o).toLowerCase();
                     String[] termsSplit = terms.split(" ");
