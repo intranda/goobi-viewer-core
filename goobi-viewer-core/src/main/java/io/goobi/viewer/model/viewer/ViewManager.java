@@ -1883,8 +1883,9 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException 
      */
-    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
             // Check whether this mode is enabled first to avoid all the other checks
             if (!DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews()) {
@@ -1995,10 +1996,11 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
+     * @throws ViewerConfigurationException 
      */
-    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topDocument != null && topDocument.isFulltextAvailable()
-                && !isFilesOnly();
+                && !isFilesOnly() && getCurrentPage() != null && getCurrentPage().isFulltextAccessPermission();
     }
 
     /**
@@ -2007,10 +2009,11 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public boolean isDisplayExternalFulltextLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayExternalFulltextLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         return topDocument != null
-                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null;
+                && topDocument.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null  && getCurrentPage() != null && getCurrentPage().isFulltextAccessPermission();
     }
 
     /**
@@ -2593,7 +2596,8 @@ public class ViewManager implements Serializable {
 
         String page = String.valueOf(currentImageOrder);
         Path sourceFileDir = Paths
-                .get(DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(), page);
+                .get(DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(),
+                        page);
         if (!Files.isDirectory(sourceFileDir)) {
             return Collections.emptyList();
         }
@@ -2645,9 +2649,9 @@ public class ViewManager implements Serializable {
     public void setTopDocumentIddoc(long topDocumentIddoc) {
         this.topDocumentIddoc = topDocumentIddoc;
     }
-    
+
     public Long getAnchorDocumentIddoc() {
-        if(this.anchorDocument != null) {
+        if (this.anchorDocument != null) {
             return anchorDocument.getLuceneId();
         } else {
             return null;
