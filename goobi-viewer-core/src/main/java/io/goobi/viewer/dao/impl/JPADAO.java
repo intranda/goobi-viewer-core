@@ -3652,7 +3652,7 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-
+    
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override

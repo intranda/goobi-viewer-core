@@ -678,12 +678,16 @@ public class PersistentAnnotation {
      * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
      * @throws java.io.IOException if any.
      */
-    public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException {
+    public OpenAnnotation getAsOpenAnnotation() {
         OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
-        annotation.setBody(this.getBodyAsOAResource());
-        annotation.setTarget(this.getTargetAsOAResource());
-        annotation.setMotivation(this.getMotivation());
-
+        try {
+            annotation.setBody(this.getBodyAsOAResource());
+            annotation.setTarget(this.getTargetAsOAResource());
+            annotation.setMotivation(this.getMotivation());
+        } catch (IOException e) {
+            logger.error("unable to parse body or target for annotation", e);
+        }
+        
         return annotation;
     }
 

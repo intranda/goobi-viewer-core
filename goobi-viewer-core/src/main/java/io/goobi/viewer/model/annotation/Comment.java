@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.model.annotation;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +45,12 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.oa.Motivation;
+import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.TextualResource;
+import de.intranda.api.annotation.wa.WebAnnotation;
+import de.intranda.api.iiif.presentation.Manifest;
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
@@ -69,8 +78,8 @@ public class Comment implements Comparable<Comment> {
     @Column(name = "pi", nullable = false)
     private String pi;
 
-    @Column(name = "page", nullable = false)
-    private int page;
+    @Column(name = "page", nullable = true)
+    private Integer page;
 
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
@@ -441,4 +450,35 @@ public class Comment implements Comparable<Comment> {
     public void setChildren(List<Comment> children) {
         this.children = children;
     }
+    
+    public OpenAnnotation getAsOpenAnnotation(IApiUrlManager urls) {
+        String url;
+        if(page != null) {            
+            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).query("format", "oa").build();
+        } else {
+            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).query("format", "oa").build();   
+        }
+        OpenAnnotation anno = new OpenAnnotation(URI.create(url));
+        anno.setMotivation(Motivation.COMMENTING);
+        anno.setTarget(new Manifest(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build())));
+        TextualResource body = new TextualResource(getText());
+        anno.setBody(body);
+        return anno;
+    }
+    
+    public WebAnnotation getAsWebAnnotation(IApiUrlManager urls) {
+        String url;
+        if(page != null) {            
+            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).build();
+        } else {
+            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).build();   
+        }
+        WebAnnotation anno = new WebAnnotation(URI.create(url));
+        anno.setMotivation(Motivation.COMMENTING);
+        anno.setTarget(new Manifest(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build())));
+        TextualResource body = new TextualResource(getText());
+        anno.setBody(body);
+        return anno;
+    }
+    
 }

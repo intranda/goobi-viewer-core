@@ -515,7 +515,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     }
                 }
             }
-        } catch (DAOException | IOException e) {
+        } catch (DAOException e) {
             logger.error("Error creating crowdsourcing annotations ", e);
         }
     }

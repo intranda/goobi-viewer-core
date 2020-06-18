@@ -39,7 +39,6 @@ public class ApiUrls implements IApiUrlManager {
     public static final String RECORDS_QUERY =                              "/query";
     public static final String RECORDS_STATISTICS =                         "/statistics";
     
-    public static final String RECORDS_RSS =                                "/records/rss";
     public static final String RECORDS_RSS_XML =                            "/rss.xml";
     public static final String RECORDS_RSS_JSON =                           "/rss.json";
     
