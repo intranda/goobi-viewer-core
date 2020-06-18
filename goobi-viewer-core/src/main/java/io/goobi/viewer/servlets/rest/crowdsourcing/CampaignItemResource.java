@@ -40,7 +40,7 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
@@ -120,7 +120,7 @@ public class CampaignItemResource {
     public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException, ContentNotFoundException {
         URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
-        URI manifestURI = new ManifestBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
+        URI manifestURI = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {

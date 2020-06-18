@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
@@ -44,7 +44,7 @@ public class AbstractBuilderTest {
 
     @Before
     public void SetUp() {
-        builder = new AbstractBuilder(new ApiUrlManager("http://localhost:8080/viewer/rest")) {
+        builder = new AbstractBuilder(new ApiUrls("http://localhost:8080/viewer/rest")) {
         };
     }
 

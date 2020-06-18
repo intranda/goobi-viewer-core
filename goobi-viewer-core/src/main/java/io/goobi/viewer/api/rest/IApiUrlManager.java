@@ -15,33 +15,22 @@
  */
 package io.goobi.viewer.api.rest;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.collections.iterators.ArrayIterator;
+import org.apache.commons.lang.ArrayUtils;
+
 
 /**
  * @author florian
  *
  */
 public interface IApiUrlManager {
-
-    /**
-     * Get the full url for the given api path. Replace all text in '{...}' with the given pathParams in the given order
-     * 
-     * @param path
-     * @param pathParams
-     * @return  The full url to the given api endpoint
-     */
-    public String getUrl(String path, String...pathParams );
-    
-    /**
-     *  Get the full url for the given api path. Replace all text in '{...}' with the given pathParams in the given order.
-     *  Add given query params to url
-     * 
-     * @param path
-     * @param queryParams
-     * @param pathParams
-     * @return  The full url to the given api endpoint
-     */
-    public String getUrl(String path, Map<String, String> queryParams, String...pathParams );
     
     /**
      * @return The base url to the api without trailing slashes
@@ -52,4 +41,100 @@ public interface IApiUrlManager {
      * @return  The base url of the viewer application
      */
     public String getApplicationUrl();
+    
+    /**
+     * @param records2
+     * @param recordsRssJson
+     * @return
+     */
+    public default ApiPath path(String...paths) {
+        String[] array = (String[]) ArrayUtils.addAll(new String[] {getApiUrl()}, paths);
+        return new ApiPath(array);
+    }
+    
+    public static class ApiPath {
+        
+        private final String[] paths;
+        
+        public ApiPath(String[] paths) {
+            this.paths = paths;
+        }
+        
+        public ApiPathParams params(Object...params) {
+            return new ApiPathParams(this, params);
+        }
+        
+        public ApiPathQueries query(String key, String value) {
+            return new ApiPathQueries(this).query(key, value);
+        }
+        
+        public String build() {
+            return String.join("", this.paths);
+        }
+    }
+    
+    public static class ApiPathParams extends ApiPath{
+        
+        private final Object[] params;
+        
+        public ApiPathParams(ApiPath path, Object[] params) {
+            super(path.paths);
+            this.params = params;
+        }
+        
+        public String build() {
+            return replacePathParams(super.build(), this.params);
+        }
+        
+        public String toString() {
+            return build();
+        }
+        
+        private String replacePathParams(String url, Object[] pathParams) {
+            Matcher matcher = Pattern.compile("\\{\\w+\\}").matcher(url);
+            Iterator i = new ArrayIterator(pathParams);
+            while(matcher.find()) {
+                String group = matcher.group();
+                if(i.hasNext()) {
+                    String replacement = i.next().toString();
+                    url = url.replace(group, replacement);
+                } else {
+                    //no further params. Cannot keep replacing
+                    break;
+                }
+            }
+            return url;
+        }
+    }
+    
+    public static class ApiPathQueries{
+        
+        private final ApiPath path;
+        private final Map<String, String> queries;
+        
+        public ApiPathQueries(ApiPath path) {
+            this.path = path;
+            this.queries = new LinkedHashMap<>();
+        }
+        
+        public ApiPathQueries query(String key, String value) {
+            this.queries.put(key, value);
+            return this;
+        }
+        
+        public String toString() {
+            return build();
+        }
+        
+        public String build() {
+            String path = this.path.build();
+            String querySeparator = "?";
+            for (String queryParam : queries.keySet()) {
+                String value = queries.get(queryParam);
+                path = path + querySeparator + queryParam + "=" + value;
+                querySeparator = "&";
+            }
+            return path;
+        }
+    }
 }

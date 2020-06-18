@@ -45,7 +45,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -983,7 +983,7 @@ public class BookmarkResource {
      * @return
      */
     public Collection createCollection(BookmarkList list) {
-        ManifestBuilder builder = new ManifestBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+        ManifestBuilder builder = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         Collection collection = new Collection(getCollectionURI(), list.getName());
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));

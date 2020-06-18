@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +39,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@Path("/records")
+@Path(ApiUrls.RECORDS)
 @CORSBinding
 @ViewerRestServiceBinding
 public class RSSResource {
@@ -49,7 +50,7 @@ public class RSSResource {
     private HttpServletResponse servletResponse;
     
     @GET
-    @Path("/rss.xml")
+    @Path(ApiUrls.RECORDS_RSS_XML)
     @Produces({ MediaType.TEXT_XML })
     @Operation(
             tags= {"records", "rss"}, 
@@ -57,68 +58,34 @@ public class RSSResource {
     @ApiResponse(responseCode = "200", description = "Return RSS feed in xml format")
     @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
     public String getRssFeed(
-            @Parameter(description = "Language of the returned metadata labels and values (Optional)") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return (Optional)") @QueryParam("max") Integer maxHits,
-            @Parameter(description = "Search query to filter results (Optional)") @QueryParam("query") String query,
-            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (Optional)" )@QueryParam("facets") String facets) throws ContentLibException {
+            @Parameter(description="Subtheme: Results are filtered to values within the given subtheme (optional)") @QueryParam("subtheme") String subtheme,
+            @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
+            @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
+            @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
+            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets) throws ContentLibException {
  
-        return RSSFeed.createRssFeed(language, maxHits, null, query, facets, servletRequest);
-    }
-    
-    @GET
-    @Path("/themes/{subtheme}/rss.xml")
-    @Produces({ MediaType.TEXT_XML })
-    @Operation(
-            tags= {"records", "rss"}, 
-            summary = "Get an rss feed of the most recent records within the given subtheme")
-    @ApiResponse(responseCode = "200", description = "Return RSS feed in xml format")
-    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
-    public String getRssFeed(
-            @Parameter(description="Subtheme: Results are filtered to values within the given subtheme") @PathParam("subtheme") String subtheme,
-            @Parameter(description = "Language of the returned metadata labels and values (Optional)") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return (Optional)") @QueryParam("max") Integer maxHits,
-            @Parameter(description = "Search query to filter results (Optional)") @QueryParam("query") String query,
-            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (Optional)" )@QueryParam("facets") String facets) throws ContentLibException {
-
-        
         return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, servletRequest);
     }
-    
-    @GET
-    @Path("/rss.json")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(
-            tags= {"records", "rss"}, 
-            summary = "Get an a json representation of an RSS feed of the most recent records")
-    @ApiResponse(responseCode = "200", description = "Return RSS feed in json format")
-    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
-    public Channel getRssJsonFeed(
-            @Parameter(description = "Language of the returned metadata labels and values (Optional)") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return (Optional)") @QueryParam("max") Integer maxHits,
-            @Parameter(description = "Search query to filter results (Optional)") @QueryParam("query") String query,
-            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (Optional)" )@QueryParam("facets") String facets) throws ContentLibException {
-        
-        return RSSFeed.createRssResponse(language, maxHits, null, query, facets, servletRequest);
-    }
-    
-    @GET
-    @Path("/themes/{subtheme}/rss.json")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(
-            tags= {"records", "rss"}, 
-            summary = "Get an a json representation of an RSS feed of the most recent records")
-    @ApiResponse(responseCode = "200", description = "Return RSS feed in json format")
-    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
-    public Channel getRssJsonFeed(
-            @Parameter(description="Subtheme: Results are filtered to values within the given subtheme") @PathParam("subtheme") String subtheme,
-            @Parameter(description = "Language of the returned metadata labels and values (Optional)") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return (Optional)") @QueryParam("max") Integer maxHits,
-            @Parameter(description = "Search query to filter results (Optional)") @QueryParam("query") String query,
-            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (Optional)" )@QueryParam("facets") String facets) throws ContentLibException {
 
+    
+    @GET
+    @Path(ApiUrls.RECORDS_RSS_JSON)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags= {"records", "rss"}, 
+            summary = "Get an a json representation of an RSS feed of the most recent records")
+    @ApiResponse(responseCode = "200", description = "Return RSS feed in json format")
+    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
+    public Channel getRssJsonFeed(
+            @Parameter(description="Subtheme: Results are filtered to values within the given subtheme (optional)") @QueryParam("subtheme") String subtheme,
+            @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
+            @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
+            @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
+            @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets) throws ContentLibException {
         
         return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, servletRequest);
     }
+
     
     
     

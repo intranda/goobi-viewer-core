@@ -59,7 +59,7 @@ import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -101,7 +101,7 @@ public class SearchResultConverter {
      * @param pageNo The page number of generated resources
      */
     public SearchResultConverter(URI requestURI, URI restApiURI, String pi, Integer pageNo) {
-        this.presentationBuilder = new AbstractBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
+        this.presentationBuilder = new AbstractBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
         };
         this.pi = pi;
         this.pageNo = pageNo;

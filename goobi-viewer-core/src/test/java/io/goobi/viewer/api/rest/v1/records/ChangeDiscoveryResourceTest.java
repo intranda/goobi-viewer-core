@@ -30,9 +30,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
+import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.rss.Channel;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * @author florian
@@ -58,8 +62,7 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
 
     @Test
     public void testGetChanges() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(ApiUrlManager.RECORDS_CHANGES)
-                .queryParam("max", 5)
+        try(Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -69,6 +72,21 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             OrderedCollection<Activity> activities = new OrderedCollection<>();
             activities = mapper.readValue(entity, activities.getClass());
             assertTrue(activities.getTotalItems() > 0);
+        }
+    }
+    
+    @Test
+    public void testGetChangesPage() throws JsonMappingException, JsonProcessingException {
+        try(Response response = target(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build())
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String entity = response.readEntity(String.class);
+            OrderedCollectionPage<Activity> activities = new OrderedCollectionPage<>();
+            activities = mapper.readValue(entity, activities.getClass());
+            assertTrue(activities.getOrderedItems().size() == DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
         }
     }
 

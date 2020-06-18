@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.servlets.rest.utils.SessionResource;
 
@@ -66,6 +66,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     };
     
     protected ObjectMapper mapper = new ObjectMapper();
+    protected ApiUrls urls = new ApiUrls("");
     
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -104,12 +105,12 @@ public abstract class AbstractRestApiTest extends JerseyTest {
 
     @Override
     protected DeploymentContext configureDeployment() {
-        ApiUrlManager apiUrlManager = new ApiUrlManager("");
+        
         AbstractBinder binder = new AbstractBinder() {
             
             @Override
             protected void configure() {
-                bind(apiUrlManager).to(IApiUrlManager.class);
+                bind(urls).to(IApiUrlManager.class);
                 
             }
         };

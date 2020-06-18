@@ -49,7 +49,7 @@ public class Application extends ResourceConfig {
             protected void configure() {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
-                bind(new ApiUrlManager(apiUrl)).to(IApiUrlManager.class);
+                bind(new ApiUrls(apiUrl)).to(IApiUrlManager.class);
             }
         };
         this.init(binder);

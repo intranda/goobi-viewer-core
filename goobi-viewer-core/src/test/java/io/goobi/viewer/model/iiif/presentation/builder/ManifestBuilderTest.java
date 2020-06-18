@@ -40,7 +40,7 @@ import de.intranda.api.iiif.presentation.Range;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -79,9 +79,9 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
             ContentNotFoundException, IOException {
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
 
-        ManifestBuilder builder = new ManifestBuilder(new ApiUrlManager("https://viewer.goobi.io/rest/"));
-        SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrlManager("https://viewer.goobi.io/rest/"));
-        StructureBuilder structureBuilder = new StructureBuilder(new ApiUrlManager("https://viewer.goobi.io/rest/"));
+        ManifestBuilder builder = new ManifestBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
+        SequenceBuilder sequenceBuilder = new SequenceBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
+        StructureBuilder structureBuilder = new StructureBuilder(new ApiUrls("https://viewer.goobi.io/rest/"));
 
         SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
         for (SolrDocument solrDocument : allDocs) {

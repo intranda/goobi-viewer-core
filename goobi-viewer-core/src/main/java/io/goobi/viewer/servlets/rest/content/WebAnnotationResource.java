@@ -45,7 +45,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -135,7 +135,7 @@ public class WebAnnotationResource {
                 + comment.getPage() + "/" + comment.getId());
         WebAnnotation anno = new WebAnnotation(resourceId);
         anno.setBody(new TextualResource(comment.getText()));
-        anno.setTarget(new SimpleResource(new SequenceBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl())).getCanvasURI(comment.getPi(), comment.getPage())));
+        anno.setTarget(new SimpleResource(new SequenceBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())).getCanvasURI(comment.getPi(), comment.getPage())));
         anno.setCreated(comment.getDateCreated());
         anno.setModified(comment.getDateUpdated());
         anno.setCreator(createAgent(comment.getOwner()));

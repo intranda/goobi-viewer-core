@@ -33,7 +33,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
@@ -46,7 +46,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@Path("/records")
+@Path(ApiUrls.RECORDS_CHANGES)
 @CORSBinding
 @ViewerRestServiceBinding
 public class ChangeDiscoveryResource {
@@ -58,7 +58,7 @@ public class ChangeDiscoveryResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private ApiUrlManager apiUrlManager;
+    private ApiUrls apiUrlManager;
     
     
     /**
@@ -71,7 +71,6 @@ public class ChangeDiscoveryResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @Path("/changes")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags= {"records", "iiif"}, 
@@ -96,7 +95,7 @@ public class ChangeDiscoveryResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @Path("/changes/pages/{pageNo}")
+    @Path(ApiUrls.RECORDS_CHANGES_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     public OrderedCollectionPage<Activity> getPage(@PathParam("pageNo") int pageNo) throws PresentationException, IndexUnreachableException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager);

@@ -38,7 +38,7 @@ import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
 import io.goobi.viewer.api.rest.IApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -46,6 +46,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 
 /**
  * Builder for both {@link de.intranda.api.iiif.discovery.OrderedCollection} and {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of
@@ -61,10 +64,10 @@ public class ActivityCollectionBuilder {
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
     private Date startDate = null;
-    private final IApiUrlManager apiUrlManager;
+    private final IApiUrlManager urls;
 
-    public ActivityCollectionBuilder(ApiUrlManager apiUrlManager) {
-        this.apiUrlManager = apiUrlManager;
+    public ActivityCollectionBuilder(ApiUrls apiUrlManager) {
+        this.urls = apiUrlManager;
     }
     
     /**
@@ -177,7 +180,7 @@ public class ActivityCollectionBuilder {
      * @return the URI for the collection request
      */
     public URI getCollectionURI() {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_CHANGES);
+        String urlString = this.urls.path(ApiUrls.RECORDS_CHANGES).build();
         return URI.create(urlString);
     }
 
@@ -188,7 +191,7 @@ public class ActivityCollectionBuilder {
      * @return the URI to request a specific collection page
      */
     public URI getPageURI(int no) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_CHANGES_PAGE, Integer.toString(no));
+        String urlString = this.urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(no).build();
         return URI.create(urlString);
     }
 
@@ -235,7 +238,7 @@ public class ActivityCollectionBuilder {
 
     private IPresentationModelElement createObject(SolrDocument doc) {
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
-        URI uri = URI.create(this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_MANIFEST, pi));
+        URI uri = URI.create(this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build());
         Manifest manifest = new Manifest(uri);
         return manifest;
     }

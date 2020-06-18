@@ -24,19 +24,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 /**
  * @author florian
  *
  */
 public class ApiUrlManagerTest {
 
-    private final static String PATH_PATTERN = "/records/{pi}/images/{filename}/{title}.pdf";
     private final static String PI = "12345";
-    private final static String FILENAME = "00000001.tif";
-    private final static String TITLE = "output";
+    private final static String DIVID = "LOG_0003";
     private final static String HOST_URL = "https://viewer/api/v1/";
-    private final static String PATH_FINAL = "https://viewer/api/v1/records/12345/images/00000001.tif/output.pdf";
-    private final static String PATH_FINAL_QUERIES = "https://viewer/api/v1/records/12345/images/00000001.tif/output.pdf?max=1&author=Mia Mustermann&watermarkText=Hosting url: http://sample.org";
+    private final static String PATH_FINAL = "https://viewer/api/v1/records/12345/sections/LOG_0003/pdf";
+    private final static String PATH_FINAL_QUERIES = "https://viewer/api/v1/records/12345/sections/LOG_0003/pdf?max=1&author=Mia Mustermann&watermarkText=Hosting url: http://sample.org";
 
     private final static String QUERY_PARAM_MAX = "max";
     private final static String QUERY_PARAM_MAX_VALUE = "1";
@@ -45,14 +45,14 @@ public class ApiUrlManagerTest {
     private final static String QUERY_PARAM_TEXT = "watermarkText";
     private final static String QUERY_PARAM_TEXT_VALUE = "Hosting url: http://sample.org";
     
-    private ApiUrlManager manager;
+    private ApiUrls manager;
     
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        this.manager = new ApiUrlManager(HOST_URL);
+        this.manager = new ApiUrls(HOST_URL);
     }
 
     /**
@@ -64,17 +64,18 @@ public class ApiUrlManagerTest {
 
     @Test
     public void testGetUrl() {
-        String url = manager.getUrl(PATH_PATTERN, PI, FILENAME, TITLE);
+        String url = manager.path(RECORDS_RECORD, RECORDS_SECTIONS_PDF).params(PI, DIVID).build();
         assertEquals(PATH_FINAL, url);
     }
     
     @Test
     public void testGetUrlWithQuery() {
-        Map<String, String> queries = new LinkedHashMap<>();
-        queries.put(QUERY_PARAM_MAX, QUERY_PARAM_MAX_VALUE);
-        queries.put(QUERY_PARAM_AUTHOR, QUERY_PARAM_AUTHOR_VALUE);
-        queries.put(QUERY_PARAM_TEXT, QUERY_PARAM_TEXT_VALUE);
-        String url = manager.getUrl(PATH_PATTERN, queries, PI, FILENAME, TITLE);
+        String url = manager.path(RECORDS_RECORD, RECORDS_SECTIONS_PDF)
+                .params(PI, DIVID)
+                .query(QUERY_PARAM_MAX, QUERY_PARAM_MAX_VALUE)
+                .query(QUERY_PARAM_AUTHOR, QUERY_PARAM_AUTHOR_VALUE)
+                .query(QUERY_PARAM_TEXT, QUERY_PARAM_TEXT_VALUE)
+                .build();
         assertEquals(PATH_FINAL_QUERIES, url);
     }
 

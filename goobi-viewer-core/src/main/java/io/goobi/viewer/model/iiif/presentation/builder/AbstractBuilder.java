@@ -63,7 +63,7 @@ import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.IApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
@@ -76,6 +76,9 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 
 /**
  * <p>
@@ -664,9 +667,9 @@ public abstract class AbstractBuilder {
     public URI getCollectionURI(String collectionField, String baseCollectionName) {
         String urlString;
         if (StringUtils.isNotBlank(baseCollectionName)) {
-            urlString = this.apiUrlManager.getUrl(ApiUrlManager.COLLECTIONS_COLLECTION, collectionField, baseCollectionName);
+            urlString = this.apiUrlManager.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, baseCollectionName).build();
         } else {
-            urlString = this.apiUrlManager.getUrl(ApiUrlManager.COLLECTIONS, collectionField);
+            urlString = this.apiUrlManager.path(COLLECTIONS).params(collectionField).build();
         }
         return URI.create(urlString);
     }
@@ -680,7 +683,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_MANIFEST, pi);
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
         return URI.create(urlString);
     }
 
@@ -694,7 +697,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi, BuildMode mode) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_MANIFEST, new SingletonMap<String, String>("mode", mode.name()), pi);
+        String urlString =this.apiUrlManager.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
         return URI.create(urlString);
     }
 
@@ -708,7 +711,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getRangeURI(String pi, String logId) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_SECTIONS_RANGE, pi, logId);
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_SECTIONS_RANGE).params(pi, logId).build();
         return URI.create(urlString);
     }
 
@@ -725,7 +728,7 @@ public abstract class AbstractBuilder {
         if (StringUtils.isBlank(label)) {
             label = "basic";
         }
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_PAGES_SEQUENCE, pi, label);
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
         return URI.create(urlString);
     }
 
@@ -739,7 +742,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getCanvasURI(String pi, int pageNo) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_PAGES_CANVAS, pi, Integer.toString(pageNo));
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, pageNo).build();
         return URI.create(urlString);
     }
 
@@ -787,11 +790,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
-        String urlString = this.apiUrlManager.getUrl(
-                ApiUrlManager.RECORDS_PAGES_ANNOTATIONS, 
-                new SingletonMap<String, String>("type", type.name()),
-                pi, 
-                Integer.toString(pageNo));
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo).query("type", type.name()).build();
         return URI.create(urlString);
     }
 
@@ -805,10 +804,8 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, AnnotationType type) {
-        String urlString = this.apiUrlManager.getUrl(
-                ApiUrlManager.RECORDS_ANNOTATIONS, 
-                new SingletonMap<String, String>("type", type.name()),
-                pi);
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).query("type", type.name()).build();
+
         return URI.create(urlString);
     }
 
@@ -823,9 +820,8 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
-        String urlString = this.apiUrlManager.getUrl(
-                ApiUrlManager.RECORDS_PAGES_COMMENTS_COMMENT, 
-                pi, Integer.toString(pageNo), Long.toString(id));
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
+
         return URI.create(urlString);
     }
 
@@ -839,7 +835,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getLayerURI(String pi, AnnotationType type) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_LAYER, pi, type.name());
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_LAYER).params(pi, type.name()).build();
         return URI.create(urlString);
     }
 
@@ -854,10 +850,10 @@ public abstract class AbstractBuilder {
      */
     public URI getLayerURI(String pi, String logId) {
         if (StringUtils.isNotBlank(logId)) {
-            String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_SECTIONS_LAYER, pi, logId, "base");
+            String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_SECTIONS_LAYER).params(pi, logId).build();
             return URI.create(urlString);            
         } else {
-            String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_LAYER, pi, "base");
+            String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_LAYER).params(pi).build();
             return URI.create(urlString);
         }
     }
@@ -872,7 +868,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getImageAnnotationURI(String pi, int order) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_PAGES_CANVAS, pi, Integer.toString(order)) + "/image/1/";
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/image/1/";
         return URI.create(urlString);
     }
 
@@ -889,7 +885,7 @@ public abstract class AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      */
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.RECORDS_PAGES_CANVAS, pi, Integer.toString(order)) + "/" + type.name() + "/annoNum/";
+        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/" + type.name() + "/annoNum/";
         return URI.create(urlString);
     }
 
@@ -904,7 +900,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationURI(String id) {
-        String urlString = this.apiUrlManager.getUrl(ApiUrlManager.ANNOTATIONS_ANNOTATION, id);
+        String urlString = this.apiUrlManager.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build();
         return URI.create(urlString);
     }
 

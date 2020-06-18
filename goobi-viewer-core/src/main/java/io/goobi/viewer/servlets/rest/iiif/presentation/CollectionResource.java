@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -173,7 +173,7 @@ public class CollectionResource extends AbstractResource {
     public CollectionBuilder getCollectionBuilder() {
         if (this.collectionBuilder == null) {
             try {
-                this.collectionBuilder = new CollectionBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+                this.collectionBuilder = new CollectionBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
             } catch (URISyntaxException e) {
                 throw new IllegalStateException(e);
             }

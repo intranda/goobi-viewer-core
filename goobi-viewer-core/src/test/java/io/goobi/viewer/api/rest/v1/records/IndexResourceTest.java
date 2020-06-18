@@ -36,7 +36,7 @@ import io.goobi.viewer.api.rest.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.servlets.rest.content.RecordsRequestParameters;
-
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 /**
  * @author florian
  *
@@ -75,7 +75,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
     public void testInvalidQuery() throws JsonMappingException, JsonProcessingException {
         params.setSortFields(SolrConstants.YEAR);
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
-        try(Response response = target("/records/query")
+        try(Response response = target(urls.path(RECORDS, RECORDS_QUERY).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(entity)) {
@@ -91,7 +91,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
         params.setCount(4);
         params.setJsonFormat("recordcentric");
         Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
-        try(Response response = target("/records/query")
+        try(Response response = target(urls.path(RECORDS, RECORDS_QUERY).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(entity)) {
@@ -104,7 +104,7 @@ public class IndexResourceTest extends AbstractRestApiTest{
     
     @Test
     public void testStatistics() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target("/records/statistics")
+        try(Response response = target(urls.path(RECORDS, RECORDS_STATISTICS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {

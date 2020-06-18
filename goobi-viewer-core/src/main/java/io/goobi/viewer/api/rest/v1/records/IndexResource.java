@@ -15,6 +15,10 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_QUERY;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_STATISTICS;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +42,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -51,11 +54,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.rss.RSSFeed;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.rest.content.RecordsRequestParameters;
-import io.goobi.viewer.servlets.rest.content.RecordsResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -64,7 +65,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@Path("/records")
+@Path(RECORDS)
 @CORSBinding
 @ViewerRestServiceBinding
 public class IndexResource {
@@ -78,7 +79,7 @@ public class IndexResource {
 
     
     @GET
-    @Path("/statistics")
+    @Path(RECORDS_STATISTICS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "records", "index" },
@@ -102,7 +103,7 @@ public class IndexResource {
     }
     
     @POST
-    @Path("/query")
+    @Path(RECORDS_QUERY)
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(

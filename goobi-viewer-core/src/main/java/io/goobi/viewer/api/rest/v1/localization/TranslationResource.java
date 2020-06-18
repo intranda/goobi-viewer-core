@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.misc.Translation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +50,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  *
  * @author florian
  */
-@Path("/localization/translations")
+@Path(ApiUrls.LOCALIZATION)
 @ViewerRestServiceBinding
 public class TranslationResource {
 
@@ -65,6 +66,7 @@ public class TranslationResource {
      * @throws IllegalRequestException 
      */
     @GET
+    @Path(ApiUrls.LOCALIZATION_TRANSLATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"localization"}, summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
     @ApiResponse(responseCode = "200", description = "Return translations for given keys")
@@ -92,6 +94,10 @@ public class TranslationResource {
 
         public TranslationList(List<Translation> translations) {
             this.translations = translations;
+        }
+        
+        public TranslationList() {
+            this.translations = new ArrayList<>();
         }
 
         /**

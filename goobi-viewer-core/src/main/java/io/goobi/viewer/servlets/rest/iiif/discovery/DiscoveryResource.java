@@ -29,7 +29,7 @@ import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.api.rest.v1.ApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
@@ -70,7 +70,7 @@ public class DiscoveryResource {
     @Path("/activities")
     @Produces({ MediaType.APPLICATION_JSON })
     public OrderedCollection<Activity> getAllChanges() throws PresentationException, IndexUnreachableException {
-        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));;
+        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));;
         OrderedCollection<Activity> collection = builder.buildCollection();
         collection.setContext(CONTEXT);
         return collection;
@@ -90,7 +90,7 @@ public class DiscoveryResource {
     @Path("/activities/{pageNo}")
     @Produces({ MediaType.APPLICATION_JSON })
     public OrderedCollectionPage<Activity> getPage(@PathParam("pageNo") int pageNo) throws PresentationException, IndexUnreachableException {
-        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(new ApiUrlManager(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl()));
         OrderedCollectionPage<Activity> page = builder.buildPage(pageNo);
         page.setContext(CONTEXT);
         return page;

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +45,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  *
  * @author Florian Alpers
  */
-@Path("/localization/vocabularies")
+@Path(ApiUrls.LOCALIZATION)
 @ViewerRestServiceBinding
 public class GlossaryResource {
 
@@ -64,6 +65,7 @@ public class GlossaryResource {
      * @throws java.io.IOException if any.
      */
     @GET
+    @Path(ApiUrls.LOCALIZATION_VOCABS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"localization"}, summary = "Get a list of all glossaries")
     public List<Glossary> listVocabularies() throws IOException {
@@ -81,7 +83,7 @@ public class GlossaryResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
     @GET
-    @Path("/{filename}")
+    @Path(ApiUrls.LOCALIZATION_VOCABS_FILE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"localization"}, summary = "Get glossary from a glossary file")
     public String getVocabulary(@PathParam("filename") @Parameter(description="Glossary filename") String filename) throws IOException, ContentNotFoundException {
