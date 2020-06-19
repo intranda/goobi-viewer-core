@@ -11,18 +11,19 @@
 		margin-bottom: 15px;
 	}
 	&__list {
-		padding: 10px;
+		padding: 2rem;
 		border: 1px solid @middlegray;
 		background-color: @white;
 		margin-bottom: 15px;
-		.panel {
+		.card {
 			border-radius: 0;
 			border-color: transparent;
 			box-shadow: none;
+			margin-bottom: 0.5rem;
+			border: none;
 		}
-		.panel-heading {
-			background-color: @white;
-			border: 1px solid transparent;
+		.card-header {
+			border: none;
 			border-radius: 0;
 			&:hover {}
 			&__fragment-link {
@@ -35,14 +36,15 @@
 			}
 		}
 
-		.panel-title {
-			text-transform: uppercase;
+		.card-title {
 			font-size: @fontLarge;
+					margin-bottom: 0;
 			a {
 				&:hover,
 				&:active,
 				&:focus {
 					text-decoration: none;
+					color: @black;
 				}
 				.fa {
 					margin-right: 5px;
