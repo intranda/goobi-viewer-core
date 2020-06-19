@@ -724,13 +724,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isSidebarTocVisible.
+     * isSidebarTocWidgetVisible.
      * </p>
      *
      * @return a boolean.
      */
-    public boolean isSidebarTocVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocVisible();
+    public boolean isSidebarTocWidgetVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
     }
 
     /**
@@ -775,19 +775,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible();
-    }
-
-    /**
-     * <p>
-     * isSidebarTocLinkVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarTocLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible();
     }
 
     /**
@@ -799,7 +787,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible();
     }
 
     /**
@@ -811,7 +799,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarMetadataLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible();
     }
 
     /**
@@ -823,7 +811,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarThumbsLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible();
     }
 
     /**
