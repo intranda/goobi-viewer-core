@@ -2509,7 +2509,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         int comments = DataManager.getInstance().getDao().deleteComments(null, user);
         UserTools.deleteUser(user);
     }
-    
 
     /**
      * @see JPADAO#changeCampaignStatisticContributors(User,User)
@@ -2582,5 +2581,26 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
         Assert.assertNotNull(o);
         Assert.assertFalse(o.isEnabled());
+    }
+
+    /**
+     * @see JPADAO#createFilterQuery(String,Map,Map)
+     * @verifies build multikey filter query correctly
+     */
+    @Test
+    public void createFilterQuery_shouldBuildMultikeyFilterQueryCorrectly() throws Exception {
+        Map<String, String> filters = Collections.singletonMap("a-a_b-b_c-c_d-d", "bar");
+        Map<String, String> params = new HashMap<>();
+        for (String key : filters.keySet()) {
+            String[] keyParts = key.split(JPADAO.MULTIKEY_SEPARATOR);
+            for (String keyPart : keyParts) {
+                params.put(keyPart.replace("-", ""), " %" + filters.get(key).toUpperCase() + "%");
+            }
+
+        }
+
+        Assert.assertEquals(
+                "STATIC:query AND ( ( UPPER(a.a.a) LIKE :aabbccdd OR UPPER(a.b.b) LIKE :aabbccdd OR UPPER(a.c.c) LIKE :aabbccdd OR UPPER(a.d.d) LIKE :aabbccdd ) ",
+                JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
 }

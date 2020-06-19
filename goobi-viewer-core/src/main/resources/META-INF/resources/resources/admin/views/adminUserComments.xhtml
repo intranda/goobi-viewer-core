@@ -30,7 +30,8 @@
                             </div>
                             <!-- FILTER -->
                             <div class="admin__table-filter">
-                                <viewerComponent:dataTableColumnFilter key="admin__comment_search" filter="#{adminBean.lazyModelComments.getFilter('text')}" />
+                                <viewerComponent:dataTableColumnFilter key="admin__comment_search"
+                                    filter="#{adminBean.lazyModelComments.getFilter('text_owner-nickName_owner-email')}" />
                             </div>
                         </div>
 
