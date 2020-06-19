@@ -1588,7 +1588,13 @@ public class JPADAO implements IDAO {
         List<String> filterKeys = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
         sbQuery.append(createFilterQuery(null, filters, params));
-
+        if (StringUtils.isNotEmpty(sortField)) {
+            sbQuery.append(" ORDER BY a.").append(sortField);
+            if (descending) {
+                sbQuery.append(" DESC");
+            }
+        }
+        
         Query q = em.createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
