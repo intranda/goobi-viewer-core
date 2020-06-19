@@ -102,7 +102,7 @@ var cmsJS = ( function( cms ) {
             
             // left
             rssItemColLeft = $( '<div />' ).addClass( 'col-12 col-md-4' );
-            rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
+            // rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
             rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
             rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
             rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-fluid' );
@@ -129,7 +129,7 @@ var cmsJS = ( function( cms ) {
             } );
             // link to work
             rssItemLinkWrapper = $( '<div />' ).addClass( 'tpl-rss__item-link' );
-            rssItemLink = $( '<a />' ).attr( 'href', item.link ).addClass( 'btn btn--full' ).text( _defaults.msg.continueReading );
+            // rssItemLink = $( '<a />' ).attr( 'href', item.link ).addClass( 'btn btn--full' ).text( _defaults.msg.continueReading );
             rssItemLinkWrapper.append( rssItemLink );
 
             // append to col right
