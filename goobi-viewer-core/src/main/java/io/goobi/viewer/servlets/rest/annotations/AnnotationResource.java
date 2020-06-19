@@ -42,7 +42,7 @@ import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -67,7 +67,7 @@ public class AnnotationResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private IApiUrlManager urls;
+    private AbstractApiUrlManager urls;
     private AnnotationsResourceBuilder annoBuilder;
     
     public AnnotationResource() {

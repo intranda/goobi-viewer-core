@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.api.rest.v1.localization;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_VOCABS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.LOCALIZATION_VOCABS_FILE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

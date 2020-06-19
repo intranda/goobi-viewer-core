@@ -15,38 +15,28 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang.StringUtils;
 
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
  *
  */
-public class ApiUrls implements IApiUrlManager {
+public class ApiUrls extends AbstractApiUrlManager {
 
-    public static final String RECORDS =                                    "/records";
-    
+    public static final String RECORDS_INDEX =                              "/records";
     public static final String RECORDS_QUERY =                              "/query";
     public static final String RECORDS_STATISTICS =                         "/statistics";
     
-    public static final String RECORDS_RSS_XML =                            "/rss.xml";
-    public static final String RECORDS_RSS_JSON =                           "/rss.json";
+    public static final String RECORDS_RSS =                                "/records/rss";
+    public static final String RECORDS_RSS_JSON =                           "/channel.json";
     
     public static final String RECORDS_CHANGES =                            "/records/changes";
-    public static final String RECORDS_CHANGES_PAGE =                       "/pages/{pageNo}";
+    public static final String RECORDS_CHANGES_PAGE =                       "/{pageNo}";
     
     public static final String RECORDS_RECORD =                             "/records/{pi}";
-
     public static final String RECORDS_RIS_TEXT =                           "/ris.txt";
     public static final String RECORDS_RIS_FILE =                           "/ris.ris";
     public static final String RECORDS_TOC =                                "/toc";

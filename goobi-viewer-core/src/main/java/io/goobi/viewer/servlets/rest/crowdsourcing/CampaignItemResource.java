@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.servlets.rest.crowdsourcing;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -57,8 +59,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.Cam
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
@@ -86,7 +86,7 @@ public class CampaignItemResource {
     private HttpServletResponse servletResponse;
 
     @Inject
-    protected IApiUrlManager urls;
+    protected AbstractApiUrlManager urls;
     protected AnnotationsResourceBuilder annoBuilder;
 
     /**
@@ -224,7 +224,7 @@ public class CampaignItemResource {
         for (AnnotationPage page : pages) {
             URI targetURI = URI.create(page.getId());
             String pageOrderString = urls.parseParameter(
-                    urls.path(RECORDS, RECORDS_PAGES_ANNOTATIONS).build(),
+                    urls.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).build(),
                     targetURI.toString(), 
                     "{pageNo}");
             Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);

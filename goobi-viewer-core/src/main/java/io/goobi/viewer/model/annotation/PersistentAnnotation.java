@@ -16,15 +16,12 @@
 package io.goobi.viewer.model.annotation;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,27 +32,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.intranda.api.annotation.AgentType;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.ISelector;
-import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.annotation.wa.Agent;
-import de.intranda.api.annotation.wa.FragmentSelector;
-import de.intranda.api.annotation.wa.SpecificResource;
-import de.intranda.api.annotation.wa.TextualResource;
-import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
-import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;

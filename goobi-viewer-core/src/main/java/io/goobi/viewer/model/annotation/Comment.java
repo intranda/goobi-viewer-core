@@ -15,10 +15,7 @@
  */
 package io.goobi.viewer.model.annotation;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -45,12 +42,6 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.oa.Motivation;
-import de.intranda.api.annotation.oa.OpenAnnotation;
-import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
-import de.intranda.api.iiif.presentation.Manifest;
-import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;

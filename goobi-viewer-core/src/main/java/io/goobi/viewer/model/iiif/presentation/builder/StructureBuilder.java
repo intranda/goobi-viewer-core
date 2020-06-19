@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +36,7 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
@@ -73,7 +71,7 @@ public class StructureBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public StructureBuilder(IApiUrlManager apiUrlManager) {
+    public StructureBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
 

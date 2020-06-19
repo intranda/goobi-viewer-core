@@ -43,7 +43,7 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -68,7 +68,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     private IResource body;
     private IResource target;
     
-    private static IApiUrlManager urls;
+    private static AbstractApiUrlManager urls;
     private static AnnotationsResourceBuilder annoBuilder;
 
     @BeforeClass

@@ -15,16 +15,17 @@
  */
 package io.goobi.viewer.model.iiif.discovery;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -37,17 +38,13 @@ import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.servlets.utils.ServletUtils;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 
 /**
@@ -64,9 +61,9 @@ public class ActivityCollectionBuilder {
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
     private Date startDate = null;
-    private final IApiUrlManager urls;
+    private final AbstractApiUrlManager urls;
 
-    public ActivityCollectionBuilder(ApiUrls apiUrlManager) {
+    public ActivityCollectionBuilder(AbstractApiUrlManager apiUrlManager) {
         this.urls = apiUrlManager;
     }
     

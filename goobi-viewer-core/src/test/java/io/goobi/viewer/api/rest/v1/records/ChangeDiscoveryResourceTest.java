@@ -15,13 +15,16 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static org.junit.Assert.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,11 +35,8 @@ import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v1.ApiUrlManagerTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.rss.Channel;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * @author florian

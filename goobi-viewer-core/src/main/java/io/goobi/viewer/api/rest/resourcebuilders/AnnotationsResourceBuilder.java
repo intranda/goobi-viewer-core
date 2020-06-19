@@ -15,6 +15,14 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -46,13 +54,11 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Manifest;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * @author florian
@@ -60,11 +66,11 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
  */
 public class AnnotationsResourceBuilder {
 
-    private final IApiUrlManager urls;
+    private final AbstractApiUrlManager urls;
 
     private final static Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
 
-    public AnnotationsResourceBuilder(IApiUrlManager urls) {
+    public AnnotationsResourceBuilder(AbstractApiUrlManager urls) {
         this.urls = urls;
     }
 

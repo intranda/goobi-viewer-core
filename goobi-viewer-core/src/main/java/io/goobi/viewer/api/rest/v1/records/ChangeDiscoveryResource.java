@@ -22,31 +22,29 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
-import io.goobi.viewer.model.rss.RSSFeed;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
 
 /**
  * @author florian
  *
  */
-@Path(ApiUrls.RECORDS_CHANGES)
+@Path(RECORDS_CHANGES)
 @CORSBinding
 @ViewerRestServiceBinding
 public class ChangeDiscoveryResource {
@@ -95,7 +93,7 @@ public class ChangeDiscoveryResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @Path(ApiUrls.RECORDS_CHANGES_PAGE)
+    @Path(RECORDS_CHANGES_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     public OrderedCollectionPage<Activity> getPage(@PathParam("pageNo") int pageNo) throws PresentationException, IndexUnreachableException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager);

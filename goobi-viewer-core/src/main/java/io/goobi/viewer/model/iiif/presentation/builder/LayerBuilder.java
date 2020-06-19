@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +39,7 @@ import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -65,7 +63,7 @@ public class LayerBuilder extends AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public LayerBuilder(IApiUrlManager apiUrlManager) {
+    public LayerBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
 

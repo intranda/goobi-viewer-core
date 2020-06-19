@@ -30,8 +30,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -52,19 +50,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.wa.collection.AnnotationCollection;
-import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
-import de.intranda.api.annotation.wa.collection.AnnotationPage;
-import de.intranda.api.iiif.presentation.AnnotationList;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.IApiUrlManager;
-import io.goobi.viewer.api.rest.IApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
-import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -73,8 +67,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.annotation.Comment;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -93,7 +85,7 @@ public class RecordResource {
     @Context
     private HttpServletResponse servletResponse;
     @Inject
-    private IApiUrlManager urls;
+    private AbstractApiUrlManager urls;
 
     private final String pi;
 

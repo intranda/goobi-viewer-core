@@ -15,45 +15,24 @@
  */
 package io.goobi.viewer.api.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Locale;
-
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.glassfish.grizzly.servlet.HttpServletRequestImpl;
-import org.glassfish.grizzly.servlet.HttpServletResponseImpl;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.test.DeploymentContext;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
-import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.model.rss.Channel;
-import io.goobi.viewer.servlets.rest.utils.SessionResource;
 
 
 /**
@@ -110,7 +89,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
             
             @Override
             protected void configure() {
-                bind(urls).to(IApiUrlManager.class);
+                bind(urls).to(AbstractApiUrlManager.class);
                 
             }
         };

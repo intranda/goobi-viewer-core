@@ -15,6 +15,21 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+
 import java.awt.Rectangle;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,9 +47,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.collections4.map.SingletonMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -42,7 +54,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.nodes.CollectionNode;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
@@ -62,7 +73,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -72,13 +83,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.servlets.utils.ServletUtils;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 
 /**
@@ -104,7 +111,7 @@ public abstract class AbstractBuilder {
     public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
             SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS };
 
-    protected final IApiUrlManager urls;
+    protected final AbstractApiUrlManager urls;
     protected final AnnotationsResourceBuilder annoBuilder;
     
     /**
@@ -114,7 +121,7 @@ public abstract class AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public AbstractBuilder(IApiUrlManager apiUrlManager) {
+    public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
         this.urls = apiUrlManager;
         this.annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }

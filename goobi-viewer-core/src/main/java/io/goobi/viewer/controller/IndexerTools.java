@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.SolrConstants.DocType;
@@ -182,7 +182,7 @@ public class IndexerTools {
         List<CampaignRecordStatistic> statistics =
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
         if (!statistics.isEmpty()) {
-            IApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
             AnnotationsResourceBuilder annoBuilder = new AnnotationsResourceBuilder(urls);
             for (CampaignRecordStatistic statistic : statistics) {
                 Campaign campaign = statistic.getOwner();

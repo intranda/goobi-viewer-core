@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@Path(ApiUrls.RECORDS)
+@Path(ApiUrls.RECORDS_RSS)
 @CORSBinding
 @ViewerRestServiceBinding
 public class RSSResource {
@@ -50,7 +50,6 @@ public class RSSResource {
     private HttpServletResponse servletResponse;
     
     @GET
-    @Path(ApiUrls.RECORDS_RSS_XML)
     @Produces({ MediaType.TEXT_XML })
     @Operation(
             tags= {"records", "rss"}, 

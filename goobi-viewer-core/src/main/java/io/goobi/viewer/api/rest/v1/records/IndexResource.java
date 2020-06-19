@@ -15,9 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_QUERY;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_STATISTICS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -65,7 +63,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@Path(RECORDS)
+@Path(RECORDS_INDEX)
 @CORSBinding
 @ViewerRestServiceBinding
 public class IndexResource {

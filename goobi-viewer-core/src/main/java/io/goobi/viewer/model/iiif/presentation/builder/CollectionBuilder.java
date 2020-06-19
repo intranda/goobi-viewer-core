@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -42,7 +40,7 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -89,7 +87,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public CollectionBuilder(IApiUrlManager apiUrlManager) throws URISyntaxException {
+    public CollectionBuilder(AbstractApiUrlManager apiUrlManager) throws URISyntaxException {
         super(apiUrlManager);
     }
 

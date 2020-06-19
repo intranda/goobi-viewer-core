@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.api.rest;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,19 +30,27 @@ import org.apache.commons.lang3.StringUtils;
  * @author florian
  *
  */
-public interface IApiUrlManager {
+public abstract class AbstractApiUrlManager {
     
     /**
      * @return The base url to the api without trailing slashes
      */
-    public String getApiUrl();
+    public abstract String getApiUrl();
     
     /**
      * @return  The base url of the viewer application
      */
-    public String getApplicationUrl();
+    public abstract String getApplicationUrl();
     
-    public default String parseParameter(String template, String url, String parameter) {
+    public static String subPath(String url, String within) {
+        if(url.startsWith(within)) {
+            return url.substring(within.length());
+        } else {
+            return url;
+        }
+    }
+    
+    public String parseParameter(String template, String url, String parameter) {
         if(StringUtils.isNoneBlank(url, parameter)) {
             if(!parameter.matches("\\{.*\\}")) {
                 parameter = "{" + parameter + "}";
@@ -81,7 +88,7 @@ public interface IApiUrlManager {
      * @param recordsRssJson
      * @return
      */
-    public default ApiPath path(String...paths) {
+    public ApiPath path(String...paths) {
         String[] array = (String[]) ArrayUtils.addAll(new String[] {getApiUrl()}, paths);
         return new ApiPath(array);
     }

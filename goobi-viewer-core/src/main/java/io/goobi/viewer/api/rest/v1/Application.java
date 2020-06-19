@@ -21,9 +21,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import com.sun.faces.config.rules.ApplicationRule;
-
-import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 
@@ -49,7 +47,7 @@ public class Application extends ResourceConfig {
             protected void configure() {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
-                bind(new ApiUrls(apiUrl)).to(IApiUrlManager.class);
+                bind(new ApiUrls(apiUrl)).to(AbstractApiUrlManager.class);
             }
         };
         this.init(binder);

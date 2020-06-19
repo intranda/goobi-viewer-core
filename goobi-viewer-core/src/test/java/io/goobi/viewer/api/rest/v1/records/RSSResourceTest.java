@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,7 +33,6 @@ import io.goobi.viewer.api.rest.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RssItem;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 /**
  * @author florian
  *
@@ -42,7 +42,8 @@ public class RSSResourceTest extends AbstractRestApiTest {
    
     @Test
     public void testRSSJsonMax() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_JSON).build())
+        
+        try(Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("max", 5)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -57,7 +58,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSJsonLang() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_JSON).build())
+        try(Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("lang", "en")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -72,7 +73,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSJsonQuery() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_JSON).build())
+        try(Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", "MD_TITLE:Berlin")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -89,7 +90,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSJsonFacets() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_JSON).build())
+        try(Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", "MD_TITLE:Berlin")
                 .queryParam("facets", "DOCSTRCT:volume")
                 .request()
@@ -108,7 +109,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSJsonSubtheme() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_JSON).build())
+        try(Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("subtheme", "subtheme2")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -123,7 +124,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSXmlSubtheme() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_XML).build())
+        try(Response response = target(urls.path(RECORDS_RSS).build())
                 .queryParam("subtheme", "subtheme2")
                 .request()
                 .accept(MediaType.TEXT_XML)
@@ -135,7 +136,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSXml() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_XML).build())
+        try(Response response = target(urls.path(RECORDS_RSS).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
@@ -146,7 +147,7 @@ public class RSSResourceTest extends AbstractRestApiTest {
     
     @Test
     public void testRSSInvalidType() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS, RECORDS_RSS_JSON).build())
+        try(Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
