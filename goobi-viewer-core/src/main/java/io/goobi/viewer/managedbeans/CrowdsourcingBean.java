@@ -195,7 +195,7 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelAnnotations.setFilters("targetPI", "body", "dateCreated");
+            lazyModelAnnotations.setFilters("targetPI_body");
         }
     }
 
