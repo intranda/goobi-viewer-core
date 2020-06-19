@@ -16,7 +16,8 @@
 package io.goobi.viewer.model.termbrowsing;
 
 import java.io.Serializable;
-import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.util.Comparator;
 import java.util.Locale;
 
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * Custom string comparator for browsing terms (case-insensitive, ignores brackets, natural sorting).
@@ -44,7 +46,13 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
         } else {
             this.locale = Locale.GERMAN;
         }
-        comparator = new AlphanumCollatorComparator(Collator.getInstance(this.locale));
+        // comparator = new AlphanumCollatorComparator(Collator.getInstance(this.locale));
+        try {
+            comparator = new AlphanumCollatorComparator(new RuleBasedCollator("< a< b< c< d"));
+        } catch (ParseException e) {
+            logger.error(e.getMessage());
+            comparator = new AlphanumCollatorComparator(null);
+        }
     }
 
     /**
@@ -52,6 +60,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
      * @should compare correctly
      * @should use sort term if provided
      * @should use translated term if provided
+     * @should sort accented vowels after plain vowels
      */
     @Override
     public int compare(BrowseTerm o1, BrowseTerm o2) {
@@ -72,10 +81,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
                 relevantString1 = relevantString1.toLowerCase();
             }
         }
-        // Remove the first character, if not alphanumeric
-        if (relevantString1.length() > 1 && !StringUtils.isAlphanumeric(relevantString1.substring(0, 1))) {
-            relevantString1 = relevantString1.substring(1);
-        }
+        relevantString1 = normalizeString(relevantString1, DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
 
         String relevantString2 = o2a.getTerm();
         if (StringUtils.isNotEmpty(relevantString2)) {
@@ -88,12 +94,37 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
                 relevantString2 = relevantString2.toLowerCase();
             }
         }
-        // Remove the first character, if not alphanumeric
-        if (relevantString2.length() > 1 && !StringUtils.isAlphanumeric(relevantString2.substring(0, 1))) {
-            relevantString2 = relevantString2.substring(1);
-        }
+        relevantString2 = normalizeString(relevantString2, DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
 
         // logger.trace("Comparing '{}' to '{}' ({})", relevantString1, relevantString2, locale);
         return comparator.compare(relevantString1, relevantString2);
+    }
+
+    /**
+     * 
+     * @param s String to normalize
+     * @param ignoreChars Optional string containing leading characters to remove from the string
+     * @return Cleaned-up string for comparison
+     * @should use ignoreChars if provided
+     * @should remove first char if non alphanum if ignoreChars not provided
+     */
+    public static String normalizeString(String s, String ignoreChars) {
+        if (s == null) {
+            return null;
+        }
+
+        if (StringUtils.isNotEmpty(ignoreChars)) {
+            // Remove leading chars if they are among ignored chars
+            while (s.length() > 1 && ignoreChars.contains(s.substring(0, 1))) {
+                s = s.substring(1);
+            }
+        } else {
+            // Remove the first character, if not alphanumeric
+            if (s.length() > 1 && !StringUtils.isAlphanumeric(s.substring(0, 1))) {
+                s = s.substring(1);
+            }
+        }
+
+        return s;
     }
 }

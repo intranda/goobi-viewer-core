@@ -92,6 +92,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getBrowsingMenuSortingIgnoreLeadingChars()
+     * @verifies return correct value
+     */
+    @Test
+    public void getBrowsingMenuSortingIgnoreLeadingChars_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(".[]", DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
+    }
+
+    /**
      * @see Configuration#getCollectionBlacklist()
      * @verifies return all configured elements
      */
