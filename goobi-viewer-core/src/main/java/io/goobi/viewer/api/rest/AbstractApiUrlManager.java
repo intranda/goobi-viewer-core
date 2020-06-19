@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.api.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -111,7 +113,8 @@ public abstract class AbstractApiUrlManager {
         }
         
         public String build() {
-            return String.join("", this.paths);
+            String path = String.join("", this.paths);
+            return path;
         }
     }
     

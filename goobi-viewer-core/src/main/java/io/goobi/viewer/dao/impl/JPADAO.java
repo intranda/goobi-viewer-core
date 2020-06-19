@@ -3654,6 +3654,23 @@ public class JPADAO implements IDAO {
     }
     
     /** {@inheritDoc} */
+    @Override
+    public long getAnnotationCountForWork(String pi) throws DAOException {
+        preQuery();
+        String query = "SELECT COUNT(a) FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        Query q = em.createQuery(query);
+        q.setParameter("pi", pi);
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
+    
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {

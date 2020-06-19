@@ -38,7 +38,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     
     public static final String RECORDS_RECORD =                             "/records/{pi}";
     public static final String RECORDS_RIS_TEXT =                           "/ris.txt";
-    public static final String RECORDS_RIS_FILE =                           "/ris.ris";
+    public static final String RECORDS_RIS_FILE =                           "/ris";
     public static final String RECORDS_TOC =                                "/toc";
     public static final String RECORDS_ANNOTATIONS =                        "/annotations";
     public static final String RECORDS_COMMENTS =                           "/comments";

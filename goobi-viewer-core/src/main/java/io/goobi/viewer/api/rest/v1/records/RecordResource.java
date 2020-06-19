@@ -25,8 +25,10 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TOC;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,7 +51,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -98,15 +102,18 @@ public class RecordResource {
         this.pi = pi;
     }
 
+    @GET
     @javax.ws.rs.Path(RECORDS_RIS_FILE)
-    @CORSBinding
-    @Operation(tags = { "records", "ris" }, summary = "Download ris as file")
     @Produces({ MediaType.TEXT_PLAIN })
-    public StreamingOutput getRISAsFile()
+    @Operation(tags = { "records", "ris" }, summary = "Download ris as file")
+    public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
         StructElement se = getStructElement(pi);
-        return new RisResourceBuilder(servletRequest, servletResponse).writeRIS(se);
+        String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
+        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        String ris = new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
+        return ris;
     }
 
     /**
@@ -147,7 +154,7 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List annotations for a record")
-    public IResource getAnnotationsForRecord(
+    public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
@@ -167,11 +174,11 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_ANNOTATIONS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public IResource getAnnotationPageForRecord()
+    public AnnotationPage getAnnotationPageForRecord(@PathParam("page") Integer page)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecord(pi, uri);
+        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecord(pi, uri, page);
     }
     
     @GET
@@ -179,7 +186,7 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List comments for a record")
-    public IResource getCommentsForRecord(
+    public IAnnotationCollection getCommentsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
@@ -190,7 +197,7 @@ public class RecordResource {
             return new AnnotationsResourceBuilder(urls).getOAnnotationListForRecordComments(pi, uri);
         } else {
             URI uri = URI.create(apiPath.build());
-            return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecord(pi, uri);
+            return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecordComments(pi, uri);
         }
     }
     
@@ -198,11 +205,11 @@ public class RecordResource {
     @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public IResource getCommentPageForRecord()
+    public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
-        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecordComments(pi, uri);
+        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecordComments(pi, uri, page);
     }
 
 
@@ -248,8 +255,8 @@ public class RecordResource {
      * @throws PresentationException
      */
     private StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:, + pi", null);
-        StructElement struct = new StructElement((long) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
+        StructElement struct = new StructElement(Long.valueOf((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
         return struct;
     }
 }

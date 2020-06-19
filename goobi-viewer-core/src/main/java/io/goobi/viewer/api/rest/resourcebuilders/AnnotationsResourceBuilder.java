@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ISelector;
 import de.intranda.api.annotation.oa.Motivation;
@@ -80,8 +81,8 @@ public class AnnotationsResourceBuilder {
      * @return
      * @throws DAOException
      */
-    public IResource getWebAnnotationCollectionForRecord(String pi, URI uri) throws DAOException {
-        long count = DataManager.getInstance().getDao().getAnnotationCountForTarget(pi, null);
+    public AnnotationCollection getWebAnnotationCollectionForRecord(String pi, URI uri) throws DAOException {
+        long count = DataManager.getInstance().getDao().getAnnotationCountForWork(pi);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
         AnnotationCollection collection = builder.buildCollection();
         return collection;
@@ -102,14 +103,15 @@ public class AnnotationsResourceBuilder {
 
     /**
      * @param uri
+     * @param page 
      * @return
      * @throws DAOException
      */
-    public AnnotationPage getWebAnnotationPageForRecord(String pi, URI uri) throws DAOException {
+    public AnnotationPage getWebAnnotationPageForRecord(String pi, URI uri, Integer page) throws DAOException {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.buildPage(annos, 1);
+        AnnotationPage annoPage = builder.buildPage(annos, page);
         return annoPage;
     }
 
@@ -128,15 +130,15 @@ public class AnnotationsResourceBuilder {
         return collection;
     }
 
-    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri) throws DAOException {
+    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page) throws DAOException {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi, true);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationPage annoPage = builder.buildPage(
                 data.stream()
-                        .map(c -> getAsOpenAnnotation(c))
+                        .map(c -> getAsWebAnnotation(c))
                         .collect(Collectors.toList()),
-                1);
+                page);
 
         return annoPage;
     }
@@ -165,7 +167,7 @@ public class AnnotationsResourceBuilder {
 
     public WebAnnotation getAsWebAnnotation(Comment comment) {
         WebAnnotation anno = new WebAnnotation(getWebAnnotationCommentURI(comment.getPi(), comment.getPage(), comment.getId()));
-        anno.setMotivation(Motivation.COMMENTING);
+        anno.setMotivation(de.intranda.api.annotation.wa.Motivation.COMMENTING);
         if (comment.getPage() != null) {
             anno.setTarget(
                     new Canvas(URI.create(urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(comment.getPi(), comment.getPage()).build())));
@@ -188,7 +190,7 @@ public class AnnotationsResourceBuilder {
     private URI getWebAnnotationCommentURI(String pi, Integer page, Long id) {
         String url;
         if (page != null) {
-            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).query("format", "oa").build();
+            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).build();
         } else {
             url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).query("format", "oa").build();
         }
@@ -198,9 +200,9 @@ public class AnnotationsResourceBuilder {
     private URI getOpenAnnotationCommentURI(String pi, Integer page, Long id) {
         String url;
         if (page != null) {
-            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).build();
+            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).query("format", "oa").build();
         } else {
-            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).build();
+            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).query("format", "oa").build();
         }
         return URI.create(url);
     }

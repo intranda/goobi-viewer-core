@@ -1831,6 +1831,13 @@ public interface IDAO {
     public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException;
 
     /**
+     * @param pi
+     * @return
+     * @throws DAOException
+     */
+    long getAnnotationCountForWork(String pi) throws DAOException;
+    
+    /**
      * <p>
      * getAnnotationsForCampaignAndWork.
      * </p>
@@ -2010,4 +2017,6 @@ public interface IDAO {
      * @throws DAOException
      */
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
+
+
 }

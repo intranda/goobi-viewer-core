@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -42,6 +44,8 @@ import io.goobi.viewer.model.viewer.StructElement;
  *
  */
 public class RisResourceBuilder {
+    
+    private static final Logger logger = LoggerFactory.getLogger(RisResourceBuilder.class);
     
     HttpServletRequest request;
     HttpServletResponse response;
@@ -89,6 +93,7 @@ public class RisResourceBuilder {
             try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
                 FileTools.copyStream(out, in);
             } catch (IOException e) {
+                logger.error("Error reading RIS from file " + tempFile, e);
             } finally {
                 out.flush();
                 out.close();
