@@ -10,7 +10,7 @@
     </composite:interface>
 
     <composite:implementation>
-		<ui:fragment rendered="#{activeDocumentBean.viewManager.displayTocViewLink}">
+		<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisible}">
 			<div id="widgetToc" class="widget widget-toc">
                 <!-- OVERLAY -->
                 <div class="widget-toc__overlay"></div>

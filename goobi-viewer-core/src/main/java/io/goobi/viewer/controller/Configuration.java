@@ -789,7 +789,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * 
      * @return
@@ -2109,55 +2109,56 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarPageLinkVisible() {
+    public boolean isSidebarPageViewLinkVisible() {
         return getLocalBoolean("sidebar.page.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarCalendarLinkVisible.
+     * isSidebarCalendarViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarCalendarLinkVisible() {
+    public boolean isSidebarCalendarViewLinkVisible() {
         return getLocalBoolean("sidebar.calendar.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarTocLinkVisible.
+     * This method checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC
+     * <strong>widget</strong> is enabled, use <code>isSidebarTocVisible()</code>.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarTocLinkVisible() {
+    public boolean isSidebarTocViewLinkVisible() {
         return getLocalBoolean("sidebar.toc.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarThumbsLinkVisible.
+     * isSidebarThumbsViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarThumbsLinkVisible() {
+    public boolean isSidebarThumbsViewLinkVisible() {
         return getLocalBoolean("sidebar.thumbs.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarMetadataLinkVisible.
+     * isSidebarMetadataViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarMetadataLinkVisible() {
+    public boolean isSidebarMetadataViewLinkVisible() {
         return getLocalBoolean("sidebar.metadata.visible", true);
     }
 
@@ -2199,13 +2200,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSidebarTocVisible.
+     * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
+     * widget is enabled, use <code>isSidebarTocVisible()</code>.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarTocVisible() {
+    public boolean isSidebarTocWidgetVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
 

@@ -1321,39 +1321,39 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarMetadataLinkVisible()
+     * @see Configuration#isSidebarMetadataViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarPageLinkVisible()
+     * @see Configuration#isSidebarPageViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarPageLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarCalendarLinkVisible()
+     * @see Configuration#isSidebarCalendarViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarThumbsLinkVisible()
+     * @see Configuration#isSidebarThumbsViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible());
     }
 
     /**
@@ -1366,21 +1366,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarTocLinkVisible()
+     * @see Configuration#isSidebarTocViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarTocLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarTocVisible()
+     * @see Configuration#isSidebarTocWidgetVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarTocVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
     }
 
     /**

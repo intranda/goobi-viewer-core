@@ -1940,7 +1940,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayObjectViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible() && isHasPages() && !isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible() && isHasPages() && !isFilesOnly();
     }
 
     /**
@@ -1951,7 +1951,7 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, DAOException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible() && calendarView != null && calendarView.isDisplay();
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible() && calendarView != null && calendarView.isDisplay();
     }
 
     /**
@@ -1962,7 +1962,7 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarTocVisible() && !isFilesOnly() && topDocument != null
+        return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible() && !isFilesOnly() && topDocument != null
                 && !topDocument.isLidoRecord() && toc != null
                 && (toc.isHasChildren() || DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
     }
@@ -1975,7 +1975,7 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible()
                 && pageLoader != null && pageLoader.getNumPages() > 1 && !isFilesOnly();
     }
 
@@ -1987,7 +1987,7 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isDisplayMetadataViewLink() throws IndexUnreachableException, DAOException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible() && topDocument != null && !topDocument.isGroup();
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible() && topDocument != null && !topDocument.isGroup();
     }
 
     /**
