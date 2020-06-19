@@ -86,15 +86,6 @@ public class ConfigurationBeanTest extends AbstractTest {
     }
 
     /**
-     * @see ConfigurationBean#isSidebarTocLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarTocLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarTocLinkVisible());
-    }
-
-    /**
      * @see ConfigurationBean#isSidebarThumbsLinkVisible()
      * @verifies return correct value
      */
