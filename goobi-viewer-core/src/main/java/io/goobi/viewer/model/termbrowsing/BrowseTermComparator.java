@@ -16,7 +16,8 @@
 package io.goobi.viewer.model.termbrowsing;
 
 import java.io.Serializable;
-import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.util.Comparator;
 import java.util.Locale;
 
@@ -45,7 +46,13 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
         } else {
             this.locale = Locale.GERMAN;
         }
-        comparator = new AlphanumCollatorComparator(Collator.getInstance(this.locale));
+        // comparator = new AlphanumCollatorComparator(Collator.getInstance(this.locale));
+        try {
+            comparator = new AlphanumCollatorComparator(new RuleBasedCollator("< a< b< c< d"));
+        } catch (ParseException e) {
+            logger.error(e.getMessage());
+            comparator = new AlphanumCollatorComparator(null);
+        }
     }
 
     /**

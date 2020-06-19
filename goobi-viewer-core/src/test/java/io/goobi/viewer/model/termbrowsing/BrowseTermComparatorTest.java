@@ -34,8 +34,11 @@ public class BrowseTermComparatorTest {
     public void compare_shouldCompareCorrectly() throws Exception {
         BrowseTermComparator comparator = new BrowseTermComparator(null);
         Assert.assertEquals(1, comparator.compare(new BrowseTerm("foo", null, null), new BrowseTerm("bar", null, null)));
-        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("foo1", null, null), new BrowseTerm("foo2", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("A", null, null), new BrowseTerm("Á", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("Azcárate", null, null), new BrowseTerm("Ávila", null, null)));
         Assert.assertEquals(0, comparator.compare(new BrowseTerm("foo123", null, null), new BrowseTerm("foo123", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("foo12", null, null), new BrowseTerm("foo123", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("12foo", null, null), new BrowseTerm("123foo", null, null)));
     }
 
     /**
