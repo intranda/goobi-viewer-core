@@ -57,15 +57,17 @@
             border-right: none;
             &:focus {
                 border-right-color: @blue;
-                & + .input-group-addon {
+                & + .input-group-append {
                 	border-color: @blue;
                 }
             }
         }
-        .input-group-addon {
+        .input-group-append {
             padding: 0;
             border-radius: 0;
             background-color: @white;
+            border: 1px solid #ced4da;
+            border-left: none;
             a {
                 color: @black;
                 &:hover,
@@ -97,7 +99,6 @@
         }
     }
     &__input-col {
-    	margin-bottom: 15px;
         a {
             display: inline-block;
             padding: 7px;
@@ -152,7 +153,6 @@
 @media screen and (max-width: @smallBreakpoint) {
     .search-advanced__input-group input[type="text"],
     .search-advanced__input-group .form-control__select { 
-        width: 100%; 
     } 
 }
 
