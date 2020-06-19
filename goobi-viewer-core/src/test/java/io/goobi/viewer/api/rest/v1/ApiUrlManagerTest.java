@@ -78,5 +78,18 @@ public class ApiUrlManagerTest {
                 .build();
         assertEquals(PATH_FINAL_QUERIES, url);
     }
+    
+    @Test
+    public void testParseParameter() {
+        String pi = "PPN1234";
+        String pageNo = "5";
+        String id = "172";
+        String template = manager.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).build();
+        String url = manager.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
+        
+        assertEquals(pi, manager.parseParameter(template, url, "pi"));
+        assertEquals(pageNo, manager.parseParameter(template, url, "pageNo"));
+        assertEquals(id, manager.parseParameter(template, url, "id"));
+    }
 
 }

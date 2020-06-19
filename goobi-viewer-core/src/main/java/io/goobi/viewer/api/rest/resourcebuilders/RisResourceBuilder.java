@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.builders;
+package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,13 +41,13 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author florian
  *
  */
-public class RisBuilder {
+public class RisResourceBuilder {
     
     HttpServletRequest request;
     HttpServletResponse response;
     
     
-    public RisBuilder(HttpServletRequest request, HttpServletResponse response) {
+    public RisResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }

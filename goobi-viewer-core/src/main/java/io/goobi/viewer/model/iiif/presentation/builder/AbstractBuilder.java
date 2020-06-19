@@ -63,6 +63,7 @@ import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -103,8 +104,9 @@ public abstract class AbstractBuilder {
     public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
             SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS };
 
-    protected final IApiUrlManager apiUrlManager;
-
+    protected final IApiUrlManager urls;
+    protected final AnnotationsResourceBuilder annoBuilder;
+    
     /**
      * <p>
      * Constructor for AbstractBuilder.
@@ -113,8 +115,8 @@ public abstract class AbstractBuilder {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
     public AbstractBuilder(IApiUrlManager apiUrlManager) {
-        this.apiUrlManager = apiUrlManager;
-
+        this.urls = apiUrlManager;
+        this.annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }
     
     
@@ -126,7 +128,7 @@ public abstract class AbstractBuilder {
         if(uri.isAbsolute()) {
             return uri;
         } else {
-            return URI.create(this.apiUrlManager.getApplicationUrl()).resolve(uri);
+            return URI.create(this.urls.getApplicationUrl()).resolve(uri);
         }
     }
     
@@ -160,12 +162,12 @@ public abstract class AbstractBuilder {
      */
     public String getMetsResolverUrl(StructElement ele) {
         try {
-            return apiUrlManager.getApplicationUrl() + "/metsresolver?id=" + ele.getPi();
+            return urls.getApplicationUrl() + "/metsresolver?id=" + ele.getPi();
         } catch (Exception e) {
             logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
             Messages.error("errGetCurrUrl");
         }
-        return apiUrlManager.getApplicationUrl() + "/metsresolver?id=" + 0;
+        return urls.getApplicationUrl() + "/metsresolver?id=" + 0;
     }
 
     /**
@@ -178,12 +180,12 @@ public abstract class AbstractBuilder {
      */
     public String getLidoResolverUrl(StructElement ele) {
         try {
-            return apiUrlManager.getApplicationUrl() + "/lidoresolver?id=" + ele.getPi();
+            return urls.getApplicationUrl() + "/lidoresolver?id=" + ele.getPi();
         } catch (Exception e) {
             logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
             Messages.error("errGetCurrUrl");
         }
-        return apiUrlManager.getApplicationUrl() + "/lidoresolver?id=" + 0;
+        return urls.getApplicationUrl() + "/lidoresolver?id=" + 0;
     }
 
     /**
@@ -197,12 +199,12 @@ public abstract class AbstractBuilder {
      */
     public String getViewUrl(PhysicalElement ele, PageType pageType) {
         try {
-            return apiUrlManager.getApplicationUrl() + "/" + pageType.getName() + ele.getPurlPart();
+            return urls.getApplicationUrl() + "/" + pageType.getName() + ele.getPurlPart();
         } catch (Exception e) {
             logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
             Messages.error("errGetCurrUrl");
         }
-        return apiUrlManager.getApplicationUrl() + "/metsresolver?id=" + 0;
+        return urls.getApplicationUrl() + "/metsresolver?id=" + 0;
     }
 
     /**
@@ -506,7 +508,8 @@ public abstract class AbstractBuilder {
         String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-        anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
+        URI annoURI = URI.create(urls.path(ApiUrls.ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(iddoc).build());
+        anno = new OpenAnnotation(annoURI);
 
         IResource body = null;
         if (doc.containsKey(SolrConstants.MD_BODY)) {
@@ -667,9 +670,9 @@ public abstract class AbstractBuilder {
     public URI getCollectionURI(String collectionField, String baseCollectionName) {
         String urlString;
         if (StringUtils.isNotBlank(baseCollectionName)) {
-            urlString = this.apiUrlManager.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, baseCollectionName).build();
+            urlString = this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, baseCollectionName).build();
         } else {
-            urlString = this.apiUrlManager.path(COLLECTIONS).params(collectionField).build();
+            urlString = this.urls.path(COLLECTIONS).params(collectionField).build();
         }
         return URI.create(urlString);
     }
@@ -683,7 +686,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
         return URI.create(urlString);
     }
 
@@ -697,7 +700,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi, BuildMode mode) {
-        String urlString =this.apiUrlManager.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
+        String urlString =this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).query("mode", mode.name()).build();
         return URI.create(urlString);
     }
 
@@ -711,7 +714,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getRangeURI(String pi, String logId) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_SECTIONS_RANGE).params(pi, logId).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_SECTIONS_RANGE).params(pi, logId).build();
         return URI.create(urlString);
     }
 
@@ -728,7 +731,7 @@ public abstract class AbstractBuilder {
         if (StringUtils.isBlank(label)) {
             label = "basic";
         }
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
         return URI.create(urlString);
     }
 
@@ -742,7 +745,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getCanvasURI(String pi, int pageNo) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, pageNo).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, pageNo).build();
         return URI.create(urlString);
     }
 
@@ -790,7 +793,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo).query("type", type.name()).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo).query("type", type.name()).build();
         return URI.create(urlString);
     }
 
@@ -804,7 +807,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, AnnotationType type) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).query("type", type.name()).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).query("type", type.name()).build();
 
         return URI.create(urlString);
     }
@@ -820,7 +823,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
 
         return URI.create(urlString);
     }
@@ -835,7 +838,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getLayerURI(String pi, AnnotationType type) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_LAYER).params(pi, type.name()).build();
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_LAYER).params(pi, type.name()).build();
         return URI.create(urlString);
     }
 
@@ -850,10 +853,10 @@ public abstract class AbstractBuilder {
      */
     public URI getLayerURI(String pi, String logId) {
         if (StringUtils.isNotBlank(logId)) {
-            String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_SECTIONS_LAYER).params(pi, logId).build();
+            String urlString = this.urls.path(RECORDS_RECORD, RECORDS_SECTIONS_LAYER).params(pi, logId).build();
             return URI.create(urlString);            
         } else {
-            String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_LAYER).params(pi).build();
+            String urlString = this.urls.path(RECORDS_RECORD, RECORDS_LAYER).params(pi).build();
             return URI.create(urlString);
         }
     }
@@ -868,7 +871,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getImageAnnotationURI(String pi, int order) {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/image/1/";
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/image/1/";
         return URI.create(urlString);
     }
 
@@ -885,7 +888,7 @@ public abstract class AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      */
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
-        String urlString = this.apiUrlManager.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/" + type.name() + "/annoNum/";
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/" + type.name() + "/annoNum/";
         return URI.create(urlString);
     }
 
@@ -900,7 +903,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationURI(String id) {
-        String urlString = this.apiUrlManager.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build();
+        String urlString = this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).build();
         return URI.create(urlString);
     }
 

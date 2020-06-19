@@ -202,7 +202,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
             /*VIEWER*/
             try {
-                LinkingContent viewerPage = new LinkingContent(new URI(this.apiUrlManager.getApplicationUrl() + "/" + ele.getUrl()));
+                LinkingContent viewerPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + ele.getUrl()));
                 viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
                 manifest.addRendering(viewerPage);
             } catch (URISyntaxException e) {
@@ -218,7 +218,7 @@ public class ManifestBuilder extends AbstractBuilder {
                         .filter(page -> page.isPublished())
                         .forEach(page -> {
                             try {
-                                LinkingContent cmsPage = new LinkingContent(new URI(this.apiUrlManager.getApplicationUrl() + "/" + page.getUrl()));
+                                LinkingContent cmsPage = new LinkingContent(new URI(this.urls.getApplicationUrl() + "/" + page.getUrl()));
                                 //                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
                                 //                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
                                 //                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));

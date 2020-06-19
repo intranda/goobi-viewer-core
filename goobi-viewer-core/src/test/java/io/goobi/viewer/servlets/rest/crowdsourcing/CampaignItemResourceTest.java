@@ -42,6 +42,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -134,7 +135,8 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         resource.setAnnotationsForManifest(Collections.singletonList(page), campaign.getId(), pi);
 
         Assert.assertFalse(DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).isEmpty());
-        WebAnnotation anno2 = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).get(0).getAsAnnotation();
+        PersistentAnnotation pAnno2 = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi).get(0);
+        WebAnnotation anno2 = resource.annoBuilder.getAsWebAnnotation(pAnno2);
         Assert.assertEquals(anno.getBody(), anno2.getBody());
         Assert.assertEquals(anno.getTarget(), anno2.getTarget());
         Assert.assertEquals(anno.getGenerator(), anno2.getGenerator());

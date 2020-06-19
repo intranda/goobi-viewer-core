@@ -679,7 +679,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(comment);
         Assert.assertEquals(Long.valueOf(1), comment.getId());
         Assert.assertEquals("PI 1", comment.getPi());
-        Assert.assertEquals(1, comment.getPage());
+        Assert.assertEquals(new Integer(1), comment.getPage());
         Assert.assertNotNull(comment.getOwner());
         Assert.assertEquals(Long.valueOf(1), comment.getOwner().getId());
         Assert.assertEquals("comment 1 text", comment.getText());

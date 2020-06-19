@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -42,6 +43,9 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.api.rest.IApiUrlManager;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -63,7 +67,17 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     private Question generator;
     private IResource body;
     private IResource target;
+    
+    private static IApiUrlManager urls;
+    private static AnnotationsResourceBuilder annoBuilder;
 
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseEnabledTest.setUpClass();
+        urls = new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        annoBuilder = new AnnotationsResourceBuilder(urls);
+    }
+    
     /**
      * @throws java.lang.Exception
      */
@@ -96,7 +110,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         annotation.setBody(body);
         annotation.setTarget(target);
 
-        daoAnno = new PersistentAnnotation(annotation);
+        daoAnno = new PersistentAnnotation(annotation, 1l, "7", 10);
     }
 
     /**
@@ -106,22 +120,6 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-    }
-
-    @Test
-    public void testIdConversion() {
-
-        URI webAnnoURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "annotations/562");
-
-        PersistentAnnotation persAnno = new PersistentAnnotation();
-        persAnno.setId(PersistentAnnotation.getId(webAnnoURI));
-
-        Assert.assertEquals(persAnno.getId(), 562l, 0l);
-
-        WebAnnotation webAnno = persAnno.getAsAnnotation();
-
-        Assert.assertEquals(webAnno.getId(), webAnnoURI);
-
     }
 
     @Test
@@ -136,10 +134,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
                         + "",
                 targetString);
 
-        IResource retrievedBody = daoAnno.getBodyAsResource();
+        IResource retrievedBody = annoBuilder.getBodyAsResource(daoAnno);
         Assert.assertEquals(body, retrievedBody);
 
-        IResource retrievedTarget = daoAnno.getTargetAsResource();
+        IResource retrievedTarget = annoBuilder.getTargetAsResource(daoAnno);
         Assert.assertEquals(target, retrievedTarget);
 
     }
@@ -167,8 +165,8 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(existingAnnotations + 1, list.size());
 
             PersistentAnnotation retrieved = list.get(list.size() - 1);
-            Assert.assertEquals(body, retrieved.getBodyAsResource());
-            Assert.assertEquals(target, retrieved.getTargetAsResource());
+            Assert.assertEquals(body, annoBuilder.getBodyAsResource(retrieved));
+            Assert.assertEquals(target, annoBuilder.getTargetAsResource(retrieved));
 
         } finally {
             em.close();
@@ -191,10 +189,10 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     public void testPersistAnnotation() throws DAOException {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assert.assertTrue(added);
-
+        URI uri = URI.create(Long.toString(daoAnno.getId()));
         PersistentAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
-        WebAnnotation webAnno = daoAnno.getAsAnnotation();
-        WebAnnotation fromDAOWebAnno = fromDAO.getAsAnnotation();
+        WebAnnotation webAnno = annoBuilder.getAsWebAnnotation(daoAnno);
+        WebAnnotation fromDAOWebAnno = annoBuilder.getAsWebAnnotation(daoAnno);
         Assert.assertEquals(webAnno.getBody(), fromDAOWebAnno.getBody());
         Assert.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assert.assertEquals(webAnno, fromDAOWebAnno);

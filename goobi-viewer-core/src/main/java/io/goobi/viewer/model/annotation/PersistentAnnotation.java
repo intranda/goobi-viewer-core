@@ -55,6 +55,7 @@ import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
+import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -75,10 +76,6 @@ import io.goobi.viewer.model.security.user.User;
 public class PersistentAnnotation {
 
     private static final Logger logger = LoggerFactory.getLogger(PersistentAnnotation.class);
-
-    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "annotations/{id}";
-    private static final String URI_ID_REGEX = ".*/annotations/(\\d+)/?$";
-    private static final String TARGET_REGEX = ".*/iiif/manifests/(.+?)/(?:canvas|manifest)?(?:/(\\d+))?/?$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -145,11 +142,11 @@ public class PersistentAnnotation {
      *
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      */
-    public PersistentAnnotation(WebAnnotation source) {
+    public PersistentAnnotation(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
-        this.id = source.getId() != null ? getId(source.getId()) : null;
+        this.id = id;
         this.creatorId = null;
         this.generatorId = null;
         try {
@@ -183,41 +180,9 @@ public class PersistentAnnotation {
         } catch (JsonProcessingException e) {
             logger.error("Error writing body " + source.getBody() + " to string ", e);
         }
-        this.targetPI = parsePI(source.getTarget().getId());
-        this.targetPageOrder = parsePageOrder(source.getTarget().getId());
+        this.targetPI = targetPI;
+        this.targetPageOrder = targetPage;
 
-    }
-
-    /**
-     * Get the PI of the annotation target from its URI id
-     *
-     * @param uri a {@link java.net.URI} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String parsePI(URI uri) {
-        Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
-
-    /**
-     * Extract the page order from a canvas url. If the url points to a manifest, return null
-     *
-     * @param uri a {@link java.net.URI} object.
-     * @return a {@link java.lang.Integer} object.
-     */
-    public static Integer parsePageOrder(URI uri) {
-        Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
-        if (matcher.find()) {
-            String pageNo = matcher.group(2);
-            if (StringUtils.isNotBlank(pageNo)) {
-                return Integer.parseInt(pageNo);
-            }
-            return null;
-        }
-        return null;
     }
 
     /**
@@ -240,46 +205,6 @@ public class PersistentAnnotation {
      */
     public void setId(Long id) {
         this.id = id;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>id</code>.
-     * </p>
-     *
-     * @param idAsURI a {@link java.net.URI} object.
-     * @return a {@link java.lang.Long} object.
-     */
-    public static Long getId(URI idAsURI) {
-        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
-        if (matcher.find()) {
-            String idString = matcher.group(1);
-            return Long.parseLong(idString);
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * getIdAsURI.
-     * </p>
-     *
-     * @return a {@link java.net.URI} object.
-     */
-    public URI getIdAsURI() {
-        return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
-    }
-
-    /**
-     * <p>
-     * getIdAsURI.
-     * </p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link java.net.URI} object.
-     */
-    public static URI getIdAsURI(String id) {
-        return URI.create(URI_ID_TEMPLATE.replace("{id}", id));
     }
 
     /**
@@ -489,44 +414,6 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Get the
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
-        if (this.body != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            IResource resource = mapper.readValue(this.body, TextualResource.class);
-            return resource;
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * getBodyAsOAResource.
-     * </p>
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getBodyAsOAResource() throws JsonParseException, JsonMappingException, IOException {
-        TextualResource resource = (TextualResource) getBodyAsResource();
-        if (resource != null) {
-            IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
-            return oaResource;
-        }
-        return null;
-    }
-
-    /**
      * <p>
      * Getter for the field <code>target</code>.
      * </p>
@@ -593,105 +480,6 @@ public class PersistentAnnotation {
     }
 
     /**
-     * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getTargetAsResource() throws JsonParseException, JsonMappingException, IOException {
-        if (this.target != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            IResource resource;
-            if (this.target.contains("SpecificResource")) {
-                resource = mapper.readValue(this.target, SpecificResource.class);
-            } else {
-                resource = mapper.readValue(this.target, TypedResource.class);
-            }
-            return resource;
-        }
-        return null;
-    }
-
-    /**
-     * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
-     *
-     * @return a {@link de.intranda.api.annotation.IResource} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
-        IResource resource = getTargetAsResource();
-        if (resource != null) {
-            if (resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
-                FragmentSelector selector = (FragmentSelector) ((SpecificResource) resource).getSelector();
-                ISelector oaSelector = new de.intranda.api.annotation.oa.FragmentSelector(selector.getFragment());
-                IResource oaResource = new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
-                return oaResource;
-            }
-            return resource;
-        }
-        return null;
-
-    }
-
-    /**
-     * Get the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object
-     *
-     * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
-     */
-    public WebAnnotation getAsAnnotation() {
-        WebAnnotation annotation = new WebAnnotation(getIdAsURI());
-        annotation.setCreated(this.dateCreated);
-        annotation.setModified(this.dateModified);
-        try {
-            if (getCreator() != null) {
-                annotation.setCreator(new Agent(getCreator().getIdAsURI(), AgentType.PERSON, getCreator().getDisplayName()));
-            }
-            if (getGenerator() != null) {
-                annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getOwner().getTitle()));
-            }
-        } catch (DAOException e) {
-            logger.error("unable to set creator and generator for annotation", e);
-        }
-        try {
-            annotation.setBody(this.getBodyAsResource());
-            annotation.setTarget(this.getTargetAsResource());
-        } catch (IOException e) {
-            logger.error("unable to parse body or target for annotation", e);
-
-        }
-        annotation.setMotivation(this.getMotivation());
-
-        return annotation;
-    }
-
-    /**
-     * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
-     *
-     * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     */
-    public OpenAnnotation getAsOpenAnnotation() {
-        OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
-        try {
-            annotation.setBody(this.getBodyAsOAResource());
-            annotation.setTarget(this.getTargetAsOAResource());
-            annotation.setMotivation(this.getMotivation());
-        } catch (IOException e) {
-            logger.error("unable to parse body or target for annotation", e);
-        }
-        
-        return annotation;
-    }
-
-    /**
      * Deletes exported JSON annotations from a related record's data folder. Should be called when deleting this annotation.
      *
      * @return Number of deleted files
@@ -746,27 +534,6 @@ public class PersistentAnnotation {
         }
 
         return count;
-    }
-
-    /**
-     * <p>
-     * getContentString.
-     * </p>
-     *
-     * @return Just the string value of the body document
-     * @throws com.fasterxml.jackson.core.JsonParseException if any.
-     * @throws com.fasterxml.jackson.databind.JsonMappingException if any.
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String getContentString() throws JsonParseException, JsonMappingException, IOException, DAOException {
-        // Value
-        WebAnnotation wa = getAsAnnotation();
-        if (wa.getBody() instanceof TextualResource) {
-            return ((TextualResource) wa.getBody()).getText();
-        }
-
-        return body;
     }
 
     /**

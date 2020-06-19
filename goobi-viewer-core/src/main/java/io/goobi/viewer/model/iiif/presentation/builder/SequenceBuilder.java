@@ -91,7 +91,7 @@ public class SequenceBuilder extends AbstractBuilder {
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferredView = PageType.viewObject;
-
+    
     /**
      * <p>
      * Constructor for SequenceBuilder.
@@ -509,7 +509,7 @@ public class SequenceBuilder extends AbstractBuilder {
                                 continue;
                             }
                         }
-                        OpenAnnotation openAnnotation = annotation.getAsOpenAnnotation();
+                        OpenAnnotation openAnnotation = annoBuilder.getAsOpenAnnotation(annotation);
                         openAnnotation.setMotivation(Motivation.convertFromWebAnnotationMotivation(annotation.getMotivation()));
                         crowdList.addResource(openAnnotation);
                     }

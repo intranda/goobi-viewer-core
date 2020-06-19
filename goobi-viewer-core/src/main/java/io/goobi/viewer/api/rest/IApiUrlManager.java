@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -42,6 +43,39 @@ public interface IApiUrlManager {
      */
     public String getApplicationUrl();
     
+    public default String parseParameter(String template, String url, String parameter) {
+        if(StringUtils.isNoneBlank(url, parameter)) {
+            if(!parameter.matches("\\{.*\\}")) {
+                parameter = "{" + parameter + "}";
+            }
+            int paramStart = template.indexOf(parameter);
+            if(paramStart < 0) {
+                return "";  //not found
+            }
+            int paramEnd = paramStart + parameter.length();
+            String before = template.substring(0, paramStart);
+            String after = template.substring(paramEnd);
+            if(before.contains("}")) {
+                int lastBracketIndex = before.lastIndexOf("}")+1;
+                before = before.substring(lastBracketIndex);
+            }
+            if(after.contains("{")) {
+                int firstBracketIndex = after.indexOf("{");
+                after = after.substring(0, firstBracketIndex);
+            }
+            if(url.contains(before) && url.contains(after)) {
+                int urlBeforeEnd = url.indexOf(before) + before.length();
+                int urlAfterStart = after.length() > 0 ? url.indexOf(after) : url.length();
+                String paramValue = url.substring(urlBeforeEnd, urlAfterStart);
+                return paramValue;
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
     /**
      * @param records2
      * @param recordsRssJson
@@ -51,6 +85,7 @@ public interface IApiUrlManager {
         String[] array = (String[]) ArrayUtils.addAll(new String[] {getApiUrl()}, paths);
         return new ApiPath(array);
     }
+    
     
     public static class ApiPath {
         

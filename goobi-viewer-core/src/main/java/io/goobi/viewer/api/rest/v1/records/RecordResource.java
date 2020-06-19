@@ -61,9 +61,10 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.IApiUrlManager;
 import io.goobi.viewer.api.rest.IApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.builders.RisBuilder;
-import io.goobi.viewer.api.rest.builders.TocBuilder;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -113,7 +114,7 @@ public class RecordResource {
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
         StructElement se = getStructElement(pi);
-        return new RisBuilder(servletRequest, servletResponse).writeRIS(se);
+        return new RisResourceBuilder(servletRequest, servletResponse).writeRIS(se);
     }
 
     /**
@@ -136,7 +137,7 @@ public class RecordResource {
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
 
         StructElement se = getStructElement(pi);
-        return new RisBuilder(servletRequest, servletResponse).getRIS(se);
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
     @GET
@@ -146,7 +147,7 @@ public class RecordResource {
     public String getTOCAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
 
-        return new TocBuilder(servletRequest, servletResponse).getToc(pi);
+        return new TocResourceBuilder(servletRequest, servletResponse).getToc(pi);
     }
 
     @GET
@@ -159,18 +160,13 @@ public class RecordResource {
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
 
-
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
         if ("oa".equalsIgnoreCase(format)) {
-            List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
-            AnnotationList list = new AnnotationList(URI.create(apiPath.query("format", "oa").build()));
-            data.stream().map(anno -> anno.getAsOpenAnnotation()).forEach(oa -> list.addResource(oa));
-            return list;
+            URI uri = URI.create(apiPath.query("format", "oa").build());
+            return new AnnotationsResourceBuilder(urls).getOAnnotationListForRecord(pi, uri);
         } else {
-            long count =  DataManager.getInstance().getDao().getAnnotationCountForTarget(pi, null);
-            AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(URI.create(apiPath.build()), count);
-            AnnotationCollection collection = builder.buildCollection();
-            return collection;
+            URI uri = URI.create(apiPath.build());
+            return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecord(pi, uri);
         }
 
     }
@@ -182,40 +178,46 @@ public class RecordResource {
     public IResource getAnnotationPageForRecord()
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
 
-        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
-
-        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(URI.create(apiPath.build()), data.size());
-        AnnotationPage annoPage = builder.buildPage(data.stream().map(PersistentAnnotation::getAsAnnotation).collect(Collectors.toList()), 1);
-        return annoPage;
+        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi).build());
+        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecord(pi, uri);
     }
-
+    
     @GET
     @javax.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @Operation(tags = { "records", "annotations"}, summary = "List comments for a record")
-    public AnnotationPage getCommentsForRecord(
+    public IResource getCommentsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
 
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi, true);
-
-        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(URI.create(servletRequest.getRequestURL().toString()), data.size());
-        AnnotationPage annoPage = builder.buildPage(
-                data.stream()
-                        .map(c -> "oa".equalsIgnoreCase(format) ? c.getAsOpenAnnotation(urls) : c.getAsWebAnnotation(urls))
-                        .collect(Collectors.toList()),
-                1);
-
-        return annoPage;
+        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
+        if ("oa".equalsIgnoreCase(format)) {
+            URI uri = URI.create(apiPath.query("format", "oa").build());
+            return new AnnotationsResourceBuilder(urls).getOAnnotationListForRecordComments(pi, uri);
+        } else {
+            URI uri = URI.create(apiPath.build());
+            return new AnnotationsResourceBuilder(urls).getWebAnnotationCollectionForRecord(pi, uri);
+        }
     }
+    
+    @GET
+    @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public IResource getCommentPageForRecord()
+            throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+
+        URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
+        return new AnnotationsResourceBuilder(urls).getWebAnnotationPageForRecordComments(pi, uri);
+    }
+
 
     @GET
     @javax.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records"}, summary = "Get record metadata source file")
+    @Operation(tags = {"records"}, summary = "Get record metadata source file")
     @CORSBinding
     public StreamingOutput getSource(
             @PathParam("pi") String pi)

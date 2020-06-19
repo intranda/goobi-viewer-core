@@ -281,7 +281,7 @@ public class Comment implements Comparable<Comment> {
      *
      * @return the page
      */
-    public int getPage() {
+    public Integer getPage() {
         return page;
     }
 
@@ -292,7 +292,7 @@ public class Comment implements Comparable<Comment> {
      *
      * @param page the page to set
      */
-    public void setPage(int page) {
+    public void setPage(Integer page) {
         this.page = page;
     }
 
@@ -450,35 +450,6 @@ public class Comment implements Comparable<Comment> {
     public void setChildren(List<Comment> children) {
         this.children = children;
     }
-    
-    public OpenAnnotation getAsOpenAnnotation(IApiUrlManager urls) {
-        String url;
-        if(page != null) {            
-            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).query("format", "oa").build();
-        } else {
-            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).query("format", "oa").build();   
-        }
-        OpenAnnotation anno = new OpenAnnotation(URI.create(url));
-        anno.setMotivation(Motivation.COMMENTING);
-        anno.setTarget(new Manifest(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build())));
-        TextualResource body = new TextualResource(getText());
-        anno.setBody(body);
-        return anno;
-    }
-    
-    public WebAnnotation getAsWebAnnotation(IApiUrlManager urls) {
-        String url;
-        if(page != null) {            
-            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).build();
-        } else {
-            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).build();   
-        }
-        WebAnnotation anno = new WebAnnotation(URI.create(url));
-        anno.setMotivation(Motivation.COMMENTING);
-        anno.setTarget(new Manifest(URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build())));
-        TextualResource body = new TextualResource(getText());
-        anno.setBody(body);
-        return anno;
-    }
+
     
 }

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.builders;
+package io.goobi.viewer.api.rest.resourcebuilders;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,13 +33,13 @@ import io.goobi.viewer.model.viewer.ViewManager;
  * @author florian
  *
  */
-public class TocBuilder {
+public class TocResourceBuilder {
 
     HttpServletRequest request;
     HttpServletResponse response;
     
     
-    public TocBuilder(HttpServletRequest request, HttpServletResponse response) {
+    public TocResourceBuilder(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }
