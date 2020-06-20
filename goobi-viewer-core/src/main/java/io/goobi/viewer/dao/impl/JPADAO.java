@@ -95,7 +95,7 @@ public class JPADAO implements IDAO {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
-    private static final String MULTIKEY_SEPARATOR = "_";
+    static final String MULTIKEY_SEPARATOR = "_";
 
     private final EntityManagerFactory factory;
     private EntityManager em;
@@ -1584,37 +1584,21 @@ public class JPADAO implements IDAO {
     @Override
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM Comment o");
+        StringBuilder sbQuery = new StringBuilder("SELECT a FROM Comment a");
         List<String> filterKeys = new ArrayList<>();
-        if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
-            filterKeys.addAll(filters.keySet());
-            Collections.sort(filterKeys);
-            int count = 0;
-            for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-                count++;
-            }
-        }
+        Map<String, String> params = new HashMap<>();
+        sbQuery.append(createFilterQuery(null, filters, params));
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.").append(sortField);
+            sbQuery.append(" ORDER BY a.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
+        
         Query q = em.createQuery(sbQuery.toString());
-        for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-        }
-        q.setFirstResult(first);
-        q.setMaxResults(pageSize);
-        q.setFlushMode(FlushModeType.COMMIT);
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        return q.getResultList();
+        return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
     }
 
     /* (non-Javadoc)
@@ -2375,8 +2359,9 @@ public class JPADAO implements IDAO {
      * @param filters The filters to use
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
+     * @should build multikey filter query correctly
      */
-    private static String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+    static String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
         StringBuilder join = new StringBuilder();
 
         List<String> filterKeys = new ArrayList<>();
@@ -2419,7 +2404,10 @@ public class JPADAO implements IDAO {
                             where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
 
                         } else {
-                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                            where.append("UPPER(" + tableKey + ".")
+                                    .append(keyPart.replace("-", "."))
+                                    .append(") LIKE :")
+                                    .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
                         }
                         keyPartCount++;
                     }
@@ -2446,7 +2434,7 @@ public class JPADAO implements IDAO {
                         join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
                         //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
                     }
-                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + value.toUpperCase() + "%");
+                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
                 }
                 if (count > 1) {
                     where.append(" )");
@@ -3335,10 +3323,10 @@ public class JPADAO implements IDAO {
         return count;
 
     }
-    
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
+     * @see io.goobi.viewer.dao.IDAO#changeCampaignStatisticContributors(io.goobi.viewer.model.security.user.User,
+     *      io.goobi.viewer.model.security.user.User)
      * @should replace user in creators and reviewers lists correctly
      */
     @SuppressWarnings("unchecked")
@@ -3351,7 +3339,8 @@ public class JPADAO implements IDAO {
         List<Campaign> campaigns = new ArrayList<>();
         Set<String> identifiers = new HashSet<>();
         StringBuilder sbQuery =
-                new StringBuilder("SELECT o FROM CampaignRecordStatistic o WHERE (:fromUser MEMBER OF o.annotators OR :fromUser MEMBER OF o.reviewers)");
+                new StringBuilder(
+                        "SELECT o FROM CampaignRecordStatistic o WHERE (:fromUser MEMBER OF o.annotators OR :fromUser MEMBER OF o.reviewers)");
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("fromUser", fromUser);
         List<CampaignRecordStatistic> result = q.getResultList();
@@ -3393,7 +3382,6 @@ public class JPADAO implements IDAO {
         return count;
 
     }
-
 
     /*
      * (non-Javadoc)

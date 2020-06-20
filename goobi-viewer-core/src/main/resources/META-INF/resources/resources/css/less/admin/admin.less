@@ -337,6 +337,14 @@
 			width: calc(66.6666% - 0.75rem);
 			max-width: calc(66.6666% - 0.75rem);
 		}
+		&.-w100 {
+			flex: 0 0 calc(100% - 0.75rem);
+			width: calc(100% - 0.75rem);
+			max-width: calc(100% - 0.75rem);
+		}
+		&.-std-bottom-pad {
+			padding-bottom: 2rem;
+		}
 		&.-danger {
 			border-top: 5px solid rgba(255, 2, 2, 0.3);
 		}
@@ -456,7 +464,7 @@
 	}
 	&__table-entry {
 		transition: background 0.2s ease;
-		padding: 0.5rem 2rem;
+		padding: 1.5rem 2rem;
 		margin-left: -2rem;
 		margin-right: -2rem;
 		&:hover {
@@ -468,7 +476,6 @@
 		}
 	}
 	&__table-img {
-		padding: 1rem 0;
         margin-right: 2rem;
 		flex: 0 0 80px;
 		img {
