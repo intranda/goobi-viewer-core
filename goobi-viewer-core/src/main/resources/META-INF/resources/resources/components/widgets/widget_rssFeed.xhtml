@@ -21,7 +21,7 @@
                     <h3>
                         #{cc.attrs.widget.widgetTitle == '' ? msg.lastImports : cc.attrs.widget.widgetTitle}
                         <a
-                            href="#{navigationHelper.applicationUrl}api/v1/records/rss.xml?query=#{cc.attrs.filterQuery}"
+                            href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}"
                             title="#{msg.rssSubscribe}"
                             target="_blank">
                             <i class="fa fa-rss" aria-hidden="true"></i>
@@ -30,7 +30,7 @@
                     <div
                         class="rss-wrapp"
                         rssnum="5"
-                        rss_url="#{navigationHelper.applicationUrl}api/v1/records/rss.xml?max=5&amp;query=#{cc.attrs.filterQuery}"
+                        rss_url="#{navigationHelper.applicationUrl}api/v1/records/rss?max=5&amp;query=#{cc.attrs.filterQuery}"
                         lastImportsMsg="#{msg.importdate}:"
                         weekDayNames="#{msg.weekDayNames}"
                         monthNames="#{msg.monthNames}"></div>
