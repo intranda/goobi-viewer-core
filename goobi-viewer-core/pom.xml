@@ -649,7 +649,13 @@
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
-					</excludes>
+                    </excludes>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>src/test/resources/log4j2-test.xml</value>
+                        </property>
+                    </systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
