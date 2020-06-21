@@ -42,6 +42,9 @@
 		<Logger
 			name="de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig"
 			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration"
+			level="ERROR" additivity="true" />
         <Logger
             name="de.unigoettingen.sub.commons.contentlib.servlet.rest"
             level="INFO" additivity="true" />
