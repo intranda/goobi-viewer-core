@@ -3360,12 +3360,17 @@ public class JPADAO implements IDAO {
                 int index = statistic.getAnnotators().indexOf(fromUser);
                 statistic.getAnnotators().remove(index);
                 statistic.getAnnotators().add(index, toUser);
+                if (!statistic.getAnnotators().contains(toUser)) {
+                    statistic.getAnnotators().add(index, toUser);
+                }
             }
             while (statistic.getReviewers().contains(fromUser)) {
                 reviewer = true;
                 int index = statistic.getReviewers().indexOf(fromUser);
                 statistic.getReviewers().remove(index);
-                statistic.getReviewers().add(index, toUser);
+                if (!statistic.getReviewers().contains(toUser)) {
+                    statistic.getReviewers().add(index, toUser);
+                }
             }
             campaigns.add(statistic.getOwner());
             // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
