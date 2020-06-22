@@ -3308,7 +3308,9 @@ public class JPADAO implements IDAO {
                 reviewer = true;
                 statistic.getReviewers().remove(user);
             }
-            campaigns.add(statistic.getOwner());
+            if (!campaigns.contains(statistic.getOwner())) {
+                campaigns.add(statistic.getOwner());
+            }
             // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
             if (annotator) {
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
@@ -3371,7 +3373,9 @@ public class JPADAO implements IDAO {
                     statistic.getReviewers().add(index, toUser);
                 }
             }
-            campaigns.add(statistic.getOwner());
+            if (!campaigns.contains(statistic.getOwner())) {
+                campaigns.add(statistic.getOwner());
+            }
             // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
             if (annotator) {
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
