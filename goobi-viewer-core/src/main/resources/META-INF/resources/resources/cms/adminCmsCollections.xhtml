@@ -29,26 +29,24 @@
                 <div class="admin__content-inner-content">
                     <h:form id="cmsCollectionsForm" prependId="false">
                         <div class="admin__default-block">
-                            <div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'}">
-                                <div class="form-group form-row">
-                                    <!-- COLLECTION FIELD -->
-                                    <div class="col-2 control-label admin__form-label">
-                                        <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
-                                    </div>
+                            <div class="#{fn:length(cmsCollectionsBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
+                                <!-- COLLECTION FIELD -->
+                                <div class="col-2 control-label admin__form-label xx">
+                                    <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
+                                </div>
 
-                                    <!-- CONTROL -->
-                                    <div class="col-9 admin__form-input">
-                                        <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
-                                            <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
-                                            <f:ajax render="@form"></f:ajax>
-                                        </h:selectOneMenu>
-                                        <span class="admin__form-help-text">#{msg.admin__cms_collections_select_field}</span>
-                                    </div>
-                                    <div class="col-1 admin__form-help-icon">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
+                                <!-- CONTROL -->
+                                <div class="col-9 admin__form-input">
+                                    <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
+                                        <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
+                                        <f:ajax render="@form"></f:ajax>
+                                    </h:selectOneMenu>
+                                    <span class="admin__form-help-text">#{msg.admin__cms_collections_select_field}</span>
+                                </div>
+                                <div class="col-1 admin__form-help-icon">
+                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </div>
 

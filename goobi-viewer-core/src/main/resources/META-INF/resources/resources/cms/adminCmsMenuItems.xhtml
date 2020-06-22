@@ -34,11 +34,11 @@
                         <ui:fragment rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
                             <div class="cms-menu__select-theme">
                                 <!-- OPTION GROUP -->
-                                <div class="cms-module__option-group">
-                                    <div class="cms-module__option-label">
+                                <div class="form-group form-row cms-module__option-group">
+                                    <div class="col-2 cms-module__option-label">
                                         <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_select_theme}:</label>
                                     </div>
-                                    <div class="cms-module__option-control">
+                                    <div class="col-9 cms-module__option-control">
                                         <div class="custom-control custom-control--select">
                                             <h:selectOneMenu value="#{cmsNavigationBean.selectedTheme}" name="cmsMenuAddItemSelectSubtheme" id="cmsMenuAddItemSelectSubtheme">
                                                 <f:selectItems value="#{cmsNavigationBean.selectableThemes}" var="theme" itemValue="#{theme}" itemLabel="#{msg[theme]}" />
@@ -210,31 +210,31 @@
                                                 <!-- OPTION -->
                                                 <div class="cms-module__option">
                                                     <!-- OPTION GROUP -->
-                                                    <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label cms-module__option-label--fullwidth">
+                                                    <div class="form-group form-row no-gutters cms-module__option-group">
+                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth">
                                                             <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
                                                         </div>
-                                                        <div class="cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                        <div class="cms-module__option-control">
+                                                        <div class="col-9 cms-module__option-control">
                                                             <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                                         </div>
+                                                        <div class="col-1 cms-module__option-help d-flex justify-content-center">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>                                                        
                                                     </div>
 
                                                     <!-- OPTION GROUP -->
-                                                    <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label cms-module__option-label--fullwidth">
+                                                    <div class="form-group form-row no-gutters cms-module__option-group">
+                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth">
                                                             <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
                                                         </div>
-                                                        <div class="cms-module__option-control">
+                                                        <div class="col-9 cms-module__option-control">
                                                             <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
                                                         </div>
-                                                        <div class="cms-module__option-help">
+                                                        <div class="col-1 cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
@@ -242,18 +242,18 @@
                                                     </div>
 
                                                     <!-- OPTION GROUP -->
-                                                    <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label cms-module__option-label--fullwidth">
+                                                    <div class="form-group form-row no-gutters cms-module__option-group">
+                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth">
                                                             <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
                                                         </div>
-                                                        <div class="cms-module__option-control">
+                                                        <div class="col-9 cms-module__option-control">
                                                             <span class="cms-module__option-control-checkbox">
                                                                 <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" />
                                                             </span>
                                                             <br />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
                                                         </div>
-                                                        <div class="cms-module__option-help">
+                                                        <div class="col-1 cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>

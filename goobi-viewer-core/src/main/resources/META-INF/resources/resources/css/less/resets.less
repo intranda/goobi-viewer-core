@@ -7,7 +7,28 @@
     overflow-y: hidden;
 } */
 
-
+a {
+	color: @blue;
+	&:hover {
+		color: @hoverblue;
+		text-decoration: underline;
+	}
+	&:active {
+		color: @activeblue;
+	}
+	&:focus {}
+}
+button, .btn {
+	color: @lowerblack;
+	&:hover {
+		color: @lowerblack;
+		text-decoration: none;
+	}
+	&:active {
+		color: @lowerblack;
+	}
+	&:focus {}
+}
 
 .modal {
     overflow-y: auto;
