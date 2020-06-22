@@ -1594,7 +1594,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        
+
         Query q = em.createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -1710,6 +1710,7 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#changeCommentsOwner(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
      * @should update rows correctly
      */
+    @SuppressWarnings("unchecked")
     @Override
     public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
         if (fromUser == null || fromUser.getId() == null) {
@@ -1728,6 +1729,13 @@ public class JPADAO implements IDAO {
                     .setParameter("newOwner", toUser)
                     .executeUpdate();
             emLocal.getTransaction().commit();
+
+            // Refresh objects in context
+            em.createQuery("SELECT o FROM Comment o WHERE o.owner = :owner")
+                    .setParameter("owner", toUser)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
+
             return rows;
         } finally {
             emLocal.close();
@@ -3378,6 +3386,13 @@ public class JPADAO implements IDAO {
                 }
             }
         }
+
+        // Refresh objects in context
+        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE (:user MEMBER OF o.annotators OR :user MEMBER OF o.reviewers)")
+                .setParameter("user", toUser)
+                .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                .getResultList()
+                .size();
 
         return count;
 
