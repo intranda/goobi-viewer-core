@@ -3292,12 +3292,26 @@ public class JPADAO implements IDAO {
 
         List<Campaign> campaigns = new ArrayList<>();
         Set<String> identifiers = new HashSet<>();
-        StringBuilder sbQuery =
-                new StringBuilder("SELECT o FROM CampaignRecordStatistic o WHERE (:user MEMBER OF o.annotators OR :user MEMBER OF o.reviewers)");
-        Query q = em.createQuery(sbQuery.toString());
-        q.setParameter("user", user);
-        List<CampaignRecordStatistic> result = q.getResultList();
-        for (CampaignRecordStatistic statistic : result) {
+        Set<CampaignRecordStatistic> statistics = new HashSet<>();
+        {
+            StringBuilder sbQuery =
+                    new StringBuilder();
+            List<CampaignRecordStatistic> result =
+                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
+                            .setParameter("user", user)
+                            .getResultList();
+            statistics.addAll(result);
+        }
+        {
+            StringBuilder sbQuery =
+                    new StringBuilder();
+            List<CampaignRecordStatistic> result =
+                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.reviewers")
+                            .setParameter("user", user)
+                            .getResultList();
+            statistics.addAll(result);
+        }
+        for (CampaignRecordStatistic statistic : statistics) {
             boolean annotator = false;
             boolean reviewer = false;
             while (statistic.getAnnotators().contains(user)) {
@@ -3348,39 +3362,58 @@ public class JPADAO implements IDAO {
 
         List<Campaign> campaigns = new ArrayList<>();
         Set<String> identifiers = new HashSet<>();
-        StringBuilder sbQuery =
-                new StringBuilder(
-                        "SELECT o FROM CampaignRecordStatistic o WHERE (:fromUser MEMBER OF o.annotators OR :fromUser MEMBER OF o.reviewers)");
-        Query q = em.createQuery(sbQuery.toString());
-        q.setParameter("fromUser", fromUser);
-        List<CampaignRecordStatistic> result = q.getResultList();
-        for (CampaignRecordStatistic statistic : result) {
+        Set<CampaignRecordStatistic> statistics = new HashSet<>();
+        {
+            List<CampaignRecordStatistic> result =
+                    em.createQuery(
+                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.annotators")
+                            .setParameter("fromUser", fromUser)
+                            .getResultList();
+            statistics.addAll(result);
+        }
+        {
+            List<CampaignRecordStatistic> result =
+                    em.createQuery(
+                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.reviewers")
+                            .setParameter("fromUser", fromUser)
+                            .getResultList();
+            statistics.addAll(result);
+        }
+        logger.trace("found {} campaign statistic rows with user {}", statistics.size(), fromUser.getId());
+        for (CampaignRecordStatistic statistic : statistics) {
+            logger.trace("statistic {}", statistic.getId());
             boolean annotator = false;
             boolean reviewer = false;
             while (statistic.getAnnotators().contains(fromUser)) {
                 annotator = true;
                 int index = statistic.getAnnotators().indexOf(fromUser);
                 statistic.getAnnotators().remove(index);
+                logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
                 if (!statistic.getAnnotators().contains(toUser)) {
                     statistic.getAnnotators().add(index, toUser);
+                    logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
                 }
             }
             while (statistic.getReviewers().contains(fromUser)) {
                 reviewer = true;
                 int index = statistic.getReviewers().indexOf(fromUser);
                 statistic.getReviewers().remove(index);
+                logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
                 if (!statistic.getReviewers().contains(toUser)) {
                     statistic.getReviewers().add(index, toUser);
+                    logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
                 }
             }
-            if (!campaigns.contains(statistic.getOwner())) {
+            if ((annotator || reviewer) && !campaigns.contains(statistic.getOwner())) {
                 campaigns.add(statistic.getOwner());
             }
             // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
             if (annotator) {
+                logger.trace("lazy loading annotators");
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
             }
             if (reviewer) {
+                logger.trace("lazy loading reviewers");
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
             }
             identifiers.add(statistic.getPi());
@@ -3389,6 +3422,7 @@ public class JPADAO implements IDAO {
         int count = 0;
         if (!campaigns.isEmpty()) {
             for (Campaign campaign : campaigns) {
+                logger.trace("updating campaign {}", campaign.getId());
                 if (updateCampaign(campaign)) {
                     count++;
                 }
