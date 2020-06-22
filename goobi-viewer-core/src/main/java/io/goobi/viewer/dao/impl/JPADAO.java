@@ -3359,7 +3359,6 @@ public class JPADAO implements IDAO {
                 annotator = true;
                 int index = statistic.getAnnotators().indexOf(fromUser);
                 statistic.getAnnotators().remove(index);
-                statistic.getAnnotators().add(index, toUser);
                 if (!statistic.getAnnotators().contains(toUser)) {
                     statistic.getAnnotators().add(index, toUser);
                 }
