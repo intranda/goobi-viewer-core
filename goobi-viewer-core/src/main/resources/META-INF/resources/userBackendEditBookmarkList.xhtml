@@ -22,61 +22,60 @@
 			<h:panelGroup rendered="#{userBean.loggedIn and bookmarkBean.currentBookmarkList != null and bookmarkBean.currentBookmarkListMine}">
 				<h2>#{msg.bookmarkList_edit}</h2>
 
-				<div class="user-bookmark-edit__form">
+
 					<h:form id="userBookmarkListEditForm" styleClass="form-horizontal" prependId="false">
-						<!-- NAME -->
-						<div class="form-group">
-							<label for="editBookmarkListName" class="col-sm-2 control-label">#{msg.name}:</label>
-							<div class="col-sm-10">
-								<h:inputText id="editBookmarkListName" styleClass="form-control" value="#{bookmarkBean.currentBookmarkList.name}"
-								    validator="#{bookmarkBean.validateName}" required="true" requiredMessage="#{msg.bookmarkList_bookmarkListNameFailure}" />
-							</div>
-						</div>
-						
-						<!-- DESCRIPTION -->
-						<div class="form-group">
-							<label for="editBookmarkListDescription" class="col-sm-2 control-label">#{msg.description}:</label>
-							<div class="col-sm-10">
-								<h:inputTextarea id="editBookmarkListDescription" styleClass="form-control" value="#{bookmarkBean.currentBookmarkList.description}" />
-							</div>
-						</div>
-	
-						<!-- PUBLIC -->	
-						<div class="form-group">
-							<label for="editBookmarkListPublic" class="col-sm-2 control-label">#{msg.bookmarkList_public}:</label>
-							<div class="col-sm-10">
-								<div class="checkbox">
-									<label>
-										<h:selectBooleanCheckbox id="editBookmarkListPublic"
-										value="#{bookmarkBean.currentBookmarkList.isPublic}" />
-						     		</label>
+						<div class="user-bookmark-edit__form">
+							<!-- NAME -->
+							<div class="form-group form-row">
+								<label for="editBookmarkListName" class="col-sm-2 control-label">#{msg.name}:</label>
+								<div class="col-sm-10">
+									<h:inputText id="editBookmarkListName" styleClass="form-control" value="#{bookmarkBean.currentBookmarkList.name}"
+									    validator="#{bookmarkBean.validateName}" required="true" requiredMessage="#{msg.bookmarkList_bookmarkListNameFailure}" />
 								</div>
 							</div>
+							
+							<!-- DESCRIPTION -->
+							<div class="form-group form-row">
+								<label for="editBookmarkListDescription" class="col-sm-2 control-label">#{msg.description}:</label>
+								<div class="col-sm-10">
+									<h:inputTextarea id="editBookmarkListDescription" styleClass="form-control" value="#{bookmarkBean.currentBookmarkList.description}" />
+								</div>
+							</div>
+		
+							<!-- PUBLIC -->	
+							<div class="form-group form-row">
+								<label for="editBookmarkListPublic" class="col-sm-2 control-label">#{msg.bookmarkList_public}:</label>
+								<div class="col-sm-10">
+									<div class="checkbox">
+										<label>
+											<h:selectBooleanCheckbox id="editBookmarkListPublic"
+											value="#{bookmarkBean.currentBookmarkList.isPublic}" />
+							     		</label>
+									</div>
+								</div>
+							</div>
+							
+							<!-- SHARES -->
+							<ui:fragment rendered="#{!userBean.user.allUserGroups.isEmpty()}">
+							    <div class="form-group form-row">
+							        <label for="editBookmarkListGroupShares" class="col-sm-2 control-label">#{msg.bookmarkList_groupShares}:</label>
+							        <div class="col-sm-10">
+							            <h:selectManyMenu id="editBookmarkListGroupShares" styleClass="form-control"
+							                value="#{bookmarkBean.currentBookmarkList.groupShares}">
+							                <f:selectItems value="#{userBean.user.allUserGroups}"></f:selectItems>
+							            </h:selectManyMenu>
+							        </div>
+							    </div>
+							</ui:fragment>
 						</div>
-						
-						<!-- SHARES -->
-						<ui:fragment rendered="#{!userBean.user.allUserGroups.isEmpty()}">
-						    <div class="form-group">
-						        <label for="editBookmarkListGroupShares" class="col-sm-2 control-label">#{msg.bookmarkList_groupShares}:</label>
-						        <div class="col-sm-10">
-						            <h:selectManyMenu id="editBookmarkListGroupShares" styleClass="form-control"
-						                value="#{bookmarkBean.currentBookmarkList.groupShares}">
-						                <f:selectItems value="#{userBean.user.allUserGroups}"></f:selectItems>
-						            </h:selectManyMenu>
-						        </div>
-						    </div>
-						</ui:fragment>
-						
-											
 						<!-- ACTION -->
-						<div class="user-bookmark-edit__action">
-                            <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.bookmarkList_cancel}" action="userBackendBookmarkLists" immediate="true">
-                                <f:setPropertyActionListener target="#{bookmarkBean.currentBookmarkList}" value="#{null}" />
-                            </h:commandLink>
-							<h:commandLink value="#{msg.save}" action="#{bookmarkBean.saveCurrentBookmarkListAction}" styleClass="btn btn--success" />
+						<div class="row no-gutters justify-content-end user-bookmark-edit__action mt-3">
+	                         <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.bookmarkList_cancel}" action="userBackendBookmarkLists" immediate="true">
+	                             <f:setPropertyActionListener target="#{bookmarkBean.currentBookmarkList}" value="#{null}" />
+	                         </h:commandLink>
+							 <h:commandLink value="#{msg.save}" action="#{bookmarkBean.saveCurrentBookmarkListAction}" styleClass="btn btn--success" />
 						</div>
 					</h:form>
-				</div>
 
 			</h:panelGroup>
 		</div>

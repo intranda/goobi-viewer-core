@@ -43,7 +43,7 @@
                                             <div class="col-10 -textlink">
                                                 #{accessCondition} (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)} #{msg.admin__licenses_record_number})
                                             </div>
-                                            <div class="col-2 d-flex justify-content-end -bluelink">
+                                            <div class="col-2 d-flex justify-content-end">
                                                 <span>#{msg.admin__licenses_configure_license_now}</span>
                                             </div>
                                         </h:commandLink>
@@ -98,7 +98,7 @@
                                         <div class="row justify-content-end admin__boxed-entry-actions">
                                             <div class="col-3 d-flex justify-content-end">
                                                 <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit -bluelink" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
+                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
                                                 <h:commandLink

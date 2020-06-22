@@ -86,9 +86,9 @@
                                             <!-- ACTIONS -->
                                             <div>
                                                 <!-- SHOW -->
-                                                <a href="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" class="admin__table-action-link -bluelink" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.pi}/#{comment.page})">#{msg.show}</a>
+                                                <a href="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.pi}/#{comment.page})">#{msg.show}</a>
                                                 <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/" class="admin__table-action-link -bluelink" aria-label="#{msg.edit}: #{user.email}">#{msg.edit}</a>
+                                                <a href="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{user.email}">#{msg.edit}</a>
                                             </div>
                                         </div>
                                         <div class="col-4 d-flex">
@@ -120,18 +120,16 @@
                                                 <h:commandLink action="pretty:adminLicenseNew"
                                                     actionListener="#{adminBean.newCurrentLicenseTypeAction(accessCondition)}"
                                                     styleClass="row admin__license-unconfigured-entry">
-                                                    <!-- TODO INLINE CSS-->
                                                     <div class="col-8 pl-5 -textlink">
                                                         #{accessCondition}
                                                     </div>
-                                                    <div class="col-4 d-flex justify-content-end -bluelink">
+                                                    <div class="col-4 d-flex justify-content-end">
                                                         <span>#{msg.admin__licenses_configure_license_now}</span>
                                                     </div>
                                                 </h:commandLink>
                                             </ui:repeat>
                                         </div>
                                     </div>
-                                    <!-- TODO INLINE CSS -->
                                     <div class="row mb-3">
                                         <div class="col-12">#{msg.admin__dashboard_licenses_admin_only}</div>
                                     </div>
