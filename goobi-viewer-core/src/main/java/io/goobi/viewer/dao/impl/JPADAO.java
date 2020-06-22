@@ -1594,7 +1594,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(" DESC");
             }
         }
-        
+
         Query q = em.createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -1710,6 +1710,7 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#changeCommentsOwner(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
      * @should update rows correctly
      */
+    @SuppressWarnings("unchecked")
     @Override
     public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
         if (fromUser == null || fromUser.getId() == null) {
@@ -1728,6 +1729,13 @@ public class JPADAO implements IDAO {
                     .setParameter("newOwner", toUser)
                     .executeUpdate();
             emLocal.getTransaction().commit();
+
+            // Refresh objects in context
+            em.createQuery("SELECT o FROM Comment o WHERE o.owner = :owner")
+                    .setParameter("owner", toUser)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
+
             return rows;
         } finally {
             emLocal.close();
@@ -3300,7 +3308,9 @@ public class JPADAO implements IDAO {
                 reviewer = true;
                 statistic.getReviewers().remove(user);
             }
-            campaigns.add(statistic.getOwner());
+            if (!campaigns.contains(statistic.getOwner())) {
+                campaigns.add(statistic.getOwner());
+            }
             // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
             if (annotator) {
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
@@ -3351,15 +3361,21 @@ public class JPADAO implements IDAO {
                 annotator = true;
                 int index = statistic.getAnnotators().indexOf(fromUser);
                 statistic.getAnnotators().remove(index);
-                statistic.getAnnotators().add(index, toUser);
+                if (!statistic.getAnnotators().contains(toUser)) {
+                    statistic.getAnnotators().add(index, toUser);
+                }
             }
             while (statistic.getReviewers().contains(fromUser)) {
                 reviewer = true;
                 int index = statistic.getReviewers().indexOf(fromUser);
                 statistic.getReviewers().remove(index);
-                statistic.getReviewers().add(index, toUser);
+                if (!statistic.getReviewers().contains(toUser)) {
+                    statistic.getReviewers().add(index, toUser);
+                }
             }
-            campaigns.add(statistic.getOwner());
+            if (!campaigns.contains(statistic.getOwner())) {
+                campaigns.add(statistic.getOwner());
+            }
             // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
             if (annotator) {
                 statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
@@ -3378,6 +3394,13 @@ public class JPADAO implements IDAO {
                 }
             }
         }
+
+        // Refresh objects in context
+        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE (:user MEMBER OF o.annotators OR :user MEMBER OF o.reviewers)")
+                .setParameter("user", toUser)
+                .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                .getResultList()
+                .size();
 
         return count;
 
