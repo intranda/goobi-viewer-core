@@ -44,8 +44,8 @@ public class ViewerImageResource extends ImageResource {
      * @param directory
      * @param filename
      */
-    public ViewerImageResource(@Context HttpServletRequest request, @PathParam("pi") String pi, @PathParam("filename") String filename) {
-        super(request, pi, filename);
+    public ViewerImageResource(@PathParam("pi") String pi, @PathParam("filename") String filename) {
+        super(pi, filename);
         request.setAttribute("pi", pi);
         request.setAttribute("filename", filename);
         

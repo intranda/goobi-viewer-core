@@ -64,20 +64,22 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_SECTIONS_ALTO =                      "/alto";
     public static final String RECORDS_SECTIONS_PDF =                       "/pdf";
     
-    public static final String RECORDS_PAGES_SEQUENCE =                     "/pages/sequence/{name}";
-    public static final String RECORDS_PAGES_CANVAS =                       "/pages/{pageNo}/canvas";
-    public static final String RECORDS_PAGES_NER_TAGS =                     "/pages/{pageNo}/ner/tags";
-    public static final String RECORDS_PAGES_ANNOTATIONS =                  "/pages/{pageNo}/annotations";
-    public static final String RECORDS_PAGES_COMMENTS =                     "/pages/{pageNo}/comments";
-    public static final String RECORDS_PAGES_COMMENTS_COMMENT =             "/pages/{pageNo}/comments/{id}";
+    public static final String RECORDS_PAGES =                              "/records/{pi}/pages";
+    public static final String RECORDS_PAGES_SEQUENCE =                     "/sequence/{name}";
+    public static final String RECORDS_PAGES_CANVAS =                       "/{pageNo}/canvas";
+    public static final String RECORDS_PAGES_NER_TAGS =                     "/{pageNo}/ner/tags";
+    public static final String RECORDS_PAGES_ANNOTATIONS =                  "/{pageNo}/annotations";
+    public static final String RECORDS_PAGES_COMMENTS =                     "/{pageNo}/comments";
+    public static final String RECORDS_PAGES_COMMENTS_COMMENT =             "/{pageNo}/comments/{id}";
     
-    public static final String RECORDS_FILES_PLAINTEXT =                    "/files/plaintext/{filename}";
-    public static final String RECORDS_FILES_ALTO =                         "/files/alto/{filename}";
-    public static final String RECORDS_FILES_PDF =                          "/files/pdf/{filename}";
-    public static final String RECORDS_FILES_IMAGE =                        "/files/images/{filename}";
-    public static final String RECORDS_FILES_TEI =                          "/files/tei/{filename}";
-    public static final String RECORDS_FILES_CONTENT =                      "/files/content/{foldername}";
-    public static final String RECORDS_FILES_CONTENT_FILE =                 "/files/content/{foldername}/{filename}";
+    public static final String RECORDS_FILES =                              "/records/{pi}/files";
+    public static final String RECORDS_FILES_PLAINTEXT =                    "/plaintext/{filename}";
+    public static final String RECORDS_FILES_ALTO =                         "/alto/{filename}";
+    public static final String RECORDS_FILES_PDF =                          "/pdf/{filename}";
+    public static final String RECORDS_FILES_IMAGE =                        "/images/{filename}";
+    public static final String RECORDS_FILES_TEI =                          "/tei/{filename}";
+    public static final String RECORDS_FILES_CONTENT =                      "/content/{foldername}";
+    public static final String RECORDS_FILES_CONTENT_FILE =                 "/content/{foldername}/{filename}";
 
     
     public static final String COLLECTIONS =                                "/collections/{field}";

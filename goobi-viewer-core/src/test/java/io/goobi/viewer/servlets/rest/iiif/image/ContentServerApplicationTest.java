@@ -70,14 +70,14 @@ public class ContentServerApplicationTest {
     @Test
     public void testResolveRepositoryURI() throws ContentLibException {
 
-        ImageResource service = new ImageResource(request, "sampleDir", "sampleImage.tif");
+        ImageResource service = new ImageResource("sampleDir", "sampleImage.tif");
         Assert.assertEquals("sampleDir/sampleImage.tif", service.getImageURI().toString());
         Assert.assertEquals(requestURI.toString() + "/image/sampleDir/sampleImage.tif", service.getResourceURI().toString());
     }
 
     @Test
     public void testResolveAbsoluteURI() throws ContentLibException, UnsupportedEncodingException {
-        ImageResource service = new ImageResource(request, "-", URLEncoder.encode(sampleFileName, "utf-8"));
+        ImageResource service = new ImageResource("-", URLEncoder.encode(sampleFileName, "utf-8"));
         Assert.assertEquals(requestURI.toString() + "/image/-/" + URLEncoder.encode(sampleFileName, "utf-8"), service.getResourceURI().toString());
         Assert.assertEquals(sampleFileName.replaceAll("\\s", "%20"), service.getImageURI().toString());
     }

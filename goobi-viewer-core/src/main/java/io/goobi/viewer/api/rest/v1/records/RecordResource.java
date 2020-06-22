@@ -15,14 +15,27 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TOC;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +61,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotationCollection;
-import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -75,7 +87,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
-import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,10 +109,6 @@ public class RecordResource {
     private AbstractApiUrlManager urls;
 
     private final String pi;
-
-    public RecordResource() {
-        pi = null;
-    }
 
     public RecordResource(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
