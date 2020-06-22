@@ -150,6 +150,17 @@
 	}	
 
 /* LINK MODIFIERS */
+a {
+	color: @blue;
+	&:hover {
+		color: @hoverblue;
+		text-decoration: underline;
+	}
+	&:active {
+		color: @activeblue;
+	}
+	&:focus {}
+}
 	.rss-elem-title a {
 		color: @blue;
 		&:hover {
@@ -158,17 +169,6 @@
 	}
 	&__action-links {
 		margin-right: 1.4rem;
-	}
-	.-bluelink {
-		color: @blue;
-		&:hover {
-			color: @hoverblue;
-			text-decoration: underline;
-		}
-		&:active {
-			color: @activeblue;
-		}
-		&:focus {}
 	}
 	.-light {
 		color: #a9a9a9;

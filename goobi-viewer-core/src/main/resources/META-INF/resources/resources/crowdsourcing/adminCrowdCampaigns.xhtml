@@ -83,7 +83,7 @@
                                             <span>#{campaign.getTitle(navigationHelper.locale, true)}</span>
                                             <div>
                                                 <!-- EDIT -->
-                                                <h:commandLink styleClass="admin__table-action-link -bluelink" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
+                                                <h:commandLink styleClass="admin__table-action-link" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
                                                     #{msg.edit}
                                                     <f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" />
                                                 </h:commandLink>
