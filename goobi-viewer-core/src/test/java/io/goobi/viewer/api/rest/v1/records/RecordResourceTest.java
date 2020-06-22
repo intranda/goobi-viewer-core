@@ -18,20 +18,28 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.Assert.*;
 
+import java.net.URI;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ctc.wstx.shaded.msv_core.util.Uri;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.sun.tools.javac.comp.Todo;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
+import de.intranda.api.iiif.presentation.Layer;
+import de.intranda.api.iiif.presentation.Manifest;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.model.rss.Channel;
 
 /**
@@ -195,16 +203,68 @@ public class RecordResourceTest extends AbstractRestApiTest{
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getSource(java.lang.String)}.
      */
+    //TODO: read some actual mets file from test index
     @Test
     public void testGetSource() {
         try(Response response = target(urls.path(RECORDS_RECORD, RECORDS_METADATA_SOURCE).params(PI).build())
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
+            assertEquals("Should return status 404", 404, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONObject error = new JSONObject(entity);
+            assertEquals("No source file found for 74241", error.getString("message"));
+        }
+    }
+    
+    @Test 
+    public void testGetManifest() throws JsonMappingException, JsonProcessingException {
+        String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
+        try(Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
             assertEquals("Should return status 200", 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
+            Manifest manifest = mapper.readValue(entity, Manifest.class);
+            assertEquals(URI.create(url), manifest.getId());
+        }
+    }
+    
+    @Test 
+    public void testGetLayer() throws JsonMappingException, JsonProcessingException {
+        String url = urls.path(RECORDS_RECORD, RECORDS_LAYER).params(PI, "ALTO").build();
+        try(Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            Layer layer = mapper.readValue(entity, Layer.class);
+            assertEquals(URI.create(url), layer.getId());
+        }
+    }
+    
+    @Test 
+    public void testGetNERTags() throws JsonMappingException, JsonProcessingException {
+        String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI).build();
+        try(Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONObject doc = new JSONObject(entity);
+            assertNotNull(doc.getJSONArray("pages"));
+            assertEquals(52, doc.getJSONArray("pages").length());
         }
     }
 

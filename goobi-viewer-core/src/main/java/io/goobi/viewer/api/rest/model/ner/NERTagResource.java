@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.ner;
+package io.goobi.viewer.api.rest.model.ner;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,13 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.model.ner.DocumentReference;
-import io.goobi.viewer.api.rest.model.ner.ElementReference;
-import io.goobi.viewer.api.rest.model.ner.MultiPageReference;
-import io.goobi.viewer.api.rest.model.ner.NERTag;
-import io.goobi.viewer.api.rest.model.ner.PageReference;
-import io.goobi.viewer.api.rest.model.ner.TagCount;
-import io.goobi.viewer.api.rest.model.ner.TagGroup;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;

@@ -48,26 +48,37 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_LAYER =                              "/layers/{name}";
     public static final String RECORDS_NER_TAGS =                           "/ner/tags";
     public static final String RECORDS_PLAINTEXT =                          "/plaintext";
+    public static final String RECORDS_PLAINTEXT_ZIP =                      "/plaintext.zip";
     public static final String RECORDS_ALTO =                               "/alto";
+    public static final String RECORDS_ALTO_ZIP =                           "/alto.zip";
     public static final String RECORDS_TEI =                                "/tei";
+    public static final String RECORDS_TEI_ZIP =                            "/tei.zip";
     public static final String RECORDS_PDF =                                "/pdf";
-    public static final String RECORDS_SECTIONS_RANGE =                     "/sections/{divId}/range";
-    public static final String RECORDS_SECTIONS_LAYER =                     "/sections/{divId}/layers/base";
-    public static final String RECORDS_SECTIONS_NER_TAGS =                  "/sections/{divId}/ner/tags";
-    public static final String RECORDS_SECTIONS_ANNOTATIONS =               "/sections/{divId}/annotations";
-    public static final String RECORDS_SECTIONS_PLAINTEXT =                 "/sections/{divId}/plaintext";
-    public static final String RECORDS_SECTIONS_ALTO =                      "/sections/{divId}/alto";
-    public static final String RECORDS_SECTIONS_PDF =                       "/sections/{divId}/pdf";
+    
+    public static final String RECORDS_SECTION =                            "/records/{pi}/sections/{divId}";
+    public static final String RECORDS_SECTIONS_RANGE =                     "/range";
+    public static final String RECORDS_SECTIONS_LAYER =                     "/layers/base";
+    public static final String RECORDS_SECTIONS_NER_TAGS =                  "/ner/tags";
+    public static final String RECORDS_SECTIONS_ANNOTATIONS =               "/annotations";
+    public static final String RECORDS_SECTIONS_PLAINTEXT =                 "/plaintext";
+    public static final String RECORDS_SECTIONS_ALTO =                      "/alto";
+    public static final String RECORDS_SECTIONS_PDF =                       "/pdf";
+    
     public static final String RECORDS_PAGES_SEQUENCE =                     "/pages/sequence/{name}";
     public static final String RECORDS_PAGES_CANVAS =                       "/pages/{pageNo}/canvas";
     public static final String RECORDS_PAGES_NER_TAGS =                     "/pages/{pageNo}/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS =                  "/pages/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS =                     "/pages/{pageNo}/comments";
     public static final String RECORDS_PAGES_COMMENTS_COMMENT =             "/pages/{pageNo}/comments/{id}";
+    
     public static final String RECORDS_FILES_PLAINTEXT =                    "/files/plaintext/{filename}";
     public static final String RECORDS_FILES_ALTO =                         "/files/alto/{filename}";
     public static final String RECORDS_FILES_PDF =                          "/files/pdf/{filename}";
     public static final String RECORDS_FILES_IMAGE =                        "/files/images/{filename}";
+    public static final String RECORDS_FILES_TEI =                          "/files/tei/{filename}";
+    public static final String RECORDS_FILES_CONTENT =                      "/files/content/{foldername}";
+    public static final String RECORDS_FILES_CONTENT_FILE =                 "/files/content/{foldername}/{filename}";
+
     
     public static final String COLLECTIONS =                                "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION =                     "/{collection}";

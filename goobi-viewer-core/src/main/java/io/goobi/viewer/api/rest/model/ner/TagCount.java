@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.servlets.rest.ner;
+package io.goobi.viewer.api.rest.model.ner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import io.goobi.viewer.servlets.rest.ner.NERTag.Type;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 
 /**
  * <p>

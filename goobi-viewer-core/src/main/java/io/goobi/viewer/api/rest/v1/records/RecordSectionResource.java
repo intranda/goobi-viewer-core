@@ -13,18 +13,12 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.iiif.presentation.builder;
+package io.goobi.viewer.api.rest.v1.records;
 
 /**
- * <p>
- * BuildMode class.
- * </p>
+ * @author florian
  *
- * @author Florian Alpers
  */
-public enum BuildMode {
+public class RecordSectionResource {
 
-    IIIF,
-    THUMBS,
-    IIIF_SIMPLE
 }

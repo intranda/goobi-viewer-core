@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import io.goobi.viewer.servlets.rest.ner.DocumentReference;
-import io.goobi.viewer.servlets.rest.ner.ElementReference;
-import io.goobi.viewer.servlets.rest.ner.NERTag;
+import io.goobi.viewer.api.rest.model.ner.DocumentReference;
+import io.goobi.viewer.api.rest.model.ner.ElementReference;
+import io.goobi.viewer.api.rest.model.ner.NERTag;
 
 /**
  * <p>
