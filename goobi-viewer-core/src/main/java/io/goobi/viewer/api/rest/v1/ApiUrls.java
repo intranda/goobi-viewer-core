@@ -56,13 +56,10 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PDF =                                "/pdf";
     public static final String RECORDS_PDF_INFO =                           "/pdf/info.json";
     
-    public static final String RECORDS_SECTION =                            "/records/{pi}/sections/{divId}";
+    public static final String RECORDS_SECTIONS =                            "/records/{pi}/sections/{divId}";
+    public static final String RECORDS_SECTIONS_RIS_TEXT =                   "/ris.txt";
+    public static final String RECORDS_SECTIONS_RIS_FILE =                   "/ris";
     public static final String RECORDS_SECTIONS_RANGE =                     "/range";
-    public static final String RECORDS_SECTIONS_LAYER =                     "/layers/base";
-    public static final String RECORDS_SECTIONS_NER_TAGS =                  "/ner/tags";
-    public static final String RECORDS_SECTIONS_ANNOTATIONS =               "/annotations";
-    public static final String RECORDS_SECTIONS_PLAINTEXT =                 "/plaintext";
-    public static final String RECORDS_SECTIONS_ALTO =                      "/alto";
     public static final String RECORDS_SECTIONS_PDF =                       "/pdf";
     public static final String RECORDS_SECTIONS_PDF_INFO =                  "/pdf/info.json";
     

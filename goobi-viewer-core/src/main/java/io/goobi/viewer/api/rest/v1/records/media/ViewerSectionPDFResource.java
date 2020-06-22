@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@Path(ApiUrls.RECORDS_SECTION)
+@Path(ApiUrls.RECORDS_SECTIONS)
 public class ViewerSectionPDFResource extends MetsPdfResource {
 
     private final String divId;

@@ -267,7 +267,7 @@ public class RecordResource {
     @CORSBinding
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
-            @Parameter(description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files")@QueryParam("mode") String mode) throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
+            @Parameter(description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files")@QueryParam("mode") String mode) throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
         BuildMode buildMode = getBuildeMode(mode);
         return builder.getManifest(pi, buildMode);

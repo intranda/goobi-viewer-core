@@ -15,10 +15,152 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import de.intranda.api.annotation.IAnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
+import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.model.ner.DocumentReference;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
+import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationBinding;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+
 /**
  * @author florian
  *
  */
+@javax.ws.rs.Path(RECORDS_SECTIONS)
+@ViewerRestServiceBinding
 public class RecordSectionResource {
 
+    private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private HttpServletResponse servletResponse;
+    @Inject
+    private AbstractApiUrlManager urls;
+
+    private final String pi;
+    private final String divId;
+
+    public RecordSectionResource(
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) {
+        this.pi = pi;
+        this.divId = divId;
+    }
+    
+    @GET
+    @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "records", "ris" }, summary = "Download ris as file")
+    public String getRISAsFile()
+            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
+
+        StructElement se = getStructElement(pi, divId);
+        String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
+        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        String ris = new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
+        return ris;
+    }
+
+    /**
+     * <p>
+     * getRISAsText.
+     * </p>
+     *
+     * @param iddoc a long.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @GET
+    @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "records", "ris" }, summary = "Get ris as text")
+    public String getRISAsText()
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
+
+        StructElement se = getStructElement(pi, divId);
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
+    }
+    
+    @GET
+    @javax.ws.rs.Path(RECORDS_SECTIONS_RANGE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = {"records", "iiif"}, summary = "Get IIIF range for section")
+    @CORSBinding
+    @IIIFPresentationBinding
+    public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException {
+        IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        return builder.getRange(pi, divId);
+    }
+
+    /**
+     * @param pi
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    private StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:DOCSTRCT +LOGID:" + divId, null);
+        StructElement struct = new StructElement(Long.valueOf((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
+        return struct;
+    }
+    
 }

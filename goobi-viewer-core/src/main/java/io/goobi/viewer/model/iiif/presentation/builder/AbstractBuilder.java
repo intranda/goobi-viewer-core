@@ -27,7 +27,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS_COMMENT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_LAYER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.awt.Rectangle;
@@ -847,25 +846,6 @@ public abstract class AbstractBuilder {
     public URI getLayerURI(String pi, AnnotationType type) {
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_LAYER).params(pi, type.name()).build();
         return URI.create(urlString);
-    }
-
-    /**
-     * <p>
-     * getLayerURI.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @return a {@link java.net.URI} object.
-     */
-    public URI getLayerURI(String pi, String logId) {
-        if (StringUtils.isNotBlank(logId)) {
-            String urlString = this.urls.path(RECORDS_RECORD, RECORDS_SECTIONS_LAYER).params(pi, logId).build();
-            return URI.create(urlString);            
-        } else {
-            String urlString = this.urls.path(RECORDS_RECORD, RECORDS_LAYER).params(pi).build();
-            return URI.create(urlString);
-        }
     }
 
     /**

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.PathParam;
 
@@ -95,6 +96,19 @@ public class IIIFPresentationResourceBuilder {
 
         return manifest;
     }
+
+    public Range getRange(String pi, String logId) throws PresentationException, IndexUnreachableException,
+            ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
+        List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
+
+        if (docs.isEmpty()) {
+            throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
+        }
+        List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
+        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().endsWith(logId + "/")).findFirst();
+        return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
+    }
+
 
     public Layer getLayer(String pi, String typeName) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {

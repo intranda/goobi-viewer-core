@@ -50,7 +50,6 @@ public class RecordResourceTest extends AbstractRestApiTest{
 
     private static final String PI = "74241";
     private static final String PI_ANNOTATIONS = "PI_1";
-    private static final String DIVID ="LOG_0004";
     
     /**
      * @throws java.lang.Exception
