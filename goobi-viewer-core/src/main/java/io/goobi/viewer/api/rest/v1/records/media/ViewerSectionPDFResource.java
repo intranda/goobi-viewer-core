@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@Path(ApiUrls.RECORDS_SECTION + ApiUrls.RECORDS_SECTIONS_PDF)
+@Path(ApiUrls.RECORDS_SECTION)
 public class ViewerSectionPDFResource extends MetsPdfResource {
 
     private final String divId;
@@ -58,16 +58,16 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     }
     
     @GET
+    @Path(ApiUrls.RECORDS_SECTIONS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @Operation(tags = { "records"}, summary = "Get PDF for section of record")
-
     public StreamingOutput getPdf() throws ContentLibException {
         return super.getPdf(divId);
     }
     
     @GET
-    @Path("/info.json")
+    @Path(ApiUrls.RECORDS_SECTIONS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerPdfInfoBinding
     @Override

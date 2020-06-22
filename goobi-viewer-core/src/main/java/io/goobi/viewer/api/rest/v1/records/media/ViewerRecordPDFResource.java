@@ -16,13 +16,10 @@
 package io.goobi.viewer.api.rest.v1.records.media;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -31,6 +28,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -38,7 +36,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@Path("/records/{pi}/pdf")
+@Path(ApiUrls.RECORDS_RECORD)
 public class ViewerRecordPDFResource extends MetsPdfResource {
 
     public ViewerRecordPDFResource(
@@ -47,6 +45,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     }
     
     @GET
+    @Path(ApiUrls.RECORDS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @Operation(tags = { "records"}, summary = "Get PDF for entire record")
@@ -55,7 +54,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     }
     
     @GET
-    @Path("/info.json")
+    @Path(ApiUrls.RECORDS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records"}, summary = "Get information about PDF for entire record")

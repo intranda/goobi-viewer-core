@@ -54,6 +54,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_TEI =                                "/tei";
     public static final String RECORDS_TEI_ZIP =                            "/tei.zip";
     public static final String RECORDS_PDF =                                "/pdf";
+    public static final String RECORDS_PDF_INFO =                           "/pdf/info.json";
     
     public static final String RECORDS_SECTION =                            "/records/{pi}/sections/{divId}";
     public static final String RECORDS_SECTIONS_RANGE =                     "/range";
@@ -63,6 +64,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_SECTIONS_PLAINTEXT =                 "/plaintext";
     public static final String RECORDS_SECTIONS_ALTO =                      "/alto";
     public static final String RECORDS_SECTIONS_PDF =                       "/pdf";
+    public static final String RECORDS_SECTIONS_PDF_INFO =                  "/pdf/info.json";
     
     public static final String RECORDS_PAGES =                              "/records/{pi}/pages";
     public static final String RECORDS_PAGES_SEQUENCE =                     "/sequence/{name}";
