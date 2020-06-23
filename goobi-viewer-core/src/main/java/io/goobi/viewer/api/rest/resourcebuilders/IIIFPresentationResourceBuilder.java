@@ -17,6 +17,7 @@ package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,11 +28,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.presentation.AnnotationList;
+import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
+import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -48,6 +51,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
@@ -105,10 +109,26 @@ public class IIIFPresentationResourceBuilder {
             throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
         }
         List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().endsWith(logId + "/")).findFirst();
+        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().contains(logId + "/")).findFirst();
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
+    public Sequence getBaseSequence(String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
+            ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
+
+        StructElement doc = getManifestBuilder().getDocument(pi);
+
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
+
+        if (manifest instanceof Collection) {
+            throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
+        } else if (manifest instanceof Manifest) {
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            return ((Manifest) manifest).getSequences().get(0);
+        }
+        throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
+
+    }
 
     public Layer getLayer(String pi, String typeName) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {
@@ -131,6 +151,33 @@ public class IIIFPresentationResourceBuilder {
             Layer layer = getLayerBuilder().generateLayer(pi, annoLists, type);
             return layer;
         }
+    }
+    
+    /**
+     * @param pi
+     * @param pageNo
+     * @return
+     * @throws ViewerConfigurationException 
+     * @throws URISyntaxException 
+     * @throws ContentNotFoundException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws DAOException 
+     */
+    public IPresentationModelElement getCanvas(String pi, Integer pageNo) throws URISyntaxException, ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException {
+        StructElement doc = getManifestBuilder().getDocument(pi);
+        if (doc != null) {
+            PhysicalElement page = getSequenceBuilder().getPage(doc, pageNo);
+            Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
+            if (canvas != null) {
+                getSequenceBuilder().addSeeAlsos(canvas, doc, page);
+                getSequenceBuilder().addOtherContent(doc, page, canvas, false);
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
+                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
+                return canvas;
+            }
+        }
+        throw new ContentNotFoundException("No page found with order= " + pageNo + " and pi = " + pi);
     }
 
     private StructureBuilder getStructureBuilder() {
@@ -181,4 +228,6 @@ public class IIIFPresentationResourceBuilder {
         }
         return layerBuilder;
     }
+
+
 }

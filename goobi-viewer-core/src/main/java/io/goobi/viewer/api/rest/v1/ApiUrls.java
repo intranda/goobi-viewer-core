@@ -64,7 +64,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_SECTIONS_PDF_INFO =                  "/pdf/info.json";
     
     public static final String RECORDS_PAGES =                              "/records/{pi}/pages";
-    public static final String RECORDS_PAGES_SEQUENCE =                     "/sequence/{name}";
+    public static final String RECORDS_PAGES_SEQUENCE =                     "/sequence/base";
     public static final String RECORDS_PAGES_CANVAS =                       "/{pageNo}/canvas";
     public static final String RECORDS_PAGES_NER_TAGS =                     "/{pageNo}/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS =                  "/{pageNo}/annotations";

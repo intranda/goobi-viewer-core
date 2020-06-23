@@ -15,19 +15,7 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.awt.Rectangle;
 import java.net.URI;
@@ -720,7 +708,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getRangeURI(String pi, String logId) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_SECTIONS_RANGE).params(pi, logId).build();
+        String urlString = this.urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(pi, logId).build();
         return URI.create(urlString);
     }
 
@@ -737,7 +725,7 @@ public abstract class AbstractBuilder {
         if (StringUtils.isBlank(label)) {
             label = "basic";
         }
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_SEQUENCE).params(pi, label).build();
         return URI.create(urlString);
     }
 
@@ -751,7 +739,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getCanvasURI(String pi, int pageNo) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, pageNo).build();
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, pageNo).build();
         return URI.create(urlString);
     }
 
@@ -799,7 +787,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo).query("type", type.name()).build();
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo).query("type", type.name()).build();
         return URI.create(urlString);
     }
 
@@ -829,7 +817,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
 
         return URI.create(urlString);
     }
@@ -858,7 +846,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getImageAnnotationURI(String pi, int order) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/image/1/";
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/image/1/";
         return URI.create(urlString);
     }
 
@@ -875,7 +863,7 @@ public abstract class AbstractBuilder {
      * @throws java.net.URISyntaxException if any.
      */
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/" + type.name() + "/annoNum/";
+        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(pi, order).build() + "/" + type.name() + "/annoNum/";
         return URI.create(urlString);
     }
 

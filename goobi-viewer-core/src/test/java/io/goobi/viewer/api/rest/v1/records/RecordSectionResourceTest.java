@@ -18,6 +18,8 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 import static org.junit.Assert.*;
 
+import java.net.URI;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -25,6 +27,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.Range;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
 
 /**
@@ -85,6 +92,22 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
             String entity = response.readEntity(String.class);
             assertTrue(entity.contains("TY  - FIGURE"));
             assertTrue(entity.contains("TI  - Wappen 1"));
+        }
+    }
+    
+    @Test 
+    public void testGetRange() throws JsonMappingException, JsonProcessingException {
+        String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RANGE).params(PI, DIVID).build();
+        try(Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            Range range = mapper.readValue(entity, Range.class);
+            assertEquals(URI.create(url), range.getId());
         }
     }
 
