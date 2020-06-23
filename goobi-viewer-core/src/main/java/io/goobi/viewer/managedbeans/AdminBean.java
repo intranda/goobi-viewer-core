@@ -1450,6 +1450,7 @@ public class AdminBean implements Serializable {
      * @param deleteUserContributions the deleteUserContributions to set
      */
     public void setDeleteUserContributions(boolean deleteUserContributions) {
+        logger.trace("setDeleteUserContributions: {}", deleteUserContributions);
         this.deleteUserContributions = deleteUserContributions;
     }
 
