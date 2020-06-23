@@ -16,6 +16,7 @@
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUser')}" />
             <f:event type="preRenderView" listener="#{adminBean.currentUser.backupFields}" />
             <f:viewParam name="avatar" value="#{adminBean.currentUser.useGravatar}"/>
+            <f:viewParam name="deleteData" value="#{adminBean.deleteUserContributions}"/>
         </f:metadata>
     </ui:define>
 
@@ -247,10 +248,9 @@
                                 <h3>#{msg.admin__user_delete}</h3>
                                 <div class="admin__default-block -danger">
                                     <p>#{msg.admin__user_delete_description}:</p>
-                                    <!-- TODO CONVERT TO BOOTSTRAP STRUCTURE -->
                                     <div class="form-group">
                                         <div class="form-check connected-top">
-                                        	<input class="form-check-input" type="radio" id="keepDataOption" name="deleteData" value="false" checked="#{!adminBean.currentUser.useGravatar ? 'false' : null}" />
+                                        	<input class="form-check-input" type="radio" id="keepDataOption" name="deleteData" value="true" checked="#{!adminBean.deleteUserContributions ? 'false' : null}" />
                                             <label class="form-check-label" for="keepDataOption">#{msg.admin__user_delete_type_keep_data}</label>
                                         </div>
                                         <div class="form-check connected-bottom">
