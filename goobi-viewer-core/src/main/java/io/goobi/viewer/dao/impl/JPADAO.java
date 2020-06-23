@@ -1710,7 +1710,6 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#changeCommentsOwner(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
      * @should update rows correctly
      */
-    @SuppressWarnings("unchecked")
     @Override
     public int changeCommentsOwner(User fromUser, User toUser) throws DAOException {
         if (fromUser == null || fromUser.getId() == null) {
@@ -1756,50 +1755,6 @@ public class JPADAO implements IDAO {
         }
 
         preQuery();
-
-        //        // Fetch relevant IDs
-        //        StringBuilder sbQuery = new StringBuilder();
-        //        sbQuery.append("SELECT o FROM Comment o WHERE ");
-        //        if (StringUtils.isNotEmpty(pi)) {
-        //            sbQuery.append("o.pi = :pi");
-        //        }
-        //        if (owner != null) {
-        //            if (StringUtils.isNotEmpty(pi)) {
-        //                sbQuery.append(" AND ");
-        //            }
-        //            sbQuery.append("o.owner = :owner");
-        //        }
-        //
-        //        Query q = em.createQuery(sbQuery.toString());
-        //        if (StringUtils.isNotEmpty(pi)) {
-        //            q.setParameter("pi", pi);
-        //        }
-        //        if (owner != null) {
-        //            q.setParameter("owner", owner);
-        //        }
-        //        
-        //        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        //        List<Comment> comments = q.getResultList();
-        //
-        //        if (comments.isEmpty()) {
-        //            return 0;
-        //        }
-        //
-        //        // Delete each manually to ensure cascading
-        //        EntityManager localEm = factory.createEntityManager();
-        //        try {
-        //            localEm.getTransaction().begin();
-        //            int rows = 0;
-        //            for (Comment comment : comments) {
-        //                Comment o = localEm.getReference(Comment.class, comment.getId());
-        //                localEm.remove(o);
-        //                rows++;
-        //            }
-        //            localEm.getTransaction().commit();
-        //            return rows;
-        //        } finally {
-        //            localEm.close();
-        //        }
 
         // Fetch relevant IDs
         StringBuilder sbQuery = new StringBuilder();
@@ -3247,7 +3202,7 @@ public class JPADAO implements IDAO {
                 em.getTransaction().begin();
                 em.merge(campaign);
                 em.getTransaction().commit();
-                return updateFromDatabase(campaign.getId(), Campaign.class);
+                return true;
             } finally {
                 em.close();
             }
@@ -3283,69 +3238,82 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#deleteCampaignStatisticsForUser(io.goobi.viewer.model.security.user.User)
      * @should remove user from creators and reviewers lists correctly
      */
-    @SuppressWarnings("unchecked")
     @Override
     public int deleteCampaignStatisticsForUser(User user) throws DAOException {
         if (user == null) {
             return 0;
         }
 
-        List<Campaign> campaigns = new ArrayList<>();
-        Set<String> identifiers = new HashSet<>();
-        Set<CampaignRecordStatistic> statistics = new HashSet<>();
-        {
-            StringBuilder sbQuery =
-                    new StringBuilder();
-            List<CampaignRecordStatistic> result =
-                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
-                            .setParameter("user", user)
-                            .getResultList();
-            statistics.addAll(result);
-        }
-        {
-            StringBuilder sbQuery =
-                    new StringBuilder();
-            List<CampaignRecordStatistic> result =
-                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.reviewers")
-                            .setParameter("user", user)
-                            .getResultList();
-            statistics.addAll(result);
-        }
-        for (CampaignRecordStatistic statistic : statistics) {
-            boolean annotator = false;
-            boolean reviewer = false;
-            while (statistic.getAnnotators().contains(user)) {
-                annotator = true;
-                statistic.getAnnotators().remove(user);
-            }
-            while (statistic.getReviewers().contains(user)) {
-                reviewer = true;
-                statistic.getReviewers().remove(user);
-            }
-            if (!campaigns.contains(statistic.getOwner())) {
-                campaigns.add(statistic.getOwner());
-            }
-            // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
-            if (annotator) {
-                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
-            }
-            if (reviewer) {
-                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
-            }
-            identifiers.add(statistic.getPi());
-        }
+        //        List<Campaign> campaigns = new ArrayList<>();
+        //        Set<CampaignRecordStatistic> statistics = new HashSet<>();
+        //        {
+        //            StringBuilder sbQuery =
+        //                    new StringBuilder();
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
+        //                            .setParameter("user", user)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        {
+        //            StringBuilder sbQuery =
+        //                    new StringBuilder();
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.reviewers")
+        //                            .setParameter("user", user)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        for (CampaignRecordStatistic statistic : statistics) {
+        //            boolean annotator = false;
+        //            boolean reviewer = false;
+        //            while (statistic.getAnnotators().contains(user)) {
+        //                annotator = true;
+        //                statistic.getAnnotators().remove(user);
+        //            }
+        //            while (statistic.getReviewers().contains(user)) {
+        //                reviewer = true;
+        //                statistic.getReviewers().remove(user);
+        //            }
+        //            if (!campaigns.contains(statistic.getOwner())) {
+        //                campaigns.add(statistic.getOwner());
+        //            }
+        //            // Lazy load the lists where the user was removed, otherwise they won't be updated when saving the campaign
+        //            if (annotator) {
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
+        //            }
+        //            if (reviewer) {
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
+        //            }
+        //        }
+        //
+        //        int count = 0;
+        //        if (!campaigns.isEmpty()) {
+        //            for (Campaign campaign : campaigns) {
+        //                if (updateCampaign(campaign)) {
+        //                    count++;
+        //                }
+        //            }
+        //        }
+        //
+        //        return count;
 
-        int count = 0;
-        if (!campaigns.isEmpty()) {
-            for (Campaign campaign : campaigns) {
-                if (updateCampaign(campaign)) {
-                    count++;
-                }
-            }
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            emLocal.getTransaction().begin();
+            int rows = emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_statistic_annotators WHERE user_id=" + user.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "DELETE FROM cs_campaign_record_statistic_reviewers WHERE user_id=" + user.getId())
+                    .executeUpdate();
+            emLocal.getTransaction().commit();
+            return rows;
+        } finally {
+            emLocal.close();
         }
-
-        return count;
-
     }
 
     /**
@@ -3353,90 +3321,142 @@ public class JPADAO implements IDAO {
      *      io.goobi.viewer.model.security.user.User)
      * @should replace user in creators and reviewers lists correctly
      */
-    @SuppressWarnings("unchecked")
     @Override
     public int changeCampaignStatisticContributors(User fromUser, User toUser) throws DAOException {
         if (fromUser == null || toUser == null) {
             return 0;
         }
 
-        List<Campaign> campaigns = new ArrayList<>();
-        Set<String> identifiers = new HashSet<>();
+        List<Campaign> campaignsToUpdate = new ArrayList<>();
         Set<CampaignRecordStatistic> statistics = new HashSet<>();
-        {
-            List<CampaignRecordStatistic> result =
-                    em.createQuery(
-                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.annotators")
-                            .setParameter("fromUser", fromUser)
-                            .getResultList();
-            statistics.addAll(result);
-        }
-        {
-            List<CampaignRecordStatistic> result =
-                    em.createQuery(
-                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.reviewers")
-                            .setParameter("fromUser", fromUser)
-                            .getResultList();
-            statistics.addAll(result);
-        }
-        logger.trace("found {} campaign statistic rows with user {}", statistics.size(), fromUser.getId());
-        for (CampaignRecordStatistic statistic : statistics) {
-            logger.trace("statistic {}", statistic.getId());
-            boolean annotator = false;
-            boolean reviewer = false;
-            while (statistic.getAnnotators().contains(fromUser)) {
-                annotator = true;
-                int index = statistic.getAnnotators().indexOf(fromUser);
-                statistic.getAnnotators().remove(index);
-                logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
-                if (!statistic.getAnnotators().contains(toUser)) {
-                    statistic.getAnnotators().add(index, toUser);
-                    logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
-                }
-            }
-            while (statistic.getReviewers().contains(fromUser)) {
-                reviewer = true;
-                int index = statistic.getReviewers().indexOf(fromUser);
-                statistic.getReviewers().remove(index);
-                logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
-                if (!statistic.getReviewers().contains(toUser)) {
-                    statistic.getReviewers().add(index, toUser);
-                    logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
-                }
-            }
-            if ((annotator || reviewer) && !campaigns.contains(statistic.getOwner())) {
-                campaigns.add(statistic.getOwner());
-            }
-            // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
-            if (annotator) {
-                logger.trace("lazy loading annotators");
-                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
-            }
-            if (reviewer) {
-                logger.trace("lazy loading reviewers");
-                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
-            }
-            identifiers.add(statistic.getPi());
-        }
 
-        int count = 0;
-        if (!campaigns.isEmpty()) {
-            for (Campaign campaign : campaigns) {
-                logger.trace("updating campaign {}", campaign.getId());
-                if (updateCampaign(campaign)) {
-                    count++;
-                }
-            }
-        }
+        //        List<Campaign> allCampaigns = DataManager.getInstance().getDao().getAllCampaigns();
+        //        for (Campaign campaign : allCampaigns) {
+        //            logger.trace("");
+        //            for (String pi : campaign.getStatistics().keySet()) {
+        //                CampaignRecordStatistic statistic = campaign.getStatistics().get(pi);
+        //                boolean annotator = false;
+        //                boolean reviewer = false;
+        //                if (statistic.getPi().equals("mnha16210")) {
+        //                    for (User user : statistic.getAnnotators()) {
+        //                        logger.trace("annotator: " + user.getId());
+        //                    }
+        //                    for (User user : statistic.getReviewers()) {
+        //                        logger.trace("reviewer: " + user.getId());
+        //                    }
+        //                }
+        //                while (statistic.getAnnotators().contains(fromUser)) {
+        //                    annotator = true;
+        //                    int index = statistic.getAnnotators().indexOf(fromUser);
+        //                    statistic.getAnnotators().remove(index);
+        //                    logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                    if (!statistic.getAnnotators().contains(toUser)) {
+        //                        statistic.getAnnotators().add(index, toUser);
+        //                        logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
+        //                    }
+        //                }
+        //                while (statistic.getReviewers().contains(fromUser)) {
+        //                    reviewer = true;
+        //                    int index = statistic.getReviewers().indexOf(fromUser);
+        //                    statistic.getReviewers().remove(index);
+        //                    logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                    if (!statistic.getReviewers().contains(toUser)) {
+        //                        statistic.getReviewers().add(index, toUser);
+        //                        logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
+        //                    }
+        //                }
+        //                if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
+        //                    logger.trace("statistic contains user: {}", statistic.getId());
+        //                    campaignsToUpdate.add(statistic.getOwner());
+        //                }
+        //            }
+        //        }
+
+        //        {
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery(
+        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.annotators")
+        //                            .setParameter("fromUser", fromUser)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        {
+        //            List<CampaignRecordStatistic> result =
+        //                    em.createQuery(
+        //                            "SELECT DISTINCT o FROM CampaignRecordStatistic o WHERE :fromUser MEMBER OF o.reviewers")
+        //                            .setParameter("fromUser", fromUser)
+        //                            .getResultList();
+        //            statistics.addAll(result);
+        //        }
+        //        logger.trace("found {} campaign statistic rows with user {}", statistics.size(), fromUser.getId());
+        //        for (CampaignRecordStatistic statistic : statistics) {
+        //            logger.trace("statistic {}", statistic.getId());
+        //            boolean annotator = false;
+        //            boolean reviewer = false;
+        //            while (statistic.getAnnotators().contains(fromUser)) {
+        //                annotator = true;
+        //                int index = statistic.getAnnotators().indexOf(fromUser);
+        //                statistic.getAnnotators().remove(index);
+        //                logger.trace("removed annotator {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                if (!statistic.getAnnotators().contains(toUser)) {
+        //                    statistic.getAnnotators().add(index, toUser);
+        //                    logger.trace("added annotator {} to statistic {}", toUser.getId(), statistic.getId());
+        //                }
+        //            }
+        //            while (statistic.getReviewers().contains(fromUser)) {
+        //                reviewer = true;
+        //                int index = statistic.getReviewers().indexOf(fromUser);
+        //                statistic.getReviewers().remove(index);
+        //                logger.trace("removed reviewer {} from statistic {}", fromUser.getId(), statistic.getId());
+        //                if (!statistic.getReviewers().contains(toUser)) {
+        //                    statistic.getReviewers().add(index, toUser);
+        //                    logger.trace("added reviewer {} to statistic {}", toUser.getId(), statistic.getId());
+        //                }
+        //            }
+        //            if ((annotator || reviewer) && !campaignsToUpdate.contains(statistic.getOwner())) {
+        //                campaignsToUpdate.add(statistic.getOwner());
+        //            }
+        //            // Lazy load the lists where the user was replaced, otherwise they won't be updated when saving the campaign
+        //            if (annotator) {
+        //                logger.trace("lazy loading annotators");
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getAnnotators();
+        //            }
+        //            if (reviewer) {
+        //                logger.trace("lazy loading reviewers");
+        //                statistic.getOwner().getStatistics().get(statistic.getPi()).getReviewers();
+        //            }
+        //        }
 
         // Refresh objects in context
-        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE (:user MEMBER OF o.annotators OR :user MEMBER OF o.reviewers)")
-                .setParameter("user", toUser)
-                .setHint("javax.persistence.cache.storeMode", "REFRESH")
-                .getResultList()
-                .size();
+        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE :user MEMBER OF o.annotators")
+        //                .setParameter("user", toUser)
+        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
+        //                .getResultList()
+        //                .size();
+        //        em.createQuery("SELECT o FROM CampaignRecordStatistic o WHERE  :user MEMBER OF o.reviewers")
+        //                .setParameter("user", toUser)
+        //                .setHint("javax.persistence.cache.storeMode", "REFRESH")
+        //                .getResultList()
+        //                .size();
 
-        return count;
+        //        return count;
+
+        EntityManager emLocal = factory.createEntityManager();
+        try {
+            emLocal.getTransaction().begin();
+            int rows = emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_statistic_annotators SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                    .executeUpdate();
+            rows += emLocal
+                    .createNativeQuery(
+                            "UPDATE cs_campaign_record_statistic_reviewers SET user_id=" + toUser.getId() + " WHERE user_id=" + fromUser.getId())
+                    .executeUpdate();
+            emLocal.getTransaction().commit();
+            return rows;
+        } finally {
+            emLocal.close();
+        }
 
     }
 

@@ -153,8 +153,8 @@ public class UserTools {
         logger.debug("{} comment(s) of user {} deleted.", comments, user.getId());
 
         // Delete campaign statistics
-        int campaigns = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
-        logger.debug("Deleted user from the statistics from {} campaign(s)", campaigns);
+        int statistics = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
+        logger.debug("Deleted user from {} campaign statistics statistic(s).", statistics);
 
         // Delete module contributions
         for (IModule module : DataManager.getInstance().getModules()) {
@@ -184,8 +184,8 @@ public class UserTools {
         logger.debug("{} comment(s) of user {} anonymized.", comments, user.getId());
 
         // Move campaign statistics
-        int campaigns = DataManager.getInstance().getDao().changeCampaignStatisticContributors(user, anon);
-        logger.debug("Anonymized user in the statistics from {} campaign(s)", campaigns);
+        int statistics = DataManager.getInstance().getDao().changeCampaignStatisticContributors(user, anon);
+        logger.debug("Anonymized user in {} campaign statistic(s).", statistics);
 
         // Move module contributions
         for (IModule module : DataManager.getInstance().getModules()) {

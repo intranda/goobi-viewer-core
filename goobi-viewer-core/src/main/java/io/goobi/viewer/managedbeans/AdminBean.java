@@ -303,8 +303,6 @@ public class AdminBean implements Serializable {
         if (user == null) {
             return "";
         }
-        logger.trace("email confirmation: " + emailConfirmation);
-        logger.trace("email actual: " + user.getEmail());
         if (StringUtils.isBlank(emailConfirmation) || !emailConfirmation.equals(user.getEmail())) {
             Messages.error("admin__error_email_mismatch");
             return "";
@@ -316,7 +314,7 @@ public class AdminBean implements Serializable {
             return "";
         }
 
-        logger.debug("Deleting user: {}", user.getDisplayName());
+        logger.debug("Deleting user: {} (delete contributions: {})", user.getDisplayName(), deleteContributions);
         if (deleteContributions) {
             // Delete all public content created by this user
             UserTools.deleteUserPublicContributions(user);
