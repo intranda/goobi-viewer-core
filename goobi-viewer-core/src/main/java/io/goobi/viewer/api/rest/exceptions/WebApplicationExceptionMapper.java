@@ -33,8 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
@@ -43,6 +45,7 @@ import io.goobi.viewer.exceptions.PresentationException;
  * @author Florian Alpers
  */
 @Provider
+@ViewerRestServiceBinding
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);

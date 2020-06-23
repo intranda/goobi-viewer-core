@@ -16,10 +16,14 @@
 package io.goobi.viewer.api.rest.v1.records.media;
 
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -28,6 +32,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,8 +45,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class ViewerRecordPDFResource extends MetsPdfResource {
 
     public ViewerRecordPDFResource(
+            @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
+            @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) throws ContentLibException {
-       super("pdf", pi + ".xml");
+       super(context, request, response, "pdf", pi + ".xml");
     }
     
     @GET

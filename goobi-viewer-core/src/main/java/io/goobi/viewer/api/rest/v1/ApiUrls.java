@@ -74,11 +74,14 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES =                              "/records/{pi}/files";
     public static final String RECORDS_FILES_PLAINTEXT =                    "/plaintext/{filename}";
     public static final String RECORDS_FILES_ALTO =                         "/alto/{filename}";
-    public static final String RECORDS_FILES_PDF =                          "/pdf/{filename}";
-    public static final String RECORDS_FILES_IMAGE =                        "/images/{filename}";
     public static final String RECORDS_FILES_TEI =                          "/tei/{filename}";
-    public static final String RECORDS_FILES_CONTENT =                      "/content/{foldername}";
-    public static final String RECORDS_FILES_CONTENT_FILE =                 "/content/{foldername}/{filename}";
+    public static final String RECORDS_FILES_PDF =                          "/pdf/{filename}";
+
+    
+    public static final String RECORDS_FILES_IMAGE =                        "/records/{pi}/files/images/{filename}";
+    public static final String RECORDS_FILES_IMAGE_PDF =                    "/full.pdf";
+    public static final String RECORDS_FILES_IMAGE_INFO =                   "/info.json";
+    public static final String RECORDS_FILES_IMAGE_IIIF =                   "/{region}/{size}/{rotation}/{quality}.{format}";
 
     
     public static final String COLLECTIONS =                                "/collections/{field}";

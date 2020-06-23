@@ -31,6 +31,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,9 +52,11 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
      * @throws ContentLibException
      */
     public ViewerSectionPDFResource(
+            @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
+            @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) throws ContentLibException {
-        super("pdf", pi + ".xml");
+        super(context, request, response, "pdf", pi + ".xml");
         this.divId = divId;
     }
     
