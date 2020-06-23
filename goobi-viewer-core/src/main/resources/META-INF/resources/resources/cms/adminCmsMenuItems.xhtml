@@ -35,7 +35,7 @@
                             <div class="cms-menu__select-theme">
                                 <!-- OPTION GROUP -->
                                 <div class="form-group form-row cms-module__option-group">
-                                    <div class="col-2 cms-module__option-label">
+                                    <div class="col-2 cms-module__option-label pt-0">
                                         <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_select_theme}:</label>
                                     </div>
                                     <div class="col-9 cms-module__option-control">
@@ -101,7 +101,7 @@
                                                 <ui:fragment rendered="#{visibleItem.absoluteLink}">
                                                     <!-- OPTION GROUP -->
                                                     <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label">
+                                                        <div class="cms-module__option-label pt-0">
                                                             <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
@@ -117,7 +117,7 @@
 
                                                     <!-- OPTION GROUP -->
                                                     <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label">
+                                                        <div class="cms-module__option-label pt-0">
                                                             <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
@@ -132,17 +132,22 @@
                                                     </div>
 
                                                     <!-- OPTION GROUP -->
-                                                    <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label">
+                                                    <div class="form-group form-row no-gutters cms-module__option-group cms-module__option-group">
+                                                        <div class="cms-module__option-label pt-0">
                                                             <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
                                                         </div>
-                                                        <div class="cms-module__option-control">
-                                                            <span class="cms-module__option-control-checkbox">
-                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" value="#{visibleItem.openInNewWindow}" />
-                                                            </span>
-                                                            <br />
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
-                                                        </div>
+                                                        <div class="cms-module__option-control admin__form-input">
+	                                                        <div class="admin__radio-switch">
+	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab" value="#{visibleItem.openInNewWindow}" immediate="true">
+	                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                                            </h:selectOneRadio>
+	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab" value="#{visibleItem.openInNewWindow}" immediate="true">
+	                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                                            </h:selectOneRadio>
+	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                                        </div>
+	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>                                                            
+                                                        </div>                                                        
                                                         <div class="cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -211,14 +216,14 @@
                                                 <div class="cms-module__option">
                                                     <!-- OPTION GROUP -->
                                                     <div class="form-group form-row no-gutters cms-module__option-group">
-                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth">
+                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth  pt-0">
                                                             <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
                                                         </div>
                                                         <div class="col-9 cms-module__option-control">
                                                             <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                                         </div>
-                                                        <div class="col-1 cms-module__option-help d-flex justify-content-center">
+                                                        <div class="col-1 cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
@@ -227,7 +232,7 @@
 
                                                     <!-- OPTION GROUP -->
                                                     <div class="form-group form-row no-gutters cms-module__option-group">
-                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth">
+                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth  pt-0">
                                                             <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
                                                         </div>
                                                         <div class="col-9 cms-module__option-control">
@@ -243,15 +248,20 @@
 
                                                     <!-- OPTION GROUP -->
                                                     <div class="form-group form-row no-gutters cms-module__option-group">
-                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth">
+                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth pt-0">
                                                             <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
                                                         </div>
-                                                        <div class="col-9 cms-module__option-control">
-                                                            <span class="cms-module__option-control-checkbox">
-                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" />
-                                                            </span>
-                                                            <br />
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
+                                                        <div class="col-9 cms-module__option-control admin__form-input">
+	                                                        <div class="admin__radio-switch">
+	                                                            <h:selectOneRadio group="privCmsMenu" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" immediate="true">
+	                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                                            </h:selectOneRadio>
+	                                                            <h:selectOneRadio group="privCmsMenu" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" immediate="true">
+	                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                                            </h:selectOneRadio>
+	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                                        </div>
+	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>                                                            
                                                         </div>
                                                         <div class="col-1 cms-module__option-help">
                                                             <button type="button" class="btn btn--clean" data-toggle="helptext">
