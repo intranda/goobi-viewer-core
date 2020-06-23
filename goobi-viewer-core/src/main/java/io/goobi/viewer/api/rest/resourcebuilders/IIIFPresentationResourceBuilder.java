@@ -22,7 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,6 +42,7 @@ import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -47,10 +52,12 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.builder.BuildMode;
+import io.goobi.viewer.model.iiif.presentation.builder.CollectionBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
+import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
@@ -65,6 +72,7 @@ public class IIIFPresentationResourceBuilder {
     private StructureBuilder structureBuilder;
     private SequenceBuilder sequenceBuilder;
     private LayerBuilder layerBuilder;
+    private CollectionBuilder collectionBuilder;
     private final AbstractApiUrlManager urls;
 
     public IIIFPresentationResourceBuilder(AbstractApiUrlManager urls) {
@@ -227,6 +235,119 @@ public class IIIFPresentationResourceBuilder {
             this.layerBuilder = new LayerBuilder(urls);
         }
         return layerBuilder;
+    }
+    
+    /**
+     * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
+     * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
+     * to set the language for all metadata values
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public Collection getCollections(String collectionField)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, null,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+
+        return collection;
+
+    }
+    
+    /**
+     * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
+     * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
+     * to set the language for all metadata values
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public Collection getCollectionsWithGrouping(String collectionField, String groupingField)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        
+        getCollectionBuilder().addTagListService(collection, collectionField, groupingField, "grouping");
+        
+        return collection;
+
+    }
+
+    /**
+     * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
+     * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
+     * member-collections Requires passing a language to set the language for all metadata values
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public Collection getCollection(String collectionField, String topElement)
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+
+        return collection;
+
+    }
+    
+    /**
+     * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
+     * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
+     * member-collections Requires passing a language to set the language for all metadata values
+     *
+     * @param collectionField a {@link java.lang.String} object.
+     * @param topElement a {@link java.lang.String} object.
+     * @param groupingField a solr field by which the collections may be grouped. Included in the response for each {@link BrowseDcElement} to enable grouping by client
+     * @return a {@link de.intranda.api.iiif.presentation.Collection} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public Collection getCollectionWithGrouping(String collectionField, String topElement, String facetField)
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+
+        getCollectionBuilder().addTagListService(collection, collectionField, facetField, "grouping");
+        
+        return collection;
+
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>collectionBuilder</code>.
+     * </p>
+     *
+     * @return the manifestBuilder
+     */
+    public CollectionBuilder getCollectionBuilder() {
+        if (this.collectionBuilder == null) {
+            try {
+                this.collectionBuilder = new CollectionBuilder(urls);
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return collectionBuilder;
     }
 
 

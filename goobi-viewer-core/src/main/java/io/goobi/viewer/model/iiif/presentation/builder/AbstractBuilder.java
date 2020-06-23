@@ -119,6 +119,9 @@ public abstract class AbstractBuilder {
      * @return
      */
     public URI absolutize(URI uri) {
+        if(uri == null) {
+            return null;
+        }
         if(uri.isAbsolute()) {
             return uri;
         } else {
