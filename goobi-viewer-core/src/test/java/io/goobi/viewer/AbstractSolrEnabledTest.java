@@ -18,7 +18,6 @@ package io.goobi.viewer;
 import java.io.File;
 
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.core.CoreContainer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -39,8 +38,9 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     protected static long iddocKleiuniv = -1;
 
     private static String solrPath = "/opt/digiverso/viewer/apache-solr/";
-    private static CoreContainer coreContainer;
 
+    private HttpSolrClient server;
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
@@ -51,16 +51,11 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
         }
         File solrDir = new File(solrPath);
         Assert.assertTrue("Solr folder not found in " + solrPath, solrDir.isDirectory());
-
-        coreContainer = new CoreContainer(solrPath);
-        coreContainer.load();
-
     }
 
     @Before
     public void setUp() throws Exception {
-        // EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, CORE_NAME);
-        HttpSolrClient server = SolrSearchIndex.getNewHttpSolrServer();
+         server = SolrSearchIndex.getNewHttpSolrServer();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
@@ -72,15 +67,10 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     @After
     public void tearDown() throws Exception {
-        if (coreContainer != null) {
-            coreContainer.getClass(); // random call so that there is no red PMD warning
-        }
+        server.close();
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        if (coreContainer != null) {
-            coreContainer.shutdown();
-        }
     }
 }
