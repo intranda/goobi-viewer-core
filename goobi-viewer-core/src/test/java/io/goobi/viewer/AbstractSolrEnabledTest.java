@@ -17,7 +17,7 @@ package io.goobi.viewer;
 
 import java.io.File;
 
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.core.CoreContainer;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -60,7 +60,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     @Before
     public void setUp() throws Exception {
         // EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, CORE_NAME);
-        HttpSolrServer server = SolrSearchIndex.getNewHttpSolrServer();
+        HttpSolrClient server = SolrSearchIndex.getNewHttpSolrServer();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
 
         // Load current IDDOC for PPN517154005, which is used in many tests

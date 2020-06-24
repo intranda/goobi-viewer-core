@@ -37,13 +37,13 @@ import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer.RemoteSolrException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
@@ -94,7 +94,7 @@ public final class SolrSearchIndex {
     /** Application-scoped map containing already looked up data repository names of records. */
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
-    private SolrServer server;
+    private SolrClient server;
 
     /**
      * <p>
@@ -103,7 +103,7 @@ public final class SolrSearchIndex {
      *
      * @param server a {@link org.apache.solr.client.solrj.SolrServer} object.
      */
-    public SolrSearchIndex(SolrServer server) {
+    public SolrSearchIndex(SolrClient server) {
         if (server == null) {
             this.server = getNewHttpSolrServer();
         } else {
@@ -115,11 +115,15 @@ public final class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (server != null && server instanceof HttpSolrServer) {
-            HttpSolrServer httpSolrServer = (HttpSolrServer) server;
+        if (server != null && server instanceof HttpSolrClient) {
+            HttpSolrClient httpSolrServer = (HttpSolrClient) server;
             if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrServer.getBaseURL())) {
                 logger.info("Solr URL has changed, re-initializing SolrHelper...");
-                httpSolrServer.shutdown();
+                try {
+                    httpSolrServer.close();
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
                 server = getNewHttpSolrServer();
             }
         }
@@ -132,16 +136,17 @@ public final class SolrSearchIndex {
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
-    public static HttpSolrServer getNewHttpSolrServer() {
-        HttpSolrServer server = new HttpSolrServer(DataManager.getInstance().getConfiguration().getSolrUrl());
-        server.setSoTimeout(TIMEOUT_SO); // socket read timeout
-        server.setConnectionTimeout(TIMEOUT_CONNECTION);
-        server.setDefaultMaxConnectionsPerHost(100);
-        server.setMaxTotalConnections(100);
+    public static HttpSolrClient getNewHttpSolrServer() {
+        HttpSolrClient server = new HttpSolrClient.Builder()
+                .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
+                .withSocketTimeout(TIMEOUT_SO)
+                .withConnectionTimeout(TIMEOUT_CONNECTION)
+                .allowCompression(true)
+                .build();
+//        server.setDefaultMaxConnectionsPerHost(100);
+//        server.setMaxTotalConnections(100);
         server.setFollowRedirects(false); // defaults to false
-        server.setAllowCompression(true);
-        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
-        // server.setParser(new XMLResponseParser()); // binary parser is used by default
+//        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
         server.setRequestWriter(new BinaryRequestWriter());
 
         return server;
@@ -155,8 +160,9 @@ public final class SolrSearchIndex {
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
+     * @throws IOException 
      */
-    public QueryResponse testQuery(String query) throws SolrServerException {
+    public QueryResponse testQuery(String query) throws SolrServerException, IOException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -257,6 +263,8 @@ public final class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             logger.error(e.toString(), e);
+            throw new IndexUnreachableException(e.getMessage());
+        } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
         }
     }
@@ -554,6 +562,8 @@ public final class SolrSearchIndex {
             } else {
                 logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             }
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
 
         return tags;
@@ -617,6 +627,8 @@ public final class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             throw new PresentationException("Search index unavailable.");
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
     }
 
@@ -993,6 +1005,8 @@ public final class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             throw new IndexUnreachableException(e.getMessage());
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
 
         return null;
@@ -1158,6 +1172,8 @@ public final class SolrSearchIndex {
                 throw new PresentationException("Bad query.");
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
+            throw new IndexUnreachableException(e.getMessage());
+        } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
         }
     }
