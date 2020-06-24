@@ -64,13 +64,13 @@ public class ApiUrlManagerTest {
 
     @Test
     public void testGetUrl() {
-        String url = manager.path(RECORDS_RECORD, RECORDS_SECTIONS_PDF).params(PI, DIVID).build();
+        String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI, DIVID).build();
         assertEquals(PATH_FINAL, url);
     }
     
     @Test
     public void testGetUrlWithQuery() {
-        String url = manager.path(RECORDS_RECORD, RECORDS_SECTIONS_PDF)
+        String url = manager.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF)
                 .params(PI, DIVID)
                 .query(QUERY_PARAM_MAX, QUERY_PARAM_MAX_VALUE)
                 .query(QUERY_PARAM_AUTHOR, QUERY_PARAM_AUTHOR_VALUE)
