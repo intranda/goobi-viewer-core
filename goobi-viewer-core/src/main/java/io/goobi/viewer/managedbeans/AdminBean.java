@@ -693,14 +693,15 @@ public class AdminBean implements Serializable {
         }
 
         if (currentLicenseType.getId() != null) {
-            if (DataManager.getInstance().getDao().updateLicenseType(getCurrentLicenseType())) {
+            if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {
+                logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.error("errSave");
                 return "pretty:adminLicenseEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addLicenseType(getCurrentLicenseType())) {
+            if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.error("errSave");

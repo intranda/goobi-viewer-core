@@ -17,8 +17,10 @@ package io.goobi.viewer.model.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -108,6 +110,13 @@ public class LicenseType implements IPrivilegeHolder {
 
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
+
+    /**
+     * Temporary markers for license types that are part of a moving wall configuration where the condition query no longer matches a particular
+     * record.
+     */
+    @Transient
+    private Map<String, Boolean> restrictionsExpired = new HashMap<>();
 
     /**
      * Empty constructor.
@@ -725,6 +734,24 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
+    }
+
+    public boolean isRestrictionsExpired(String query) {
+        return restrictionsExpired.get(query) != null && restrictionsExpired.get(query);
+    }
+
+    /**
+     * @return the restrictionsExpired
+     */
+    public Map<String, Boolean> getRestrictionsExpired() {
+        return restrictionsExpired;
+    }
+
+    /**
+     * @param restrictionsExpired the restrictionsExpired to set
+     */
+    public void setRestrictionsExpired(Map<String, Boolean> restrictionsExpired) {
+        this.restrictionsExpired = restrictionsExpired;
     }
 
     /**

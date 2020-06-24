@@ -854,7 +854,7 @@ public class AccessConditionUtils {
             // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
             for (LicenseType licenseType : relevantLicenseTypes) {
                 requiredAccessConditions.add(licenseType.getName());
-                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()) {
+                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess() && !licenseType.isRestrictionsExpired(query)) {
                     logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
                     licenseTypeAllowsPriv = false;
                 }
@@ -966,7 +966,7 @@ public class AccessConditionUtils {
                         logger.trace(
                                 "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
                                 licenseType.getName(), query);
-                        licenseType.setOpenAccess(true);
+                        licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
