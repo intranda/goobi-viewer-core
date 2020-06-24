@@ -15,11 +15,9 @@
  */
 package io.goobi.viewer.servlets.rest.crowdsourcing;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +27,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.SimpleResource;
@@ -59,6 +54,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -108,7 +104,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
     }
 
     @Test
-    public void testGetAnnotationsForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
+    public void testGetAnnotationsForManifest() throws URISyntaxException, DAOException {
         String pi = "PI 1";
         List<WebAnnotation> annotationList = resource.getAnnotationsForManifest(1l, pi);
         Assert.assertEquals(2, annotationList.size());
@@ -116,7 +112,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
 
     @Test
     public void testSetAnnotationsForManifest()
-            throws ContentNotFoundException, URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+            throws URISyntaxException, DAOException {
         String pi = "PI_10";
         URI manifestUrl =
                 new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
