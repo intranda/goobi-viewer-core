@@ -21,7 +21,6 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.apache.lucene.document.Document;
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Before;

@@ -46,7 +46,6 @@ import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.solr.client.solrj.impl.HttpSolrServer.RemoteSolrException;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
@@ -1482,9 +1481,6 @@ public final class SearchHelper {
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             throw new PresentationException(e.getMessage());
-        } catch (RemoteSolrException e) {
-            logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), sbQuery.toString());
-            throw new PresentationException("Search index unavailable.");
         }
 
         if (!terms.isEmpty()) {
