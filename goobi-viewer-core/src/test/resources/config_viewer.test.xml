@@ -271,8 +271,8 @@
 
 		<!-- max. allowed values for ContentServer arguments, higher values than 
 			these will be reduced to the values defined here -->
-		<maxImageWidth>60000</maxImageWidth>
-		<maxImageHeight>70000</maxImageHeight>
+		<maxImageWidth>6</maxImageWidth>
+		<maxImageHeight>7</maxImageHeight>
 		<maxImageScale>8</maxImageScale>
 
 		<!-- thumbnailsPerPage: number of thumbnails to show on one page -->

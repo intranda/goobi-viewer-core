@@ -91,11 +91,11 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-//            assertNotNull("Should return user object as json", response.getEntity());
-//            String responseString = response.readEntity(String.class);
-//            JSONObject info = new JSONObject(responseString);
-//            assertTrue(info.getString("@id").endsWith(id));
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String responseString = response.readEntity(String.class);
+            JSONObject info = new JSONObject(responseString);
+            assertTrue(info.getString("@id").endsWith(id));
         }
     }
     
@@ -107,11 +107,11 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-//            assertNotNull("Should return user object as json", response.getEntity());
-//            String responseString = response.readEntity(String.class);
-//            JSONObject info = new JSONObject(responseString);
-//            assertTrue(info.getString("@id").endsWith(id));
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            String responseString = response.readEntity(String.class);
+            JSONObject info = new JSONObject(responseString);
+            assertTrue(info.getString("@id").endsWith(id));
         }
     }
     
@@ -122,10 +122,10 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept("image")
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-//            assertNotNull("Should return user object as json", response.getEntity());
-//            byte[] entity = response.readEntity(byte[].class);
-//            assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            byte[] entity = response.readEntity(byte[].class);
+            assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
         }
     }
     
@@ -136,10 +136,10 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept("application/pdf")
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-//            assertNotNull("Should return user object as json", response.getEntity());
-//            byte[] entity = response.readEntity(byte[].class);
-//            assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
+            assertEquals("Should return status 200", 200, response.getStatus());
+            assertNotNull("Should return user object as json", response.getEntity());
+            byte[] entity = response.readEntity(byte[].class);
+            assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
         }
     }
 
