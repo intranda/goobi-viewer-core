@@ -74,15 +74,37 @@
                                     </div>
                                     <div class="col-9 admin__form-input">
 	                   	                <div class="admin__radio-switch openAccessToggle">
-	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}" immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
+	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
 	                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
 	                                        </h:selectOneRadio>
-	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}" immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}"
+	                                            immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
 	                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 	                                        </h:selectOneRadio>
 	                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                    </div>
                                         <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <span>#{msg.movingWall}:</span>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <div class="admin__radio-switch movingWallToggle">
+                                            <h:selectOneRadio group="movingWallToggle" value="#{adminBean.currentLicenseType.movingWall}"
+                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                            </h:selectOneRadio>
+                                            <h:selectOneRadio group="movingWallToggle" value="#{adminBean.currentLicenseType.movingWall}"
+                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                            </h:selectOneRadio>
+                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                        </div>
+                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
                                     </div>
                                 </div>
 

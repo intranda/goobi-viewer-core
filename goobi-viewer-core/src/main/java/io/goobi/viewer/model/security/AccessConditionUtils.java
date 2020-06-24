@@ -172,7 +172,7 @@ public class AccessConditionUtils {
             default:
                 break;
         }
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
+        sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" +").append(useFileField).append(':');
         if (wildcard) {
             // Escape whitespaces etc. for wildcard searches
             useFileName = ClientUtils.escapeQueryChars(useFileName) + ".*";
@@ -266,7 +266,7 @@ public class AccessConditionUtils {
             throw new IllegalArgumentException("page may not be null");
         }
 
-        String query = SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " AND " + SolrConstants.ORDER + ":" + page.getOrder();
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
             User user = BeanUtils.getUserFromRequest(request);
             if (user == null) {
@@ -302,17 +302,22 @@ public class AccessConditionUtils {
             throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
+            StringBuilder sbQuery = new StringBuilder("+");
             if (StringUtils.isNotEmpty(logId)) {
                 // Sub-docstruct
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
-                sbQuery.append(" AND ").append(SolrConstants.LOGID).append(':').append(logId);
+                sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(identifier)
+                        .append(" +")
+                        .append(SolrConstants.LOGID)
+                        .append(':')
+                        .append(logId);
             } else {
                 // Top document
                 sbQuery.append(SolrConstants.PI).append(':').append(identifier);
             }
             // Only query docstruct docs because metadata/event docs may not contain values defined in the license type filter query
-            sbQuery.append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+            sbQuery.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
                 logger.trace(sbQuery.toString());
@@ -379,19 +384,20 @@ public class AccessConditionUtils {
         }
 
         if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+            String query = new StringBuilder().append('+')
+                    .append(SolrConstants.PI_TOPSTRUCT)
                     .append(':')
                     .append(identifier)
-                    .append(" AND ")
+                    .append(" +")
                     .append(SolrConstants.DOCTYPE)
                     .append(':')
-                    .append(DocType.DOCSTRCT.name());
+                    .append(DocType.DOCSTRCT.name())
+                    .toString();
             try {
-                logger.trace(sbQuery.toString());
+                logger.trace(query);
                 SolrDocumentList results = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, null,
+                        .search(query, SolrSearchIndex.MAX_HITS, null,
                                 Arrays.asList(new String[] { SolrConstants.LOGID, SolrConstants.ACCESSCONDITION }));
                 if (results != null) {
                     User user = BeanUtils.getUserFromRequest(request);
@@ -417,7 +423,7 @@ public class AccessConditionUtils {
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
                             ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    NetTools.getIpAddress(request), sbQuery.toString()));
+                                    NetTools.getIpAddress(request), query));
                         }
                     }
                     long end = System.nanoTime();
@@ -474,13 +480,12 @@ public class AccessConditionUtils {
 
         // logger.trace("checkContentFileAccessPermission({})", identifier);
         if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI).append(':').append(identifier);
             try {
+                String query = "+" + SolrConstants.PI + ":" + identifier;
                 Set<String> requiredAccessConditions = new HashSet<>();
                 SolrDocumentList results = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(sbQuery.toString(), 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
+                        .search(query, 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
                 if (results != null) {
                     for (SolrDocument doc : results) {
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -503,7 +508,7 @@ public class AccessConditionUtils {
 
                 Map<String, Boolean> lokalAccessMap =
                         checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, NetTools.getIpAddress(request), sbQuery.toString(), files);
+                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, NetTools.getIpAddress(request), query, files);
                 accessMap.putAll(lokalAccessMap);
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -532,40 +537,45 @@ public class AccessConditionUtils {
     public static boolean checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames());
-        if (StringUtils.isNotEmpty(imageUrn)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.IMAGEURN).append(':').append(imageUrn.replace(":", "\\:"));
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList hits = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(sbQuery.toString(), 1, null,
-                                Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
-                for (SolrDocument doc : hits) {
-                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                    if (fieldsAccessConddition != null) {
-                        for (Object accessCondition : fieldsAccessConddition) {
-                            requiredAccessConditions.add((String) accessCondition);
-                            // logger.debug((String) accessCondition);
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                if (user == null) {
-                    UserBean userBean = BeanUtils.getUserBean();
-                    if (userBean != null) {
-                        user = userBean.getUser();
-                    }
-                }
-                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, NetTools.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
+        if (StringUtils.isEmpty(imageUrn)) {
+            return false;
         }
 
-        return false;
+        String query = new StringBuilder()
+                .append('+')
+                .append(SolrConstants.IMAGEURN)
+                .append(':')
+                .append(imageUrn.replace(":", "\\:"))
+                .toString();
+        try {
+            Set<String> requiredAccessConditions = new HashSet<>();
+            SolrDocumentList hits = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, 1, null,
+                            Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
+            for (SolrDocument doc : hits) {
+                Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                if (fieldsAccessConddition != null) {
+                    for (Object accessCondition : fieldsAccessConddition) {
+                        requiredAccessConditions.add((String) accessCondition);
+                        // logger.debug((String) accessCondition);
+                    }
+                }
+            }
+
+            User user = BeanUtils.getUserFromRequest(request);
+            if (user == null) {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            }
+            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
+                    privilegeName, user, NetTools.getIpAddress(request), query);
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -898,24 +908,16 @@ public class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions, Collection<LicenseType> allLicenseTypes) throws DAOException {
-
-        if (requiredAccessConditions.size() == 1) {
-            boolean containsOpenAccess =
-                    requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
-            boolean openAccessIsConfiguredLicenceType =
-                    allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
-                            : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
-            return containsOpenAccess && !openAccessIsConfiguredLicenceType;
+        if (requiredAccessConditions.size() != 1) {
+            return false;
         }
 
-        return false;
-    }
-
-    static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
-            throws IndexUnreachableException, PresentationException {
-        Map<String, Boolean> accessMap = new HashMap<>();
-        accessMap.put("", Boolean.FALSE);
-        return getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap).get("");
+        boolean containsOpenAccess =
+                requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
+        boolean openAccessIsConfiguredLicenceType =
+                allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
+                        : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
+        return containsOpenAccess && !openAccessIsConfiguredLicenceType;
     }
 
     /**
@@ -924,11 +926,13 @@ public class AccessConditionUtils {
      * @param allLicenseTypes
      * @param requiredAccessConditions
      * @param query
+     * @param accessMap
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should remove license types whose names do not match access conditions
      * @should remove license types whose condition query excludes the given pi
+     * @should not remove moving wall license types to open access if condition query excludes given pi
      */
     static Map<String, List<LicenseType>> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String query, Map<String, Boolean> accessMap) throws IndexUnreachableException, PresentationException {
@@ -947,17 +951,25 @@ public class AccessConditionUtils {
             if (StringUtils.isNotEmpty(licenseType.getProcessedConditions()) && StringUtils.isNotEmpty(query)) {
                 String conditions = licenseType.getProcessedConditions();
                 // logger.trace("License conditions: {}", conditions);
-                StringBuilder sbQuery = new StringBuilder(query);
-                if (conditions.charAt(0) == '-') {
-                    // do not wrap the conditions in parentheses if it starts with a negation, otherwise it won't work
-                    sbQuery.append(" AND ").append(conditions);
+                StringBuilder sbQuery = new StringBuilder().append("+(").append(query).append(')');
+                if (conditions.charAt(0) == '-' || conditions.charAt(0) == '+') {
+                    sbQuery.append(conditions);
                 } else {
-                    sbQuery.append(" AND (").append(conditions).append(')');
+                    // Make sure the condition query is not optional (starts with + or -)
+                    sbQuery.append(" +(").append(conditions).append(')');
                 }
                 logger.trace("License relevance query: {}", sbQuery.toString());
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
-                    continue;
+                    if (licenseType.isMovingWall()) {
+                        // Moving wall license type allow everything if the condition query doesn't match
+                        logger.trace(
+                                "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
+                                licenseType.getName(), query);
+                        licenseType.setOpenAccess(true);
+                    } else {
+                        continue;
+                    }
                 }
                 logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
                         query);

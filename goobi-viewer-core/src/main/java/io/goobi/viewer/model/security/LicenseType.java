@@ -91,6 +91,8 @@ public class LicenseType implements IPrivilegeHolder {
     private boolean openAccess = false;
     @Column(name = "core")
     private boolean core = false;
+    @Column(name = "moving_wall")
+    private boolean movingWall = false;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -410,6 +412,20 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public void setCore(boolean core) {
         this.core = core;
+    }
+
+    /**
+     * @return the movingWall
+     */
+    public boolean isMovingWall() {
+        return movingWall;
+    }
+
+    /**
+     * @param movingWall the movingWall to set
+     */
+    public void setMovingWall(boolean movingWall) {
+        this.movingWall = movingWall;
     }
 
     /**
