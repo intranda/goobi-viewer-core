@@ -130,7 +130,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     private final String apiUrl;
     
     public ApiUrls() {
-        this.apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
+       this(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
     
     public ApiUrls(String apiUrl) {

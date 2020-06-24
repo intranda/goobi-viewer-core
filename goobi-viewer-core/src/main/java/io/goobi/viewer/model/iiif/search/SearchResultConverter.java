@@ -474,7 +474,7 @@ public class SearchResultConverter {
         }
 
         IResource canvas = createSimpleCanvasResource(pi, pageNo);
-        URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT);
+        URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, null);
         URI uri = getAnnotationId(baseURI.toString(), "plaintext");
         IAnnotation pageAnnotation = createAnnotation(text, canvas, uri);
         hit.addAnnotation(pageAnnotation);
@@ -523,7 +523,7 @@ public class SearchResultConverter {
      */
     private IAnnotation createAnnotation(GeometricData altoElement) {
         return altoBuilder.createAnnotation(altoElement, createSimpleCanvasResource(getPi(), getPageNo()),
-                getAnnotationListURI(getPi(), getPageNo(), AnnotationType.ALTO).toString(), true);
+                getAnnotationListURI(getPi(), getPageNo(), null).toString(), true);
     }
 
     /**

@@ -162,6 +162,8 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     @Test
     public void testGetAnnotationsFromAlto() {
 
+        ApiUrls urls = new ApiUrls();
+        
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
@@ -174,7 +176,8 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
         SearchHit hit1 = results.hits.get(0);
         Assert.assertEquals("Hollywood!", hit1.getMatch());
-        Assert.assertEquals(restUrl + "iiif/manifests/12345/list/1/ALTO/Word_14", hit1.getAnnotations().get(0).getId().toString());
+        String url = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_ANNOTATIONS).params("12345", "1").build() + "/Word_14";
+        Assert.assertEquals(url, hit1.getAnnotations().get(0).getId().toString());
 
     }
 

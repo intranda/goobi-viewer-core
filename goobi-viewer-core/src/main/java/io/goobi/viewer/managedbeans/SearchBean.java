@@ -1444,6 +1444,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             currentHitIndex++;
         }
+        //if we leave the loop without returning, no hit was found and currentHitIndex should be -1
+        currentHitIndex= -1;
     }
 
     /**

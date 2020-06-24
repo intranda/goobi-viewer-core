@@ -790,8 +790,13 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo).query("type", type.name()).build();
-        return URI.create(urlString);
+        ApiPath url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
+        if(type != null) {
+            url = url.query("type", type.name());
+            
+        }
+                
+        return URI.create(url.build());
     }
 
     /**
