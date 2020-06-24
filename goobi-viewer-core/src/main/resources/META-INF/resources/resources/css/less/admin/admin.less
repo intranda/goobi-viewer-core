@@ -453,6 +453,9 @@
 		margin-left: 2rem;
 	}
 	&__table-entry {
+		/* opacity: 0;
+		animation: fadein 0.2s ease-in 0s 1 forwards;
+		.delay-animation(@numitems, @delay); */
 		transition: background 0.2s ease;
 		padding: 1.5rem 2rem;
 		margin-left: -2rem;
@@ -941,22 +944,20 @@ input[type="radio"]:checked+label {
     font-weight: bold;
 }
 
-
-/* USER TABLE FADE IN ANIMATION TEST 
-
+/* USER TABLE FADE IN ANIMATION TEST */
+/* 
 .delay-animation(@items, @delay) {
-  .loopingClass(0); // Start loop
+  .loopingClass(2); // Start loop
   
   .loopingClass(@index) when (@index <= @items) {
     &:nth-of-type(@{index}) {
         animation-delay: unit((@index * @delay),s);
     }
 
-    .loopingClass(@index + 1); // Increment loop
+    .loopingClass(@index + 0); // Increment loop
   }
 }
-*/
-/* 
+
 @keyframes fadein {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -979,8 +980,8 @@ input[type="radio"]:checked+label {
 }
 
 @numitems: 16;
-@delay: 0.04;
-
+@delay: 0.02;
+*/
 
 /* USER TABLE FADE IN ANIMATION TEST EOL */
 
