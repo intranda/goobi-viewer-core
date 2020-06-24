@@ -80,9 +80,9 @@ var adminJS = ( function( admin ) {
     		var scrollPos = $( this ).scrollTop();
     		
     		if(diffSidebar <= 0) {
-    		    $( '#adminSidebar' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
+    		    $( '#adminSidebar' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );
     		} else if(diffContent <= 0) {
-    		    $( '#adminContent' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
+    		    $( '#adminContent' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );
     		} else if(sidebarHeight <= contentHeight) {
     		    console.log("sidebar smaller content")
     		    if ( scrollPos >= diffSidebar && windowHeight < sidebarHeight ) {
