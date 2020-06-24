@@ -710,13 +710,12 @@
 		padding: 1rem;
 		right: 15px;
 	}
-	// fancy radio switch selection for CMS rights management
+	// fancy radio switch/toggle 
 	&__radio-switch {
 	    position: relative;
 		width: 18rem;
 		height: 2.5rem;
 		font-size: 0;
-		margin-left: -2rem;
 	    input {
 	        position: absolute;
 	        top: 0;
@@ -725,7 +724,7 @@
 	        cursor: pointer;
 			height: 2.5rem;
 			width: 6rem;
-			left: 6rem;
+			left: 3rem;
 			margin: 0;
 			& ~ input:checked ~ .toggle-outside {
 				background: #ccc;
@@ -756,15 +755,17 @@
 			transition: opacity 0.25s ease;
 			cursor: pointer;
 			font-size: 1.5rem;
-			line-height: 3rem;
+			line-height: 2.5rem;
 		  	display: inline-block;
-		  	width: 6rem;
+		  	width: 3rem;
 		  	height: 100%;
 			margin: 0;
-		  	text-align: center;
+		  	text-align: left;
 		  	user-select: none;
 		  	&:last-of-type {
 				margin-left: 6rem;
+				width: 4.8rem;
+				text-align: right;
 			}
 		}
 		.toggle-outside {
@@ -776,7 +777,7 @@
 			background: #3365a9;
 			position: absolute;
 			width: 6rem;
-			left: 6rem;
+			left: 3rem;
 		}
 		.toggle-inside {
 			border-radius: 5rem;

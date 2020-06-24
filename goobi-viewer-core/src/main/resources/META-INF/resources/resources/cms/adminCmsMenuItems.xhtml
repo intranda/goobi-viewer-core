@@ -63,7 +63,7 @@
                                 <h4>#{msg.cms_menu_main_menu}</h4>
 
                                 <ul id="visibleItemList" class="cms-menu__visible-items-list">
-                                    <ui:repeat var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
+                                    <ui:repeat varStatus="status" var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
                                         <li sortPosition="item_#{visibleItem.sortingListId}?#{visibleItem.level}"
                                             class="cms-menu__visible-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
                                             <!-- ITEM LEVEL -->
@@ -138,10 +138,10 @@
                                                         </div>
                                                         <div class="cms-module__option-control admin__form-input">
 	                                                        <div class="admin__radio-switch">
-	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab" value="#{visibleItem.openInNewWindow}" immediate="true">
+	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab-#{status.index}" value="#{visibleItem.openInNewWindow}" immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
 	                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
 	                                                            </h:selectOneRadio>
-	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab" value="#{visibleItem.openInNewWindow}" immediate="true">
+	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab-#{status.index}" value="#{visibleItem.openInNewWindow}" immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
 	                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 	                                                            </h:selectOneRadio>
 	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
