@@ -209,9 +209,9 @@
         parent_item_id="1" cms_page_id="2" />
     <cms_navigation_items cms_navigation_item_id="4" item_label="item 4" page_url="url 4" item_order="2" />
     
-    <download_jobs download_job_id="1" type="pdf" identifier="70eef211dc8a5889578f58d88eb50b8e" pi="PI_1"
+    <download_jobs download_job_id="1" type="pdf" identifier="0afb73c418262beb2c88dc40c95831b7" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
-    <download_jobs download_job_id="2" type="epub" identifier="f0ea4764cef8658faa6deb78cd994091" pi="PI_1" logid="LOG_0001"
+    <download_jobs download_job_id="2" type="epub" identifier="ae469e5e54cd18ce6f0a4fae0d6b6bcc" pi="PI_1" logid="LOG_0001"
         status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />

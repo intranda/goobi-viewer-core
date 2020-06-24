@@ -1969,7 +1969,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("70eef211dc8a5889578f58d88eb50b8e");
+        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier("0afb73c418262beb2c88dc40c95831b7");
         Assert.assertNotNull(job);
         Assert.assertEquals(PDFDownloadJob.class, job.getClass());
         Assert.assertEquals(Long.valueOf(1), job.getId());

@@ -58,9 +58,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PDF =                                "/pdf";
     public static final String RECORDS_PDF_INFO =                           "/pdf/info.json";
     
-    public static final String RECORDS_SECTIONS =                            "/records/{pi}/sections/{divId}";
-    public static final String RECORDS_SECTIONS_RIS_TEXT =                   "/ris.txt";
-    public static final String RECORDS_SECTIONS_RIS_FILE =                   "/ris";
+    public static final String RECORDS_SECTIONS =                           "/records/{pi}/sections/{divId}";
+    public static final String RECORDS_SECTIONS_RIS_TEXT =                  "/ris.txt";
+    public static final String RECORDS_SECTIONS_RIS_FILE =                  "/ris";
     public static final String RECORDS_SECTIONS_RANGE =                     "/range";
     public static final String RECORDS_SECTIONS_PDF =                       "/pdf";
     public static final String RECORDS_SECTIONS_PDF_INFO =                  "/pdf/info.json";
@@ -90,11 +90,13 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String COLLECTIONS_COLLECTION =                     "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST =                  "/contentassist";
     
-    public static final String DOWNLOADS =                                  "/downloads/records/{pi}";
+    public static final String DOWNLOADS =                                  "/downloads";
     public static final String DOWNLOADS_EPUB =                             "/epub";
     public static final String DOWNLOADS_PDF =                              "/pdf";
-    public static final String DOWNLOADS_SECTIONS_EPUB =                    "/sections/{divId}/epub";
-    public static final String DOWNLOADS_SECTIONS_PDF =                     "/sections/{divId}/pdf";
+    public static final String DOWNLOADS_EPUB_RECORD =                      "/epub/records/{pi}";
+    public static final String DOWNLOADS_PDF_RECORD =                       "/pdf/records/{pi}";
+    public static final String DOWNLOADS_EPUB_SECTION =                     "/epub/records/{pi}/sections/{divId}";
+    public static final String DOWNLOADS_PDF_SECTION =                       "/pdf/records/{pi}/sections/{divId}";
     
     public static final String USERS =                                      "/users/{userId}";
     public static final String USERS_BOOKMARKS =                            "/bookmarks";
