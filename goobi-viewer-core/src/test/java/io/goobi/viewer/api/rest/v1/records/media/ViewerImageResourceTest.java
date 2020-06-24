@@ -122,7 +122,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept("image")
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals("Should return status 200. Error message: " + response.readEntity(String.class), 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             byte[] entity = response.readEntity(byte[].class);
             assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
