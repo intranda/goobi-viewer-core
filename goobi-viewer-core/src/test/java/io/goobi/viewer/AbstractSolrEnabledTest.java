@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer;
 
-import java.io.File;
-
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -32,30 +30,20 @@ import io.goobi.viewer.controller.SolrSearchIndex;
  */
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
-    private static final String CORE_NAME = "test-viewer-2020";
-
     protected static final String PI_KLEIUNIV = "PPN517154005";
     protected static long iddocKleiuniv = -1;
 
-    private static String solrPath = "/opt/digiverso/viewer/apache-solr/";
-
     private HttpSolrClient server;
-    
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
 
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.indexOf("win") >= 0) {
-            solrPath = "C:/digiverso/viewer/apache-solr-test/";
-        }
-        File solrDir = new File(solrPath);
-        Assert.assertTrue("Solr folder not found in " + solrPath, solrDir.isDirectory());
     }
 
     @Before
     public void setUp() throws Exception {
-         server = SolrSearchIndex.getNewHttpSolrServer();
+        server = SolrSearchIndex.getNewHttpSolrServer();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
