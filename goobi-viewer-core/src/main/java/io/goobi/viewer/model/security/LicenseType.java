@@ -736,7 +736,15 @@ public class LicenseType implements IPrivilegeHolder {
         this.privilegesCopy = privilegesCopy;
     }
 
+    /**
+     * 
+     * @param query
+     * @return
+     */
     public boolean isRestrictionsExpired(String query) {
+        if (query == null) {
+            return false;
+        }
         return restrictionsExpired.get(query) != null && restrictionsExpired.get(query);
     }
 

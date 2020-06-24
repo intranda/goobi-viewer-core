@@ -265,12 +265,13 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("type1");
 
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005";
         Map<String, List<LicenseType>> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
-                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005", Collections.singletonMap("", Boolean.FALSE));
+                query, Collections.singletonMap("", Boolean.FALSE));
         Assert.assertNotNull(ret);
         Assert.assertNotNull(ret.get(""));
         Assert.assertEquals(1, ret.get("").size());
-        Assert.assertTrue(ret.get("").get(0).isOpenAccess());
+        Assert.assertTrue(ret.get("").get(0).isRestrictionsExpired(query));
         Assert.assertEquals("type1", ret.get("").get(0).getName());
     }
 
