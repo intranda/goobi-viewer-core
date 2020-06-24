@@ -50,7 +50,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
         if (iddocKleiuniv == -1) {
             iddocKleiuniv = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         }
-        Assert.assertNotEquals(1, iddocKleiuniv);
+        Assert.assertNotEquals(0, iddocKleiuniv);
     }
 
     @After
