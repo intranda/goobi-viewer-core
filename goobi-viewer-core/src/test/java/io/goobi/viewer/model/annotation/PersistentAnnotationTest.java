@@ -110,7 +110,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         annotation.setBody(body);
         annotation.setTarget(target);
 
-        daoAnno = new PersistentAnnotation(annotation, 1l, "7", 10);
+        daoAnno = new PersistentAnnotation(annotation, null, "7", 10);
     }
 
     /**
