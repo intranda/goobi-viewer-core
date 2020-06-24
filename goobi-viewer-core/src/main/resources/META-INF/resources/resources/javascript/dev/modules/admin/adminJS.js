@@ -53,7 +53,6 @@ $( document ).ready(function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
 	});
 
-	
 // hide license functions if open access checkbox is checked
 	// check if checkbox already checked on page load
 	if ($('.openAccessToggle input:nth-of-type(1)').prop('checked')) {
@@ -65,5 +64,25 @@ $( document ).ready(function() {
 		   $('.admin__license-functions').fadeOut('fast');
 		  else if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
 			   $('.admin__license-functions').fadeIn('fast');
+	});
+});
+
+// hiding the new tab option for cms menus if link value is '#'
+$(document).ready(function(){
+	$('.cms-module__option-url').each(function() {
+		if ($(this).val() == "#") {
+			$(this).parent().parent().next(".cms-module__option-group").hide();
+		}
+	});
+	// check if form input value changes
+	$('.cms-module__option-url').each(function() {
+		$(this).on('keyup change ready', function() {
+			if ($(this).val() == "#") {
+				$(this).parent().parent().next(".cms-module__option-group").fadeOut();
+			}
+			else {
+				$(this).parent().parent().next(".cms-module__option-group").fadeIn();
+			}
+		});
 	});
 });
