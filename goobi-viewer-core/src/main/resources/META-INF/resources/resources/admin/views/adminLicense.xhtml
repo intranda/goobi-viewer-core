@@ -73,10 +73,16 @@
                                         <span>#{msg.openAccess}:</span>
                                     </div>
                                     <div class="col-9 admin__form-input">
-                                        <div class="form-check admin__form-checkbox">
-                                            <h:selectBooleanCheckbox class="form-check-input" id="openaccess" value="#{adminBean.currentLicenseType.openAccess}" />
-                                            <label class="form-check-label" for="openaccess">#{msg.admin__license_openaccess_notice}</label>
-                                        </div>
+	                   	                <div class="admin__radio-switch openAccessToggle">
+	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}" immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+	                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                        </h:selectOneRadio>
+	                                        <h:selectOneRadio group="openAccessToggle" value="#{adminBean.currentLicenseType.openAccess}" immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+	                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                        </h:selectOneRadio>
+	                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                    </div>
+	                                    <span class="admin__form-help-text in">#{msg.openAccess} Helptext MSG KEY</span>
                                     </div>
                                 </div>
 

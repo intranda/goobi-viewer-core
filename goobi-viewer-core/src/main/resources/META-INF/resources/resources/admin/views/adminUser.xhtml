@@ -157,10 +157,15 @@
                                             <span>#{msg.admin__user_superuser}:</span>
                                         </div>
                                         <div class="col-9 admin__form-input">
-                                            <div class="form-check admin__form-checkbox">
-                                                <h:selectBooleanCheckbox class="form-check-input" type="checkbox" value="#{adminBean.currentUser.superuser}" id="superUser" />
-                                                <label class="form-check-label" for="superUser">#{msg.admin__user_superuser_notice}</label>
-                                            </div>
+	                                        <div class="admin__radio-switch openAccessToggle">
+		                                        <h:selectOneRadio group="superUserToggle" value="#{adminBean.currentUser.superuser}" immediate="true" checked="#{adminBean.currentUser.superuser ? 'true' : null}">
+		                                            <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+		                                        </h:selectOneRadio>
+		                                        <h:selectOneRadio group="superUserToggle" value="#{adminBean.currentUser.superuser}" immediate="true" checked="#{adminBean.currentUser.superuser ? null : 'false'}">
+		                                            <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+		                                        </h:selectOneRadio>
+		                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
+		                                    </div>
                                         </div>
                                     </div>
                                 </fieldset>

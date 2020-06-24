@@ -46,21 +46,24 @@ var adminJS = ( function() {
     
 } )( jQuery );
 
+
 $( document ).ready(function() {
 // toggle help text for admin forms
 	$("body").on("click", '[data-toggle="helptext"]', function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
 	});
 
+	
 // hide license functions if open access checkbox is checked
 	// check if checkbox already checked on page load
-	if ($('#openaccess').prop('checked')) {
+	if ($('.openAccessToggle input:nth-of-type(1)').prop('checked')) {
 			  $('.admin__license-functions').hide();
 		  }
 	// check if checkbox status changes
-	$("#openaccess").change(function(){
-		  if ($(this).is(':checked'))
+	$(".openAccessToggle input").change(function(){
+		  if ($('.openAccessToggle input:nth-of-type(1)').is(':checked'))
 		   $('.admin__license-functions').fadeOut('fast');
-		  else $('.admin__license-functions').fadeIn('fast');
+		  else if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
+			   $('.admin__license-functions').fadeIn('fast');
 	});
 });
