@@ -15,10 +15,10 @@
  */
 package io.goobi.viewer.api.rest.v1.collections;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -33,6 +33,7 @@ import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentationResourceBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -91,5 +92,16 @@ public class CollectionsResource {
           return builder.getCollectionWithGrouping(solrField, collection, grouping);
         }
     }
+    
+    @GET
+    @javax.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records"}, summary = "Return a list of collections starting with the given input")
+    public List<String> contentAssist(
+            @Parameter(description="User input for which content assist is requested")@QueryParam("query")String input) throws IndexUnreachableException, PresentationException {
+        ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();
+        return builder.getCollections(solrField, input);
+    }
+    
     
 }

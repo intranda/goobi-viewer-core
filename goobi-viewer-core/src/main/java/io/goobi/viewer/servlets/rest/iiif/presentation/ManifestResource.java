@@ -41,6 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.faces.config.rules.ApplicationRule;
+
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.AnnotationList;
@@ -185,7 +187,7 @@ public class ManifestResource extends AbstractResource {
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+        return new IIIFSearchBuilder(new ApiUrls(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
 
     /**
@@ -209,7 +211,7 @@ public class ManifestResource extends AbstractResource {
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation)
+        return new IIIFSearchBuilder(new ApiUrls(), query, pi).setMotivation(motivation)
                 .setDate(date)
                 .setUser(user)
                 .setPage(page)

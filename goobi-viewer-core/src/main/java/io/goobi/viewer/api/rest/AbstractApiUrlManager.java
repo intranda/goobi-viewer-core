@@ -108,7 +108,7 @@ public abstract class AbstractApiUrlManager {
             return new ApiPathParams(this, params);
         }
         
-        public ApiPathQueries query(String key, String value) {
+        public ApiPathQueries query(String key, Object value) {
             return new ApiPathQueries(this).query(key, value);
         }
         
@@ -152,17 +152,25 @@ public abstract class AbstractApiUrlManager {
         }
     }
     
-    public static class ApiPathQueries{
+    public static class ApiPathQueries extends ApiPathParams{
         
-        private final ApiPath path;
-        private final Map<String, String> queries;
+        private final Map<String, Object> queries;
         
         public ApiPathQueries(ApiPath path) {
-            this.path = path;
+            
+            super(path, initParams(path));
             this.queries = new LinkedHashMap<>();
         }
         
-        public ApiPathQueries query(String key, String value) {
+        private static Object[] initParams(ApiPath path) {
+            Object[] params = new Object[0];
+            if(path instanceof ApiPathParams) {
+                params = ((ApiPathParams) path).params;
+            }
+            return params;
+        }
+        
+        public ApiPathQueries query(String key, Object value) {
             this.queries.put(key, value);
             return this;
         }
@@ -172,10 +180,10 @@ public abstract class AbstractApiUrlManager {
         }
         
         public String build() {
-            String path = this.path.build();
+            String path = super.build();
             String querySeparator = "?";
             for (String queryParam : queries.keySet()) {
-                String value = queries.get(queryParam);
+                String value = queries.get(queryParam).toString();
                 path = path + querySeparator + queryParam + "=" + value;
                 querySeparator = "&";
             }

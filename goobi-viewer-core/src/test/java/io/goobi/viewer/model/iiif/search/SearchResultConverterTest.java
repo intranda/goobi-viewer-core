@@ -30,6 +30,7 @@ import de.intranda.api.annotation.oa.TextQuoteSelector;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -61,7 +62,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         super.setUp();
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
-        converter = new SearchResultConverter(URI.create(restUrl + "iiif/search"), URI.create(restUrl), pi, pageNo);
+        converter = new SearchResultConverter(new ApiUrls(), pi, pageNo);
         doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
 
     }
