@@ -809,7 +809,7 @@ public class AccessConditionUtils {
         } else {
             accessMap.put("", Boolean.FALSE);
         }
-        // If user ist superuser, allow immediately
+        // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
             return accessMap;
@@ -953,7 +953,7 @@ public class AccessConditionUtils {
                 // logger.trace("License conditions: {}", conditions);
                 StringBuilder sbQuery = new StringBuilder().append("+(").append(query).append(')');
                 if (conditions.charAt(0) == '-' || conditions.charAt(0) == '+') {
-                    sbQuery.append(conditions);
+                    sbQuery.append(' ').append(conditions);
                 } else {
                     // Make sure the condition query is not optional (starts with + or -)
                     sbQuery.append(" +(").append(conditions).append(')');
