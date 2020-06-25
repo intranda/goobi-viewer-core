@@ -83,7 +83,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
 
         // Campaign statistics
-        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", null);
         Assert.assertEquals(1, statistics.size());
         Assert.assertTrue(statistics.get(0).getReviewers().isEmpty());
         Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
@@ -106,7 +106,7 @@ public class UserToolsTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotEquals(user, comment.getOwner());
 
         // Campaign statistics
-        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", null);
         Assert.assertEquals(1, statistics.size());
         Assert.assertEquals(1, statistics.get(0).getReviewers().size());
         Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
