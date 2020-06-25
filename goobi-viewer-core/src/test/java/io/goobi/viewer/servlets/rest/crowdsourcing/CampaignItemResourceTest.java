@@ -71,7 +71,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         urls = new ApiUrls();
         annoBuilder = new AnnotationsResourceBuilder(urls);
         
-        resource = new CampaignItemResource(request, response);
+        resource = new CampaignItemResource(urls);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
 
     @Test
     public void testGetAnnotationsForManifest() throws URISyntaxException, DAOException {
-        String pi = "PI 1";
+        String pi = "PI_1";
         List<WebAnnotation> annotationList = resource.getAnnotationsForManifest(1l, pi);
         Assert.assertEquals(2, annotationList.size());
     }
@@ -125,10 +125,11 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
             throws URISyntaxException, DAOException {
         String pi = "PI_10";
         URI manifestUrl =
-                new ManifestBuilder(new ApiUrls()).getManifestURI(pi);
+                new ManifestBuilder(urls).getManifestURI(pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
 
-        WebAnnotation anno = new WebAnnotation();
+        String annoUrl = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ANNOTATION).params(1l).build();
+        WebAnnotation anno = new WebAnnotation(URI.create(annoUrl));
         anno.setBody(new SimpleResource(URI.create("F")));
         anno.setTarget(new SimpleResource(manifestUrl));
         anno.setGenerator(new Agent(campaign.getQuestions().get(0).getIdAsURI(), AgentType.SOFTWARE, campaign.getTitle()));

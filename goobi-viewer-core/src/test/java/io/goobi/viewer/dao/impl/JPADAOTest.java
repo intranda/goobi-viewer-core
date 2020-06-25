@@ -775,7 +775,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        Assert.assertEquals(4, DataManager.getInstance().getDao().deleteComments("PI 1", null));
+        Assert.assertEquals(4, DataManager.getInstance().getDao().deleteComments("PI_1", null));
         Assert.assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
     }
 
@@ -801,7 +801,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments("PI 1", user));
+        Assert.assertEquals(3, DataManager.getInstance().getDao().deleteComments("PI_1", user));
         Assert.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
     }
 
@@ -829,7 +829,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         Assert.assertEquals(3, DataManager.getInstance().getDao().changeCommentsOwner(oldOwner, newOwner));
 
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork("PI 1");
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork("PI_1");
         Assert.assertEquals(4, comments.size());
         Assert.assertEquals(newOwner, comments.get(0).getOwner());
         Assert.assertNotEquals(newOwner, comments.get(1).getOwner());
@@ -2494,14 +2494,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
-            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 2"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 3"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 4"));
-            Assert.assertTrue(campaign.getStatistics().get("PI 1").getAnnotators().contains(user));
-            Assert.assertTrue(campaign.getStatistics().get("PI 2").getAnnotators().contains(user));
-            Assert.assertTrue(campaign.getStatistics().get("PI 3").getReviewers().contains(user));
-            Assert.assertTrue(campaign.getStatistics().get("PI 4").getReviewers().contains(user));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            Assert.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
+            Assert.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
+            Assert.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
+            Assert.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
         }
 
         int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
@@ -2509,15 +2509,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
-            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 2"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 3"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 4"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
             // User should no longer be among the reviewers
-            Assert.assertFalse(campaign.getStatistics().get("PI 1").getAnnotators().contains(user));
-            Assert.assertFalse(campaign.getStatistics().get("PI 2").getAnnotators().contains(user));
-            Assert.assertFalse(campaign.getStatistics().get("PI 3").getReviewers().contains(user));
-            Assert.assertFalse(campaign.getStatistics().get("PI 4").getReviewers().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
+            Assert.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
         }
     }
 
@@ -2534,18 +2534,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
-            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 2"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 3"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 4"));
-            Assert.assertTrue(campaign.getStatistics().get("PI 1").getAnnotators().contains(fromUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 2").getAnnotators().contains(fromUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 3").getReviewers().contains(fromUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 4").getReviewers().contains(fromUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 1").getAnnotators().contains(toUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 2").getAnnotators().contains(toUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 3").getReviewers().contains(toUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 4").getReviewers().contains(toUser));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
+            Assert.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
         }
 
         int rows = DataManager.getInstance().getDao().changeCampaignStatisticContributors(fromUser, toUser);
@@ -2553,19 +2553,19 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
             Assert.assertNotNull(campaign);
-            Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 2"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 3"));
-            Assert.assertNotNull(campaign.getStatistics().get("PI 4"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_1"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_2"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_3"));
+            Assert.assertNotNull(campaign.getStatistics().get("PI_4"));
             // Only toUser should be among the reviewers
-            Assert.assertFalse(campaign.getStatistics().get("PI 1").getAnnotators().contains(fromUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 2").getAnnotators().contains(fromUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 3").getReviewers().contains(fromUser));
-            Assert.assertFalse(campaign.getStatistics().get("PI 4").getReviewers().contains(fromUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 1").getAnnotators().contains(toUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 2").getAnnotators().contains(toUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 3").getReviewers().contains(toUser));
-            Assert.assertTrue(campaign.getStatistics().get("PI 4").getReviewers().contains(toUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
+            Assert.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
+            Assert.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
         }
     }
 

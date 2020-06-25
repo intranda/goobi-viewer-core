@@ -181,7 +181,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
             String entity = response.readEntity(String.class);
             AnnotationCollection collection = mapper.readValue(entity, AnnotationCollection.class);
             assertNotNull(collection);
-            assertEquals(2l, collection.getTotalItems());
+            assertEquals(4l, collection.getTotalItems());
         }
     }
 
@@ -201,7 +201,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
             String entity = response.readEntity(String.class);
             AnnotationPage page = mapper.readValue(entity, AnnotationPage.class);
             assertNotNull(page);
-            assertEquals(2l, page.getItems().size());
+            assertEquals(4l, page.getItems().size());
         }
     }
 

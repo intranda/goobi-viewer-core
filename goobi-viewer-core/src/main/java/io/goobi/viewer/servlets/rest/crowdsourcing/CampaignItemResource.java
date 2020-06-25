@@ -96,18 +96,11 @@ public class CampaignItemResource {
      */
     public CampaignItemResource() {
         annoBuilder = new AnnotationsResourceBuilder(urls);
-
     }
-
-    /**
-     * For testing
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     */
-    public CampaignItemResource(HttpServletRequest request, HttpServletResponse response) {
-        this.servletRequest = request;
-        this.servletResponse = response;
+    
+    public CampaignItemResource(AbstractApiUrlManager urls) {
+        this.urls = urls;
+        annoBuilder = new AnnotationsResourceBuilder(this.urls);
     }
 
     /**
@@ -127,8 +120,7 @@ public class CampaignItemResource {
     @CORSBinding
     public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException, ContentNotFoundException {
-        URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
-        URI manifestURI = new ManifestBuilder(new ApiUrls(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
+        URI manifestURI = new ManifestBuilder(urls).getManifestURI(pi);
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {
