@@ -101,7 +101,6 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
                 .get()) {
             assertEquals("Should return status 404", 404, response.getStatus());
             String errorString = response.readEntity(String.class);
-            System.out.println(errorString);
             JSONObject error = new JSONObject(errorString);
             assertEquals("Resource not found", error.getString("message"));
         }

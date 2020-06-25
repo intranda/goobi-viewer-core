@@ -70,7 +70,6 @@ public class RecordSectionResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 200", 200, response.getStatus());
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
-            System.out.println(entity);
             assertTrue(entity.contains("TY  - FIGURE"));
             assertTrue(entity.contains("TI  - Wappen 1"));
             String fileName = PI + "_LOG_0004.ris";
