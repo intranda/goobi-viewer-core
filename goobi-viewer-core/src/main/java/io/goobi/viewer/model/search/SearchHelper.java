@@ -1702,10 +1702,14 @@ public final class SearchHelper {
      * </p>
      *
      * @return a {@link java.util.Map} object.
+     * @should return empty map if search hit aggregation on
      */
     public static Map<String, String> generateQueryParams() {
         Map<String, String> params = new HashMap<>();
-        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
+        if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+            return params;
+        }
+        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
             // Add grouping by GROUPFIELD (to avoid duplicates among metadata search hits)
             params.put(GroupParams.GROUP, "true");
             params.put(GroupParams.GROUP_MAIN, "true");

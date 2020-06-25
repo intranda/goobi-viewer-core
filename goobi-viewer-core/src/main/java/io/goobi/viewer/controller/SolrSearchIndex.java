@@ -231,18 +231,18 @@ public final class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                // logger.trace("&{}={}", key, params.get(key));
+                 logger.trace("&{}={}", key, params.get(key));
             }
         }
 
         try {
-            // logger.trace("Solr query URL: {}", solrQuery.getQuery());
-            // logger.debug("range: {} - {}", first, first + rows);
-            // logger.debug("facetFields: {}", facetFields);
-            // logger.debug("fieldList: {}", fieldList);
+             logger.trace("Solr query : {}", solrQuery.getQuery());
+             logger.debug("range: {} - {}", first, first + rows);
+             logger.debug("facetFields: {}", facetFields);
+             logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = server.query(solrQuery);
-            // logger.debug("found: {}", resp.getResults().getNumFound());
-            // logger.debug("fetched: {}", resp.getResults().size());
+             logger.debug("found: {}", resp.getResults().getNumFound());
+             logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
