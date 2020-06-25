@@ -146,7 +146,7 @@ public class AnnotationsResourceBuilder {
      * @throws DAOException
      */
     public AnnotationCollection getWebAnnotationCollectionForRecordComments(String pi, URI uri) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi, true);
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationCollection collection = builder.buildCollection();
@@ -155,7 +155,7 @@ public class AnnotationsResourceBuilder {
     }
 
     public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi, true);
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationPage annoPage = builder.buildPage(
@@ -168,7 +168,7 @@ public class AnnotationsResourceBuilder {
     }
     
     public AnnotationList getOAnnotationListForRecordComments(String pi, URI uri) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi, true);
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationList list = new AnnotationList(uri);
         data.stream().map(c -> getAsOpenAnnotation(c)).forEach(oa -> list.addResource(oa));
@@ -176,7 +176,7 @@ public class AnnotationsResourceBuilder {
     }
 
     public AnnotationList getOAnnotationListForPageComments(String pi, Integer pageNo, URI uri) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo, true);
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
 
         AnnotationList list = new AnnotationList(uri);
         data.stream().map(c -> getAsOpenAnnotation(c)).forEach(oa -> list.addResource(oa));
@@ -184,7 +184,7 @@ public class AnnotationsResourceBuilder {
     }
     
     public AnnotationCollection getWebAnnotationCollectionForPageComments(String pi, Integer pageNo, URI uri) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo, true);
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationCollection collection = builder.buildCollection();
@@ -193,7 +193,7 @@ public class AnnotationsResourceBuilder {
     }
 
     public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri, Integer page) throws DAOException {
-        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo, true);
+        List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationPage annoPage = builder.buildPage(

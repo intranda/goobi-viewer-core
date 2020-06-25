@@ -15,8 +15,19 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-import static org.junit.Assert.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TOC;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 
@@ -25,22 +36,17 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ctc.wstx.shaded.msv_core.util.Uri;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.sun.tools.javac.comp.Todo;
 
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.Manifest;
 import io.goobi.viewer.api.rest.AbstractRestApiTest;
-import io.goobi.viewer.api.rest.model.ner.DocumentReference;
-import io.goobi.viewer.model.rss.Channel;
 
 /**
  * @author florian
