@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -111,7 +113,7 @@ public class ImageDeliveryBean implements Serializable {
                 logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
                 servletPath = "";
             }
-            init(config, servletPath);
+            init(config, new ApiUrls());
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
@@ -121,10 +123,10 @@ public class ImageDeliveryBean implements Serializable {
      * Initialize for testing
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
-     * @param servletPath a {@link java.lang.String} object.
+     * @param apiUrls a {@link java.lang.String} object.
      */
-    public void init(Configuration config, String servletPath) {
-        this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
+    public void init(Configuration config, AbstractApiUrlManager urls) {
+        this.staticImagesURI = getStaticImagesPath(urls.getApplicationUrl(), config.getTheme());
         this.cmsMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
         this.tempMediaPath =
@@ -133,12 +135,12 @@ public class ImageDeliveryBean implements Serializable {
         iiif = new IIIFUrlHandler();
         images = new ImageHandler();
         objects3d = new Object3DHandler(config);
-        footer = new WatermarkHandler(config, servletPath);
+        footer = new WatermarkHandler(config, urls.getApplicationUrl());
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
         pdf = new PdfHandler(footer, config);
         media = new MediaHandler(config);
         try {
-            presentation = new IIIFPresentationAPIHandler(servletPath, config);
+            presentation = new IIIFPresentationAPIHandler(urls, config);
         } catch (URISyntaxException e) {
             logger.error("Failed to initalize presentation api handler", e.toString());
         }

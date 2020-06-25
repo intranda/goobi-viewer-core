@@ -43,10 +43,8 @@ public class IIIFPresentationAPIHandler {
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @throws java.net.URISyntaxException if any.
      */
-    public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
-        AbstractApiUrlManager urls = new ApiUrls(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-        this.builder = new AbstractBuilder(urls) {
-        };
+    public IIIFPresentationAPIHandler(AbstractApiUrlManager urls, Configuration configuration) throws URISyntaxException {
+        this.builder = new AbstractBuilder(urls) {};
     }
 
     /**
