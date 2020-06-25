@@ -141,12 +141,12 @@ public final class SolrSearchIndex {
                 .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
                 .withSocketTimeout(TIMEOUT_SO)
                 .withConnectionTimeout(TIMEOUT_CONNECTION)
-                .allowCompression(true)
+                .allowCompression(false)
                 .build();
-//        server.setDefaultMaxConnectionsPerHost(100);
-//        server.setMaxTotalConnections(100);
+        //        server.setDefaultMaxConnectionsPerHost(100);
+        //        server.setMaxTotalConnections(100);
         server.setFollowRedirects(false); // defaults to false
-//        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
+        //        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
         server.setRequestWriter(new BinaryRequestWriter());
 
         return server;
@@ -160,7 +160,7 @@ public final class SolrSearchIndex {
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
-     * @throws IOException 
+     * @throws IOException
      */
     public QueryResponse testQuery(String query) throws SolrServerException, IOException {
         SolrQuery solrQuery = new SolrQuery(query);
@@ -231,18 +231,18 @@ public final class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
                 solrQuery.set(key, params.get(key));
-                 logger.trace("&{}={}", key, params.get(key));
+                //                 logger.trace("&{}={}", key, params.get(key));
             }
         }
 
         try {
-             logger.trace("Solr query : {}", solrQuery.getQuery());
-             logger.debug("range: {} - {}", first, first + rows);
-             logger.debug("facetFields: {}", facetFields);
-             logger.debug("fieldList: {}", fieldList);
+            //             logger.trace("Solr query : {}", solrQuery.getQuery());
+            //             logger.debug("range: {} - {}", first, first + rows);
+            //             logger.debug("facetFields: {}", facetFields);
+            //             logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = server.query(solrQuery);
-             logger.debug("found: {}", resp.getResults().getNumFound());
-             logger.debug("fetched: {}", resp.getResults().size());
+            //             logger.debug("found: {}", resp.getResults().getNumFound());
+            //             logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {
