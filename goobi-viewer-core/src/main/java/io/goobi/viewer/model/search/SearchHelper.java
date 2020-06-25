@@ -899,6 +899,7 @@ public final class SearchHelper {
      * @should construct suffix correctly if user has license privilege
      * @should construct suffix correctly if user has overriding license privilege
      * @should construct suffix correctly if ip range has license privilege
+     * @should construct suffix correctly if moving wall license
      */
     public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
             throws IndexUnreachableException, PresentationException, DAOException {
@@ -920,10 +921,17 @@ public final class SearchHelper {
             if (usedLicenseTypes.contains(licenseType.getName())) {
                 continue;
             }
+            
+            // Moving wall license type, use negated filter query
+            if (licenseType.isMovingWall() && StringUtils.isNotBlank(licenseType.getProcessedConditions())) {
+                logger.trace("License type '{}' is a moving wall", licenseType.getName());
+                query.append(licenseType.getFilterQueryPart(true));
+                // Do not continue with the next license type here because the user may have full access to the moving wall license, in which case it should also be added with a non-negated filter query
+            }
 
             // License type contains listing privilege
             if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
-                query.append(licenseType.getFilterQueryPart());
+                query.append(licenseType.getFilterQueryPart(false));
                 usedLicenseTypes.add(licenseType.getName());
                 continue;
             }
@@ -932,7 +940,7 @@ public final class SearchHelper {
                     new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                query.append(licenseType.getFilterQueryPart());
+                query.append(licenseType.getFilterQueryPart(false));
                 usedLicenseTypes.add(licenseType.getName());
             } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
@@ -943,7 +951,7 @@ public final class SearchHelper {
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                             new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
                             null)) {
-                        query.append(overridingLicenseType.getFilterQueryPart());
+                        query.append(overridingLicenseType.getFilterQueryPart(false));
                         usedLicenseTypes.add(overridingLicenseType.getName());
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
                                 overridingLicenseType.getName(), licenseType.getName());

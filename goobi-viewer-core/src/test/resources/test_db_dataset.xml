@@ -35,8 +35,8 @@
 		description="ip range 2 desc" />
 
 	<license_types license_type_id="1" name="license type 1 name"
-		description="license type 1 desc" conditions="YEAR:[* TO 3000]"
-		open_access="false" core="false" />
+		description="license type 1 desc" conditions="-YEAR:[* TO 3000]"
+		open_access="false" core="false" moving_wall="true" />
 	<license_type_privileges license_type_id="1"
 		privilege_name="license type 1 priv 1" />
 
@@ -61,7 +61,7 @@
     <license_types license_type_id="6" name="restriction on access"
         description="restricted records"
         open_access="false" core="false"
-        conditions="MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]" />
+        conditions="-MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]" />
     <license_type_privileges license_type_id="6"
         privilege_name="LIST" />
 

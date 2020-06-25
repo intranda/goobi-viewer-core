@@ -820,18 +820,23 @@ public class LicenseType implements IPrivilegeHolder {
      * 
      * @return
      */
-    public String getFilterQueryPart() {
-        StringBuilder query = new StringBuilder();
+    public String getFilterQueryPart(boolean negateFilterQuery) {
         String processedConditions = getProcessedConditions();
         if (StringUtils.isNotBlank(processedConditions)) {
             // Do not append empty sub-query
-            query.append(" (").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"');
-            query.append(" AND ").append(processedConditions).append(')');
-        } else {
-            query.append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"');
+            return new StringBuilder().append(" (+")
+                    .append(SolrConstants.ACCESSCONDITION)
+                    .append(":\"")
+                    .append(name)
+                    .append("\" ")
+                    .append(negateFilterQuery ? '-' : '+')
+                    .append('(')
+                    .append(processedConditions)
+                    .append("))")
+                    .toString();
         }
 
-        return query.toString();
+        return new StringBuilder().append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"').toString();
     }
 
     /* (non-Javadoc)

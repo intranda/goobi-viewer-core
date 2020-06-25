@@ -232,7 +232,7 @@ public class CmsBean implements Serializable {
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
+            lazyModelPages.addFilter("CMSPageLanguageVersion#CMSCategory", "title_menuTitle#name");
             lazyModelPages.addFilter("CMSCategory", "name");
         }
         selectedLocale = getDefaultLocale();
