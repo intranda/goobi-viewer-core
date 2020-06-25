@@ -16,7 +16,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="adminLicenseType">
+            <div id="adminLicense">
                 <h:panelGroup rendered="#{userBean.admin  and adminBean.currentLicenseType != null}">
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
                         <div class="admin__title-bar">
@@ -68,7 +68,7 @@
                             <!-- FUNCTIONS -->
                             <h3>#{msg.admin__license_functions}</h3>
                             <div class="admin__default-block">
-                                <div class="form-row">
+                                <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
                                         <span>#{msg.openAccess}:</span>
                                     </div>
@@ -88,7 +88,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="form-row">
+                                <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
                                         <span>#{msg.movingWall}:</span>
                                     </div>
