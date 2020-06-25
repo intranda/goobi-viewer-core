@@ -404,11 +404,11 @@ public class ManifestResource extends AbstractResource {
         List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
 
         if (docs.isEmpty()) {
-            throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
+            throw new ContentNotFoundException("No document with PI = " + pi + " and logId = " + logId + " found");
         }
         List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().endsWith(logId + "/")).findFirst();
-        return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
+        Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().contains(logId)).findFirst();
+        return range.orElseThrow(() -> new ContentNotFoundException("No document with PI = " + pi + " and logId = " + logId + " found"));
     }
 
     /**

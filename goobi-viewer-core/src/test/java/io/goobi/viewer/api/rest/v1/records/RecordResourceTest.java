@@ -56,6 +56,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
 
     private static final String PI = "74241";
     private static final String PI_ANNOTATIONS = "PI_1";
+    private static final String PI_NER = "PPN743674162";
     
     /**
      * @throws java.lang.Exception
@@ -258,7 +259,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
     
     @Test 
     public void testGetNERTags() throws JsonMappingException, JsonProcessingException {
-        String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI).build();
+        String url = urls.path(RECORDS_RECORD, RECORDS_NER_TAGS).params(PI_NER).build();
         try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -269,7 +270,7 @@ public class RecordResourceTest extends AbstractRestApiTest{
             assertNotNull(entity);
             JSONObject doc = new JSONObject(entity);
             assertNotNull(doc.getJSONArray("pages"));
-            assertEquals(52, doc.getJSONArray("pages").length());
+            assertEquals(322, doc.getJSONArray("pages").length());
         }
     }
 
