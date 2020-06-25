@@ -1293,6 +1293,16 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isPreventProxyCaching());
     }
 
+
+    /**
+     * @see Configuration#isSolrCompressionEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSolrCompressionEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
+    }
+    
     /**
      * @see Configuration#isShowSidebarEventMetadata()
      * @verifies return correct value

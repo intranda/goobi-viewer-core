@@ -160,6 +160,9 @@
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>false</preventProxyCaching>
+		
+        <!-- solrCompressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
+        <solrCompressionEnabled>true</solrCompressionEnabled>
 	</performance>
 
 	<accessConditions>

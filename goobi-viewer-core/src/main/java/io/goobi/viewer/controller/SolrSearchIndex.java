@@ -141,7 +141,7 @@ public final class SolrSearchIndex {
                 .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
                 .withSocketTimeout(TIMEOUT_SO)
                 .withConnectionTimeout(TIMEOUT_CONNECTION)
-                .allowCompression(false)
+                .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
                 .build();
         //        server.setDefaultMaxConnectionsPerHost(100);
         //        server.setMaxTotalConnections(100);

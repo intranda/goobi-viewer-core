@@ -3461,6 +3461,18 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
+    
+    /**
+     * <p>
+     * isSolrCompressionEnabled.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSolrCompressionEnabled() {
+        return getLocalBoolean(("performance.solrCompressionEnabled"), false);
+    }
 
     /**
      * <p>
