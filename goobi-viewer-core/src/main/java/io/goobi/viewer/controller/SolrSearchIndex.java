@@ -37,13 +37,13 @@ import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer.RemoteSolrException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
@@ -94,7 +94,7 @@ public final class SolrSearchIndex {
     /** Application-scoped map containing already looked up data repository names of records. */
     Map<String, String> dataRepositoryNames = new HashMap<>();
 
-    private SolrServer server;
+    private SolrClient server;
 
     /**
      * <p>
@@ -103,7 +103,7 @@ public final class SolrSearchIndex {
      *
      * @param server a {@link org.apache.solr.client.solrj.SolrServer} object.
      */
-    public SolrSearchIndex(SolrServer server) {
+    public SolrSearchIndex(SolrClient server) {
         if (server == null) {
             this.server = getNewHttpSolrServer();
         } else {
@@ -115,11 +115,15 @@ public final class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (server != null && server instanceof HttpSolrServer) {
-            HttpSolrServer httpSolrServer = (HttpSolrServer) server;
+        if (server != null && server instanceof HttpSolrClient) {
+            HttpSolrClient httpSolrServer = (HttpSolrClient) server;
             if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(httpSolrServer.getBaseURL())) {
                 logger.info("Solr URL has changed, re-initializing SolrHelper...");
-                httpSolrServer.shutdown();
+                try {
+                    httpSolrServer.close();
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
                 server = getNewHttpSolrServer();
             }
         }
@@ -132,16 +136,17 @@ public final class SolrSearchIndex {
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
-    public static HttpSolrServer getNewHttpSolrServer() {
-        HttpSolrServer server = new HttpSolrServer(DataManager.getInstance().getConfiguration().getSolrUrl());
-        server.setSoTimeout(TIMEOUT_SO); // socket read timeout
-        server.setConnectionTimeout(TIMEOUT_CONNECTION);
-        server.setDefaultMaxConnectionsPerHost(100);
-        server.setMaxTotalConnections(100);
+    public static HttpSolrClient getNewHttpSolrServer() {
+        HttpSolrClient server = new HttpSolrClient.Builder()
+                .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
+                .withSocketTimeout(TIMEOUT_SO)
+                .withConnectionTimeout(TIMEOUT_CONNECTION)
+                .allowCompression(true)
+                .build();
+//        server.setDefaultMaxConnectionsPerHost(100);
+//        server.setMaxTotalConnections(100);
         server.setFollowRedirects(false); // defaults to false
-        server.setAllowCompression(true);
-        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
-        // server.setParser(new XMLResponseParser()); // binary parser is used by default
+//        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
         server.setRequestWriter(new BinaryRequestWriter());
 
         return server;
@@ -155,8 +160,9 @@ public final class SolrSearchIndex {
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
+     * @throws IOException 
      */
-    public QueryResponse testQuery(String query) throws SolrServerException {
+    public QueryResponse testQuery(String query) throws SolrServerException, IOException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -187,22 +193,18 @@ public final class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        SolrQuery solrQuery = new SolrQuery(query);
-        solrQuery.setStart(first);
-        solrQuery.setRows(rows);
+        SolrQuery solrQuery = new SolrQuery(query).setStart(first).setRows(rows);
 
         if (sortFields != null && !sortFields.isEmpty()) {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);
                 if (StringUtils.isNotEmpty(sortField.getOne())) {
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
-                    // logger.trace("Added sorting field: {}", sortField);
                 }
             }
         }
         if (facetFields != null && !facetFields.isEmpty()) {
             for (String facetField : facetFields) {
-                // logger.trace("adding facet field: {}", sortField);
                 if (StringUtils.isNotEmpty(facetField)) {
                     solrQuery.addFacetField(facetField);
                     // TODO only do this once, perhaps?
@@ -211,12 +213,10 @@ public final class SolrSearchIndex {
                     }
                 }
             }
-            solrQuery.setFacetMinCount(1);
-            solrQuery.setFacetLimit(-1); // no limit
+            solrQuery.setFacetMinCount(1).setFacetLimit(-1); // no limit
         }
         if (fieldList != null && !fieldList.isEmpty()) {
             for (String field : fieldList) {
-                // logger.trace("adding result field: " + field);
                 if (StringUtils.isNotEmpty(field)) {
                     solrQuery.addField(field);
                 }
@@ -238,10 +238,10 @@ public final class SolrSearchIndex {
         try {
             // logger.trace("Solr query URL: {}", solrQuery.getQuery());
             // logger.debug("range: {} - {}", first, first + rows);
-            // logger.debug("facetFields: " + facetFields);
-            // logger.debug("fieldList: " + fieldList);
+            // logger.debug("facetFields: {}", facetFields);
+            // logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = server.query(solrQuery);
-            // logger.debug("found: " + resp.getResults().getNumFound());
+            // logger.debug("found: {}", resp.getResults().getNumFound());
             // logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
@@ -264,17 +264,9 @@ public final class SolrSearchIndex {
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             logger.error(e.toString(), e);
             throw new IndexUnreachableException(e.getMessage());
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
-
-        // SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span class=\"highlight\">", "</span>");
-        //
-        // Highlighter highlighter = new Highlighter(formatter, queryScorer);
-        // Fragmenter fragmenter = new SimpleFragmenter(200);
-        // highlighter.setTextFragmenter(fragmenter);
-        //
-        // TokenStream tokenStream = new StandardAnalyzer().tokenStream(ConstantsRetrieval.FIELD_DOC_CONTENT, new StringReader(text));
-        //
-        // formattedText = highlighter.getBestFragments(tokenStream, text, 5, "...");
     }
 
     /**
@@ -501,17 +493,18 @@ public final class SolrSearchIndex {
         Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
 
-        SolrQuery solrQuery = new SolrQuery(query);
+        List<String> termlist = new ArrayList<>();
+        Map<String, Long> frequencyMap = new HashMap<>();
+        SolrQuery solrQuery =
+                new SolrQuery(query).setRows(DataManager.getInstance().getConfiguration().getTagCloudSampleSize(fieldName)).addField(fieldName);
         try {
-            List<String> termlist = new ArrayList<>();
-            Map<String, Long> frequencyMap = new HashMap<>();
-
-            solrQuery.setRows(DataManager.getInstance().getConfiguration().getTagCloudSampleSize(fieldName));
-            solrQuery.addField(fieldName);
             QueryResponse resp = server.query(solrQuery);
             logger.trace("query done");
             for (SolrDocument doc : resp.getResults()) {
                 Collection<Object> values = doc.getFieldValues(fieldName);
+                if (values == null) {
+                    continue;
+                }
                 for (Object o : values) {
                     String terms = String.valueOf(o).toLowerCase();
                     String[] termsSplit = terms.split(" ");
@@ -569,6 +562,8 @@ public final class SolrSearchIndex {
             } else {
                 logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             }
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
 
         return tags;
@@ -632,6 +627,8 @@ public final class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             throw new PresentationException("Search index unavailable.");
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
     }
 
@@ -1008,6 +1005,8 @@ public final class SolrSearchIndex {
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
             throw new IndexUnreachableException(e.getMessage());
+        } catch (IOException e) {
+            throw new IndexUnreachableException(e.getMessage());
         }
 
         return null;
@@ -1173,6 +1172,8 @@ public final class SolrSearchIndex {
                 throw new PresentationException("Bad query.");
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
+            throw new IndexUnreachableException(e.getMessage());
+        } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
         }
     }

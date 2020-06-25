@@ -30,14 +30,16 @@ import io.goobi.viewer.model.security.user.User;
  * </p>
  */
 @FacesConverter("userConverter")
-public class UserConverter implements Converter {
+public class UserConverter implements Converter<User> {
 
     /** {@inheritDoc} */
     @Override
-    public final Object getAsObject(final FacesContext context, final UIComponent component, final String value) {
-        int id = Integer.valueOf(value);
+    public final User getAsObject(final FacesContext context, final UIComponent component, final String value) {
         try {
+            long id = Long.valueOf(value);
             return DataManager.getInstance().getDao().getUser(id);
+        } catch (NumberFormatException e) {
+            return null;
         } catch (DAOException e) {
             return null;
         }
@@ -45,19 +47,15 @@ public class UserConverter implements Converter {
 
     /** {@inheritDoc} */
     @Override
-    public final String getAsString(final FacesContext context, final UIComponent component, final Object object) {
+    public final String getAsString(final FacesContext context, final UIComponent component, final User object) {
         if (object == null) {
             return null;
         }
 
-        if (object instanceof User) {
-            User user = (User) object;
-            try {
-                return String.valueOf(user.getId());
-            } catch (NumberFormatException nfe) {
-                return null;
-            }
+        try {
+            return String.valueOf(object.getId());
+        } catch (NumberFormatException nfe) {
+            return null;
         }
-        throw new IllegalArgumentException("Object '" + object.getClass().getName() + "' is not a User.");
     }
 }

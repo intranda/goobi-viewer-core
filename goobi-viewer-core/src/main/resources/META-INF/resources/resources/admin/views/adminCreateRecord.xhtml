@@ -4,7 +4,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:jsf="http://xmlns.jcp.org/jsf"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -16,248 +16,213 @@
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">       
+        <f:view contentType="text/html" encoding="utf-8">
             <ui:fragment rendered="#{userBean.admin}">
-            <div id="adminCreateRecord">
-                <h2 class="admin__content-inner-title">#{msg.admin__create_record__title}</h2>
-                
-                <div class="admin__content-inner-content">
-                	<div class="admin__content-inner-content__description">
-                		<h:outputText escape="false" value="#{msg.admin__create_record__description}"></h:outputText>
-                	</div>
-                	
-                	<h:form prependId="false">
-                	
-	                	<h3 class="admin__content-inner-content__title">#{msg.admin__create_record__metadata__title}</h3>
-	                	<div class="admin__content-inner-content__description">
-	                		<h:outputText escape="false" value="#{msg.admin__create_record__metadata__description}"></h:outputText>
-	                	</div>
-	                	<h:panelGroup display="block" id="inputForm" styleClass="admin__content-inner-content__input_form">
-	                	
-	                	 	<!-- TITLE -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCTitle">#{msg.MD_TITLE}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker in">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control">
-	                                <h:inputText id="createDCTitle" styleClass="form-control"
-	                                    value="#{createRecordBean.title}" required="true" requiredMessage="#{msg.error__title_required}"/>
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="titleHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="titleHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_title__help}</div>
-	                        </div>
-	                        
-	                        <!-- DESCRIPTION -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCDescription">#{msg.MD_RECORDDESCRIPTION}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control">
-	                                <h:inputTextarea id="createDCDescription" styleClass="form-control"
-	                                    value="#{createRecordBean.description}" />
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="descriptionHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="descriptionHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_description__help}</div>
-	                        </div>
-	                        
-	                        <!-- LANGUAGE -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCLanguage">#{msg.MD_LANGUAGE}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control custom-control custom-control--select">
-	                                <h:selectOneMenu id="createDCLanguage" styleClass="form-control"
-	                                    value="#{createRecordBean.language}" >
-	                                    <f:selectItem itemLabel="#{msg.select}" itemValue=""/>
-	                                    <f:selectItems 
-	                                    value="#{createRecordBean.possibleLanguages}" 
-	                                    var="language" 
-	                                    itemLabel="#{language.getName(navigationHelper.locale)}"
-	                                    itemValue="#{language.isoCode}"
-	                                    itemDescription="#{language.isoCode}"></f:selectItems>
-	                                </h:selectOneMenu>
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="languageHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="languageHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_language__help}</div>
-	                        </div>
-	                        
-	                        <!-- DATE -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCDate">#{msg.NORM_DATE}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control">
-	                            <h:inputText id="createDCDate" styleClass="form-control" value="#{createRecordBean.date}" />
-<!-- 	                            	<input class="form-control" type="date" jsf:id="recordDate" jsf:value="#{createRecordBean.date}" jsf:converter="localDateConverter" /> -->
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="dateHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="dateHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_date__help}</div>
-	                        </div>
-	                        
-	                        <!-- CREATOR -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCCreator">#{msg.MD_CREATOR}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control">
-	                                <h:inputText id="createDCCreator" styleClass="form-control"
-	                                    value="#{createRecordBean.creator}" />
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="creatorHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="creatorHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_creator__help}</div>
-	                        </div>
-	                        
-	                        <!-- COLLECTION -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCCollection">#{msg.DC}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control">
-	                                <h:inputText id="createDCCollection" styleClass="form-control"
-	                                    value="#{createRecordBean.collection}" />
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="collectionHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="collectionHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_collection__help}</div>
-	                        </div>
-	                        
-	                        <!-- LICENSE -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCLicense">#{msg.MD_LICENSE}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control custom-control custom-control--select">
-	                                <h:selectOneMenu id="createDCLicense" styleClass="form-control"
-	                                    value="#{createRecordBean.license}">
-	                                    <f:selectItem itemLabel="#{msg.select}" itemValue=""/>
-	                                    <f:selectItems 
-	                                    value="#{createRecordBean.possibleLicenses}" 
-	                                    var="license" 
-	                                    itemLabel="#{license.label}"
-	                                    itemValue="#{license.url}"></f:selectItems>
-	                                </h:selectOneMenu>
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="licenseHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="licenseHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_license__help}</div>
-	                        </div>
-	                        
-	                        <!-- ACCESS CONDITION -->
-	                        <div class="input_form__option_group">
-	                            <div class="input_form__option_label">
-	                                <label for="createDCAccessCondition">#{msg.ACCESSCONDITION}:</label>
-	                            </div>
-	                            <div class="input_form__option_marker">
-	                            <label>*</label>
-	                            </div>
-	                            <div class="input_form__option_control">
-	                                <h:inputText id="createDCAccessCondition" styleClass="form-control"
-	                                    value="#{createRecordBean.accessCondition}" />
-	                            </div>
-	                            <div class="input_form__option_help">
-	                                <button type="button" class="btn btn--clean" data-toggle="helptext" for="accessConditionHelp">
-	                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                </button>
-	                            </div>
-	                            <div id="accessConditionHelp" class="input_form__option_control_helptext">#{msg.admin__create_record__metadata_accesscondition__help}</div>
-	                        </div>
-	                        
-	                        
-	                	</h:panelGroup>
-                	
-                		<h3 class="admin__content-inner-content__title">#{msg.admin__create_record__files__title}</h3>
-	                	<div class="admin__content-inner-content__description">
-	                		<h:outputText escape="false" value="#{msg.admin__create_record__files__description}"></h:outputText>
-	                	</div>
-	                	<h:panelGroup id="uploadForm" styleClass="admin__content-inner-content__upload_form">
-	                		<adminMediaUpload></adminMediaUpload>
-	                	</h:panelGroup>
-	                	
-	                	<div class="admin__content-inner-content__controls">
-	                		<h:link styleClass="btn btn--default" value="#{msg.reset}"></h:link>
-	                		<h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{createRecordBean.saveRecord}"></h:commandButton>
-	                	</div>
-                	
-                	</h:form>
-                	
-                	<script type="text/javascript">
-                	
-                	var fileUploadConfig = {
-                			postUrl : '#{navigationHelper.applicationUrl}rest/record/dc/#{createRecordBean.uuid}/upload/',
-                			msg : {
-                				buttonUpload : "#{msg.button__upload}",
-                				uploadText : "#{msg.admin__media_upload_text}",
-                				allowedFileTypes : "#{msg.admin__media_upload_filetypes}",
-                				mediaUploading : "#{msg.admin__media_upload_uploading}",
-                				mediaFinished : "#{msg.admin__media_upload_finished}",
-                				mediaError : "#{msg.admin__media_upload_error}",
-                				bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}",
-                				overwriteFileConfirm: "#{msg.admin__media_overwrite_file_confirm}",
-                        		overwriteFileRefused: "#{msg.admin__media_overwrite_file_refused}"
-                			},
-                			fileTypes: "TIFF, JPEG, JP2, PNG",
-                			showFiles: true,
-                			onUploadComplete : function() {
-								console.log("file upload complete")
-                			}
-                		};
+                <div id="adminCreateRecord">
+                    <!-- TITLE -->
+                    <div class="admin__title-bar">
+                        <h2 class="admin__title">#{msg.admin__create_record__title}</h2>
+                    </div>
 
-                		riot.mount( 'adminMediaUpload', fileUploadConfig );
+                    <div class="admin__content-inner-content">
+                        <p>
+                            <h:outputText escape="false" value="#{msg.admin__create_record__description}" />
+                        </p>
 
-                	
-                	</script>
-                	
+                        <h:form prependId="false">
+                            <h3>#{msg.admin__create_record__metadata__title}</h3>
+                            <p>
+                                <h:outputText escape="false" value="#{msg.admin__create_record__metadata__description}"/>
+                            </p>
+
+                            <div class="admin__default-block">
+                                <fieldset>
+                                    <!-- TITLE -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCTitle">#{msg.MD_TITLE}:</label><span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText id="createDCTitle" styleClass="form-control" value="#{createRecordBean.title}" required="true" requiredMessage="#{msg.error__title_required}"/>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_title__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext"  aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- DESCRIPTION -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCDescription">#{msg.MD_RECORDDESCRIPTION}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputTextarea id="createDCDescription" styleClass="form-control" value="#{createRecordBean.description}" />
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_description__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="descriptionHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- LANGUAGE -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCLanguage">#{msg.MD_LANGUAGE}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:selectOneMenu id="createDCLanguage" styleClass="form-control" value="#{createRecordBean.language}">
+                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
+                                                <f:selectItems
+                                                value="#{createRecordBean.possibleLanguages}"
+                                                var="language"
+                                                itemLabel="#{language.getName(navigationHelper.locale)}"
+                                                itemValue="#{language.isoCode}"
+                                                itemDescription="#{language.isoCode}" />
+                                            </h:selectOneMenu>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_language__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="languageHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- DATE -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCDate">#{msg.NORM_DATE}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText id="createDCDate" styleClass="form-control" value="#{createRecordBean.date}" />
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_date__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="dateHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- CREATOR -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCCreator">#{msg.MD_CREATOR}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText id="createDCCreator" styleClass="form-control" value="#{createRecordBean.creator}" />
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_creator__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="creatorHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- COLLECTION -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCCollection">#{msg.DC}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText id="createDCCollection" styleClass="form-control" value="#{createRecordBean.collection}" />
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_collection__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="collectionHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- LICENSE -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCLicense">#{msg.MD_LICENSE}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:selectOneMenu id="createDCLicense" styleClass="form-control" value="#{createRecordBean.license}">
+                                                <f:selectItem itemLabel="#{msg.select}" itemValue=""/>
+                                                <f:selectItems
+                                                value="#{createRecordBean.possibleLicenses}"
+                                                var="license"
+                                                itemLabel="#{license.label}"
+                                                itemValue="#{license.url}"/>
+                                            </h:selectOneMenu>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_license__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="licenseHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- ACCESS CONDITION -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="createDCAccessCondition">#{msg.ACCESSCONDITION}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText id="createDCAccessCondition" styleClass="form-control" value="#{createRecordBean.accessCondition}" />
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_accesscondition__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" for="accessConditionHelp" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <h3>#{msg.admin__create_record__files__title}</h3>
+                            <p>
+                                <h:outputText escape="false" value="#{msg.admin__create_record__files__description}" />
+                            </p>
+                            <h:panelGroup id="uploadForm" styleClass="admin__content-inner-content__upload_form">
+                                <adminMediaUpload></adminMediaUpload>
+                            </h:panelGroup>
+
+                            <div class="row no-gutters justify-content-end admin__final-actions">
+                                <h:link styleClass="btn" value="#{msg.cancel}"></h:link>
+                                <h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{createRecordBean.saveRecord}" />
+                            </div>
+                        </h:form>
+
+
+                        <script type="text/javascript">
+                        var fileUploadConfig = {
+                                postUrl : '#{navigationHelper.applicationUrl}rest/record/dc/#{createRecordBean.uuid}/upload/',
+                                msg : {
+                                    buttonUpload : "#{msg.button__upload}",
+                                    uploadText : "#{msg.admin__media_upload_text}",
+                                    allowedFileTypes : "#{msg.admin__media_upload_filetypes}",
+                                    mediaUploading : "#{msg.admin__media_upload_uploading}",
+                                    mediaFinished : "#{msg.admin__media_upload_finished}",
+                                    mediaError : "#{msg.admin__media_upload_error}",
+                                    bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}",
+                                    overwriteFileConfirm: "#{msg.admin__media_overwrite_file_confirm}",
+                                    overwriteFileRefused: "#{msg.admin__media_overwrite_file_refused}"
+                                },
+                                fileTypes: "TIFF, JPEG, JP2, PNG",
+                                showFiles: true,
+                                onUploadComplete : function() {
+                                    console.log("file upload complete")
+                                }
+                            };
+
+                            riot.mount( 'adminMediaUpload', fileUploadConfig );
+                        </script>
+                    </div>
                 </div>
-            </div>
-            </ui:fragment> 
-            
+            </ui:fragment>
         </f:view>
     </ui:define>
 

@@ -34,8 +34,11 @@ public class BrowseTermComparatorTest {
     public void compare_shouldCompareCorrectly() throws Exception {
         BrowseTermComparator comparator = new BrowseTermComparator(null);
         Assert.assertEquals(1, comparator.compare(new BrowseTerm("foo", null, null), new BrowseTerm("bar", null, null)));
-        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("foo1", null, null), new BrowseTerm("foo2", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("A", null, null), new BrowseTerm("Á", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("Azcárate", null, null), new BrowseTerm("Ávila", null, null)));
         Assert.assertEquals(0, comparator.compare(new BrowseTerm("foo123", null, null), new BrowseTerm("foo123", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("foo12", null, null), new BrowseTerm("foo123", null, null)));
+        Assert.assertEquals(-1, comparator.compare(new BrowseTerm("12foo", null, null), new BrowseTerm("123foo", null, null)));
     }
 
     /**
@@ -67,5 +70,34 @@ public class BrowseTermComparatorTest {
         Assert.assertEquals(1,
                 new BrowseTermComparator(Locale.ENGLISH).compare(new BrowseTerm("ger", null, new MultiLanguageMetadataValue(translations1)),
                         new BrowseTerm("eng", null, new MultiLanguageMetadataValue(translations2))));
+    }
+    
+
+    /**
+     * @see BrowseTermComparator#compare(BrowseTerm,BrowseTerm)
+     * @verifies sort accented vowels after plain vowels
+     */
+    @Test
+    public void compare_shouldSortAccentedVowelsAfterPlainVowels() throws Exception {
+//        Assert.assertEquals(1, new BrowseTermComparator(null).compare(new BrowseTerm("Ávila", null, null), new BrowseTerm("Azcárate", null, null)));
+        Assert.assertEquals(-1, new BrowseTermComparator(null).compare(new BrowseTerm("arm", null, null), new BrowseTerm("árm", null, null)));
+    }
+
+    /**
+     * @see BrowseTermComparator#normalizeString(String,String)
+     * @verifies use ignoreChars if provided
+     */
+    @Test
+    public void normalizeString_shouldUseIgnoreCharsIfProvided() throws Exception {
+        Assert.assertEquals("#.foo", BrowseTermComparator.normalizeString("[.]#.foo", ".[]"));
+    }
+
+    /**
+     * @see BrowseTermComparator#normalizeString(String,String)
+     * @verifies remove first char if non alphanum if ignoreChars not provided
+     */
+    @Test
+    public void normalizeString_shouldRemoveFirstCharIfNonAlphanumIfIgnoreCharsNotProvided() throws Exception {
+        Assert.assertEquals(".]#.foo", BrowseTermComparator.normalizeString("[.]#.foo", null));
     }
 }

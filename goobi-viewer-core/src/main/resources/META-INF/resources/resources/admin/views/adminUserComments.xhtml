@@ -2,7 +2,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -10,176 +10,139 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserComments')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>
 
-    <ui:define name="content">    
-		<div id="adminUserComments">
+    <ui:define name="content">
+        <div id="adminUserComments">
             <h:panelGroup rendered="#{userBean.admin}">
-                <h2 class="admin__content-inner-title">#{msg.admin__comments}</h2>
-
-                <div class="admin__content-inner-content">
-                    <div class="sortable-table-wrapper">
-                        <h:form id="adminUserCommentsForm" prependId="false">
-                            <!-- paginator -->
-                            <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelComments}" />
-
-                            <table id="adminUserCommentsTable" class="table table-striped table-bordered admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            #{msg.dateCreated}
-
-                                            <!-- SORTING -->
-                                            <div class="sorting-wrapper">
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'ASCENDING')}">
-                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'DESCENDING')}">
-                                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                            </div>
-
-                                            <div class="clearfix"></div>
-                                        </th>
-                                        <th>
-                                            #{msg.identifier} / #{msg.page}
-
-                                            <!-- SORTING -->
-                                            <div class="sorting-wrapper">
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('pi', 'ASCENDING')}">
-                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('pi', 'DESCENDING')}">
-                                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                            </div>
-
-                                            <div class="clearfix"></div>
-                                        </th>
-                                        <th>
-                                            #{msg.text}
-
-                                            <!-- SORTING -->
-                                            <div class="sorting-wrapper">
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'ASCENDING')}">
-                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                                <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'DESCENDING')}">
-                                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                    <f:ajax execute="@form" render="@form" />
-                                                </h:commandLink>
-                                            </div>
-
-                                            <div class="clearfix"></div>
-
-                                            <!-- FILTER -->
-                                            <viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelComments.getFilter('text')}" />
-                                        </th>
-                                        <th>#{msg.action}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <ui:repeat var="comment" value="#{adminBean.pageComments}">
-                                        <tr>
-                                            <td>
-                                                <h:outputText value="#{comment.dateCreated}">
-                                                    <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
-                                                </h:outputText>
-                                            </td>
-                                            <td>
-                                                <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" title="#{comment.pi}"
-                                                    styleClass="comment-identifier">
-                                                    <h:outputText value="#{comment.pi}" />
-                                                </h:outputLink>
-                                                /
-                                                <h:outputLink value="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/">
-                                                    <h:outputText value="#{comment.page}" />
-                                                </h:outputLink>
-                                            </td>
-                                            <td>
-                                                <span data-toggle="tooltip" data-placement="top" title="#{msg.admin_userComments_commentOwner}: #{comment.owner}">
-                                                    <h:outputText value="#{comment.text}" />
-                                                </span>
-                                            </td>
-                                            <td class="admin-table__action">
-                                                <!-- edit comment -->
-                                                <button type="button" class="btn btn--icon edit-comment-btn" title="#{msg.edit}">
-                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                                                </button>
-
-                                                <!-- delete comment -->
-                                                <h:commandLink styleClass="btn btn--icon"
-                                                    onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-                                                    action="#{adminBean.deleteCommentAction(comment)}" title="#{msg.delete}">
-                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                </h:commandLink>
-
-                                                <!-- editCommentModal -->
-                                                <div class="modal editCommentModal" tabindex="-1" role="dialog" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <button type="button" class="close" data-dismiss="modal">
-                                                                    <span aria-hidden="true">
-                                                                        <h:outputText value="&amp;times;" escape="false" />
-                                                                    </span>
-                                                                    <span class="sr-only">#{msg.cancel}</span>
-                                                                </button>
-                                                                <h4 class="modal-title">#{msg.admin_userEditComments}</h4>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <h:inputTextarea class="form-control" value="#{comment.text}" />
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-                                                                <h:commandLink action="#{adminBean.saveCommentAction(comment)}" value="#{msg.save}" styleClass="btn btn--success" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </ui:repeat>
-                                </tbody>
-                            </table>
-                        </h:form>
+                <h:form id="adminUserCommentsForm" prependId="false">
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h2 class="admin__title">#{msg.admin__comments}</h2>
                     </div>
-                </div>
+
+                    <div class="admin__content-inner-content">
+                        <div class="admin__table-tools">
+                            <!-- PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelComments}" />
+                            </div>
+                            <!-- FILTER -->
+                            <div class="admin__table-filter">
+                                <viewerComponent:dataTableColumnFilter key="admin__comment_search"
+                                    filter="#{adminBean.lazyModelComments.getFilter('text_owner-nickName_owner-email')}" />
+                            </div>
+                        </div>
+
+
+                        <!-- ALL COMMENTS TABLE -->
+                        <div id="adminUserCommentsTable" class="admin__table-content">
+
+                            <!-- TITLE ROW -->
+                            <div class="row no-gutters admin__table-title">
+
+                                <!-- COMMENT COL -->
+                                <div class="col-8 d-flex">
+                                    #{msg.Comment}
+                                    <div class="sorting-wrapper admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('text', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+
+                                <!-- USER COL -->
+                                <div class="col-2 d-flex">
+                                    Benutzer
+                                    <div class="sorting-wrapper admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('owner', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('owner', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+
+                                <!-- DATE COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.date}
+                                    <div class="sorting-wrapper admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{adminBean.lazyModelComments.sortBy('dateCreated', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <!-- INDIVIDUAL COMMENTS -->
+                            <ui:repeat var="comment" value="#{adminBean.pageComments}">
+                                <div class="row no-gutters admin__table-entry">
+                                    <div class="col-8 d-flex" style="flex-direction:column;">
+                                        <!-- COMMENT -->
+                                        <h:outputText value="#{comment.text}" />
+
+                                        <!-- ACTIONS -->
+                                        <div>
+                                            <!-- SHOW -->
+                                            <a href="#{navigationHelper.imageUrl}/#{comment.pi}/#{comment.page}/" class="admin__table-action-link" target="_blank" aria-label="#{msg.Comment} #{msg.show} (#{comment.pi}/#{comment.page})">#{msg.show}</a>
+
+                                            <!-- DELETE -->
+                                            <h:commandLink styleClass="admin__table-action-link -redlink"
+                                                onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
+                                                action="#{adminBean.deleteCommentAction(comment)}">#{msg.delete}
+                                            </h:commandLink>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex">#{comment.owner}</div>
+                                    <div class="col-2 d-flex">
+                                        <h:outputText value="#{comment.dateCreated}">
+                                            <f:convertDateTime pattern="dd.MM.YYYY - HH:mm" type="both" dateStyle="short" timeStyle="short" />
+                                        </h:outputText>
+                                    </div>
+                               </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
             </h:panelGroup>
         </div>
 
-		<script type="text/javascript">
+        <script type="text/javascript">
             $( document ).ready( function() {
                 var dataTableConfig = {
-                		dataTablePaginator: "#dataTablePaginator",
-    	                txtField1: "#txtMoveTo1",
-    	                txtField2: "#txtMoveTo2",
-    	                totalCount: "#totalCount",
-    	                reloadBtn: 'input[id*="cmdMoveTo"]',
-                };    
-            
+                        dataTablePaginator: "#dataTablePaginator",
+                        txtField1: "#txtMoveTo1",
+                        txtField2: "#txtMoveTo2",
+                        totalCount: "#totalCount",
+                        reloadBtn: 'input[id*="cmdMoveTo"]',
+                };
+
                 viewerJS.dataTable.init( dataTableConfig );
 
-                var btnCount = 0;
-                $.each( $( ".edit-comment-btn" ), function() {
-                    $( this ).attr( "data-toggle", "modal" ).attr( "data-target", "#editCommentModal-" + btnCount );
-                    btnCount++;
-                } );
-                
-                var modalCount = 0;
-                $.each( $( ".editCommentModal" ), function() {
-                    $( this ).attr( "id", "editCommentModal-" + modalCount );
-                    modalCount++;
-                } );
             } );
         </script>
-	</ui:define>
 
+    </ui:define>
 </ui:composition>

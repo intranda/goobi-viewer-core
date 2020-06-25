@@ -4,6 +4,115 @@
    ==============================================================*/
 #widgetAdmin {}
 
+.admin-widget {
+    margin-bottom: 20px;
+    /* ELEMENT */
+    &__header { 
+    	margin-right: -15px; 
+    	margin-left: -15px;
+    	padding-top: 0;
+    	padding-right: 15px;
+    	padding-bottom: 5px;
+    	padding-left: 15px;
+    	color: @white;
+    	border-bottom: 1px solid @white;
+    }
+    ul {
+        .mx-list-reset;
+    }
+    li {
+    	position: relative;
+    	margin-right: -15px;
+    	margin-left: -15px;
+    	padding-right: 15px;
+    	padding-left: 15px;
+    	&.active {
+    		background-color: @activeblue;
+    		&:after {
+    			content: "";
+    			position: absolute;
+    			display: block;
+    			top: 50%;
+    			right: 0;
+    			width: 0;
+    			height: 0;
+    			margin-top: -6px;
+    			border-width: 6px;
+    			border-style: solid;
+    			border-color: transparent @neutralgray transparent transparent;
+    			z-index: 10;
+    		}
+    	}
+    	&:hover {
+    		background-color: @hoverblue;
+    	}
+    	&.spacer {
+    		margin-bottom: 10px;
+    	}
+    }
+    a {
+    	display: block;
+    	padding: 5px 0;
+    	.fa {
+    		width: 30px;
+    	}
+    }
+    &__roles-link {
+    	padding: 2.5rem 0;
+    }
+}
+
+
+
+/* test */
+
+.admin-widget {
+	margin-bottom: 0;
+}
+
+
+.admin-widget ul {
+}
+
+.admin-widget__header {
+    margin-right: -15px;
+    margin-left: -15px;
+    color: #fff;
+    border-bottom: none;
+    padding: 2rem 1.5rem 0.5rem 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0.00rem;
+    text-transform: uppercase;
+    margin-bottom: 0;
+    font-size: 1.4rem;
+
+}
+
+
+.admin-widget li {
+   transition: all 0.2s ease;
+   padding-left: 2.5rem;
+   
+}
+
+
+.admin-widget li:hover {
+    background-color: #235396;
+    padding-left: 3rem;
+}
+
+
+.admin-widget li.active {
+    background-color: #235396;
+}
+
+.admin__sidebar-logout {
+margin-top: 2rem;
+border-top: none;
+}
+
+
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 

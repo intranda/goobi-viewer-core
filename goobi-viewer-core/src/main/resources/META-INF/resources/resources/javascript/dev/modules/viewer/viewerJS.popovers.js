@@ -33,8 +33,8 @@ var viewerJS = ( function( viewer ) {
     const _popoverSelectorAttribute = "data-popover-element";
     const _popoverTitleAttribute = "data-popover-title";
     const _popoverPlacementAttribute = "data-popover-placement";
-    const _popoverTemplate = "<div class='popover' role='tooltip'><div class='arrow'></div><h3 class='popover-title-custom'>#{title}</h3><div class='popover-content'></div></div>";    
-    const _popoverTemplateNoTitle = "<div class='popover' role='tooltip'><div class='arrow'></div><div class='popover-content'></div></div>";    
+    const _popoverTemplate = "<div class='popover' role='tooltip'><div class='arrow'></div><h3 class='popover-title-custom'>#{title}</h3><div class='popover-body'></div></div>";    
+    const _popoverTemplateNoTitle = "<div class='popover' role='tooltip'><div class='arrow'></div><div class='popover-body'></div></div>";    
     const _dismissPopoverAttribute = "data-popover-dismiss";
     const _clickOutside = "click-outside";
     const _popoverOnShowAttribute = "data-popover-onshow";
@@ -89,6 +89,7 @@ var viewerJS = ( function( viewer ) {
                 }
                 
                 $trigger.popover(config);
+                console.log("init popover done", config);
             },
             
             fromEvent(anchor, event, popoverSelector, config) {
@@ -144,7 +145,7 @@ var viewerJS = ( function( viewer ) {
             
             addCloseHandler : function($trigger) {
                 $('body').on("click.popover", event => {
-                    if($(event.target).closest("popover").length == 0) {
+                    if($(event.target).closest(".viewerPopover").length == 0) {
                         $trigger.popover("hide");
                         $('body').off("click.popover");
                     }

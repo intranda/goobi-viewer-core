@@ -13,7 +13,6 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsMedia')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
              <f:event type="preRenderView" listener="#{cmsMediaBean.setFilenameFilter('')}" />
         </f:metadata>
     </ui:define>
@@ -21,7 +20,7 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <div id="adminCmsMedia" class="admin-cms-media">
-            <ui:fragment rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
+            <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                 <!-- MEDIA ITEM OVERLAY -->
                 <div class="admin-cms-media__overlay"></div>
             
@@ -84,10 +83,4 @@
 		</script>
     </ui:define>                    
 
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-        <adminWidget:widget_cms />
-    </ui:define>
 </ui:composition>

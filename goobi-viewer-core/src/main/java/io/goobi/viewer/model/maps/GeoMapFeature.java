@@ -17,9 +17,7 @@ package io.goobi.viewer.model.maps;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.json.JSONObject;
-
-import io.goobi.viewer.controller.SolrSearchIndex;
+import org.json.JSONObject;
 
 /**
  * @author florian

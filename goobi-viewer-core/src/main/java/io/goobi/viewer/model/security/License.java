@@ -17,10 +17,13 @@ package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -37,11 +40,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
@@ -162,6 +173,21 @@ public class License implements IPrivilegeHolder, Serializable {
             inverseJoinColumns = @JoinColumn(name = "campaign_id"))
     private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
 
+    @Transient
+    private String type;
+
+    @Transient
+    private Set<String> privilegesCopy = new HashSet<>();
+
+    @Transient
+    private List<Selectable<String>> selectableSubthemes = null;
+
+    @Transient
+    private List<Selectable<CMSCategory>> selectableCategories = null;
+
+    @Transient
+    private List<Selectable<String>> selectableTemplates = null;
+
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
      * license's start and and dates.
@@ -174,245 +200,30 @@ public class License implements IPrivilegeHolder, Serializable {
         return (start == null || start.before(now)) && (end == null || end.after(now));
     }
 
+    /**
+     * Adds the given privilege to the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean addPrivilege(String privilege) {
+        return privilegesCopy.add(privilege);
+    }
+
+    /**
+     * Removes the given privilege from the working set.
+     * 
+     * @param privilege
+     * @return true if successful; false otherwise
+     */
+    public boolean removePrivilege(String privilege) {
+        return privilegesCopy.remove(privilege);
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean hasPrivilege(String privilege) {
         return privileges.contains(privilege);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivList() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_LIST);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivList(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_LIST);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_LIST);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewImages() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewImages(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewThumbnails() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewThumbnails(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewFulltext() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewFulltext(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewVideo() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewVideo(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivViewAudio() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivViewAudio(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadPdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadPdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadPagePdf()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadPagePdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadPagePdf(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadPagePdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDownloadOriginalContent() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.user.IPrivilegeHolder#setPrivDownloadOriginalContent(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDownloadOriginalContent(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        }
-
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDownloadMetadata()
-     */
-    @Override
-    public boolean isPrivDownloadMetadata() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDownloadMetadata(boolean)
-     */
-    @Override
-    public void setPrivDownloadMetadata(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivGenerateIiifManifest()
-     */
-    @Override
-    public boolean isPrivGenerateIiifManifest() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivIiifManifest(boolean)
-     */
-    @Override
-    public void setPrivGenerateIiifManifest(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivDeleteOcrPage() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivDeleteOcrPage(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivDeleteOcrPage(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivSetRepresentativeImage() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivSetRepresentativeImage(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-        }
     }
 
     /* (non-Javadoc)
@@ -431,75 +242,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivCmsAllSubthemes() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivCmsAllSubthemes(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivCmsAllCategories() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivCmsAllCategories(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrivCmsAllTemplates() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setPrivCmsAllTemplates(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
 
@@ -518,10 +263,11 @@ public class License implements IPrivilegeHolder, Serializable {
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsMenu(boolean priv) {
+        logger.trace("setPrivCmsMenu: {}", priv);
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_MENU);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_MENU);
         }
     }
 
@@ -541,9 +287,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         }
     }
 
@@ -563,9 +309,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         }
     }
 
@@ -585,9 +331,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         }
     }
 
@@ -607,9 +353,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
         }
     }
 
@@ -629,9 +375,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
         }
     }
 
@@ -651,10 +397,138 @@ public class License implements IPrivilegeHolder, Serializable {
     @Override
     public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            privilegesCopy.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            privilegesCopy.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
         }
+    }
+
+    /**
+     * Resets all working copies of lists of various privileges.
+     */
+    public void resetTempData() {
+        privilegesCopy.clear();
+        selectableSubthemes = null;
+        selectableCategories = null;
+        selectableTemplates = null;
+    }
+
+    /**
+     * Returns the list of available record privileges for adding to this license (using the working copy while editing).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public List<String> getAvailablePrivileges() {
+        return getAvailablePrivileges(privilegesCopy);
+    }
+
+    /**
+     * Returns the list of available record privileges for adding to this license (using the given privileges list).
+     * 
+     * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
+     */
+    public List<String> getAvailablePrivileges(Set<String> privileges) {
+        if (licenseType != null && licenseType.isCmsType()) {
+            return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_CMS));
+        }
+        return getAvailablePrivileges(privileges, Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+    }
+
+    /**
+     * 
+     * @param excludePrivileges
+     * @param sourcePrivileges
+     * @return
+     */
+    List<String> getAvailablePrivileges(Set<String> excludePrivileges, List<String> sourcePrivileges) {
+        if (excludePrivileges == null) {
+            throw new IllegalArgumentException("excludePrivileges may not be null");
+        }
+        if (sourcePrivileges == null || sourcePrivileges.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> ret = new ArrayList<>(sourcePrivileges);
+        // Remove existing privileges
+        ret.removeAll(excludePrivileges);
+        // Remove privileges inherited from the license type
+        if (licenseType != null) {
+            ret.removeAll(licenseType.getPrivileges());
+        }
+        return ret;
+    }
+
+    /**
+     * Returns a sorted list (according to the static array of privileges, either for records or CMS) based on the given set of privileges.
+     * 
+     * @param privileges Listed privileges
+     * @param sourcePrivileges List containing the desired order
+     * @return Sorted list of privileges contained in <code>privileges</code>
+     */
+    public List<String> getSortedPrivileges(Set<String> privileges) {
+        if (privileges == null || privileges.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> orderList = (licenseType != null && licenseType.isCmsType()) ? Arrays.asList(IPrivilegeHolder.PRIVS_CMS)
+                : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD);
+        List<String> ret = new ArrayList<>(orderList.size());
+        for (String priv : orderList) {
+            // Skip PRIV_CMS_PAGES
+            if (privileges.contains(priv) && !IPrivilegeHolder.PRIV_CMS_PAGES.equals(priv)) {
+                ret.add(priv);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<Selectable<String>> getSelectableSubthemes() throws PresentationException, IndexUnreachableException {
+        if (selectableSubthemes == null) {
+            List<String> allSubthemes = BeanUtils.getCmsBean().getSubthemeDiscriminatorValues();
+            selectableSubthemes =
+                    allSubthemes.stream()
+                            .map(sub -> new Selectable<>(sub, this.subthemeDiscriminatorValues.contains(sub)))
+                            .collect(Collectors.toList());
+        }
+        return selectableSubthemes;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+        if (selectableCategories == null) {
+            List<CMSCategory> allCategories = DataManager.getInstance().getDao().getAllCategories();
+            selectableCategories =
+                    allCategories.stream().map(cat -> new Selectable<>(cat, this.allowedCategories.contains(cat))).collect(Collectors.toList());
+        }
+        return selectableCategories;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<Selectable<String>> getSelectableTemplates() throws DAOException {
+        if (selectableTemplates == null) {
+            List<CMSPageTemplate> allTemplates = BeanUtils.getCmsBean().getTemplates();
+            selectableTemplates =
+                    allTemplates.stream()
+                            .map(template -> new Selectable<>(template.getName(), this.allowedCmsTemplates.contains(template.getName())))
+                            .collect(Collectors.toList());
+        }
+        return selectableTemplates;
     }
 
     /**
@@ -699,7 +573,6 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
-        logger.trace("setLicenseType: {}", licenseType.getName());
     }
 
     /**
@@ -719,9 +592,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param user the user to set
+     * @should set userGroup and ipRange to null if user not null
+     * @should not set userGroup and ipRange to null if user null
      */
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.userGroup = null;
+            this.ipRange = null;
+        }
     }
 
     /**
@@ -741,9 +620,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param userGroup the userGroup to set
+     * @should set user and ipRange to null if userGroup not null
+     * @should not set user and ipRange to null if userGroup null
      */
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
+        if (userGroup != null) {
+            this.user = null;
+            this.ipRange = null;
+        }
     }
 
     /**
@@ -763,9 +648,15 @@ public class License implements IPrivilegeHolder, Serializable {
      * </p>
      *
      * @param ipRange the ipRange to set
+     * @should set user and userGroup to null if ipRange not null
+     * @should not set user and userGroup to null if ipRange null
      */
     public void setIpRange(IpRange ipRange) {
         this.ipRange = ipRange;
+        if (ipRange != null) {
+            this.user = null;
+            this.userGroup = null;
+        }
     }
 
     /**
@@ -964,5 +855,42 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
         this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        if (type == null) {
+            if (user != null) {
+                type = "user";
+            } else if (userGroup != null) {
+                type = "group";
+            } else if (ipRange != null) {
+                type = "iprange";
+            }
+        }
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the privilegesCopy
+     */
+    public Set<String> getPrivilegesCopy() {
+        return privilegesCopy;
+    }
+
+    /**
+     * @param privilegesCopy the privilegesCopy to set
+     */
+    public void setPrivilegesCopy(Set<String> privilegesCopy) {
+        this.privilegesCopy = privilegesCopy;
     }
 }

@@ -6,7 +6,7 @@
 		<div class="panel-heading">
 		
 			<div class="panel-thumbnail">
-				<img if="{collection.thumbnail}" class="img-responsive" src="{collection.thumbnail['@id']}"/>
+				<img if="{collection.thumbnail}" class="img-fluid" src="{collection.thumbnail['@id']}"/>
 			</div>
 			
 			<h4 class="panel-title">

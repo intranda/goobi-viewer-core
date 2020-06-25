@@ -880,8 +880,6 @@
 		<reindexOnSave>true</reindexOnSave>
 	</crowdsourcing>
 	<cms>
-		<!-- enabled: enables cms functionality globally (default is false) -->
-		<enabled>true</enabled>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 
 			menu, configurable with cms-functionality -->
 		<useCustomNavBar>true</useCustomNavBar>

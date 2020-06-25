@@ -12,14 +12,13 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
 
     <!-- CONTENT -->
     <ui:define name="content">
-        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
             <div id="cmsEditCollection" class="cms-edit-collection">
                 <h:form id="cmsEditCollectionForm" prependId="false">
                     <h2 class="admin__content-inner-title">#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>
@@ -110,12 +109,12 @@
                                 <!-- THUMBNAIL -->
                                 <div class="cms-edit-collection__text-image-thumbnail">
                                     <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-responsive" alt="" />
+                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
                                     </ui:fragment>
                                     <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
                                         <img data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
                                         data-viewer-thumbnail="thumbnail"
-                                            class="img-responsive" alt="" />
+                                            class="img-fluid" alt="" />
                                     </ui:fragment>
                                 </div>
 
@@ -172,12 +171,5 @@
 	        </h:panelGroup>
             
         </ui:fragment>
-    </ui:define>
-
-    <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-        <adminWidget:widget_cms />
     </ui:define>
 </ui:composition>

@@ -146,6 +146,10 @@
 		<smtpSenderName>Goobi viewer</smtpSenderName>
 		<smtpSecurity>SSL</smtpSecurity>
 		<feedbackEmailAddress>viewer@intranda.com</feedbackEmailAddress>
+		
+		<!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
+		    It will as an anonymous owner of user-created date in case the original user is deleted and their public data is kept. -->
+		<anonymousUserEmailAddress></anonymousUserEmailAddress>
 	</user>
 
 	<performance>
@@ -578,9 +582,6 @@
 				is not consistent used in RSS feed, search, tag clouds etc. and hits from 
 				this collection may appear there as well. -->
 			<blacklist>
-				<!-- mode: defines where the blacklist shall be applied (values: all, 
-					dclist). Default is "all". -->
-				<mode>dcList</mode>
 				<!-- <collection>varia</collection> -->
 			</blacklist>
 
@@ -1012,6 +1013,12 @@
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
 			<hitsPerPage>70</hitsPerPage>
+			
+			<sorting>
+			    <!-- ignoreLeadingChars: All leading characters to be ignored when comparing browsing terms.
+			        If empty, only the first non-alphanumeric char will be removed. -->
+			    <ignoreLeadingChars>.[]</ignoreLeadingChars>
+			</sorting>
 
 			<!-- luceneField: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
@@ -1346,8 +1353,6 @@
 	</userComments>
 
 	<cms>
-		<!-- enabled: enables cms functionality globally (default is false) -->
-		<enabled>true</enabled>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 
 			menu, configurable with cms-functionality (default is false) -->
 		<useCustomNavBar>true</useCustomNavBar>

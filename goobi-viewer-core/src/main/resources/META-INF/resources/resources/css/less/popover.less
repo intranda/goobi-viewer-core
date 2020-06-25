@@ -9,6 +9,18 @@ popover {
 	display: block;
 }
 
+.popover .viewerPopover {
+	display: block;
+}
+
+.viewerPopover {
+	display: none;
+		a {
+		display: block;
+		margin-bottom: 0.3rem;
+	}
+}
+
 .popover {
 	z-index: 2020;
 	.popover-title-custom {
@@ -24,7 +36,7 @@ popover {
 }
 
 imageFilters {
-	.imagefilters{
+	.imagefilters {
 		&__filter {
 			display: flex;
 			flex-wrap: wrap;
@@ -53,11 +65,11 @@ imageFilters {
 		}
 		&__checkbox {
 			margin: 0;
-			
 		}
 		&__slider {
 			flex-basis: 60%;
 			flex-grow: 1;
+			min-width: 0;
 			&[disabled] {
 				color: lightgray;
 			}

@@ -233,7 +233,7 @@ public class CmsBean implements Serializable {
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            lazyModelPages.addFilter("classifications", "classification");
+            lazyModelPages.addFilter("CMSCategory", "name");
         }
         selectedLocale = getDefaultLocale();
     }
@@ -360,19 +360,53 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * 
+     * @param enabled
+     * @return
+     * @throws DAOException 
+     */
+    public List<CMSPageTemplate> getTemplates(boolean enabled) throws DAOException {
+        List<CMSPageTemplate> all = getTemplates();
+        if (all.isEmpty()) {
+            return all;
+        }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(all.size());
+        for (CMSPageTemplate template : getTemplates()) {
+            if (template.getEnabled().isEnabled() == enabled) {
+                ret.add(template);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns a filtered page template list for the given user, unless the user is a superuser. Other CMS admins get a list matching the template ID
      * list attached to ther CMS license.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return List of CMS templates whose IDs are among allowed template IDs
+     * @throws DAOException 
      */
-    public List<CMSPageTemplate> getAllowedTemplates(User user) {
+    public List<CMSPageTemplate> getAllowedTemplates(User user) throws DAOException {
         logger.trace("getAllowedTemplates");
         if (user == null) {
             return Collections.emptyList();
         }
 
-        return user.getAllowedTemplates(getTemplates());
+        return user.getAllowedTemplates(getTemplates(true));
+    }
+
+    /**
+     * Persists the enabled/disabled status of all CMS tempaltes in the DB.
+     * 
+     * @return
+     * @throws DAOException 
+     */
+    public String saveTemplatesAction() throws DAOException {
+        DataManager.getInstance().getDao().saveCMSPageTemplateEnabledStatuses(getTemplates());
+        return "pretty:adminCmsSelectTemplate";
     }
 
     /**
@@ -1183,6 +1217,29 @@ public class CmsBean implements Serializable {
             this.selectedPage = null;
         }
 
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getSelectedPageId() {
+        if (selectedPage == null) {
+            return null;
+        }
+
+        return String.valueOf(selectedPage.getId());
+    }
+
+    /**
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    public void setSelectedPageId(String id) throws DAOException {
+        logger.trace("setSelectedPageId: {}", id);
+        CMSPage page = findPage(id);
+        setSelectedPage(page);
     }
 
     /**
@@ -2031,23 +2088,48 @@ public class CmsBean implements Serializable {
         }
         return null;
     }
-
+    
     /**
-     * @return
-     * @throws DAOException
+     * 
+     * @param page
+     * @return true if the given CMS page is mapped to any static page; otherwise
+     * @throws DAOException 
      */
-    private static List<CMSStaticPage> createStaticPageList() throws DAOException {
-        List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
+    public boolean isMappedToStaticPage(CMSPage page) throws DAOException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
 
-        List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
-        for (PageType pageType : pageTypesForCMS) {
-            CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
-            if (!staticPages.contains(newPage)) {
-                staticPages.add(newPage);
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if (staticPage.isHasCmsPage() && staticPage.getCmsPage().equals(page)) {
+                return true;
             }
         }
 
-        return staticPages;
+        return false;
+    }
+
+    /**
+     * @return List of static pages in the order specified in the PageType enum
+     * @throws DAOException
+     * @should return pages in specified order
+     */
+    static List<CMSStaticPage> createStaticPageList() throws DAOException {
+        List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
+
+        List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
+        
+        List<CMSStaticPage> ret = new ArrayList<>(pageTypesForCMS.size());
+        for (PageType pageType : pageTypesForCMS) {
+            CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
+            if (staticPages.contains(newPage)) {
+                ret.add(staticPages.get(staticPages.indexOf(newPage)));
+            } else {
+                ret.add(newPage);
+            }
+        }
+
+        return ret;
     }
 
     /**

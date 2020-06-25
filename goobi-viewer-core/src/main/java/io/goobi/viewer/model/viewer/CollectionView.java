@@ -536,7 +536,7 @@ public class CollectionView {
 
     /**
      * @param collections
-     * @return The hiearchy level of the first collection within collections (1-based), or 0 if the list is empty
+     * @return The hierarchy level of the first collection within collections (1-based), or 0 if the list is empty
      */
     private static int getLevelOfFirstElement(List<String> collections, String splittingChar) {
         if (collections.isEmpty()) {
@@ -1012,12 +1012,12 @@ public class CollectionView {
      * @param info The info to apply
      */
     public void setCollectionInfo(String name, BrowseElementInfo info) {
-        if(completeCollectionList != null) {            
+        if (completeCollectionList != null) {
             completeCollectionList.stream()
-            .flatMap(ele -> ele.getAllDescendents(true).stream())
-            .filter(ele -> ele.getName().equals(name))
-            .findFirst()
-            .ifPresent(ele -> ele.setInfo(info));
+                    .flatMap(ele -> ele.getAllDescendents(true).stream())
+                    .filter(ele -> ele.getName().equals(name))
+                    .findFirst()
+                    .ifPresent(ele -> ele.setInfo(info));
         }
     }
 
@@ -1028,12 +1028,12 @@ public class CollectionView {
      * @param name The collection name
      */
     public void removeCollectionInfo(String name) {
-        if(completeCollectionList != null) {            
+        if (completeCollectionList != null) {
             completeCollectionList.stream()
-            .flatMap(ele -> ele.getAllDescendents(true).stream())
-            .filter(ele -> ele.getName().equals(name))
-            .findFirst()
-            .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+                    .flatMap(ele -> ele.getAllDescendents(true).stream())
+                    .filter(ele -> ele.getName().equals(name))
+                    .findFirst()
+                    .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
         }
     }
 

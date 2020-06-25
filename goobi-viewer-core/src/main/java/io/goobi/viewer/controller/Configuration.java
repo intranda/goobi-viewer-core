@@ -791,6 +791,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getBrowsingMenuSortingIgnoreLeadingChars() {
+        return getLocalString("metadata.browsingMenu.sorting.ignoreLeadingChars");
+    }
+
+    /**
      * <p>
      * getDocstrctWhitelistFilterQuery.
      * </p>
@@ -867,24 +876,6 @@ public final class Configuration extends AbstractConfiguration {
             superlist.add(new DcSortingList(sortAfter, collectionList));
         }
         return superlist;
-    }
-
-    /**
-     * <p>
-     * getCollectionBlacklistMode.
-     * </p>
-     *
-     * @param field a {@link java.lang.String} object.
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCollectionBlacklistMode(String field) {
-        HierarchicalConfiguration collection = getCollectionConfiguration(field);
-        if (collection == null) {
-            return "all";
-        }
-
-        return collection.getString("blacklist.mode", "all");
     }
 
     /**
@@ -1946,6 +1937,18 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getAnonymousUserEmailAddress.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAnonymousUserEmailAddress() {
+        return getLocalString("user.anonymousUserEmailAddress");
+    }
+
+    /**
+     * <p>
      * isDisplayCollectionBrowsing.
      * </p>
      *
@@ -2106,55 +2109,56 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarPageLinkVisible() {
+    public boolean isSidebarPageViewLinkVisible() {
         return getLocalBoolean("sidebar.page.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarCalendarLinkVisible.
+     * isSidebarCalendarViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarCalendarLinkVisible() {
+    public boolean isSidebarCalendarViewLinkVisible() {
         return getLocalBoolean("sidebar.calendar.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarTocLinkVisible.
+     * This method checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC
+     * <strong>widget</strong> is enabled, use <code>isSidebarTocVisible()</code>.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarTocLinkVisible() {
+    public boolean isSidebarTocViewLinkVisible() {
         return getLocalBoolean("sidebar.toc.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarThumbsLinkVisible.
+     * isSidebarThumbsViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarThumbsLinkVisible() {
+    public boolean isSidebarThumbsViewLinkVisible() {
         return getLocalBoolean("sidebar.thumbs.visible", true);
     }
 
     /**
      * <p>
-     * isSidebarMetadataLinkVisible.
+     * isSidebarMetadataViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarMetadataLinkVisible() {
+    public boolean isSidebarMetadataViewLinkVisible() {
         return getLocalBoolean("sidebar.metadata.visible", true);
     }
 
@@ -2196,13 +2200,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSidebarTocVisible.
+     * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
+     * widget is enabled, use <code>isSidebarTocVisible()</code>.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarTocVisible() {
+    public boolean isSidebarTocWidgetVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
 
@@ -3977,18 +3982,6 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isCmsEnabled.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isCmsEnabled() {
-        return getLocalBoolean("cms.enabled", false);
-    }
-
-    /**
-     * <p>
      * useCustomNavBar.
      * </p>
      *
@@ -4621,7 +4614,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     /**
      * @param marker
      * @return
@@ -4629,20 +4622,19 @@ public final class Configuration extends AbstractConfiguration {
     public GeoMapMarker getGeoMapMarker(String name) {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
     }
-    
+
     public List<GeoMapMarker> getGeoMapMarkers() {
-        
+
         List<GeoMapMarker> markers = new ArrayList<>();
         List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("maps.markers.marker");
         for (HierarchicalConfiguration config : configs) {
             GeoMapMarker marker = readGeoMapMarker(config);
-            if(marker != null) {                
+            if (marker != null) {
                 markers.add(marker);
             }
         }
         return markers;
 
-        
     }
 
     /**
@@ -4650,10 +4642,10 @@ public final class Configuration extends AbstractConfiguration {
      * @param marker
      * @return
      */
-    public GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
+    public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration config) {
         GeoMapMarker marker = null;
         String name = config.getString(".");
-        if(StringUtils.isNotBlank(name)) {                
+        if (StringUtils.isNotBlank(name)) {
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
             marker.setIcon(config.getString("[@icon]", marker.getIcon()));
@@ -4668,7 +4660,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return marker;
     }
-    
+
     /**
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
      * return null;
@@ -4720,7 +4712,5 @@ public final class Configuration extends AbstractConfiguration {
 
         return licenses;
     }
-
-
 
 }

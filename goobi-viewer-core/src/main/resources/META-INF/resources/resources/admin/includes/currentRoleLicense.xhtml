@@ -21,7 +21,7 @@
                 <div class="custom-control custom-control--select">
                     <h:selectOneMenu id="name" value="#{adminBean.currentLicense.licenseType}" converter="licenseTypeConverter" required="true">
                         <!-- TODO different modes for core and other license types -->
-                        <f:selectItems value="#{adminBean.allRoleLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                        <f:selectItems value="#{adminBean.allCoreLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                         <f:ajax render="@form" />
                     </h:selectOneMenu>
                 </div>

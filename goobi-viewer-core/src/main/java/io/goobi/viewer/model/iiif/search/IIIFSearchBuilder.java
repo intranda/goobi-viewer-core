@@ -398,7 +398,7 @@ public class IIIFSearchBuilder {
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
         try {
-            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
                     .filter(c -> c.getText().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
                     .collect(Collectors.toList());
@@ -420,7 +420,7 @@ public class IIIFSearchBuilder {
         String queryRegex = AbstractSearchParser.getAutoSuggestRegex(query);
 
         try {
-            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
                     .filter(c -> c.getText().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
                     .collect(Collectors.toList());

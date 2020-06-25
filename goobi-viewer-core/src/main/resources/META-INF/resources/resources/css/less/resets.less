@@ -2,7 +2,73 @@
    Resets for CSS Libs
    ==============================================================*/
  /* BOOTSTRAP */
- .page-header {
+
+/* .modal-open .modal {
+    overflow-y: hidden;
+} */
+
+a {
+	color: @blue;
+	&:hover {
+		color: @hoverblue;
+		text-decoration: underline;
+	}
+	&:active {
+		color: @activeblue;
+	}
+	&:focus {}
+}
+button, .btn {
+	color: @lowerblack;
+	&:hover {
+		color: @lowerblack;
+		text-decoration: none;
+	}
+	&:active {
+		color: @lowerblack;
+	}
+	&:focus {}
+}
+
+.modal {
+    overflow-y: auto;
+}
+
+.modal-open {
+    overflow: auto;
+}
+
+.modal-open[style] {
+    padding-right: 0px !important;
+}
+
+pre {
+	font-size: 1.3rem;
+	line-height: 1.42857143;
+}
+
+.tooltip {
+	font-size: 1.2rem;
+}
+
+button:focus {
+	outline: 0;
+}
+
+.modal-backdrop {
+    z-index: 4000;
+}
+
+.badge-success {
+	background-color: @badge-success;
+	@badge-success: #008a00;
+}
+.badge-info {
+	background-color: @badge-info;
+	@badge-info: #008295;
+}
+ 
+.page-header {
     padding-bottom: 0;
     margin: 0;
     border-bottom: none;
@@ -14,10 +80,13 @@
 	}
 	li {
 		a {
-			border-bottom: 1px solid @middlegray;
+			display: inline-block;
+			padding: 1rem 1.5rem;
+			border: 1px solid @middlegray;
 			background-color: @lightgray;
 			border-radius: 0;
 			border-color: @middlegray;
+			margin-right: 0.2rem;
 		}
 		span {
 			display: block;
@@ -56,6 +125,7 @@
         outline: none;
     }
 }
+/*
 .form-horizontal {
     .form-group {
         label {
@@ -66,6 +136,8 @@
         .btn {}
     }
 }
+*/
+
 .popover-content {
 	color: @black;
 }
@@ -82,8 +154,8 @@
 		margin: 0;
 	}
 }
-.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6,
-.col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12,
+.col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+.col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
 .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
 .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12,
 .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6,
@@ -104,7 +176,65 @@
 }
 
 .tooltip {
-	z-index: 2011;
+	z-index: 3011;
+}
+
+a {
+	&.badge-dark:focus,
+	&.badge-dark.focus {
+		box-shadow: none;
+	}
+	&.badge {
+		&:hover,
+		&:focus {
+			cursor: pointer;
+		}
+	}
+}
+.input-group-addon {
+padding: 6px 12px;
+font-size: 14px;
+font-weight: 400;
+line-height: 1;
+color: #555;
+text-align: center;
+background-color: #eee;
+border: 1px solid #ccc;
+border-radius: 4px;
+display: flex;
+	&:last-child {
+		border-left: 0;
+	}
+}
+
+.caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-top: 4px solid\9;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
+.hidden {
+    display: none !important;
+}
+
+[role=button] {
+	cursor: pointer;
+}
+
+.dl-horizontal dt {
+    float: left;
+    width: 160px;
+    overflow: hidden;
+    clear: left;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* CHROME RESETS */

@@ -135,6 +135,10 @@
 		<smtpSecurity>smtpSecurity_value</smtpSecurity>
 		<feedbackEmailAddress>feedbackEmailAddress_value
 		</feedbackEmailAddress>
+		
+        <!-- anonymousUserEmailAddress: A user with this email address will be automatically created by the application.
+            It will as an anonymous owner of user-created date in case the original user is deleted and their public data is kept. -->
+        <anonymousUserEmailAddress>we.are@anonymous.lulz</anonymousUserEmailAddress>
 	</user>
 
 	<performance>
@@ -732,6 +736,12 @@
 			<!-- hitsPerPage: defines the maximum number of hits that are displayed 
 				per page -->
 			<hitsPerPage>19</hitsPerPage>
+			
+            <sorting>
+                <!-- ignoreLeadingChars: All leading characters to be ignored when comparing browsing terms.
+                    If empty, only the first non-alphanumeric char will be removed. -->
+                <ignoreLeadingChars>.[]</ignoreLeadingChars>
+            </sorting>
 
 			<!-- luceneField: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
@@ -1042,8 +1052,6 @@
 	</userComments>
 
 	<cms>
-		<!-- enabled: enables cms functionality globally (default is false) -->
-		<enabled>true</enabled>
 		<!-- useCustomNavBar: enables the use of a custom navigation navigation 
 			menu, configurable with cms-functionality -->
 		<useCustomNavBar>true</useCustomNavBar>

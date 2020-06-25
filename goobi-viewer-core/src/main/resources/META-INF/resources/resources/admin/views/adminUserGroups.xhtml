@@ -1,0 +1,88 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminAllUserGroups')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentUserGroupAction}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminAllUserGroups">
+                <h:panelGroup rendered="#{userBean.admin}">
+                    <h:form id="adminAllUserGroupsForm" prependId="false">
+                        <div class="admin__title-bar">
+                            <!-- TITLE -->
+                            <h2 class="admin__title">#{msg.admin__groups}</h2>
+                            <!-- CREATE NEW GROUP -->
+                            <a href="#{navigationHelper.getPageUrl('adminUserGroupNew')}/" class="btn btn--default admin__title-bar-action">
+                                #{msg.add}
+                            </a>
+                        </div>
+                        <div class="admin__content-inner-content">
+                            <!-- INFO TEXT -->
+                            <div class="admin__info-text">
+                                <h:outputText value="#{msg.admin__groups_description_text}" escape="false" />
+                            </div>
+
+                            <div class="admin__entry-list">
+                                <!-- INDIVIDUAL GROUPS -->
+                                <ui:repeat var="userGroup" value="#{adminBean.allUserGroups}">
+                                    <div class="admin__boxed-entry -w33">
+                                        <!-- NAME -->
+                                        <div class="row">
+                                            <h3 class="col-12">#{userGroup.name}</h3>
+                                        </div>
+                                        <!-- DESCRIPTION -->
+                                        <div class="row">
+                                            <ui:fragment rendered="#{userGroup.description ne ''}">
+                                                <p class="col-12 admin__boxed-entry-description">#{userGroup.description}</p>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{userGroup.description eq ''}">
+                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+                                            </ui:fragment>
+                                        </div>
+                                        <!-- DATA -->
+                                        <dl class="row">
+                                            <dt class="col-sm-4">#{msg.userGroup_members}:</dt>
+                                            <dd class="col-sm-8">#{userGroup.memberCount}</dd>
+                                            <dt class="col-sm-4">#{msg.owner}:</dt>
+                                            <dd class="col-sm-8">#{userGroup.owner.displayName}</dd>
+                                        </dl>
+                                        <!-- ACTIONS -->
+                                        <div class="row admin__boxed-entry-actions">
+                                            <div class="col-3 d-flex">
+                                                <!-- EDIT-->
+                                                <a href="#{navigationHelper.applicationUrl}admin/groups/edit/#{userGroup.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{userGroup.name}">#{msg.edit}</a>
+
+                                                <!-- DELETE -->
+                                                <h:commandLink rendered="#{!userGroup.hasMembers}"
+                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
+                                                    action="adminAllUserGroups"
+                                                    actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
+                                                    styleClass="admin__boxed-entry-actions-delete -redlink">
+                                                    <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{userGroup.name}" />
+                                                    #{msg.delete}
+                                                </h:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
+
+</ui:composition>

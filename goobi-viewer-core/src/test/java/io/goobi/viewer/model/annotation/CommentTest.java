@@ -33,7 +33,7 @@ public class CommentTest {
         Assert.assertEquals("PPN123", comment.getPi());
         Assert.assertEquals(owner, comment.getOwner());
         Assert.assertEquals("comment text", comment.getText());
-        Assert.assertNull(comment.getParent());
+        //        Assert.assertNull(comment.getParent());
     }
 
     /**

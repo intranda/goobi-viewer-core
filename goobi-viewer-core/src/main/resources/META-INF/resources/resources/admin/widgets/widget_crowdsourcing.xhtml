@@ -1,20 +1,20 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core" 
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface />
+    <composite:interface />
 
     <composite:implementation>
         <h:panelGroup rendered="#{userBean.user.superuser}">
-            <div id="widgetCms" class="admin-widget">
+            <div id="widgetCrowdsourcing" class="admin-widget">
                 <h:form id="widgetCmsForm">
-                    <h3>#{msg.admin__crowdsourcing}</h3>
+                    <div class="admin-widget__header">#{msg.admin__crowdsourcing_title}</div>
 
                     <ul>
-                        <li class="#{navigationHelper.currentPage == 'adminCrowdsourcingCampaigns' ? 'active' : ''}">
+                        <li class="#{navigationHelper.currentPage == 'adminCrowdCampagins' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdsourcingCampaigns')}/">
                                 <i class="fa fa-rocket" aria-hidden="true"></i>
                                 <span>#{msg.admin__crowdsourcing_campaigns}</span>

@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRights')}" />
+            <f:event type="preRenderView" listener="#{adminBean.setCurrentLicense(null)}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminLicenseTypes">
+                <h:panelGroup rendered="#{userBean.admin}">
+                    <h:form id="adminLicensesForm" prependId="false">
+                        <div class="admin__title-bar">
+                            <!-- TITLE -->
+                            <h2 class="admin__title">#{msg.admin__rights}</h2>
+                            <a href="#{navigationHelper.getPageUrl('adminRightsNew')}/" class="btn btn--default admin__title-bar-action">#{msg.add}</a>
+                        </div>
+
+                        <div class="admin__content-inner-content">
+                            <!-- INFO TEXT -->
+                            <div class="admin__info-text">
+                                <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
+                            </div>
+
+                           <div class="admin__entry-list">
+                               <ui:repeat var="license" value="#{adminBean.allLicenses}">
+                                    <div class="admin__boxed-entry -w50">
+                                    	<div class="overflow-hidden">
+	                                        <!-- NAME -->
+	                                        <div class="row">
+	                                            <ui:fragment rendered="#{license.user != null}">
+	                                                <h3 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> #{license.user.displayName}</h3>
+	                                            </ui:fragment>
+	                                            <ui:fragment rendered="#{license.userGroup != null}">
+	                                                <h3 class="col-12"><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h3>
+	                                            </ui:fragment>
+	                                            <ui:fragment rendered="#{license.ipRange != null}">
+	                                                <h3 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h3>
+	                                            </ui:fragment>
+	                                        </div>
+	                                        <!-- DATA -->
+	                                        <dl class="row">
+	                                            <dt class="col-sm-4">#{msg.admin__right_license_type}:</dt>
+	                                            <dd class="col-sm-8">#{msg[license.licenseType.name]}</dd>
+	
+	                                            <!-- FUNCTIONS -->
+	                                            <dt class="col-sm-4">#{msg.admin__right_functions}:</dt>
+	                                            <dd class="col-sm-8">
+	                                                <!-- Allowed subthemes -->
+	                                                <ui:repeat var="subtheme" value="#{license.subthemeDiscriminatorValues}">
+	                                                    <div class="badge badge-dark" title="#{msg[subtheme]}">#{msg[subtheme]}</div>
+	                                                </ui:repeat>
+	                                                <!-- Allowed categories -->
+	                                                <ui:repeat var="cat" value="#{license.allowedCategories}">
+	                                                    <div class="badge badge-violet" title="#{msg[cat.name]}">#{msg[cat.name]}</div>
+	                                                </ui:repeat>
+	                                                <!-- Allowed CMS templates -->
+	                                                <ui:repeat var="template" value="#{license.allowedCmsTemplates}">
+	                                                    <div class="badge badge-primary" title="#{msg[template]}">#{msg[template]}</div>
+	                                                </ui:repeat>
+	                                                <!-- Added to this license -->
+	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.privileges)}">
+	                                                    <div class="badge badge-success" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                </ui:repeat>
+	                                                <!-- Inherited from the selected license type -->
+	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.licenseType.privileges)}">
+	                                                    <div class="badge badge-secondary" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                </ui:repeat>
+	                                                <!-- All other -->
+	                                                <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
+	                                                    <div class="badge badge-light -light" aria-disabled="true" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                </ui:repeat>
+	                                            </dd>
+	                                        </dl>
+	
+	                                        <!-- ACTIONS -->
+	                                        <div class="row justify-content-end admin__boxed-entry-actions">
+	                                            <div class="col-3 d-flex justify-content-end">
+	                                                <!-- EDIT -->
+	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayName} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
+	
+	                                                <!-- DELETE -->
+	                                                <h:commandLink styleClass="admin__boxed-entry-actions-delete -redlink"
+	                                                    onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
+	                                                    action="#{adminBean.deleteLicenseAction(license)}">
+	                                                    #{msg.delete}
+	                                                </h:commandLink>
+	                                            </div>
+	                                        </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
+</ui:composition>

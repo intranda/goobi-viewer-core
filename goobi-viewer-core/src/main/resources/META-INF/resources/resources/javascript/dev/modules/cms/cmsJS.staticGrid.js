@@ -86,7 +86,7 @@ var cmsJS = ( function( cms ) {
         _gridRow = $( '<div class="row" />' );
         
         data.items.forEach( function( item ) {
-            _gridCol = $( '<div class="col-xs-6 col-sm-3" />' );
+            _gridCol = $( '<div class="col-6 col-sm-3" />' );
             // tile
             _gridTile = $( '<div class="grid-tile" />' );
             // title

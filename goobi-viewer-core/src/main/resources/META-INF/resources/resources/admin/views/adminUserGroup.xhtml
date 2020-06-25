@@ -1,17 +1,17 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserGroup')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentUserRoleAction}" />
         </f:metadata>
     </ui:define>
 
@@ -19,67 +19,134 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminUserGroup">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">
-                    <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
-                        <h2 class="admin__content-inner-title">#{msg.userGroup_createNewUserGroup}</h2>
-                    </h:panelGroup>
+                    <div class="admin__title-bar">
+                        <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
+                            <h2 class="admin__title">#{msg.admin__group_create_new}</h2>
+                        </h:panelGroup>
 
-                    <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                        <h2 class="admin__content-inner-title">#{msg.userGroup}: #{adminBean.currentUserGroup.name}</h2>
-                    </h:panelGroup>
+                        <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                            <h2 class="admin__title">#{msg.admin__group_edit}</h2>
+                        </h:panelGroup>
+                    </div>
 
                     <div class="admin__content-inner-content">
-                        <div role="tabpanel">
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation" class="active">
-                                    <a href="#userGroupGeneral" aria-controls="home" role="tab" data-toggle="tab">#{msg.general}</a>
-                                </li>
-                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <li role="presentation">
-                                        <a href="#userGroupMembers" aria-controls="profile" role="tab" data-toggle="tab">#{msg.userGroup_members}</a>
-                                    </li>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <li role="presentation">
-                                        <a href="#userGroupRoles" aria-controls="messages" role="tab" data-toggle="tab">#{msg.roles}</a>
-                                    </li>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <li role="presentation">
-                                        <a href="#userGroupLicenses" aria-controls="messages" role="tab" data-toggle="tab">#{msg.licenses}</a>
-                                    </li>
-                                </h:panelGroup>
-                            </ul>
-    
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <!-- user group general -->
-                                <div role="tabpanel" class="tab-pane active" id="userGroupGeneral">
-                                    <ui:include src="/resources/admin/includes/tabUserGroupGeneral.xhtml" />
-                                </div>
-    
-                                <!-- user group members -->
-                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <div role="tabpanel" class="tab-pane" id="userGroupMembers">
-                                        <ui:include src="/resources/admin/includes/tabUserGroupMembers.xhtml" />
+                        <h:form id="editUserGroupGeneral" styleClass="form-horizontal" role="form" prependId="false">
+                            <h3>#{msg.admin__group_general}</h3>
+
+                            <div class="admin__default-block">
+                                <fieldset>
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="userGroupNameGeneral">#{msg.name}:</label>
+                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputText value="#{adminBean.currentUserGroup.name}"
+                                                id="userGroupNameGeneral" styleClass="form-control"
+                                                required="true" />
+                                            <span class="admin__form-help-text">#{msg.admin__user_group_name__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                </h:panelGroup>
-                                
-                                <!-- user group role -->
-                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <div role="tabpanel" class="tab-pane" id="userGroupRoles">
-                                        <ui:include src="/resources/admin/includes/tabUserGroupRoles.xhtml" />
+
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="userGroupDescription">#{msg.description}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:inputTextarea value="#{adminBean.currentUserGroup.description}" id="userGroupDescription" styleClass="form-control" />
+                                            <span class="admin__form-help-text">#{msg.admin__user_group_description__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                </h:panelGroup>
-    
-                                <!-- user group licenses -->
-                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <div role="tabpanel" class="tab-pane" id="userGroupLicenses">
-                                        <ui:include src="/resources/admin/includes/tabUserGroupLicenses.xhtml" />
+
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="userGroupOwner">#{msg.userGroup_owner}:</label>
+                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input">
+                                            <h:selectOneMenu value="#{adminBean.currentUserGroup.owner}"
+                                                id="userGroupOwner" converter="userConverter"
+                                                required="true" styleClass="form-control">
+                                                <f:selectItems value="#{adminBean.allUsers}" var="user" itemLabel="#{user.displayName}" />
+                                            </h:selectOneMenu>
+                                            <span class="admin__form-help-text">#{msg.admin__user_group_owner__help}</span>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                </h:panelGroup>
+                                </fieldset>
                             </div>
-                        </div>
+
+                            <!-- TODO changes made here are not reset when canceling! -->
+                            <h3>#{msg.admin__user_group_manage_members}</h3>
+                            <div class="admin__default-block">
+                                <p class="admin__group-add-member-info-text">#{msg.admin__user_group_manage_members_info_text}</p>
+
+                                <!-- ADD MEMBER TO USER GROUP -->
+                                <div class="form-group form-row">
+                                    <div class="col-8 col-lg-11 admin__form-input">
+                                        <h:selectOneMenu value="#{adminBean.currentUserRole.user}"
+                                            id="user" converter="userConverter"
+                                            hideNoSelectionOption="false" styleClass="form-control">
+                                            <f:passThroughAttribute name="aria-label" value="add-member-to-group" />
+                                            <f:selectItem noSelectionOption="true" itemLabel="#{msg.select}"></f:selectItem>
+                                            <f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.membersAndOwner)}" var="user" itemLabel="#{user.displayName}" />
+                                        </h:selectOneMenu>
+                                    </div>
+
+                                    <!-- ADD MEMBER ACTION -->
+                                    <div class="col-4 col-lg-1 align-self-center d-flex justify-content-center admin__form-action-link">
+                                        <h:commandLink action="#{adminBean.saveUserRoleAction}" styleClass="-bluelink" title="#{msg.add}">
+                                            #{msg.add}
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+
+                                <div id="editUserGroupMembersTable" class="admin__group-member-list">
+                                    <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships}">
+
+                                        <!-- DELETE MEMBER -->
+                                        <h:commandLink
+                                            onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
+                                            action="#{adminBean.deleteUserRoleAction(membership)}"
+                                            title="#{msg.delete}"
+                                            styleClass="admin__group-member-delete">
+                                            <div class="form-row admin__group-member-entry">
+                                                <div class="col-11">
+                                                    <span class="admin__group-member-name">
+                                                        #{membership.user.displayName} (#{membership.user.email})
+                                                    </span>
+                                                </div>
+                                                <div class="col-1 d-flex justify-content-center">
+                                                    <span class="admin__group-member-delete-hint -redlink">
+                                                        #{msg.delete}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </h:commandLink>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+
+                            <!-- ACTION -->
+                            <div class="row no-gutters justify-content-end admin__final-actions">
+                                <h:commandLink action="pretty:adminGroups" value="#{msg.cancel}" styleClass="btn" immediate="true" />
+                                <h:commandLink action="#{adminBean.saveUserGroupAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                            </div>
+                        </h:form>
                     </div>
                 </h:panelGroup>
             </div>

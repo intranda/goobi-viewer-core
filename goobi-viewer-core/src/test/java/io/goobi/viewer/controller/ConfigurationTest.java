@@ -92,6 +92,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getBrowsingMenuSortingIgnoreLeadingChars()
+     * @verifies return correct value
+     */
+    @Test
+    public void getBrowsingMenuSortingIgnoreLeadingChars_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(".[]", DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
+    }
+
+    /**
      * @see Configuration#getCollectionBlacklist()
      * @verifies return all configured elements
      */
@@ -768,6 +777,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAnonymousUserEmailAddress()
+     * @verifies return correct value
+     */
+    @Test
+    public void getAnonymousUserEmailAddress_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("we.are@anonymous.lulz", DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    }
+
+    /**
      * @see Configuration#getSolrUrl()
      * @verifies return correct value
      */
@@ -1303,39 +1321,39 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarMetadataLinkVisible()
+     * @see Configuration#isSidebarMetadataViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarPageLinkVisible()
+     * @see Configuration#isSidebarPageViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarPageLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarCalendarLinkVisible()
+     * @see Configuration#isSidebarCalendarViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarThumbsLinkVisible()
+     * @see Configuration#isSidebarThumbsViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible());
     }
 
     /**
@@ -1348,21 +1366,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarTocLinkVisible()
+     * @see Configuration#isSidebarTocViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarTocLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarTocVisible()
+     * @see Configuration#isSidebarTocWidgetVisible()
      * @verifies return correct value
      */
     @Test
     public void isSidebarTocVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocVisible());
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
     }
 
     /**
@@ -2014,15 +2032,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getDbPersistenceUnit_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("intranda_viewer_test", DataManager.getInstance().getConfiguration().getDbPersistenceUnit());
-    }
-
-    /**
-     * @see Configuration#isCmsEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isCmsEnabled_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isCmsEnabled());
     }
 
     /**
@@ -2750,7 +2759,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
         Assert.assertEquals("", licenses.get(0).getIcon());
     }
-    
+
     @Test
     public void testGetGeoMapMarkers() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
@@ -2759,7 +2768,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("fa-circle", markers.get(0).getIcon());
         Assert.assertEquals("fa-search", markers.get(1).getIcon());
     }
-    
+
     @Test
     public void testGetGeoMapMarker() {
         GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker("maps__marker_2");

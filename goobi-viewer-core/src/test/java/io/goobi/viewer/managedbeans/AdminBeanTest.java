@@ -19,13 +19,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.security.user.User;
 
 public class AdminBeanTest extends AbstractDatabaseEnabledTest {
@@ -64,5 +67,68 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(3, bean.getAllUsers().size());
         List<User> result = bean.getAllUsersExcept(Collections.singleton(user));
         Assert.assertEquals(2, result.size());
+    }
+
+    /**
+     * @see AdminBean#deleteUserAction(User,boolean)
+     * @verifies delete all user public content correctly
+     */
+    @Test
+    public void deleteUserAction_shouldDeleteAllUserPublicContentCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        AdminBean bean = new AdminBean();
+        bean.setEmailConfirmation(user.getEmail());
+
+        bean.deleteUserAction(user, true);
+
+        // Comments
+        Assert.assertNull(DataManager.getInstance().getDao().getComment(2));
+
+        // Campaign statistics
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        Assert.assertEquals(1, statistics.size());
+        Assert.assertTrue(statistics.get(0).getReviewers().isEmpty());
+        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
+    }
+
+    /**
+     * @see AdminBean#deleteUserAction(User,boolean)
+     * @verifies anonymize all user public content correctly
+     */
+    @Test
+    public void deleteUserAction_shouldAnonymizeAllUserPublicContentCorrectly() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        AdminBean bean = new AdminBean();
+        bean.setEmailConfirmation(user.getEmail());
+
+        bean.deleteUserAction(user, false);
+
+        // Comments
+        Comment comment = DataManager.getInstance().getDao().getComment(2);
+        Assert.assertNotNull(comment);
+        Assert.assertNotEquals(user, comment.getOwner());
+
+        // Campaign statistics
+        List<CampaignRecordStatistic> statistics = DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", null);
+        Assert.assertEquals(1, statistics.size());
+        Assert.assertEquals(1, statistics.get(0).getReviewers().size());
+        Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
+    }
+
+    /**
+     * @see AdminBean#getGroupedLicenseTypeSelectItems()
+     * @verifies group license types in select item groups correctly
+     */
+    @Test
+    public void getGroupedLicenseTypeSelectItems_shouldGroupLicenseTypesInSelectItemGroupsCorrectly() throws Exception {
+        AdminBean bean = new AdminBean();
+        bean.init();
+
+        List<SelectItem> items = bean.getGroupedLicenseTypeSelectItems();
+        Assert.assertEquals(2, items.size());
+        Assert.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
+        Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }
 }

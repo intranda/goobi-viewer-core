@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenses')}" />
+            <f:event type="preRenderView" listener="#{adminBean.setCurrentLicenseType(null)}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="adminLicenseTypes">
+                <h:panelGroup rendered="#{userBean.admin}">
+                    <!-- TITLE -->
+                    <div class="admin__title-bar">
+                        <h2 class="admin__title">#{msg.admin__licenses}</h2>
+                    </div>
+                    <div class="admin__content-inner-content">
+                        <h:form id="adminLicenseTypesForm" prependId="false">
+                            <!-- INFO TEXT -->
+                            <div class="admin__info-text">
+                                <h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
+                            </div>
+
+                            <!-- NOT CONFIGURED LICENSES -->
+                            <ui:fragment rendered="#{not empty adminBean.notConfiguredAccessConditions}">
+                                <div class="admin__default-block mb-5 -danger">
+                                    <div class="row">
+                                        <h3 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h3>
+                                    </div>
+                                    <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
+                                        <h:commandLink action="pretty:adminLicenseNew"
+                                            actionListener="#{adminBean.newCurrentLicenseTypeAction(accessCondition)}"
+                                            styleClass="row admin__license-unconfigured-entry">
+                                            <div class="col-10 -textlink">
+                                                #{accessCondition} (#{adminBean.getNumRecordsWithAccessCondition(accessCondition)} #{msg.admin__licenses_record_number})
+                                            </div>
+                                            <div class="col-2 d-flex justify-content-end">
+                                                <span>#{msg.admin__licenses_configure_license_now}</span>
+                                            </div>
+                                        </h:commandLink>
+                                    </ui:repeat>
+                                </div>
+                            </ui:fragment>
+
+                            <div class="admin__entry-list">
+                                <!-- INDIVIDUAL LICENSES -->
+                                <ui:repeat var="licenseType" value="#{adminBean.allRecordLicenseTypes}">
+                                    <div class="admin__boxed-entry -w50">
+	                                    <div class="overflow-hidden">
+	                                        <!-- NAME -->
+	                                        <div class="row">
+	                                            <h3 class="col-12">#{msg[licenseType.name]}</h3>
+	                                        </div>
+	                                        <!-- DESCRIPTION-->
+	                                        <ui:fragment rendered="#{licenseType.description != null and licenseType.description != ''}">
+	                                            <div class="row">
+	                                                <p class="col-12 admin__boxed-entry-description">#{licenseType.description}</p>
+	                                            </div>
+	                                        </ui:fragment>
+	                                        <!-- DATA -->
+	                                        <dl class="row">
+	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
+	                                            <dd class="col-sm-8">#{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</dd>
+	
+	                                            <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
+	                                                <dt class="col-sm-4">#{msg.license_conditions}:</dt>
+	                                                <dd class="col-sm-8">#{licenseType.conditions}</dd>
+	                                            </ui:fragment>
+	
+	                                            <!-- FUNCTIONS -->
+	                                            <ui:fragment rendered="#{!licenseType.openAccess}">
+	                                                <dt class="col-sm-4">#{msg.admin__license_functions}:</dt>
+	                                                <dd class="col-sm-8">
+	                                                    <ui:repeat var="priv" value="#{licenseType.getSortedPrivileges(licenseType.privileges)}">
+	                                                       <div class="badge badge-success" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    </ui:repeat>
+	                                                    <ui:repeat var="priv" value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
+	                                                       <div class="badge badge-light -light" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}" aria-disabled="true">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    </ui:repeat>
+	                                                </dd>
+	                                            </ui:fragment>
+	                                        </dl>
+	
+	                                        <!-- OPEN ACCESS TEXT -->
+	                                        <ui:fragment rendered="#{licenseType.openAccess}">
+	                                            <div class="row col-12">#{msg.admin__license_open_access_desciption_text}</div>
+	                                        </ui:fragment>
+	
+	                                        <!-- ACTIONS -->
+	                                        <div class="row justify-content-end admin__boxed-entry-actions">
+	                                            <div class="col-3 d-flex justify-content-end">
+	                                                <!-- EDIT -->
+	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
+	
+	                                                <!-- DELETE -->
+	                                                <h:commandLink
+	                                                    styleClass="admin__boxed-entry-actions-delete -redlink"
+	                                                    onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
+	                                                    action="#{adminBean.deleteLicenseTypeAction(licenseType)}">
+	                                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{licenseType.name}" />
+	                                                        #{msg.delete}
+	                                                </h:commandLink>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </f:view>
+    </ui:define>
+
+</ui:composition>

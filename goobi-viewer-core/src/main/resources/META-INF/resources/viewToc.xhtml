@@ -64,7 +64,7 @@
                                                 </h:panelGroup>
         
                                                 <div class="row">
-                                                    <div class="col-xs-12 col-sm-8 col-md-9">
+                                                    <div class="col-12 col-sm-8 col-md-9">
                                                         <!-- MV TITLE -->
                                                         <h:panelGroup rendered="#{tocElement.label != null and tocElement.pageNo != null}">
                                                             <div class="toc__mv-element-title">
@@ -72,7 +72,7 @@
                                                             </div>
                                                         </h:panelGroup>
                                                     </div>
-                                                    <div class="col-xs-6 col-sm-2">
+                                                    <div class="col-6 col-sm-2">
                                                         <!-- MV GROUPLINK -->
                                                         <h:panelGroup rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
                                                             <div class="toc__mv-element-link text-right">
@@ -84,7 +84,7 @@
                                                             </div>
                                                         </h:panelGroup>
                                                     </div>
-                                                    <div class="col-xs-6 col-sm-2 col-md-1">
+                                                    <div class="col-6 col-sm-2 col-md-1">
                                                         <!-- MV IMAGE -->
                                                         <div class="toc__mv-element-img text-center">
                                                             
@@ -109,7 +109,7 @@
         										</h:panelGroup>
     	
     											<div class="row">
-    												<div class="col-xs-6 col-sm-8 col-md-9">
+    												<div class="col-6 col-sm-8 col-md-9">
     													<!-- MV TITLE -->
     													<h:panelGroup rendered="#{tocElement.label != null and tocElement.pageNo != null}">
     														<div class="toc__mv-element-title">
@@ -117,7 +117,7 @@
     														</div>
     													</h:panelGroup>
     												</div>
-    												<div class="col-xs-6 col-sm-2">
+    												<div class="col-6 col-sm-2">
     													<!-- MV GROUPLINK -->
     													<h:panelGroup rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
     														<div class="toc__mv-element-link text-right">
@@ -129,7 +129,7 @@
     														</div>
     													</h:panelGroup>
     												</div>
-    												<div class="col-xs-6 col-sm-2 col-md-1">
+    												<div class="col-6 col-sm-2 col-md-1">
     													<!-- MV IMAGE -->
     													<div class="toc__mv-element-img text-center">
     														<h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
@@ -182,7 +182,7 @@
 											<h:panelGroup rendered="#{tocElement.visible}">
 												<li class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }" data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
 													<div class="row">
-														<div class="col-xs-12 col-sm-1">
+														<div class="col-12 col-sm-1">
 															<h:panelGroup rendered="#{tocElement.hasChild}">
 																<!-- EXPAND -->
 																<div class="toc__list-expandable-expand">
@@ -197,7 +197,7 @@
 																</div>
 															</h:panelGroup>
 														</div>
-														<div class="col-xs-12 col-sm-8 col-md-9">
+														<div class="col-12 col-sm-8 col-md-9">
 															<!-- TITLE -->
 															<div class="toc__list-expandable-title">
 																<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
@@ -208,7 +208,7 @@
 																</h:outputLink>
 															</div>
 														</div>
-														<div class="col-xs-12 col-sm-3 col-md-2">
+														<div class="col-12 col-sm-3 col-md-2">
 															<!-- NUMBER -->
 															<div class="toc__list-expandable-number text-right">
 																<ul>
@@ -263,7 +263,7 @@
 										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
 											<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
 												<div class="row">
-													<div class="col-xs-12 col-sm-8 col-md-9">
+													<div class="col-12 col-sm-8 col-md-9">
 														<!-- TITLE -->
 														<div class="toc__list-full-title">
 															<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
@@ -274,7 +274,7 @@
 															</h:outputLink>
 														</div>
 													</div>
-													<div class="col-xs-12 col-sm-4 col-md-3">
+													<div class="col-12 col-sm-4 col-md-3">
 														<!-- NUMBER -->
 														<div class="toc__list-full-number text-right"> 
 															<ul>

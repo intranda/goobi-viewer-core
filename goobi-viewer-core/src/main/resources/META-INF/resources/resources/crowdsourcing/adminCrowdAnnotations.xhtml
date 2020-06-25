@@ -10,112 +10,111 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdCampagins')}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdsourcingAnnotations')}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
 
-	<ui:define name="content">
+    <ui:define name="content">
         <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
             <div id="crowdCampaigns">
-                    <h:form id="csCampaignsForm" prependId="false">
-                    <h2 class="admin__content-inner-title">#{msg.admin__crowdsourcing_annotations}</h2>
+                <h:form id="csCampaignsForm" prependId="false">
+                    <div class="admin__title-bar">
+                        <h2 class="admin__title">#{msg.admin__crowdsourcing_annotations}</h2>
+                    </div>
 
-                        <div class="admin__content-inner-content">
-                            <div id="csAnnotationsWrapper" class="sortable-table-wrapper">
-                            
-                            	<div class="admin__content-inner-content__above">									
-	                                <!-- paginator -->
-	                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelAnnotations}" />
-								</div>
+                    <div class="admin__content-inner-content">
 
-                                <table id="csAnnotationsTable" class="table table-striped table-bordered admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="column_date">
-                                                #{msg.date}
-                                                <!-- SORTING -->
-                                                <div class="sorting-wrapper">
-                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'ASCENDING')}">
-                                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                        <f:ajax execute="@form" render="@form" />
-                                                    </h:commandLink>
-                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'DESCENDING')}">
-                                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                        <f:ajax execute="@form" render="@form" />
-                                                    </h:commandLink>
-                                                </div>
-                                            </th>
-                                            <th class="column_target">
-                                                #{msg.admin__crowdsourcing_annotation_target}
-                                                <!-- SORTING -->
-                                                <div class="sorting-wrapper">
-                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'ASCENDING')}">
-                                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                                        <f:ajax execute="@form" render="@form" />
-                                                    </h:commandLink>
-                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
-                                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
-                                                        <f:ajax execute="@form" render="@form" />
-                                                    </h:commandLink>
-                                                </div>
-                                        
-                                                <div class="clearfix"></div>
-    
-                                                <!-- FILTER -->
-                                                <viewerComponent:dataTableColumnFilter
-                                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('targetPI')}"/>    
-                                            </th>
-                                            <th class="column_annotation">
-                                                #{msg.admin__crowdsourcing_annotation}
-                                                <!-- FILTER -->
-                                                <viewerComponent:dataTableColumnFilter
-                                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('body')}"/>    
-                                            </th>
-                                            <th class="column_actions">#{msg.admin__crowdsourcing_annotations_action}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
-                                            <tr>
-                                                <td class="column_title">
-                                                    <h:outputText value="#{annotation.dateCreated}">
-                                                        <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                                                    </h:outputText>
-                                                </td>
-                                                <td class="column_visibility">
-                                                    #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
-                                                </td>
-                                                <td class="column_annotation">
-                                                    <h:outputText value="#{annotation.contentString}" />
-                                                </td>
-                                                <td class="column_actions">
-                                                    <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.objectUrl}#{annotation.targetLink}"
-                                                        target="_blank" title="#{msg.view}" alt="#{msg.view}">
-                                                        <i class="fa fa-search" aria-hidden="true"></i>
-                                                    </h:outputLink>
-                                                    <!-- Delete link -->
-                                                    <h:commandLink styleClass="btn btn--icon"
-                                                        onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };" 
-                                                        action="#{crowdsourcingBean.deleteAnnotationAction(annotation)}" title="#{msg.delete}" alt="#{msg.delete}">
-                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                    </h:commandLink>
-                                                </td>
-                                            </tr>
-                                        </ui:repeat>
-                                    </tbody>
-                                </table>
-
-                                <!-- paginator -->
-<!--                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" /> -->
+                        <div class="admin__table-tools">
+                            <!-- PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelAnnotations}" />
+                            </div>
+                            <!-- FILTER -->
+                            <div class="admin__table-filter">
+                                <!-- TODO: ADD FILTER FOR targetPI, TOO -->
+                                <viewerComponent:dataTableColumnFilter key="admin__crowsourcing_annotations_search"
+                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
                             </div>
                         </div>
-                    </h:form>
+
+
+                        <!-- ALL ANNOTATIONS TABLE -->
+                        <div id="csAnnotationsTable" class="admin__table-content">
+
+                            <!-- TITLE ROW -->
+                            <div class="row no-gutters admin__table-title">
+
+                                <!-- ANNOTATION COL -->
+                                <div class="col-8 d-flex">#{msg.admin__crowdsourcing_annotation}</div>
+
+                                <!-- TARGET COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.admin__crowdsourcing_annotation_target}
+                                    <div class="sorting-wrapper admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+
+                                <!-- DATE COL -->
+                                <div class="col-2 d-flex">
+                                    #{msg.date}
+                                    <div class="sorting-wrapper admin__table-sorting">
+                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'ASCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort ascending" />
+                                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                        <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'DESCENDING')}">
+                                            <f:passThroughAttribute name="aria-label" value="sort descending" />
+                                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- INDIVIDUAL ANNOTATION ROWS -->
+                            <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
+                                <div class="row no-gutters admin__table-entry">
+                                    <div class="col-8 d-flex" style="flex-direction:column;">
+                                        <h:outputText value="#{annotation.contentString}" />
+
+                                        <!-- ACTIONS -->
+                                        <div>
+                                            <!-- SHOW -->
+                                            <!-- TODO INLINE CSS -->
+                                            <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}" class="admin__table-action-link" style="padding-right: 1.4rem;" target="_blank" aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
+
+                                            <!-- DELETE -->
+                                            <h:commandLink styleClass="admin__table-action-link -redlink"
+                                                onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };"
+                                                action="#{crowdsourcingBean.deleteAnnotationAction(annotation)}">#{msg.delete}
+                                            </h:commandLink>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex">
+                                        #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
+                                    </div>
+                                    <div class="col-2 d-flex">
+                                        <h:outputText value="#{annotation.dateCreated}">
+                                            <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
             </div>
 
             <script type="text/javascript">
@@ -135,15 +134,8 @@
                     
                     viewerJS.dataTable.init( dataTableConfig );
                 } );
-        		riot.mount("progressBar");
+                        riot.mount("progressBar");
             </script>
         </h:panelGroup>
-    </ui:define>
-
-	<!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <adminWidget:widget_admin />
-        <adminWidget:widget_crowdsourcing />
-    	<adminWidget:widget_cms />
     </ui:define>
 </ui:composition>

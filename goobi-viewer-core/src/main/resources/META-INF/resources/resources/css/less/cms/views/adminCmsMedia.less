@@ -3,7 +3,12 @@
    style declarations for adminCmsMedia.xhtml
    ==============================================================*/
 /* ADMIN CMS MEDIA */
+
 .admin-cms-media {
+	/* BOOTSTRAP FIX */
+	.custom-control {
+		padding-left: 0;
+	}
 	/* OVERLAY */
 	&__overlay {
 		display: none;
@@ -139,7 +144,7 @@
 		display: flex;
 		align-items: center;
 		padding: 10px;
-		background-color: @neutralgray;
+		background-color: @neutralgray2;
 	}
 	&__bulk-actions,
 	&__switch {

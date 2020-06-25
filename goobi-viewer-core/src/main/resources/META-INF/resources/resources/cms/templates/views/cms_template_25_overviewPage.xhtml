@@ -54,11 +54,11 @@
 					<div class="tpl-overviewpage__overview-thumbnail">
 						<ui:fragment rendered="#{activeDocumentBean.recordLoaded}">
 							<img src="#{imageDelivery.representativeThumbnail}"
-								class="img-responsive" />
+								class="img-fluid" />
 						</ui:fragment>
 						<ui:fragment rendered="#{!activeDocumentBean.recordLoaded}">
 							<img src="#{imageDelivery.staticImagesURI}access_denied.png"
-								class="img-responsive" />
+								class="img-fluid" />
 						</ui:fragment>
 					</div>
 

@@ -132,6 +132,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean hasImage = false;
     /** Whether or not full-text is available for this page. */
     private boolean fulltextAvailable = false;
+
+    private Boolean fulltextAccessPermission;
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -719,6 +721,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the fulltextAccessPermission
+     * @throws ViewerConfigurationException 
+     */
+    public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
+        if (fulltextAccessPermission == null) {
+            getFullText();
+        }
+        return fulltextAccessPermission;
+    }
+
+    /**
      * <p>
      * Setter for the field <code>fulltextAvailable</code>.
      * </p>
@@ -747,7 +760,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
-    
+
     /**
      * <p>
      * isTeiAvailableForPage.
@@ -760,7 +773,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isTeiAvailable() throws IndexUnreachableException, DAOException {
         return isDisplayFulltext();
     }
-
 
     /**
      * <p>
@@ -849,14 +861,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return fullText;
     }
-    
+
     /**
      * 
-     * @return  The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
+     * @return The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
      * @throws ViewerConfigurationException
      */
     public String getFulltextMimeType() throws ViewerConfigurationException {
-        if(textContentType == null) {
+        if (textContentType == null) {
             getFullText();
         }
         return textContentType;
@@ -897,12 +909,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         try {
             String text = NetTools.getWebContentGET(url);
             textContentType = FileTools.probeContentType(text);
+            fulltextAccessPermission = true;
             return text;
         } catch (HTTPException e) {
             logger.error("Could not retrieve file from {}", url);
             logger.error(e.getMessage());
             if (e.getCode() == 403) {
                 logger.debug("Access denied for full-text file {}", fulltextFileName);
+                fulltextAccessPermission = false;
                 throw new AccessDeniedException("fulltextAccessDenied");
             }
             return null;
@@ -979,8 +993,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
             logger.debug("Access denied for ALTO file {}", altoFileName);
+            fulltextAccessPermission = false;
             throw new AccessDeniedException("fulltextAccessDenied");
         }
+        fulltextAccessPermission = true;
         String url = DataFileTools.buildFullTextUrl(altoFileName);
         logger.trace("ALTO URL: {}", url);
         try {
@@ -1516,7 +1532,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Comment> getComments() throws DAOException {
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, true);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order);
         Collections.sort(comments);
         //        Collections.reverse(comments);
         return comments;
