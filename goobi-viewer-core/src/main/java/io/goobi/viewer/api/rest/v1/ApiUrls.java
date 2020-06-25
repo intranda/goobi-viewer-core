@@ -26,7 +26,7 @@ import io.goobi.viewer.controller.DataManager;
  */
 public class ApiUrls extends AbstractApiUrlManager {
 
-    public static final String RECORDS_INDEX =                              "/records";
+    public static final String RECORDS_INDEX =                              "/index";
     public static final String RECORDS_QUERY =                              "/query";
     public static final String RECORDS_STATISTICS =                         "/statistics";
     

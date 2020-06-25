@@ -104,7 +104,8 @@ public class IndexResourceTest extends AbstractRestApiTest{
     
     @Test
     public void testStatistics() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_INDEX, RECORDS_STATISTICS).build())
+        String url = urls.path(RECORDS_INDEX, RECORDS_STATISTICS).build();
+        try(Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
