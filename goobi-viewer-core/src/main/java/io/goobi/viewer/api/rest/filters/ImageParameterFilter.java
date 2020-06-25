@@ -20,8 +20,11 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -49,10 +52,16 @@ public class ImageParameterFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageParameterFilter.class);
 
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private HttpServletResponse servletResponse;
+    
     /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         String uri = request.getUriInfo().getPath();
+        String pi;
         if (uri.contains("image/") || uri.contains("pdf/mets/")) {
 
             String requestPath;
@@ -65,7 +74,12 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             // logger.trace("Filtering request {}", requestPath);
             StringTokenizer tokenizer = new StringTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
-            String pi = pathSegments.get(0).replaceAll("\\..+", "");
+            pi = pathSegments.get(0).replaceAll("\\..+", "");
+        } else if(servletRequest.getAttribute("pi") != null){
+            pi = servletRequest.getAttribute("pi").toString();
+        } else {
+            pi = "";
+        }
             try {
                 if (StringUtils.isNotBlank(pi) && !"-".equals(pi)) {
                     addRepositoryPathIfRequired(request, pi);
@@ -82,8 +96,6 @@ public class ImageParameterFilter implements ContainerRequestFilter {
                 request.abortWith(errorResponse);
             }
         }
-
-    }
 
     /**
      * <p>

@@ -116,7 +116,12 @@ public class ApiUrls extends AbstractApiUrlManager {
     
     public static final String ANNOTATIONS =                                "/annotations";
     public static final String ANNOTATIONS_PAGE =                           "/pages/{pageNo}";
-    public static final String ANNOTATIONS_ANNOTATION =                     "/{id}";
+    public static final String ANNOTATIONS_ANNOTATION =                     "/annotation_{id}";
+    public static final String ANNOTATIONS_COMMENT =                        "/comment_{id}";
+    public static final String ANNOTATIONS_PLAINTEXT =                      "/plaintext_{pi}_{pageNo}";
+    public static final String ANNOTATIONS_ALTO =                           "/alto_{pi}_{pageNo}_{elementId}";
+    public static final String ANNOTATIONS_METADATA =                       "/metadata_{pi}_{divId}_{field}";
+    public static final String ANNOTATIONS_UGC =                            "/ugc_{id}";
     
     public static final String LOCALIZATION =                               "/localization";
     public static final String LOCALIZATION_VOCABS =                        "/vocabularies";

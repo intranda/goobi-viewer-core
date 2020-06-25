@@ -38,6 +38,9 @@ import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+
+
 /**
  * @author florian
  *
@@ -47,12 +50,14 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     String text = "A bird in the hand is worth\ntwo in the bush.";
     SearchResultConverter converter;
     String pi = "12345";
+    String logId = "LOG_0000";
     int pageNo = 1;
     String restUrl;
 
     Path altoFile = Paths.get("src/test/resources/data/sample_alto.xml");
     AltoDocument doc;
 
+    ApiUrls urls = new ApiUrls();
     /**
      * @throws java.lang.Exception
      */
@@ -62,7 +67,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         super.setUp();
         DataManager.getInstance().injectConfiguration(new Configuration("src/test/resources/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
-        converter = new SearchResultConverter(new ApiUrls(), pi, pageNo);
+        converter = new SearchResultConverter(urls, pi, pageNo);
         doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
 
     }
@@ -89,9 +94,11 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
         SearchHit hit = converter.convertCommentToHit(queryRegex, pi, comment);
-
+        
+        String url = urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(comment.getId()).query("format", "oa").toString();
+        
         Assert.assertNotNull(hit);
-        Assert.assertEquals(restUrl + "webannotation/comments/12345/1/1/", hit.getAnnotations().get(0).getId().toString());
+        Assert.assertEquals(url, hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
         TextQuoteSelector selector1 = (TextQuoteSelector) hit.getSelectors().get(0);
         TextQuoteSelector selector2 = (TextQuoteSelector) hit.getSelectors().get(1);
@@ -116,8 +123,9 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String query = "in";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
         SearchHit hit = converter.convertUGCToHit(queryRegex, ugc);
+        String url = urls.path(ANNOTATIONS, ANNOTATIONS_UGC).params(123456789).build();
         Assert.assertNotNull(hit);
-        Assert.assertEquals(restUrl + "annotations/123456789", hit.getAnnotations().get(0).getId().toString());
+        Assert.assertEquals(url, hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
         TextQuoteSelector selector1 = (TextQuoteSelector) hit.getSelectors().get(0);
         TextQuoteSelector selector2 = (TextQuoteSelector) hit.getSelectors().get(1);
@@ -136,6 +144,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.TITLE, text);
         doc.setField(SolrConstants.PI_TOPSTRUCT, pi);
+        doc.setField(SolrConstants.LOGID, logId);
         doc.setField(SolrConstants.PI, pi);
         doc.setField(SolrConstants.THUMBPAGENO, pageNo);
         doc.setField(SolrConstants.IDDOC, 123456789);
@@ -144,8 +153,10 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
         SearchHit hit = converter.convertMetadataToHit(queryRegex, SolrConstants.TITLE, doc);
 
+        String annoUrl = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_METADATA).params(pi, logId, "MD_TITLE").query("format", "oa").build();
+        
         Assert.assertNotNull(hit);
-        Assert.assertEquals(restUrl + "iiif/manifests/12345/METADATA/12345/MD_TITLE/", hit.getAnnotations().get(0).getId().toString());
+        Assert.assertEquals(annoUrl, hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
         TextQuoteSelector selector1 = (TextQuoteSelector) hit.getSelectors().get(0);
         TextQuoteSelector selector2 = (TextQuoteSelector) hit.getSelectors().get(1);
@@ -162,7 +173,6 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     @Test
     public void testGetAnnotationsFromAlto() {
 
-        ApiUrls urls = new ApiUrls();
         
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
@@ -176,7 +186,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
         SearchHit hit1 = results.hits.get(0);
         Assert.assertEquals("Hollywood!", hit1.getMatch());
-        String url = urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_ANNOTATIONS).params("12345", "1").build() + "/Word_14";
+        String url = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_ALTO).params(pi, pageNo, "Word_14").query("format", "oa").build();
         Assert.assertEquals(url, hit1.getAnnotations().get(0).getId().toString());
 
     }

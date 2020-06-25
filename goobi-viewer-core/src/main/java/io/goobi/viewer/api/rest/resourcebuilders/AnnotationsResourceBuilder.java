@@ -15,13 +15,7 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -226,7 +220,7 @@ public class AnnotationsResourceBuilder {
     }
 
     public WebAnnotation getAsWebAnnotation(Comment comment) {
-        WebAnnotation anno = new WebAnnotation(getWebAnnotationCommentURI(comment.getPi(), comment.getPage(), comment.getId()));
+        WebAnnotation anno = new WebAnnotation(getWebAnnotationCommentURI(comment.getId()));
         anno.setMotivation(de.intranda.api.annotation.wa.Motivation.COMMENTING);
         if (comment.getPage() != null) {
             anno.setTarget(
@@ -247,24 +241,12 @@ public class AnnotationsResourceBuilder {
         return URI.create(this.urls.path(ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(id).query("format", "oa").build());
     }
 
-    private URI getWebAnnotationCommentURI(String pi, Integer page, Long id) {
-        String url;
-        if (page != null) {
-            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).build();
-        } else {
-            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).query("format", "oa").build();
-        }
-        return URI.create(url);
+    private URI getWebAnnotationCommentURI(Long id) {
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).build());
     }
 
     private URI getOpenAnnotationCommentURI(String pi, Integer page, Long id) {
-        String url;
-        if (page != null) {
-            url = urls.path(RECORDS_RECORD, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, page, id).query("format", "oa").build();
-        } else {
-            url = urls.path(RECORDS_RECORD, RECORDS_COMMENTS_COMMENT).params(pi, id).query("format", "oa").build();
-        }
-        return URI.create(url);
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).query("format", "oa").build());
     }
 
     /**

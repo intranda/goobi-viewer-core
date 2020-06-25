@@ -70,18 +70,6 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
-    @Test
-    public void testGetFullImage() {
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF).params(PI, FILENAME, REGION, SIZE, ROTATION, QUALITY, FORMAT).build();
-        try(Response response = target(url)
-                .request()
-                .accept(new String[] {"image", "application/pdf"})
-                .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            
-        }
-    }
     
     @Test
     public void testGetImageInformation() throws JsonMappingException, JsonProcessingException {
@@ -122,9 +110,11 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept("image")
                 .get()) {
-            assertEquals("Should return status 200. Error message: " + response.readEntity(String.class), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            int status = response.getStatus();
+            String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
+            assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
+            assertEquals("file:///opt/digiverso/viewer/data/2/media/" + PI + "/" + FILENAME + ".tif", contentLocation);
             assertTrue(entity.length >= 5*5*8*3); //entity is at least as long as the image data
         }
     }

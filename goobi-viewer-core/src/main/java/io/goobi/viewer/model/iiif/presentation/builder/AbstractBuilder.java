@@ -446,7 +446,7 @@ public abstract class AbstractBuilder {
         Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
         if (ugcDocs != null && !ugcDocs.isEmpty()) {
             for (SolrDocument doc : ugcDocs) {
-                OpenAnnotation anno = createOpenAnnotation(pi, doc, urlOnlyTarget);
+                OpenAnnotation anno = createUGCOpenAnnotation(pi, doc, urlOnlyTarget);
                 Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
                 List<OpenAnnotation> annoList = annoMap.get(page);
                 if (annoList == null) {
@@ -467,7 +467,7 @@ public abstract class AbstractBuilder {
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString());
         if(docList != null && !docList.isEmpty()) {
             SolrDocument doc = docList.get(0);
-            IAnnotation anno = createOpenAnnotation(doc, false);
+            IAnnotation anno = createUGCOpenAnnotation(doc, false);
             return anno;
         } else {
             return null;
@@ -484,9 +484,9 @@ public abstract class AbstractBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
-    public OpenAnnotation createOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
+    public OpenAnnotation createUGCOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
         String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(Object::toString).orElse("");
-        return createOpenAnnotation(pi, doc, urlOnlyTarget);
+        return createUGCOpenAnnotation(pi, doc, urlOnlyTarget);
 
     }
 
@@ -500,12 +500,12 @@ public abstract class AbstractBuilder {
      * @param urlOnlyTarget a boolean.
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
-    public OpenAnnotation createOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
+    public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         OpenAnnotation anno;
         String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-        URI annoURI = URI.create(urls.path(ApiUrls.ANNOTATIONS, ANNOTATIONS_ANNOTATION).params(iddoc).build());
+        URI annoURI = URI.create(urls.path(ApiUrls.ANNOTATIONS, ANNOTATIONS_UGC).params(iddoc).build());
         anno = new OpenAnnotation(annoURI);
 
         IResource body = null;
@@ -824,8 +824,8 @@ public abstract class AbstractBuilder {
      * @param id a long.
      * @return a {@link java.net.URI} object.
      */
-    public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
-        String urlString = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS_COMMENT).params(pi, pageNo, id).build();
+    public URI getCommentAnnotationURI(long id) {
+        String urlString = this.urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).build();
 
         return URI.create(urlString);
     }

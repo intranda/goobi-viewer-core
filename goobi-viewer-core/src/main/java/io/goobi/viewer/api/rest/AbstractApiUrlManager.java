@@ -94,7 +94,7 @@ public abstract class AbstractApiUrlManager {
         String[] array = (String[]) ArrayUtils.addAll(new String[] {getApiUrl()}, paths);
         return new ApiPath(array);
     }
-    
+
     
     public static class ApiPath {
         

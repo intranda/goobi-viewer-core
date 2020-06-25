@@ -223,7 +223,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
                     for (Comment comment : comments) {
-                        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
+                        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
                         anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
                         TextualResource body = new TextualResource(comment.getText());
@@ -387,8 +387,8 @@ public class SequenceBuilder extends AbstractBuilder {
                         String altoText = page.loadAlto();
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
-                            List<IAnnotation> annos = new AltoAnnotationBuilder().createAnnotations(alto.getFirstPage(), canvas,
-                                    AltoAnnotationBuilder.Granularity.LINE, annoList.getId().toString(), false);
+                            List<IAnnotation> annos = new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
+                                    AltoAnnotationBuilder.Granularity.LINE, false);
                             for (IAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }

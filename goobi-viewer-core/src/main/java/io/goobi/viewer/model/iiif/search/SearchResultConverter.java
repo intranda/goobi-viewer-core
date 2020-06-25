@@ -15,14 +15,16 @@
  */
 package io.goobi.viewer.model.iiif.search;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ALTO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_METADATA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_UGC;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,6 @@ import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextQuoteSelector;
 import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchTerm;
@@ -60,8 +60,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -85,13 +83,14 @@ public class SearchResultConverter {
 
     private static final int MAX_TEXT_LENGTH = 20;
 
-    private final AltoAnnotationBuilder altoBuilder = new AltoAnnotationBuilder();
+    private final AltoAnnotationBuilder altoBuilder;
     private final AbstractBuilder presentationBuilder;
     private final AltoSearchParser altoParser = new AltoSearchParser();
     private final SolrSearchParser solrParser = new SolrSearchParser();
 
     private String pi;
     private Integer pageNo;
+    private AbstractApiUrlManager urls;
 
     /**
      * Create a new converter; parameters are used to construct urls or result resources
@@ -102,8 +101,9 @@ public class SearchResultConverter {
      * @param pageNo The page number of generated resources
      */
     public SearchResultConverter(AbstractApiUrlManager urls, String pi, Integer pageNo) {
-        this.presentationBuilder = new AbstractBuilder(urls) {
-        };
+        this.presentationBuilder = new AbstractBuilder(urls) {};
+        this.altoBuilder = new AltoAnnotationBuilder(urls, "oa");
+        this.urls = urls;
         this.pi = pi;
         this.pageNo = pageNo;
     }
@@ -237,7 +237,7 @@ public class SearchResultConverter {
                 }
             }
             hit.setMatch(match);
-            OpenAnnotation anno = getPresentationBuilder().createOpenAnnotation(ugc, true);
+            OpenAnnotation anno = getPresentationBuilder().createUGCOpenAnnotation(ugc, true);
             hit.addAnnotation(anno);
         }
         return hit;
@@ -474,9 +474,7 @@ public class SearchResultConverter {
         }
 
         IResource canvas = createSimpleCanvasResource(pi, pageNo);
-        URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, null);
-        URI uri = getAnnotationId(baseURI.toString(), "plaintext");
-        IAnnotation pageAnnotation = createAnnotation(text, canvas, uri);
+        IAnnotation pageAnnotation = createAnnotation(text, canvas);
         hit.addAnnotation(pageAnnotation);
 
         return hit;
@@ -494,8 +492,7 @@ public class SearchResultConverter {
         String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
         Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
         Integer thumbPageNo = SolrSearchIndex.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
-        String id = pi + "/" + (StringUtils.isNotBlank(logId) ? (logId + "/") : "") + metadataField;
-        OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(id));
+        OpenAnnotation anno = new OpenAnnotation(getMetadataAnnotationURI(pi, logId, metadataField));
         anno.setMotivation(Motivation.DESCRIBING);
         if (thumbPageNo != null) {
             anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));
@@ -515,6 +512,8 @@ public class SearchResultConverter {
         return anno;
     }
 
+
+
     /**
      * Create an annotation from an ALTO element
      * 
@@ -522,15 +521,14 @@ public class SearchResultConverter {
      * @return An annotation representing the element
      */
     private IAnnotation createAnnotation(GeometricData altoElement) {
-        return altoBuilder.createAnnotation(altoElement, createSimpleCanvasResource(getPi(), getPageNo()),
-                getAnnotationListURI(getPi(), getPageNo(), null).toString(), true);
+        return altoBuilder.createAnnotation(altoElement, getPi(), getPageNo(), createSimpleCanvasResource(getPi(), getPageNo()), true);
     }
 
     /**
      * create a text annotation with the given text in the given canvas
      */
-    private IAnnotation createAnnotation(String text, IResource canvas, URI uri) {
-        AbstractAnnotation anno = new OpenAnnotation(uri);
+    private IAnnotation createAnnotation(String text, IResource canvas) {
+        AbstractAnnotation anno = new OpenAnnotation(getPlaintextAnnotationURI(pi, pageNo));
         anno.setMotivation(Motivation.PAINTING);
         anno.setTarget(canvas);
         TextualResource body = new TextualResource(text);
@@ -539,7 +537,7 @@ public class SearchResultConverter {
     }
 
     private IAnnotation createAnnotation(String pi, Comment comment) {
-        OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
+        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(comment.getId().toString()));
         anno.setMotivation(Motivation.COMMENTING);
         IResource canvas = createSimpleCanvasResource(pi, comment.getPage());
         anno.setTarget(canvas);
@@ -576,12 +574,24 @@ public class SearchResultConverter {
         }
     }
 
-    private URI getAnnotationId(String annotationListURI, String id) {
-        if (annotationListURI.endsWith("/")) {
-            return URI.create(annotationListURI + id);
-        } else {
-            return URI.create(annotationListURI + "/" + id);
-        }
+    private URI getMetadataAnnotationURI(String pi, String logId, String metadataField) {
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_METADATA).params(pi, logId, metadataField).query("format", "oa").build());
+    }
+    
+    private URI getPlaintextAnnotationURI(String pi, Integer pageNo) {
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_PLAINTEXT).params(pi, pageNo).query("format", "oa").build());
+    }
+    
+    private URI getAltoAnnotationURI(String pi, Integer pageNo, String elementId) {
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params(pi, pageNo, elementId).query("format", "oa").build());
+    }
+    
+    private URI getUGCAnnotationURI(String id) {
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_UGC).params(id).query("format", "oa").build());
+    }
+    
+    private URI getCommentAnnotationURI(String id) {
+        return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).query("format", "oa").build());
     }
 
 }
