@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.iiif.presentation.Collection;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -63,13 +64,14 @@ public class CollectionResource extends AbstractResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException 
      */
     @GET
     @Path("/{collectionField}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public Collection getCollections(@PathParam("collectionField") String collectionField)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -89,13 +91,14 @@ public class CollectionResource extends AbstractResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException 
      */
     @GET
     @Path("/{collectionField}/grouping/{groupingField}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public Collection getCollectionsWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("groupingField") final String groupingField)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -118,13 +121,14 @@ public class CollectionResource extends AbstractResource {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException 
      */
     @GET
     @Path("/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
-            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -146,13 +150,14 @@ public class CollectionResource extends AbstractResource {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException 
      */
     @GET
     @Path("/{collectionField}/{topElement}/grouping/{groupingField}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public Collection getCollectionWithGrouping(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement, @PathParam("groupingField") final String facetField)
-            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));

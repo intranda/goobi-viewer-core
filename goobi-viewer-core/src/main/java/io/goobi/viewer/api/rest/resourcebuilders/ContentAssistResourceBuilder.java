@@ -25,6 +25,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -49,33 +51,41 @@ public class ContentAssistResourceBuilder {
      * @param solrField a {@link java.lang.String} object.
      * @param inputString a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws IllegalRequestException if the solrField doesn't exist in the index
+     * @throws IndexUnreachableException If an error occured communicating with the SOLR index
      */
 
     public List<String> getCollections(String solrField, String inputString)
-            throws IndexUnreachableException, PresentationException {
+            throws IllegalRequestException, IndexUnreachableException {
         if ("-".equals(inputString)) {
             inputString = "";
         }
         String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
-        List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0);
-
-        List<String> collections = new ArrayList<>();
-        CmsCollectionsBean bean = BeanUtils.getCMSCollectionsBean();
-        if (bean != null) {
-            collections.addAll(bean.getCollections().stream().map(collection -> collection.getSolrFieldValue()).collect(Collectors.toList()));
+        try {            
+            List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0);
+            List<String> collections = new ArrayList<>();
+            CmsCollectionsBean bean = BeanUtils.getCMSCollectionsBean();
+            if (bean != null) {
+                collections.addAll(bean.getCollections().stream().map(collection -> collection.getSolrFieldValue()).collect(Collectors.toList()));
+            }
+            String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
+            List<String> list = facets.stream()
+                    .flatMap(facet -> getHierarchy("", facet, splittingChar).stream())
+                    .distinct()
+                    .filter(facet -> !collections.contains(facet))
+                    .sorted()
+                    .sorted((f1, f2) -> Integer.compare(f1.split(splittingChar).length, f2.split(splittingChar).length))
+                    .collect(Collectors.toList());
+            
+            return list;
+        } catch(PresentationException e) {
+            if(e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
+                throw new IllegalRequestException("Not a valid SOLR field: " + solrField);
+            } else {
+                throw new IndexUnreachableException("Internal error in index:" + e.toString());
+            }
         }
-        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
-        List<String> list = facets.stream()
-                .flatMap(facet -> getHierarchy("", facet, splittingChar).stream())
-                .distinct()
-                .filter(facet -> !collections.contains(facet))
-                .sorted()
-                .sorted((f1, f2) -> Integer.compare(f1.split(splittingChar).length, f2.split(splittingChar).length))
-                .collect(Collectors.toList());
 
-        return list;
     }
 
     /**

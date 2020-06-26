@@ -1715,8 +1715,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
+    public CollectionView getCollection() throws PresentationException, IndexUnreachableException, IllegalRequestException {
         return BeanUtils.getCmsBean().getCollection(this);
     }
 

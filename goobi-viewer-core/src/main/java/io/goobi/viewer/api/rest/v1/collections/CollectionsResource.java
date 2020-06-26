@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.presentation.Collection;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
@@ -41,6 +42,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -63,42 +65,57 @@ public class CollectionsResource {
     
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get all collections as IIIF presentation collection")
+    @Operation(tags = { "collections", "iiif" }, summary = "Get all collections as IIIF presentation collection")
+    @ApiResponse(responseCode="400", description="No collections available for field")
     public Collection getAllCollections(
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
                     )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        Collection collection;
         if(StringUtils.isBlank(grouping)) {            
-            return builder.getCollections(solrField);
+            collection = builder.getCollections(solrField);
         } else {
-            return builder.getCollectionsWithGrouping(solrField, grouping);
+            collection = builder.getCollectionsWithGrouping(solrField, grouping);
         }
+        if(collection.getMembers() == null || collection.getMembers().isEmpty()) {
+            //can't be a collection
+            throw new IllegalRequestException("No collections found for field " + solrField);
+        }
+        return collection;
     }
     
     @GET
     @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get given collection as a IIIF presentation collection")
+    @Operation(tags = { "collections", "iiif" }, summary = "Get given collection as a IIIF presentation collection")
+    @ApiResponse(responseCode="400", description="Invalid collection name or field")
     public Collection getCollection(
-            @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collection,
+            @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName,
             @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping
             )
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentationResourceBuilder builder = new IIIFPresentationResourceBuilder(urls);
+        Collection collection;
         if(StringUtils.isBlank(grouping)) {                   
-            return builder.getCollection(solrField, collection);
+            collection = builder.getCollection(solrField, collectionName);
         } else {
-          return builder.getCollectionWithGrouping(solrField, collection, grouping);
+          collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping);
         }
+        if(collection.getMembers() == null || collection.getMembers().isEmpty()) {
+            //can't be a collection
+            throw new IllegalRequestException("No valid collection: " + solrField + ":" + collectionName);
+        }
+        return collection;
     }
     
     @GET
     @javax.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records"}, summary = "Return a list of collections starting with the given input")
+    @ApiResponse(responseCode="400", description="No collections available for field")
+    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
     public List<String> contentAssist(
-            @Parameter(description="User input for which content assist is requested")@QueryParam("query")String input) throws IndexUnreachableException, PresentationException {
+            @Parameter(description="User input for which content assist is requested")@QueryParam("query")String input) throws IndexUnreachableException, IllegalRequestException {
         ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();
         return builder.getCollections(solrField, input);
     }

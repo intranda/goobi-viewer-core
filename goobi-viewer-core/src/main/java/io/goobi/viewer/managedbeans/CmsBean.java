@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -1497,9 +1498,10 @@ public class CmsBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
+     * @throws IllegalRequestException 
      */
     public String cmsContextAction() throws IndexUnreachableException, DAOException, ViewerConfigurationException,
-            RecordNotFoundException, RecordDeletedException {
+            RecordNotFoundException, RecordDeletedException, IllegalRequestException {
         return cmsContextAction(true);
     }
 
@@ -1517,10 +1519,11 @@ public class CmsBean implements Serializable {
      * @throws ViewerConfigurationException
      * @throws RecordDeletedException
      * @throws RecordNotFoundException
+     * @throws IllegalRequestException 
      */
     public String cmsContextAction(boolean resetSearch)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException,
-            RecordDeletedException {
+            RecordDeletedException, IllegalRequestException {
         logger.trace("cmsContextAction: {}", resetSearch);
         if (currentPage == null) {
             return "";
@@ -1957,8 +1960,9 @@ public class CmsBean implements Serializable {
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException {
+    public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = page.getId() + "_" + id;
         CollectionView collection = collections.get(myId);
         if (collection == null) {
@@ -1990,8 +1994,9 @@ public class CmsBean implements Serializable {
      * @return The CollectionView or null if none was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
+    public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         Optional<CMSContentItem> collectionItem =
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
         if (collectionItem.isPresent()) {

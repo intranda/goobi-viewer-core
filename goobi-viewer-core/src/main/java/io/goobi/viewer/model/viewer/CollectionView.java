@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -93,8 +94,9 @@ public class CollectionView {
      * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public void populateCollectionList() throws IndexUnreachableException {
+    public void populateCollectionList() throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
             try {
                 logger.trace("populateCollectionList");
@@ -166,8 +168,9 @@ public class CollectionView {
      * <p>
      * calculateVisibleDcElements.
      * </p>
+     * @throws IllegalRequestException 
      */
-    public void calculateVisibleDcElements() {
+    public void calculateVisibleDcElements() throws IllegalRequestException {
         calculateVisibleDcElements(true);
     }
 
@@ -177,8 +180,9 @@ public class CollectionView {
      * </p>
      *
      * @param loadDescriptions a boolean.
+     * @throws IllegalRequestException 
      */
-    public void calculateVisibleDcElements(boolean loadDescriptions) {
+    public void calculateVisibleDcElements(boolean loadDescriptions) throws IllegalRequestException {
         logger.trace("calculateVisibleDcElements: {}", loadDescriptions);
         if (completeCollectionList == null) {
             return;
@@ -187,6 +191,10 @@ public class CollectionView {
             List<HierarchicalBrowseDcElement> visibleList = new ArrayList<>();
             HierarchicalBrowseDcElement topElement = getElement(getTopVisibleElement(), completeCollectionList);
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
+            if(StringUtils.isNotBlank(getTopVisibleElement()) && topElement == null) {
+                //invalid top element
+                throw new IllegalRequestException("No collection found with name " + getTopVisibleElement());
+            }
             if (topElement == null) {
                 for (HierarchicalBrowseDcElement element : completeCollectionList) {
                     if (this.ignoreList.contains(element.getName())) {
@@ -685,8 +693,9 @@ public class CollectionView {
      *
      * @param element a {@link io.goobi.viewer.model.viewer.HierarchicalBrowseDcElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public void expand(HierarchicalBrowseDcElement element) throws IndexUnreachableException {
+    public void expand(HierarchicalBrowseDcElement element) throws IndexUnreachableException, IllegalRequestException {
         setTopVisibleElement(element.getName());
         populateCollectionList();
     }
@@ -698,8 +707,9 @@ public class CollectionView {
      * @param reset a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IllegalRequestException 
      */
-    public void reset(boolean reset) throws DAOException, IndexUnreachableException {
+    public void reset(boolean reset) throws DAOException, IndexUnreachableException, IllegalRequestException {
         if (reset && StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName())) {
             setTopVisibleElement((String) null);
             populateCollectionList();
@@ -767,8 +777,9 @@ public class CollectionView {
      * <p>
      * showAll.
      * </p>
+     * @throws IllegalRequestException 
      */
-    public void showAll() {
+    public void showAll() throws IllegalRequestException {
         if (completeCollectionList != null) {
             for (HierarchicalBrowseDcElement collection : completeCollectionList) {
                 displayAllDescendents(collection);
@@ -781,8 +792,9 @@ public class CollectionView {
      * <p>
      * hideAll.
      * </p>
+     * @throws IllegalRequestException 
      */
-    public void hideAll() {
+    public void hideAll() throws IllegalRequestException {
         if (completeCollectionList != null) {
             for (HierarchicalBrowseDcElement collection : completeCollectionList) {
                 hideAllDescendents(collection);

@@ -250,7 +250,7 @@ public class IIIFPresentationResourceBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Collection getCollections(String collectionField)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -272,7 +272,7 @@ public class IIIFPresentationResourceBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Collection getCollectionsWithGrouping(String collectionField, String groupingField)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null, groupingField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -295,9 +295,10 @@ public class IIIFPresentationResourceBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException If the topElement is not a collection
      */
     public Collection getCollection(String collectionField, String topElement)
-            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -319,9 +320,10 @@ public class IIIFPresentationResourceBuilder {
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws IllegalRequestException if the topElement is not a collection
      */
     public Collection getCollectionWithGrouping(String collectionField, String topElement, String facetField)
-            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement, facetField,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
