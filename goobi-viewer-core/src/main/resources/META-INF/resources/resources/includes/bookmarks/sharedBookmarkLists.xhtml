@@ -145,7 +145,7 @@
 											<ui:fragment rendered="#{!bookmarkList.hasShareKey()}">
 												<h:commandLink action="#{bookmarkBean.getShareLink(bookmarkList)}">
 													<i class="fa fa-share-alt" aria-hidden="true"></i>
-													<span>#{msg.action__create_boookmarklist_sharelink}</span>
+													<span>#{msg.action__create_bookmarklist_sharelink}</span>
 													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
 												</h:commandLink>
 											</ui:fragment>
@@ -165,11 +165,11 @@
 													data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
 													data-copy-done="#{msg.copyUrlDone}">
 													<i class="fa fa-share-alt" aria-hidden="true"></i>
-													<span>#{msg.action__copy_boookmarklist_sharelink}</span>
+													<span>#{msg.action__copy_bookmarklist_sharelink}</span>
 												</a>
 												<h:commandLink rendered="#{!bookmarkList.isPublic}" action="#{bookmarkBean.resetShareLink(bookmarkList)}">
 													<i class="fa fa-trash" aria-hidden="true"></i>
-													<span>#{msg.action__delete_boookmarklist_sharelink}</span>
+													<span>#{msg.action__delete_bookmarklist_sharelink}</span>
 													<f:ajax execute="@this" render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
 												</h:commandLink>
 											</ui:fragment>
@@ -215,7 +215,7 @@
 										data-clipboard-text="#{bookmarkBean.getShareLink(bookmarkList)}"
 										data-copy-done="#{msg.copyUrlDone}">
 										<i class="fa fa-share-alt" aria-hidden="true"></i>
-										<span>#{msg.action__copy_boookmarklist_sharelink}</span>
+										<span>#{msg.action__copy_bookmarklist_sharelink}</span>
 									</a>
 								
 								</ui:fragment>
