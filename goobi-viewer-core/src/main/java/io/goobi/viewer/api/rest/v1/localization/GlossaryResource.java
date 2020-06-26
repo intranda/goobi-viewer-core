@@ -37,6 +37,7 @@ import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>
@@ -86,6 +87,7 @@ public class GlossaryResource {
     @Path(ApiUrls.LOCALIZATION_VOCABS_FILE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"localization"}, summary = "Get glossary from a glossary file")
+    @ApiResponse(responseCode="404", description="Not vocabulary found with that filename")
     public String getVocabulary(@PathParam("filename") @Parameter(description="Glossary filename") String filename) throws IOException, ContentNotFoundException {
         return new GlossaryManager().getGlossaryAsJson(filename);
 

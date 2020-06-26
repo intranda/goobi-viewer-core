@@ -37,6 +37,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.exceptions.NotImplementedException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
@@ -67,6 +68,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             status = ((WebApplicationException) e).getResponse().getStatusInfo().toEnum();
         } else if (e instanceof NotFoundException) {
             status = Status.NOT_FOUND;
+        } else if (e instanceof NotImplementedException) {
+            status = Status.NOT_IMPLEMENTED;
         } else if (e instanceof ContentLibException) {
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
         } else if (e instanceof RuntimeException) {

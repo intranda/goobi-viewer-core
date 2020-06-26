@@ -102,14 +102,20 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String DOWNLOADS_PDF_SECTION =                       "/pdf/records/{pi}/sections/{divId}";
     
     public static final String USERS =                                      "/users/{userId}";
-    public static final String USERS_BOOKMARKS =                            "/bookmarks";
-    public static final String USERS_BOOKMARKS_LIST =                       "/bookmarks/{listId}";
-    public static final String USERS_BOOKMARKS_LIST_RSS =                   "/bookmarks/{listId}/rss.xml";
-    public static final String USERS_BOOKMARKS_LIST_RSS_JSON =              "/{userId}/bookmarks/{listId}/rss.json";
-    public static final String USERS_BOOKMARKS_LIST_STATISTICS =            "/{userId}/bookmarks/{listId}/statistics";
-    public static final String USERS_BOOKMARKS_SHARED =                     "/{userId}/bookmarks/shared";
-    public static final String USERS_BOOKMARKS_PUBLIC =                     "/{userId}/bookmarks/public";
     
+    public static final String USERS_BOOKMARKS =                            "/users/{userId}/bookmarks";
+    public static final String USERS_BOOKMARKS_LIST =                       "/{listId}";
+    public static final String USERS_BOOKMARKS_ITEM =                       "/{listId}/items/{bookmarkId}";
+    public static final String USERS_BOOKMARKS_LIST_IIIF =                  "/{listId}/collection.json";
+    public static final String USERS_BOOKMARKS_LIST_MIRADOR =               "/{listId}/mirador.json";
+    public static final String USERS_BOOKMARKS_LIST_RSS =                   "/{listId}/rss.xml";
+    public static final String USERS_BOOKMARKS_LIST_RSS_JSON =              "/{listId}/rss.json";
+    public static final String USERS_BOOKMARKS_LIST_STATISTICS =            "/{listId}/statistics";
+    public static final String USERS_BOOKMARKS_SHARED =                     "/shared";
+    public static final String USERS_BOOKMARKS_PUBLIC =                     "/public";
+    public static final String USERS_BOOKMARKS_LIST_SHARED =                "/shared/{key}";
+    public static final String USERS_BOOKMARKS_LIST_SHARED_MIRADOR =        "/shared/{key}/mirador.json";
+
     public static final String AUTHORITY =                                  "/authorities/{authority}/{id}";
     
     public static final String CROWDSOURCING_CAMPAIGN =                     "/crowdsourcing/campaings/{campaignId}";

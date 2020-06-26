@@ -54,8 +54,6 @@ public class RSSResource {
     @Operation(
             tags= {"records", "rss"}, 
             summary = "Get an rss feed of the most recent records")
-    @ApiResponse(responseCode = "200", description = "Return RSS feed in xml format")
-    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
     public String getRssFeed(
             @Parameter(description="Subtheme: Results are filtered to values within the given subtheme (optional)") @QueryParam("subtheme") String subtheme,
             @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,
@@ -73,8 +71,6 @@ public class RSSResource {
     @Operation(
             tags= {"records", "rss"}, 
             summary = "Get an a json representation of an RSS feed of the most recent records")
-    @ApiResponse(responseCode = "200", description = "Return RSS feed in json format")
-    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
     public Channel getRssJsonFeed(
             @Parameter(description="Subtheme: Results are filtered to values within the given subtheme (optional)") @QueryParam("subtheme") String subtheme,
             @Parameter(description = "Language of the returned metadata labels and values (optional)") @QueryParam("lang") String language,

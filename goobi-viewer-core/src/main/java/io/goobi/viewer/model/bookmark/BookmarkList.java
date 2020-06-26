@@ -86,7 +86,7 @@ public class BookmarkList implements Serializable {
     private String description;
 
     @Column(name = "public")
-    private boolean isPublic = false;
+    private Boolean isPublic = false;
 
     @Column(name = "share_key", unique = true)
     public String shareKey;
@@ -427,7 +427,7 @@ public class BookmarkList implements Serializable {
      *
      * @return the isPublic
      */
-    public boolean isIsPublic() {
+    public Boolean isIsPublic() {
         return isPublic;
     }
 
