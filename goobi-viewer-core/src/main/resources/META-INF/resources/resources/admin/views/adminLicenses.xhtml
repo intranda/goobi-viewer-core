@@ -60,12 +60,21 @@
 	                                        <div class="row">
 	                                            <h3 class="col-12">#{msg[licenseType.name]}</h3>
 	                                        </div>
-	                                        <!-- DESCRIPTION-->
-	                                        <ui:fragment rendered="#{licenseType.description != null and licenseType.description != ''}">
-	                                            <div class="row">
-	                                                <p class="col-12 admin__boxed-entry-description">#{licenseType.description}</p>
-	                                            </div>
-	                                        </ui:fragment>
+	                                        <!-- DESCRIPTION + OPEN ACCESS + MOVING WALL INFO -->
+                                        	<div class="row admin__boxed-entry-description">
+	                                            <ui:fragment rendered="#{licenseType.description ne ''}">
+	                                                <p class="col-12 mb-1">#{licenseType.description}</p>
+	                                            </ui:fragment>
+	                                            <ui:fragment rendered="#{licenseType.openAccess}">
+	                                            	<p class="col-12 mb-1">#{msg.admin__license_open_access_activated_info}</p>
+	                                        	</ui:fragment>
+												<ui:fragment rendered="#{licenseType.movingWall}">
+	                                            	<p class="col-12">#{msg.admin__moving_wall_activated_info}</p>
+	                                        	</ui:fragment>
+	                                            <ui:fragment rendered="#{licenseType.description eq '' and licenseType.openAccess eq ''}">
+	                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
+	                                            </ui:fragment>
+                                      		</div>
 	                                        <!-- DATA -->
 	                                        <dl class="row">
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
@@ -89,11 +98,7 @@
 	                                                </dd>
 	                                            </ui:fragment>
 	                                        </dl>
-	
-	                                        <!-- OPEN ACCESS TEXT -->
-	                                        <ui:fragment rendered="#{licenseType.openAccess}">
-	                                            <div class="row col-12">#{msg.admin__license_open_access_desciption_text}</div>
-	                                        </ui:fragment>
+
 	
 	                                        <!-- ACTIONS -->
 	                                        <div class="row justify-content-end admin__boxed-entry-actions">
