@@ -186,7 +186,7 @@ public class License implements IPrivilegeHolder, Serializable {
     private List<Selectable<CMSCategory>> selectableCategories = null;
 
     @Transient
-    private List<Selectable<String>> selectableTemplates = null;
+    private List<Selectable<CMSPageTemplate>> selectableTemplates = null;
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -520,12 +520,12 @@ public class License implements IPrivilegeHolder, Serializable {
      * @return
      * @throws DAOException
      */
-    public List<Selectable<String>> getSelectableTemplates() throws DAOException {
+    public List<Selectable<CMSPageTemplate>> getSelectableTemplates() throws DAOException {
         if (selectableTemplates == null) {
             List<CMSPageTemplate> allTemplates = BeanUtils.getCmsBean().getTemplates();
             selectableTemplates =
                     allTemplates.stream()
-                            .map(template -> new Selectable<>(template.getName(), this.allowedCmsTemplates.contains(template.getName())))
+                            .map(template -> new Selectable<>(template, this.allowedCmsTemplates.contains(template.getId())))
                             .collect(Collectors.toList());
         }
         return selectableTemplates;

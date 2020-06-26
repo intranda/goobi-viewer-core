@@ -63,6 +63,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
@@ -883,9 +884,9 @@ public class AdminBean implements Serializable {
         // Sync changes made to allowed templates
         if (currentLicense.getSelectableTemplates() != null && !currentLicense.getSelectableTemplates().isEmpty()) {
             currentLicense.getAllowedCmsTemplates().clear();
-            for (Selectable<String> selectable : currentLicense.getSelectableTemplates()) {
+            for (Selectable<CMSPageTemplate> selectable : currentLicense.getSelectableTemplates()) {
                 if (selectable.isSelected()) {
-                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue());
+                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue().getId());
                 }
             }
         }

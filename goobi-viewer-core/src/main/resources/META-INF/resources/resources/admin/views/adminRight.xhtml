@@ -312,7 +312,7 @@
                                                                 <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-primary">
-                                                                            #{msg[selectable.value]}
+                                                                            #{msg[selectable.value.name]}
                                                                         </div>
                                                                     </ui:fragment>
                                                                 </ui:repeat>
@@ -331,7 +331,7 @@
                                                                                         <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
                                                                                             <f:ajax render="selected_templates" />
                                                                                         </h:selectBooleanCheckbox>
-                                                                                        #{msg[selectable.value]}
+                                                                                        #{msg[selectable.value.name]}
                                                                                     </label>
                                                                                 </li>
                                                                             </ui:repeat>
