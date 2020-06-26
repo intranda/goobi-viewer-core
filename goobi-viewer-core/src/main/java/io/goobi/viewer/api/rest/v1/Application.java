@@ -24,6 +24,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 /**
  * <p>

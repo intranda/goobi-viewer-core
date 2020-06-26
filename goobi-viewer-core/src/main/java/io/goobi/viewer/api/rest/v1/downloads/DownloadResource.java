@@ -31,6 +31,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -157,7 +158,7 @@ public class DownloadResource {
     public String putPDFDownloadJob(            
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
-            @Parameter(description = "email to notify on job completion") @PathParam("email") String email) throws ContentLibException {
+            @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, logId, email, PDFDownloadJob.TYPE);
         
     }
@@ -225,7 +226,7 @@ public class DownloadResource {
     @DownloadBinding
     public String putPDFDownloadJob(            
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "email to notify on job completion") @PathParam("email") String email) throws ContentLibException {
+            @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, "", email, PDFDownloadJob.TYPE);
         
     }
@@ -304,7 +305,7 @@ public class DownloadResource {
     public String putEPUBDownloadJob(            
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
-            @Parameter(description = "email to notify on job completion") @PathParam("email") String email) throws ContentLibException {
+            @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, logId, email, EPUBDownloadJob.TYPE);
         
     }
@@ -371,7 +372,7 @@ public class DownloadResource {
     @DownloadBinding
     public String putEPUBDownloadJob(            
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "email to notify on job completion") @PathParam("email") String email) throws ContentLibException {
+            @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, "", email, EPUBDownloadJob.TYPE);
         
     }

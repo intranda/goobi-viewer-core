@@ -15,6 +15,9 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -155,4 +158,5 @@ public class ApiUrls extends AbstractApiUrlManager {
         return this.apiUrl.replace("/api/v1", "").replace("/rest", "");
     }
 
+    
 }

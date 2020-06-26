@@ -24,16 +24,12 @@
 	        fetch("#{request.contextPath}/api/v1/openapi.json")
 	        .then(res => res.json())
 	        .then(json => {
+	            json.basePath = "/api/v1"
 	            json.servers = [
 	                {
 	                    url: "#{request.contextPath}",
-// 	                    variables:  {
-// 	                        basePath: {
-// 	                            "default": "/api/v2"
-// 	                        }
-// 	                    }
 	                }
-	            ];	          
+	            ];	    
 	            return json;
 	        })
 
@@ -42,6 +38,13 @@
 	            const ui = SwaggerUIBundle({
 	        	    dom_id: '#swagger-container',
 	        	    spec: json,
+	        	    requestInterceptor : request => {
+	        	        if(!request.url.endsWith("/")) {
+	        	            request.url = request.url + "/";
+	        	        }
+		                console.log("requesting ", request);
+		                return request;
+		            },
 	        	  });
 	        })
         	

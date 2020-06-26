@@ -52,6 +52,7 @@ import de.intranda.api.iiif.presentation.Manifest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
@@ -65,8 +66,29 @@ public class AnnotationsResourceBuilder {
 
     private final static Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
 
+    private final static int MAX_ANNOTATIONS_PER_PAGE = 100;
+
     public AnnotationsResourceBuilder(AbstractApiUrlManager urls) {
         this.urls = urls;
+    }
+
+    public AnnotationCollection getWebnnotationCollection() throws DAOException {
+        long count = DataManager.getInstance().getDao().getAnnotationCount(null);
+        URI uri = URI.create(urls.path(ANNOTATIONS).build());
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
+        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
+        return collection;
+    }
+
+    public AnnotationPage getWebAnnotationPage(Integer page) throws DAOException {
+        int first = (page-1) * MAX_ANNOTATIONS_PER_PAGE;
+        String sortField = "id";
+        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotations(first, MAX_ANNOTATIONS_PER_PAGE, sortField, true, null);
+        URI uri = URI.create(urls.path(ANNOTATIONS).build());
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
+        List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
+        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
+        return annoPage;
     }
 
     /**
@@ -78,17 +100,17 @@ public class AnnotationsResourceBuilder {
     public AnnotationCollection getWebAnnotationCollectionForRecord(String pi, URI uri) throws DAOException {
         long count = DataManager.getInstance().getDao().getAnnotationCountForWork(pi);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
-        AnnotationCollection collection = builder.buildCollection();
+        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
         return collection;
     }
 
     public AnnotationCollection getWebAnnotationCollectionForPage(String pi, Integer pageNo, URI uri) throws DAOException {
         long count = DataManager.getInstance().getDao().getAnnotationCountForTarget(pi, pageNo);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
-        AnnotationCollection collection = builder.buildCollection();
+        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
         return collection;
     }
-    
+
     /**
      * @param pi
      * @param uri
@@ -101,13 +123,13 @@ public class AnnotationsResourceBuilder {
         data.stream().map(this::getAsOpenAnnotation).forEach(oa -> list.addResource(oa));
         return list;
     }
-    
+
     /**
      * @param pi
      * @param pageNo
      * @param uri
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public IAnnotationCollection getOAnnotationListForPage(String pi, Integer pageNo, URI uri) throws DAOException {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
@@ -116,10 +138,9 @@ public class AnnotationsResourceBuilder {
         return list;
     }
 
-
     /**
      * @param uri
-     * @param page 
+     * @param page
      * @return
      * @throws DAOException
      */
@@ -127,15 +148,15 @@ public class AnnotationsResourceBuilder {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.buildPage(annos, page);
+        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
         return annoPage;
     }
-    
+
     public AnnotationPage getWebAnnotationPageForPage(String pi, Integer pageNo, URI uri, Integer page) throws DAOException {
         List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, pageNo);
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(this::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.buildPage(annos, page);
+        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annos, page);
         return annoPage;
     }
 
@@ -149,7 +170,7 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationCollection collection = builder.buildCollection();
+        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
 
         return collection;
     }
@@ -158,7 +179,7 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationPage annoPage = builder.buildPage(
+        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(
                 data.stream()
                         .map(c -> getAsWebAnnotation(c))
                         .collect(Collectors.toList()),
@@ -166,7 +187,7 @@ public class AnnotationsResourceBuilder {
 
         return annoPage;
     }
-    
+
     public AnnotationList getOAnnotationListForRecordComments(String pi, URI uri) throws DAOException {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
 
@@ -182,12 +203,12 @@ public class AnnotationsResourceBuilder {
         data.stream().map(c -> getAsOpenAnnotation(c)).forEach(oa -> list.addResource(oa));
         return list;
     }
-    
+
     public AnnotationCollection getWebAnnotationCollectionForPageComments(String pi, Integer pageNo, URI uri) throws DAOException {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationCollection collection = builder.buildCollection();
+        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
 
         return collection;
     }
@@ -196,7 +217,7 @@ public class AnnotationsResourceBuilder {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationPage annoPage = builder.buildPage(
+        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(
                 data.stream()
                         .map(c -> getAsWebAnnotation(c))
                         .collect(Collectors.toList()),
@@ -387,7 +408,5 @@ public class AnnotationsResourceBuilder {
 
         return annotation;
     }
-
-
 
 }
