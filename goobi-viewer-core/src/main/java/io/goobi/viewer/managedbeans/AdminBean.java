@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -47,6 +49,7 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1652,7 +1655,30 @@ public class AdminBean implements Serializable {
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance()
                 .getSearchIndex()
-                .getHitCount(SearchHelper.ALL_RECORDS_QUERY + " +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
+                .getHitCount(getQueryForAccessCondition(accessCondition));
+    }
+
+    /**
+     * 
+     * @param accessCondition
+     * @return
+     */
+    public String getUrlQueryForAccessCondition(String accessCondition) {
+        String query = getQueryForAccessCondition(accessCondition);
+        try {
+            return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return query;
+        }
+    }
+
+    /**
+     * 
+     * @param accessCondition
+     * @return
+     */
+    static String getQueryForAccessCondition(String accessCondition) {
+        return SearchHelper.ALL_RECORDS_QUERY + " AND " + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"";
     }
 
     public void triggerMessage(String message) {

@@ -78,7 +78,12 @@
 	                                        <!-- DATA -->
 	                                        <dl class="row">
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
-	                                            <dd class="col-sm-8">#{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}</dd>
+	                                            <dd class="col-sm-8">
+	                                               <h:outputLink target="_blank"
+	                                                   value="#{navigationHelper.searchUrl}/-/#{adminBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/">
+	                                                   #{adminBean.getNumRecordsWithAccessCondition(licenseType.name)}
+	                                               </h:outputLink>
+	                                            </dd>
 	
 	                                            <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
 	                                                <dt class="col-sm-4">#{msg.license_conditions}:</dt>
